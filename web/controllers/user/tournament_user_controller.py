@@ -132,6 +132,27 @@ class AbstractInputUserController(AbstractScreenUserController):
 
 
 class CheckInUserController(AbstractInputUserController):
+    @get(
+        path='/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        name='user-checkin-modal'
+    )
+    async def htmx_user_checkin_modal(
+            self,
+            request: HTMXRequest,
+            event_uniq_id: str,
+            screen_uniq_id: str,
+            tournament_id: int,
+            player_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: PlayerUserWebContext = PlayerUserWebContext(
+            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id, player_id=player_id, tournament_started=False)
+        if web_context.error:
+            return web_context.error
+        return HTMXTemplate(
+            template_name="user_screen.html",
+            context=web_context.template_context | {
+            })
 
     @patch(
         path='/user/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
@@ -157,7 +178,6 @@ class CheckInUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return self._user_screen_render(web_context)
-
 
 class IllegalMoveUserController(AbstractInputUserController):
     def _delete_or_add_illegal_move(
@@ -226,7 +246,6 @@ class IllegalMoveUserController(AbstractInputUserController):
 
 
 class ResultUserController(AbstractInputUserController):
-
     @get(
         path='/user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}',
         name='user-result-modal'

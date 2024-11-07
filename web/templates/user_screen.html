@@ -209,6 +209,37 @@
                     (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
                 </script>
             {% endwith %}
+        {% elif player %}
+            <div class="modal-dialog modal-dialog-centered input-screen-result-modal d-block w-80 mw-100">
+                <div class="modal-content bg-secondary-subtle">
+                    <div class="modal-header">
+                        <div class="modal-title fs-4 fw-bold">Pointage</div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row d-flex align-items-center justify-content-center">
+                            <button
+                                class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                                hx-patch="{{ url_for('user-toggle-check-in', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >{% if not player.check_in %}POINTER{% else %}DE-POINTER{% endif %}<br/><br/>{{ player.last_name }}<br/>{{ player.first_name }}<br/>{{ player.rating }}{{ player.rating_type }}</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer row d-flex align-items-center justify-content-center">
+                        <button
+                                hx-trigger="click, keyup[key=='Escape'] from:body"
+                                class="result-button btn-secondary col-3 ms-auto me-auto btn fs-4 p-3"
+                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
+                                preload
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                        >Annuler</button>
+                    </div>
+                </div>
+            </div>
+            <script>
+                (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
+            </script>
         {% endif %}
     {% endif %}
 {% endblock modal %}
