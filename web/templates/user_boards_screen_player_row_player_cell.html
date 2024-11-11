@@ -14,5 +14,5 @@
     <i
         class="{% if player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"
 
-    ></i> {% if player.title_str %}{{ player.title_str }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}
+    ></i> {% if player.title_str %}{{ player.title_str }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}{% if admin_auth %} ({{ player.licenceType }}){% endif %}
 </td>
