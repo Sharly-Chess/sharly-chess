@@ -93,7 +93,7 @@ class SQLiteDatabase:
 
     @staticmethod
     def dump_to_json_database_field(obj: Any, if_none=None) -> str | None:
-        """Serilizes the given object `obj` to JSON.
+        """Serializes the given object `obj` to JSON.
         Returns the JSON serialization of `if_none` otherwise (may be None)."""
         if obj is not None:
             return json.dumps(obj)
@@ -182,7 +182,7 @@ class EventDatabase(SQLiteDatabase):
           this type.
         - If `items_number` is passed, `supposed_list` must contain exactly
           this number of elements.
-        - If `allowed_empty is set to Falsen `supposed_list` must not be empty.
+        - If `allowed_empty is set to False, `supposed_list` must not be empty.
         """
         assert isinstance(supposed_list, list), f'{yml_file.name}: {list_path} is no list'
         if item_type is not None:
@@ -590,7 +590,7 @@ class EventDatabase(SQLiteDatabase):
         self._execute('UPDATE `info` SET `last_update` = ?', (time.time(),))
 
     def rename(self, new_uniq_id: str = None):
-        """Changes the event file database to theone associated to the
+        """Changes the event file database to the one associated to the
         provided `new_uniq_id`."""
         self.file.rename(EventDatabase(new_uniq_id).file)
         with EventDatabase(new_uniq_id, write=True) as event_database:
@@ -622,9 +622,9 @@ class EventDatabase(SQLiteDatabase):
                 self._version = None
         return self
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredEvent 
+    StoredEvent
     ---------------------------------------------------------------------------------
     """
 
@@ -747,9 +747,9 @@ class EventDatabase(SQLiteDatabase):
             tuple(params))
         return self._get_stored_event()
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredChessEvent 
+    StoredChessEvent
     ---------------------------------------------------------------------------------
     """
 
@@ -842,7 +842,7 @@ class EventDatabase(SQLiteDatabase):
             stored_chessevent.uniq_id = f'{uniq_id}{clone_index}'
         return self._write_stored_chessevent(stored_chessevent)
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
     StoredTimerHour
     ---------------------------------------------------------------------------------
@@ -997,7 +997,7 @@ class EventDatabase(SQLiteDatabase):
     def _delete_stored_timer_hours(self, timer_id: int):
         self._execute('DELETE FROM `timer_hour` WHERE `timer_id` = ?;', (timer_id,))
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
     StoredTimer
     ---------------------------------------------------------------------------------
@@ -1095,13 +1095,13 @@ class EventDatabase(SQLiteDatabase):
         self._execute('UPDATE `family` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,))
         self._execute('UPDATE `screen` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,))
         self._delete_stored_timer_hours(timer_id)
-        # references are not deleted as they shoud be!
+        # references are not deleted as they should be!
         self._execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
         self.set_last_update()
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    Skipped rounds 
+    Skipped rounds
     ---------------------------------------------------------------------------------
     """
 
@@ -1143,9 +1143,9 @@ class EventDatabase(SQLiteDatabase):
                     (tournament_id, papi_player_id, round, score),
                 )
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredTournament 
+    StoredTournament
     ---------------------------------------------------------------------------------
     """
 
@@ -1301,9 +1301,9 @@ class EventDatabase(SQLiteDatabase):
             (time.time(), tournament_id, ),
         )
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    Illegal moves 
+    Illegal moves
     ---------------------------------------------------------------------------------
     """
 
@@ -1331,7 +1331,7 @@ class EventDatabase(SQLiteDatabase):
         self._execute(
             'SELECT `illegal_move`.* '
             'FROM `illegal_move` '
-            'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`' 
+            'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`'
             'WHERE `tournament`.`id` = ? AND `round` = ?',
             (tournament_id, round,),
         )
@@ -1378,7 +1378,7 @@ class EventDatabase(SQLiteDatabase):
                 (tournament_id, ),
             )
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
     results
     ---------------------------------------------------------------------------------
@@ -1474,9 +1474,9 @@ class EventDatabase(SQLiteDatabase):
                     value))
         return results
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredFamily 
+    StoredFamily
     ---------------------------------------------------------------------------------
     """
 
@@ -1587,9 +1587,9 @@ class EventDatabase(SQLiteDatabase):
             stored_family.uniq_id = f'{uniq_id}{clone_index}'
         return self._write_stored_family(stored_family)
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredScreen 
+    StoredScreen
     ---------------------------------------------------------------------------------
     """
 
@@ -1725,14 +1725,14 @@ class EventDatabase(SQLiteDatabase):
         self._execute(
             'SELECT `screen`.`id` AS `screen_id` '
             'FROM `screen` '
-            'JOIN `screen_set` ON `screen_set`.`screen_id` = `screen`.`id` ' 
+            'JOIN `screen_set` ON `screen_set`.`screen_id` = `screen`.`id` '
             'WHERE `screen_set`.`tournament_id` = ?',
             (tournament_id,),
         )
         for row in self._fetchall():
             self.delete_stored_screen(row['screen_id'])
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
     StoredScreenSet
     ---------------------------------------------------------------------------------
@@ -1862,9 +1862,9 @@ class EventDatabase(SQLiteDatabase):
         self._execute('DELETE FROM `screen_set` WHERE `id` = ?;', (screen_set_id,))
         self.set_last_update()
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredRotator 
+    StoredRotator
     ---------------------------------------------------------------------------------
     """
 

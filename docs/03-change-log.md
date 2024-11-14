@@ -19,7 +19,7 @@
 - Correction d'un bug sur la mise à jour des bases de données (#43)
 
 ## Version 2.4.2 - 4 novembre 2024
-- Optimisation des temps de rafraichissement des pages de saisie des résultats
+- Optimisation des temps de rafraîchissement des pages de saisie des résultats
 - Ajout de la possibilité d'effacer ou rectifier un résultat mal rentré sur les pages de saisie (#29)
 - Ajout d'un paramètre pour les écrans de résultats pour limiter l'âge des résultats affichés (#27)
 
@@ -39,7 +39,7 @@
 - Présentation des évènements et des écrans à l'aide de tuiles
 - Amélioration de l'authentification sur les écrans de saisie
 - Ajout de la possibilité de restreindre la visibilité de certains évènements, certains écrans, certaines familles d'écrans, certains écrans rotatifs
-- Ajout de la possibilité d'utiliser plusieurs chronomètres (#26) 
+- Ajout de la possibilité d'utiliser plusieurs chronomètres (#26)
 - Ajout d'écrans fixes permettant d'insérer des images dans les écrans rotatifs
 - Suppression de la personnalisation CSS et remplacement par une image et une couleur de fond
 - Contournement d'un bug du site fédéral sur l'affichage des classements (suppression des forfaits en l'absence d'appariement) (#14)
@@ -100,7 +100,7 @@
 - Suppression des données personnelles des joueur·euses avant téléchargement sur le site fédéral
 
 ## Version 2.0.3 - 19 novembre 2023
-- Réduction _a minima_ des téléchargements des tournois vers le site fédéral 
+- Réduction _a minima_ des téléchargements des tournois vers le site fédéral
 - Amélioration de la détection de l'encodage des fichiers de configuration
 
 ## Version 2.0.0 - 10 novembre 2023
@@ -133,13 +133,13 @@
 - Support du système de Haley dégressif
 - Support du « bye »
 - Ajout du chronomètre
-- Amélioration du rafraichissement des pages
+- Amélioration du rafraîchissement des pages
 - Renommage de la propriété no-banner en no_banner
 
 ## Version 1.14 - 9 avril 2019
 - Ajout des écrans d'affichage des résultats
 - Ajout des écrans d'affichage des derniers résultats
-- Ajout du rafraichissement automatique des écrans de saisie
+- Ajout du rafraîchissement automatique des écrans de saisie
 - Amélioration des temps de réponse
 - Simplification des URL des écrans
 - Téléchargement systématique des fichiers avant affichage sur le site FFE

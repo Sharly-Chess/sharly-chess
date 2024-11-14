@@ -255,13 +255,13 @@ class Engine:
             logger.warning('Veuillez vérifier votre connection à internet : %s', e)
             return None
         except Timeout as e:
-            logger.warning('La plateforme Github est indisponible : %s', e)
+            logger.warning('La plateforme GitHub est indisponible : %s', e)
             return None
         except HTTPError as e:
-            logger.warning('La plateforme Github a renvoyé l\'erreur %s %s', e.errno, e.strerror)
+            logger.warning('La plateforme GitHub a renvoyé l\'erreur %s %s', e.errno, e.strerror)
             return None
         except RequestException as e:
-            logger.warning('La plateforme Github a renvoyé une erreur : %s', e)
+            logger.warning('La plateforme GitHub a renvoyé une erreur : %s', e)
             return None
 
     @staticmethod
@@ -298,11 +298,11 @@ class Engine:
             logger.error('Veuillez vérifier votre connection à internet : %s', e)
             return False
         except Timeout as e:
-            logger.error('La plateforme Github est indisponible : %s', e)
+            logger.error('La plateforme GitHub est indisponible : %s', e)
             return False
         except HTTPError as e:
-            logger.error('La plateforme Github a renvoyé l\'erreur %s %s', e.errno, e.strerror)
+            logger.error('La plateforme GitHub a renvoyé l\'erreur %s %s', e.errno, e.strerror)
             return False
         except RequestException as e:
-            logger.error('La plateforme Github a renvoyé une erreur : %s', e)
+            logger.error('La plateforme GitHub a renvoyé une erreur : %s', e)
             return False

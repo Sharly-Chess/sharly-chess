@@ -36,7 +36,7 @@ Veuillez entrer le numéro de votre évènement :
   - [4] Tournoi homologué (homologation.ini)
   - [Q] Quitter
 Votre choix : 4
-Evènement : Tournoi homologué
+Évènement : Tournoi homologué
 Tournois : 47778
 Actions :
   - [T] Tester les codes d'accès des tournois
@@ -48,7 +48,7 @@ Entrez votre choix : T
 Action : test des codes d'accès
 INFO     Tournoi [47778] :
 ERROR    L'authentification a échoué (vérifier les codes)
-Evènement : Tournoi homologué
+Évènement : Tournoi homologué
 Tournois : 47778
 Actions :
   - [T] Tester les codes d'accès des tournois
@@ -77,7 +77,7 @@ Veuillez entrer le numéro de votre évènement :
   - [4] Tournoi homologué (homologation.ini)
   - [Q] Quitter
 Votre choix : 4
-Evènement : Tournoi homologué
+Évènement : Tournoi homologué
 Tournois : 47778
 Actions :
   - [T] Tester les codes d'accès des tournois
@@ -107,7 +107,7 @@ Veuillez entrer le numéro de votre évènement :
   - [4] Tournoi homologué (homologation.ini)
   - [Q] Quitter
 Votre choix : 4
-Evènement : Tournoi homologué
+Évènement : Tournoi homologué
 Tournois : 47778
 Actions :
   - [T] Tester les codes d'accès des tournois
@@ -145,7 +145,7 @@ Veuillez entrer le numéro de votre évènement :
   - [4] Tournoi homologué (homologation.ini)
   - [Q] Quitter
 Votre choix : 4
-Evènement : Tournoi homologué
+Évènement : Tournoi homologué
 Tournois : 59999
 Actions :
   - [T] Tester les codes d'accès des tournois
@@ -166,4 +166,3 @@ La facture d'homologation récupérée est stockée dans le répertoire `fees/<f
 ![Exemple de facture d'homologation](images/fees.jpg)
 
 Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

@@ -68,8 +68,8 @@ class AccessDatabase:
             yield dict(zip(columns, row))
 
     def _fetchone(self) -> dict[str, Any]:
-        """Returns a dictionary from the last exexcuted query, in the format
-        {colum_name: value, ...}.
+        """Returns a dictionary from the last executed query, in the format
+        {column_name: value, ...}.
         Repeated applications of this method will advance the database cursor
         and return different row data."""
         columns = [column[0] for column in self.cursor.description]

@@ -4,9 +4,9 @@
 
 ## Papi-web, c'est arrivé comment ?
 
-Papi-web est né de quelques observations simples : 
+Papi-web est né de quelques observations simples :
 
-- Pendant les tournois, les arbitres « à l'ancienne » (qui se reconnaitront :-)) passent un temps non négligeable sur le clavier de leur ordinateur à entrer les résultats des joueur·euses, puis à les vérifier ; l'arbitrage des parties en souffre, c'est pourtant le cœur de métier des arbitres !
+- Pendant les tournois, les arbitres « à l'ancienne » (qui se reconnaîtront :-)) passent un temps non négligeable sur le clavier de leur ordinateur à entrer les résultats des joueur·euses, puis à les vérifier ; l'arbitrage des parties en souffre, c'est pourtant le cœur de métier des arbitres !
 - La saisie des résultats par l'arbitre est souvent source d'erreurs, en simple saisie en cadence lente à cause des erreurs sur les feuilles de partie, et surtout en double saisie en cadence rapide quand les joueur·euses notent leurs scores sur un papier et que l'arbitre les reporte ensuite dans la « boule Papi » ;
 - Il faut attendre la fin des rondes pour en connaître les résultats, difficile de communiquer sur les aspects sportifs d'un évènement échiquéen dans ces conditions...
 - Sur des opens rapides en faible cadence (typiquement 9 rondes en 12 minutes et 3 secondes par coups), les retards s'accumulent sur la journée à cause des temps de saisie, les pauses déjeuner sont raccourcies, les remises des prix ont lieu systématiquement en retard, ...
@@ -60,34 +60,34 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 
 | Arbitre             | Titre | Ligue | Dép | Club                                          |
 |---------------------|-------|-------|-----|-----------------------------------------------|
-| ADRAN Claude        | AF02  | EST   | 57  | Vandoeuvre-Echecs                             |
-| AGUERO Pablo Daniel |       | NAQ   | 40  | Dax Echiquier Dacquois                        |
-| ARMES Timothy       | AFO1  | ARA   | 69  | Echiquier Romanais-Peageois                   |
-| AUBRY Pascal        | AFO2  | BRE   | 35  | Echiquier Domloupéen                          |
-| AVENIA Adrien       |       | BFC   | 25  | Tour Prends Garde! Besancon                   |
-| BELEY Huong         | AFO1  | IDF   | 77  | Tours et Detours Club d'Echecs Centre Brie    |
+| ADRAN Claude        | AF02  | EST   | 57  | Vandoeuvre-Échecs                             |
+| AGUERO Pablo Daniel |       | NAQ   | 40  | Dax Échiquier Dacquois                        |
+| ARMES Timothy       | AFO1  | ARA   | 26  | Échiquier Romanais-Péageois                   |
+| AUBRY Pascal        | AFO2  | BRE   | 35  | Échiquier Domloupéen                          |
+| AVENIA Adrien       |       | BFC   | 25  | Tour Prends Garde! Besançon                   |
+| BELEY Huong         | AFO1  | IDF   | 77  | Tours et Detours Club d'Échecs Centre Brie    |
 | BENETEAU Hubert     | AFE1  | NOR   | 50  | Agneaux Saint-Lô                              |
-| BENADDOU Khaled     | AFE2  | IDF   | 94  | Club d'Echecs de Saint-Maur                   |
+| BENADDOU Khaled     | AFE2  | IDF   | 94  | Club d'Échecs de Saint-Maur                   |
 | BLEUZEN Christian   | AFE1  | BRE   | 35  | Rennes Paul Bert                              |
 | CHANTIER Pierre     | AFO1  | EST   | 10  | Verrières Animation Loisirs                   |
-| CLEMENCEAU Cyril    | AFC   | BRE   | 29  | Echiquier du Léon                             |
-| DELMOTTE Eric       | AFE1  | BFC   | 71  | L'Echiquier Châlonnais                        |
-| FRAYSSE Sébastien   | AFO2  | BRE   | 29  | Echiquier Quimpérois                          |
-| GUINET Kevin        |       | PDL   | 72  | L'Echiquier Fertois                           |
-| JOLY Christian      | AFO1  | ARA   | 42  | Echiquier Sportif de St Etienne               |
-| LABORDE Stephane    | AFO1  | OCC   | 66  | Perpignan - Les rois de la Tet                |
-| LAPEYRE Pierre      | AFE2  | NAQ   | 33  | Echiquier Bordelais                           |
-| LAUER Alban         | AF01  | IDF   | 95  | L'Echiquéenne de Survilliers                  |
-| LECORNU Laurent     | AFE1  | BRE   | 29  | Echiquier Gouesnousien                        |
-| LEFEBVRE Philippe   | AFO1  | BRE   | 29  | Echiquier Gouesnousien                        |
-| LOUDIER Sarah       | AFC   | BRE   | 22  | Tregor Echecs                                 |
-| PERCHE Ludovic      | AFO2  | NAQ   | 16  | Echiquier Couronnais                          |
-| PERNOT Damien       | AFO1  | BRE   | 35  | Betton Echecs Club                            |
+| CLEMENCEAU Cyril    | AFC   | BRE   | 29  | Échiquier du Léon                             |
+| DELMOTTE Eric       | AFE1  | BFC   | 71  | L'Échiquier Châlonnais                        |
+| FRAYSSE Sébastien   | AFO2  | BRE   | 29  | Échiquier Quimpérois                          |
+| GUINET Kevin        |       | PDL   | 72  | L'Échiquier Fertois                           |
+| JOLY Christian      | AFO1  | ARA   | 42  | Échiquier Sportif de St Étienne               |
+| LABORDE Stéphane    | AFO1  | OCC   | 66  | Perpignan - Les rois de la Tet                |
+| LAPEYRE Pierre      | AFE2  | NAQ   | 33  | Échiquier Bordelais                           |
+| LAUER Alban         | AF01  | IDF   | 95  | L'Échiquéenne de Survilliers                  |
+| LECORNU Laurent     | AFE1  | BRE   | 29  | Échiquier Gouesnousien                        |
+| LEFEBVRE Philippe   | AFO1  | BRE   | 29  | Échiquier Gouesnousien                        |
+| LOUDIER Sarah       | AFC   | BRE   | 22  | Tregor Échecs                                 |
+| PERCHE Ludovic      | AFO2  | NAQ   | 16  | Échiquier Couronnais                          |
+| PERNOT Damien       | AFO1  | BRE   | 35  | Betton Échecs Club                            |
 | PLAT Sammy          | AFO2  | BRE   | 35  | Rennes Paul Bert                              |
-| PORTE Pierre        |       | ARA   | 73  | Academie d'Echecs d'Aix les bains             |
+| PORTE Pierre        |       | ARA   | 73  | Académie d'Échecs d'Aix les bains             |
 | REGAUD Denis        | AFE2  | NAQ   | 33  | Salon Nostradamus                             |
-| RUHLMANN Dominique  | AFE1  | BRE   | 35  | Echiquier du pays de Liffré                   |
-| SALLETTE Alain      | AFE1  | NAQ   | 33  | Bordeaux Aspom Echecs                         |
+| RUHLMANN Dominique  | AFE1  | BRE   | 35  | Échiquier du pays de Liffré                   |
+| SALLETTE Alain      | AFE1  | NAQ   | 33  | Bordeaux Aspom Échecs                         |
 | TRAVAILLOUX Dimitri | AFO1  | ARA   | 74  | Cercle d'échecs de l'agglomération Annécienne |
-| VIEVILLE Claude     | AFC   | HDF   | 85  | Cercle d'Echecs de Fournes en Weppes          |
-| VIOLEAU Jean-Luc    | AFE1  | PDL   | 85  | Club Echecs La Roche sur Yon                  |
+| VIEVILLE Claude     | AFC   | HDF   | 85  | Cercle d'Échecs de Fournes en Weppes          |
+| VIOLEAU Jean-Luc    | AFE1  | PDL   | 85  | Club Échecs La Roche sur Yon                  |

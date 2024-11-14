@@ -70,7 +70,7 @@ C:\...\papi-web-<version>$ ffe.bat
 [2] Championnat de France de parties rapides (france-rapide.ini)
 Veuillez entrer le numéro de votre évènement (ou [Q] pour quitter) :
 2
-Evènement : Championnat de France de parties rapides
+Évènement : Championnat de France de parties rapides
 Tournois : 58878 (C:\...\58878.papi)
 Actions :
 - [T] Tester les codes d'accès des tournois
@@ -98,9 +98,8 @@ Actions :
   - [C] Créer les fichiers Papi
   - [U] Créer les fichiers Papi et les envoyer sur le site fédéral
   - [Q] Revenir à la liste des évènements
-Entrez votre choix (par défaut C) : 
+Entrez votre choix (par défaut C) :
 ```
 
 > [!NOTE]
 > Pour utiliser les outils d'interface avec la plateforme ChessEvent sur les tournois de vos évènements, il est nécessaire de déclarer les identifiants d'accès à la plateforme ChessEvent.
-
