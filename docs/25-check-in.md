@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Pointage
-
-> [!CAUTION]
-> Cette page décrivant le pointage des joueur·euses est obsolète et sera prochainement remplacée par un tutoriel.
 
 Le statut (pointé·e/non pointé·e) est indiqué en temps-réel sur la liste des joueur·euses avant l'affichage des premiers appariements.
 

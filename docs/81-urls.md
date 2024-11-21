@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Annexe technique : URLs utilisées par le serveur web
-
-> [!CAUTION]
-> Cette page décrivant les URLs utilisées par l'application est obsolète.
 
 Cette page décrit les URLs utilisées par Papi-web.
 

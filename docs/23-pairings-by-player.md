@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Affichage des appariements par ordre alphabétique
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des écrans d'affichage des appariements par ordre alphabétique est obsolète et sera prochainement remplacée par un tutoriel.
 
 L'affichage par ordre alphabétique permet aux joueur·euses de trouver beaucoup plus rapidement leur table à chaque ronde, il est particulièrement important pour les tournois à forte participation pour lesquels les niveaux de points des appariements peuvent être très fournis.
 
@@ -104,6 +106,3 @@ tournament = D
 
 > [!NOTE]
 > Il est tout à fait possible dans chaque ensemble de limiter les joueur·euses présenté·es, comme vu précédemment avec les options `first`/`last` ou `part`/`parts`.
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

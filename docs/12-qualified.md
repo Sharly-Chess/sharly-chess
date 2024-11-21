@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Configuration d'un tournoi homologué
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI d'un tournoi homologué est obsolète et sera prochainement remplacée par un tutoriel.
 
 Pour pouvoir utiliser les outils d'interface avec le site fédéral, il faut préciser le numéro d'homologation du tournoi et le code d'accès du tournoi sur le site fédéral de gestion des tournois.
 ```
@@ -164,5 +166,3 @@ INFO     fees OK
 La facture d'homologation récupérée est stockée dans le répertoire `fees/<ffe_id>.html` et directement ouverte dans le navigateur.
 
 ![Exemple de facture d'homologation](images/fees.jpg)
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)

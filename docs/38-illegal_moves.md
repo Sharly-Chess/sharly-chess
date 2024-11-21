@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Enregistrement des coups illégaux
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI de la gestion des coups illégaux est obsolète et sera prochainement remplacée par un tutoriel.
 
 > [!NOTE]
 > Cette fonctionnalité n'est disponible qu'à partir de la version 2.2 de Papi-web.<br/>

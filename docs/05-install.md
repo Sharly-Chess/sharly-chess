@@ -18,17 +18,17 @@ sur l'ordinateur qui jouera le rôle de serveur (sur lequel seront également le
 
 - **[Télécharger la dernière version stable](https://github.com/papi-web-org/papi-web/releases)**
 
-| Fichiers et répertoires                                                | Type                 | Signification                                                                                                                                   |
-|------------------------------------------------------------------------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| **`server.bat`**                                                       | **Script**           | Le script de lancement du serveur de Papi-web                                                                                                   |
-| **`ffe.bat`**                                                          | **Script**           | Le script de lancement des outils d'interface avec le site fédéral                                                                              |
-| **`chessevent.bat`**                                                   | **Script**           | Le script de création des fichiers papi des tournois à partir de la plateforme Chess Event                                                      |
-| **`papi-web.ini`**                                                     | **Configuration**    | Le fichier de configuration de Papi-web                                                                                                         |
-| **`events\*.db`**                                                      | **Configuration**    | Les évènements (un fichier par évènement)                                                                                                       |
-| **`papi\*.papi`**                                                      | **Papi**             | Les fichiers Papi des tournois gérés (il est possible configurer Papi-web pour que les fichiers Papi soient localisés dans un autre répertoire) |
-| **`custom\club\XNNNNN\*.*`, `custom\ligue\BRE\*.*`, `custom\FFE\*.*`** | **Personnalisation** | Les fichiers de personnalisation des écrans d'affichage, de saisie, ...                                                                         |
-| `bin\papi-web-<version>.exe`                                           | Exécutable           | L'exécutable unique de Papi-web                                                                                                                 |
-| `tmp\*.*`                                                              | temporaire           | Les fichiers temporaires                                                                                                                        |
+| Fichiers et répertoires      | Type                 | Signification                                                                              |
+|------------------------------|----------------------|--------------------------------------------------------------------------------------------|
+| **`server.bat`**             | **Script**           | Le script de lancement du serveur de Papi-web                                              |
+| **`ffe.bat`**                | **Script**           | Le script de lancement des outils d'interface avec le site fédéral                         |
+| **`chessevent.bat`**         | **Script**           | Le script de création des fichiers papi des tournois à partir de la plateforme Chess Event |
+| **`papi-web.ini`**           | **Configuration**    | Le fichier de configuration de Papi-web                                                    |
+| **`events\*.db`**            | **Configuration**    | Les évènements (un fichier par évènement)                                                  |
+| **`papi\*.papi`**            | **Papi**             | Les fichiers Papi des tournois gérés (localisation par défaut)                             |
+| **`custom\*.*`**             | **Personnalisation** | Les fichiers de personnalisation des écrans d'affichage, de saisie, ...                    |
+| `bin\papi-web-<version>.exe` | Exécutable           | L'exécutable unique de Papi-web                                                            |
+| `tmp\*.*`                    | Temporaire           | Les fichiers temporaires                                                                   |
 
 > [!NOTE]
 > Selon votre antivirus, il est possible que vous deviez ajouter une exception pour le fichier exécutable `bin\papi-web-<version>.exe` (par exemple dans Avast : ☰ Menu ▸ Paramètres ▸ Général ▸ Exclusions ▸ Ajouter une exclusion).
@@ -36,10 +36,5 @@ sur l'ordinateur qui jouera le rôle de serveur (sur lequel seront également le
 ## Mise à jour
 
 Pour installer une nouvelle version de Papi-web :
-1. procédez comme pour une première installation
-2. récupérez vos personnalisations :
-  - la configuration de papi-web (`papi-web.ini`)
-  - les fichiers de vos évènements (`events/*.db`)
-  - les fichiers de personnalisation des écrans (`custom/*`)
-  - éventuellement les fichiers Papi si vous les avez stockés dans le répertoire `papi/`.
-
+1. décompressez l'archive de la nouvelle version au même niveau que la version déjà installée
+2. suivez les instructions pour récupérer vos évènements, fichiers Papi et fichiers de personnalisation

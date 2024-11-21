@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Gestion d'un évènement avec plusieurs tournois
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI d'un évènement comportant plusieurs tournois est obsolète et sera prochainement remplacée par un tutoriel.
 
 Lorsqu'il n'y qu'un seul tournoi dans un évènement, le tournoi est déclaré en utilisant la rubrique `[tournament]`.
 
@@ -33,6 +35,3 @@ ffe_id = 60000
 
 > [!NOTE]
 > Pour information, lorsque vous ne déclarez qu'un seul tournoi à l'aide de la rubrique `[tournament]`, Papi-web considère que l'identifiant de ce tournoi est `default`, comme si vous aviez déclaré votre tournoi dans la rubrique `[tournament.default]`.
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

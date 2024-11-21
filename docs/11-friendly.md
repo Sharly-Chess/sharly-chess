@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Configuration d'un tournoi amical
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI d'un petit tournoi amical est obsolète et sera prochainement remplacée par un tutoriel.
 
 Même pour un petit tournoi amical au club, l'utilisation de Papi-web pour l'entrée des résultats permet de fluidifier le déroulement de la compétition.
 On crée un fichier `amical.ini` dans le répertoire `events/` pour déclarer l'évènement.
@@ -50,6 +52,3 @@ Il ne reste plus qu'à demander aux joueur·euses de saisir leurs résultats...
 ![Enregistrement dans le fichier Papi](images/friendly-update-4.jpg)
 
 ...puis apparier la ronde suivante, dans le logiciel Papi !
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

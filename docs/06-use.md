@@ -2,10 +2,33 @@
 
 # Papi-web - Configuration et utilisation
 
-L'utilisation de Papi-web nécessite un peu d'apprentissage : il vous sera très vite indispensable, en particulier pour gérer de gros évènements, mais il est fortement conseillé de s'entrainer sur des évènements modestes dans un premier temps.
+Le logiciel Papi-web est utilisable immédiatement après installation..
 
-## Configuration (`papi-web.ini`)
-La configuration fournie par défaut dans le fichier `papi-web.ini` est suffisante pour la très grande majorité des cas.
+## Gestion du serveur Papi-web (`server.bat`)
+
+Le serveur Papi-web se lance en exécutant le script `server.bat`.
+
+On arrête le serveur en tapant `Ctrl-C`.
+
+## Interface avec le site fédéral (`ffe.bat`)
+
+Les outils d'interface avec le site fédéral se lancent en exécutant le script `ffe.bat`.
+
+> [!NOTE]
+> Pour utiliser les outils d'interface avec le site fédéral sur les tournois de vos évènements, il est nécessaire de déclarer le numéro d'homologation et le code d'accès des tournois.
+
+## Interface avec la plateforme ChessEvent (`chessevent.bat`)
+
+Les outils d'interface avec la plateforme ChessEvent se lancent en exécutant le script `chessevent.bat`.
+
+> [!NOTE]
+> Pour utiliser les outils d'interface avec la plateforme ChessEvent sur les tournois de vos évènements, il est nécessaire de déclarer les identifiants d'accès à la plateforme ChessEvent.
+
+## Configuration (optionnelle, `papi-web.ini`)
+
+> [!NOTE]
+> La configuration fournie par défaut dans le fichier `papi-web.ini` est suffisante pour la très grande majorité des cas, **vous n'avez normalement pas à modifier le fichier fourni par défaut**.
+
 
 ### Messages (`[logging]`)
 #### level
@@ -42,64 +65,3 @@ upload_delay = 300
 ```
 Le délai minimum entre deux téléchargements sur le site fédéral est par défaut fixé à `180` secondes (minimum `60` secondes).
 
-## Gestion du serveur Papi-web (`server.bat`)
-
-Le serveur Papi-web se lance en exécutant le script `server.bat` :
-```
-C:\...\papi-web-<version>$ server.bat
-Papi-web <version> Copyright © Pascal AUBRY 2013-2024
-Starting Papi-web server, please wait...
-Reading configuration file...
-log: INFO
-port: 80
-local URL: http://127.0.0.1
-LAN/WAN URL: http://192.168.43.85
-INFO:     Started server process [XXXXX]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
-```
-On arrête le serveur en tapant `Ctrl-C`.
-
-## Interface avec le site fédéral (`ffe.bat`)
-
-Les outils d'interface avec le site fédéral se lancent en exécutant le script `ffe.bat` :
-```
-C:\...\papi-web-<version>$ ffe.bat
-[1] Open Fide de domloup (domloup-fide.ini)
-[2] Championnat de France de parties rapides (france-rapide.ini)
-Veuillez entrer le numéro de votre évènement (ou [Q] pour quitter) :
-2
-Évènement : Championnat de France de parties rapides
-Tournois : 58878 (C:\...\58878.papi)
-Actions :
-- [T] Tester les codes d'accès des tournois
-- [V] Rendre les tournois visibles sur le site fédéral
-- [H] Télécharger les factures d'homologation
-- [U] Mettre en ligne les tournois
-- [Q] Revenir à la liste des évènements
-Entrez votre choix :
-```
-> [!NOTE]
-> Pour utiliser les outils d'interface avec le site fédéral sur les tournois de vos évènements, il est nécessaire de déclarer le numéro d'homologation et le code d'accès des tournois.
-
-## Interface avec la plateforme ChessEvent (`chessevent.bat`)
-
-Les outils d'interface avec la plateforme ChessEvent se lancent en exécutant le script `chessevent.bat` :
-```
-C:\...\papi-web-<version>$ chessevent.bat
-[1] Open Fide de domloup (domloup-fide.ini)
-[2] Championnat de France de parties rapides (france-rapide.ini)
-Veuillez entrer le numéro de votre évènement (ou [Q] pour quitter) :
-1
-Évènement : 37e open Fide de Domloup
-Tournois : Tournoi A, Tournoi B, Tournoi C, Tournoi D, Tournoi E, Tournoi F, Tournoi X
-Actions :
-  - [C] Créer les fichiers Papi
-  - [U] Créer les fichiers Papi et les envoyer sur le site fédéral
-  - [Q] Revenir à la liste des évènements
-Entrez votre choix (par défaut C) :
-```
-
-> [!NOTE]
-> Pour utiliser les outils d'interface avec la plateforme ChessEvent sur les tournois de vos évènements, il est nécessaire de déclarer les identifiants d'accès à la plateforme ChessEvent.

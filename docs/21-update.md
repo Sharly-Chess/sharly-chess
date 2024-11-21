@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Saisie des résultats
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des écrans de saisie des résultats est obsolète et sera prochainement remplacée par un tutoriel.
 
 La principale fonctionnalité attendue de Papi-web est celle de proposer une interface de saisie des résultats, délégable aux joueur·euses.
 
@@ -146,5 +148,3 @@ parts = 6
 ```
 
 ![Écran de saisie multi-colonnes](images/update-multi-columns.jpg)
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)

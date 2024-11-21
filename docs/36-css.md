@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Personnalisation du rendu des écrans (CSS)
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI de la personnalisation des écrans est obsolète et sera prochainement remplacée par un tutoriel.
 
 Il est possible de personnaliser le rendu des écrans à l'aide de fichiers CSS (Cascading Style Sheets).
 
@@ -41,6 +43,3 @@ Vous trouverez ci-dessous quelques personnalisations déjà existantes :
 - [`custom/club/F35043`](../custom/club/F35043) (Échiquier Domloupéen)
 
 Si vous souhaitez partager votre personnalisation dans de futures versions de Papi-Web, faites nous signe !
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

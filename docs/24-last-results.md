@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Affichage des résultats
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des écrans d'affichage des derniers résultats est obsolète et sera prochainement remplacée par un tutoriel.
 
 Dans les évènements avec plusieurs tournois, il peut être utile de suivre l'intégralité des résultats sur un seul écran, c'est l'objet des écrans de résultats.
 
@@ -41,6 +43,3 @@ tournaments = j
 
 > [!NOTE]
 > Les options de personnalisation des menus sont décrites sur la page [Configuration des menus des écrans](33-menus.md).
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-
