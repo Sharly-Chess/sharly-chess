@@ -151,6 +151,12 @@ class Tournament:
         return self.event.record_illegal_moves
 
     @property
+    def rules(self) -> str | None:
+        if self.stored_tournament.rules is not None:
+            return self.stored_tournament.rules
+        return self.event.rules
+
+    @property
     def last_update(self) -> float:
         return self.stored_tournament.last_update
 

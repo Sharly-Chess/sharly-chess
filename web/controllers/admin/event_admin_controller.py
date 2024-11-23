@@ -2,6 +2,7 @@ import logging
 import time
 from datetime import datetime
 from logging import Logger
+from pathlib import Path
 from typing import Annotated, Any
 
 import requests
@@ -74,6 +75,64 @@ class EventAdminWebContext(AdminWebContext):
 
 
 class AbstractEventAdminController(AbstractIndexAdminController):
+
+    @staticmethod
+    def _admin_validate_record_illegal_moves_update_data(
+            data: dict[str, str] | None,
+            errors: dict[str, str],
+    ) -> int | None:
+        field: str = 'record_illegal_moves'
+        record_illegal_moves: int | None
+        try:
+            record_illegal_moves = WebContext.form_data_to_int(data, field)
+            assert record_illegal_moves is None or 0 <= record_illegal_moves <= 3
+        except (ValueError, AssertionError):
+            record_illegal_moves = None
+            errors['record_illegal_moves'] = f'La valeur entrée [{data[field]}] n\'est pas valide.'
+        return record_illegal_moves
+
+    @staticmethod
+    def _admin_validate_rules_update_data(
+            data: dict[str, str] | None,
+            errors: dict[str, str],
+    ) -> str | None:
+        field: str = 'rules'
+        rules: str | None = WebContext.form_data_to_str(data, field)
+        if rules:
+            if validators.url(rules):
+                try:
+                    response = requests.get(rules)
+                    if response.status_code != 200:
+                        errors[field] = \
+                            f'L\'URL [{rules}] est en erreur (code [{response.status_code}]).'
+                except requests.ConnectionError as ce:
+                    errors[field] = f'L\'URL [{rules}] est en erreur ([{ce}]).'
+            else:
+                if rules.find('..') != -1:
+                    errors[field] = f'Le chemin [{rules}] est incorrect.'
+                    data[field] = ''
+                else:
+                    file: Path = Path(rules)
+                    if not file.exists() or not file.is_file():
+                        errors[field] = f'Le fichier [{rules}] est introuvable.'
+                    elif file.suffix.lower() != '.pdf':
+                        errors[field] = f'Un fichier PDF est attendu [{file.suffix}].'
+        return rules
+
+    @staticmethod
+    def _admin_validate_background_color_update_data(
+            data: dict[str, str] | None,
+            errors: dict[str, str],
+    ) -> str | None:
+        field: str = 'background_color'
+        background_color: str | None = None
+        color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
+        if not color_checkbox:
+            try:
+                background_color = WebContext.form_data_to_rgb(data, field)
+            except ValueError:
+                errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
+        return background_color
 
     @classmethod
     def _get_admin_event_render_context(
@@ -183,8 +242,9 @@ class AbstractEventAdminController(AbstractIndexAdminController):
 
 class EventAdminController(AbstractEventAdminController):
 
-    @staticmethod
+    @classmethod
     def _admin_validate_event_update_data(
+            cls,
             action: str,
             web_context: EventAdminWebContext,
             data: dict[str, str] | None = None,
@@ -244,6 +304,7 @@ class EventAdminController(AbstractEventAdminController):
         background_color: str | None = None
         update_password: str | None = None
         record_illegal_moves: int | None = None
+        rules: str | None = None
         timer_colors: dict[int, str | None] = {i: None for i in range(1, 4)}
         timer_color_checkboxes: dict[int, bool | None] = {i: None for i in range(1, 4)}
         timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
@@ -271,19 +332,9 @@ class EventAdminController(AbstractEventAdminController):
                             elif not (PapiWebConfig.custom_path / background_image).exists() \
                                     and not (PapiWebConfig.embedded_custom_path / background_image).exists():
                                 errors[field] = f'Le fichier [{background_image}] est introuvable.'
-                field: str = 'background_color'
-                color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
-                if not color_checkbox:
-                    try:
-                        background_color = WebContext.form_data_to_rgb(data, field)
-                    except ValueError:
-                        errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
-                field: str = 'record_illegal_moves'
-                try:
-                    record_illegal_moves = WebContext.form_data_to_int(data, field)
-                    assert record_illegal_moves is None or 0 <= record_illegal_moves <= 3
-                except (ValueError, AssertionError):
-                    errors['record_illegal_moves'] = f'La valeur entrée [{data[field]}] n\'est pas valide.'
+                background_color = cls._admin_validate_background_color_update_data(data, errors)
+                record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(data, errors)
+                rules = cls._admin_validate_rules_update_data(data, errors)
                 for i in range(1, 4):
                     field: str = f'color_{i}'
                     timer_color_checkboxes[i] = WebContext.form_data_to_bool(data, field + '_checkbox')
@@ -304,6 +355,7 @@ class EventAdminController(AbstractEventAdminController):
                 background_image = web_context.admin_event.stored_event.background_image
                 background_color = web_context.admin_event.stored_event.background_color
                 record_illegal_moves = web_context.admin_event.stored_event.record_illegal_moves
+                rules = web_context.admin_event.stored_event.rules
                 timer_colors = web_context.admin_event.stored_event.timer_colors
                 timer_delays = web_context.admin_event.stored_event.timer_delays
             case 'delete':
@@ -322,6 +374,7 @@ class EventAdminController(AbstractEventAdminController):
             background_color=background_color,
             update_password=update_password,
             record_illegal_moves=record_illegal_moves,
+            rules=rules,
             timer_colors=timer_colors,
             timer_delays=timer_delays,
             errors=errors,
@@ -430,6 +483,7 @@ class EventAdminController(AbstractEventAdminController):
                                 web_context.admin_event.stored_event.update_password)
                             data['record_illegal_moves'] = WebContext.value_to_form_data(
                                 web_context.admin_event.stored_event.record_illegal_moves)
+                            data['rules'] = WebContext.value_to_form_data(web_context.admin_event.stored_event.rules)
                             for i in range(1, 4):
                                 data[f'color_{i}'] = WebContext.value_to_form_data(
                                     web_context.admin_event.timer_colors[i])

@@ -180,6 +180,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             background_color=None,
             update_password=None,
             record_illegal_moves=None,
+            rules=None,
             timer_colors={i: None for i in range(1, 4)},
             timer_delays={i: None for i in range(1, 4)},
             errors=errors,

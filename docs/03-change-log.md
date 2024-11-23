@@ -3,6 +3,7 @@
 # Papi-web - ChangeLog
 
 ## Version 2.4.12
+- Ajout du règlement des évènements et des tournois
 - Facilitation de la transmission des fichiers de personnalisation pour intégration dans la distribution
 
 ## Version 2.4.11 - 18 novembre 2024

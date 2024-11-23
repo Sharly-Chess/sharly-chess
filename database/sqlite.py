@@ -231,8 +231,8 @@ class EventDatabase(SQLiteDatabase):
                         mandatory_fields=['name', ],
                         optional_fields=['start', 'stop', 'path', 'hide_background_image', 'background_image',
                                          'background_color', 'public', 'update_password', 'record_illegal_moves',
-                                         'chessevents', 'tournaments', 'timers', 'screens', 'families', 'rotators',
-                                         'timer_colors', 'timer_delays', ],
+                                         'rules', 'chessevents', 'tournaments', 'timers', 'screens', 'families',
+                                         'rotators', 'timer_colors', 'timer_delays', ],
                         empty_allowed=False)
                     timer_delays: dict[int, int] | None = None
                     if 'timer_delays' in event_dict:
@@ -266,6 +266,7 @@ class EventDatabase(SQLiteDatabase):
                         background_color=event_dict.get('background_color', None),
                         update_password=event_dict.get('update_password', None),
                         record_illegal_moves=event_dict.get('record_illegal_moves', None),
+                        rules=event_dict.get('rules', None),
                         timer_colors=timer_colors,
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
@@ -363,6 +364,7 @@ class EventDatabase(SQLiteDatabase):
                                 chessevent_id=chessevent_id,
                                 chessevent_tournament_name=tournament_dict.get('chessevent_tournament_name', None),
                                 record_illegal_moves=None,
+                                rules=None,
                             ))
                             tournament_ids_by_uniq_id[tournament_uniq_id] = stored_tournament.id
                     screen_ids_by_uniq_id: dict[str, int] = {}
@@ -648,6 +650,8 @@ class EventDatabase(SQLiteDatabase):
             background_color=row['background_color'],
             update_password=row['update_password'],
             record_illegal_moves=row['record_illegal_moves'],
+            # needed to open event databases when version < 2.4.11 before checking the version
+            rules=row.get('rules', None),
             timer_colors=self.set_dict_int_keys(self.load_json_from_database_field(row['timer_colors'])),
             timer_delays=self.set_dict_int_keys(self.load_json_from_database_field(row['timer_delays'])),
             last_update=row['last_update'],
@@ -716,8 +720,10 @@ class EventDatabase(SQLiteDatabase):
             self.set_version(target_version)
             self.commit()
             logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
-        target_version = Version('2.4.11')
-        if self.version.public in ['2.4.8', '2.4.9', '2.4.10', ]:
+        target_version = Version('2.4.12')
+        if self.version.public in ['2.4.8', '2.4.9', '2.4.10', '2.4.11', ]:
+            self._execute('ALTER TABLE `info` ADD `rules` TEXT')
+            self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
             self.set_version(target_version)
             self.commit()
             logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
@@ -747,12 +753,12 @@ class EventDatabase(SQLiteDatabase):
         `stored_event`."""
         fields: list[str] = [
             'name', 'start', 'stop', 'public', 'path', 'hide_background_image', 'background_image', 'background_color',
-            'update_password', 'record_illegal_moves', 'timer_colors', 'timer_delays', 'last_update',
+            'update_password', 'record_illegal_moves', 'rules', 'timer_colors', 'timer_delays', 'last_update',
         ]
         params: tuple = (
             stored_event.name, stored_event.start, stored_event.stop, stored_event.public, stored_event.path,
             stored_event.hide_background_image, stored_event.background_image, stored_event.background_color,
-            stored_event.update_password, stored_event.record_illegal_moves,
+            stored_event.update_password, stored_event.record_illegal_moves, stored_event.rules,
             self.dump_to_json_database_timer_colors(stored_event.timer_colors),
             self.dump_to_json_database_timer_delays(stored_event.timer_delays),
             time.time(),
@@ -1183,6 +1189,7 @@ class EventDatabase(SQLiteDatabase):
             chessevent_id=row['chessevent_id'],
             chessevent_tournament_name=row['chessevent_tournament_name'],
             record_illegal_moves=row['record_illegal_moves'],
+            rules=row['rules'],
             last_update=row['last_update'],
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
@@ -1218,7 +1225,7 @@ class EventDatabase(SQLiteDatabase):
             'uniq_id', 'name', 'path', 'filename', 'ffe_id', 'ffe_password',
             'time_control_initial_time', 'time_control_increment', 'time_control_handicap_penalty_step',
             'time_control_handicap_penalty_value', 'time_control_handicap_min_time', 'chessevent_id',
-            'chessevent_tournament_name', 'record_illegal_moves', 'last_update', 'last_result_update',
+            'chessevent_tournament_name', 'record_illegal_moves', 'rules', 'last_update', 'last_result_update',
             'last_illegal_move_update', 'last_check_in_update', 'last_ffe_upload', 'last_chessevent_download_md5',
         ]
         params: list = [
@@ -1227,9 +1234,10 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.time_control_increment, stored_tournament.time_control_handicap_penalty_step,
             stored_tournament.time_control_handicap_penalty_value, stored_tournament.time_control_handicap_min_time,
             stored_tournament.chessevent_id, stored_tournament.chessevent_tournament_name,
-            stored_tournament.record_illegal_moves, time.time(), stored_tournament.last_result_update,
-            stored_tournament.last_illegal_move_update, stored_tournament.last_check_in_update,
-            stored_tournament.last_ffe_upload, stored_tournament.last_chessevent_download_md5,
+            stored_tournament.record_illegal_moves, stored_tournament.rules, time.time(),
+            stored_tournament.last_result_update, stored_tournament.last_illegal_move_update,
+            stored_tournament.last_check_in_update, stored_tournament.last_ffe_upload,
+            stored_tournament.last_chessevent_download_md5,
         ]
         if stored_tournament.id is None:
             protected_fields = [f"`{f}`" for f in fields]

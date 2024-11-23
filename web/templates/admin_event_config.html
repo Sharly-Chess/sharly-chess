@@ -87,6 +87,11 @@
             <td></td>
         </tr>
         <tr>
+            <th scope="row" class="text-nowrap">Règlement</th>
+            <td class="text-nowrap">{% if admin_event.rules %}Oui{% else %}Non{% endif %}</td>
+            <td></td>
+        </tr>
+        <tr>
             <th scope="row" class="text-nowrap">Paramètres par défaut des chronomètres</th>
             <td class="text-nowrap">
                 <div style="background-color: {{ admin_event.timer_colors[1] }}">&nbsp;{{ admin_event.timer_delays[1] }} minutes avant&nbsp;</div>

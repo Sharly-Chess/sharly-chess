@@ -66,6 +66,7 @@ class StoredTournament:
     chessevent_id: int | None
     chessevent_tournament_name: str | None
     record_illegal_moves: int | None
+    rules: str | None
     last_update: float = field(default=0.0)
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)
@@ -161,6 +162,7 @@ class StoredEvent:
     background_color: str | None = None
     update_password: str | None = None
     record_illegal_moves: int | None = None
+    rules: str | None = None
     version: str | None = None
     timer_colors: dict[int, str | None] = None
     timer_delays: dict[int, int | None] = None

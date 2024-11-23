@@ -24,6 +24,7 @@ CREATE TABLE `info` (
     `background_color` TEXT,
     `update_password` TEXT,
     `record_illegal_moves` INTEGER,
+    `rules` TEXT,
     `timer_colors` TEXT,
     `timer_delays` TEXT,
     `last_update` FLOAT NOT NULL
@@ -84,6 +85,7 @@ CREATE TABLE `tournament` (
     `chessevent_id` INTEGER,
     `chessevent_tournament_name` TEXT,
     `record_illegal_moves` INTEGER,
+    `rules` TEXT,
     `last_update` FLOAT NOT NULL,
     `last_illegal_move_update` FLOAT NOT NULL DEFAULT 0.0,
     `last_result_update` FLOAT NOT NULL DEFAULT 0.0,

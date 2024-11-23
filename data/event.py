@@ -182,6 +182,10 @@ class Event:
             record_illegal_moves = self.stored_event.record_illegal_moves
         return record_illegal_moves
 
+    @property
+    def rules(self) -> str | None:
+        return self.stored_event.rules
+
     @cached_property
     def timer_colors(self) -> dict[int, str]:
         return {

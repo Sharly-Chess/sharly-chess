@@ -400,6 +400,31 @@
                             {% endif %}
                         </div>
                     {% endwith %}
+                    <h3>
+                        Règlement
+                    </h3>
+                    <div class="row">
+                        <div class="col-6">
+                            {% with id='rules', name='rules' %}
+                                <label for="{{ id }}" class="form-label">Localisation du règlement :</label>
+                                <input
+                                        name="{{ name }}"
+                                        type="text" id="{{ id }}"
+                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                        aria-describedby="{{ id }}-help {{ id }}-error"
+                                        placeholder="Exemple : C:\echecs\ligue\reglements\tournoi.pdf"
+                                        value="{{ data[name] }}" />
+                                <div id="{{ id }}-help" class="form-text">
+                                  Une URL, ou le chemin du règlement sur le serveur, au format PDF (par défaut le règlement de l'évènement).
+                                </div>
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
                 {% endif %}
             </div>
             <div class="modal-footer d-block">

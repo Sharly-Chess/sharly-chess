@@ -64,8 +64,9 @@ class ScreenAdminWebContext(EventAdminWebContext):
 
 class ScreenAdminController(AbstractEventAdminController):
 
-    @staticmethod
+    @classmethod
     def _admin_validate_screen_update_data(
+            cls,
             action: str,
             web_context: ScreenAdminWebContext,
             data: dict[str, str] | None = None,
@@ -189,13 +190,7 @@ class ScreenAdminController(AbstractEventAdminController):
                                         f'L\'URL [{background_image}] est en erreur (code [{response.status_code}]).'
                             except requests.ConnectionError as ce:
                                 errors[field] = f'L\'URL [{background_image}] est en erreur ([{ce}]).'
-                        field: str = 'background_color'
-                        color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
-                        if not color_checkbox:
-                            try:
-                                background_color = WebContext.form_data_to_rgb(data, field)
-                            except ValueError:
-                                errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
+                        background_color = cls._admin_validate_background_color_update_data(data, errors)
                     case _:
                         raise ValueError(f'type=[{web_context.admin_screen.type}]')
             case _:
