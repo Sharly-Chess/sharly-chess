@@ -727,6 +727,13 @@ class EventDatabase(SQLiteDatabase):
             self.set_version(target_version)
             self.commit()
             logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+        target_version = Version('2.4.13')
+        if self.version.public in ['2.4.12', ]:
+            self._execute('ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT')
+            self._execute('UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0')
+            self.set_version(target_version)
+            self.commit()
+            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
         if self.version == target_version:
             logger.info(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
             return
@@ -1195,6 +1202,7 @@ class EventDatabase(SQLiteDatabase):
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
             last_ffe_upload=row['last_ffe_upload'],
+            last_ffe_rules_upload=row['last_ffe_rules_upload'],
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
         )
 
@@ -1226,7 +1234,8 @@ class EventDatabase(SQLiteDatabase):
             'time_control_initial_time', 'time_control_increment', 'time_control_handicap_penalty_step',
             'time_control_handicap_penalty_value', 'time_control_handicap_min_time', 'chessevent_id',
             'chessevent_tournament_name', 'record_illegal_moves', 'rules', 'last_update', 'last_result_update',
-            'last_illegal_move_update', 'last_check_in_update', 'last_ffe_upload', 'last_chessevent_download_md5',
+            'last_illegal_move_update', 'last_check_in_update', 'last_ffe_upload', 'last_ffe_rules_upload',
+            'last_chessevent_download_md5',
         ]
         params: list = [
             stored_tournament.uniq_id, stored_tournament.name, stored_tournament.path, stored_tournament.filename,
@@ -1237,7 +1246,7 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.record_illegal_moves, stored_tournament.rules, time.time(),
             stored_tournament.last_result_update, stored_tournament.last_illegal_move_update,
             stored_tournament.last_check_in_update, stored_tournament.last_ffe_upload,
-            stored_tournament.last_chessevent_download_md5,
+            stored_tournament.last_ffe_rules_upload, stored_tournament.last_chessevent_download_md5,
         ]
         if stored_tournament.id is None:
             protected_fields = [f"`{f}`" for f in fields]
@@ -1294,12 +1303,18 @@ class EventDatabase(SQLiteDatabase):
         stored_tournament.last_illegal_move_update = 0.0
         stored_tournament.last_check_in_update = 0.0
         stored_tournament.last_ffe_upload = 0.0
+        stored_tournament.last_ffe_rules_upload = 0.0
         stored_tournament.last_chessevent_download = 0.0
         return self._write_stored_tournament(stored_tournament)
 
     def set_tournament_last_ffe_upload(self, tournament_id: int):
         self._execute(
             f'UPDATE `tournament` SET `last_ffe_upload` = ? WHERE `id` = ?',
+            (time.time(), tournament_id, ))
+
+    def set_tournament_last_ffe_rules_upload(self, tournament_id: int):
+        self._execute(
+            f'UPDATE `tournament` SET `last_ffe_rules_upload` = ? WHERE `id` = ?',
             (time.time(), tournament_id, ))
 
     def set_tournament_last_chessevent_download_md5(self, tournament_id: int, md5: str = None):

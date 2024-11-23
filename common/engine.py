@@ -332,8 +332,8 @@ class Engine:
                 logger.warning('Une version plus récente que la vôtre est disponible (%s)',
                                last_stable_version)
                 return last_stable_version
-            logger.warning('Vous utilisez une version plus récente que la dernière version stable disponible, '
-                           'vous ne seriez pas développeur des fois ?')
+            logger.warning('Vous utilisez une version plus récente que la dernière version stable disponible (%s), '
+                           'vous ne seriez pas développeur des fois ?', last_stable_version)
             return None
         if not (matches := re.match(r'^(?P<major>\d+)\.(?P<minor>\d+)rc(?P<rc>\d+)$', str(PapiWebConfig.version))):
             raise ValueError(f'Version de Papi-web invalide [{str(PapiWebConfig.version)}]')

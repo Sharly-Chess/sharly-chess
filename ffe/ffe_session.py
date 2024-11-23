@@ -32,6 +32,9 @@ FEES_EVENT: str = 'ctl00$ContentPlaceHolderMain$CmdFactureHomologation'
 UPLOAD_LINK_ID: str = 'ctl00_ContentPlaceHolderMain_CmdUploadPapi'
 UPLOAD_EVENT: str = UPLOAD_LINK_ID.replace('_', '$')
 UPLOAD_FILE_ID: str = 'ctl00$ContentPlaceHolderMain$UploadPapi'
+UPLOAD_RULES_LINK_ID: str = 'ctl00_ContentPlaceHolderMain_CmdUploadRI'
+UPLOAD_RULES_EVENT: str = UPLOAD_RULES_LINK_ID.replace('_', '$')
+UPLOAD_RULES_FILE_ID: str = 'ctl00$ContentPlaceHolderMain$UploadRI'
 
 FEES_DIR: Path = Path('fees')
 
@@ -114,8 +117,10 @@ class FFESession(Session):
         tag: AdvancedTag = parser.getElementById('ctl00_ContentPlaceHolderMain_LabelError')
         if tag:
             if tag.innerText:
-                matches = re.match(r'^Transfert du fichier : .*\.papi \(\d+ octets\) achevé$', tag.innerText)
-                if not matches:
+                matches = re.match(r'^Transfert du fichier : .* \(\d+ octets\) achevé$', tag.innerText)
+                if matches:
+                    logger.info(tag.innerText)
+                else:
                     error = tag.innerText
                     logger.error(error)
         return parser, error
@@ -171,7 +176,7 @@ class FFESession(Session):
         if not self.read_ffe_state(parser, url):
             return False
         self.auth_state: dict[str, str] = {}
-        for id in [SET_VISIBLE_LINK_ID, FEES_LINK_ID, UPLOAD_LINK_ID, ]:
+        for id in [SET_VISIBLE_LINK_ID, FEES_LINK_ID, UPLOAD_LINK_ID, UPLOAD_RULES_LINK_ID, ]:
             tag: AdvancedTag = parser.getElementById(id)
             self.auth_state[id] = tag.innerText if tag else None
             if self.debug:
@@ -319,3 +324,40 @@ class FFESession(Session):
         if not html:
             return
         logger.info('show OK')
+
+    def upload_rules(self):
+        """Upload the rules of the tournament to the FFE admin website."""
+        logger.info(
+            'Mise à jour du règlement du tournoi [%s] (%s) sur le site fédéral :',
+            self.tournament.ffe_id, self.tournament.rules)
+        if not self._ffe_init():
+            return
+        # logger.info('init OK')
+        if not self._ffe_auth():
+            return
+        logger.info('auth OK: %s', self.tournament_ffe_url)
+        if self.debug:
+            logger.info('> auth_state[%s]=[%s]', UPLOAD_RULES_LINK_ID, self.auth_state[UPLOAD_RULES_LINK_ID])
+        if self.auth_state[UPLOAD_RULES_LINK_ID] is None:
+            logger.warning('Lien de mise en ligne non trouvé (vérifier que le tournoi n\'est pas terminé)')
+            return
+        url = FFE_URL + '/MonTournoi.aspx'
+        post: dict[str, str] = {
+            '__EVENTTARGET': UPLOAD_RULES_EVENT,
+            '__EVENTARGUMENT': '',
+            VIEW_STATE_INPUT_ID: self.ffe_state[VIEW_STATE_INPUT_ID],
+            VIEW_STATE_GENERATOR_INPUT_ID: self.ffe_state[VIEW_STATE_GENERATOR_INPUT_ID],
+            EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
+        }
+        html: str = self._read_url(url=url, data=post, files={UPLOAD_RULES_FILE_ID: Path(self.tournament.rules), })
+        if not html:
+            logger.error('html')
+            return
+        _, error = self._parse_html_content(html)
+        if error:
+            logger.error(error)
+            return
+        with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
+            event_database.set_tournament_last_ffe_rules_upload(self.tournament.id)
+            event_database.commit()
+        logger.info('upload OK')

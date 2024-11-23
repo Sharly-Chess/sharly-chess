@@ -1,5 +1,8 @@
 import time
 from logging import Logger
+from pathlib import Path
+
+import validators
 
 from common.logger import get_logger, print_interactive, input_interactive
 from common.papi_web_config import PapiWebConfig
@@ -43,6 +46,25 @@ class ActionSelector(metaclass=Singleton):
                 tournaments.append(tournament)
         return tournaments
 
+    @classmethod
+    def __get_qualified_tournaments_with_existing_local_rules(cls, event: Event) -> list[Tournament]:
+        if not event.tournaments_by_id:
+            return []
+        tournaments: list[Tournament] = []
+        for tournament in event.tournaments_by_id.values():
+            if not tournament.ffe_id or not tournament.ffe_password:
+                logger.warning('Identifiants de connexion non définis pour le tournoi [%s]', tournament.uniq_id)
+            elif not tournament.rules:
+                logger.warning('Règlement non défini pour le tournoi [%s]', tournament.uniq_id)
+            elif validators.url(tournament.rules):
+                logger.warning('Règlement défini par une URL pour le tournoi [%s]', tournament.uniq_id)
+            elif not Path(tournament.rules).exists():
+                logger.warning(
+                    'Fichier de règlement non trouvé [%s] pour le tournoi [%s]', tournament.rules, tournament.uniq_id)
+            else:
+                tournaments.append(tournament)
+        return tournaments
+
     def run(self, event_uniq_id: str) -> bool:
         event_loader: EventLoader = EventLoader.get(request=None)
         event: Event = event_loader.reload_event(event_uniq_id)
@@ -57,6 +79,7 @@ class ActionSelector(metaclass=Singleton):
         print_interactive('  - [T] Tester les codes d\'accès des tournois')
         print_interactive('  - [V] Rendre les tournois visibles sur le site fédéral')
         print_interactive('  - [H] Télécharger les factures d\'homologation')
+        print_interactive('  - [R] Mettre en ligne les règlements des tournois')
         print_interactive('  - [U] Mettre en ligne les tournois')
         print_interactive('  - [Q] Revenir à la liste des évènements')
         while choice is None:
@@ -91,8 +114,26 @@ class ActionSelector(metaclass=Singleton):
             for tournament in tournaments:
                 FFESession(tournament, debug=False).get_fees()
             return True
+        if choice == 'R':
+            logger.info('Action : mise en ligne des règlements')
+            tournaments = self.__get_qualified_tournaments_with_existing_local_rules(
+                event_loader.reload_event(event_uniq_id))
+            if not tournaments:
+                logger.error('Aucun tournoi éligible pour cette action')
+                return True
+            updated_tournaments: list[Tournament] = []
+            for tournament in tournaments:
+                needs_upload: NeedsUpload = tournament.ffe_rules_upload_needed
+                match needs_upload:
+                    case NeedsUpload.YES:
+                        updated_tournaments.append(tournament)
+            if not updated_tournaments:
+                logger.info('Tous les règlements des tournois sont à jour')
+            for tournament in updated_tournaments:
+                FFESession(tournament, debug=False).upload_rules()
+            time.sleep(10)
         if choice == 'U':
-            (logger.info('Action : mise en ligne des résultats'))
+            logger.info('Action : mise en ligne des résultats')
             ffe_upload_delay: int = PapiWebConfig().ffe_upload_delay
             try:
                 while True:

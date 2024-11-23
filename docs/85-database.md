@@ -89,6 +89,7 @@
 | `last_result_update`                  | `FLOAT`   | NOT NULL DEFAULT 0.0                       | La date de dernière modification d'un résultat du tournoi.                                                                                                                              |
 | `last_check_in_update`                | `FLOAT`   | NOT NULL DEFAULT 0.0                       | La date de dernière modification du pointage du tournoi.                                                                                                                                |
 | `last_ffe_upload`                     | `FLOAT`   | NOT NULL DEFAULT 0.0                       | La date de dernier envoi du tournoi vers le site fédéral.                                                                                                                               |
+| `last_ffe_rules_upload`               | `FLOAT`   | NOT NULL DEFAULT 0.0                       | La date de dernier envoi du règlement du tournoi vers le site fédéral.                                                                                                                  |
 | `last_chessevent_download_md5`        | `TEXT`    |                                            | L'empreinte du dernier téléchargement du tournoi depuis la plateforme ChessEvent.                                                                                                       |
 
 ### table `illegal_move` (coups illégaux)

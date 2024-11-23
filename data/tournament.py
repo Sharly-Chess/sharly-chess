@@ -181,6 +181,10 @@ class Tournament:
         return self.stored_tournament.last_ffe_upload
 
     @property
+    def last_ffe_rules_upload(self) -> float:
+        return self.stored_tournament.last_ffe_rules_upload
+
+    @property
     def last_chessevent_download_md5(self) -> str:
         return self.stored_tournament.last_chessevent_download_md5
 
@@ -510,6 +514,16 @@ class Tournament:
             if time.time() < self.stored_tournament.last_ffe_upload + PapiWebConfig().ffe_upload_delay:
                 # last upload too recent
                 return NeedsUpload.RECENT_CHANGE
+            return NeedsUpload.YES
+        except FileNotFoundError:
+            return NeedsUpload.NO_CHANGE
+
+    @property
+    def ffe_rules_upload_needed(self) -> NeedsUpload:
+        try:
+            if self.stored_tournament.last_ffe_rules_upload > Path(self.rules).lstat().st_mtime:
+                # last version already uploaded
+                return NeedsUpload.NO_CHANGE
             return NeedsUpload.YES
         except FileNotFoundError:
             return NeedsUpload.NO_CHANGE
