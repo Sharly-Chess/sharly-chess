@@ -512,7 +512,7 @@ class Tournament:
                 return NeedsUpload.RECENT_CHANGE
             return NeedsUpload.YES
         except FileNotFoundError:
-            return NeedsUpload.YES
+            return NeedsUpload.NO_CHANGE
 
     def add_result(self, board: Board, white_result: Result):
         """Stores the given result for the given `board` in the current round.
