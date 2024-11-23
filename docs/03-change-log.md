@@ -5,6 +5,7 @@
 ## Version 2.4.12
 - Ajout du règlement des évènements et des tournois
 - Facilitation de la transmission des fichiers de personnalisation pour intégration dans la distribution
+- Correction d'un bug sur la duplication des familles
 
 ## Version 2.4.11 - 18 novembre 2024
 - Correction d'un bug sur la saisie des résultats

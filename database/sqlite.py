@@ -1594,21 +1594,19 @@ class EventDatabase(SQLiteDatabase):
         self._execute('DELETE FROM `family` WHERE `tournament_id` = ?;', (tournament_id,))
 
     def clone_stored_family(
-            self, family_id: int,
+            self,
+            family_id: int,
+            new_uniq_id: str,
+            new_public: bool,
+            new_name: str,
+            new_tournament_id: int,
     ) -> StoredFamily:
         stored_family = self.get_stored_family(family_id)
         stored_family.id = None
-        self._execute(
-            'SELECT uniq_id FROM `family`',
-            (),
-        )
-        uniq_ids: list[str] = [row['uniq_id'] for row in self._fetchall()]
-        uniq_id: str = f'{stored_family.uniq_id}-clone'
-        clone_index: int = 1
-        stored_family.uniq_id = uniq_id
-        while stored_family.uniq_id in uniq_ids:
-            clone_index += 1
-            stored_family.uniq_id = f'{uniq_id}{clone_index}'
+        stored_family.uniq_id = new_uniq_id
+        stored_family.public = new_public
+        stored_family.name = new_name
+        stored_family.tournament_id = new_tournament_id
         return self._write_stored_family(stored_family)
 
     """
