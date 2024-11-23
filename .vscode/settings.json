@@ -106,5 +106,6 @@
     "XAMPP",
     "XNNNNN"
   ],
-  "cSpell.language": "en,fr-FR,en-GB,fr"
+  "cSpell.language": "en,fr-FR,en-GB,fr",
+  "git.allowForcePush": true
 }

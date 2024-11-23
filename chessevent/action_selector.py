@@ -18,7 +18,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.papi_template import create_empty_papi_database, PAPI_VERSIONS
-from ffe.ffe_session import FFESession
+from ffe.ffe_session import FFESession, FFEAction
 
 logger: Logger = get_logger()
 
@@ -160,7 +160,7 @@ class ActionSelector(metaclass=Singleton):
                                                    'impossible.',
                                                    tournament.name)
                                 else:
-                                    FFESession(tournament, debug=False).upload(set_visible=True)
+                                    FFESession(tournament, debug=False).upload(action=FFEAction.UPLOAD_PAPI_AND_SET_VISIBLE)
                         if times_choice == '1':
                             return True
                         time.sleep(chessevent_timeout)

@@ -8,7 +8,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from data.util import NeedsUpload
-from ffe.ffe_session import FFESession
+from ffe.ffe_session import FFESession, FFEAction
 
 logger: Logger = get_logger()
 
@@ -58,6 +58,7 @@ class ActionSelector(metaclass=Singleton):
         print_interactive('  - [V] Rendre les tournois visibles sur le site fédéral')
         print_interactive('  - [H] Télécharger les factures d\'homologation')
         print_interactive('  - [U] Mettre en ligne les tournois')
+        print_interactive('  - [R] Mettre en ligne les règlements intérieurs')
         print_interactive('  - [Q] Revenir à la liste des évènements')
         while choice is None:
             choice = input_interactive('Entrez votre choix : ').upper()
@@ -80,7 +81,7 @@ class ActionSelector(metaclass=Singleton):
                 logger.error('Aucun tournoi éligible pour cette action')
                 return True
             for tournament in tournaments:
-                FFESession(tournament, debug=False).upload(set_visible=True)
+                FFESession(tournament, debug=False).upload(action=FFEAction.UPLOAD_PAPI_AND_SET_VISIBLE)
             return True
         if choice == 'H':
             logger.info('Action : téléchargement des factures d\'homologation')
@@ -120,9 +121,18 @@ class ActionSelector(metaclass=Singleton):
                                 f'{recently_updated_tournaments} tournoi(s) a(ont) été modifié(s) il y a moins de '
                                 f'{ffe_upload_delay} secondes, temporisation en cours')
                     for tournament in updated_tournaments:
-                        FFESession(tournament, debug=False).upload(set_visible=False)
+                        FFESession(tournament, debug=False).upload(action=FFEAction.UPLOAD_PAPI)
                     time.sleep(10)
             except KeyboardInterrupt:
                 logger.info('Fin de la mise en ligne')
                 return True
+        if choice == 'R':
+            (logger.info('Action : mise en ligne des règlements intérieurs'))
+            tournaments = self.__get_qualified_tournaments_with_existing_file(
+                event_loader.reload_event(event_uniq_id))
+            if not tournaments:
+                logger.error('Aucun tournoi éligible pour cette action')
+                return True
+            for tournament in tournaments:
+                FFESession(tournament, debug=False).upload(action=FFEAction.UPLOAD_RI)
         return True
