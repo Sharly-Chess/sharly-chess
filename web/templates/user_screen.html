@@ -24,7 +24,7 @@
             {% endif %}
         </script>
         {% if not rotator %}
-            {% set menu_screens = screen.admin_menu_screens if admin_auth else public_menu_screens %}
+            {% set menu_screens = screen.admin_menu_screens if admin_auth else screen.public_menu_screens %}
             {% if menu_screens %}
                 <div id="#screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
                     {% for entry in menu_screens %}
