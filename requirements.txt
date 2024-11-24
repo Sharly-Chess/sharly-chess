@@ -1,85 +1,17 @@
-# updates omited on 2024 nov 17th:
-# - httpx: 0.27.2 > 1.0.0b0
-# - pydantic: 2.9.2 > 2.10.0b2
 AdvancedHTMLParser~=9.0.2
-# Jinja2 is required by Litestar
 Jinja2~=3.1.4
-# MarkupSafe is required by Jinja2
-MarkupSafe~=3.0.2
-PyPAC~=0.16.4
-# PyYAML is required by Litestar
-PyYAML~=6.0.2
-# altgraph is required by pyinstaller
-altgraph~=0.17.4
-# annotated-types is required by pydantic
-annotated-types~=0.7.0
-# anyio is required by Litestar
-anyio~=4.6.2post1
-babel~=2.16.0
-backports.tarfile~=1.2.0
-certifi~=2024.8.30
-cffi~=1.17.1
 chardet~=5.2.0
-charset-normalizer~=3.4.0
-# click is required by uvicorn
-click~=8.1.7
-colorama~=0.4.6
 colorlog~=6.9.0
-configparser~=7.1.0
-# cryptography is required by Litestar
 cryptography~=43.0.1
-# h11 is required by uvicorn
-h11~=0.14.0
-httpcore~=1.0.7
 httpdate~=1.2.0
-httpx~=0.27.2
-idna~=3.10
-importlib-metadata~=8.5.0
-importlib-resources~=6.4.5
-# idna is required by requests
-inflect~=7.4.0
-jaraco.context~=6.0.1
-jaraco.functools~=4.1.0
-jaraco.text~=4.0.0
 litestar~=2.12.1
-more-itertools~=10.5.0
-# multidict is required by Litestar
-multidict~=6.1.0
-# msgspec is required by Litestar
-msgspec~=0.18.6
-mysql-connector-python~=9.1.0
 packaging~=24.2
-# pefile is required by pyinstaller
-pefile~=2024.8.2
-platformdirs~=4.3.6
-# pydantic is required by Litestar
-polyfactory~=2.18.0
-pydantic~=2.9.2
-pydantic-core~=2.27.0
-pyinstaller~=6.11.1
-pyinstaller-hooks-contrib~=2024.10
 pyodbc~=5.2.0
-# pywin32-ctypes is required by pyinstaller
-pywin32-ctypes~=0.2.3
 requests~=2.32.3
-requests-file~=2.1.0
-rfc3986~=2.0.0
-rich~=13.9.4
-rich-click~=1.8.4
-setuptools~=75.5.0
-# sniffio is required by Litestar
-sniffio~=1.3.1
-# tldextract is required by PyPAC
-tldextract~=5.1.3
-tomli~=2.1.0
-typeguard~=4.4.1
-# typing-extensions is required by Litestar
-typing-extensions~=4.12.2
-# tzdata is required at runtime
-tzdata~=2024.2
-# urllib3 is required by pyinstaller
-urllib3~=2.2.3
-uvicorn~=0.32.0
+uvicorn~=0.32.1
 validators~=0.34.0
-wheel~=0.45.0
-zipp~=3.21.0
+
+# Needed to export exe files
+PyInstaller~=6.11.1
+
+# Needed at run-time
