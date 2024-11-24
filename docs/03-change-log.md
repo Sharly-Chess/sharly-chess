@@ -2,8 +2,9 @@
 
 # Papi-web - ChangeLog
 
-## Version 2.4.13 - 23 novembre 2024
+## Version 2.4.13 - 24 novembre 2024
 - Ajout de l'envoi du règlement des tournois sur le site fédéral
+- Correction d'un bug d'affichage des menus des écrans publics
 
 ## Version 2.4.12 - 22 novembre 2024
 - Ajout du règlement des évènements et des tournois
