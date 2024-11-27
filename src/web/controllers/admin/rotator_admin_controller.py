@@ -10,7 +10,6 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
 from data.rotator import Rotator
 from database.sqlite import EventDatabase

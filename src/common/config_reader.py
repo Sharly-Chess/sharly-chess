@@ -114,7 +114,7 @@ class ConfigReader(ConfigParser):
         """Tries to convert the value associated to the given key in the
         given section to an integer, returns None if it can't be converted
         properly.
-        Optionnally performs bounds checks and returns None if the value is out
+        Optionally performs bounds checks and returns None if the value is out
         of the given bounds."""
         try:
             val: int = self.getint(section_key, key)

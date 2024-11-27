@@ -159,9 +159,11 @@ class PapiWebConfig(metaclass=Singleton):
     def ffe_upload_delay(self) -> int:
         return self.__ffe_upload_delay
 
-    version: Version = Version('2.4.6')
+    version: Version = Version('2.4.13')
 
     url: str = 'https://github.com/papi-web-org/papi-web'
+
+    mail: str = 'papi-web@echecs-bretagne.fr'
 
     copyright: str = '© Projet Papi-web 2013-2024'
 
@@ -172,6 +174,8 @@ class PapiWebConfig(metaclass=Singleton):
     arch_ext: str = 'arch'
 
     custom_path: Path = Path().absolute() / 'custom'
+
+    embedded_custom_path: Path = Path(__file__).resolve().parent.parent / 'custom'
 
     default_papi_path: Path = Path() / 'papi'
 
@@ -273,6 +277,8 @@ class PapiWebConfig(metaclass=Singleton):
     allowed_columns: list[int] = [1, 2, 3, 4, 6]
 
     default_columns: int = 4
+
+    default_hide_background_image: bool = False
 
     default_background_image: str = '/static/images/papi-web-background.png'
 

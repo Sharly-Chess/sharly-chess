@@ -160,7 +160,7 @@ class ActionSelector(metaclass=Singleton):
                                                    'impossible.',
                                                    tournament.name)
                                 else:
-                                    FFESession(tournament).upload(set_visible=True)
+                                    FFESession(tournament, debug=False).upload(set_visible=True)
                         if times_choice == '1':
                             return True
                         time.sleep(chessevent_timeout)

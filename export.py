@@ -49,7 +49,6 @@ def build_exe():
         '--hiddenimport=data',
         '--hiddenimport=database',
         '--hiddenimport=ffe',
-        '--hiddenimport=test',
         '--hiddenimport=web',
         '--paths=.',
         '--icon=web/static/images/papi-web.ico',
@@ -101,6 +100,11 @@ def build_exe():
     files += [sql_dir / 'create_event.sql', ]
     yml_dir: Path = Path('src') / 'database' / 'yml'
     files += list(yml_dir.glob('*.yml'))
+    custom_dir: Path = Path('.') / 'custom'
+    files += [
+        file for file in custom_dir.glob('**/*')
+        if file.is_file()
+    ]
     for file in files:
         pyinstaller_params.append(f'--add-data={file};{file.parent}')
     files: list[Path] = []
@@ -122,10 +126,12 @@ def create_project():
     bin_dir: Path = PROJECT_DIR / 'bin'
     bin_dir.mkdir(exist_ok=True)
     shutil.move(dist_exe_file, bin_dir)
-    custom_path: Path = PapiWebConfig.custom_path
-    target_dir: Path = PROJECT_DIR / custom_path.name
-    logger.info(f'Copying {custom_path} to {target_dir}...')
-    shutil.copytree(custom_path, target_dir)
+    # create an empty events dir
+    events_dir: Path = PROJECT_DIR / 'events'
+    events_dir.mkdir(exist_ok=True)
+    # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
+    custom_dir: Path = PROJECT_DIR / 'custom'
+    custom_dir.mkdir(exist_ok=True)
     target_file: Path = PROJECT_DIR / 'server.bat'
     logger.info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt') as f:

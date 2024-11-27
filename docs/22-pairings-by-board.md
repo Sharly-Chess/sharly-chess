@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Affichage des appariements par échiquier
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des écrans d'affichage des appariements par échiquier est obsolète et sera prochainement remplacée par un tutoriel.
 
 Les écrans d'affichage des appariements par échiquier ne sont ni plus ni moins que des [écrans de saisie](21-update.md) sur lesquels la saisie est invalidée.
 
@@ -18,6 +20,3 @@ type = boards
 > [!NOTE]
 > L'option `[event] update_password` ne contrôle pas l'accès aux écrans d'affichage des appariements.
 > Les options de personnalisation des menus sont décrites sur la page [Configuration des menus des écrans](33-menus.md).
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

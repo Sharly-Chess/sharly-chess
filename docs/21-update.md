@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Saisie des résultats
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des écrans de saisie des résultats est obsolète et sera prochainement remplacée par un tutoriel.
 
 La principale fonctionnalité attendue de Papi-web est celle de proposer une interface de saisie des résultats, délégable aux joueur·euses.
 
@@ -53,7 +55,7 @@ part = 1
 parts = 3
 ```
 
-Vous pouvez préciser les échiquiers qui seront affichés sur l'écran en indiquant le nombre d'échiquiers 
+Vous pouvez préciser les échiquiers qui seront affichés sur l'écran en indiquant le nombre d'échiquiers
 qui sera présenté sur chaque écran (ici le deuxième écran de 30 échiquiers, soit les échiquiers de `31` sur `60` inclus) :
 ```
 [screen.saisie-1]
@@ -97,7 +99,7 @@ Ce code devra être renseigné lors du premier accès à l'écran de saisie :
 ![Écran de saisie d'un tournoi](images/friendly-update-5.jpg)
 
 > [!IMPORTANT]
-> La protection mise en place reste succinte, elle a essentiellement pour objectif de limiter les mauvaises manipulations. En particulier, l'intrusion sur le réseau local utilisé par Papi-Web peut mener à des attaques de type « man-in-the-middle » puisque les communications HTTP avec le serveur Papi-web ne sont pas chiffrées. Afin de complètement se protéger, l'accès au réseau local (filaire ou Wi-Fi) doit être limité aux arbitres et aux organisateur·ices (par exemple, la clé Wi-Fi du réseau local ne doit pas être partagée).
+> La protection mise en place reste succincte, elle a essentiellement pour objectif de limiter les mauvaises manipulations. En particulier, l'intrusion sur le réseau local utilisé par Papi-Web peut mener à des attaques de type « man-in-the-middle » puisque les communications HTTP avec le serveur Papi-web ne sont pas chiffrées. Afin de complètement se protéger, l'accès au réseau local (filaire ou Wi-Fi) doit être limité aux arbitres et aux organisateur·ices (par exemple, la clé Wi-Fi du réseau local ne doit pas être partagée).
 
 
 ## Saisie de résultats de plusieurs tournois sur un même écran (`[screen.<screen_id>.boards.<set_id>]`)
@@ -146,6 +148,3 @@ parts = 6
 ```
 
 ![Écran de saisie multi-colonnes](images/update-multi-columns.jpg)
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

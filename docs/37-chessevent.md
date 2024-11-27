@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Création des fichiers Papi des tournois à partir de la plateforme d'inscription en ligne Chess Event
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des connexions à la plateforme ChessEvent est obsolète et sera prochainement remplacée par un tutoriel.
 
 > [!NOTE]
 > Cette fonctionnalité n'est disponible qu'à partir de la version 2.1 de Papi-web.<br/>
@@ -75,8 +77,6 @@ Entrez votre choix : 1
 INFO     Le fichier papi\domloup-fide-36-A.papi a été créé (20 joueur·euses).
 [...]
 ```
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
 
 ## Évènement Papi-web avec des tournois de plusieurs évènements Chess Event
 

@@ -5,9 +5,9 @@ background_image: "FRA/BRE/BRE.png"
 background_color: "#dbf1ff"
 chessevents:
   bre-jeunes-2024:
-    user_id: lbe
+    user_id: "lbe"
     password: "Find it!"
-    event_id: "BRE_35_BretagneJeunes2024"
+    event_id: "BRE_35_Championnat35TC2025"
 timers:
   grands:
     hours:

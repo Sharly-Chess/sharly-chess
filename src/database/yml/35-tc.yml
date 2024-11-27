@@ -1,0 +1,57 @@
+name: "Championnat 35 toutes catégories 2025"
+public: true
+chessevents:
+  35-tc-2025:
+    user_id: "cd35"
+    password: "Find it!"
+    event_id: "BRE_35_Championnat35TC2025"
+tournaments:
+  T:
+    filename: "35-tc-2025"
+    name: "Championnat 35 TC 2025"
+    ffe_id: 64790
+    ffe_password: "ABCDEFGHIJ"
+    chessevent_uniq_id: "35-tc-2025"
+    chessevent_tournament_name: "principal"
+  T-34:
+    filename: "35-tc-2025-34"
+    name: "Championnat 35 TC 2025 r3-4"
+    ffe_id: 64791
+    ffe_password: "ABCDEFGHIJ"
+  T-567:
+    filename: "35-tc-2025-567"
+    name: "Championnat 35 TC 2025 r5-7"
+    ffe_id: 64792
+    ffe_password: "ABCDEFGHIJ"
+screens:
+  saisie:
+    type: "input"
+    sets:
+      -
+        tournament_uniq_id: "T"
+background_image: "FRA/BRE/35/35.png"
+background_color: "#fdf5f9"
+timers:
+  grands:
+    hours:
+      1:
+        date_str: "2024-11-30"
+        time_str: "14:15"
+      2:
+        date_str: "2024-12-14"
+        time_str: "14:15"
+      3:
+        date_str: "2025-01-11"
+        time_str: "14:15"
+      4:
+        date_str: "2025-01-25"
+        time_str: "14:15"
+      5:
+        date_str: "2025-03-08"
+        time_str: "14:15"
+      6:
+        date_str: "2025-03-22"
+        time_str: "14:15"
+      7:
+        date_str: "2025-04-05"
+        time_str: "14:15"

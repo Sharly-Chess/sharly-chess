@@ -71,6 +71,21 @@
 .board-row.last_result_updated > * {
     color: red !important;
 }
+.player-row .player-lic {
+    color: #ffffff;
+}
+.player-row .player-lic.A {
+    background-color: #001da3;
+}
+.player-row .player-lic.B {
+    background-color: #6480ff;
+}
+.player-row .player-lic.N {
+    background-color: #767676;
+}
+.player-federation-flag {
+    height: 1em;
+}
 /*
 ###########################################################
 # PLAYERS SCREENS - ROWS

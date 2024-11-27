@@ -1,7 +1,9 @@
+from gettext import gettext, ngettext
 from os import urandom
 from pathlib import Path
 from typing import Sequence
 
+from jinja2 import Environment
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.middleware.session.client_side import CookieBackendConfig
@@ -9,7 +11,6 @@ from litestar.static_files import create_static_files_router
 from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 
-from common.papi_web_config import PapiWebConfig
 from web.controllers.admin.chessevent_admin_controller import ChessEventAdminController
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
@@ -30,7 +31,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 static_files_folders = [
     BASE_DIR / 'web' / 'static',
-    PapiWebConfig.custom_path,
+    # a direct web access to these folders is not needed at this time (2.4.11)
+    # since the background images are delivered by the /background URL.
+    # PapiWebConfig.custom_path,
+    # PapiWebConfig.embedded_custom_path,
 ]
 
 static_files_router: Router = create_static_files_router(
@@ -61,9 +65,29 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     static_files_router,
 ]
 
+# Keep this here for the day we need to add extra functions to templates
+# def template_test_function(ctx: dict[str, Any], param: str) -> str:
+#     request: HTMXRequest = ctx["request"]
+#     return f'le résultat de template_test_function(): string=[{param}], session=[{request.session}]'
+#
+# def register_template_callables(engine: JinjaTemplateEngine) -> None:
+#     engine.register_template_callable(
+#         key="callable_test_function",
+#         template_callable=template_test_function,
+#     )
+
+# create the Jinja config that will be passed to the Litestar app
 template_config: TemplateConfig = TemplateConfig(
-        directory=BASE_DIR / 'web' / 'templates',
-        engine=JinjaTemplateEngine)
+    directory=BASE_DIR / 'web' / 'templates',
+    engine=JinjaTemplateEngine,
+    # engine_callback=register_template_callables,
+)
+
+# add the Jinja i18n extension and register the gettext callables
+jinja_engine: JinjaTemplateEngine = template_config.engine_instance
+jinja_env: Environment = jinja_engine.engine
+jinja_env.add_extension('jinja2.ext.i18n')
+jinja_env.install_gettext_callables(gettext=gettext, ngettext=ngettext, newstyle=True)
 
 middlewares: Sequence[Middleware] = [
     CookieBackendConfig(secret=urandom(16)).middleware,

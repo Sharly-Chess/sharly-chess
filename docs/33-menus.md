@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Configuration des menus des écrans
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des menus des écrans est obsolète et sera prochainement remplacée par un tutoriel.
 
 Lorsque l'on utilise plusieurs écrans, les menus permettent de passer facilement d'un menu à un autre.
 
@@ -110,6 +112,3 @@ tournament = j
 ```
 
 ![Exemple de menu](images/menus-3.jpg)
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

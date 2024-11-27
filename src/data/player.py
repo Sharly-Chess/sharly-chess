@@ -23,6 +23,7 @@ class Player:
     rating: int
     rating_type: str
     licence_type: str
+    federation: str
     fixed: int
     check_in: bool
     pairings: dict[int, Pairing]

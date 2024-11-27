@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+from common.papi_web_config import PapiWebConfig
+
 """
 All the classes of this module are basic data classed stored into event databases.
 """
@@ -64,11 +66,13 @@ class StoredTournament:
     chessevent_id: int | None
     chessevent_tournament_name: str | None
     record_illegal_moves: int | None
+    rules: str | None
     last_update: float = field(default=0.0)
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)
     last_check_in_update: float = field(default=0.0)
     last_ffe_upload: float = field(default=0.0)
+    last_ffe_rules_upload: float = field(default=0.0)
     last_chessevent_download_md5: str | None = field(default=None)
     stored_skipped_rounds: list[StoredSkippedRound] = field(default_factory=list[StoredSkippedRound])
     errors: dict[str, str] = field(default_factory=dict[str, str])
@@ -154,10 +158,12 @@ class StoredEvent:
     stop: float
     public: bool = False
     path: str | None = None
+    hide_background_image: bool = PapiWebConfig.default_hide_background_image
     background_image: str | None = None
     background_color: str | None = None
     update_password: str | None = None
     record_illegal_moves: int | None = None
+    rules: str | None = None
     version: str | None = None
     timer_colors: dict[int, str | None] = None
     timer_delays: dict[int, int | None] = None

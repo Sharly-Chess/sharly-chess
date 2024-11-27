@@ -69,7 +69,7 @@
                 class="me-2 text-nowrap"
                 {{ tooltip_attributes(
                     'info',
-                    'La connexion à la plateforme ChessEvent est configurée ({{ tournament.chessevent.uniq_id }}).'
+                    'La connexion à la plateforme ChessEvent est configurée (' ~ tournament.chessevent.uniq_id ~').'
                     if tournament.chessevent else
                     'Aucune connexion à la plateforme ChessEvent.',
                     'top') }}
@@ -101,6 +101,9 @@
                 {% endfor %}
             {% endif %}
         </span>
+    </div>
+    <div class="text-start">
+        Règlement : {% if tournament.rules %}oui{% else %}non{% endif %}
     </div>
     <div class="text-start">
         {% if tournament.pairing %}

@@ -47,11 +47,11 @@ class AdminWebContext(WebContext):
             self._redirect_error(f'Invalid value [{self.admin_tab}] for parameter [admin_tab]')
 
     @property
-    def background_image(self) -> str:
+    def background_image(self) -> str | None:
         if self.admin_tab in ['archives', 'config', ]:
             return PapiWebConfig.default_background_image
         else:
-            return ''
+            return None
 
     @property
     def background_color(self) -> str:
@@ -180,6 +180,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             background_color=None,
             update_password=None,
             record_illegal_moves=None,
+            rules=None,
             timer_colors={i: None for i in range(1, 4)},
             timer_delays={i: None for i in range(1, 4)},
             errors=errors,

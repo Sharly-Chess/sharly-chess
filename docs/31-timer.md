@@ -1,9 +1,18 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Utilisation d'un chronomètre
 
 > [!CAUTION]
-> Cette page décrivant la configuration au format INI des chronomètres est obsolète et sera prochainement remplacée par un tutoriel.
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 L'article 4.4 des règles générales pour les compétitions FIDE mentionne concernant la préparation de la salle de jeu :
 
@@ -88,6 +97,3 @@ Les délais de fonctionnement du chronomètre sont exprimés en minutes :
 2 = 5
 3 = 10
 ```
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

@@ -1,9 +1,13 @@
+import filecmp
 import json
 import logging
 import platform
 import re
 import shutil
+import time
+import webbrowser
 import zipfile
+from datetime import datetime
 from json import JSONDecodeError
 from logging import Logger
 from pathlib import Path
@@ -11,15 +15,15 @@ from typing import Any
 
 import pyodbc
 from packaging.version import Version
-from requests import Response, get
+from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, \
     HTTPError  # pylint: disable=redefined-builtin
 
 from common.logger import get_logger, configure_logger, input_interactive, print_interactive
 from common.papi_web_config import PapiWebConfig, TMP_DIR
+from data.event import Event
 from data.loader import EventLoader
 from database.sqlite import EventDatabase
-from event import Event
 
 logger: Logger = get_logger()
 configure_logger(logging.INFO)
@@ -33,6 +37,11 @@ class Engine:
             TMP_DIR.mkdir(parents=True, exist_ok=True)
         except PermissionError as pe:
             logger.critical(f'Impossible de créer le répertoire {TMP_DIR.absolute()} :-(')
+            raise pe
+        try:
+            PapiWebConfig.event_path.mkdir(parents=True, exist_ok=True)
+        except PermissionError as pe:
+            logger.critical(f'Impossible de créer le répertoire {PapiWebConfig.event_path.absolute()} :-(')
             raise pe
         logger.debug('ODBC drivers found:')
         for driver in pyodbc.drivers():
@@ -100,19 +109,19 @@ class Engine:
                 if len(previous_databases) == 1:
                     while True:
                         match input_interactive(
-                            f'Voulez-vous récupérer les évènements de la version {previous_versions[0]} [O/n] ?'):
+                            f'Voulez-vous récupérer la configuration de la version {previous_versions[0]} [O/n] ?'):
                             case '' | 'O':
                                 version_num = 1
                                 break
                             case 'N':
                                 break
                 else:
-                    print_interactive(f'Veuillez choisir la version dont vous souhaitez récupérer les évènements :')
+                    print_interactive(f'Veuillez choisir la version dont vous souhaitez récupérer la configuration :')
                     version_range = range(1, len(previous_versions) + 1)
                     for num in version_range:
                         version: Version = previous_versions[num - 1]
                         print_interactive(f'  - [{num}] {version} ({", ".join([file.stem for file in previous_databases[version]])})')
-                    print_interactive('  - [Q] ne pas restaurer')
+                    print_interactive('  - [Q] ne rien récupérer')
                     while True:
                         match choice := input_interactive(f'Veuillez choisir la version [{previous_versions[-1]}] :'):
                             case 'Q':
@@ -130,24 +139,26 @@ class Engine:
                                     pass
                 if version_num is not None:
                     recovered_version = previous_versions[version_num - 1]
-                    self._recover_previous_version_events(recovered_version, previous_databases[recovered_version])
-            if not previous_databases and not recovered_version:
+                    self._recover_previous_version(recovered_version, previous_databases[recovered_version])
+            if not recovered_version:
                 while True:
                     match input_interactive('Voulez-vous installer des bases de données d\'exemple [O/n] ?'):
-                        case 'O':
+                        case '' | 'O':
                             for event_id in (
                                     file.stem for file in
                             PapiWebConfig.database_yml_path.glob(f'*.{PapiWebConfig.yml_ext}')
                             ):
                                 EventDatabase(event_id).create(populate=True)
                             break
-                        case '' | 'N':
+                        case 'N':
                             break
 
     @classmethod
-    def _recover_previous_version_events(cls, version: Version, files: list[Path]):
+    def _recover_previous_version(cls, version: Version, files: list[Path]):
+        """Recover all the configuration of a previous version (events, Papi files and customization files)."""
         logger.info('Récupération des évènements de la version %s...', version)
         tournaments_number: int = 0
+        version_dir = Path('..') / f'papi-web-{version}'
         for file in files:
             event_uniq_id: str = file.stem
             logger.info('Récupération de l\'évènement %s...', event_uniq_id)
@@ -157,8 +168,7 @@ class Engine:
             # now open the event database to search for local Papi files
             event: Event = EventLoader.get(request=None).load_event(event_uniq_id)
             for tournament in event.tournaments_by_id.values():
-                src_file: Path = Path('..') / f'papi-web-{version}' / 'papi' \
-                                 / f'{tournament.filename}.{PapiWebConfig.papi_ext}'
+                src_file: Path = version_dir / 'papi' / f'{tournament.filename}.{PapiWebConfig.papi_ext}'
                 if tournament.path == PapiWebConfig.default_papi_path and src_file.exists():
                     # recover the Papi file where stored in the default folder
                     logger.info(
@@ -166,9 +176,142 @@ class Engine:
                     shutil.copy(src_file, tournament.file)
                     logger.debug(str(src_file) + ' > ' + str(tournament.file))
                     tournaments_number += 1
-        logger.info('Évènements récupérés : %d (dans le répertoire %s)', len(files), PapiWebConfig.event_path)
-        logger.info('Tournois récupérés : %d (dans le répertoire %s)', tournaments_number, PapiWebConfig.default_papi_path)
+        custom_files: list[Path] = []
+        custom_dir: Path = version_dir / 'custom'
+        if custom_dir.is_dir():
+            for item in custom_dir.glob('**/*'):
+                if item.is_file():
+                    embedded_item: Path = Path(str(item).replace(str(custom_dir), str(PapiWebConfig.embedded_custom_path)))
+                    if not embedded_item.exists() or not filecmp.cmp(item, embedded_item):
+                        target_item: Path = Path(str(item).replace(str(custom_dir), str(PapiWebConfig.custom_path)))
+                        target_item.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy(item, target_item)
+                        custom_files.append(item)
+        logger.info(
+            'Évènements récupérés : %d (dans le répertoire %s)',
+            len(files), PapiWebConfig.event_path)
+        logger.info(''
+                    'Tournois récupérés : %d (dans le répertoire %s)',
+                    tournaments_number, PapiWebConfig.default_papi_path)
+        if custom_files:
+            logger.info(
+                'Fichiers de personnalisation récupérés : %d (dans le répertoire %s)',
+                len(custom_files), PapiWebConfig.custom_path)
+            for custom_file in custom_files:
+                logger.info(f'- {str(custom_file).replace(str(custom_dir), "")}')
+            while True:
+                match input_interactive(
+                    'Voulez-vous transmettre ces fichiers aux développeur·euses de Papi-web pour qu\'ils soient '
+                    'intégrés dans une future version [O/n] ?'):
+                    case '' | 'O':
+                        cls._send_custom_files({
+                            str(custom_file).replace(str(custom_dir), '').replace('\\', '/').lstrip('/'): custom_file
+                            for custom_file in custom_files
+                        })
+                        break
+                    case 'N':
+                        break
 
+    @classmethod
+    def _filebin_url(cls, path: str) -> str:
+        """Returns a URL on filebin.net."""
+        return f'https://filebin.net/{path}'
+
+    @classmethod
+    def _bin_url(cls, bin_name: str) -> str:
+        """Returns the URL of a bin on filebin.net."""
+        return cls._filebin_url(bin_name)
+
+    @classmethod
+    def _bin_zip_url(cls, bin_name: str) -> str:
+        """Returns the URL to download a bin as a zip file from filebin.net."""
+        return cls._filebin_url(f'archive/{bin_name}/zip')
+
+    @classmethod
+    def _bin_request(
+            cls, method: str, path: str, data: dict[str, str] | None, files: dict[str, Path] | None) -> bool:
+        """Do a request on filebin.net with optional payload and attached files."""
+        url: str = cls._filebin_url(path)
+        handlers: dict[str, Any] = {}
+        debug: bool = False
+        try:
+            if debug:
+                logger.info('_bin_request(method=%s, url=%s)', method, url)
+                if data:
+                    logger.info('- data:')
+                    for field_id, field in data.items():
+                         logger.info(
+                            '  - %s: [%s]', field_id,
+                             field[:64] + ('...' if len(field) > 64 else '') if field else 'None')
+                if files:
+                    logger.info('- files:')
+                    for field_id, file in files.items():
+                        logger.info('  - %s: [%s]', field_id, file)
+            if not data and not files:
+                response: Response = request(method=method, url=url)
+            elif not files:
+                response: Response = request(method=method, url=url, data=data)
+            else:
+                handlers = {
+                    file_id: open(file_name, 'rb')
+                    for file_id, file_name in files.items()
+                }
+                response: Response = request(method=method, url=url, data=data, files=handlers)
+                for handler in handlers.values():
+                    handler.close()
+            response.raise_for_status()
+            content: str = response.content.decode()
+            if debug:
+                logger.info(f'content={content}')
+            return True
+        except ConnectionError as e:
+            logger.error('Veuillez vérifier votre connection à internet [%s] : %s', url, e)
+        except Timeout as e:
+            logger.error('Le site filebin.net est indisponible [%s] : %s', url, e)
+        except RequestException as e:
+            logger.error('Le site filebin.net a renvoyé une erreur [%s] : %s', url, e)
+        for handler in handlers.values():
+            handler.close()
+        return False
+
+    @classmethod
+    def _upload_bin_files(cls, bin_name: str, files: dict[str, Path]) -> bool:
+        """Upload a dict of files to filebin.net."""
+        for filename, file in files.items():
+            if not cls._bin_request(method='POST', path=f'{bin_name}/{filename}', data=None, files={filename: file}):
+                return False
+        return True
+
+    @classmethod
+    def _send_custom_files(cls, custom_files: dict[str, Path]):
+        """Sends the custom files to filebin.net and proposes to email the developers."""
+        logger.info('Envoi des fichiers sur un serveur en ligne...')
+        datetime_str: str = datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d-%H-%M-%S")
+        bin_name: str = f'papi-web-custom-files-{datetime_str}'
+        if cls._upload_bin_files(bin_name, custom_files):
+            logger.info('Les fichiers ont été envoyé dans la corbeille %s :', bin_name)
+            logger.info('- Voir les fichiers en ligne : %s', cls._bin_url(bin_name))
+            logger.info('- Télécharger au format ZIP : %s', cls._bin_zip_url(bin_name))
+            subject: str = '[Papi-web] Demande d\'intégration de fichiers de personnalisation'
+            body: str = '<p>Bonjour,</p>'
+            body += '<p>J\'aimerais que les fichiers suivants soient intégrés dans une prochaine distribution de Papi-web :</p>'
+            body += '<ul>'
+            for filename in custom_files:
+                body += f'<li>{filename}</li>'
+            body += '</ul>'
+            body += '<p>Merci :-)</p>'
+            body += '<ul>'
+            body += f'<li><a href="{cls._bin_url(bin_name)}">Voir les fichiers déposés sur filebin.net</a></li>'
+            body += f'<li><a href="{cls._bin_zip_url(bin_name)}">Télécharger au format ZIP</a></li>'
+            body += '</ul>'
+            body += '<p>Ajoutez ici toutes les informations que vous jugez nécessaires, et si vous n\'êtes pas connu·e du projet, présentez-vous !</p>'
+            body += '<p>Prénom NOM</p>'
+            mail_url: str = f'mailto:{PapiWebConfig.mail}?subject={subject}&html-body={body}'
+            logger.info(
+                'Une fenêtre va \'ouvrir pour envoyer un mél au projet Papi-web ; si la fenêtre ne s\'ouvre pas, '
+                'veuillez cliquer sur le lien ci-dessous ou envoyer manuellement un mail à %s.', PapiWebConfig.mail)
+            logger.info('%s', mail_url)
+            webbrowser.open(mail_url, 0)
 
     @classmethod
     def _check_version(cls) -> Version | None:
@@ -189,8 +332,8 @@ class Engine:
                 logger.warning('Une version plus récente que la vôtre est disponible (%s)',
                                last_stable_version)
                 return last_stable_version
-            logger.warning('Vous utilisez une version plus récente que la dernière version stable disponible, '
-                           'vous ne seriez pas développeur des fois ?')
+            logger.warning('Vous utilisez une version plus récente que la dernière version stable disponible (%s), '
+                           'vous ne seriez pas développeur des fois ?', last_stable_version)
             return None
         if not (matches := re.match(r'^(?P<major>\d+)\.(?P<minor>\d+)rc(?P<rc>\d+)$', str(PapiWebConfig.version))):
             raise ValueError(f'Version de Papi-web invalide [{str(PapiWebConfig.version)}]')
@@ -220,7 +363,7 @@ class Engine:
         Otherwise, the last stable version is returned."""
         url: str = 'https://api.github.com/repos/papi-web-org/papi-web/releases'
         try:
-            logger.debug('Recherche d\'une version plus récente sur GitHub (%s)...', url)
+            logger.info('Recherche d\'une version plus récente sur GitHub (%s)...', url)
             response: Response = get(url, allow_redirects=True, timeout=5)
             response.raise_for_status()
             if not response:
@@ -250,18 +393,18 @@ class Engine:
                 return None
             versions.sort(key=Version)
             logger.debug('releases=%s', versions)
-            return Version(versions[0])
+            return Version(versions[-1])
         except ConnectionError as e:
             logger.warning('Veuillez vérifier votre connection à internet : %s', e)
             return None
         except Timeout as e:
-            logger.warning('La plateforme Github est indisponible : %s', e)
+            logger.warning('La plateforme GitHub est indisponible : %s', e)
             return None
         except HTTPError as e:
-            logger.warning('La plateforme Github a renvoyé l\'erreur %s %s', e.errno, e.strerror)
+            logger.warning('La plateforme GitHub a renvoyé l\'erreur %s %s', e.errno, e.strerror)
             return None
         except RequestException as e:
-            logger.warning('La plateforme Github a renvoyé une erreur : %s', e)
+            logger.warning('La plateforme GitHub a renvoyé une erreur : %s', e)
             return None
 
     @staticmethod
@@ -298,11 +441,11 @@ class Engine:
             logger.error('Veuillez vérifier votre connection à internet : %s', e)
             return False
         except Timeout as e:
-            logger.error('La plateforme Github est indisponible : %s', e)
+            logger.error('La plateforme GitHub est indisponible : %s', e)
             return False
         except HTTPError as e:
-            logger.error('La plateforme Github a renvoyé l\'erreur %s %s', e.errno, e.strerror)
+            logger.error('La plateforme GitHub a renvoyé l\'erreur %s %s', e.errno, e.strerror)
             return False
         except RequestException as e:
-            logger.error('La plateforme Github a renvoyé une erreur : %s', e)
+            logger.error('La plateforme GitHub a renvoyé une erreur : %s', e)
             return False

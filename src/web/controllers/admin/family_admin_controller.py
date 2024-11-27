@@ -79,14 +79,14 @@ class FamilyAdminController(AbstractEventAdminController):
         uniq_id: str = WebContext.form_data_to_str(data, field)
         name: str | None = None
         public: bool | None = None
-        if action in ['delete', 'clone', ]:
+        if action in ['delete', ]:
             pass
         else:
             if not uniq_id:
                 errors[field] = 'Veuillez entrer l\'identifiant de la famille.'
             else:
                 match action:
-                    case 'create':
+                    case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.families_by_uniq_id:
                             errors[field] = f'La famille [{uniq_id}] existe déjà.'
                     case 'update':
@@ -110,9 +110,9 @@ class FamilyAdminController(AbstractEventAdminController):
         parts: int | None = None
         number: int | None = None
         match action:
-            case 'delete' | 'clone':
+            case 'delete':
                 pass
-            case 'create' | 'update':
+            case 'create' | 'clone' | 'update':
                 field: str = 'tournament_id'
                 try:
                     if len(web_context.admin_event.tournaments_by_id) == 1:
@@ -174,15 +174,6 @@ class FamilyAdminController(AbstractEventAdminController):
                         players_show_unpaired = WebContext.form_data_to_bool(data, 'players_show_unpaired')
                     case _:
                         raise ValueError(f'type=[{type}]')
-                field: str = 'tournament_id'
-                try:
-                    tournament_id = WebContext.form_data_to_int(data, field)
-                    if not tournament_id:
-                        errors[field] = f'Veuillez indiquer le tournoi.'
-                    elif tournament_id not in web_context.admin_event.tournaments_by_id:
-                        errors[field] = f'Le tournoi [{tournament_id}] n\'existe pas.'
-                except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
                 field: str = 'parts'
                 try:
                     parts = WebContext.form_data_to_int(data, field, minimum=1)
@@ -253,7 +244,7 @@ class FamilyAdminController(AbstractEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
                     match action:
-                        case 'update' | 'clone':
+                        case 'update':
                             data['public'] = WebContext.value_to_form_data(
                                 web_context.admin_family.stored_family.public)
                             data['name'] = WebContext.value_to_form_data(web_context.admin_family.stored_family.name)
@@ -285,7 +276,7 @@ class FamilyAdminController(AbstractEventAdminController):
                             data['parts'] = WebContext.value_to_form_data(web_context.admin_family.stored_family.parts)
                             data['number'] = WebContext.value_to_form_data(
                                 web_context.admin_family.stored_family.number)
-                        case 'create':
+                        case 'create' | 'clone':
                             data['type'] = ''
                             data['public'] = WebContext.value_to_form_data(True)
                             data['uniq_id'] = ''
@@ -386,7 +377,10 @@ class FamilyAdminController(AbstractEventAdminController):
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_families_render(request, event_uniq_id=event_uniq_id)
                 case 'clone':
-                    stored_family = event_database.clone_stored_family(web_context.admin_family.id)
+                    stored_family = event_database.clone_stored_family(
+                        family_id=web_context.admin_family.id, new_uniq_id=stored_family.uniq_id,
+                        new_public=stored_family.public, new_name=stored_family.name,
+                        new_tournament_id=stored_family.tournament_id)
                     event_database.commit()
                     Message.success(
                         request,

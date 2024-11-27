@@ -144,6 +144,8 @@ class Event:
 
     @cached_property
     def background_image(self) -> str:
+        if self.stored_event.hide_background_image:
+            return ''
         background_image: str = PapiWebConfig.default_background_image
         if not self.stored_event.background_image:
             self.add_debug(f'pas d\'image de fond définie, image de fond par défaut : [{background_image}]')
@@ -179,6 +181,10 @@ class Event:
         else:
             record_illegal_moves = self.stored_event.record_illegal_moves
         return record_illegal_moves
+
+    @property
+    def rules(self) -> str | None:
+        return self.stored_event.rules
 
     @cached_property
     def timer_colors(self) -> dict[int, str]:

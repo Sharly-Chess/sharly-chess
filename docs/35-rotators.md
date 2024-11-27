@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Écrans rotatifs
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des écrans rotatifs est obsolète et sera prochainement remplacée par un tutoriel.
 
 Avec la version 1 de Papi-web, les organisateurs s'appuyaient parfois sur des modules externes de navigateurs (Tab Rotate sur Chrome, Tab Rotator sur Firefox, ...) pour permettre une rotation de l'affichage entre plusieurs écrans.
 
@@ -89,6 +91,3 @@ parts = 2
 [rotator.tournoi-AB]
 families = a,b
 ```
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

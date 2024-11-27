@@ -151,6 +151,12 @@ class Tournament:
         return self.event.record_illegal_moves
 
     @property
+    def rules(self) -> str | None:
+        if self.stored_tournament.rules is not None:
+            return self.stored_tournament.rules
+        return self.event.rules
+
+    @property
     def last_update(self) -> float:
         return self.stored_tournament.last_update
 
@@ -173,6 +179,10 @@ class Tournament:
     @property
     def last_ffe_upload(self) -> float:
         return self.stored_tournament.last_ffe_upload
+
+    @property
+    def last_ffe_rules_upload(self) -> float:
+        return self.stored_tournament.last_ffe_rules_upload
 
     @property
     def last_chessevent_download_md5(self) -> str:
@@ -506,7 +516,17 @@ class Tournament:
                 return NeedsUpload.RECENT_CHANGE
             return NeedsUpload.YES
         except FileNotFoundError:
+            return NeedsUpload.NO_CHANGE
+
+    @property
+    def ffe_rules_upload_needed(self) -> NeedsUpload:
+        try:
+            if self.stored_tournament.last_ffe_rules_upload > Path(self.rules).lstat().st_mtime:
+                # last version already uploaded
+                return NeedsUpload.NO_CHANGE
             return NeedsUpload.YES
+        except FileNotFoundError:
+            return NeedsUpload.NO_CHANGE
 
     def add_result(self, board: Board, white_result: Result):
         """Stores the given result for the given `board` in the current round.

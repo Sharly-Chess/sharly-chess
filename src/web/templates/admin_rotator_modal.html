@@ -51,7 +51,7 @@
                                             placeholder="Exemple : Appariements"
                                             value="{{ data[name] }}" />
                                     <div id="{{ id }}-help" class="form-text">
-                                      L'identifiant unique, utilisé pour référencer l'écran'.
+                                      L'identifiant unique, utilisé pour référencer l'écran.
                                     </div>
                                     {% if name in errors %}
                                         <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -108,7 +108,7 @@
                                             placeholder="Exemple : {{ papi_web_config.default_rotator_delay }} (secondes)"
                                             value="{{ data[name] }}" />
                                     <div id="{{ id }}-help" class="form-text">
-                                      Le délai de rotation entre deux écrans (par défaut {{ papi_web_config.default_rotator_delay }}.
+                                      Le délai de rotation entre deux écrans (par défaut {{ papi_web_config.default_rotator_delay }}).
                                     </div>
                                     {% if name in errors %}
                                         <div id="{{ id }}-error" class="form-text invalid-feedback">

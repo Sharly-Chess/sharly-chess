@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Modèles et familles d'écran
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des modèles et des familles d'écrans est obsolète et sera prochainement remplacée par un tutoriel.
 
 Les modèles et les familles ont été introduits dans Papi-web en version 2 pour simplifier la configuration des écrans multiples.
 
@@ -279,6 +281,3 @@ Dans ce cas Papi-web calcule automatiquement le nombre d'écrans nécessaires.
 
 > [!NOTE]
 > Dans les deux cas (`parts` et `number`), on peut restreindre les écrans de la famille en utilisant par exemple `range = 3-5`.
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

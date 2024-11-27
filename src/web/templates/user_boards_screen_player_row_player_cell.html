@@ -3,6 +3,9 @@
         player-cell bg-transparent
         {% if screen.type == 'input' and last_check_in_updated and last_check_in_updated.expiration > now and last_check_in_updated.tournament_id == tournament.id and last_check_in_updated.player_id == player.id %}
             last_check_in_updated
+        {% endif %}
+        {% if screen.type == 'input' %}
+            cursor-pointer
         {% endif %}"
     {% if screen.type == 'input' %}
         hx-get="{{ url_for('user-checkin-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
@@ -13,6 +16,10 @@
 >
     <i
         class="{% if player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"
-
-    ></i> {% if player.title_str %}{{ player.title_str }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}{% if admin_auth %} ({{ player.licence_type }}){% endif %}
+    ></i>
+    {% if admin_auth %}
+        <span class="player-lic {{ player.licence_type }} ms-1 ps-1 pe-1">{{ player.licence_type }}</span>
+        <img class="player-federation-flag ms-1 ps-1 pe-1" src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}" />
+    {% endif %}
+    {% if player.title_str %}{{ player.title_str }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}
 </td>

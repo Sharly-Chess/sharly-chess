@@ -1,9 +1,11 @@
-**[Retour au sommaire de la documentation](../README.md)**
+> [!CAUTION]
+> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE ET SERA PROCHAINEMENT REMPLACÉE PAR UN TUTORIEL.**
+>
+> **[Retour au sommaire de la documentation](../README.md)**
+>
+> ![](../web/static/images/papi-web-error.png)
 
 # Papi-web - Configuration d'un tournoi à handicap
-
-> [!CAUTION]
-> Cette page décrivant la configuration au format INI des tournois à handicap est obsolète et sera prochainement remplacée par un tutoriel.
 
 Les tournois à handicap ne sont pas homologués mais sont particulièrement appréciés dans les clubs pour des tournois rapides avec de forts écarts de niveau entre les joueur·euses (les joueur·euses les mieux classé·es disposent de moins de temps à la pendule, en fonction de la différence de classement).
 
@@ -21,6 +23,3 @@ min_time = 60
 Lorsqu'un évènement ne comprend qu'un seul tournoi alors l'identifiant `<tournament_id>` peut être omis (on utilise simplement `[tournament.handicap]`).
 
 ![Affichage des appariements d'un tournoi à handicap](images/handicap.jpg)
-
-Voir également : [Guide de référence de la configuration des évènements](40-ref.md)
-

@@ -76,6 +76,64 @@ class EventAdminWebContext(AdminWebContext):
 
 class AbstractEventAdminController(AbstractIndexAdminController):
 
+    @staticmethod
+    def _admin_validate_record_illegal_moves_update_data(
+            data: dict[str, str] | None,
+            errors: dict[str, str],
+    ) -> int | None:
+        field: str = 'record_illegal_moves'
+        record_illegal_moves: int | None
+        try:
+            record_illegal_moves = WebContext.form_data_to_int(data, field)
+            assert record_illegal_moves is None or 0 <= record_illegal_moves <= 3
+        except (ValueError, AssertionError):
+            record_illegal_moves = None
+            errors['record_illegal_moves'] = f'La valeur entrée [{data[field]}] n\'est pas valide.'
+        return record_illegal_moves
+
+    @staticmethod
+    def _admin_validate_rules_update_data(
+            data: dict[str, str] | None,
+            errors: dict[str, str],
+    ) -> str | None:
+        field: str = 'rules'
+        rules: str | None = WebContext.form_data_to_str(data, field)
+        if rules:
+            if validators.url(rules):
+                try:
+                    response = requests.get(rules)
+                    if response.status_code != 200:
+                        errors[field] = \
+                            f'L\'URL [{rules}] est en erreur (code [{response.status_code}]).'
+                except requests.ConnectionError as ce:
+                    errors[field] = f'L\'URL [{rules}] est en erreur ([{ce}]).'
+            else:
+                if rules.find('..') != -1:
+                    errors[field] = f'Le chemin [{rules}] est incorrect.'
+                    data[field] = ''
+                else:
+                    file: Path = Path(rules)
+                    if not file.exists() or not file.is_file():
+                        errors[field] = f'Le fichier [{rules}] est introuvable.'
+                    elif file.suffix.lower() != '.pdf':
+                        errors[field] = f'Un fichier PDF est attendu [{file.suffix}].'
+        return rules
+
+    @staticmethod
+    def _admin_validate_background_color_update_data(
+            data: dict[str, str] | None,
+            errors: dict[str, str],
+    ) -> str | None:
+        field: str = 'background_color'
+        background_color: str | None = None
+        color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
+        if not color_checkbox:
+            try:
+                background_color = WebContext.form_data_to_rgb(data, field)
+            except ValueError:
+                errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
+        return background_color
+
     @classmethod
     def _get_admin_event_render_context(
             cls,
@@ -184,8 +242,9 @@ class AbstractEventAdminController(AbstractIndexAdminController):
 
 class EventAdminController(AbstractEventAdminController):
 
-    @staticmethod
+    @classmethod
     def _admin_validate_event_update_data(
+            cls,
             action: str,
             web_context: EventAdminWebContext,
             data: dict[str, str] | None = None,
@@ -240,10 +299,12 @@ class EventAdminController(AbstractEventAdminController):
                 raise ValueError(f'action=[{action}]')
         public: bool | None = WebContext.form_data_to_bool(data, 'public')
         path: str | None = None
+        hide_background_image: bool | None = None
         background_image: str | None = None
         background_color: str | None = None
         update_password: str | None = None
         record_illegal_moves: int | None = None
+        rules: str | None = None
         timer_colors: dict[int, str | None] = {i: None for i in range(1, 4)}
         timer_color_checkboxes: dict[int, bool | None] = {i: None for i in range(1, 4)}
         timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
@@ -252,37 +313,28 @@ class EventAdminController(AbstractEventAdminController):
                 path = WebContext.form_data_to_str(data, 'path')
                 update_password = WebContext.form_data_to_str(data, 'update_password')
                 field = 'background_image'
-                if background_image := WebContext.form_data_to_str(data, field, ''):
-                    if validators.url(background_image):
-                        try:
-                            response = requests.get(background_image)
-                            if response.status_code != 200:
-                                errors[field] = \
-                                    f'L\'URL [{background_image}] est en erreur (code [{response.status_code}]).'
-                        except requests.ConnectionError as ce:
-                            errors[field] = f'L\'URL [{background_image}] est en erreur ([{ce}]).'
-                    else:
-                        background_image = background_image.strip('/')
-                        if background_image.find('..') != -1:
-                            errors[field] = f'Le chemin [{background_image}] est incorrect.'
-                            data[field] = ''
+                hide_background_image = WebContext.form_data_to_bool(data, field + '_checkbox')
+                if not hide_background_image:
+                    if background_image := WebContext.form_data_to_str(data, field, ''):
+                        if validators.url(background_image):
+                            try:
+                                response = requests.get(background_image)
+                                if response.status_code != 200:
+                                    errors[field] = \
+                                        f'L\'URL [{background_image}] est en erreur (code [{response.status_code}]).'
+                            except requests.ConnectionError as ce:
+                                errors[field] = f'L\'URL [{background_image}] est en erreur ([{ce}]).'
                         else:
-                            file: Path = PapiWebConfig.custom_path / background_image
-                            if not file.exists():
+                            background_image = background_image.strip('/')
+                            if background_image.find('..') != -1:
+                                errors[field] = f'Le chemin [{background_image}] est incorrect.'
+                                data[field] = ''
+                            elif not (PapiWebConfig.custom_path / background_image).exists() \
+                                    and not (PapiWebConfig.embedded_custom_path / background_image).exists():
                                 errors[field] = f'Le fichier [{background_image}] est introuvable.'
-                field: str = 'background_color'
-                color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
-                if not color_checkbox:
-                    try:
-                        background_color = WebContext.form_data_to_rgb(data, field)
-                    except ValueError:
-                        errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
-                field: str = 'record_illegal_moves'
-                try:
-                    record_illegal_moves = WebContext.form_data_to_int(data, field)
-                    assert record_illegal_moves is None or 0 <= record_illegal_moves <= 3
-                except (ValueError, AssertionError):
-                    errors['record_illegal_moves'] = f'La valeur entrée [{data[field]}] n\'est pas valide.'
+                background_color = cls._admin_validate_background_color_update_data(data, errors)
+                record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(data, errors)
+                rules = cls._admin_validate_rules_update_data(data, errors)
                 for i in range(1, 4):
                     field: str = f'color_{i}'
                     timer_color_checkboxes[i] = WebContext.form_data_to_bool(data, field + '_checkbox')
@@ -299,9 +351,11 @@ class EventAdminController(AbstractEventAdminController):
             case 'clone':
                 path = web_context.admin_event.stored_event.path
                 update_password = web_context.admin_event.stored_event.update_password
+                hide_background_image = web_context.admin_event.stored_event.hide_background_image
                 background_image = web_context.admin_event.stored_event.background_image
                 background_color = web_context.admin_event.stored_event.background_color
                 record_illegal_moves = web_context.admin_event.stored_event.record_illegal_moves
+                rules = web_context.admin_event.stored_event.rules
                 timer_colors = web_context.admin_event.stored_event.timer_colors
                 timer_delays = web_context.admin_event.stored_event.timer_delays
             case 'delete':
@@ -315,10 +369,12 @@ class EventAdminController(AbstractEventAdminController):
             stop=stop,
             public=public,
             path=path,
+            hide_background_image=hide_background_image,
             background_image=background_image,
             background_color=background_color,
             update_password=update_password,
             record_illegal_moves=record_illegal_moves,
+            rules=rules,
             timer_colors=timer_colors,
             timer_delays=timer_delays,
             errors=errors,
@@ -326,45 +382,50 @@ class EventAdminController(AbstractEventAdminController):
 
     @staticmethod
     def background_images_jstree_data(background_image: str) -> list[dict[str, Any]]:
-        custom_path: Path = PapiWebConfig.custom_path
-        dir_nodes: list[dict[str, str]] = []
-        file_nodes: list[dict[str, str]] = []
-        for item in custom_path.rglob('*'):
-            item_str = str(item).replace(str(custom_path), '').replace('\\', '/').lstrip('/')
-            node: dict[str, Any] = {
-                'id': item_str or '#',
-                'parent': '/'.join(item_str.split('/')[:-1]) or '#',
-                'text': f'{" " if item.is_dir() else ""}{item_str.split("/")[-1]}',
-                'state': {},
+        dirs: list[str] = []
+        files: list[str] = []
+        for custom_path in [PapiWebConfig.embedded_custom_path, PapiWebConfig.custom_path, ]:
+            for item in custom_path.rglob('*'):
+                item_str = str(item).replace(str(custom_path), '').replace('\\', '/').lstrip('/')
+                if item.is_dir():
+                    if item_str not in dirs:
+                        dirs.append(item_str)
+                else:
+                    if item_str not in files:
+                        files.append(item_str)
+        dir_nodes: list[dict[str, str]] = [{
+            'id': d or '#',
+            'parent': '/'.join(d.split('/')[:-1]) or '#',
+            'text': f' {d.split("/")[-1]}',
+            'state': {},
+            'icon': 'bi-folder',
+        } for d in dirs]
+        file_nodes: list[dict[str, str]] = [{
+            'id': f or '#',
+            'parent': '/'.join(f.split('/')[:-1]) or '#',
+            'text': f.split('/')[-1],
+            'state': {
+                'selected': background_image == f,
+            },
+            'icon': 'bi-card-image',
+            'a_attr': {
+                'onclick': f'$("#background-image").val("{f}"); '
+                           f'$.ajax({{'
+                           f'    url: "/background",'
+                           f'    type: "GET",'
+                           f'    data: {{ "image": "{f}", "color": $("#background-color").val() }},'
+                           f'    success: function(data) {{'
+                           f'        $("#background-image-test").css("background-image", data["url"]);'
+                           f'    }},'
+                           f'    error: function(jqXHR, exception) {{'
+                           f'        console.log('
+                           f'            "Changing background failed: status_code=" + jqXHR.status '
+                           f'            + ", exception=" + exception + ", response=" + jqXHR.responseText'
+                           f'        );'
+                           f'    }},'
+                           f'}});',
             }
-            if item.is_dir():
-                node['icon'] = 'bi-folder'
-            else:
-                node['icon'] = 'bi-card-image'
-                if background_image == item_str:
-                    node['state']['selected'] = True
-                node['a_attr'] = {
-                    'onclick': f'$("#background-image").val("{item_str}"); '
-                               f'$.ajax({{'
-                               f'    url: "/background",'
-                               f'    type: "GET",'
-                               f'    data: {{ "image": "{item_str}", "color": $("#background-color").val() }},'
-                               f'    success: function(data) {{'
-                               f'        $("#background-image-test").css("background-image", data["url"]);'
-                               f'        $("#background-image-test").css("background-color", data["color"]);'
-                               f'    }},'
-                               f'    error: function(jqXHR, exception) {{'
-                               f'        console.log('
-                               f'            "Changing background failed: status_code=" + jqXHR.status '
-                               f'            + ", exception=" + exception + ", response=" + jqXHR.responseText'
-                               f'        );'
-                               f'    }},'
-                               f'}});',
-                }
-            if item.is_dir():
-                dir_nodes.append(node)
-            else:
-                file_nodes.append(node)
+        } for f in files]
         return file_nodes + dir_nodes
 
     @classmethod
@@ -409,6 +470,8 @@ class EventAdminController(AbstractEventAdminController):
                                 web_context.admin_event.stored_event.start)
                             data['stop'] = WebContext.value_to_datetime_form_data(
                                 web_context.admin_event.stored_event.stop)
+                            data['background_image_checkbox'] = WebContext.value_to_form_data(
+                                web_context.admin_event.stored_event.hide_background_image)
                             data['background_image'] = WebContext.value_to_form_data(
                                 web_context.admin_event.stored_event.background_image)
                             data['background_color'] = WebContext.value_to_form_data(
@@ -420,6 +483,7 @@ class EventAdminController(AbstractEventAdminController):
                                 web_context.admin_event.stored_event.update_password)
                             data['record_illegal_moves'] = WebContext.value_to_form_data(
                                 web_context.admin_event.stored_event.record_illegal_moves)
+                            data['rules'] = WebContext.value_to_form_data(web_context.admin_event.stored_event.rules)
                             for i in range(1, 4):
                                 data[f'color_{i}'] = WebContext.value_to_form_data(
                                     web_context.admin_event.timer_colors[i])

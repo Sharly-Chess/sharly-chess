@@ -93,7 +93,7 @@ class SQLiteDatabase:
 
     @staticmethod
     def dump_to_json_database_field(obj: Any, if_none=None) -> str | None:
-        """Serilizes the given object `obj` to JSON.
+        """Serializes the given object `obj` to JSON.
         Returns the JSON serialization of `if_none` otherwise (may be None)."""
         if obj is not None:
             return json.dumps(obj)
@@ -182,7 +182,7 @@ class EventDatabase(SQLiteDatabase):
           this type.
         - If `items_number` is passed, `supposed_list` must contain exactly
           this number of elements.
-        - If `allowed_empty is set to Falsen `supposed_list` must not be empty.
+        - If `allowed_empty is set to False, `supposed_list` must not be empty.
         """
         assert isinstance(supposed_list, list), f'{yml_file.name}: {list_path} is no list'
         if item_type is not None:
@@ -229,9 +229,10 @@ class EventDatabase(SQLiteDatabase):
                     self._check_populate_dict(
                         yml_file, '', event_dict,
                         mandatory_fields=['name', ],
-                        optional_fields=['start', 'stop', 'path', 'background_image', 'background_color', 'public',
-                                         'update_password', 'record_illegal_moves', 'chessevents', 'tournaments',
-                                         'timers', 'screens', 'families', 'rotators', 'timer_colors', 'timer_delays', ],
+                        optional_fields=['start', 'stop', 'path', 'hide_background_image', 'background_image',
+                                         'background_color', 'public', 'update_password', 'record_illegal_moves',
+                                         'rules', 'chessevents', 'tournaments', 'timers', 'screens', 'families',
+                                         'rotators', 'timer_colors', 'timer_delays', ],
                         empty_allowed=False)
                     timer_delays: dict[int, int] | None = None
                     if 'timer_delays' in event_dict:
@@ -259,10 +260,13 @@ class EventDatabase(SQLiteDatabase):
                         start=event_start,
                         stop=event_stop,
                         path=event_dict.get('path', None),
+                        hide_background_image=event_dict.get(
+                            'hide_background_image', PapiWebConfig.default_hide_background_image),
                         background_image=event_dict.get('background_image', None),
                         background_color=event_dict.get('background_color', None),
                         update_password=event_dict.get('update_password', None),
                         record_illegal_moves=event_dict.get('record_illegal_moves', None),
+                        rules=event_dict.get('rules', None),
                         timer_colors=timer_colors,
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
@@ -360,6 +364,7 @@ class EventDatabase(SQLiteDatabase):
                                 chessevent_id=chessevent_id,
                                 chessevent_tournament_name=tournament_dict.get('chessevent_tournament_name', None),
                                 record_illegal_moves=None,
+                                rules=None,
                             ))
                             tournament_ids_by_uniq_id[tournament_uniq_id] = stored_tournament.id
                     screen_ids_by_uniq_id: dict[str, int] = {}
@@ -590,7 +595,7 @@ class EventDatabase(SQLiteDatabase):
         self._execute('UPDATE `info` SET `last_update` = ?', (time.time(),))
 
     def rename(self, new_uniq_id: str = None):
-        """Changes the event file database to theone associated to the
+        """Changes the event file database to the one associated to the
         provided `new_uniq_id`."""
         self.file.rename(EventDatabase(new_uniq_id).file)
         with EventDatabase(new_uniq_id, write=True) as event_database:
@@ -622,9 +627,9 @@ class EventDatabase(SQLiteDatabase):
                 self._version = None
         return self
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredEvent 
+    StoredEvent
     ---------------------------------------------------------------------------------
     """
 
@@ -638,10 +643,15 @@ class EventDatabase(SQLiteDatabase):
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
             path=row['path'],
+            # needed to open event databases when version < 2.4.8 before checking the version
+            hide_background_image=self.load_bool_from_database_field(
+                row.get('hide_background_image', PapiWebConfig.default_hide_background_image)),
             background_image=row['background_image'],
             background_color=row['background_color'],
             update_password=row['update_password'],
             record_illegal_moves=row['record_illegal_moves'],
+            # needed to open event databases when version < 2.4.11 before checking the version
+            rules=row.get('rules', None),
             timer_colors=self.set_dict_int_keys(self.load_json_from_database_field(row['timer_colors'])),
             timer_delays=self.set_dict_int_keys(self.load_json_from_database_field(row['timer_delays'])),
             last_update=row['last_update'],
@@ -701,8 +711,26 @@ class EventDatabase(SQLiteDatabase):
             self.set_version(target_version)
             self.commit()
             logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
-        target_version = Version('2.4.6')
-        if self.version.public in ['2.4.5', ]:
+        target_version = Version('2.4.8')
+        if self.version.public in ['2.4.5', '2.4.6', '2.4.7', ]:
+            self._execute('ALTER TABLE `info` ADD `hide_background_image` INTEGER')
+            self._execute(
+                'UPDATE `info` SET `hide_background_image` = ?',
+                (1 if PapiWebConfig.default_hide_background_image else 0, ))
+            self.set_version(target_version)
+            self.commit()
+            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+        target_version = Version('2.4.12')
+        if self.version.public in ['2.4.8', '2.4.9', '2.4.10', '2.4.11', ]:
+            self._execute('ALTER TABLE `info` ADD `rules` TEXT')
+            self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
+            self.set_version(target_version)
+            self.commit()
+            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+        target_version = Version('2.4.13')
+        if self.version.public in ['2.4.12', ]:
+            self._execute('ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT')
+            self._execute('UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0')
             self.set_version(target_version)
             self.commit()
             logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
@@ -731,13 +759,14 @@ class EventDatabase(SQLiteDatabase):
         """Updates the event database with the information in the provided
         `stored_event`."""
         fields: list[str] = [
-            'name', 'start', 'stop', 'public', 'path', 'background_image', 'background_color', 'update_password',
-            'record_illegal_moves', 'timer_colors', 'timer_delays', 'last_update',
+            'name', 'start', 'stop', 'public', 'path', 'hide_background_image', 'background_image', 'background_color',
+            'update_password', 'record_illegal_moves', 'rules', 'timer_colors', 'timer_delays', 'last_update',
         ]
         params: tuple = (
             stored_event.name, stored_event.start, stored_event.stop, stored_event.public, stored_event.path,
-            stored_event.background_image, stored_event.background_color, stored_event.update_password,
-            stored_event.record_illegal_moves, self.dump_to_json_database_timer_colors(stored_event.timer_colors),
+            stored_event.hide_background_image, stored_event.background_image, stored_event.background_color,
+            stored_event.update_password, stored_event.record_illegal_moves, stored_event.rules,
+            self.dump_to_json_database_timer_colors(stored_event.timer_colors),
             self.dump_to_json_database_timer_delays(stored_event.timer_delays),
             time.time(),
         )
@@ -747,9 +776,9 @@ class EventDatabase(SQLiteDatabase):
             tuple(params))
         return self._get_stored_event()
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredChessEvent 
+    StoredChessEvent
     ---------------------------------------------------------------------------------
     """
 
@@ -842,7 +871,7 @@ class EventDatabase(SQLiteDatabase):
             stored_chessevent.uniq_id = f'{uniq_id}{clone_index}'
         return self._write_stored_chessevent(stored_chessevent)
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
     StoredTimerHour
     ---------------------------------------------------------------------------------
@@ -997,7 +1026,7 @@ class EventDatabase(SQLiteDatabase):
     def _delete_stored_timer_hours(self, timer_id: int):
         self._execute('DELETE FROM `timer_hour` WHERE `timer_id` = ?;', (timer_id,))
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
     StoredTimer
     ---------------------------------------------------------------------------------
@@ -1095,13 +1124,13 @@ class EventDatabase(SQLiteDatabase):
         self._execute('UPDATE `family` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,))
         self._execute('UPDATE `screen` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,))
         self._delete_stored_timer_hours(timer_id)
-        # references are not deleted as they shoud be!
+        # references are not deleted as they should be!
         self._execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
         self.set_last_update()
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    Skipped rounds 
+    Skipped rounds
     ---------------------------------------------------------------------------------
     """
 
@@ -1143,9 +1172,9 @@ class EventDatabase(SQLiteDatabase):
                     (tournament_id, papi_player_id, round, score),
                 )
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredTournament 
+    StoredTournament
     ---------------------------------------------------------------------------------
     """
 
@@ -1167,11 +1196,13 @@ class EventDatabase(SQLiteDatabase):
             chessevent_id=row['chessevent_id'],
             chessevent_tournament_name=row['chessevent_tournament_name'],
             record_illegal_moves=row['record_illegal_moves'],
+            rules=row['rules'],
             last_update=row['last_update'],
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
             last_ffe_upload=row['last_ffe_upload'],
+            last_ffe_rules_upload=row['last_ffe_rules_upload'],
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
         )
 
@@ -1202,8 +1233,9 @@ class EventDatabase(SQLiteDatabase):
             'uniq_id', 'name', 'path', 'filename', 'ffe_id', 'ffe_password',
             'time_control_initial_time', 'time_control_increment', 'time_control_handicap_penalty_step',
             'time_control_handicap_penalty_value', 'time_control_handicap_min_time', 'chessevent_id',
-            'chessevent_tournament_name', 'record_illegal_moves', 'last_update', 'last_result_update',
-            'last_illegal_move_update', 'last_check_in_update', 'last_ffe_upload', 'last_chessevent_download_md5',
+            'chessevent_tournament_name', 'record_illegal_moves', 'rules', 'last_update', 'last_result_update',
+            'last_illegal_move_update', 'last_check_in_update', 'last_ffe_upload', 'last_ffe_rules_upload',
+            'last_chessevent_download_md5',
         ]
         params: list = [
             stored_tournament.uniq_id, stored_tournament.name, stored_tournament.path, stored_tournament.filename,
@@ -1211,9 +1243,10 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.time_control_increment, stored_tournament.time_control_handicap_penalty_step,
             stored_tournament.time_control_handicap_penalty_value, stored_tournament.time_control_handicap_min_time,
             stored_tournament.chessevent_id, stored_tournament.chessevent_tournament_name,
-            stored_tournament.record_illegal_moves, time.time(), stored_tournament.last_result_update,
-            stored_tournament.last_illegal_move_update, stored_tournament.last_check_in_update,
-            stored_tournament.last_ffe_upload, stored_tournament.last_chessevent_download_md5,
+            stored_tournament.record_illegal_moves, stored_tournament.rules, time.time(),
+            stored_tournament.last_result_update, stored_tournament.last_illegal_move_update,
+            stored_tournament.last_check_in_update, stored_tournament.last_ffe_upload,
+            stored_tournament.last_ffe_rules_upload, stored_tournament.last_chessevent_download_md5,
         ]
         if stored_tournament.id is None:
             protected_fields = [f"`{f}`" for f in fields]
@@ -1270,12 +1303,18 @@ class EventDatabase(SQLiteDatabase):
         stored_tournament.last_illegal_move_update = 0.0
         stored_tournament.last_check_in_update = 0.0
         stored_tournament.last_ffe_upload = 0.0
+        stored_tournament.last_ffe_rules_upload = 0.0
         stored_tournament.last_chessevent_download = 0.0
         return self._write_stored_tournament(stored_tournament)
 
     def set_tournament_last_ffe_upload(self, tournament_id: int):
         self._execute(
             f'UPDATE `tournament` SET `last_ffe_upload` = ? WHERE `id` = ?',
+            (time.time(), tournament_id, ))
+
+    def set_tournament_last_ffe_rules_upload(self, tournament_id: int):
+        self._execute(
+            f'UPDATE `tournament` SET `last_ffe_rules_upload` = ? WHERE `id` = ?',
             (time.time(), tournament_id, ))
 
     def set_tournament_last_chessevent_download_md5(self, tournament_id: int, md5: str = None):
@@ -1301,9 +1340,9 @@ class EventDatabase(SQLiteDatabase):
             (time.time(), tournament_id, ),
         )
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    Illegal moves 
+    Illegal moves
     ---------------------------------------------------------------------------------
     """
 
@@ -1331,7 +1370,7 @@ class EventDatabase(SQLiteDatabase):
         self._execute(
             'SELECT `illegal_move`.* '
             'FROM `illegal_move` '
-            'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`' 
+            'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`'
             'WHERE `tournament`.`id` = ? AND `round` = ?',
             (tournament_id, round,),
         )
@@ -1378,7 +1417,7 @@ class EventDatabase(SQLiteDatabase):
                 (tournament_id, ),
             )
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
     results
     ---------------------------------------------------------------------------------
@@ -1474,9 +1513,9 @@ class EventDatabase(SQLiteDatabase):
                     value))
         return results
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredFamily 
+    StoredFamily
     ---------------------------------------------------------------------------------
     """
 
@@ -1570,26 +1609,24 @@ class EventDatabase(SQLiteDatabase):
         self._execute('DELETE FROM `family` WHERE `tournament_id` = ?;', (tournament_id,))
 
     def clone_stored_family(
-            self, family_id: int,
+            self,
+            family_id: int,
+            new_uniq_id: str,
+            new_public: bool,
+            new_name: str,
+            new_tournament_id: int,
     ) -> StoredFamily:
         stored_family = self.get_stored_family(family_id)
         stored_family.id = None
-        self._execute(
-            'SELECT uniq_id FROM `family`',
-            (),
-        )
-        uniq_ids: list[str] = [row['uniq_id'] for row in self._fetchall()]
-        uniq_id: str = f'{stored_family.uniq_id}-clone'
-        clone_index: int = 1
-        stored_family.uniq_id = uniq_id
-        while stored_family.uniq_id in uniq_ids:
-            clone_index += 1
-            stored_family.uniq_id = f'{uniq_id}{clone_index}'
+        stored_family.uniq_id = new_uniq_id
+        stored_family.public = new_public
+        stored_family.name = new_name
+        stored_family.tournament_id = new_tournament_id
         return self._write_stored_family(stored_family)
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredScreen 
+    StoredScreen
     ---------------------------------------------------------------------------------
     """
 
@@ -1725,14 +1762,14 @@ class EventDatabase(SQLiteDatabase):
         self._execute(
             'SELECT `screen`.`id` AS `screen_id` '
             'FROM `screen` '
-            'JOIN `screen_set` ON `screen_set`.`screen_id` = `screen`.`id` ' 
+            'JOIN `screen_set` ON `screen_set`.`screen_id` = `screen`.`id` '
             'WHERE `screen_set`.`tournament_id` = ?',
             (tournament_id,),
         )
         for row in self._fetchall():
             self.delete_stored_screen(row['screen_id'])
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
     StoredScreenSet
     ---------------------------------------------------------------------------------
@@ -1862,9 +1899,9 @@ class EventDatabase(SQLiteDatabase):
         self._execute('DELETE FROM `screen_set` WHERE `id` = ?;', (screen_set_id,))
         self.set_last_update()
 
-    """ 
+    """
     ---------------------------------------------------------------------------------
-    StoredRotator 
+    StoredRotator
     ---------------------------------------------------------------------------------
     """
 

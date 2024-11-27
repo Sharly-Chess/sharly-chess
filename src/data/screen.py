@@ -203,7 +203,7 @@ class Screen:
                 if '*' in menu_part:
                     menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
                         self.event.screens_by_uniq_id.keys(), menu_part)
-                    if menu_part_screen_uniq_ids:
+                    if not menu_part_screen_uniq_ids:
                         logger.warning(f'Le motif [{menu_part}] ne correspond à aucun écran')
                     else:
                         menu_screens += [

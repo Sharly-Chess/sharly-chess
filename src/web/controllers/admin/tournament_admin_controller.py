@@ -51,8 +51,9 @@ class TournamentAdminWebContext(EventAdminWebContext):
 
 class TournamentAdminController(AbstractEventAdminController):
 
-    @staticmethod
+    @classmethod
     def _admin_validate_tournament_update_data(
+            cls,
             action: str,
             web_context: TournamentAdminWebContext,
             data: dict[str, str] | None = None,
@@ -114,6 +115,7 @@ class TournamentAdminController(AbstractEventAdminController):
         chessevent_id: int | None = None
         chessevent_tournament_name: str | None = None
         record_illegal_moves: int | None = None
+        rules: str | None = None
         match action:
             case 'update':
                 time_control_initial_time = WebContext.form_data_to_int(data, 'time_control_initial_time')
@@ -126,7 +128,8 @@ class TournamentAdminController(AbstractEventAdminController):
                     data, 'time_control_handicap_min_time')
                 chessevent_id = WebContext.form_data_to_int(data, 'chessevent_id')
                 chessevent_tournament_name = WebContext.form_data_to_str(data, 'chessevent_tournament_name')
-                record_illegal_moves = WebContext.form_data_to_str(data, 'record_illegal_moves')
+                record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(data, errors)
+                rules = cls._admin_validate_rules_update_data(data, errors)
             case 'delete' | 'create' | 'clone':
                 pass
             case _:
@@ -147,6 +150,7 @@ class TournamentAdminController(AbstractEventAdminController):
             chessevent_id=chessevent_id,
             chessevent_tournament_name=chessevent_tournament_name,
             record_illegal_moves=record_illegal_moves,
+            rules=rules,
             errors=errors,
         )
 
@@ -232,6 +236,8 @@ class TournamentAdminController(AbstractEventAdminController):
                                 web_context.admin_tournament.stored_tournament.chessevent_tournament_name)
                             data['record_illegal_moves'] = WebContext.value_to_form_data(
                                 web_context.admin_tournament.stored_tournament.record_illegal_moves)
+                            data['rules'] = WebContext.value_to_form_data(
+                                web_context.admin_tournament.stored_tournament.rules)
                         case 'delete' | 'clone' | 'create':
                             pass
                         case _:
