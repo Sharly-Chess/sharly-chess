@@ -13,13 +13,13 @@ BUILD_DIR: Path = Path('build')
 DIST_DIR: Path = Path('dist')
 DATA_DIR: Path = Path('export-data')
 basename: str = f'papi-web-{PapiWebConfig.version}'
-EXPORT_DIR: Path = Path('..') / 'export'
+EXPORT_DIR: Path = Path('export')
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
 SPEC_FILE: Path = Path('.') / f'{basename}.spec'
-TEST_DIR: Path = Path('..') / 'test'
-ICON_FILE: Path = Path('.') / 'web' / 'static' / 'images' / 'papi-web.ico'
+TEST_DIR: Path = Path('.') / 'test'
+ICON_FILE: Path = Path('src') / 'web' / 'static' / 'images' / 'papi-web.ico'
 
 
 def clean(clean_zip: bool):
@@ -56,7 +56,7 @@ def build_exe():
         'papi_web.py',
     ]
     files: list[Path] = []
-    web_dir = Path('.') / 'web'
+    web_dir = Path('src') / 'web'
     files += [file for file in Path('web/templates').glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
     files += [file for file in Path('web/static/images').glob('**/*') if file.is_file()]
@@ -97,9 +97,9 @@ def build_exe():
         file for file in jstree_dir.glob('**/*')
         if file.is_file()
     ]
-    sql_dir: Path = Path('.') / 'database' / 'sql'
+    sql_dir: Path = Path('src') / 'database' / 'sql'
     files += [sql_dir / 'create_event.sql', ]
-    yml_dir: Path = Path('.') / 'database' / 'yml'
+    yml_dir: Path = Path('src') / 'database' / 'yml'
     files += list(yml_dir.glob('*.yml'))
     for file in files:
         pyinstaller_params.append(f'--add-data={file};{file.parent}')
