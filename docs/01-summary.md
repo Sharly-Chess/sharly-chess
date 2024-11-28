@@ -70,6 +70,7 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 | BENETEAU Hubert     | AFE1  | NOR   | 50  | Agneaux Saint-Lô                              |
 | BENADDOU Khaled     | AFE2  | IDF   | 94  | Club d'Échecs de Saint-Maur                   |
 | BLEUZEN Christian   | AFE1  | BRE   | 35  | Rennes Paul Bert                              |
+| BLOT Philippe       | AFE1  | NOR   | 59  | Le Coin de L'echiquier Grande Synthe          |
 | CHANTIER Pierre     | AFO1  | EST   | 10  | Verrières Animation Loisirs                   |
 | CLEMENCEAU Cyril    | AFC   | BRE   | 29  | Échiquier du Léon                             |
 | DELMOTTE Eric       | AFE1  | BFC   | 71  | L'Échiquier Châlonnais                        |
