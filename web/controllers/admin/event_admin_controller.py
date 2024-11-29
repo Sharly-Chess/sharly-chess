@@ -324,6 +324,8 @@ class EventAdminController(AbstractEventAdminController):
                                         f'L\'URL [{background_image}] est en erreur (code [{response.status_code}]).'
                             except requests.ConnectionError as ce:
                                 errors[field] = f'L\'URL [{background_image}] est en erreur ([{ce}]).'
+                        elif Path(background_image).exists():
+                            errors[field] = f'Veuillez indiquer une URL ou choisir une image à droite.'
                         else:
                             background_image = background_image.strip('/')
                             if background_image.find('..') != -1:
