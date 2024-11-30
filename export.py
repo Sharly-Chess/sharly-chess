@@ -13,12 +13,12 @@ BUILD_DIR: Path = Path('build')
 DIST_DIR: Path = Path('dist')
 DATA_DIR: Path = Path('export-data')
 basename: str = f'papi-web-{PapiWebConfig.version}'
-EXPORT_DIR: Path = Path('export')
+EXPORT_DIR: Path = Path('..') / 'export'
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
 SPEC_FILE: Path = Path('.') / f'{basename}.spec'
-TEST_DIR: Path = Path('.') / 'test'
+TEST_DIR: Path = Path('..') / 'test'
 ICON_FILE: Path = Path('src') / 'web' / 'static' / 'images' / 'papi-web.ico'
 
 
@@ -51,7 +51,7 @@ def build_exe():
         '--hiddenimport=ffe',
         '--hiddenimport=web',
         '--paths=.',
-        '--icon=web/static/images/papi-web.ico',
+        '--icon=src/web/static/images/papi-web.ico',
         'papi_web.py',
     ]
     files: list[Path] = []
