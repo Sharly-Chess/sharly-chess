@@ -45,7 +45,7 @@ def download_fide_players():
     print(f'{len(federations)} federations found.')
     federations.sort()
     print('Downloading federation flags... ', end='')
-    flags_dir: Path = Path() / 'web' / 'static' / 'images' / 'federations'
+    flags_dir: Path = Path() / 'src' / 'web' / 'static' / 'images' / 'federations'
     flags_dir.mkdir(exist_ok=True, parents=True)
     errors: dict[str, str] = {}
     for federation in federations:
