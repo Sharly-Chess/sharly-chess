@@ -2,6 +2,10 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.4.15 - 1er décembre 2024
+- Correction d'un bug dans la gestion des erreurs
+- Correction d'un bug dans la création des bases d'exemple
+
 ## Version 2.4.14 - 29 novembre 2024
 - Correction d'un bug de saisie des images de fond des évènements
 
