@@ -109,11 +109,11 @@ def build_exe():
         pyinstaller_params.append(f'--add-data={file};{file.parent}')
     files: list[Path] = []
     files += [
-        file for file in Path('venv/Lib/site-packages/litestar/middleware/exceptions/templates').glob('**/*')
+        file for file in Path('venv/Lib/site-packages/litestar/exceptions/responses/templates').glob('**/*')
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file};litestar/middleware/exceptions/templates')
+        pyinstaller_params.append(f'--add-data={file};litestar/exceptions/responses/templates')
     run(pyinstaller_params)
 
 
