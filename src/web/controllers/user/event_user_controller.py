@@ -38,7 +38,7 @@ class EventUserWebContext(UserWebContext):
         if self.error:
             return
         if not event_uniq_id:
-            self._redirect_error(f'L\'évènement n\'est pas spécifie')
+            self._redirect_error('L\'évènement n\'est pas spécifie')
             return
         try:
             self.user_event = EventLoader.get(request=self.request).load_event(event_uniq_id)

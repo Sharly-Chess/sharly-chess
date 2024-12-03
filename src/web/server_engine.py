@@ -31,7 +31,7 @@ def launch_browser(url: str):
 
 class ServerEngine(Engine):
     def __init__(self):
-        logger.info(f'Starting Papi-web server, please wait...')
+        logger.info('Starting Papi-web server, please wait...')
         super().__init__()
         if self.updated:
             return

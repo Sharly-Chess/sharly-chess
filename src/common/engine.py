@@ -116,7 +116,7 @@ class Engine:
                             case 'N':
                                 break
                 else:
-                    print_interactive(f'Veuillez choisir la version dont vous souhaitez récupérer la configuration :')
+                    print_interactive('Veuillez choisir la version dont vous souhaitez récupérer la configuration :')
                     version_range = range(1, len(previous_versions) + 1)
                     for num in version_range:
                         version: Version = previous_versions[num - 1]
@@ -172,7 +172,7 @@ class Engine:
                 if tournament.path == PapiWebConfig.default_papi_path and src_file.exists():
                     # recover the Papi file where stored in the default folder
                     logger.info(
-                        f'Évènement [%s] : récupération du tournoi %s...', event_uniq_id, tournament.uniq_id)
+                        'Évènement [%s] : récupération du tournoi %s...', event_uniq_id, tournament.uniq_id)
                     shutil.copy(src_file, tournament.file)
                     logger.debug(str(src_file) + ' > ' + str(tournament.file))
                     tournaments_number += 1

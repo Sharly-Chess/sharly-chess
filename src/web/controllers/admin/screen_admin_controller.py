@@ -179,7 +179,7 @@ class ScreenAdminController(AbstractEventAdminController):
                         field = 'background_image'
                         background_image = WebContext.form_data_to_str(data, field, '')
                         if not background_image:
-                            errors[field] = f'Veuillez préciser l\'URL de l\'image.'
+                            errors[field] = 'Veuillez préciser l\'URL de l\'image.'
                         elif not validators.url(background_image):
                             errors[field] = f'L\'URL [{background_image}] n\'est pas valide.'
                         else:
@@ -238,7 +238,7 @@ class ScreenAdminController(AbstractEventAdminController):
             else:
                 tournament_id = WebContext.form_data_to_int(data, field)
                 if not tournament_id:
-                    errors[field] = f'Veuillez indiquer le tournoi.'
+                    errors[field] = 'Veuillez indiquer le tournoi.'
                 elif tournament_id not in web_context.admin_screen.event.tournaments_by_id:
                     errors[field] = f'Le tournoi [{tournament_id}] n\'existe pas.'
         except ValueError:
@@ -601,7 +601,7 @@ class ScreenAdminController(AbstractEventAdminController):
             case 'delete':
                 if len(web_context.admin_screen.screen_sets_sorted_by_order) <= 1:
                     return AbstractController.redirect_error(
-                        request, f'Le dernier ensemble d\'un écran ne peut être supprimé.')
+                        request, 'Le dernier ensemble d\'un écran ne peut être supprimé.')
             case 'update' | 'clone' | 'add' | 'reorder':
                 pass
             case _:

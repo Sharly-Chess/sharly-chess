@@ -45,12 +45,12 @@ class Tournament:
                 f'le nom du fichier Papi n\'est pas défini, par défaut [{self.filename}]', tournament=self)
         if not self.stored_tournament.ffe_id or not self.stored_tournament.ffe_password:
             self.event.add_info(
-                f'le numéro d\'homologation et le mot de passe de connexion au site fédéral sont nécessaires '
-                f'pour les opérations sur le site fédéral, elles ne seront pas disponibles',
+                'le numéro d\'homologation et le mot de passe de connexion au site fédéral sont nécessaires '
+                'pour les opérations sur le site fédéral, elles ne seront pas disponibles',
                 tournament=self)
         if not self.chessevent:
             self.event.add_info(
-                f'la connexion à la plateforme ChessEvent n\'est pas définie', tournament=self)
+                'la connexion à la plateforme ChessEvent n\'est pas définie', tournament=self)
         if self.chessevent and not self.stored_tournament.chessevent_tournament_name:
             self.event.add_warning(
                 f'le nom du tournoi [{self.uniq_id}] n\'est pas renseigné, la connexion à la plateforme '

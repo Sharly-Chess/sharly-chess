@@ -237,14 +237,14 @@ class EventDatabase(SQLiteDatabase):
                     timer_delays: dict[int, int] | None = None
                     if 'timer_delays' in event_dict:
                         self._check_populate_list(
-                            yml_file, f'/timer_delays', event_dict['timer_delays'],
+                            yml_file, '/timer_delays', event_dict['timer_delays'],
                             items_number=3, item_type=int)
                         timer_delays = {i + 1: event_dict[
                             'timer_delays'][i] for i in range(0, len(event_dict['timer_delays']))}
                     timer_colors: dict[int, str] | None = None
                     if 'timer_colors' in event_dict:
                         self._check_populate_list(
-                            yml_file, f'/timer_colors', event_dict['timer_colors'],
+                            yml_file, '/timer_colors', event_dict['timer_colors'],
                             items_number=3, item_type=str)
                         timer_colors = {i + 1: event_dict[
                             'timer_colors'][i] for i in range(0, len(event_dict['timer_colors']))}
@@ -961,7 +961,7 @@ class EventDatabase(SQLiteDatabase):
         order: int = 1
         for timer_hour_id in timer_hour_ids:
             self._execute(
-                f'UPDATE `timer_hour` SET `order` = ? WHERE `id` = ?',
+                'UPDATE `timer_hour` SET `order` = ? WHERE `id` = ?',
                 (order, timer_hour_id, ),
             )
             order += 1
@@ -1022,7 +1022,7 @@ class EventDatabase(SQLiteDatabase):
         order: int = 1
         for stored_timer_hour in self.load_stored_timer_hours(timer_id):
             self._execute(
-                f'UPDATE `timer_hour` SET `order` = ? WHERE `id` = ?',
+                'UPDATE `timer_hour` SET `order` = ? WHERE `id` = ?',
                 (order, stored_timer_hour.id, ),
             )
             order += 1
@@ -1314,17 +1314,17 @@ class EventDatabase(SQLiteDatabase):
 
     def set_tournament_last_ffe_upload(self, tournament_id: int):
         self._execute(
-            f'UPDATE `tournament` SET `last_ffe_upload` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `last_ffe_upload` = ? WHERE `id` = ?',
             (time.time(), tournament_id, ))
 
     def set_tournament_last_ffe_rules_upload(self, tournament_id: int):
         self._execute(
-            f'UPDATE `tournament` SET `last_ffe_rules_upload` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `last_ffe_rules_upload` = ? WHERE `id` = ?',
             (time.time(), tournament_id, ))
 
     def set_tournament_last_chessevent_download_md5(self, tournament_id: int, md5: str = None):
         self._execute(
-            f'UPDATE `tournament` SET `last_chessevent_download_md5` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `last_chessevent_download_md5` = ? WHERE `id` = ?',
             (md5, tournament_id, ))
 
     def _set_tournament_last_illegal_move_update(self, tournament_id: int):
@@ -1494,7 +1494,7 @@ class EventDatabase(SQLiteDatabase):
             query: str = ('SELECT '
                           '    * '
                           'FROM `result` '
-                          f'WHERE `date` > ? AND ({" OR ".join([f"`tournament_id` = ?", ] * len(tournament_ids))}) '
+                          f'WHERE `date` > ? AND ({" OR ".join(["`tournament_id` = ?", ] * len(tournament_ids))}) '
                           'ORDER BY `date` DESC')
             params += tournament_ids
         if limit:
@@ -1686,7 +1686,7 @@ class EventDatabase(SQLiteDatabase):
 
     def _set_stored_screen_last_update(self, screen_id: int):
         self._execute(
-            f'UPDATE `screen` SET `last_update` = ? WHERE `id` = ?',
+            'UPDATE `screen` SET `last_update` = ? WHERE `id` = ?',
             (time.time(), screen_id,),
         )
 
@@ -1825,7 +1825,7 @@ class EventDatabase(SQLiteDatabase):
         order: int = 1
         for screen_set_id in screen_set_ids:
             self._execute(
-                f'UPDATE `screen_set` SET `order` = ?, `last_update` = ? WHERE `id` = ?',
+                'UPDATE `screen_set` SET `order` = ?, `last_update` = ? WHERE `id` = ?',
                 (order, time.time(), screen_set_id, ),
             )
             order += 1
@@ -1896,7 +1896,7 @@ class EventDatabase(SQLiteDatabase):
         order: int = 1
         for stored_screen_set in self.load_stored_screen_sets(screen_id):
             self._execute(
-                f'UPDATE `screen_set` SET `order` = ?, `last_update` = ? WHERE `id` = ?',
+                'UPDATE `screen_set` SET `order` = ?, `last_update` = ? WHERE `id` = ?',
                 (order, time.time(), stored_screen_set.id, ),
             )
             order += 1

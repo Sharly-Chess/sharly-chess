@@ -257,7 +257,7 @@ class EventAdminController(AbstractEventAdminController):
             if not uniq_id:
                 errors['uniq_id'] = 'Veuillez entrer l\'identifiant de l\'évènement.'
             elif uniq_id != web_context.admin_event.uniq_id:
-                errors['uniq_id'] = f'L\'identifiant entré n\'est pas valide.'
+                errors['uniq_id'] = 'L\'identifiant entré n\'est pas valide.'
         else:
             if not uniq_id:
                 errors['uniq_id'] = 'Veuillez entrer l\'identifiant de l\'évènement.'
@@ -325,7 +325,7 @@ class EventAdminController(AbstractEventAdminController):
                             except requests.ConnectionError as ce:
                                 errors[field] = f'L\'URL [{background_image}] est en erreur ([{ce}]).'
                         elif Path(background_image).exists():
-                            errors[field] = f'Veuillez indiquer une URL ou choisir une image à droite.'
+                            errors[field] = 'Veuillez indiquer une URL ou choisir une image à droite.'
                         else:
                             background_image = background_image.strip('/')
                             if background_image.find('..') != -1:

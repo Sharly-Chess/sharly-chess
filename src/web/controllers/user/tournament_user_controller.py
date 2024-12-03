@@ -289,12 +289,11 @@ class ResultUserController(AbstractInputUserController):
         if result is None:
             if not web_context.admin_auth:
                 return AbstractController.redirect_error(
-                    request, f'la suppression de résultat n\'est pas autorisée.')
+                    request, 'la suppression de résultat n\'est pas autorisée.')
             with suppress(ValueError):
                 web_context.tournament.delete_result(web_context.board)
         else:
-            if not result in \
-                   (Result.admin_imputable_results() if web_context.admin_auth else Result.user_imputable_results()):
+            if result not in (Result.admin_imputable_results() if web_context.admin_auth else Result.user_imputable_results()):
                 return AbstractController.redirect_error(request, f'Le résultat [{result}] est invalide.')
             web_context.tournament.add_result(web_context.board, Result.from_papi_value(result))
         SessionHandler.set_session_last_result_updated(request, web_context.tournament.id, round, web_context.board.id)

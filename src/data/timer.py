@@ -148,7 +148,7 @@ class Timer:
             timer_hour: TimerHour = TimerHour(self, stored_timer_hour)
             self.timer_hours_by_id[timer_hour.id] = timer_hour
             if not stored_timer_hour.time_str:
-                timer_hour.error = f'L\'heure n\'est pas définie.'
+                timer_hour.error = 'L\'heure n\'est pas définie.'
                 self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
             else:
                 matches = re.match('^(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{1,2})$', stored_timer_hour.time_str)
@@ -156,7 +156,7 @@ class Timer:
                     timer_hour.error = f'L\'heure [{stored_timer_hour.time_str}]n\'est pas valide.'
                     self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
                 elif previous_valid_timer_hour is None and not stored_timer_hour.date_str:
-                    timer_hour.error = f'La date du premier horaire n\'est pas définie (obligatoire).'
+                    timer_hour.error = 'La date du premier horaire n\'est pas définie (obligatoire).'
                     self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
                 else:
                     datetime_str: str

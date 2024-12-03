@@ -66,7 +66,7 @@ class TournamentAdminController(AbstractEventAdminController):
             if not uniq_id:
                 errors['uniq_id'] = 'Veuillez entrer l\'identifiant du tournoi.'
             elif uniq_id != web_context.admin_tournament.uniq_id:
-                errors['uniq_id'] = f'L\'identifiant entré n\'est pas valide.'
+                errors['uniq_id'] = 'L\'identifiant entré n\'est pas valide.'
         else:
             if not uniq_id:
                 errors['uniq_id'] = 'Veuillez entrer l\'identifiant du tournoi.'

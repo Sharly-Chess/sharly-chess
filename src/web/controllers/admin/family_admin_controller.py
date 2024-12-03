@@ -121,7 +121,7 @@ class FamilyAdminController(AbstractEventAdminController):
                     else:
                         tournament_id = WebContext.form_data_to_int(data, field)
                         if not tournament_id:
-                            errors[field] = f'Veuillez indiquer le tournoi.'
+                            errors[field] = 'Veuillez indiquer le tournoi.'
                         elif tournament_id not in web_context.admin_event.tournaments_by_id:
                             errors[field] = f'Le tournoi [{tournament_id}] n\'existe pas.'
                 except ValueError:

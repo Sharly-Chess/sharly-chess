@@ -141,16 +141,16 @@ class TimerAdminController(AbstractEventAdminController):
         time_str: str = WebContext.form_data_to_str(data, 'time_str')
         date_str: str = WebContext.form_data_to_str(data, 'date_str')
         if not time_str:
-            errors['time_str'] = f'Veuillez entrer l\'heure.'
+            errors['time_str'] = 'Veuillez entrer l\'heure.'
         else:
             matches = re.match('^(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{1,2})$', time_str)
             if not matches:
-                errors['time_str'] = f'Veuillez entrer une heure valide.'
+                errors['time_str'] = 'Veuillez entrer une heure valide.'
         if not previous_valid_timer_hour and not date_str:
-            errors['date_str'] = f'Veuillez entrer La date du premier horaire.'
+            errors['date_str'] = 'Veuillez entrer La date du premier horaire.'
         elif date_str:
             if not re.match('^#?(?P<year>[0-9]{4})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2})$', date_str):
-                errors['date_str'] = f'Veuillez entrer une date valide.'
+                errors['date_str'] = 'Veuillez entrer une date valide.'
         if 'time_str' not in errors and 'date_str' not in errors:
             datetime_str: str
             if date_str:
@@ -166,7 +166,7 @@ class TimerAdminController(AbstractEventAdminController):
                     if date_str:
                         errors['date_str'] = errors['time_str']
             except ValueError:
-                errors['time_str'] = f'Veuillez entrer une date et une heure valides.'
+                errors['time_str'] = 'Veuillez entrer une date et une heure valides.'
                 if date_str:
                     errors['date_str'] = errors['time_str']
         if uniq_id != web_context.admin_timer_hour.uniq_id and uniq_id in web_context.admin_timer.timer_hour_uniq_ids:
@@ -488,7 +488,7 @@ class TimerAdminController(AbstractEventAdminController):
             case 'delete':
                 if len(web_context.admin_timer.timer_hours_by_id) <= 1:
                     return AbstractController.redirect_error(
-                        request, f'Le dernier horaire d\'un chronomètre ne peut être supprimé.')
+                        request, 'Le dernier horaire d\'un chronomètre ne peut être supprimé.')
             case 'update' | 'clone' | 'add' | 'reorder':
                 pass
             case _:
