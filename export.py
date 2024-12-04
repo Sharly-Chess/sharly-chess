@@ -13,7 +13,7 @@ BUILD_DIR: Path = Path('build')
 DIST_DIR: Path = Path('dist')
 DATA_DIR: Path = Path('export-data')
 basename: str = f'papi-web-{PapiWebConfig.version}'
-EXPORT_DIR: Path = Path('..') / 'export'
+EXPORT_DIR: Path = Path('export')
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
@@ -56,11 +56,11 @@ def build_exe():
     ]
     files: list[Path] = []
     web_dir = Path('src') / 'web'
-    files += [file for file in Path('web/templates').glob('**/*') if file.is_file()]
+    files += [file for file in Path('src/web/templates').glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
-    files += [file for file in Path('web/static/images').glob('**/*') if file.is_file()]
-    files += [file for file in Path('web/static/css').glob('**/*') if file.is_file()]
-    files += [file for file in Path('web/static/js').glob('**/*') if file.is_file()]
+    files += [file for file in Path('src/web/static/images').glob('**/*') if file.is_file()]
+    files += [file for file in Path('src/web/static/css').glob('**/*') if file.is_file()]
+    files += [file for file in Path('src/web/static/js').glob('**/*') if file.is_file()]
     lib_dir = static_dir / 'lib'
     bootstrap_dir = lib_dir / 'bootstrap' / f'bootstrap-{PapiWebConfig.bootstrap_version}-dist'
     files += [
@@ -100,7 +100,7 @@ def build_exe():
     files += [sql_dir / 'create_event.sql', ]
     yml_dir: Path = Path('src') / 'database' / 'yml'
     files += list(yml_dir.glob('*.yml'))
-    custom_dir: Path = Path('.') / 'custom'
+    custom_dir: Path = Path('src') / 'custom'
     files += [
         file for file in custom_dir.glob('**/*')
         if file.is_file()
