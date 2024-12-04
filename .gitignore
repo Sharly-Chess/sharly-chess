@@ -11,6 +11,9 @@ __pycache__/
 
 /build/
 /export/
+/test/
+
+papi-web.egg-info/
 
 # Vim scratch files
 *.swp

@@ -17,8 +17,8 @@ EXPORT_DIR: Path = Path('export')
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
-SPEC_FILE: Path = Path('.') / f'{basename}.spec'
-TEST_DIR: Path = Path('..') / 'test'
+SPEC_FILE: Path = Path(f'{basename}.spec')
+TEST_DIR: Path = Path('test')
 ICON_FILE: Path = Path('src') / 'web' / 'static' / 'images' / 'papi-web.ico'
 
 
@@ -56,7 +56,9 @@ def build_exe():
     ]
     files: list[Path] = []
     web_dir = Path('src') / 'web'
-    files += [file for file in Path('src/web/templates').glob('**/*') if file.is_file()]
+    template_files = [file for file in Path('src/web/templates').glob('**/*') if file.is_file()]
+    print(template_files)
+    files += template_files
     static_dir = web_dir / 'static'
     files += [file for file in Path('src/web/static/images').glob('**/*') if file.is_file()]
     files += [file for file in Path('src/web/static/css').glob('**/*') if file.is_file()]

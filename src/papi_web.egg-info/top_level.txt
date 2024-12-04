@@ -1,7 +1,0 @@
-chessevent
-common
-custom
-data
-database
-ffe
-web
