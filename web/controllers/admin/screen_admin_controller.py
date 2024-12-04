@@ -126,7 +126,7 @@ class ScreenAdminController(AbstractEventAdminController):
         results_tournament_ids: list[int] | None = None
         background_image: str | None = None
         background_color: str | None = None
-        message_default: bool | None = None
+        message_default: bool = True
         message_text: str | None = None
         match action:
             case 'create':

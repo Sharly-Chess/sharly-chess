@@ -79,7 +79,7 @@ class RotatorAdminController(AbstractEventAdminController):
                 raise ValueError(f'action=[{action}]')
         public: bool | None = None
         delay: int | None = None
-        message_default: bool | None = None
+        message_default: bool = True
         message_text: str | None = None
         screen_ids: list[int] | None = None
         family_ids: list[int] | None = None
@@ -167,6 +167,7 @@ class RotatorAdminController(AbstractEventAdminController):
                         case 'create':
                             data['type'] = ''
                             data['public'] = WebContext.value_to_form_data(True)
+                            data['message_text_checkbox'] = WebContext.value_to_form_data(True)
                             data['uniq_id'] = ''
                         case 'delete':
                             pass

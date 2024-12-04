@@ -109,7 +109,7 @@ class FamilyAdminController(AbstractEventAdminController):
         last: int | None = None
         parts: int | None = None
         number: int | None = None
-        message_default: bool | None = None
+        message_default: bool = True
         message_text: str | None = None
         match action:
             case 'delete':
