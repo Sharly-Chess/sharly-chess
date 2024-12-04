@@ -56,9 +56,7 @@ def build_exe():
     ]
     files: list[Path] = []
     web_dir = Path('src') / 'web'
-    template_files = [file for file in Path('src/web/templates').glob('**/*') if file.is_file()]
-    print(template_files)
-    files += template_files
+    files += [file for file in Path('src/web/templates').glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
     files += [file for file in Path('src/web/static/images').glob('**/*') if file.is_file()]
     files += [file for file in Path('src/web/static/css').glob('**/*') if file.is_file()]
@@ -136,7 +134,7 @@ def create_project():
     custom_dir.mkdir(exist_ok=True)
     target_file: Path = PROJECT_DIR / 'server.bat'
     logger.info(f'Creating batch file {target_file}...')
-    with open(target_file, 'wt') as f:
+    with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Démarrage du serveur Papi-web, veuillez patienter...\n'
                 f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
@@ -144,7 +142,7 @@ def create_project():
                 f'pause\n')
     target_file = PROJECT_DIR / 'ffe.bat'
     logger.info(f'Creating batch file {target_file}...')
-    with open(target_file, 'wt') as f:
+    with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Connexion de Papi-web au serveur fédéral, veuillez patienter...\n'
                 f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
@@ -152,7 +150,7 @@ def create_project():
                 f'pause\n')
     target_file = PROJECT_DIR / 'chessevent.bat'
     logger.info(f'Creating batch file {target_file}...')
-    with open(target_file, 'wt') as f:
+    with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Connexion de Papi-web à Chess Event, veuillez patienter...\n'
                 f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'

@@ -175,7 +175,7 @@ class PapiWebConfig(metaclass=Singleton):
 
     custom_path: Path = Path().absolute() / 'custom'
 
-    embedded_custom_path: Path = Path(__file__).resolve().parent.parent / 'custom'
+    embedded_custom_path: Path = Path(__file__).resolve().parents[1] / 'custom'
 
     default_papi_path: Path = Path() / 'papi'
 

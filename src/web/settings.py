@@ -1,6 +1,7 @@
 from gettext import gettext, ngettext
 from os import urandom
 from pathlib import Path
+import sys
 from typing import Sequence
 
 from jinja2 import Environment
@@ -29,12 +30,21 @@ from web.controllers.user.tournament_user_controller import CheckInUserControlle
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+if getattr(sys, 'frozen', False):
+    template_dir = Path(sys._MEIPASS, 'src/web/templates')
+    static_files_base_dir = Path(sys._MEIPASS, 'src/web/static')
+    embedded_custom_path = Path(sys._MEIPASS, 'src/custom')
+else:
+    template_dir = BASE_DIR / 'web' / 'templates'
+    static_files_base_dir = BASE_DIR / 'web' / 'static'
+    embedded_custom_path = PapiWebConfig.embedded_custom_path
+
 static_files_folders = [
-    BASE_DIR / 'web' / 'static',
+    static_files_base_dir,
     # a direct web access to these folders is not needed at this time (2.4.11)
     # since the background images are delivered by the /background URL.
-    # PapiWebConfig.custom_path,
-    # PapiWebConfig.embedded_custom_path,
+    #PapiWebConfig.custom_path,
+    embedded_custom_path,
 ]
 
 static_files_router: Router = create_static_files_router(
@@ -78,7 +88,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
 
 # create the Jinja config that will be passed to the Litestar app
 template_config: TemplateConfig = TemplateConfig(
-    directory=BASE_DIR / 'web' / 'templates',
+    directory=template_dir,
     engine=JinjaTemplateEngine,
     # engine_callback=register_template_callables,
 )
