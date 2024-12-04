@@ -196,7 +196,7 @@ class ScreenAdminController(AbstractEventAdminController):
                     case _:
                         raise ValueError(f'type=[{web_context.admin_screen.type}]')
                 field = 'message_text'
-                message_default = WebContext.form_data_to_bool(data, field + '_checkbox')
+                message_default = WebContext.form_data_to_bool(data, field + '_checkbox', False)
                 if message_default:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
