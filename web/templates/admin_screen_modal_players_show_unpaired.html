@@ -1,29 +1,22 @@
-<h3>
-    Affichage
-</h3>
-<div class="row">
-    <div class="col-6">
-        {% with id='players-show-unpaired', name='players_show_unpaired' %}
-            <label for="{{ id }}" class="form-label">Affichage des joueur·euses non apparié·es :</label>
-            <select
-                    name="{{ name }}"
-                    id="{{ id }}"
-                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                    aria-describedby="{{ id }}-help {{ id }}-error" >
-                {% for value, text in players_show_unpaired_options.items() %}
-                    <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
-                        {{ text }}
-                    </option>
-                {% endfor %}
-            </select>
-            <div id="{{ id }}-help" class="form-text">
-              Si les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye.
-            </div>
-            {% if name in errors %}
-                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                    {{ errors[name] }}
-                </div>
-            {% endif %}
-        {% endwith %}
+{% with id='players-show-unpaired', name='players_show_unpaired' %}
+    <label for="{{ id }}" class="form-label">Affichage des joueur·euses non apparié·es :</label>
+    <select
+            name="{{ name }}"
+            id="{{ id }}"
+            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+            aria-describedby="{{ id }}-help {{ id }}-error" >
+        {% for value, text in players_show_unpaired_options.items() %}
+            <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
+                {{ text }}
+            </option>
+        {% endfor %}
+    </select>
+    <div id="{{ id }}-help" class="form-text">
+      Si les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye.
     </div>
-</div>
+    {% if name in errors %}
+        <div id="{{ id }}-error" class="form-text invalid-feedback">
+            {{ errors[name] }}
+        </div>
+    {% endif %}
+{% endwith %}

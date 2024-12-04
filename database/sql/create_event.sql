@@ -19,7 +19,7 @@ CREATE TABLE `info` (
     `stop` FLOAT NOT NULL,
     `public` INTEGER,
     `path` TEXT,
-    `hide_background_image` INTEGER,
+    `hide_background_image` INTEGER DEFAULT 0,
     `background_image` TEXT,
     `background_color` TEXT,
     `update_password` TEXT,
@@ -27,6 +27,9 @@ CREATE TABLE `info` (
     `rules` TEXT,
     `timer_colors` TEXT,
     `timer_delays` TEXT,
+    `message_text` TEXT,
+    `message_color` TEXT,
+    `message_background_color` TEXT,
     `last_update` FLOAT NOT NULL
 );
 
@@ -139,6 +142,8 @@ CREATE TABLE `screen` (
     `results_tournament_ids` TEXT,
     `background_image` TEXT,
     `background_color` TEXT,
+    `message_default` INTEGER NOT NULL DEFAULT 1,
+    `message_text` TEXT,
     `last_update` FLOAT NOT NULL,
     PRIMARY KEY(`id` AUTOINCREMENT),
     UNIQUE(`uniq_id`),
@@ -179,6 +184,8 @@ CREATE TABLE `family` (
     `last` INTEGER,
     `parts` INTEGER,
     `number` INTEGER,
+    `message_default` INTEGER NOT NULL DEFAULT 1,
+    `message_text` TEXT,
     `last_update` FLOAT NOT NULL,
     PRIMARY KEY(`id` AUTOINCREMENT),
     UNIQUE(`uniq_id`),
@@ -193,6 +200,8 @@ CREATE TABLE `rotator` (
     `screen_ids` TEXT,
     `family_ids` TEXT,
     `delay` INTEGER,
+    `message_default` INTEGER NOT NULL DEFAULT 1,
+    `message_text` TEXT,
     PRIMARY KEY(`id` AUTOINCREMENT),
     UNIQUE(`uniq_id`)
 );

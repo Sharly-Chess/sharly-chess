@@ -2,6 +2,9 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.4.16 - 4 décembre 2024
+- Ajout de bandeaux d'alerte pour faire passer rapidement de l'information sur les écrans publics
+
 ## Version 2.4.15 - 1er décembre 2024
 - Correction d'un bug dans la gestion des erreurs
 - Correction d'un bug dans la création des bases d'exemple

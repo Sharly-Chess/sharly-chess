@@ -126,6 +126,8 @@ class ScreenAdminController(AbstractEventAdminController):
         results_tournament_ids: list[int] | None = None
         background_image: str | None = None
         background_color: str | None = None
+        message_default: bool | None = None
+        message_text: str | None = None
         match action:
             case 'create':
                 if type != ScreenType.Image:
@@ -193,6 +195,14 @@ class ScreenAdminController(AbstractEventAdminController):
                         background_color = cls._admin_validate_background_color_update_data(data, errors)
                     case _:
                         raise ValueError(f'type=[{web_context.admin_screen.type}]')
+                field = 'message_text'
+                message_default = WebContext.form_data_to_bool(data, field + '_checkbox')
+                if message_default:
+                    # do not change the original value when the default message is used
+                    # (needed since disabled fields are not submitted)
+                    message_text = web_context.admin_screen.stored_screen.message_text
+                else:
+                    message_text = WebContext.form_data_to_str(data, field)
             case _:
                 raise ValueError(f'action=[{action}]')
         return StoredScreen(
@@ -213,6 +223,8 @@ class ScreenAdminController(AbstractEventAdminController):
             results_tournament_ids=results_tournament_ids,
             background_image=background_image,
             background_color=background_color,
+            message_default=message_default,
+            message_text=message_text,
             errors=errors,
         )
 
@@ -357,6 +369,10 @@ class ScreenAdminController(AbstractEventAdminController):
                                         web_context.admin_screen.stored_screen.background_color is None)
                                 case _:
                                     raise ValueError(f'action={action}')
+                            data['message_text_checkbox'] = WebContext.value_to_form_data(
+                                web_context.admin_screen.stored_screen.message_default)
+                            data['message_text'] = WebContext.value_to_form_data(
+                                web_context.admin_screen.stored_screen.message_text)
                         case 'create':
                             data['type'] = ''
                             data['public'] = WebContext.value_to_form_data(True)

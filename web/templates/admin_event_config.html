@@ -94,9 +94,20 @@
         <tr>
             <th scope="row" class="text-nowrap">Paramètres par défaut des chronomètres</th>
             <td class="text-nowrap">
-                <div style="background-color: {{ admin_event.timer_colors[1] }}">&nbsp;{{ admin_event.timer_delays[1] }} minutes avant&nbsp;</div>
-                <div style="background-color: {{ admin_event.timer_colors[2] }}">&nbsp;{{ admin_event.timer_delays[2] }} minutes avant&nbsp;</div>
-                <div style="background-color: {{ admin_event.timer_colors[3] }}">&nbsp;{{ admin_event.timer_delays[3] }} minutes après&nbsp;</div>
+                <div class="px-2" style="background-color: {{ admin_event.timer_colors[1] }}">{{ admin_event.timer_delays[1] }} minutes avant</div>
+                <div class="px-2" style="background-color: {{ admin_event.timer_colors[2] }}">{{ admin_event.timer_delays[2] }} minutes avant</div>
+                <div class="px-2" style="background-color: {{ admin_event.timer_colors[3] }}">{{ admin_event.timer_delays[3] }} minutes après</div>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">Message d'alerte</th>
+            <td class="">
+                <div
+                        class="px-2 alert-message event-alert-message"
+                        style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+                >
+                    {% if admin_event.message_text %}{{ admin_event.message_text }}{% else %}<span class="fst-italic">Aucun message d'alerte</span>{% endif %}</div>
             </td>
             <td></td>
         </tr>

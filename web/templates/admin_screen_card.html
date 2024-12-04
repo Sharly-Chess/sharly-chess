@@ -62,6 +62,16 @@
                 Couleur de fond : {% if screen.stored_screen.background_color %}{{ screen.stored_screen.background_color }}{% else %}<span class="fst-italic text-danger">par défaut</span>{% endif %}
             </div>
         {% endif %}
+        {% if screen.message_text %}
+            <div
+                    class="px-2 alert-message screen-alert-message"
+                    style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+            >
+                {{ screen.message_text }} {% if screen.message_default %}<span class="fst-italic">(par défaut)</span>{% endif %}
+            </div>
+        {% else %}
+            <div class="fst-italic">Aucun message d'alerte {% if screen.message_default %}<span class="fst-italic">(par défaut)</span>{% endif %}</div>
+        {% endif %}
         <hr/>
     {% endif %}
     <div class="mb-2">

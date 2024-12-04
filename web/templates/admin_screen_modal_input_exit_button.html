@@ -1,29 +1,22 @@
-<h3>
-    Affichage
-</h3>
-<div class="row">
-    <div class="col-6">
-        {% with id='input-exit-button', name='input_exit_button' %}
-            <label for="{{ id }}" class="form-label">Affichage d'un bouton de sortie de l'écran :</label>
-            <select
-                    name="{{ name }}"
-                    id="{{ id }}"
-                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                    aria-describedby="{{ id }}-help {{ id }}-error" >
-                {% for value, text in input_exit_button_options.items() %}
-                    <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
-                        {{ text }}
-                    </option>
-                {% endfor %}
-            </select>
-            <div id="{{ id }}-help" class="form-text">
-              En cachant le bouton de sortie de l'écran, vous empêchez les utilisateur·ices de sortir accidentellement des écrans de saisie.
-            </div>
-            {% if name in errors %}
-                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                    {{ errors[name] }}
-                </div>
-            {% endif %}
-        {% endwith %}
+{% with id='input-exit-button', name='input_exit_button' %}
+    <label for="{{ id }}" class="form-label">Affichage d'un bouton de sortie de l'écran :</label>
+    <select
+            name="{{ name }}"
+            id="{{ id }}"
+            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+            aria-describedby="{{ id }}-help {{ id }}-error" >
+        {% for value, text in input_exit_button_options.items() %}
+            <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
+                {{ text }}
+            </option>
+        {% endfor %}
+    </select>
+    <div id="{{ id }}-help" class="form-text">
+      En cachant le bouton de sortie de l'écran, vous empêchez les utilisateur·ices de sortir accidentellement des écrans de saisie.
     </div>
-</div>
+    {% if name in errors %}
+        <div id="{{ id }}-error" class="form-text invalid-feedback">
+            {{ errors[name] }}
+        </div>
+    {% endif %}
+{% endwith %}

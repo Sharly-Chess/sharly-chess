@@ -1,0 +1,38 @@
+{% with
+    id='message-text',
+    name='message_text',
+    checkbox_id='message-text-checkbox',
+    checkbox_name='message_text_checkbox'
+%}
+    <label for="{{ id }}" class="form-label">Message d'alerte :</label>
+    <input
+            name="{{ checkbox_name }}"
+            type="checkbox" id="{{ checkbox_id }}"
+            aria-describedby="{{ id }}-help {{ id }}-error"
+            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> par défaut
+    <input
+            name="{{ name }}"
+            type="text" id="{{ id }}"
+            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+            aria-describedby="{{ id }}-help {{ id }}-error"
+            placeholder="Exemple : Merci aux joueur·euses de bien vouloir se mettre en place !"
+            value="{{ data[name] }}"
+            {% if data[checkbox_name] == 'on' %}disabled{% endif %} />
+    <div id="{{ id }}-help" class="form-text">
+        {{ message_help_text }}
+    </div>
+    {% if name in errors %}
+        <div id="{{ id }}-error" class="form-text invalid-feedback">
+            {{ errors[name] }}
+        </div>
+    {% endif %}
+    <script>
+        $('#{{ checkbox_id }}').click(function() {
+            if ($(this).is(':checked')) {
+                $('#{{ id }}').prop('disabled', true);
+            } else {
+                $('#{{ id }}').prop('disabled', false);
+            }
+        });
+    </script>
+{% endwith %}

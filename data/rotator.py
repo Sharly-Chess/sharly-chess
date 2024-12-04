@@ -42,6 +42,14 @@ class Rotator:
         return self.stored_rotator.delay if self.stored_rotator.delay is not None \
             else PapiWebConfig.default_rotator_delay
 
+    @property
+    def message_default(self) -> bool:
+        return self.stored_rotator.message_default
+
+    @property
+    def message_text(self) -> str | None:
+        return self.event.message_text if self.message_default else self.stored_rotator.message_text
+
     @cached_property
     def screens(self) -> list[Screen]:
         screens: list[Screen] = []

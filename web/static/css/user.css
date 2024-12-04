@@ -10,6 +10,25 @@
 ###########################################################
 */
 
+.alert-message-text {
+  display: inline-block;
+  padding-right: 0;
+  padding-left: 100%;
+  white-space: nowrap;
+  animation-name: scroll-rtl;
+  animation-duration: 15s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes scroll-rtl {
+  0% {
+    transform: translate3d(0,0,0);
+  }
+  100% {
+    transform: translate3d(-200%,0,0);
+  }
+}
 /*
 ###########################################################
 # INPUT SCREENS - LOGIN MODAL
