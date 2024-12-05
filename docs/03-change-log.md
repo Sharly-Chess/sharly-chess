@@ -2,7 +2,7 @@
 
 # Papi-web - ChangeLog
 
-## Version 2.4.16 - 4 décembre 2024
+## Version 2.4.16 - 5 décembre 2024
 - Ajout de bandeaux d'alerte pour faire passer rapidement de l'information sur les écrans publics
 
 ## Version 2.4.15 - 1er décembre 2024
