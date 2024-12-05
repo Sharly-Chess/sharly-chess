@@ -2,6 +2,9 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.4.17 - ?
+- Masquage de tous les champs de saisie des mots de passe
+
 ## Version 2.4.16 - 5 décembre 2024
 - Ajout de bandeaux d'alerte pour faire passer rapidement de l'information sur les écrans publics
 

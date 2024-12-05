@@ -141,11 +141,25 @@
                         </div>
                         <div class="mb-3">
                             <label for="event-password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="event-password" aria-describedby="event-password-help" name="password">
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="event-password" aria-describedby="event-password-help" name="password">
+                                <i
+                                        id="toggle-password"
+                                        class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
+                            </div>
                             <div id="event-password-help" class="form-text">Veuillez vous rapprocher de l'organisateur pour obtenir le code d'accès.</div>
                         </div>
                         <button type="submit" class="btn btn-primary">Connexion</button>
                     </form>
+                    <script>
+                        $('#toggle-password').on('click', function(event) {
+                            event.preventDefault();
+                            hide = $('#event-password').attr("type") == 'text'
+                            $('#event-password').attr('type', hide ? 'password' : 'text');
+                            $('#toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
+                            $('#toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
+                        });
+                    </script>
                 </div>
                 <!--div class="modal-footer d-block">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

@@ -96,13 +96,18 @@
                             {% with id='password', name='password' %}
                                 <div>
                                     <label for="{{ id }}" class="form-label">Mot de passe :</label>
-                                    <input
-                                            name="{{ name }}"
-                                            type="text" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="Exemple : mot_de_passe"
-                                            value="{{ data[name] }}" />
+                                    <div class="input-group">
+                                        <input
+                                                name="{{ name }}"
+                                                type="password" id="{{ id }}"
+                                                class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                                aria-describedby="{{ id }}-help {{ id }}-error"
+                                                placeholder="Exemple : mot_de_passe"
+                                                value="{{ data[name] }}" />
+                                        <i
+                                                id="toggle-password"
+                                                class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
+                                    </div>
                                     <div id="{{ id }}-help" class="form-text">
                                       Le mot de passe utilisé pour se connecter sur la plateforme ChessEvent.
                                     </div>
@@ -112,6 +117,15 @@
                                         </div>
                                     {% endif %}
                                 </div>
+                                <script>
+                                    $('#toggle-password').on('click', function(event) {
+                                        event.preventDefault();
+                                        hide = $('#{{ id }}').attr("type") == 'text'
+                                        $('#{{ id }}').attr('type', hide ? 'password' : 'text');
+                                        $('#toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
+                                        $('#toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
+                                    });
+                                </script>
                             {% endwith %}
                         </div>
                         <div class="col-4">
