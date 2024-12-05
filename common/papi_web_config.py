@@ -159,7 +159,7 @@ class PapiWebConfig(metaclass=Singleton):
     def ffe_upload_delay(self) -> int:
         return self.__ffe_upload_delay
 
-    version: Version = Version('2.4.15')
+    version: Version = Version('2.4.16')
 
     url: str = 'https://github.com/papi-web-org/papi-web'
 
@@ -255,6 +255,10 @@ class PapiWebConfig(metaclass=Singleton):
             2: 5,
             3: 10,
         }
+
+    default_message_color: str = '#FF0000'
+
+    default_message_background_color: str = '#FFFF00'
 
     default_input_exit_button: bool = True
 

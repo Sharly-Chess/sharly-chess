@@ -113,6 +113,8 @@ class StoredScreen:
     stored_screen_sets: list[StoredScreenSet] = field(default_factory=list[StoredScreenSet])
     last_update: float = 0.0
     public: bool = True
+    message_default: bool = True
+    message_text: str | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -135,6 +137,8 @@ class StoredFamily:
     parts: int | None
     number: int | None
     public: bool = True
+    message_default: bool = True
+    message_text: str | None = None
     last_update: float = 0.0
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
@@ -147,6 +151,8 @@ class StoredRotator:
     screen_ids: list[int] | None
     delay: int | None
     public: bool = True
+    message_default: bool = True
+    message_text: str | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -167,6 +173,9 @@ class StoredEvent:
     version: str | None = None
     timer_colors: dict[int, str | None] = None
     timer_delays: dict[int, int | None] = None
+    message_text: str | None = None
+    message_color: str | None = None
+    message_background_color: str | None = None
     last_update: float = 0.0
     stored_chessevents: list[StoredChessEvent] = field(default_factory=list[StoredChessEvent])
     stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])

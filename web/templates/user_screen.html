@@ -7,7 +7,7 @@
         {% if screen.type != 'input' or screen.input_exit_button %}
             <button
                     id="user-screen-exit-button"
-                    class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2"
+                    class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-1"
                     hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab) }}"
                     preload
                     hx-target="body"
@@ -26,7 +26,7 @@
         {% if not rotator %}
             {% set menu_screens = screen.admin_menu_screens if admin_auth else screen.public_menu_screens %}
             {% if menu_screens %}
-                <div id="#screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
+                <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
                     {% for entry in menu_screens %}
                         {% if entry.menu_label is not none %}
                             <a
@@ -64,6 +64,23 @@
                         hx-indicator="#please-wait"
                 ></div>
             {% endif %}
+        {% endif %}
+        {% set message_text = rotator.message_text if (rotator and screen.message_default) else screen.message_text %}
+        {% if message_text %}
+            <div class="alert-message-wrapper">
+                <div
+                        id="alert-message"
+                        class="row alert-message w-100 m-0 fw-bold position-fixed bottom-0 overflow-hidden"
+                        style="background-color: {{ screen.event.message_background_color }}; color: {{ screen.event.message_color }}"
+                >
+                    <h2
+                            id="alert-message-text"
+                            class="col-12 alert-message-text text-start fw-bold"
+                    >
+                        {{ message_text }}
+                    </h2>
+                </div>
+            </div>
         {% endif %}
         {{ copyright_script(show=screen.type != 'image') }}
     </div>

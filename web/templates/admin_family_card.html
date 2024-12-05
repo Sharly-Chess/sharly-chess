@@ -50,6 +50,16 @@
                 Non apparié·es : {% if family.players_show_unpaired %}Oui{% else %}Non{% endif %} {% if family.stored_family.players_show_unpaired is none %}(par défaut){% endif %}
             </div>
         {% endif %}
+        {% if family.message_text %}
+            <div
+                    class="px-2 alert-message family-alert-message"
+                    style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+            >
+                {{ family.message_text }} {% if family.message_default %}<span class="fst-italic">(par défaut)</span>{% endif %}
+            </div>
+        {% else %}
+            <div class="fst-italic">Aucun message d'alerte {% if family.message_default %}<span class="fst-italic">(par défaut)</span>{% endif %}</div>
+        {% endif %}
         <hr/>
     {% endif %}
     <div class="mb-2">

@@ -308,6 +308,9 @@ class EventAdminController(AbstractEventAdminController):
         timer_colors: dict[int, str | None] = {i: None for i in range(1, 4)}
         timer_color_checkboxes: dict[int, bool | None] = {i: None for i in range(1, 4)}
         timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
+        message_text: str | None = None
+        message_color: str | None = None
+        message_background_color: str | None = None
         match action:
             case 'update':
                 path = WebContext.form_data_to_str(data, 'path')
@@ -344,12 +347,26 @@ class EventAdminController(AbstractEventAdminController):
                         try:
                             timer_colors[i] = WebContext.form_data_to_rgb(data, field)
                         except ValueError:
-                            errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#HHHHHH]).'
+                            errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
                     field: str = f'delay_{i}'
                     try:
                         timer_delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
                     except ValueError:
                         errors[field] = f'Le délai [{data[field]}] n\'est pas valide (attendu un entier positif).'
+                field: str = 'message_text'
+                message_text = WebContext.form_data_to_str(data, field)
+                field: str = 'message_color'
+                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+                    try:
+                        message_color = WebContext.form_data_to_rgb(data, field)
+                    except ValueError:
+                        errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
+                field: str = 'message_background_color'
+                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+                    try:
+                        message_background_color = WebContext.form_data_to_rgb(data, field)
+                    except ValueError:
+                        errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
             case 'clone':
                 path = web_context.admin_event.stored_event.path
                 update_password = web_context.admin_event.stored_event.update_password
@@ -360,6 +377,9 @@ class EventAdminController(AbstractEventAdminController):
                 rules = web_context.admin_event.stored_event.rules
                 timer_colors = web_context.admin_event.stored_event.timer_colors
                 timer_delays = web_context.admin_event.stored_event.timer_delays
+                message_text = web_context.admin_event.stored_event.message_text
+                message_color = web_context.admin_event.stored_event.message_color
+                message_background_color = web_context.admin_event.stored_event.message_background_color
             case 'delete':
                 pass
             case _:
@@ -379,6 +399,9 @@ class EventAdminController(AbstractEventAdminController):
             rules=rules,
             timer_colors=timer_colors,
             timer_delays=timer_delays,
+            message_text=message_text,
+            message_color=message_color,
+            message_background_color=message_background_color,
             errors=errors,
         )
 
@@ -493,6 +516,16 @@ class EventAdminController(AbstractEventAdminController):
                                     web_context.admin_event.stored_event.timer_colors[i] is None)
                                 data[f'delay_{i}'] = WebContext.value_to_form_data(
                                     web_context.admin_event.stored_event.timer_delays[i])
+                            data['message_text'] = WebContext.value_to_form_data(
+                                web_context.admin_event.stored_event.message_text)
+                            data['message_color_checkbox'] = WebContext.value_to_form_data(
+                                web_context.admin_event.stored_event.message_color is None)
+                            data['message_color'] = WebContext.value_to_form_data(
+                                web_context.admin_event.message_color)
+                            data['message_background_color_checkbox'] = WebContext.value_to_form_data(
+                                web_context.admin_event.stored_event.message_background_color is None)
+                            data['message_background_color'] = WebContext.value_to_form_data(
+                                web_context.admin_event.message_background_color)
                         case 'delete':
                             pass
                         case _:
