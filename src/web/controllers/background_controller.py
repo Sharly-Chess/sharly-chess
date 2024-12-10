@@ -27,8 +27,10 @@ class BackgroundWebContext(WebContext):
         }
         if not image:
             self.background['url'] = ''
-        elif image.startswith('/') or validators.url(image):
+        elif validators.url(image) or image.startswith('/'):
             self.background['url'] = f'url({image})'
+        # elif image.startswith('/'):
+        #     self.background['url'] = f'url({image})'
         else:
             self.background['url'] = f'url({inline_image_url(image)})'
 

@@ -16,10 +16,11 @@ basename: str = f'papi-web-{PapiWebConfig.version}'
 EXPORT_DIR: Path = Path('export')
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
-EXE_FILENAME: str = basename + '.exe'
+EXE_FILENAME: str = basename
 SPEC_FILE: Path = Path(f'{basename}.spec')
 TEST_DIR: Path = Path('test')
-ICON_FILE: Path = Path('src') / 'web' / 'static' / 'images' / 'papi-web.ico'
+SOURCE_DIR: Path = Path('src')
+ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 
 
 def clean(clean_zip: bool):
@@ -55,12 +56,12 @@ def build_exe():
         'papi_web.py',
     ]
     files: list[Path] = []
-    web_dir = Path('src') / 'web'
-    files += [file for file in Path('src/web/templates').glob('**/*') if file.is_file()]
+    web_dir = SOURCE_DIR / 'web'
+    files += [file for file in (web_dir / 'templates').glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
-    files += [file for file in Path('src/web/static/images').glob('**/*') if file.is_file()]
-    files += [file for file in Path('src/web/static/css').glob('**/*') if file.is_file()]
-    files += [file for file in Path('src/web/static/js').glob('**/*') if file.is_file()]
+    files += [file for file in Path(static_dir, 'images').glob('**/*') if file.is_file()]
+    files += [file for file in Path(static_dir, 'css').glob('**/*') if file.is_file()]
+    files += [file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()]
     lib_dir = static_dir / 'lib'
     bootstrap_dir = lib_dir / 'bootstrap' / f'bootstrap-{PapiWebConfig.bootstrap_version}-dist'
     files += [
@@ -96,24 +97,24 @@ def build_exe():
         file for file in jstree_dir.glob('**/*')
         if file.is_file()
     ]
-    sql_dir: Path = Path('src') / 'database' / 'sql'
+    sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [sql_dir / 'create_event.sql', ]
-    yml_dir: Path = Path('src') / 'database' / 'yml'
+    yml_dir: Path = SOURCE_DIR / 'database' / 'yml'
     files += list(yml_dir.glob('*.yml'))
-    custom_dir: Path = Path('src') / 'custom'
+    custom_dir: Path = SOURCE_DIR / 'custom'
     files += [
         file for file in custom_dir.glob('**/*')
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file};{file.parent}')
+        pyinstaller_params.append(f'--add-data={file}:{file.parent}')
     files: list[Path] = []
     files += [
-        file for file in Path('venv/Lib/site-packages/litestar/middleware/exceptions/templates').glob('**/*')
+        file for file in Path('venv/lib/site-packages/litestar/middleware/exceptions/templates').glob('**/*')
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file};litestar/middleware/exceptions/templates')
+        pyinstaller_params.append(f'--add-data={file}:litestar/middleware/exceptions/templates')
     run(pyinstaller_params)
 
 

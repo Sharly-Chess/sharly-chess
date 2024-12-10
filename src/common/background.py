@@ -24,7 +24,7 @@ def inline_image_url(image: str | None) -> str:
         return image
     file: Path = PapiWebConfig.custom_path / image
     if not file.exists():
-        file: Path = PapiWebConfig.embedded_custom_path / image
+        file: Path = Path('src') / PapiWebConfig.embedded_custom_path / image
         if not file.exists():
             logger.warning(f'L\'image [{file}] n\'existe pas.')
             return PapiWebConfig.error_background_image
