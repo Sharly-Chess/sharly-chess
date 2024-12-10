@@ -181,7 +181,7 @@ class PapiWebConfig(metaclass=Singleton):
 
     papi_ext: str = 'papi'
 
-    _database_path: Path = Path(__file__).resolve().parent / '..' / 'database'
+    _database_path: Path = Path(__file__).resolve().parents[1] / 'src/database'
 
     database_sql_path: Path = _database_path / 'sql'
 
