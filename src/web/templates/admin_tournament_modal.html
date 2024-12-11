@@ -188,13 +188,18 @@
                         <div class="col-6">
                             {% with id='ffe-password', name='ffe_password' %}
                                 <label for="{{ id }}" class="form-label">Mot de passe de connexion au site fédéral :</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : KYNPRTZMHX"
-                                        value="{{ data[name] }}" />
+                                <div class="input-group">
+                                    <input
+                                            name="{{ name }}"
+                                            type="password" id="{{ id }}"
+                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                            aria-describedby="{{ id }}-help {{ id }}-error"
+                                            placeholder="Exemple : KYNPRTZMHX"
+                                            value="{{ data[name] }}" />
+                                    <i
+                                            id="toggle-password"
+                                            class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
+                                </div>
                                 <div id="{{ id }}-help" class="form-text">
                                   Le mot de passe est composé de 10 caractères majuscules, il est utilisé pour se connecter sur le site fédéral et réaliser toutes les opérations d'administration.
                                 </div>
@@ -203,6 +208,15 @@
                                         {{ errors[name] }}
                                     </div>
                                 {% endif %}
+                                <script>
+                                    $('#toggle-password').on('click', function(event) {
+                                        event.preventDefault();
+                                        hide = $('#{{ id }}').attr("type") == 'text'
+                                        $('#{{ id }}').attr('type', hide ? 'password' : 'text');
+                                        $('#toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
+                                        $('#toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
+                                    });
+                                </script>
                             {% endwith %}
                         </div>
                     </div>

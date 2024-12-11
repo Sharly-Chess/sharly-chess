@@ -166,14 +166,14 @@ class Event:
             background_color = self.stored_event.background_color
         return background_color
 
-    @property
+    @cached_property
     def update_password(self) -> str | None:
         update_password: str | None = self.stored_event.update_password
         if not update_password:
             self.add_debug('pas de mot de passe défini pour les écrans de saisie')
         return update_password
 
-    @property
+    @cached_property
     def record_illegal_moves(self) -> int:
         record_illegal_moves: int = PapiWebConfig.default_record_illegal_moves_number
         if self.stored_event.record_illegal_moves is None:
@@ -207,6 +207,18 @@ class Event:
     @property
     def public(self) -> bool:
         return self.stored_event.public
+
+    @property
+    def message_text(self) -> str | None:
+        return self.stored_event.message_text
+
+    @property
+    def message_color(self) -> str:
+        return self.stored_event.message_color or PapiWebConfig.default_message_color
+
+    @property
+    def message_background_color(self) -> str:
+        return self.stored_event.message_background_color or PapiWebConfig.default_message_background_color
 
     @cached_property
     def tournaments_sorted_by_uniq_id(self) -> list[Tournament]:

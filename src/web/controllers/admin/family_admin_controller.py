@@ -109,6 +109,8 @@ class FamilyAdminController(AbstractEventAdminController):
         last: int | None = None
         parts: int | None = None
         number: int | None = None
+        message_default: bool = True
+        message_text: str | None = None
         match action:
             case 'delete':
                 pass
@@ -189,6 +191,14 @@ class FamilyAdminController(AbstractEventAdminController):
                                  'compatibles.'
                     errors['parts'] = error
                     errors['number'] = error
+                field = 'message_text'
+                message_default = WebContext.form_data_to_bool(data, field + '_checkbox', False)
+                if message_default:
+                    # do not change the original value when the default message is used
+                    # (needed since disabled fields are not submitted)
+                    message_text = web_context.admin_family.stored_family.message_text
+                else:
+                    message_text = WebContext.form_data_to_str(data, field)
             case _:
                 raise ValueError(f'action=[{action}]')
         return StoredFamily(
@@ -209,6 +219,8 @@ class FamilyAdminController(AbstractEventAdminController):
             last=last,
             parts=parts,
             number=number,
+            message_default=message_default,
+            message_text=message_text,
             errors=errors,
         )
 
@@ -276,6 +288,10 @@ class FamilyAdminController(AbstractEventAdminController):
                             data['parts'] = WebContext.value_to_form_data(web_context.admin_family.stored_family.parts)
                             data['number'] = WebContext.value_to_form_data(
                                 web_context.admin_family.stored_family.number)
+                            data['message_text_checkbox'] = WebContext.value_to_form_data(
+                                web_context.admin_family.stored_family.message_default)
+                            data['message_text'] = WebContext.value_to_form_data(
+                                web_context.admin_family.stored_family.message_text)
                         case 'create' | 'clone':
                             data['type'] = ''
                             data['public'] = WebContext.value_to_form_data(True)

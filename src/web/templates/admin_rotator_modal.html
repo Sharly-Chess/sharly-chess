@@ -205,6 +205,18 @@
                             </div>
                         </div>
                     </div>
+                    <h3>
+                        Affichage
+                    </h3>
+                    {% with
+                        message_help_text='Lorsqu\'il est défini, le message d\'alerte est utilisé dans le bandeau défilant en bas des écrans de l\'écran rotatif (sauf si un autre message est défini pour les écrans).'
+                    %}
+                        <div class="row">
+                            <div class="col-6">
+                                {% include 'admin_screen_modal_message.html' %}
+                            </div>
+                        </div>
+                    {% endwith %}
                 {% endif %}
             </div>
             <div class="modal-footer d-block">

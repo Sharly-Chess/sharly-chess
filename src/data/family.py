@@ -135,6 +135,14 @@ class Family:
         return self.stored_family.number
 
     @property
+    def message_default(self) -> bool:
+        return self.stored_family.message_default
+
+    @property
+    def message_text(self) -> str | None:
+        return self.event.message_text if self.message_default else self.stored_family.message_text
+
+    @property
     def last_update(self) -> float | None:
         return self.stored_family.last_update
 

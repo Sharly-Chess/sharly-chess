@@ -79,6 +79,8 @@ class RotatorAdminController(AbstractEventAdminController):
                 raise ValueError(f'action=[{action}]')
         public: bool | None = None
         delay: int | None = None
+        message_default: bool = True
+        message_text: str | None = None
         screen_ids: list[int] | None = None
         family_ids: list[int] | None = None
         match action:
@@ -98,6 +100,14 @@ class RotatorAdminController(AbstractEventAdminController):
                     field = f'family_{family_id}'
                     if WebContext.form_data_to_bool(data, field):
                         family_ids.append(family_id)
+                field = 'message_text'
+                message_default = WebContext.form_data_to_bool(data, field + '_checkbox', False)
+                if message_default and web_context.admin_rotator:
+                    # do not change the original value when the default message is used
+                    # (needed since disabled fields are not submitted)
+                    message_text = web_context.admin_rotator.stored_rotator.message_text
+                else:
+                    message_text = WebContext.form_data_to_str(data, field)
             case 'delete':
                 pass
             case _:
@@ -109,6 +119,8 @@ class RotatorAdminController(AbstractEventAdminController):
             delay=delay,
             screen_ids=screen_ids,
             family_ids=family_ids,
+            message_default=message_default,
+            message_text=message_text,
             errors=errors,
         )
 
@@ -142,6 +154,10 @@ class RotatorAdminController(AbstractEventAdminController):
                                 web_context.admin_rotator.stored_rotator.public)
                             data['delay'] = WebContext.value_to_form_data(
                                 web_context.admin_rotator.stored_rotator.delay)
+                            data['message_text_checkbox'] = WebContext.value_to_form_data(
+                                web_context.admin_rotator.stored_rotator.message_default)
+                            data['message_text'] = WebContext.value_to_form_data(
+                                web_context.admin_rotator.stored_rotator.message_text)
                             for screen_id in web_context.admin_event.basic_screens_by_id:
                                 data[f'screen_{screen_id}'] = WebContext.value_to_form_data(
                                     screen_id in web_context.admin_rotator.stored_rotator.screen_ids)
@@ -151,6 +167,7 @@ class RotatorAdminController(AbstractEventAdminController):
                         case 'create':
                             data['type'] = ''
                             data['public'] = WebContext.value_to_form_data(True)
+                            data['message_text_checkbox'] = WebContext.value_to_form_data(True)
                             data['uniq_id'] = ''
                         case 'delete':
                             pass

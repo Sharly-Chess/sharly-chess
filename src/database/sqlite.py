@@ -654,6 +654,10 @@ class EventDatabase(SQLiteDatabase):
             rules=row.get('rules', None),
             timer_colors=self.set_dict_int_keys(self.load_json_from_database_field(row['timer_colors'])),
             timer_delays=self.set_dict_int_keys(self.load_json_from_database_field(row['timer_delays'])),
+            # needed to open event databases when version < 2.4.16 before checking the version
+            message_text=row.get('message_text', None),
+            message_color=row.get('message_color', None),
+            message_background_color=row.get('message_background_color', None),
             last_update=row['last_update'],
         )
 
@@ -734,8 +738,17 @@ class EventDatabase(SQLiteDatabase):
             self.set_version(target_version)
             self.commit()
             logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
-        target_version = Version('2.4.14')
-        if self.version.public in ['2.4.13', ]:
+        target_version = Version('2.4.16')
+        if self.version.public in ['2.4.13', '2.4.14', '2.4.15', ]:
+            self._execute('ALTER TABLE `info` ADD `message_text` TEXT')
+            self._execute('ALTER TABLE `info` ADD `message_color` TEXT')
+            self._execute('ALTER TABLE `info` ADD `message_background_color` TEXT')
+            self._execute('ALTER TABLE `screen` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+            self._execute('ALTER TABLE `screen` ADD `message_text` TEXT')
+            self._execute('ALTER TABLE `family` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+            self._execute('ALTER TABLE `family` ADD `message_text` TEXT')
+            self._execute('ALTER TABLE `rotator` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+            self._execute('ALTER TABLE `rotator` ADD `message_text` TEXT')
             self.set_version(target_version)
             self.commit()
             logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
@@ -765,15 +778,16 @@ class EventDatabase(SQLiteDatabase):
         `stored_event`."""
         fields: list[str] = [
             'name', 'start', 'stop', 'public', 'path', 'hide_background_image', 'background_image', 'background_color',
-            'update_password', 'record_illegal_moves', 'rules', 'timer_colors', 'timer_delays', 'last_update',
+            'update_password', 'record_illegal_moves', 'rules', 'timer_colors', 'timer_delays', 'message_text',
+            'message_color', 'message_background_color', 'last_update',
         ]
         params: tuple = (
             stored_event.name, stored_event.start, stored_event.stop, stored_event.public, stored_event.path,
             stored_event.hide_background_image, stored_event.background_image, stored_event.background_color,
             stored_event.update_password, stored_event.record_illegal_moves, stored_event.rules,
             self.dump_to_json_database_timer_colors(stored_event.timer_colors),
-            self.dump_to_json_database_timer_delays(stored_event.timer_delays),
-            time.time(),
+            self.dump_to_json_database_timer_delays(stored_event.timer_delays), stored_event.message_text,
+            stored_event.message_color, stored_event.message_background_color, time.time(),
         )
         field_sets = (f"`{f}` = ?" for f in fields)
         self._execute(
@@ -1544,6 +1558,8 @@ class EventDatabase(SQLiteDatabase):
             last=row['last'],
             parts=row['parts'],
             number=row['number'],
+            message_default=cls.load_bool_from_database_field(row['message_default']),
+            message_text=row['message_text'],
             last_update=row['last_update'],
         )
 
@@ -1569,14 +1585,15 @@ class EventDatabase(SQLiteDatabase):
     ) -> StoredFamily:
         fields: list[str] = [
             'uniq_id', 'name', 'type', 'public', 'tournament_id', 'columns', 'menu_link', 'menu_text', 'menu',
-            'timer_id', 'input_exit_button', 'players_show_unpaired', 'first', 'last', 'parts', 'number', 'last_update',
+            'timer_id', 'input_exit_button', 'players_show_unpaired', 'first', 'last', 'parts', 'number',
+            'message_default', 'message_text', 'last_update',
         ]
         params: list = [
             stored_family.uniq_id, stored_family.name, stored_family.type, stored_family.public,
             stored_family.tournament_id, stored_family.columns, stored_family.menu_link, stored_family.menu_text,
             stored_family.menu, stored_family.timer_id, stored_family.input_exit_button,
             stored_family.players_show_unpaired, stored_family.first, stored_family.last, stored_family.parts,
-            stored_family.number, time.time(),
+            stored_family.number, stored_family.message_default, stored_family.message_text, time.time(),
         ]
         if stored_family.id is None:
             protected_fields = [f"`{f}`" for f in fields]
@@ -1655,6 +1672,8 @@ class EventDatabase(SQLiteDatabase):
             results_tournament_ids=cls.load_json_from_database_field(row['results_tournament_ids']),
             background_image=row['background_image'],
             background_color=row['background_color'],
+            message_default=cls.load_bool_from_database_field(row['message_default']),
+            message_text=row['message_text'],
             last_update=row['last_update'],
         )
 
@@ -1696,7 +1715,7 @@ class EventDatabase(SQLiteDatabase):
         fields: list[str] = [
             'uniq_id', 'name', 'type', 'public', 'input_exit_button', 'players_show_unpaired', 'columns', 'menu_link',
             'menu_text', 'menu', 'timer_id', 'results_limit', 'results_max_age', 'results_tournament_ids',
-            'background_image', 'background_color', 'last_update',
+            'background_image', 'background_color', 'message_default', 'message_text', 'last_update',
         ]
         params: list = [
             stored_screen.uniq_id, stored_screen.name, stored_screen.type,
@@ -1711,6 +1730,7 @@ class EventDatabase(SQLiteDatabase):
             if stored_screen.type == 'results' else None,
             stored_screen.background_image if stored_screen.type == 'image' else None,
             stored_screen.background_color if stored_screen.type == 'image' else None,
+            stored_screen.message_default, stored_screen.message_text,
             time.time(),
         ]
         if stored_screen.id is None:
@@ -1917,6 +1937,8 @@ class EventDatabase(SQLiteDatabase):
             uniq_id=row['uniq_id'],
             public=cls.load_bool_from_database_field(row['public']),
             delay=row['delay'],
+            message_default=cls.load_bool_from_database_field(row['message_default']),
+            message_text=row['message_text'],
             screen_ids=cls.load_json_from_database_field(row['screen_ids']),
             family_ids=cls.load_json_from_database_field(row['family_ids']),
         )
@@ -1941,9 +1963,12 @@ class EventDatabase(SQLiteDatabase):
     def _write_stored_rotator(
             self, stored_rotator: StoredRotator,
     ) -> StoredRotator:
-        fields: list[str] = ['uniq_id', 'public', 'delay', 'screen_ids', 'family_ids', ]
+        fields: list[str] = [
+            'uniq_id', 'public', 'delay', 'message_default', 'message_text', 'screen_ids', 'family_ids',
+        ]
         params: list = [
             stored_rotator.uniq_id, stored_rotator.public, stored_rotator.delay,
+            stored_rotator.message_default, stored_rotator.message_text,
             self.dump_to_json_database_field(stored_rotator.screen_ids, []),
             self.dump_to_json_database_field(stored_rotator.family_ids, []),
         ]

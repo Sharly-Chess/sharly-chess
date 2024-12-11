@@ -114,7 +114,7 @@ def build_exe():
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file};litestar/middleware/exceptions/templates')
+        pyinstaller_params.append(f'--add-data={file};litestar/exceptions/responses/templates')
     run(pyinstaller_params)
 
 

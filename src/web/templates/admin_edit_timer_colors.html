@@ -14,6 +14,21 @@
                         type="checkbox" id="{{ checkbox_id }}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if data[checkbox_name] == 'on' %}checked{% endif %} /> par défaut
+                <input
+                        name="{{ name }}"
+                        type="color" id="{{ id }}"
+                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        value="{{ default_colors[num] if data[checkbox_name] == 'on' else data[name] }}"
+                        {% if data[checkbox_name] == 'on' %}disabled{% endif %}/>
+                <div id="{{ id }}-help" class="form-text">
+                    {{ color_text }}
+                </div>
+                {% if name in errors %}
+                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                        {{ errors[name] }}
+                    </div>
+                {% endif %}
                 <script>
                     $('#{{ checkbox_id }}').click(function() {
                         if ($(this).is(':checked')) {
@@ -24,21 +39,6 @@
                         }
                     });
                 </script>
-                <input
-                        name="{{ name }}"
-                        type="color" id="{{ id }}"
-                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                        aria-describedby="{{ id }}-help {{ id }}-error"
-                        value="{{ data[name] }}"
-                        {% if data[checkbox_name] == 'on' %}disabled{% endif %}/>
-                <div id="{{ id }}-help" class="form-text">
-                    {{ color_text }}
-                </div>
-                {% if name in errors %}
-                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                        {{ errors[name] }}
-                    </div>
-                {% endif %}
             </div>
         {% endwith %}
     {% endfor %}

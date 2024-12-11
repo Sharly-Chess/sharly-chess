@@ -108,7 +108,7 @@ class TimerAdminController(AbstractEventAdminController):
                         try:
                             colors[i] = WebContext.form_data_to_rgb(data, field)
                         except ValueError:
-                            errors[field] = f'La couleur n\'est pas valide [{data[field]}] (attendu [#HHHHHH]).'
+                            errors[field] = f'La couleur n\'est pas valide [{data[field]}] (attendu [#RRGGBB]).'
                     field: str = f'delay_{i}'
                     try:
                         delays[i] = WebContext.form_data_to_int(data, field, minimum=1)

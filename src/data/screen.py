@@ -360,5 +360,16 @@ class Screen:
             return self.event.background_color
 
     @property
+    def message_default(self) -> bool:
+        return self.stored_screen.message_default if self.stored_screen else self.family.message_default
+
+    @property
+    def message_text(self) -> str | None:
+        if self.message_default:
+            return self.event.message_text
+        else:
+            return self.stored_screen.message_text if self.stored_screen else self.family.message_text
+
+    @property
     def last_update_str(self) -> str | None:
         return format_timestamp_date_time(self.last_update)

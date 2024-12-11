@@ -428,12 +428,40 @@
                                 {% endwith %}
                             </div>
                         </div>
-                        {% if admin_family.type == 'input' %}
-                            {% include 'admin_screen_modal_input_exit_button.html' %}
-                        {% endif %}
-                        {% if admin_family.type == 'players' %}
-                            {% include 'admin_screen_modal_players_show_unpaired.html' %}
-                        {% endif %}
+                        <h3>
+                            Affichage
+                        </h3>
+                        {% with
+                            message_help_text='Lorsqu\'il est défini, le message d\'alerte est utilisé dans le bandeau défilant en bas des écrans de la famille (si le texte est vide le bandeau n\'est pas affiché). Sinon, le message d\'alerte par défaut (de l\'évènement ou de l\'écran rotatif le cas échéant) est utilisé.'
+                        %}
+                            {% if admin_family.type == 'input' %}
+                                <div class="row">
+                                    <div class="col-6">
+                                        {% include 'admin_screen_modal_input_exit_button.html' %}
+                                    </div>
+                                    <div class="col-6">
+                                        {% include 'admin_screen_modal_message.html' %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if admin_family.type == 'boards' %}
+                                <div class="row">
+                                    <div class="col-6">
+                                        {% include 'admin_screen_modal_message.html' %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if admin_family.type == 'players' %}
+                                <div class="row">
+                                    <div class="col-6">
+                                        {% include 'admin_screen_modal_players_show_unpaired.html' %}
+                                    </div>
+                                    <div class="col-6">
+                                        {% include 'admin_screen_modal_message.html' %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
                     {% endif %}
                 {% endif %}
             </div>

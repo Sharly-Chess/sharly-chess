@@ -70,6 +70,7 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 | BENETEAU Hubert     | AFE1  | NOR   | 50  | Agneaux Saint-Lô                              |
 | BENADDOU Khaled     | AFE2  | IDF   | 94  | Club d'Échecs de Saint-Maur                   |
 | BLEUZEN Christian   | AFE1  | BRE   | 35  | Rennes Paul Bert                              |
+| BLOT Philippe       | AFE1  | NOR   | 59  | Le Coin de L'echiquier Grande Synthe          |
 | CHANTIER Pierre     | AFO1  | EST   | 10  | Verrières Animation Loisirs                   |
 | CLEMENCEAU Cyril    | AFC   | BRE   | 29  | Échiquier du Léon                             |
 | DELMOTTE Eric       | AFE1  | BFC   | 71  | L'Échiquier Châlonnais                        |
@@ -80,6 +81,7 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 | LABORDE Stéphane    | AFO1  | OCC   | 66  | Perpignan - Les rois de la Tet                |
 | LAPEYRE Pierre      | AFE2  | NAQ   | 33  | Échiquier Bordelais                           |
 | LAUER Alban         | AF01  | IDF   | 95  | L'Échiquéenne de Survilliers                  |
+| LECLERC Rodolphe    | AF01  | ARA   | 73  | Albertville Savoie Echecs                     |
 | LECORNU Laurent     | AFE1  | BRE   | 29  | Échiquier Gouesnousien                        |
 | LEFEBVRE Philippe   | AFO1  | BRE   | 29  | Échiquier Gouesnousien                        |
 | LOUDIER Sarah       | AFC   | BRE   | 22  | Tregor Échecs                                 |
