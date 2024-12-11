@@ -16,7 +16,7 @@ basename: str = f'papi-web-{PapiWebConfig.version}'
 EXPORT_DIR: Path = Path('export')
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
-EXE_FILENAME: str = basename
+EXE_FILENAME: str = basename + '.exe'
 SPEC_FILE: Path = Path(f'{basename}.spec')
 TEST_DIR: Path = Path('test')
 SOURCE_DIR: Path = Path('src')
@@ -107,14 +107,14 @@ def build_exe():
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file}:{file.parent}')
+        pyinstaller_params.append(f'--add-data={file};{file.parent}')
     files: list[Path] = []
     files += [
         file for file in Path('venv/lib/site-packages/litestar/middleware/exceptions/templates').glob('**/*')
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file}:litestar/middleware/exceptions/templates')
+        pyinstaller_params.append(f'--add-data={file};litestar/middleware/exceptions/templates')
     run(pyinstaller_params)
 
 
