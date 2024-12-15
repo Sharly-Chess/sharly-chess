@@ -259,9 +259,19 @@ class Tournament:
         return self._current_round
 
     @property
+    def started(self) -> bool:
+        self.read_papi()
+        return self.current_round != 0
+
+    @property
     def playing(self) -> bool:
         self.read_papi()
         return self._playing
+
+    @property
+    def finished(self) -> bool:
+        self.read_papi()
+        return self.current_round == self.rounds and not self.playing
 
     @property
     def boards(self) -> list[Board] | None:

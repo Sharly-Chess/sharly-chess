@@ -68,12 +68,15 @@
     {% if not tournament.rounds %}
         {% set _icon_class='bi-exclamation-triangle-fill text-danger' %}
         {% set _tooltip_text='' %}
-    {% elif not tournament.current_round %}
+    {% elif not tournament.started %}
         {% set _icon_class='bi-pause-fill' %}
         {% set _tooltip_text='Le tournoi n\'est pas commencé.' %}
     {% elif tournament.playing %}
         {% set _icon_class='bi-caret-right-square-fill' %}
-        {% set _tooltip_text='Le tournoi est en cours.' %}
+        {% set _tooltip_text='La ronde ' ~ tournament.current_round ~ ' est en cours.' %}
+    {% elif not tournament.finished %}
+        {% set _icon_class='bi-pause-fill' %}
+        {% set _tooltip_text='La ronde ' ~ tournament.current_round ~ ' est terminée.' %}
     {% else %}
         {% set _icon_class='bi-check-circle-fill text-success' %}
         {% set _tooltip_text='Le tournoi est terminé.' %}
