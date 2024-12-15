@@ -1,6 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="flag-icon-css-sy" viewBox="0 0 640 480">
-  <rect width="640" height="160" y="160" fill="#fff" fill-rule="evenodd" rx="0" ry="0"/>
-  <rect width="640" height="160" y="320" fill-rule="evenodd" rx="0" ry="0"/>
-  <path fill="red" fill-rule="evenodd" d="M0 0h640v160H0z"/>
-  <path fill="#090" fill-rule="evenodd" d="M201.9 281l-28.8-20.9-28.7 21.1 10.7-34.2-28.7-21.2 35.4-.3 11-34.1 11.3 34h35.4L191 246.9l10.9 34.2zm307.6 0l-28.8-20.9-28.7 21.1 10.7-34.2-28.6-21.2 35.4-.3 11-34.1 11.2 34h35.4l-28.5 21.4 11 34.2z"/>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="flag-icon-css-sy" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+	 y="0px" viewBox="0 0 640 480" style="enable-background:new 0 0 640 480;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;}
+	.st2{fill-rule:evenodd;clip-rule:evenodd;fill:#009900;}
+	.st3{fill-rule:evenodd;clip-rule:evenodd;fill:#FF0000;}
+</style>
+<rect y="160" class="st0" width="640" height="160"/>
+<rect y="320" class="st1" width="640" height="160"/>
+<path class="st2" d="M0,0h640v160H0V0z"/>
+<path class="st3" d="M155.1,281l-28.8-20.9l-28.7,21.1l10.7-34.2l-28.7-21.2l35.4-0.3l11-34.1l11.3,34h35.4l-28.5,21.5l10.9,34.2
+	V281z M542.8,281L514,260.1l-28.7,21.1L496,247l-28.6-21.2l35.4-0.3l11-34.1l11.2,34h35.4l-28.5,21.4l11,34.2L542.8,281z"/>
+<polygon class="st3" points="349,281 320.1,260.1 291.5,281.2 302.1,247 273.5,225.8 308.8,225.5 319.8,191.4 331.1,225.4 
+	366.5,225.4 338,246.9 349,281.1 "/>
 </svg>

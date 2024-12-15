@@ -31,7 +31,7 @@ def download_fide_players():
         return
     print(f'Data unzipped to [{local_txt_file}].')
     print('Reading FIDE players and extracting federations... ', end='')
-    federations: list[str] = []
+    federations: set[str] = set()
     with open(local_txt_file, 'r') as file:
         first_line: bool = True
         for line in file:
@@ -40,12 +40,11 @@ def download_fide_players():
                 continue
             federation = line[76:79].upper()
             if federation not in federations:
-                federations.append(federation)
+                federations.add(federation)
                 print(f'[{federation}] ', end='')
     print(f'{len(federations)} federations found.')
-    federations.sort()
     print('Downloading federation flags... ', end='')
-    flags_dir: Path = Path() / 'src' / 'web' / 'static' / 'images' / 'federations'
+    flags_dir: Path = Path() / '..' / 'src' / 'web' / 'static' / 'images' / 'federations'
     flags_dir.mkdir(exist_ok=True, parents=True)
     errors: dict[str, str] = {}
     for federation in federations:
