@@ -18,7 +18,7 @@ PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
 SPEC_FILE: Path = Path(f'{basename}.spec')
-TEST_DIR: Path = Path('test')
+TEST_DIR: Path = Path('export-test')
 SOURCE_DIR: Path = Path('src')
 ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 
