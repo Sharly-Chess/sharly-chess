@@ -13,13 +13,14 @@ BUILD_DIR: Path = Path('build')
 DIST_DIR: Path = Path('dist')
 DATA_DIR: Path = Path('export-data')
 basename: str = f'papi-web-{PapiWebConfig.version}'
-EXPORT_DIR: Path = Path('..') / 'export'
+EXPORT_DIR: Path = Path('export')
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
-SPEC_FILE: Path = Path('.') / f'{basename}.spec'
-TEST_DIR: Path = Path('..') / 'test'
-ICON_FILE: Path = Path('.') / 'web' / 'static' / 'images' / 'papi-web.ico'
+SPEC_FILE: Path = Path(f'{basename}.spec')
+TEST_DIR: Path = Path('export-test')
+SOURCE_DIR: Path = Path('src')
+ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 
 
 def clean(clean_zip: bool):
@@ -51,16 +52,16 @@ def build_exe():
         '--hiddenimport=ffe',
         '--hiddenimport=web',
         '--paths=.',
-        '--icon=web/static/images/papi-web.ico',
+        '--icon=src/web/static/images/papi-web.ico',
         'papi_web.py',
     ]
     files: list[Path] = []
-    web_dir = Path('.') / 'web'
-    files += [file for file in Path('web/templates').glob('**/*') if file.is_file()]
+    web_dir = SOURCE_DIR / 'web'
+    files += [file for file in (web_dir / 'templates').glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
-    files += [file for file in Path('web/static/images').glob('**/*') if file.is_file()]
-    files += [file for file in Path('web/static/css').glob('**/*') if file.is_file()]
-    files += [file for file in Path('web/static/js').glob('**/*') if file.is_file()]
+    files += [file for file in Path(static_dir, 'images').glob('**/*') if file.is_file()]
+    files += [file for file in Path(static_dir, 'css').glob('**/*') if file.is_file()]
+    files += [file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()]
     lib_dir = static_dir / 'lib'
     bootstrap_dir = lib_dir / 'bootstrap' / f'bootstrap-{PapiWebConfig.bootstrap_version}-dist'
     files += [
@@ -96,11 +97,11 @@ def build_exe():
         file for file in jstree_dir.glob('**/*')
         if file.is_file()
     ]
-    sql_dir: Path = Path('.') / 'database' / 'sql'
+    sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [sql_dir / 'create_event.sql', ]
-    yml_dir: Path = Path('.') / 'database' / 'yml'
+    yml_dir: Path = SOURCE_DIR / 'database' / 'yml'
     files += list(yml_dir.glob('*.yml'))
-    custom_dir: Path = Path('.') / 'custom'
+    custom_dir: Path = SOURCE_DIR / 'custom'
     files += [
         file for file in custom_dir.glob('**/*')
         if file.is_file()
@@ -109,7 +110,7 @@ def build_exe():
         pyinstaller_params.append(f'--add-data={file};{file.parent}')
     files: list[Path] = []
     files += [
-        file for file in Path('venv/Lib/site-packages/litestar/exceptions/responses/templates').glob('**/*')
+        file for file in Path('venv/lib/site-packages/litestar/middleware/exceptions/templates').glob('**/*')
         if file.is_file()
     ]
     for file in files:
@@ -134,7 +135,7 @@ def create_project():
     custom_dir.mkdir(exist_ok=True)
     target_file: Path = PROJECT_DIR / 'server.bat'
     logger.info(f'Creating batch file {target_file}...')
-    with open(target_file, 'wt') as f:
+    with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Démarrage du serveur Papi-web, veuillez patienter...\n'
                 f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
@@ -142,7 +143,7 @@ def create_project():
                 f'pause\n')
     target_file = PROJECT_DIR / 'ffe.bat'
     logger.info(f'Creating batch file {target_file}...')
-    with open(target_file, 'wt') as f:
+    with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Connexion de Papi-web au serveur fédéral, veuillez patienter...\n'
                 f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
@@ -150,7 +151,7 @@ def create_project():
                 f'pause\n')
     target_file = PROJECT_DIR / 'chessevent.bat'
     logger.info(f'Creating batch file {target_file}...')
-    with open(target_file, 'wt') as f:
+    with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Connexion de Papi-web à Chess Event, veuillez patienter...\n'
                 f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'

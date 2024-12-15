@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools >= 75.5.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Papi-web"
+description = "An application to help chess arbiters and organizers manage their tournaments"
+requires-python = ">=3.11.0"
+version = "2.4.14"
+authors = [
+  {name = "Pascal Aubry", email = "papi-web@echecs-bretagne.fr"},
+  {name = "Sammy Plat", email = "papi-web@echecs-bretagne.fr"},
+  {name = "Timothy Armes"},
+]
+license = { text = "AGPL v3.0" }
+readme = "README.md"
+dependencies = [
+  "AdvancedHTMLParser ~= 9.0.2",
+  "chardet ~= 5.2.0",
+  "colorama ~= 0.4.6",
+  "colorlog ~= 6.9.0",
+  "cryptography ~= 43.0.3",
+  "httpdate ~= 1.2.0",
+  "Jinja2 ~= 3.1.4",
+  "litestar ~= 2.12.1",
+  "pefile >= 2022.5.30",
+  "pyinstaller ~= 6.11.1",
+  "pyodbc ~= 5.2.0",
+  "pywin32-ctypes ~= 0.2.3",
+  "requests ~= 2.32.2",
+  "uvicorn ~= 0.32.0",
+  "validators ~= 0.34.0",
+  "wheel ~= 0.45.0",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pipdeptree"]
+

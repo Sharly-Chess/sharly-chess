@@ -9,6 +9,13 @@ tmp/
 db/
 __pycache__/
 
+/build/
+/export/
+/test/
+/export-test/
+
+*.egg-info/
+
 # Vim scratch files
 *.swp
 *.swo
