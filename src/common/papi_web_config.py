@@ -10,6 +10,7 @@ import pyodbc
 import uvicorn
 from packaging.version import Version
 
+from common import BASE_DIR
 from common.config_reader import ConfigReader
 from common.logger import get_logger, configure_logger
 from common.singleton import Singleton
@@ -175,13 +176,13 @@ class PapiWebConfig(metaclass=Singleton):
 
     custom_path: Path = Path().absolute() / 'custom'
 
-    embedded_custom_path: Path = Path(__file__).resolve().parents[1] / 'src/custom'
+    embedded_custom_path: Path = BASE_DIR / 'src/custom'
 
     default_papi_path: Path = Path() / 'papi'
 
     papi_ext: str = 'papi'
 
-    _database_path: Path = Path(__file__).resolve().parents[1] / 'src/database'
+    _database_path: Path = BASE_DIR / 'src/database'
 
     database_sql_path: Path = _database_path / 'sql'
 

@@ -4,27 +4,28 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
+
+from common import BASE_DIR
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger
 
 logger: Logger = get_logger()
 
-BUILD_DIR: Path = Path('build')
-DIST_DIR: Path = Path('dist')
-DATA_DIR: Path = Path('export-data')
+BUILD_DIR: Path = BASE_DIR / 'build'
+DIST_DIR: Path = BASE_DIR / 'dist'
+DATA_DIR: Path = BASE_DIR / 'export-data'
 basename: str = f'papi-web-{PapiWebConfig.version}'
-EXPORT_DIR: Path = Path('export')
+EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
-SPEC_FILE: Path = Path(f'{basename}.spec')
-TEST_DIR: Path = Path('export-test')
-SOURCE_DIR: Path = Path('src')
+SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
+TEST_DIR: Path = BASE_DIR / 'export-test'
+SOURCE_DIR: Path = BASE_DIR / 'src'
 ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 
 
 def clean(clean_zip: bool):
-    os.chdir(Path(__file__).resolve().parents[0])
     for d in [BUILD_DIR, DIST_DIR, PROJECT_DIR, ]:
         if Path(d).is_dir():
             logger.info(f'Deleting folder {d}...')
@@ -39,7 +40,6 @@ def clean(clean_zip: bool):
 
 
 def build_exe():
-    os.chdir(Path(__file__).resolve().parents[0])
     pyinstaller_params = [
         '--clean',
         '--noconfirm',
@@ -107,19 +107,19 @@ def build_exe():
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file};{file.parent}')
+        pyinstaller_params.append(f'--add-data={file};{file.parent.relative_to(BASE_DIR)}')
     files: list[Path] = []
     files += [
-        file for file in Path('venv/lib/site-packages/litestar/middleware/exceptions/templates').glob('**/*')
+        file for file in Path(BASE_DIR / 'venv/lib/site-packages/litestar/exceptions/responses/templates').glob('**/*')
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file};litestar/exceptions/responses/templates')
+        pyinstaller_params.append(f'--add-data={file};{file.parent.relative_to(BASE_DIR / "venv/lib/site-packages")}')
+    print(pyinstaller_params)
     run(pyinstaller_params)
 
 
 def create_project():
-    os.chdir(Path(__file__).resolve().parents[0])
     logger.info(f'Creating folder {PROJECT_DIR} from {DATA_DIR}...')
     shutil.copytree(DATA_DIR, PROJECT_DIR)
     dist_exe_file: Path = DIST_DIR / EXE_FILENAME
@@ -162,17 +162,17 @@ def create_project():
 def create_zip():
     logger.info(f'Creating archive {ZIP_FILE}...')
     with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
-        os.chdir(PROJECT_DIR.resolve())
+        os.chdir(PROJECT_DIR)
         for folder_name, sub_folders, file_names in os.walk('.'):
             zip_file.write(folder_name, folder_name)
         for folder_name, sub_folders, file_names in os.walk('.'):
             for filename in file_names:
                 file_path: Path = Path(folder_name, filename)
                 zip_file.write(file_path, file_path)
+        os.chdir(BASE_DIR)
 
 
 def build_test():
-    os.chdir(Path(__file__).resolve().parents[0])
     if not TEST_DIR.is_dir():
         logger.info(f'Creating test environment in {TEST_DIR}...')
         TEST_DIR.mkdir(parents=True)

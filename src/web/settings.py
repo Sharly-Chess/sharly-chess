@@ -1,7 +1,6 @@
 from gettext import gettext, ngettext
 from os import urandom
 from pathlib import Path
-import sys
 from typing import Sequence
 
 from jinja2 import Environment
@@ -12,7 +11,7 @@ from litestar.static_files import create_static_files_router
 from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 
-from common.papi_web_config import PapiWebConfig
+from common import BASE_DIR
 from web.controllers.admin.chessevent_admin_controller import ChessEventAdminController
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
@@ -29,23 +28,11 @@ from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.tournament_user_controller import CheckInUserController, IllegalMoveUserController, \
     ResultUserController, DownloadUserController
 
-BASE_DIR = Path(__file__).resolve().parents[1]
-
-if getattr(sys, 'frozen', False):
-    template_dir = Path(sys._MEIPASS, 'src/web/templates')
-    static_files_base_dir = Path(sys._MEIPASS, 'src/web/static')
-    embedded_custom_path = Path(sys._MEIPASS, 'src/custom')
-else:
-    template_dir = BASE_DIR / 'web' / 'templates'
-    static_files_base_dir = BASE_DIR / 'web' / 'static'
-    embedded_custom_path = PapiWebConfig.embedded_custom_path
+template_dir: Path = BASE_DIR / 'src/web/templates'
+static_files_base_dir = BASE_DIR / 'src/web/static'
 
 static_files_folders = [
     static_files_base_dir,
-    # a direct web access to these folders is not needed at this time (2.4.11)
-    # since the background images are delivered by the /background URL.
-    #PapiWebConfig.custom_path,
-    # embedded_custom_path,
 ]
 
 static_files_router: Router = create_static_files_router(
