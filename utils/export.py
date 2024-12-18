@@ -53,7 +53,7 @@ def build_exe():
         '--hiddenimport=web',
         '--paths=.',
         '--icon=src/web/static/images/papi-web.ico',
-        'papi_web.py',
+        'src/papi_web.py',
     ]
     files: list[Path] = []
     web_dir = SOURCE_DIR / 'web'
@@ -115,7 +115,6 @@ def build_exe():
     ]
     for file in files:
         pyinstaller_params.append(f'--add-data={file};{file.parent.relative_to(BASE_DIR / "venv/lib/site-packages")}')
-    print(pyinstaller_params)
     run(pyinstaller_params)
 
 
