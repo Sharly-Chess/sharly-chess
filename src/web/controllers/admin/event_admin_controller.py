@@ -1,12 +1,7 @@
 import logging
-import time
-from datetime import datetime
 from logging import Logger
-from pathlib import Path
 from typing import Annotated, Any
 
-import requests
-import validators
 from litestar import get, patch, delete, post
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
@@ -23,7 +18,7 @@ from data.loader import EventLoader
 from database.sqlite import EventDatabase
 from database.store import StoredEvent
 from web.controllers.admin.index_admin_controller import AdminWebContext, AbstractIndexAdminController
-from web.controllers.index_controller import WebContext, AbstractController
+from web.controllers.index_controller import AbstractController
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -75,64 +70,6 @@ class EventAdminWebContext(AdminWebContext):
 
 
 class AbstractEventAdminController(AbstractIndexAdminController):
-
-    @staticmethod
-    def _admin_validate_record_illegal_moves_update_data(
-            data: dict[str, str] | None,
-            errors: dict[str, str],
-    ) -> int | None:
-        field: str = 'record_illegal_moves'
-        record_illegal_moves: int | None
-        try:
-            record_illegal_moves = WebContext.form_data_to_int(data, field)
-            assert record_illegal_moves is None or 0 <= record_illegal_moves <= 3
-        except (ValueError, AssertionError):
-            record_illegal_moves = None
-            errors['record_illegal_moves'] = f'La valeur entrée [{data[field]}] n\'est pas valide.'
-        return record_illegal_moves
-
-    @staticmethod
-    def _admin_validate_rules_update_data(
-            data: dict[str, str] | None,
-            errors: dict[str, str],
-    ) -> str | None:
-        field: str = 'rules'
-        rules: str | None = WebContext.form_data_to_str(data, field)
-        if rules:
-            if validators.url(rules):
-                try:
-                    response = requests.get(rules)
-                    if response.status_code != 200:
-                        errors[field] = \
-                            f'L\'URL [{rules}] est en erreur (code [{response.status_code}]).'
-                except requests.ConnectionError as ce:
-                    errors[field] = f'L\'URL [{rules}] est en erreur ([{ce}]).'
-            else:
-                if rules.find('..') != -1:
-                    errors[field] = f'Le chemin [{rules}] est incorrect.'
-                    data[field] = ''
-                else:
-                    file: Path = Path(rules)
-                    if not file.exists() or not file.is_file():
-                        errors[field] = f'Le fichier [{rules}] est introuvable.'
-                    elif file.suffix.lower() != '.pdf':
-                        errors[field] = f'Un fichier PDF est attendu [{file.suffix}].'
-        return rules
-
-    @staticmethod
-    def _admin_validate_background_color_update_data(
-            data: dict[str, str] | None,
-            errors: dict[str, str],
-    ) -> str | None:
-        field: str = 'background_color'
-        background_color: str | None = None
-        color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
-        if not color_checkbox:
-            try:
-                background_color = WebContext.form_data_to_rgb(data, field)
-            except ValueError:
-                errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
-        return background_color
 
     @classmethod
     def _get_admin_event_render_context(
@@ -243,217 +180,6 @@ class AbstractEventAdminController(AbstractIndexAdminController):
 class EventAdminController(AbstractEventAdminController):
 
     @classmethod
-    def _admin_validate_event_update_data(
-            cls,
-            action: str,
-            web_context: EventAdminWebContext,
-            data: dict[str, str] | None = None,
-    ) -> StoredEvent:
-        if data is None:
-            data = {}
-        errors: dict[str, str] = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
-        if action == 'delete':
-            if not uniq_id:
-                errors['uniq_id'] = 'Veuillez entrer l\'identifiant de l\'évènement.'
-            elif uniq_id != web_context.admin_event.uniq_id:
-                errors['uniq_id'] = 'L\'identifiant entré n\'est pas valide.'
-        else:
-            if not uniq_id:
-                errors['uniq_id'] = 'Veuillez entrer l\'identifiant de l\'évènement.'
-            elif uniq_id.find('/') != -1:
-                errors['uniq_id'] = "le caractère « / » n\'est pas autorisé"
-            else:
-                event_uniq_ids: list[str] = EventLoader.get(request=web_context.request).event_uniq_ids
-                match action:
-                    case 'clone':
-                        if uniq_id in event_uniq_ids:
-                            errors['uniq_id'] = f'L\'évènement [{uniq_id}] existe déjà.'
-                    case 'update':
-                        if uniq_id != web_context.admin_event.uniq_id and uniq_id in event_uniq_ids:
-                            errors['uniq_id'] = f'L\'évènement [{uniq_id}] existe déjà.'
-                    case _:
-                        raise ValueError(f'action=[{action}]')
-        name: str | None = WebContext.form_data_to_str(data, 'name')
-        start: float | None = None
-        stop: float | None = None
-        match action:
-            case 'clone' | 'update':
-                if not name:
-                    errors['name'] = 'Veuillez entrer le nom de l\'évènement.'
-                start_str: str | None = WebContext.form_data_to_str(data, 'start')
-                if not start_str:
-                    errors['start'] = 'Veuillez entrer la date de début de l\'évènement.'
-                else:
-                    start = time.mktime(datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple())
-                stop_str: str | None = WebContext.form_data_to_str(data, 'stop')
-                if not stop_str:
-                    errors['stop'] = 'Veuillez entrer la date de fin de l\'évènement.'
-                else:
-                    stop = time.mktime(datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple())
-                if 'start' not in errors and 'stop' not in errors and start > stop:
-                    errors['stop'] = 'Veuillez entrer la date postérieure à la date de début.'
-            case 'delete':
-                pass
-            case _:
-                raise ValueError(f'action=[{action}]')
-        public: bool | None = WebContext.form_data_to_bool(data, 'public')
-        path: str | None = None
-        hide_background_image: bool | None = None
-        background_image: str | None = None
-        background_color: str | None = None
-        update_password: str | None = None
-        record_illegal_moves: int | None = None
-        rules: str | None = None
-        timer_colors: dict[int, str | None] = {i: None for i in range(1, 4)}
-        timer_color_checkboxes: dict[int, bool | None] = {i: None for i in range(1, 4)}
-        timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
-        message_text: str | None = None
-        message_color: str | None = None
-        message_background_color: str | None = None
-        match action:
-            case 'update':
-                path = WebContext.form_data_to_str(data, 'path')
-                update_password = WebContext.form_data_to_str(data, 'update_password')
-                field = 'background_image'
-                hide_background_image = WebContext.form_data_to_bool(data, field + '_checkbox')
-                if not hide_background_image:
-                    if background_image := WebContext.form_data_to_str(data, field, ''):
-                        if validators.url(background_image):
-                            try:
-                                response = requests.get(background_image)
-                                if response.status_code != 200:
-                                    errors[field] = \
-                                        f'L\'URL [{background_image}] est en erreur (code [{response.status_code}]).'
-                            except requests.ConnectionError as ce:
-                                errors[field] = f'L\'URL [{background_image}] est en erreur ([{ce}]).'
-                        elif Path(background_image).exists():
-                            errors[field] = 'Veuillez indiquer une URL ou choisir une image à droite.'
-                        else:
-                            background_image = background_image.strip('/')
-                            if background_image.find('..') != -1:
-                                errors[field] = f'Le chemin [{background_image}] est incorrect.'
-                                data[field] = ''
-                            elif not (PapiWebConfig.custom_path / background_image).exists() \
-                                    and not (PapiWebConfig.embedded_custom_path / background_image).exists():
-                                errors[field] = f'Le fichier [{background_image}] est introuvable.'
-                background_color = cls._admin_validate_background_color_update_data(data, errors)
-                record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(data, errors)
-                rules = cls._admin_validate_rules_update_data(data, errors)
-                for i in range(1, 4):
-                    field: str = f'color_{i}'
-                    timer_color_checkboxes[i] = WebContext.form_data_to_bool(data, field + '_checkbox')
-                    if not timer_color_checkboxes[i]:
-                        try:
-                            timer_colors[i] = WebContext.form_data_to_rgb(data, field)
-                        except ValueError:
-                            errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
-                    field: str = f'delay_{i}'
-                    try:
-                        timer_delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
-                    except ValueError:
-                        errors[field] = f'Le délai [{data[field]}] n\'est pas valide (attendu un entier positif).'
-                field: str = 'message_text'
-                message_text = WebContext.form_data_to_str(data, field)
-                field: str = 'message_color'
-                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-                    try:
-                        message_color = WebContext.form_data_to_rgb(data, field)
-                    except ValueError:
-                        errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
-                field: str = 'message_background_color'
-                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-                    try:
-                        message_background_color = WebContext.form_data_to_rgb(data, field)
-                    except ValueError:
-                        errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
-            case 'clone':
-                path = web_context.admin_event.stored_event.path
-                update_password = web_context.admin_event.stored_event.update_password
-                hide_background_image = web_context.admin_event.stored_event.hide_background_image
-                background_image = web_context.admin_event.stored_event.background_image
-                background_color = web_context.admin_event.stored_event.background_color
-                record_illegal_moves = web_context.admin_event.stored_event.record_illegal_moves
-                rules = web_context.admin_event.stored_event.rules
-                timer_colors = web_context.admin_event.stored_event.timer_colors
-                timer_delays = web_context.admin_event.stored_event.timer_delays
-                message_text = web_context.admin_event.stored_event.message_text
-                message_color = web_context.admin_event.stored_event.message_color
-                message_background_color = web_context.admin_event.stored_event.message_background_color
-            case 'delete':
-                pass
-            case _:
-                raise ValueError(f'action=[{action}]')
-        return StoredEvent(
-            uniq_id=uniq_id,
-            name=name,
-            start=start,
-            stop=stop,
-            public=public,
-            path=path,
-            hide_background_image=hide_background_image,
-            background_image=background_image,
-            background_color=background_color,
-            update_password=update_password,
-            record_illegal_moves=record_illegal_moves,
-            rules=rules,
-            timer_colors=timer_colors,
-            timer_delays=timer_delays,
-            message_text=message_text,
-            message_color=message_color,
-            message_background_color=message_background_color,
-            errors=errors,
-        )
-
-    @staticmethod
-    def background_images_jstree_data(background_image: str) -> list[dict[str, Any]]:
-        dirs: list[str] = []
-        files: list[str] = []
-        for custom_path in [PapiWebConfig.embedded_custom_path, PapiWebConfig.custom_path, ]:
-            for item in custom_path.rglob('*'):
-                item_str = str(item).replace(str(custom_path), '').replace('\\', '/').lstrip('/')
-                if item.is_dir():
-                    if item_str not in dirs:
-                        dirs.append(item_str)
-                else:
-                    if item_str not in files:
-                        files.append(item_str)
-        dir_nodes: list[dict[str, str]] = [{
-            'id': d or '#',
-            'parent': '/'.join(d.split('/')[:-1]) or '#',
-            'text': f' {d.split("/")[-1]}',
-            'state': {},
-            'icon': 'bi-folder',
-        } for d in dirs]
-        file_nodes: list[dict[str, str]] = [{
-            'id': f or '#',
-            'parent': '/'.join(f.split('/')[:-1]) or '#',
-            'text': f.split('/')[-1],
-            'state': {
-                'selected': background_image == f,
-            },
-            'icon': 'bi-card-image',
-            'a_attr': {
-                'onclick': f'$("#background-image").val("{f}"); '
-                           f'$.ajax({{'
-                           f'    url: "/background",'
-                           f'    type: "GET",'
-                           f'    data: {{ "image": "{f}", "color": $("#background-color").val() }},'
-                           f'    success: function(data) {{'
-                           f'        $("#background-image-test").css("background-image", data["url"]);'
-                           f'    }},'
-                           f'    error: function(jqXHR, exception) {{'
-                           f'        console.log('
-                           f'            "Changing background failed: status_code=" + jqXHR.status '
-                           f'            + ", exception=" + exception + ", response=" + jqXHR.responseText'
-                           f'        );'
-                           f'    }},'
-                           f'}});',
-            }
-        } for f in files]
-        return file_nodes + dir_nodes
-
-    @classmethod
     def _admin_event_config_render(
             cls,
             request: HTMXRequest,
@@ -474,63 +200,9 @@ class EventAdminController(AbstractEventAdminController):
                 pass
             case 'event':
                 if data is None:
-                    data: dict[str, str] = {}
-                    match action:
-                        case 'update':
-                            data['uniq_id'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.uniq_id)
-                        case 'clone':
-                            data['uniq_id'] = ''
-                        case 'delete':
-                            pass
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    match action:
-                        case 'update' | 'clone':
-                            data['uniq_id'] = '' if action == 'clone' else WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.uniq_id)
-                            data['name'] = WebContext.value_to_form_data(web_context.admin_event.stored_event.name)
-                            data['public'] = WebContext.value_to_form_data(web_context.admin_event.stored_event.public)
-                            data['start'] = WebContext.value_to_datetime_form_data(
-                                web_context.admin_event.stored_event.start)
-                            data['stop'] = WebContext.value_to_datetime_form_data(
-                                web_context.admin_event.stored_event.stop)
-                            data['background_image_checkbox'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.hide_background_image)
-                            data['background_image'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.background_image)
-                            data['background_color'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.background_color)
-                            data['background_color_checkbox'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.background_color is None)
-                            data['path'] = WebContext.value_to_form_data(web_context.admin_event.stored_event.path)
-                            data['update_password'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.update_password)
-                            data['record_illegal_moves'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.record_illegal_moves)
-                            data['rules'] = WebContext.value_to_form_data(web_context.admin_event.stored_event.rules)
-                            for i in range(1, 4):
-                                data[f'color_{i}'] = WebContext.value_to_form_data(
-                                    web_context.admin_event.timer_colors[i])
-                                data[f'color_{i}_checkbox'] = WebContext.value_to_form_data(
-                                    web_context.admin_event.stored_event.timer_colors[i] is None)
-                                data[f'delay_{i}'] = WebContext.value_to_form_data(
-                                    web_context.admin_event.stored_event.timer_delays[i])
-                            data['message_text'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.message_text)
-                            data['message_color_checkbox'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.message_color is None)
-                            data['message_color'] = WebContext.value_to_form_data(
-                                web_context.admin_event.message_color)
-                            data['message_background_color_checkbox'] = WebContext.value_to_form_data(
-                                web_context.admin_event.stored_event.message_background_color is None)
-                            data['message_background_color'] = WebContext.value_to_form_data(
-                                web_context.admin_event.message_background_color)
-                        case 'delete':
-                            pass
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    stored_event: StoredEvent = cls._admin_validate_event_update_data(action, web_context, data)
+                    data = cls._prepare_event_modal_data(action, request, web_context.admin_event)
+                    stored_event: StoredEvent = cls._admin_validate_event_update_data(
+                        action, request, web_context.admin_event, data)
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
@@ -539,7 +211,7 @@ class EventAdminController(AbstractEventAdminController):
                         PapiWebConfig.default_record_illegal_moves_number),
                     'timer_color_texts': cls._get_timer_color_texts(PapiWebConfig.default_timer_delays),
                     'background_images_jstree_data': cls.background_images_jstree_data(
-                        data['background_image']) if action == 'update' else {},
+                        data['background_image']) if action in ['update', 'clone', ] else {},
                     'modal': 'event',
                     'action': action,
                     'data': data,
@@ -705,7 +377,8 @@ class EventAdminController(AbstractEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(action, web_context, data)
+        stored_event: StoredEvent = self._admin_validate_event_update_data(
+            action, request, web_context.admin_event, data)
         if stored_event.errors:
             return self._admin_event_config_render(
                 request, event_uniq_id=event_uniq_id, modal='event', action=action, data=data,
@@ -734,12 +407,12 @@ class EventAdminController(AbstractEventAdminController):
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'clone':
-                EventDatabase(web_context.admin_event.uniq_id).clone(new_uniq_id=uniq_id)
+                EventDatabase(uniq_id).create()
                 with EventDatabase(uniq_id, write=True) as event_database:
                     event_database.update_stored_event(stored_event)
                     event_database.commit()
                 Message.success(
-                    request, f'L\'évènement [{web_context.admin_event.uniq_id}] a été dupliqué ([{uniq_id}]).')
+                    request, f'L\'évènement [{uniq_id}] a été créé.')
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'delete':
