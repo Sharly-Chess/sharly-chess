@@ -187,7 +187,7 @@ class TournamentAdminController(AbstractEventAdminController):
                             name = web_context.admin_tournament.stored_tournament.name
                         case 'create':
                             uniq_id = web_context.admin_event.get_unused_tournament_uniq_id('tournament')
-                            name = web_context.admin_event.get_unused_tournament_name('Tournoi')
+                            name = web_context.admin_event.get_unused_tournament_name('Nouveau tournoi')
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_tournament_uniq_id(
                                 web_context.admin_tournament.stored_tournament.uniq_id)
