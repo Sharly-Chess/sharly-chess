@@ -602,14 +602,6 @@ class EventDatabase(SQLiteDatabase):
             event_database.set_last_update()
             event_database.commit()
 
-    def clone(self, new_uniq_id: str):
-        """Create a copy of the event database file corresponding to an event
-        with name `new_uniq_id`."""
-        shutil.copy(self.file, EventDatabase(new_uniq_id).file)
-        with EventDatabase(new_uniq_id, write=True) as event_database:
-            event_database.set_last_update()
-            event_database.commit()
-
     def __enter__(self) -> Self:
         if not self.exists():
             raise PapiWebException(
