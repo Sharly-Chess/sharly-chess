@@ -76,7 +76,7 @@ class SessionHandler:
 
     @classmethod
     def get_session_show_family_screens_on_screen_list(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.SHOW_FAMILY_SCREENS_ON_SCREEN_LIST, True)
+        return request.session.get(cls.SHOW_FAMILY_SCREENS_ON_SCREEN_LIST, False)
 
     SHOW_DETAILS_ON_SCREEN_LIST: str = 'show_details_on_screen_list'
 
@@ -86,7 +86,7 @@ class SessionHandler:
 
     @classmethod
     def get_session_show_details_on_screen_list(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.SHOW_DETAILS_ON_SCREEN_LIST, True)
+        return request.session.get(cls.SHOW_DETAILS_ON_SCREEN_LIST, False)
 
     SHOW_DETAILS_ON_FAMILY_LIST: str = 'show_details_on_family_list'
 
@@ -96,7 +96,7 @@ class SessionHandler:
 
     @classmethod
     def get_session_show_details_on_family_list(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.SHOW_DETAILS_ON_FAMILY_LIST, True)
+        return request.session.get(cls.SHOW_DETAILS_ON_FAMILY_LIST, False)
 
     SHOW_DETAILS_ON_ROTATOR_LIST: str = 'show_details_on_rotator_list'
 
@@ -106,7 +106,7 @@ class SessionHandler:
 
     @classmethod
     def get_session_show_details_on_rotator_list(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.SHOW_DETAILS_ON_ROTATOR_LIST, True)
+        return request.session.get(cls.SHOW_DETAILS_ON_ROTATOR_LIST, False)
 
     SCREEN_TYPES_ON_SCREEN_LIST_SESSION_KEY: str = 'screen_types_on_screen_list'
 
