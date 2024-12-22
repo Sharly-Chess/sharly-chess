@@ -367,7 +367,8 @@ class Event:
         }
 
     def get_unused_tournament_uniq_id(self, base_uniq_id: str) -> str:
-        """ Returns the first unused tournament uniq_id (base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
+        """ Returns the first unused tournament uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
         index: int
         uniq_id: str
         if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
@@ -383,7 +384,8 @@ class Event:
         return uniq_id
 
     def get_unused_tournament_name(self, base_name: str) -> str:
-        """ Returns the first unused tournament name (base_name, or base_name (2), or base_name (n+1)... """
+        """ Returns the first unused tournament name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)... """
         index: int
         name: str
         if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
