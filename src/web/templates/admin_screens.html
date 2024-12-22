@@ -50,20 +50,6 @@
             <i class="bi-arrow-clockwise"></i>
         </button>
     </span>
-    <span {{ tooltip_attributes('info', 'Ajouter un nouvel écran à l\'évènement.' if admin_event.tournaments_by_id else 'Vous devez créer un tournoi avant de pouvoir créer des écrans', 'top') }}>
-        <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
-                {% if not admin_event.tournaments_by_id %}
-                    disabled
-                {% endif %}
-        >
-            <i class="bi-plus-square-fill"></i> Créer un écran
-        </button>
-    </span>
 {% endblock %}
 
 {% block cards_container_cards %}
@@ -98,7 +84,7 @@
             <div class="row">
                 <div class="col-12 mt-3 fs-4 fw-bold text-nowrap {% if not screen_type in screen_types_on_screen_list %}text-secondary{% endif %}">
                     {% with id='show-'~screen_type~'-screens-on-screen-list', name='show_'~screen_type~'_screens_on_screen_list' %}
-                        <div
+                        <span
                                 class="form-check form-switch d-inline-block pe-3 mt-2"
                                 {{ tooltip_attributes('info', screen_data.checkbox_tooltip_text, 'top') }}
                         >
@@ -115,7 +101,26 @@
                                 {{ screen_type_icon(screen_type, false) }}
                                 {{ screen_data.title }}
                             </label>
-                        </div>
+                        </span>
+                        {% if screen_type in screen_types_on_screen_list %}
+                            <span
+                                    class="d-inline-block pe-3 mt-2"
+                                    {{ tooltip_attributes('info', 'Ajouter un nouvel écran à l\'évènement.' if admin_event.tournaments_by_id else 'Vous devez créer un tournoi avant de pouvoir créer des écrans', 'top') }}
+                            >
+                                <button
+                                        class="btn btn-primary text-nowrap mb-2 fw-bold"
+                                        hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
+                                        preload
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        {% if not admin_event.tournaments_by_id %}
+                                            disabled
+                                        {% endif %}
+                                >
+                                    <i class="bi-plus-square"></i>
+                                </button>
+                            </span>
+                        {% endif %}
                     {% endwith %}
                 </div>
             </div>

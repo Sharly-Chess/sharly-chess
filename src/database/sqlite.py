@@ -1,5 +1,4 @@
 import json
-import shutil
 import time
 from collections import Counter
 from collections.abc import Iterator
@@ -1724,20 +1723,6 @@ class EventDatabase(SQLiteDatabase):
             stored_screen = self.get_stored_screen(screen_id=stored_screen.id)
         self.set_last_update()
         return stored_screen
-
-    def clone_stored_screen(
-            self, screen_id: int, new_uniq_id: str, new_name: str,
-    ) -> StoredScreen:
-        stored_screen = self.load_stored_screen(screen_id)
-        stored_screen.id = None
-        stored_screen.uniq_id = new_uniq_id
-        stored_screen.name = new_name
-        stored_screen.last_update = time.time()
-        new_stored_screen: StoredScreen = self._write_stored_screen(stored_screen)
-        for stored_screen_set in stored_screen.stored_screen_sets:
-            new_stored_screen.stored_screen_sets.append(
-                self.clone_stored_screen_set(stored_screen_set.id, new_stored_screen.id))
-        return new_stored_screen
 
     def add_stored_screen(
             self, stored_screen: StoredScreen,

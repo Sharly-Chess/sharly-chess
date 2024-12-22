@@ -421,6 +421,41 @@ class Event:
             for screen in self.basic_screens_by_id.values()
         }
 
+    def get_unused_screen_uniq_id(self, base_uniq_id: str) -> str:
+        """ Returns the first unused screen uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
+        index: int
+        uniq_id: str
+        if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
+            base_uniq_id = matches.group(1)
+            index = int(matches.group(2))
+            uniq_id = f'{base_uniq_id}-{index + 1}'
+        else:
+            index = 1
+            uniq_id = base_uniq_id
+        while uniq_id in self.basic_screens_by_uniq_id:
+            index += 1
+            uniq_id = f'{base_uniq_id}-{index}'
+        return uniq_id
+
+    def get_unused_screen_name(self, base_name: str) -> str:
+        """ Returns the first unused screen name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)... """
+        index: int
+        name: str
+        if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
+            base_name = matches.group(1)
+            index = int(matches.group(2))
+            name = f'{base_name} ({index + 1})'
+        else:
+            index = 1
+            name = base_name
+        basic_screen_names: list[str] = [screen.name for screen in self.basic_screens_by_id.values()]
+        while name in basic_screen_names:
+            index += 1
+            name = f'{base_name} ({index})'
+        return name
+
     @cached_property
     def families_by_id(self) -> dict[int, Family]:
         if self.errors:
