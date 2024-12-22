@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -364,6 +365,37 @@ class Event:
             tournament.uniq_id: tournament
             for tournament in self.tournaments_by_id.values()
         }
+
+    def get_unused_tournament_uniq_id(self, base_uniq_id: str) -> str:
+        index: int
+        uniq_id: str
+        if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
+            base_uniq_id = matches.group(1)
+            index = int(matches.group(2))
+            uniq_id = f'{base_uniq_id}-{index + 1}'
+        else:
+            index = 1
+            uniq_id = base_uniq_id
+        while uniq_id in self.tournaments_by_uniq_id:
+            index += 1
+            uniq_id = f'{base_uniq_id}-{index}'
+        return uniq_id
+
+    def get_unused_tournament_name(self, base_name: str) -> str:
+        index: int
+        name: str
+        if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
+            base_name = matches.group(1)
+            index = int(matches.group(2))
+            name = f'{base_name} ({index + 1})'
+        else:
+            index = 1
+            name = base_name
+        tournament_names: list[str] = [tournament.name for tournament in self.tournaments_by_id.values()]
+        while name in tournament_names:
+            index += 1
+            name = f'{base_name} ({index})'
+        return name
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:

@@ -1,9 +1,7 @@
 <div class="modal-dialog modal-dialog-centered admin-tournament-edit-modal d-block w-80 mw-100">
     <form
-            {% if action == 'create' %}
-                hx-post="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-            {% elif action == 'clone' %}
-                hx-post="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+            {% if action in ['create', 'clone', ] %}
+                hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
             {% elif action == 'update' %}
                 hx-patch="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
             {% elif action == 'delete' %}
@@ -16,10 +14,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">
-                    {% if action == 'create' %}
+                    {% if action in ['create', 'clone', ] %}
                         Création d'un tournoi
-                    {% elif action == 'clone' %}
-                        Duplication du tournoi [{{ admin_tournament.uniq_id }}]
                     {% elif action == 'update' %}
                         Modification du tournoi [{{ admin_tournament.uniq_id }}]
                     {% elif action == 'delete' %}
@@ -42,7 +38,7 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-                   {% if admin_tournament.dependent_families %}
+                    {% if admin_tournament.dependent_families %}
                         <p>Les familles d'écrans suivantes seront supprimées :</p>
                         <ul>
                             {% for family in admin_tournament.dependent_families %}
@@ -70,7 +66,7 @@
                             {% endif %}
                         </div>
                     {% endwith %}
-                {% elif action in ['create', 'update', 'clone', ] %}
+                {% else %}
                     <h3>
                         Propriétés
                     </h3>
@@ -220,8 +216,6 @@
                             {% endwith %}
                         </div>
                     </div>
-                {% endif %}
-                {% if action == 'update' %}
                     <h3>
                         Cadence
                     </h3>
@@ -450,10 +444,8 @@
                                 data-bs-dismiss="modal"
                         >
                             <i class="bi-floppy-fill"></i>
-                            {% if action == 'create' %}
+                            {% if action in ['create', 'clone', ] %}
                                 Créer
-                            {% elif action == 'clone' %}
-                                Dupliquer
                             {% elif action == 'update' %}
                                 Modifier
                             {% elif action == 'delete' %}

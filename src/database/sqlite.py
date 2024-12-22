@@ -1310,27 +1310,6 @@ class EventDatabase(SQLiteDatabase):
         self._execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
         self.set_last_update()
 
-    def clone_stored_tournament(
-            self, tournament_id: int, new_uniq_id: str, new_name: str, new_path: str | None, new_filename: str | None,
-            new_ffe_id: int | None, new_ffe_password: str | None,
-    ) -> StoredTournament:
-        stored_tournament = self.get_stored_tournament(tournament_id)
-        stored_tournament.id = None
-        stored_tournament.uniq_id = new_uniq_id
-        stored_tournament.name = new_name
-        stored_tournament.path = new_path
-        stored_tournament.filename = new_filename
-        stored_tournament.ffe_id = new_ffe_id
-        stored_tournament.ffe_password = new_ffe_password
-        stored_tournament.last_update = time.time(),
-        stored_tournament.last_result_update = 0.0
-        stored_tournament.last_illegal_move_update = 0.0
-        stored_tournament.last_check_in_update = 0.0
-        stored_tournament.last_ffe_upload = 0.0
-        stored_tournament.last_ffe_rules_upload = 0.0
-        stored_tournament.last_chessevent_download = 0.0
-        return self._write_stored_tournament(stored_tournament)
-
     def set_tournament_last_ffe_upload(self, tournament_id: int):
         self._execute(
             'UPDATE `tournament` SET `last_ffe_upload` = ? WHERE `id` = ?',

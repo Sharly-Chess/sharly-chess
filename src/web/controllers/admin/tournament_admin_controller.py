@@ -88,6 +88,15 @@ class TournamentAdminController(AbstractEventAdminController):
         filename: str | None = None
         ffe_id: int | None = None
         ffe_password: str | None = None
+        time_control_initial_time: int | None = None
+        time_control_increment: int | None = None
+        time_control_handicap_penalty_value: int | None = None
+        time_control_handicap_penalty_step: int | None = None
+        time_control_handicap_min_time: int | None = None
+        chessevent_id: int | None = None
+        chessevent_tournament_name: str | None = None
+        record_illegal_moves: int | None = None
+        rules: str | None = None
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
@@ -103,21 +112,6 @@ class TournamentAdminController(AbstractEventAdminController):
                 if ffe_password and not re.match('^[A-Z]{10}$', ffe_password):
                     errors['ffe_password'] = \
                         'Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules.'
-            case 'delete':
-                pass
-            case _:
-                raise ValueError(f'action=[{action}]')
-        time_control_initial_time: int | None = None
-        time_control_increment: int | None = None
-        time_control_handicap_penalty_value: int | None = None
-        time_control_handicap_penalty_step: int | None = None
-        time_control_handicap_min_time: int | None = None
-        chessevent_id: int | None = None
-        chessevent_tournament_name: str | None = None
-        record_illegal_moves: int | None = None
-        rules: str | None = None
-        match action:
-            case 'update':
                 time_control_initial_time = WebContext.form_data_to_int(data, 'time_control_initial_time')
                 time_control_increment = WebContext.form_data_to_int(data, 'time_control_increment')
                 time_control_handicap_penalty_value = WebContext.form_data_to_int(
@@ -130,12 +124,12 @@ class TournamentAdminController(AbstractEventAdminController):
                 chessevent_tournament_name = WebContext.form_data_to_str(data, 'chessevent_tournament_name')
                 record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(data, errors)
                 rules = cls._admin_validate_rules_update_data(data, errors)
-            case 'delete' | 'create' | 'clone':
+            case 'delete':
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
         return StoredTournament(
-            id=web_context.admin_tournament.id if action != 'create' else None,
+            id=web_context.admin_tournament.id if action not in ['create', 'clone', ] else None,
             uniq_id=uniq_id,
             name=name,
             path=path,
@@ -185,63 +179,79 @@ class TournamentAdminController(AbstractEventAdminController):
                 pass
             case 'tournament':
                 if data is None:
-                    data = {}
+                    uniq_id: str | None = None
+                    name: str | None = None
                     match action:
                         case 'update':
-                            data['uniq_id'] = WebContext.value_to_form_data(
+                            uniq_id = web_context.admin_tournament.stored_tournament.uniq_id
+                            name = web_context.admin_tournament.stored_tournament.name
+                        case 'create':
+                            uniq_id = web_context.admin_event.get_unused_tournament_uniq_id('tournament')
+                            name = web_context.admin_event.get_unused_tournament_name('Tournoi')
+                        case 'clone':
+                            uniq_id = web_context.admin_event.get_unused_tournament_uniq_id(
                                 web_context.admin_tournament.stored_tournament.uniq_id)
-                        case 'create' | 'clone':
-                            data['uniq_id'] = ''
+                            name = web_context.admin_event.get_unused_tournament_name(
+                                web_context.admin_tournament.stored_tournament.name)
                         case 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
+                    path: str | None = None
+                    filename: str | None = None
+                    ffe_id: int | None = None
+                    ffe_password: str | None = None
+                    time_control_initial_time: int | None = None
+                    time_control_increment: int | None = None
+                    time_control_handicap_penalty_value: int | None = None
+                    time_control_handicap_penalty_step: int | None = None
+                    time_control_handicap_min_time: int | None = None
+                    chessevent_id: int | None = None
+                    chessevent_tournament_name: str | None = None
+                    record_illegal_moves: int | None = None
+                    rules: str | None = None
                     match action:
                         case 'update' | 'clone':
-                            data['name'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.name)
-                            data['path'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.path)
-                            data['filename'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.filename)
-                            data['ffe_id'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.ffe_id)
-                            data['ffe_password'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.ffe_password)
-                        case 'create':
-                            data['name'] = ''
-                            data['path'] = ''
-                            data['filename'] = ''
-                            data['ffe_id'] = ''
-                            data['ffe_password'] = ''
-                        case 'delete':
+                            path = web_context.admin_tournament.stored_tournament.path
+                            time_control_initial_time = web_context.admin_tournament.stored_tournament.time_control_initial_time
+                            time_control_increment = web_context.admin_tournament.stored_tournament.time_control_increment
+                            time_control_handicap_penalty_value = web_context.admin_tournament.stored_tournament.time_control_handicap_penalty_value
+                            time_control_handicap_penalty_step = web_context.admin_tournament.stored_tournament.time_control_handicap_penalty_step
+                            time_control_handicap_min_time = web_context.admin_tournament.stored_tournament.time_control_handicap_min_time
+                            chessevent_id = web_context.admin_tournament.stored_tournament.chessevent_id
+                            chessevent_tournament_name = web_context.admin_tournament.stored_tournament.chessevent_tournament_name
+                            record_illegal_moves = web_context.admin_tournament.stored_tournament.record_illegal_moves
+                            rules = web_context.admin_tournament.stored_tournament.rules
+                        case 'create' | 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update':
-                            data['time_control_initial_time'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.time_control_initial_time)
-                            data['time_control_increment'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.time_control_increment)
-                            data['time_control_handicap_penalty_value'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.time_control_handicap_penalty_value)
-                            data['time_control_handicap_penalty_step'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.time_control_handicap_penalty_step)
-                            data['time_control_handicap_min_time'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.time_control_handicap_min_time)
-                            data['chessevent_id'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.chessevent_id)
-                            data['chessevent_tournament_name'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.chessevent_tournament_name)
-                            data['record_illegal_moves'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.record_illegal_moves)
-                            data['rules'] = WebContext.value_to_form_data(
-                                web_context.admin_tournament.stored_tournament.rules)
-                        case 'delete' | 'clone' | 'create':
+                            filename = web_context.admin_tournament.stored_tournament.filename
+                            ffe_id = web_context.admin_tournament.stored_tournament.ffe_id
+                            ffe_password = web_context.admin_tournament.stored_tournament.ffe_password
+                        case 'clone' | 'create' | 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
+                    data = {
+                        'uniq_id': WebContext.value_to_form_data(uniq_id),
+                        'name': WebContext.value_to_form_data(name),
+                        'path': WebContext.value_to_form_data(path),
+                        'filename': WebContext.value_to_form_data(filename),
+                        'time_control_initial_time': WebContext.value_to_form_data(time_control_initial_time),
+                        'time_control_increment': WebContext.value_to_form_data(time_control_increment),
+                        'time_control_handicap_penalty_value': WebContext.value_to_form_data(time_control_handicap_penalty_value),
+                        'time_control_handicap_penalty_step': WebContext.value_to_form_data(time_control_handicap_penalty_step),
+                        'time_control_handicap_min_time': WebContext.value_to_form_data(time_control_handicap_min_time),
+                        'chessevent_id': WebContext.value_to_form_data(chessevent_id),
+                        'chessevent_tournament_name': WebContext.value_to_form_data(chessevent_tournament_name),
+                        'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
+                        'rules': WebContext.value_to_form_data(rules),
+                        'ffe_id': WebContext.value_to_form_data(ffe_id),
+                        'ffe_password': WebContext.value_to_form_data(ffe_password),
+                    }
                     stored_tournament: StoredTournament = cls._admin_validate_tournament_update_data(
                         action, web_context, data)
                     errors = stored_tournament.errors
@@ -311,14 +321,12 @@ class TournamentAdminController(AbstractEventAdminController):
         event_loader: EventLoader = EventLoader.get(request=request)
         with (EventDatabase(web_context.admin_event.uniq_id, write=True) as event_database):
             match action:
-                case 'create':
+                case 'create' | 'clone':
                     stored_tournament = event_database.add_stored_tournament(stored_tournament)
                     event_database.commit()
                     Message.success(request, f'Le tournoi [{stored_tournament.uniq_id}] a été créé.')
                     event_loader.clear_cache(event_uniq_id)
-                    return self._admin_event_tournaments_render(
-                        request, event_uniq_id=event_uniq_id, modal='tournament', action='update',
-                        tournament_id=stored_tournament.id)
+                    return self._admin_event_tournaments_render(request, event_uniq_id=event_uniq_id)
                 case 'update':
                     stored_tournament = event_database.update_stored_tournament(stored_tournament)
                     event_database.commit()
@@ -331,19 +339,6 @@ class TournamentAdminController(AbstractEventAdminController):
                     Message.success(request, f'Le tournoi [{web_context.admin_tournament.uniq_id}] a été supprimé.')
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_tournaments_render(request, event_uniq_id=event_uniq_id)
-                case 'clone':
-                    stored_tournament = event_database.clone_stored_tournament(
-                        web_context.admin_tournament.id, stored_tournament.uniq_id, stored_tournament.name,
-                        stored_tournament.path, stored_tournament.filename, stored_tournament.ffe_id,
-                        stored_tournament.ffe_password, )
-                    event_database.commit()
-                    Message.success(
-                        request, f'Le tournoi [{web_context.admin_tournament.uniq_id}] a été dupliqué '
-                                 f'([{stored_tournament.uniq_id}]).')
-                    event_loader.clear_cache(event_uniq_id)
-                    return self._admin_event_tournaments_render(
-                        request, event_uniq_id=event_uniq_id, modal='tournament', action='update',
-                        tournament_id=stored_tournament.id)
                 case _:
                     raise ValueError(f'action=[{action}]')
 
@@ -358,19 +353,6 @@ class TournamentAdminController(AbstractEventAdminController):
     ) -> Template | ClientRedirect:
         return self._admin_tournament_update(
             request, event_uniq_id=event_uniq_id, action='create', tournament_id=None, data=data)
-
-    @post(
-        path='/admin/tournament-clone/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-clone'
-    )
-    async def htmx_admin_tournament_clone(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
-            event_uniq_id: str,
-            tournament_id: int | None,
-    ) -> Template | ClientRedirect:
-        return self._admin_tournament_update(
-            request, event_uniq_id=event_uniq_id, action='clone', tournament_id=tournament_id, data=data)
 
     @patch(
         path='/admin/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
