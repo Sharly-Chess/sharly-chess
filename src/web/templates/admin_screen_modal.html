@@ -46,7 +46,19 @@
                     </h3>
                 {% else %}
                     <h3>
-                        Propriétés
+                        {% if screen_type == 'input' %}
+                            Propriétés (saisie des résultats)
+                        {% elif screen_type == 'boards' %}
+                            Propriétés (appariements par échiquier)
+                        {% elif screen_type == 'players' %}
+                            Propriétés (appariements par ordre alphabétique)
+                        {% elif screen_type == 'results' %}
+                            Propriétés (derniers résultats)
+                        {% elif screen_type == 'image' %}
+                            Propriétés (image)
+                        {% else %}
+                            ?
+                        {% endif %}
                     </h3>
                     <div class="row">
                         <div class="col-3">
