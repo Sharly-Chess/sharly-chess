@@ -58,7 +58,7 @@ class RotatorAdminController(AbstractEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        field = 'uniq_id'
+        field: str = 'uniq_id'
         uniq_id: str = WebContext.form_data_to_str(data, field)
         public: bool | None = None
         delay: int | None = None
