@@ -15,7 +15,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite import EventDatabase
-from database.store import StoredTournament
+from database.store import StoredTournament, StoredScreen
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
 from web.controllers.index_controller import WebContext
 from web.messages import Message
@@ -323,8 +323,42 @@ class TournamentAdminController(AbstractEventAdminController):
             match action:
                 case 'create' | 'clone':
                     stored_tournament = event_database.add_stored_tournament(stored_tournament)
+                    if 'add_screens' in data:
+                        for (type, menu, name) in [
+                            ('input', '@input', 'Saisie des résultats', ),
+                            ('boards', '@boards', 'Appariements par échiquier', ),
+                            ('players', '@players', 'Appariements par ordre alphabétique', ),
+                        ]:
+                            stored_screen: StoredScreen = event_database.add_stored_screen(StoredScreen(
+                                id=None,
+                                uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
+                                    f'{stored_tournament.uniq_id}-{type}'),
+                                type='input',
+                                public=True,
+                                name=name,
+                                columns=1,
+                                menu_link=True,
+                                menu_text=None,
+                                menu=menu,
+                                timer_id=None,
+                                input_exit_button=None,
+                                players_show_unpaired=None,
+                                results_limit=None,
+                                results_max_age=None,
+                                results_tournament_ids=[],
+                                background_image=None,
+                                background_color=None,
+                                message_default=True,
+                                message_text=None,
+                            ))
+                            event_database.add_stored_screen_set(stored_screen.id, stored_tournament.id)
                     event_database.commit()
-                    Message.success(request, f'Le tournoi [{stored_tournament.uniq_id}] a été créé.')
+                    if 'add_screens' in data:
+                        Message.success(
+                            request,
+                            f'Le tournoi [{stored_tournament.uniq_id}] a été créé et les écrans par défaut ont été ajoutés.')
+                    else:
+                        Message.success(request, f'Le tournoi [{stored_tournament.uniq_id}] a été créé.')
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_tournaments_render(request, event_uniq_id=event_uniq_id)
                 case 'update':

@@ -435,6 +435,18 @@
                                 ?
                             {% endif %}
                         </button>
+                        {% if action in ['create', 'clone', ] %}
+                            <button
+                                    type="submit"
+                                    name="add_screens"
+                                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                                    data-bs-dismiss="modal"
+                            >
+                                <i class="bi-floppy-fill"></i>
+                                <i class="bi-plus-square-fill"></i>
+                                Créer et ajouter des écrans par défaut
+                            </button>
+                        {% endif %}
                     </div>
                     <div class="col col-6 text-end">
                         <button
