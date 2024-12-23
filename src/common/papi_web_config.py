@@ -160,13 +160,13 @@ class PapiWebConfig(metaclass=Singleton):
     def ffe_upload_delay(self) -> int:
         return self.__ffe_upload_delay
 
-    version: Version = Version('2.4.17')
+    version: Version = Version('2.4.18')
 
     url: str = 'https://github.com/papi-web-org/papi-web'
 
     mail: str = 'papi-web@echecs-bretagne.fr'
 
-    copyright: str = '© Projet Papi-web 2013-2024'
+    copyright: str = '© Projet Papi-web 2013-2025'
 
     event_path: Path = Path() / 'events'
 

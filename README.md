@@ -2,9 +2,9 @@
 
 Papi-web, programme de saisie des résultats dans Papi et de mise en ligne des résultats sur le site fédéral, a été développé à titre gracieux pour les arbitres et organisateur·trices de la Fédération Française des Échecs par Pascal AUBRY depuis 2013.
 
-Papi-web - © Projet Papi-web 2013-2024 - https://github.com/papi-web-org/papi-web ([copyright](COPYRIGHT.md))
+Papi-web - © Projet Papi-web 2013-2025 - https://github.com/papi-web-org/papi-web ([copyright](COPYRIGHT.md))
 
-- **[Télécharger la dernière version stable (2.4.17)](https://github.com/papi-web-org/papi-web/releases/download/2.4.17/papi-web-2.4.17.zip)**
+- **[Télécharger la dernière version stable (2.4.18)](https://github.com/papi-web-org/papi-web/releases/download/2.4.18/papi-web-2.4.18.zip)**
 
 ## Généralités
 

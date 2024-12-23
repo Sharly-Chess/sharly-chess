@@ -2,6 +2,11 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.4.18 - 23 décembre 2024
+- Ajout de la possibilité d'ajouter des écrans par défaut à la création d'un tournoi
+- Correction d'un bug dans la gestion des connexions à ChessEvent
+- Amélioration de l'ergonomie des écrans d'arbitrage
+
 ## Version 2.4.17 - 15 décembre 2024
 - Masquage de tous les champs de saisie des mots de passe
 - Correction d'un bug dans l'affichage du statut des tournois

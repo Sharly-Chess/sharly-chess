@@ -2,7 +2,7 @@
 
 # Papi-web - Copyright
 
-Papi-web - © Projet Papi-web 2013-2024 - https://github.com/papi-web-org/papi-web
+Papi-web - © Projet Papi-web 2013-2025 - https://github.com/papi-web-org/papi-web
 
 ## License
 
