@@ -71,7 +71,7 @@
                         Propriétés
                     </h3>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-3">
                             {% with id='uniq-id', name='uniq_id' %}
                                 <label for="{{ id }}" class="form-label">Identifiant (unique) :</label>
                                 <input
@@ -91,7 +91,7 @@
                                 {% endif %}
                             {% endwith %}
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             {% with id='name', name='name' %}
                                 <label for="{{ id }}" class="form-label">Nom :</label>
                                 <input
@@ -111,12 +111,7 @@
                                 {% endif %}
                             {% endwith %}
                         </div>
-                    </div>
-                    <h3>
-                        Fichier Papi
-                    </h3>
-                    <div class="row">
-                        <div class="col-6">
+                        <div class="col-3">
                             {% with id='path', name='path' %}
                                 <label for="{{ id }}" class="form-label">Répertoire du fichier Papi :</label>
                                 <input
@@ -136,7 +131,7 @@
                                 {% endif %}
                             {% endwith %}
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             {% with id='filename', name='filename' %}
                                 <label for="{{ id }}" class="form-label">Nom du fichier Papi (sans extension) :</label>
                                 <input
@@ -158,10 +153,10 @@
                         </div>
                     </div>
                     <h3>
-                        Site fédéral
+                        Connexions (site fédéral et ChessEvent)
                     </h3>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-3">
                             {% with id='ffe-id', name='ffe_id' %}
                                 <label for="{{ id }}" class="form-label">Numéro d'homologation FFE (facultatif) :</label>
                                 <input
@@ -181,7 +176,7 @@
                                 {% endif %}
                             {% endwith %}
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             {% with id='ffe-password', name='ffe_password' %}
                                 <label for="{{ id }}" class="form-label">Mot de passe de connexion au site fédéral :</label>
                                 <div class="input-group">
@@ -215,123 +210,8 @@
                                 </script>
                             {% endwith %}
                         </div>
-                    </div>
-                    <h3>
-                        Cadence
-                    </h3>
-                    <div class="row">
-                        <div class="col-6">
-                            {% with id='time-control-initial-time', name='time_control_initial_time' %}
-                                <label for="{{ id }}" class="form-label">Temps initial (facultatif) :</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : 300 (5 minutes)"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  Le temps initial à la pendule en secondes (peut être nul si incrément).
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
-                        <div class="col-6">
-                            {% with id='time-control-increment', name='time_control_increment' %}
-                                <label for="{{ id }}" class="form-label">Incrément (facultatif) :</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : 3"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  L'incrément de temps gagné par les joueur·euses à chaque coup.
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
-                    </div>
-                    <h3>
-                        Tournoi à handicap
-                    </h3>
-                    <div class="row">
-                        <div class="col-4">
-                            {% with id='time-control-handicap-penalty-value', name='time_control_handicap_penalty_value' %}
-                                <label for="{{ id }}" class="form-label">Pénalité par tranche :</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : 30 (secondes)"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses).
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
-                        <div class="col-4">
-                            {% with id='time-control-handicap-penalty-step', name='time_control_handicap_penalty_step' %}
-                                <label for="{{ id }}" class="form-label">Tranche de classement :</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : 50 (points Elo)"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  Le nombre de points de différences entre le classement des joueurs servant à calculer le nombre de pénalités appliquées au·à la joueur·euse le·la mieux classé·e.
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
-                        <div class="col-4">
-                            {% with id='time-control-handicap-min-time', name='time_control_handicap_min_time' %}
-                                <label for="{{ id }}" class="form-label">Temps minimal :</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : 60 (secondes)"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  Le temps minimal qui sera accordé au·à la joueur·euse le·la mieux classé·e même si la différence de classement est très importante.
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endwith %}
-                    </div>
-                    <h3>
-                        ChessEvent
-                    </h3>
-                    {% if admin_event.chessevents_by_id %}
-                        <div class="row">
-                            <div class="col-6">
+                        {% if admin_event.chessevents_by_id %}
+                            <div class="col-3">
                                 {% with id='chessevent-id', name='chessevent_id' %}
                                     <label for="{{ id }}" class="form-label">Connexion à ChessEvent :</label>
                                     <select
@@ -355,7 +235,7 @@
                                     {% endif %}
                                 {% endwith %}
                             </div>
-                            <div class="col-6">
+                            <div class="col-3">
                                 {% with id='chessevent-tournament-name', name='chessevent_tournament_name' %}
                                     <label for="{{ id }}" class="form-label">Le nom du tournoi sur la plateforme ChessEvent :</label>
                                     <input
@@ -375,39 +255,116 @@
                                     {% endif %}
                                 {% endwith %}
                             </div>
-                        </div>
                     {% else %}
-                        <div>
+                        <div class="col-6">
                             Pas de connexion à ChessEvent (aucune connexion enregistrée).
                         </div>
                     {% endif %}
                     <h3>
-                        Enregistrement des coups illégaux
+                        Cadence
                     </h3>
-                    {% with id='record-illegal-moves', name='record_illegal_moves' %}
-                        <div>
-                            <label for="{{ id }}" class="form-label">Enregistrement des coups illégaux :</label>
-                            <select
-                                    name="{{ name }}"
-                                    id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error" >
-                                {% for value, text in record_illegal_moves_options.items() %}
-                                    <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>{{ text }}</option>
-                                {% endfor %}
-                            </select>
-                            <div id="{{ id }}-help" class="form-text">
-                              Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde pour un·e joueur·euse
-                                (de 0 à 3, par défaut {% if papi_web_config.default_record_illegal_moves_enabled %}{{ papi_web_config.default_record_illegal_moves_number }}{% else %}0{% endif %}).
-                                Cette valeur peut être modifiée pour chaque tournoi.
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
+                    <div class="row">
+                        <div class="col-3">
+                            {% with id='time-control-initial-time', name='time_control_initial_time' %}
+                                <label for="{{ id }}" class="form-label">Temps initial (facultatif) :</label>
+                                <input
+                                        name="{{ name }}"
+                                        type="text" id="{{ id }}"
+                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                        aria-describedby="{{ id }}-help {{ id }}-error"
+                                        placeholder="Exemple : 300 (5 minutes)"
+                                        value="{{ data[name] }}" />
+                                <div id="{{ id }}-help" class="form-text">
+                                  Le temps initial à la pendule en secondes (peut être nul si incrément).
                                 </div>
-                            {% endif %}
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
                         </div>
-                    {% endwith %}
+                        <div class="col-3">
+                            {% with id='time-control-increment', name='time_control_increment' %}
+                                <label for="{{ id }}" class="form-label">Incrément (facultatif) :</label>
+                                <input
+                                        name="{{ name }}"
+                                        type="text" id="{{ id }}"
+                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                        aria-describedby="{{ id }}-help {{ id }}-error"
+                                        placeholder="Exemple : 3"
+                                        value="{{ data[name] }}" />
+                                <div id="{{ id }}-help" class="form-text">
+                                  L'incrément de temps gagné par les joueur·euses à chaque coup.
+                                </div>
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="col-2">
+                            {% with id='time-control-handicap-penalty-value', name='time_control_handicap_penalty_value' %}
+                                <label for="{{ id }}" class="form-label">Pénalité (handicap) :</label>
+                                <input
+                                        name="{{ name }}"
+                                        type="text" id="{{ id }}"
+                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                        aria-describedby="{{ id }}-help {{ id }}-error"
+                                        placeholder="Exemple : 30 (secondes)"
+                                        value="{{ data[name] }}" />
+                                <div id="{{ id }}-help" class="form-text">
+                                  Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses).
+                                </div>
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="col-2">
+                            {% with id='time-control-handicap-penalty-step', name='time_control_handicap_penalty_step' %}
+                                <label for="{{ id }}" class="form-label">Tranche (handicap) :</label>
+                                <input
+                                        name="{{ name }}"
+                                        type="text" id="{{ id }}"
+                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                        aria-describedby="{{ id }}-help {{ id }}-error"
+                                        placeholder="Exemple : 50 (points Elo)"
+                                        value="{{ data[name] }}" />
+                                <div id="{{ id }}-help" class="form-text">
+                                  Le nombre de points de différences entre le classement des joueurs servant à calculer le nombre de pénalités appliquées au·à la joueur·euse le·la mieux classé·e.
+                                </div>
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="col-2">
+                            {% with id='time-control-handicap-min-time', name='time_control_handicap_min_time' %}
+                                <label for="{{ id }}" class="form-label">Temps minimal (handicap) :</label>
+                                <input
+                                        name="{{ name }}"
+                                        type="text" id="{{ id }}"
+                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                        aria-describedby="{{ id }}-help {{ id }}-error"
+                                        placeholder="Exemple : 60 (secondes)"
+                                        value="{{ data[name] }}" />
+                                <div id="{{ id }}-help" class="form-text">
+                                  Le temps minimal qui sera accordé au·à la joueur·euse le·la mieux classé·e même si la différence de classement est très importante.
+                                </div>
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+                    </div>
                     <h3>
                         Règlement
                     </h3>
@@ -424,6 +381,30 @@
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
                                   Une URL, ou le chemin du règlement sur le serveur, au format PDF (par défaut le règlement de l'évènement).
+                                </div>
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="col-6">
+                            {% with id='record-illegal-moves', name='record_illegal_moves' %}
+                                <label for="{{ id }}" class="form-label">Enregistrement des coups illégaux :</label>
+                                <select
+                                        name="{{ name }}"
+                                        id="{{ id }}"
+                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                        aria-describedby="{{ id }}-help {{ id }}-error" >
+                                    {% for value, text in record_illegal_moves_options.items() %}
+                                        <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>{{ text }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div id="{{ id }}-help" class="form-text">
+                                  Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde pour un·e joueur·euse
+                                    (de 0 à 3, par défaut {% if papi_web_config.default_record_illegal_moves_enabled %}{{ papi_web_config.default_record_illegal_moves_number }}{% else %}0{% endif %}).
+                                    Cette valeur peut être modifiée pour chaque tournoi.
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
