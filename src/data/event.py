@@ -106,7 +106,7 @@ class Event:
 
     @staticmethod
     def _get_unused_item_name(base_name: str, used_names: list[str]) -> str:
-        """ Returns the first unused name in alist looking like base_name:
+        """ Returns the first unused name in a list looking like base_name:
         base_name, or base_name (2), or base_name (n+1)... """
         index: int
         name: str
