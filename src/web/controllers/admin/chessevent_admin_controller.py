@@ -69,12 +69,12 @@ class ChessEventAdminController(AbstractEventAdminController):
             else:
                 match action:
                     case 'create' | 'clone':
-                        if uniq_id in web_context.admin_event.rotators_by_uniq_id:
+                        if uniq_id in web_context.admin_event.chessevents_by_uniq_id:
                             errors[field] = f'La connexion à ChessEvent [{uniq_id}] existe déjà.'
                     case 'update':
                         if uniq_id != web_context.admin_chessevent.uniq_id \
                                 and uniq_id in web_context.admin_event.chessevents_by_uniq_id:
-                            errors['uniq_id'] = \
+                            errors[field] = \
                                 f'Une autre connexion à ChessEvent avec l\'identifiant [{uniq_id}] existe déjà.'
                     case _:
                         raise ValueError(f'action=[{action}]')

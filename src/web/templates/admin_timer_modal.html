@@ -16,14 +16,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">
-                    {% if action == 'create' %}
+                    {% if action in ['create', 'clone', ] %}
                         Création d'un chronomètre
                     {% elif action == 'update' %}
                         Modification du chronomètre [{{ admin_timer.uniq_id }}]
-                    {% elif action == 'clone' %}
-                        Duplication du chronomètre [{{ admin_timer.uniq_id }}]
-                    {% else %}
+                    {% elif action == 'delete' %}
                         Suppression du chronomètre [{{ admin_timer.uniq_id }}]
+                    {% else %}
+                        ?
                     {% endif %}
                 </h2>
             </div>
@@ -58,17 +58,15 @@
                             {% endwith %}
                         </div>
                     </div>
-                    {% if action == 'update' %}
-                        <h3>
-                            Couleurs et délais
-                        </h3>
-                        {% with default_colors=admin_event.timer_colors %}
-                            {% include 'admin_edit_timer_colors.html' %}
-                        {% endwith %}
-                        {% with default_delays=admin_event.timer_delays %}
-                            {% include 'admin_edit_timer_delays.html' %}
-                        {% endwith %}
-                    {% endif %}
+                    <h3>
+                        Couleurs et délais
+                    </h3>
+                    {% with default_colors=admin_event.timer_colors %}
+                        {% include 'admin_edit_timer_colors.html' %}
+                    {% endwith %}
+                    {% with default_delays=admin_event.timer_delays %}
+                        {% include 'admin_edit_timer_delays.html' %}
+                    {% endwith %}
                 {% endif %}
             </div>
             <div class="modal-footer d-block">
@@ -80,14 +78,14 @@
                                 data-bs-dismiss="modal"
                         >
                             <i class="bi-floppy-fill"></i>
-                            {% if action == 'create' %}
+                            {% if action in ['create', 'clone', ] %}
                                 Créer
                             {% elif action == 'update' %}
                                 Modifier
-                            {% elif action == 'clone' %}
-                                Dupliquer
-                            {% else %}
+                            {% elif action == 'delete' %}
                                 Supprimer
+                            {% else %}
+                                ?
                             {% endif %}
                         </button>
                     </div>

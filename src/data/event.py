@@ -387,6 +387,11 @@ class Event:
             for timer in self.timers_by_id.values()
         }
 
+    def get_unused_timer_uniq_id(self, base_uniq_id: str) -> str:
+        """ Returns the first unused timer uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
+        return self._get_unused_item_uniq_id(base_uniq_id, self.timers_by_uniq_id)
+
     @cached_property
     def tournaments_by_id(self) -> dict[int, Tournament]:
         if self.errors:

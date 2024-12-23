@@ -72,35 +72,30 @@ class TimerAdminController(AbstractEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        match action:
-            case 'delete' | 'create' | 'clone' | 'update':
-                uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
-            case _:
-                raise ValueError(f'action=[{action}]')
-        match action:
-            case 'create' | 'clone' | 'update':
-                if not uniq_id:
-                    errors['uniq_id'] = 'Veuillez entrer l\'identifiant du chronomètre.'
-            case 'delete':
-                pass
-            case _:
-                raise ValueError(f'action=[{action}]')
-        match action:
-            case 'create' | 'clone':
-                if uniq_id in web_context.admin_event.timers_by_uniq_id:
-                    errors['uniq_id'] = f'Le chronomètre [{uniq_id}] existe déjà.'
-            case 'update':
-                if uniq_id != web_context.admin_timer.uniq_id and uniq_id in web_context.admin_event.timers_by_uniq_id:
-                    errors['uniq_id'] = f'Le chronomètre [{uniq_id}] existe déjà.'
-            case 'delete':
-                pass
-            case _:
-                raise ValueError(f'action=[{action}]')
+        field: str = 'uniq_id'
+        uniq_id: str = WebContext.form_data_to_str(data, field)
         colors: dict[int, str | None] = {i: None for i in range(1, 4)}
         color_checkboxes: dict[int, bool | None] = {i: None for i in range(1, 4)}
         delays: dict[int, int | None] = {i: None for i in range(1, 4)}
+        if action in ['delete', ]:
+            pass
+        else:
+            if not uniq_id:
+                errors[field] = 'Veuillez entrer l\'identifiant du chronomètre.'
+            else:
+                match action:
+                    case 'create' | 'clone':
+                        if uniq_id in web_context.admin_event.timers_by_uniq_id:
+                            errors[field] = f'Le chronomètre [{uniq_id}] existe déjà.'
+                    case 'update':
+                        if uniq_id != web_context.admin_timer.uniq_id \
+                                and uniq_id in web_context.admin_event.timers_by_uniq_id:
+                            errors[field] = \
+                                f'Le chronomètre [{uniq_id}] existe déjà.'
+                    case _:
+                        raise ValueError(f'action=[{action}]')
         match action:
-            case 'update':
+            case 'update' | 'create' | 'clone':
                 for i in range(1, 4):
                     field: str = f'color_{i}'
                     color_checkboxes[i] = WebContext.form_data_to_bool(data, field + '_checkbox')
@@ -114,12 +109,12 @@ class TimerAdminController(AbstractEventAdminController):
                         delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
                     except ValueError:
                         errors[field] = f'Le délai [{data[field]}] n\'est pas valide (attendu un entier positif).'
-            case 'create' | 'clone' | 'delete':
+            case 'delete':
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
         return StoredTimer(
-            id=web_context.admin_timer.id if action != 'create' else None,
+            id=web_context.admin_timer.id if action not in ['create', 'clone', ] else None,
             uniq_id=uniq_id,
             colors=colors,
             delays=delays,
@@ -219,36 +214,39 @@ class TimerAdminController(AbstractEventAdminController):
                 pass
             case 'timer':
                 if data is None:
-                    data = {}
+                    uniq_id: str | None = None
+                    colors: dict[int, str | None] = {i: None for i in range(1, 4)}
+                    delays: dict[int, int | None] = {i: None for i in range(1, 4)}
                     match action:
                         case 'update':
-                            data['uniq_id'] = WebContext.value_to_form_data(
+                            uniq_id = web_context.admin_timer.stored_timer.uniq_id
+                        case 'create':
+                            uniq_id = web_context.admin_event.get_unused_timer_uniq_id('timer')
+                        case 'clone':
+                            uniq_id = web_context.admin_event.get_unused_timer_uniq_id(
                                 web_context.admin_timer.stored_timer.uniq_id)
-                        case 'create' | 'clone':
-                            data['uniq_id'] = ''
                         case 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
-                            for i in range(1, 4):
-                                data[f'color_{i}'] = WebContext.value_to_form_data(web_context.admin_timer.colors[i])
-                                data[f'color_{i}_checkbox'] = WebContext.value_to_form_data(
-                                    web_context.admin_timer.stored_timer.colors[i] is None)
-                                data[f'delay_{i}'] = WebContext.value_to_form_data(
-                                    web_context.admin_timer.stored_timer.delays[i])
-                        case 'create':
-                            for i in range(1, 4):
-                                data[f'color_{i}'] = ''
-                                data[f'color_{i}_checkbox'] = ''
-                                data[f'delay_{i}'] = ''
-                        case 'delete':
+                            colors = web_context.admin_timer.stored_timer.colors
+                            delays = web_context.admin_timer.stored_timer.delays
+                        case 'create' | 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    stored_timer: StoredTimer = cls._admin_validate_timer_update_data(
-                        action, web_context, data)
+                    data = {
+                        'uniq_id': WebContext.value_to_form_data(uniq_id),
+                    } | {
+                        f'color_{i}': WebContext.value_to_form_data(colors[i]) for i in range(1, 4)
+                    } | {
+                        f'color_{i}_checkbox': WebContext.value_to_form_data(colors[i] is None) for i in range(1, 4)
+                    } | {
+                        f'delay_{i}': WebContext.value_to_form_data(delays[i]) for i in range(1, 4)
+                    }
+                    stored_timer: StoredTimer = cls._admin_validate_timer_update_data(action, web_context, data)
                     errors = stored_timer.errors
                 if errors is None:
                     errors = {}
@@ -342,12 +340,14 @@ class TimerAdminController(AbstractEventAdminController):
             match action:
                 case 'create':
                     stored_timer = event_database.add_stored_timer(stored_timer)
+                    stored_timer_hour: StoredTimerHour = event_database.add_stored_timer_hour(
+                        stored_timer.id, set_datetime=True)
                     event_database.commit()
                     Message.success(request, f'Le chronomètre [{stored_timer.uniq_id}] a été créé.')
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_timers_render(
-                        request, event_uniq_id=event_uniq_id, modal='timer', action='update',
-                        timer_id=stored_timer.id)
+                        request, event_uniq_id=event_uniq_id, modal='timer_hours', timer_id=stored_timer.id,
+                        timer_hour_id=stored_timer_hour.id)
                 case 'update':
                     stored_timer = event_database.update_stored_timer(stored_timer)
                     Message.success(request, f'Le chronomètre [{stored_timer.uniq_id}] a été modifié.')
@@ -375,15 +375,14 @@ class TimerAdminController(AbstractEventAdminController):
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_timers_render(request, event_uniq_id=event_uniq_id)
                 case 'clone':
-                    stored_timer = event_database.clone_stored_timer(web_context.admin_timer.id, stored_timer.uniq_id, )
+                    stored_timer = event_database.add_stored_timer(stored_timer)
+                    for timer_hour in web_context.admin_timer.timer_hours_sorted_by_order:
+                        event_database.clone_stored_timer_hour(timer_hour.id, stored_timer.id)
                     event_database.commit()
-                    Message.success(
-                        request,
-                        f'Le chronomètre [{web_context.admin_timer.uniq_id}] a été dupliqué '
-                        f'([{stored_timer.uniq_id}]).')
+                    Message.success(request, f'Le chronomètre [{stored_timer.uniq_id}] a été créé.')
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_timers_render(
-                        request, event_uniq_id=event_uniq_id, modal='timer', action='update', timer_id=stored_timer.id)
+                        request, event_uniq_id=event_uniq_id, modal='timer_hours', timer_id=stored_timer.id)
                 case _:
                     raise ValueError(f'action=[{action}]')
 

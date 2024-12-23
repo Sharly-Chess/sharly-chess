@@ -1105,18 +1105,6 @@ class EventDatabase(SQLiteDatabase):
         assert stored_timer.id is not None
         return self._write_stored_timer(stored_timer)
 
-    def clone_stored_timer(
-            self, timer_id: int, new_uniq_id: str,
-    ) -> StoredTimer:
-        stored_timer = self.load_stored_timer(timer_id)
-        stored_timer.id = None
-        stored_timer.uniq_id = new_uniq_id
-        new_stored_timer: StoredTimer = self._write_stored_timer(stored_timer)
-        for stored_timer_hour in stored_timer.stored_timer_hours:
-            new_stored_timer.stored_timer_hours.append(
-                self.clone_stored_timer_hour(stored_timer_hour.id, new_stored_timer.id))
-        return new_stored_timer
-
     def delete_stored_timer(self, timer_id: int):
         self._execute('UPDATE `family` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,))
         self._execute('UPDATE `screen` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,))
