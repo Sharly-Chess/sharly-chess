@@ -328,6 +328,7 @@ class ScreenAdminController(AbstractEventAdminController):
                     timer_id: int | None = None
                     background_image: str | None = None
                     background_color: str | None = None
+                    message_default: bool | None = None
                     message_text: str | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool | None = None
@@ -396,21 +397,21 @@ class ScreenAdminController(AbstractEventAdminController):
                                     background_color = web_context.admin_screen.background_color
                                 case _:
                                     raise ValueError(f'screen_type={web_context.admin_screen.type}')
+                            message_default = web_context.admin_screen.stored_screen.message_default
                             message_text = web_context.admin_screen.stored_screen.message_text
                         case 'create':
                             public = True
+                            message_default = True
                             if screen_type != ScreenType.Image:
                                 menu_link = True
                             match screen_type:
                                 case ScreenType.Boards:
-                                    pass
+                                    menu = '@boards'
                                 case ScreenType.Input:
-                                    pass
+                                    menu = '@input'
                                 case ScreenType.Players:
-                                    pass
-                                case ScreenType.Results:
-                                    pass
-                                case ScreenType.Image:
+                                    menu = '@players'
+                                case ScreenType.Results | ScreenType.Image:
                                     pass
                                 case _:
                                     raise ValueError(f'screen_type={screen_type}')
@@ -434,7 +435,7 @@ class ScreenAdminController(AbstractEventAdminController):
                         'background_image': WebContext.value_to_form_data(background_image),
                         'background_color': WebContext.value_to_form_data(background_color),
                         'background_color_checkbox': WebContext.value_to_form_data(background_color is None),
-                        'message_text_checkbox': WebContext.value_to_form_data(message_text is None),
+                        'message_text_checkbox': WebContext.value_to_form_data(message_default),
                         'message_text': WebContext.value_to_form_data(message_text),
                         'init_set_tournament_id': WebContext.value_to_form_data(init_set_tournament_id),
                     }
