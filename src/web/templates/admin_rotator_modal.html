@@ -1,9 +1,7 @@
 <div class="modal-dialog modal-dialog-centered admin-rotator-edit-modal d-block w-80 mw-100">
     <form
-            {% if action == 'create' %}
-                hx-post="{{ url_for('admin-rotator-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-            {% elif action == 'clone' %}
-                hx-post="{{ url_for('admin-rotator-' ~ action, event_uniq_id=admin_event.uniq_id, rotator_id=admin_rotator.id) }}"
+            {% if action in ['create', 'clone', ] %}
+                hx-post="{{ url_for('admin-rotator-create', event_uniq_id=admin_event.uniq_id) }}"
             {% elif action == 'update' %}
                 hx-patch="{{ url_for('admin-rotator-' ~ action, event_uniq_id=admin_event.uniq_id, rotator_id=admin_rotator.id) }}"
             {% elif action == 'delete' %}
@@ -16,10 +14,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">
-                    {% if action == 'create' %}
+                    {% if action in ['create', 'clone', ] %}
                         Création d'un écran rotatif
-                    {% elif action == 'clone' %}
-                        Duplication de l'écran rotatif [{{ admin_rotator.uniq_id }}]
                     {% elif action == 'update' %}
                         Modification de l'écran rotatif [{{ admin_rotator.uniq_id }}]
                     {% elif action == 'delete' %}
@@ -39,29 +35,7 @@
                         Propriétés
                     </h3>
                     <div class="row">
-                        <div class="col-6">
-                            {% with id='uniq-id', name='uniq_id' %}
-                                <div>
-                                    <label for="{{ id }}" class="form-label">Identifiant (unique) :</label>
-                                    <input
-                                            name="{{ name }}"
-                                            type="text" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="Exemple : Appariements"
-                                            value="{{ data[name] }}" />
-                                    <div id="{{ id }}-help" class="form-text">
-                                      L'identifiant unique, utilisé pour référencer l'écran.
-                                    </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
-                        </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             {% with id='public', name='public' %}
                                 <div>
                                     <label
@@ -91,12 +65,34 @@
                                 {% endif %}
                             {% endwith %}
                         </div>
+                        <div class="col-3">
+                            {% with id='uniq-id', name='uniq_id' %}
+                                <div>
+                                    <label for="{{ id }}" class="form-label">Identifiant (unique) :</label>
+                                    <input
+                                            name="{{ name }}"
+                                            type="text" id="{{ id }}"
+                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                            aria-describedby="{{ id }}-help {{ id }}-error"
+                                            placeholder="Exemple : Appariements"
+                                            value="{{ data[name] }}" />
+                                    <div id="{{ id }}-help" class="form-text">
+                                      L'identifiant unique, utilisé pour référencer l'écran.
+                                    </div>
+                                    {% if name in errors %}
+                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                            {{ errors[name] }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endwith %}
+                        </div>
                     </div>
                     <h3>
                         Paramètres
                     </h3>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-2">
                             {% with id='delay', name='delay' %}
                                 <div>
                                     <label for="{{ id }}" class="form-label">Délai :</label>
@@ -120,7 +116,7 @@
                         </div>
                     </div>
                     <h3>
-                        Sélection des écrans
+                        Sélection
                         (<i class="bi-card-list"></i>&nbsp;échiquiers,
                         <i class="bi-pencil-fill"></i>&nbsp;saisie,
                         <i class="bi-people-fill"></i>&nbsp;appariements,
@@ -128,7 +124,8 @@
                         <i class="bi-image"></i>&nbsp;image)
                     </h3>
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-6">
+                            <label class="form-label">Écrans :</label>
                             <div>
                                 {% if admin_event.basic_screens_by_id %}
                                     {% for first in [true, false] %}
@@ -162,15 +159,8 @@
                                 Les tournois qui seront affichés de manière circulaire (les écrans de saisie apparaissent en italique car ils ne devraient normalement pas être inclus dans les écrans rotatifs).
                             </div>
                         </div>
-                    </div>
-                    <h3>
-                        Sélection des familles
-                        (<i class="bi-card-list"></i>&nbsp;échiquiers,
-                        <i class="bi-pencil-fill"></i>&nbsp;saisie,
-                        <i class="bi-people-fill"></i>&nbsp;appariements)
-                    </h3>
-                    <div class="row">
-                        <div class="col-12">
+                        <div class="col-6">
+                            <label class="form-label">Famille d'écrans :</label>
                             <div>
                                 {% if admin_event.families_by_id %}
                                     {% for first in [true, false] %}
@@ -187,7 +177,7 @@
                                                                         {% if data[name] == "on" %}checked{% endif %} />
                                                                 <label for="{{ id }}" class="form-label {% if not first %}fst-italic{%endif %}">
                                                                     <i class="{{ family.icon_str }}"></i>
-                                                                    {{ family.uniq_id }} {{ family.name }}
+                                                                    {{ family.name }}
                                                                 </label>
                                                             </span>
                                                         {% endwith %}
@@ -227,10 +217,8 @@
                                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                         >
                             <i class="bi-floppy-fill"></i>
-                           {% if action == 'create' %}
+                           {% if action in ['create', 'clone', ] %}
                                 Créer
-                            {% elif action == 'clone' %}
-                                Dupliquer
                             {% elif action == 'update' %}
                                 Modifier
                             {% elif action == 'delete' %}

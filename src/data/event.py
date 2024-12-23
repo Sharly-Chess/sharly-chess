@@ -545,6 +545,23 @@ class Event:
             for rotator in self.rotators_by_id.values()
         }
 
+    def get_unused_rotator_uniq_id(self, base_uniq_id: str) -> str:
+        """ Returns the first unused rotator uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
+        index: int
+        uniq_id: str
+        if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
+            base_uniq_id = matches.group(1)
+            index = int(matches.group(2))
+            uniq_id = f'{base_uniq_id}-{index + 1}'
+        else:
+            index = 1
+            uniq_id = base_uniq_id
+        while uniq_id in self.rotators_by_uniq_id:
+            index += 1
+            uniq_id = f'{base_uniq_id}-{index}'
+        return uniq_id
+
     def _add_message(
             self, level: int, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
             family: Family | None = None, timer: Timer | None = None, timer_hour: TimerHour | None = None,

@@ -1948,21 +1948,3 @@ class EventDatabase(SQLiteDatabase):
     def delete_stored_rotator(self, rotator_id: int):
         self._execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
         self.set_last_update()
-
-    def clone_stored_rotator(
-            self, rotator_id: int,
-    ) -> StoredRotator:
-        stored_rotator = self.get_stored_rotator(rotator_id)
-        stored_rotator.id = None
-        self._execute(
-            'SELECT uniq_id FROM `rotator`',
-            (),
-        )
-        uniq_ids: list[str] = [row['uniq_id'] for row in self._fetchall()]
-        uniq_id: str = f'{stored_rotator.uniq_id}-clone'
-        clone_index: int = 1
-        stored_rotator.uniq_id = uniq_id
-        while stored_rotator.uniq_id in uniq_ids:
-            clone_index += 1
-            stored_rotator.uniq_id = f'{uniq_id}{clone_index}'
-        return self._write_stored_rotator(stored_rotator)
