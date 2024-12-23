@@ -34,23 +34,43 @@
             <i class="bi-arrow-clockwise"></i>
         </button>
     </span>
-    <span {{ tooltip_attributes('info', 'Ajouter une nouvelle famille d\'écrans à l\'évènement.' if admin_event.tournaments_by_id else 'Vous devez créer un tournoi avant de pouvoir créer des familles d\'écrans', 'top') }}>
-        <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
-                {% if not admin_event.tournaments_by_id %}
-                    disabled
-                {% endif %}
-        >
-            <i class="bi-plus-square-fill"></i> Créer une famille
-        </button>
-    </span>
 {% endblock %}
 
 {% block cards_container_cards %}
+    <div class="row">
+        <div class="col-12 mb-2">
+            {% set no_tournament_message='Vous devez créer un tournoi avant de pouvoir créer des familles d\'écrans' %}
+            {% for family_type, family_data in {
+                'input': {
+                    'text': 'Saisie des résultats',
+                    'tooltip_text': 'Ajouter à l\'évènement une nouvelle famille d\'écrans de saisie des résultats.',
+                },
+                'boards': {
+                    'text': 'Appariements par échiquiers',
+                    'tooltip_text': 'Ajouter à l\'évènement une nouvelle famille d\'écrans d\'affichage des appariements par échiquier.',
+                },
+                'players': {
+                    'text': 'Appariements par ordre alphabétique',
+                    'tooltip_text': 'Ajouter à l\'évènement une nouvelle famille d\'écrans d\'affichage des appariements par ordre alphabétique.',
+                },
+            }.items() %}
+                <span {{ tooltip_attributes('info', family_data.tooltip_text if admin_event.tournaments_by_id else no_tournament_message, 'top') }}>
+                    <button
+                            class="btn btn-primary text-nowrap"
+                            hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
+                            preload
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            {% if not admin_event.tournaments_by_id %}
+                                disabled
+                            {% endif %}
+                    >
+                        <i class="bi-plus-square-fill"></i> {{ family_data.text }}
+                    </button>
+                </span>
+            {% endfor %}
+        </div>
+    </div>
     <div class="row">
         {% if admin_event.families_by_id %}
             {% for family in admin_event.families_by_id.values() %}

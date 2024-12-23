@@ -1605,22 +1605,6 @@ class EventDatabase(SQLiteDatabase):
     def _delete_tournament_stored_families(self, tournament_id: int):
         self._execute('DELETE FROM `family` WHERE `tournament_id` = ?;', (tournament_id,))
 
-    def clone_stored_family(
-            self,
-            family_id: int,
-            new_uniq_id: str,
-            new_public: bool,
-            new_name: str,
-            new_tournament_id: int,
-    ) -> StoredFamily:
-        stored_family = self.get_stored_family(family_id)
-        stored_family.id = None
-        stored_family.uniq_id = new_uniq_id
-        stored_family.public = new_public
-        stored_family.name = new_name
-        stored_family.tournament_id = new_tournament_id
-        return self._write_stored_family(stored_family)
-
     """
     ---------------------------------------------------------------------------------
     StoredScreen
