@@ -1,9 +1,7 @@
 <div class="modal-dialog modal-dialog-centered admin-chessevent-edit-modal d-block w-80 mw-100">
     <form
-            {% if action == 'create' %}
-                hx-post="{{ url_for('admin-chessevent-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-            {% elif action == 'clone' %}
-                hx-post="{{ url_for('admin-chessevent-' ~ action, event_uniq_id=admin_event.uniq_id, chessevent_id=admin_chessevent.id) }}"
+            {% if action in ['create', 'clone', ] %}
+                hx-post="{{ url_for('admin-chessevent-create', event_uniq_id=admin_event.uniq_id) }}"
             {% elif action == 'update' %}
                 hx-patch="{{ url_for('admin-chessevent-' ~ action, event_uniq_id=admin_event.uniq_id, chessevent_id=admin_chessevent.id) }}"
             {% elif action == 'delete' %}
@@ -16,12 +14,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">
-                    {% if action == 'create' %}
+                    {% if action in ['create', 'clone', ] %}
                         Création d'une connexion à ChessEvent
                     {% elif action == 'update' %}
                         Modification de la connexion à ChessEvent [{{ admin_chessevent.uniq_id }}]
-                    {% else %}
+                    {% elif action == 'delete' %}
                         Suppression de la connexion à ChessEvent [{{ admin_chessevent.uniq_id }}]
+                    {% else %}
+                        ?
                     {% endif %}
                 </h2>
             </div>
@@ -162,12 +162,14 @@
                                 data-bs-dismiss="modal"
                         >
                             <i class="bi-floppy-fill"></i>
-                            {% if action == 'create' %}
+                            {% if action in ['create', 'clone', ] %}
                                 Créer
                             {% elif action == 'update' %}
                                 Modifier
-                            {% else %}
+                            {% elif action == 'delete' %}
                                 Supprimer
+                            {% else %}
+                                ?
                             {% endif %}
                         </button>
                     </div>

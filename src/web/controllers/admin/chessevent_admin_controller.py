@@ -56,41 +56,48 @@ class ChessEventAdminController(AbstractEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
+        field: str = 'uniq_id'
+        uniq_id: str = WebContext.form_data_to_str(data, field)
+        user_id: str | None = None
+        password: str | None = None
+        event_id: str | None = None
+        if action in ['delete', ]:
+            pass
+        else:
+            if not uniq_id:
+                errors[field] = 'Veuillez entrer l\'identifiant de la connexion à ChessEvent.'
+            else:
+                match action:
+                    case 'create' | 'clone':
+                        if uniq_id in web_context.admin_event.rotators_by_uniq_id:
+                            errors[field] = f'La connexion à ChessEvent [{uniq_id}] existe déjà.'
+                    case 'update':
+                        if uniq_id != web_context.admin_chessevent.uniq_id \
+                                and uniq_id in web_context.admin_event.chessevents_by_uniq_id:
+                            errors['uniq_id'] = \
+                                f'Une autre connexion à ChessEvent avec l\'identifiant [{uniq_id}] existe déjà.'
+                    case _:
+                        raise ValueError(f'action=[{action}]')
         match action:
-            case 'create':
-                if not uniq_id:
-                    errors['uniq_id'] = 'Veuillez entrer l\'identifiant de la connexion à ChessEvent.'
-                elif uniq_id in web_context.admin_event.chessevents_by_uniq_id:
-                    errors['uniq_id'] = f'La connexion à ChessEvent [{uniq_id}] existe déjà.'
-            case 'update':
-                if not uniq_id:
-                    errors['uniq_id'] = 'Veuillez entrer l\'identifiant de la connexion à ChessEvent.'
-                elif uniq_id != web_context.admin_chessevent.uniq_id \
-                        and uniq_id in web_context.admin_event.chessevents_by_uniq_id:
-                    errors['uniq_id'] = \
-                        f'Une autre connexion à ChessEvent avec l\'identifiant [{uniq_id}] existe déjà.'
-            case 'delete':
-                pass
-            case _:
-                raise ValueError(f'action=[{action}]')
-        user_id: str = WebContext.form_data_to_str(data, 'user_id')
-        password: str = WebContext.form_data_to_str(data, 'password')
-        event_id: str = WebContext.form_data_to_str(data, 'event_id')
-        match action:
-            case 'create' | 'update':
+            case 'create' | 'update' | 'clone':
+                field = 'user_id'
+                user_id = WebContext.form_data_to_str(data, field)
                 if not user_id:
-                    errors['user_id'] = 'Veuillez entrer l\'identifiant de connexion à ChessEvent.'
+                    errors[field] = 'Veuillez entrer l\'identifiant de connexion à ChessEvent.'
+                field = 'password'
+                password = WebContext.form_data_to_str(data, field)
                 if not password:
-                    errors['password'] = 'Veuillez entrer le mot de passe de connexion à ChessEvent.'
+                    errors[field] = 'Veuillez entrer le mot de passe de connexion à ChessEvent.'
+                field = 'event_id'
+                event_id = WebContext.form_data_to_str(data, field)
                 if not event_id:
-                    errors['event_id'] = 'Veuillez entrer le nom de l\'évènement ChessEvent.'
+                    errors[field] = 'Veuillez entrer le nom de l\'évènement ChessEvent.'
             case 'delete':
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
         return StoredChessEvent(
-            id=web_context.admin_chessevent.id if action != 'create' else None,
+            id=web_context.admin_chessevent.id if action not in ['create', 'clone', ] else None,
             uniq_id=uniq_id,
             user_id=user_id,
             password=password,
@@ -118,27 +125,39 @@ class ChessEventAdminController(AbstractEventAdminController):
                 pass
             case 'chessevent':
                 if data is None:
-                    data: dict[str, str] = {}
+                    uniq_id: str | None = None
+                    user_id: str | None = None
+                    password: str | None = None
+                    event_id: str | None = None
                     match action:
                         case 'update':
-                            data['uniq_id'] = WebContext.value_to_form_data(
-                                web_context.admin_chessevent.stored_chessevent.uniq_id)
-                            data['event_id'] = WebContext.value_to_form_data(
-                                web_context.admin_chessevent.stored_chessevent.event_id)
-                            data['user_id'] = WebContext.value_to_form_data(
-                                web_context.admin_chessevent.stored_chessevent.user_id)
-                            data['password'] = WebContext.value_to_form_data(
-                                web_context.admin_chessevent.stored_chessevent.password)
+                            uniq_id = web_context.admin_chessevent.stored_chessevent.uniq_id
                         case 'create':
-                            data['uniq_id'] = ''
-                            data['uniq_id'] = ''
-                            data['event_id'] = ''
-                            data['user_id'] = ''
-                            data['password'] = ''
+                            uniq_id = web_context.admin_event.get_unused_chessevent_uniq_id('chessevent')
+                        case 'clone':
+                            uniq_id = web_context.admin_event.get_unused_chessevent_uniq_id(
+                                web_context.admin_chessevent.stored_chessevent.uniq_id)
                         case 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
+                    match action:
+                        case 'update' | 'clone':
+                            event_id = web_context.admin_chessevent.stored_chessevent.event_id
+                            user_id = web_context.admin_chessevent.stored_chessevent.user_id
+                            password = web_context.admin_chessevent.stored_chessevent.password
+                        case 'create':
+                            pass
+                        case 'delete':
+                            pass
+                        case _:
+                            raise ValueError(f'action=[{action}]')
+                    data: dict[str, str] = {
+                        'uniq_id': WebContext.value_to_form_data(uniq_id),
+                        'event_id': WebContext.value_to_form_data(event_id),
+                        'user_id': WebContext.value_to_form_data(user_id),
+                        'password': WebContext.value_to_form_data(password),
+                    }
                     stored_chessevent: StoredChessEvent = cls._admin_validate_chessevent_update_data(
                         action, web_context, data)
                     errors = stored_chessevent.errors
@@ -199,8 +218,8 @@ class ChessEventAdminController(AbstractEventAdminController):
         stored_chessevent: StoredChessEvent = self._admin_validate_chessevent_update_data(action, web_context, data)
         if stored_chessevent.errors:
             return self._admin_event_chessevents_render(
-                request, action=action, event_uniq_id=event_uniq_id, chessevent_id=chessevent_id, data=data,
-                errors=stored_chessevent.errors)
+                request, modal='chessevent', action=action, event_uniq_id=event_uniq_id, chessevent_id=chessevent_id,
+                data=data, errors=stored_chessevent.errors)
         event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(web_context.admin_event.uniq_id, write=True) as event_database:
             match action:
@@ -208,23 +227,19 @@ class ChessEventAdminController(AbstractEventAdminController):
                     stored_chessevent = event_database.add_stored_chessevent(stored_chessevent)
                     event_database.commit()
                     Message.success(request, f'La connexion à ChessEvent [{stored_chessevent.uniq_id}] a été créée.')
-                    event_loader.clear_cache(event_uniq_id)
-                    return self._admin_event_chessevents_render(request, event_uniq_id=event_uniq_id)
                 case 'update':
                     stored_chessevent = event_database.update_stored_chessevent(stored_chessevent)
                     event_database.commit()
                     Message.success(request, f'La connexion à ChessEvent [{stored_chessevent.uniq_id}] a été modifiée.')
-                    event_loader.clear_cache(event_uniq_id)
-                    return self._admin_event_chessevents_render(request, event_uniq_id=event_uniq_id)
                 case 'delete':
                     event_database.delete_stored_chessevent(web_context.admin_chessevent.id)
                     event_database.commit()
                     Message.success(
                         request, f'La connexion à ChessEvent [{web_context.admin_chessevent.uniq_id}] a été supprimée.')
-                    event_loader.clear_cache(event_uniq_id)
-                    return self._admin_event_chessevents_render(request, event_uniq_id=event_uniq_id)
                 case _:
                     raise ValueError(f'action=[{action}]')
+        event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_chessevents_render(request, event_uniq_id=event_uniq_id)
 
     @post(
         path='/admin/chessevent-create/{event_uniq_id:str}',
@@ -237,31 +252,6 @@ class ChessEventAdminController(AbstractEventAdminController):
     ) -> Template | ClientRedirect:
         return self._admin_chessevent_update(
             request, event_uniq_id=event_uniq_id, action='create', chessevent_id=None, data=data)
-
-    @post(
-        path='/admin/chessevent-clone/{event_uniq_id:str}/{chessevent_id:int}',
-        name='admin-chessevent-clone'
-    )
-    async def htmx_admin_chessevent_clone(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            chessevent_id: int | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
-    ) -> Template | ClientRedirect:
-        web_context: ChessEventAdminWebContext = ChessEventAdminWebContext(
-            request, event_uniq_id=event_uniq_id, admin_event_tab='chessevents', chessevent_id=chessevent_id,
-            data=data)
-        with EventDatabase(web_context.admin_event.uniq_id, write=True) as event_database:
-            stored_chessevent = event_database.clone_stored_chessevent(web_context.admin_chessevent.id)
-            event_database.commit()
-            Message.success(
-                request,
-                f'La connexion à ChessEvent [{web_context.admin_chessevent.uniq_id}] a été dupliquée '
-                f'([{stored_chessevent.uniq_id}]).')
-        EventLoader.get(request=request).clear_cache(event_uniq_id)
-        return self._admin_event_chessevents_render(
-            request, modal='chessevent', action='update', event_uniq_id=event_uniq_id,
-            chessevent_id=stored_chessevent.id)
 
     @patch(
         path='/admin/chessevent-update/{event_uniq_id:str}/{chessevent_id:int}',

@@ -868,24 +868,6 @@ class EventDatabase(SQLiteDatabase):
         self._execute('DELETE FROM `chessevent` WHERE `id` = ?;', (chessevent_id,))
         self.set_last_update()
 
-    def clone_stored_chessevent(
-            self, chessevent_id: int,
-    ) -> StoredChessEvent:
-        stored_chessevent = self.get_stored_chessevent(chessevent_id)
-        stored_chessevent.id = None
-        self._execute(
-            'SELECT uniq_id FROM `chessevent`',
-            (),
-        )
-        uniq_ids: list[str] = [row['uniq_id'] for row in self._fetchall()]
-        uniq_id: str = f'{stored_chessevent.uniq_id}-clone'
-        clone_index: int = 1
-        stored_chessevent.uniq_id = uniq_id
-        while stored_chessevent.uniq_id in uniq_ids:
-            clone_index += 1
-            stored_chessevent.uniq_id = f'{uniq_id}{clone_index}'
-        return self._write_stored_chessevent(stored_chessevent)
-
     """
     ---------------------------------------------------------------------------------
     StoredTimerHour

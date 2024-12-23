@@ -324,6 +324,24 @@ class Event:
             for chessevent in self.chessevents_by_id.values()
         }
 
+    # TODO factorize code between all get_unused_x() methods
+    def get_unused_chessevent_uniq_id(self, base_uniq_id: str) -> str:
+        """ Returns the first unused chessevent uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
+        index: int
+        uniq_id: str
+        if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
+            base_uniq_id = matches.group(1)
+            index = int(matches.group(2))
+            uniq_id = f'{base_uniq_id}-{index + 1}'
+        else:
+            index = 1
+            uniq_id = base_uniq_id
+        while uniq_id in self.chessevents_by_uniq_id:
+            index += 1
+            uniq_id = f'{base_uniq_id}-{index}'
+        return uniq_id
+
     @cached_property
     def timers_by_id(self) -> dict[int, Timer]:
         if self.errors:
