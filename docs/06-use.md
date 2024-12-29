@@ -29,6 +29,14 @@ Les outils d'interface avec la plateforme ChessEvent se lancent en exécutant le
 > [!NOTE]
 > La configuration fournie par défaut dans le fichier `papi-web.ini` est suffisante pour la très grande majorité des cas, **vous n'avez normalement pas à modifier le fichier fourni par défaut**.
 
+### Language (`[i18n]`)
+#### locale
+```
+[i18n]
+locale = en
+```
+Les languages implémentés sont visibles dans le répertoire [`/locale`](../locale).
+Si cette option n'est pas trouvée dans le fichier de configuration, il est demandé à l'utilisateur·ice sa langue préférée, qui est inscrite dans le fichier de configuration.
 
 ### Messages (`[logging]`)
 #### level
@@ -37,6 +45,7 @@ Les outils d'interface avec la plateforme ChessEvent se lancent en exécutant le
 level = INFO
 ```
 Pour obtenir plus de messages utiliser `level = DEBUG`.
+
 ### Réseau (`[web]`)
 #### host
 ```
