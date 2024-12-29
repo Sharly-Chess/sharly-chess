@@ -277,7 +277,7 @@ class PapiWebConfig(metaclass=Singleton):
         return self._ffe_upload_delay or self._default_ffe_upload_delay
 
     """ The version of the application. """
-    version: Version = Version('2.4.18')
+    version: Version = Version('2.4.19')
 
     """ The URL of the project. """
     url: str = 'https://github.com/papi-web-org/papi-web'

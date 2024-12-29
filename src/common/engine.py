@@ -35,6 +35,8 @@ class Engine:
     def __init__(self):
         # before all the rest, initialize a PapiWebConfig instance to set the language.
         papi_web_config: PapiWebConfig = PapiWebConfig()
+        print_interactive_info(
+            f'Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}')
         print_interactive_info(_('Checking Papi-web version...'))
         new_stable_version: Version | None = self._check_version()
         # Engines inheriting from this class should not do anything if property updated is true.

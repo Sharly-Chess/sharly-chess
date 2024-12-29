@@ -4,16 +4,15 @@ from logging import Logger
 import os
 
 from chessevent.chessevent_engine import ChessEventEngine
-from common.i18n import _, ngettext
+from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from ffe.ffe_engine import FFEEngine
 from web.server_engine import ServerEngine
-from common.logger import get_logger
+from common.logger import get_logger, print_interactive_info
 
 try:
     logger: Logger = get_logger()
 
-    logger.info(f'Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}')
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--server', help='start the web server', action='store_true')
     parser.add_argument('-f', '--ffe', help='run the FFE utilities', action='store_true')

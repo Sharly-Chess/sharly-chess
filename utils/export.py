@@ -120,6 +120,7 @@ def build_exe():
 
 
 def create_project():
+    papi_web_config: PapiWebConfig = PapiWebConfig()
     logger.info(f'Creating folder {PROJECT_DIR} from {DATA_DIR}...')
     shutil.copytree(DATA_DIR, PROJECT_DIR)
     dist_exe_file: Path = DIST_DIR / EXE_FILENAME
@@ -138,7 +139,7 @@ def create_project():
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Démarrage du serveur Papi-web, veuillez patienter...\n'
-                f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
+                f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
                 f'bin\\{EXE_FILENAME} --server\n'
                 f'pause\n')
     target_file = PROJECT_DIR / 'ffe.bat'
@@ -146,7 +147,7 @@ def create_project():
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Connexion de Papi-web au serveur fédéral, veuillez patienter...\n'
-                f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
+                f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
                 f'bin\\{EXE_FILENAME} --ffe\n'
                 f'pause\n')
     target_file = PROJECT_DIR / 'chessevent.bat'
@@ -154,7 +155,7 @@ def create_project():
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Connexion de Papi-web à Chess Event, veuillez patienter...\n'
-                f'@rem Papi-web {PapiWebConfig.version} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
+                f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
                 f'bin\\{EXE_FILENAME} --chessevent\n'
                 f'pause\n')
 

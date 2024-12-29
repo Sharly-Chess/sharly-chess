@@ -1,4 +1,4 @@
-#: src/papi_web.py:34
+#: src/papi_web.py:33
 msgid "This program should not be launched directly, use scripts server.bat, ffe.bat and chessevent.bat."
 msgstr ""
 
@@ -32,7 +32,7 @@ msgstr "U"
 
 #: src/chessevent/action_selector.py:72 src/chessevent/action_selector.py:92
 #: src/chessevent/action_selector.py:113 src/chessevent/event_selector.py:29
-#: src/common/engine.py:122 src/ffe/action_selector.py:96
+#: src/common/engine.py:124 src/ffe/action_selector.py:96
 #: src/ffe/event_selector.py:25
 msgid "Q *** THE LETTER TO ANSWER QUIT ***"
 msgstr "Q"
@@ -138,23 +138,23 @@ msgstr ""
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:85 src/common/engine.py:279
-#: src/common/engine.py:408 src/common/engine.py:454 src/ffe/ffe_session.py:99
+#: src/chessevent/chessevent_session.py:85 src/common/engine.py:281
+#: src/common/engine.py:410 src/common/engine.py:456 src/ffe/ffe_session.py:99
 msgid "Failed to read [{url}] (connection error): [{ex}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:88 src/common/engine.py:281
-#: src/common/engine.py:411 src/common/engine.py:457 src/ffe/ffe_session.py:101
+#: src/chessevent/chessevent_session.py:88 src/common/engine.py:283
+#: src/common/engine.py:413 src/common/engine.py:459 src/ffe/ffe_session.py:101
 msgid "Failed to read [{url}] (timeout): [{ex}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:91 src/common/engine.py:283
-#: src/common/engine.py:414 src/common/engine.py:460 src/ffe/ffe_session.py:103
+#: src/chessevent/chessevent_session.py:91 src/common/engine.py:285
+#: src/common/engine.py:416 src/common/engine.py:462 src/ffe/ffe_session.py:103
 msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:95 src/common/engine.py:286
-#: src/common/engine.py:418 src/common/engine.py:464 src/ffe/ffe_session.py:106
+#: src/chessevent/chessevent_session.py:95 src/common/engine.py:288
+#: src/common/engine.py:420 src/common/engine.py:466 src/ffe/ffe_session.py:106
 msgid "Failed to read [{url}]: [{ex}]."
 msgstr ""
 
@@ -203,177 +203,177 @@ msgstr ""
 msgid "Error: [{ex}]."
 msgstr ""
 
-#: src/common/engine.py:38
+#: src/common/engine.py:40
 msgid "Checking Papi-web version..."
 msgstr ""
 
-#: src/common/engine.py:43 src/common/engine.py:104 src/common/engine.py:144
-#: src/common/engine.py:208
+#: src/common/engine.py:45 src/common/engine.py:106 src/common/engine.py:146
+#: src/common/engine.py:210
 msgid "Y *** THE LETTER TO ANSWER YES ***"
 msgstr "Y"
 
-#: src/common/engine.py:44 src/common/engine.py:105 src/common/engine.py:145
-#: src/common/engine.py:209
+#: src/common/engine.py:46 src/common/engine.py:107 src/common/engine.py:147
+#: src/common/engine.py:211
 msgid "N *** THE LETTER TO ANSWER NO ***"
 msgstr "N"
 
-#: src/common/engine.py:47
+#: src/common/engine.py:49
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
 msgstr ""
 
-#: src/common/engine.py:55
+#: src/common/engine.py:57
 msgid "The installation of version [{version}] failed."
 msgstr ""
 
-#: src/common/engine.py:88
+#: src/common/engine.py:90
 msgid "- Version {version} ({events})"
 msgstr ""
 
-#: src/common/engine.py:92
+#: src/common/engine.py:94
 msgid "- Version {version}: no events"
 msgstr ""
 
-#: src/common/engine.py:94
+#: src/common/engine.py:96
 msgid "No event found in previously installed versions."
 msgstr ""
 
-#: src/common/engine.py:96
+#: src/common/engine.py:98
 msgid "No previously installed version found."
 msgstr ""
 
-#: src/common/engine.py:108
+#: src/common/engine.py:110
 msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
 msgstr ""
 
-#: src/common/engine.py:117
+#: src/common/engine.py:119
 msgid "Please choose the version to recover:"
 msgstr ""
 
-#: src/common/engine.py:123
+#: src/common/engine.py:125
 msgid "  - [{q_uc}] Do not recover"
 msgstr ""
 
-#: src/common/engine.py:126
+#: src/common/engine.py:128
 msgid "Please entre the number of the version to recover [{default}]: "
 msgstr ""
 
-#: src/common/engine.py:148
+#: src/common/engine.py:150
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr ""
 
-#: src/common/engine.py:164
+#: src/common/engine.py:166
 msgid "Recovering events from version {version}..."
 msgstr ""
 
-#: src/common/engine.py:169
+#: src/common/engine.py:171
 msgid "Recovering event [{event_uniq_id}]..."
 msgstr ""
 
-#: src/common/engine.py:180
+#: src/common/engine.py:182
 msgid "Event [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]..."
 msgstr ""
 
-#: src/common/engine.py:185
+#: src/common/engine.py:187
 msgid "Recovering custom files..."
 msgstr ""
 
-#: src/common/engine.py:198
+#: src/common/engine.py:200
 msgid "Events recovered: {num} (from directory [{dir}])."
 msgstr ""
 
-#: src/common/engine.py:200
+#: src/common/engine.py:202
 msgid "Tournaments recovered: {num} (from directory [{dir}])."
 msgstr ""
 
-#: src/common/engine.py:204
+#: src/common/engine.py:206
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr ""
 
-#: src/common/engine.py:212
+#: src/common/engine.py:214
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr ""
 
-#: src/common/engine.py:302
+#: src/common/engine.py:304
 msgid "Sending the files to a server..."
 msgstr ""
 
-#: src/common/engine.py:308
+#: src/common/engine.py:310
 msgid "Files have been sent to bin {bin_name}."
 msgstr ""
 
-#: src/common/engine.py:309
+#: src/common/engine.py:311
 msgid "- View the files on filebin.net: {bin_url}"
 msgstr ""
 
-#: src/common/engine.py:310
+#: src/common/engine.py:312
 msgid "- Download the files (ZIP archive): {bin_zip_url}"
 msgstr ""
 
-#: src/common/engine.py:312
+#: src/common/engine.py:314
 msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr ""
 
-#: src/common/engine.py:329
+#: src/common/engine.py:331
 msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr ""
 
-#: src/common/engine.py:341
+#: src/common/engine.py:343
 msgid "Checking the version failed."
 msgstr ""
 
-#: src/common/engine.py:344
+#: src/common/engine.py:346
 msgid "Your Papi-web version is up to date."
 msgstr ""
 
-#: src/common/engine.py:351
+#: src/common/engine.py:353
 msgid "A more recent version is available ([{version}])."
 msgstr ""
 
-#: src/common/engine.py:354
+#: src/common/engine.py:356
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
 msgstr ""
 
-#: src/common/engine.py:362
+#: src/common/engine.py:364
 msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}] must be done manually (upgrade from the last stable version installed on your server)."
 msgstr ""
 
-#: src/common/engine.py:366
+#: src/common/engine.py:368
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr ""
 
-#: src/common/engine.py:378
+#: src/common/engine.py:380
 msgid "Looking for a a more recent version on GitHub ([{url}])..."
 msgstr ""
 
-#: src/common/engine.py:382 src/common/engine.py:438
+#: src/common/engine.py:384 src/common/engine.py:440
 msgid "No response from GitHub."
 msgstr ""
 
-#: src/common/engine.py:389
+#: src/common/engine.py:391
 msgid "Invalid response from GitHub: {ex}."
 msgstr ""
 
-#: src/common/engine.py:401
+#: src/common/engine.py:403
 msgid "No stable version found."
 msgstr ""
 
-#: src/common/engine.py:429
+#: src/common/engine.py:431
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr ""
 
-#: src/common/engine.py:434
+#: src/common/engine.py:436
 msgid "Downloading version {version} from GitHub ([{url}])..."
 msgstr ""
 
-#: src/common/engine.py:442
+#: src/common/engine.py:444
 msgid "Downloading failed with code [{code}]."
 msgstr ""
 
-#: src/common/engine.py:446
+#: src/common/engine.py:448
 msgid "File downloaded: [{zip_file}]."
 msgstr ""
 
-#: src/common/engine.py:449
+#: src/common/engine.py:451
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr ""
 
@@ -697,7 +697,7 @@ msgstr "Exempt"
 msgid "Exempt *** MALE ***"
 msgstr "Exempt"
 
-#: src/data/screen.py:97 src/data/screen.py:179
+#: src/data/screen.py:97 src/data/screen.py:178
 #: src/web/controllers/admin/index_admin_controller.py:108
 #: src/web/controllers/admin/screen_admin_controller.py:359
 #: src/web/templates/admin_screens.html:74
@@ -729,32 +729,32 @@ msgstr ""
 msgid "%t (by board)"
 msgstr ""
 
-#: src/data/screen.py:141
+#: src/data/screen.py:140
 msgid "By player"
 msgstr ""
 
-#: src/data/screen.py:146
+#: src/data/screen.py:145
 msgid "%t (by player)"
 msgstr ""
 
-#: src/data/screen.py:194 src/data/screen.py:204 src/data/screen.py:214
-#: src/data/screen.py:224
+#: src/data/screen.py:193 src/data/screen.py:203 src/data/screen.py:213
+#: src/data/screen.py:223
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
-#: src/data/screen.py:232
+#: src/data/screen.py:231
 msgid "Pattern [{pattern}] can be used by screen families."
 msgstr ""
 
-#: src/data/screen.py:240
+#: src/data/screen.py:239
 msgid "Pattern [{pattern}] matches no screen."
 msgstr ""
 
-#: src/data/screen.py:250
+#: src/data/screen.py:249
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
-#: src/data/screen.py:327
+#: src/data/screen.py:326
 msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
 msgstr ""
 
