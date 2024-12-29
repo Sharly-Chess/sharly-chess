@@ -4,13 +4,13 @@ from pathlib import Path
 
 from requests import get, Response, HTTPError
 
-from common.papi_web_config import TMP_DIR
+from common.papi_web_config import PapiWebConfig
 
 FIDE_PLAYERS_URL: str = 'https://ratings.fide.com/download/players_list_legacy.zip'
 
 def download_fide_players():
     print('Downloading FIDE players... ', end='')
-    local_zip_file: Path = TMP_DIR / 'players_list_legacy.zip'
+    local_zip_file: Path = PapiWebConfig.tmp_dir / 'players_list_legacy.zip'
     with suppress(FileNotFoundError):
         local_zip_file.unlink()
     response: Response = get(FIDE_PLAYERS_URL, allow_redirects=True, timeout=5)
@@ -21,11 +21,11 @@ def download_fide_players():
         return
     print(f'URL [{FIDE_PLAYERS_URL}] downloaded to [{local_zip_file}].')
     print('Unzipping archive... ', end='')
-    local_txt_file = TMP_DIR / 'players_list.txt'
+    local_txt_file = PapiWebConfig.tmp_dir / 'players_list.txt'
     with suppress(FileNotFoundError):
         local_txt_file.unlink()
     with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-        zip_ref.extractall(TMP_DIR)
+        zip_ref.extractall(PapiWebConfig.tmp_dir)
     if not local_txt_file.exists():
         print(f'Could not unzip archive [{local_zip_file}].')
         return

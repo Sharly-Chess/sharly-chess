@@ -2,8 +2,8 @@ from functools import total_ordering
 from logging import Logger
 from dataclasses import dataclass, field
 from contextlib import suppress
-import warnings
 
+from common.i18n import _
 from data.pairing import Pairing
 from common.logger import get_logger
 from data.util import PlayerGender, PlayerTitle, Color
@@ -67,11 +67,6 @@ class Player:
             return '½'
         return '{:.1f}'.format(points).replace('.0', '').replace('.5', '½')
 
-    def set_points(self, points: float):
-        """Deprecated method, use direct assignment instead."""
-        warnings.warn("Use direct assignment to points instead")
-        self.points = points
-
     def add_points(self, points: float):
         """If `self.points` is set, add `points` to it.
         Otherwise, leave `self.points` as None."""
@@ -81,11 +76,6 @@ class Player:
     @property
     def points_str(self) -> str:
         return self._points_str(self.points)
-
-    def set_vpoints(self, vpoints: float):
-        """Deprecated method, use direct assignment instead."""
-        warnings.warn("Use direct assignment to vpoints instead")
-        self.vpoints = vpoints
 
     def add_vpoints(self, vpoints: float):
         """If `self.vpoints` is set, add `vpoints` to it.
@@ -99,26 +89,11 @@ class Player:
 
     @property
     def not_paired_str(self) -> str:
-        return 'Non apparié' + ('e' if self.gender == PlayerGender.FEMALE else '')
+        return _('Unpaired *** FEMALE ***') if self.gender == PlayerGender.FEMALE else _('Unpaired *** MALE ***')
 
     @property
     def exempt_str(self) -> str:
-        return 'Exempt' + ('e' if self.gender == PlayerGender.FEMALE else '')
-
-    def set_board_id(self, board_id: int):
-        """Deprecated method, use direct assignment instead."""
-        warnings.warn("Use direct assignment to board_id instead")
-        self.board_id = board_id
-
-    def set_board_number(self, board_number: int):
-        """Deprecated method, use direct assignment instead."""
-        warnings.warn("Use direct assignment to board_number instead")
-        self.board_number = board_number
-
-    def set_color(self, color: Color):
-        """Deprecated method, use direct assignment instead."""
-        warnings.warn("Use direct assignment to color instead")
-        self.color = color
+        return _('Exempt *** FEMALE ***') if self.gender == PlayerGender.FEMALE else _('Exempt *** MALE ***')
 
     def set_board(self, board_id: int, board_number: int, color: Color):
         self.board_id = board_id

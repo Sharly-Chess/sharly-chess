@@ -9,6 +9,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common.i18n import _
 from common.logger import get_logger
 from data.chessevent import ChessEvent
 from data.loader import EventLoader
@@ -35,7 +36,7 @@ class ChessEventAdminWebContext(EventAdminWebContext):
             try:
                 self.admin_chessevent = self.admin_event.chessevents_by_id[chessevent_id]
             except KeyError:
-                self._redirect_error(f'La connexion à ChessEvent [{chessevent_id}] n\'existe pas')
+                self._redirect_error(f'ChessEvent connection [{chessevent_id}] not found.')
                 return
 
     @property
@@ -65,17 +66,18 @@ class ChessEventAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = 'Veuillez entrer l\'identifiant de la connexion à ChessEvent.'
+                errors[field] = _('Please enter the id of ChessEvent connection.')
             else:
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.chessevents_by_uniq_id:
-                            errors[field] = f'La connexion à ChessEvent [{uniq_id}] existe déjà.'
+                            errors[field] = _('ChessEvent connection [{uniq_id}] already exists.').format(
+                                uniq_id=uniq_id)
                     case 'update':
                         if uniq_id != web_context.admin_chessevent.uniq_id \
                                 and uniq_id in web_context.admin_event.chessevents_by_uniq_id:
-                            errors[field] = \
-                                f'Une autre connexion à ChessEvent avec l\'identifiant [{uniq_id}] existe déjà.'
+                            errors[field] = _('ChessEvent connection [{uniq_id}] already exists.').format(
+                                uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
         match action:
@@ -83,15 +85,15 @@ class ChessEventAdminController(AbstractEventAdminController):
                 field = 'user_id'
                 user_id = WebContext.form_data_to_str(data, field)
                 if not user_id:
-                    errors[field] = 'Veuillez entrer l\'identifiant de connexion à ChessEvent.'
+                    errors[field] = _('Please enter the id used to connect to the ChessEvent platform.')
                 field = 'password'
                 password = WebContext.form_data_to_str(data, field)
                 if not password:
-                    errors[field] = 'Veuillez entrer le mot de passe de connexion à ChessEvent.'
+                    errors[field] = _('Please enter the password used to connect to the ChessEvent platform.')
                 field = 'event_id'
                 event_id = WebContext.form_data_to_str(data, field)
                 if not event_id:
-                    errors[field] = 'Veuillez entrer le nom de l\'évènement ChessEvent.'
+                    errors[field] = _('Please enter the id of the event on the ChessEvent platform.')
             case 'delete':
                 pass
             case _:
@@ -226,16 +228,21 @@ class ChessEventAdminController(AbstractEventAdminController):
                 case 'create':
                     stored_chessevent = event_database.add_stored_chessevent(stored_chessevent)
                     event_database.commit()
-                    Message.success(request, f'La connexion à ChessEvent [{stored_chessevent.uniq_id}] a été créée.')
+                    Message.success(
+                        request, _('ChessEvent connection [{chessevent_uniq_id}] has been created.').format(
+                            chessevent_uniq_id=stored_chessevent.uniq_id))
                 case 'update':
                     stored_chessevent = event_database.update_stored_chessevent(stored_chessevent)
                     event_database.commit()
-                    Message.success(request, f'La connexion à ChessEvent [{stored_chessevent.uniq_id}] a été modifiée.')
+                    Message.success(
+                        request, _('ChessEvent connection [{chessevent_uniq_id}] has been updated.').format(
+                            chessevent_uniq_id=stored_chessevent.uniq_id))
                 case 'delete':
                     event_database.delete_stored_chessevent(web_context.admin_chessevent.id)
                     event_database.commit()
                     Message.success(
-                        request, f'La connexion à ChessEvent [{web_context.admin_chessevent.uniq_id}] a été supprimée.')
+                        request, _('ChessEvent connection [{chessevent_uniq_id}] has been deleted.').format(
+                            chessevent_uniq_id=web_context.admin_chessevent.uniq_id))
                 case _:
                     raise ValueError(f'action=[{action}]')
         event_loader.clear_cache(event_uniq_id)

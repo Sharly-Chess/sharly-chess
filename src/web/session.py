@@ -3,8 +3,12 @@ import time
 
 from litestar.contrib.htmx.request import HTMXRequest
 
+from common import get_logger
+from common.i18n import default_locale
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
+
+logger: logging.Logger = get_logger()
 
 
 class SessionHandler:
@@ -150,3 +154,13 @@ class SessionHandler:
     @classmethod
     def get_session_min_logging_level(cls, request: HTMXRequest) -> int:
         return request.session.get(cls.ADMIN_MIN_LOGGING_LEVEL_SESSION_KEY, logging.INFO)
+
+    LOCALE_KEY: str = 'locale'
+
+    @classmethod
+    def set_session_locale(cls, request: HTMXRequest, locale: str):
+        request.session[cls.LOCALE_KEY]: str = locale
+
+    @classmethod
+    def get_session_locale(cls, request: HTMXRequest) -> str:
+        return request.session.get(cls.LOCALE_KEY, PapiWebConfig().locale)

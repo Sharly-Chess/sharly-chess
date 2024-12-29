@@ -10,8 +10,10 @@ from pathlib import Path
 import chardet
 
 from chessevent.chessevent_session import ChessEventSession
-from common.logger import get_logger, print_interactive, input_interactive
-from common.papi_web_config import TMP_DIR
+from common.i18n import _
+from common.logger import get_logger, print_interactive_input, input_interactive, print_interactive_warning, \
+    print_interactive_info, print_interactive_error, print_interactive_success
+from common.papi_web_config import PapiWebConfig
 from common.singleton import Singleton
 from data.chessevent_tournament import ChessEventTournament
 from data.event import Event
@@ -36,11 +38,17 @@ class ActionSelector(metaclass=Singleton):
             yield from ()
         for tournament in event.tournaments_by_id.values():
             if not tournament.chessevent_tournament_name:
-                logger.warning('Connexion à Chess Event non définie pour le tournoi [%s]', tournament.uniq_id)
+                print_interactive_warning(
+                    _('ChessEvent connection not set for tournament [{tournament_uniq_id}].').format(
+                        tournament_uniq_id=tournament.uniq_id))
             elif not tournament.file:
-                logger.warning('Fichier non défini pour le tournoi [%s]', tournament.uniq_id)
+                print_interactive_warning(
+                    _('Papi file not set for tournament [{tournament_uniq_id}].').format(
+                        tournament_uniq_id=tournament.uniq_id))
             elif tournament.current_round:
-                logger.warning('Le tournoi [%s] est déjà commencé', tournament.uniq_id)
+                print_interactive_warning(
+                    _('Tournament [{tournament_uniq_id}] is started.').format(
+                        tournament_uniq_id=tournament.uniq_id))
             else:
                 yield tournament
 
@@ -52,55 +60,76 @@ class ActionSelector(metaclass=Singleton):
         Returns False if an error occurred or if it was interrupted.
         Returns True when the one-shot creation (and possibly upload) was okay"""
         event: Event = EventLoader.get(request=None).reload_event(event_uniq_id)
-        logger.info('Évènement : %s', event.name)
+        print_interactive_info(_('Event : {event_name}').format(event_name=event.name))
         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
         if not tournaments:
-            logger.error("La création des fichiers Papi n'est possible pour aucun tournoi")
+            print_interactive_error('Creating Papi files is impossible for all the tournaments.')
             return False
-        logger.info('Tournois : %s', ", ".join(map(lambda t: str(t.name), tournaments)))
-        print_interactive('Actions :')
-        print_interactive('  - [C] Créer les fichiers Papi')
-        print_interactive('  - [U] Créer les fichiers Papi et les envoyer sur le site fédéral')
-        print_interactive('  - [Q] Revenir à la liste des évènements')
+        print_interactive_info(_('Tournaments: {tournament_names}').format(
+            tournament_names=', '.join((tournament.name for tournament in tournaments))))
+        create_answer: str = _('C *** THE LETTER TO ANSWER CREATE ***')
+        upload_answer: str = _('U *** THE LETTER TO ANSWER UPLOAD ***')
+        quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT ***')
+        default_answer: str = create_answer
+        actions1: dict[str, str] = {
+            create_answer: _('Create the Papi files'),
+            upload_answer: _('Create the Papi files and send them to the FFE website'),
+            quit_answer: _('Quit'),
+        }
+        print_interactive_input('Actions :')
+        for letter, text in actions1.items():
+            print_interactive_input(f'  - [{letter}] {text}')
         action_choice: str | None = None
-        while action_choice not in ['C', 'U', 'Q', ]:
-            action_choice = input_interactive('Entrez votre choix (par défaut C) : ').upper() or 'C'
-        if action_choice == 'Q':
+        while action_choice not in actions1:
+            action_choice = input_interactive(
+                _('Your choice (by default {default}): ').format(default=default_answer)).upper() or default_answer
+        print_interactive_info(_('Action: {action}').format(action=actions1[action_choice]))
+        if action_choice == quit_answer:
             return False
-        if action_choice in ['C', 'U']:
-            if action_choice == 'C':
-                logger.info('Action : création des fichiers Papi')
-            else:
-                logger.info('Action : création des fichiers Papi et envoi sur le site fédéral')
-            print_interactive('Fréquence :')
-            print_interactive('  - [1] Une seule fois')
-            print_interactive('  - [C] En continu')
-            print_interactive('  - [A] Abandonner')
-            times_choice: str | None = None
-            while times_choice not in ['1', 'C', 'A', ]:
-                times_choice = input_interactive('Entrez votre choix (par défaut 1) : ').upper() or '1'
-            if times_choice == 'A':
+        if action_choice in [create_answer, upload_answer, ]:
+            once_answer: str = _('1 *** THE LETTER TO ANSWER ONCE ***')
+            always_answer: str = _('C *** THE LETTER TO ANSWER CONTINUOUSLY ***')
+            quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT ***')
+            default_answer: str = once_answer
+            frequency_actions: dict[str, str] = {
+                once_answer: _('Once'),
+                always_answer: _('Continuously'),
+                quit_answer: _('Quit'),
+            }
+            print_interactive_input('Frequency :')
+            for letter, text in frequency_actions.items():
+                print_interactive_input(f'  - [{letter}] {text}')
+            frequency_choice: str | None = None
+            while frequency_choice not in frequency_actions:
+                frequency_choice = input_interactive(
+                    _('Your choice (by default {default}): ').format(default=default_answer)).upper() or default_answer
+            if frequency_choice == quit_answer:
                 return False
-            if times_choice in ['1', 'C']:
+            print_interactive_info(_('Frequency: {frequency}').format(frequency=frequency_actions[frequency_choice]))
+            if frequency_choice in [once_answer, always_answer, ]:
                 if len(PAPI_VERSIONS) > 1:
                     default_papi_version = PAPI_VERSIONS[-1]
-                    print_interactive('Version de Papi :')
-                    version_choices = [str(i + 1) for i in range(len(PAPI_VERSIONS))] + ['A', ]
-                    for i in range(len(PAPI_VERSIONS)):
-                        print_interactive(f'  - [{i + 1}] {PAPI_VERSIONS[i]}')
-                    print_interactive('  - [A] Abandonner')
+                    print_interactive_input(_('Please choose the Papi version:'))
+                    quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT ***')
+                    version_choices = {
+                        str(i + 1): PAPI_VERSIONS[i] for i in range(len(PAPI_VERSIONS))
+                    } | {
+                        quit_answer: _('Quit'),
+                    }
+                    default_answer: str = str(len(PAPI_VERSIONS))
+                    for letter, text in version_choices.items():
+                        print_interactive_input(f'  - [{letter}] {text}')
                     version_choice: str | None = None
                     while version_choice not in version_choices:
                         version_choice = input_interactive(
-                            f'Entrez votre choix (par défaut {len(PAPI_VERSIONS)} = {default_papi_version}) : ').upper()
-                        if not version_choice:
-                            version_choice = str(len(PAPI_VERSIONS))
-                    if version_choice == 'A':
+                            _('Your choice (by default {default}): ').format(
+                                default=default_papi_version)).upper() or default_answer
+                    if version_choice == quit_answer:
                         return False
                     papi_version = PAPI_VERSIONS[int(version_choice) - 1]
                 else:
                     papi_version = PAPI_VERSIONS[-1]
-                logger.info('Version de Papi : %s', papi_version)
+                print_interactive_info(_('Papi version: {version}').format(version=papi_version))
                 try:
                     chessevent_timeout_min: int = 10
                     chessevent_timeout_max: int = 180
@@ -109,7 +138,7 @@ class ActionSelector(metaclass=Singleton):
                         event = EventLoader.get(request=None).reload_event(event_uniq_id)
                         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
                         if not tournaments:
-                            logger.error('Plus aucun tournoi n\'est éligible pour la création des fichiers Papi.')
+                            print_interactive_error(_('This action can be done on the tournaments of this event.'))
                             return False
                         for tournament in tournaments:
                             data: str | None = ChessEventSession(tournament).read_data()
@@ -124,24 +153,21 @@ class ActionSelector(metaclass=Singleton):
                             data = '\n'.join([line for line in data.split('\n')])
                             try:
                                 chessevent_tournament_info = json.loads(data)
-                            except JSONDecodeError as jde:
+                            except JSONDecodeError as ex:
                                 error_output: Path = (
-                                        TMP_DIR / event.uniq_id /
-                                        f'{tournament.uniq_id}_error_l{jde.lineno}_c{jde.colno}_p{jde.pos}.json'
+                                        PapiWebConfig.tmp_dir / event.uniq_id /
+                                        f'{tournament.uniq_id}_error_l{ex.lineno}_c{ex.colno}_p{ex.pos}.json'
                                 )
                                 error_output.parents[0].mkdir(parents=True, exist_ok=True)
-                                with open(error_output, 'w', encoding="utf-8") as f:
+                                with open(error_output, 'w', encoding='utf-8') as f:
                                     f.write(data)
-                                logger.error('les données du tournoi (encodage %s) n\'ont pas pu être '
-                                             'décodées, elles ont été sauvegardées dans le fichier %s '
-                                             '(erreur ligne %s, colonne %s, position %s)',
-                                             encoding, error_output, jde.lineno, jde.colno, jde.pos)
+                                print_interactive_error(
+                                    _('Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}]).').format(
+                                    tournament_uniq_id=tournament.uniq_id, encoding=encoding, file=error_output, line=ex.lineno, column=ex.colno, position=ex.pos))
                                 continue
                             data_md5 = hashlib.md5(data.encode('utf-8')).hexdigest()
                             if data_md5 == tournament.last_chessevent_download_md5 and tournament.file.exists():
-                                logger.info('Les données du tournoi [%s] sur Chess Event '
-                                            'n\'ont pas été modifiées.',
-                                            tournament.name)
+                                print_interactive_info(_('Data for tournament [{tournament_name}] on ChessEvent are unchanged.').format(tournament_name=tournament.name))
                                 continue
                             chessevent_tournament = ChessEventTournament(chessevent_tournament_info)
                             if chessevent_tournament.error:
@@ -151,20 +177,21 @@ class ActionSelector(metaclass=Singleton):
                             if create_empty_papi_database(tournament.file, papi_version):
                                 players_number: int = tournament.write_chessevent_info_to_database(
                                     chessevent_tournament, data_md5)
-                                logger.info('Le fichier %s a été créé (%s joueur·euses).',
-                                            tournament.file, players_number)
-                            if action_choice == 'U':
+                                print_interactive_success(_(
+                                    'Papi file [{file}] has been created (players: {num}).').format(
+                                    file=tournament.file, num=players_number))
+                            if action_choice == upload_answer:
                                 if not tournament.ffe_id or not tournament.ffe_password:
-                                    logger.warning('Identifiants de connexion au site fédéral non définis pour le '
-                                                   'tournoi [%s], l\'envoi sur le site fédéral est '
-                                                   'impossible.',
-                                                   tournament.name)
+                                    logger.warning(_(
+                                        'FFE id and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.').format(
+                                        tournament_name=tournament.name))
                                 else:
                                     FFESession(tournament, debug=False).upload(set_visible=True)
-                        if times_choice == '1':
+                        if frequency_choice == once_answer:
                             return True
                         time.sleep(chessevent_timeout)
                         chessevent_timeout = min(chessevent_timeout_max, int(chessevent_timeout * 1.2))
                 except KeyboardInterrupt:
                     return False
-        return True
+            raise ValueError(f'frequency_choice={frequency_choice}')
+        raise ValueError(f'action_choice={action_choice}')

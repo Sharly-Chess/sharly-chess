@@ -1,7 +1,6 @@
 from functools import total_ordering
 from logging import Logger
 from dataclasses import dataclass
-import warnings
 
 from common.logger import get_logger
 from data.util import Result
@@ -30,34 +29,9 @@ class Board:
     def id(self, new_id):
         self.board_id = new_id
 
-    def set_id(self, board_id: int):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to id instead')
-        self.board_id = board_id
-
-    def set_number(self, number: int):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to number instead')
-        self.number = number
-
-    def set_white_player(self, player: Player):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to white_player instead')
-        self.white_player = player
-
-    def set_black_player(self, player: Player):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to black_player instead')
-        self.black_player = player
-
     @property
     def result_str(self) -> str:
         return str(self.result) if self.result else ''
-
-    def set_result(self, result: Result):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to result instead')
-        self.result = result
 
     def __lt__(self, other):
         # p1 < p2 calls p1.__lt__(p2)

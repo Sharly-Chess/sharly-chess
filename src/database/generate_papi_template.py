@@ -1,5 +1,6 @@
+# TODO move this to /utils
 """This module is a utility script to create papi templates.
-This script re-creates the papi_template.py file on invocation including
+This script re-creates the /src/database/papi_template.py file on invocation including
 imports.
 """
 import bz2
@@ -51,10 +52,7 @@ with open('papi_template.py', 'wt', encoding='utf-8') as output_file:
         '            raise ValueError()\n')
     output_file.write(
         '    if not file.parents[0].is_dir():\n'
-        '        logger.warning(\n'
-        '            f\'Le répertoire [{file.parents[0]}] n\\\'existe pas, la génération du fichier Papi à partir \'\n'
-        '            f\'de la plateforme ChessEvent est impossible.\'\n'
-        '        )\n'
+        '        logger.warning(f\'Directory [%s] not found, could not generate the Papi file.\', file.parents[0])\n'
         '        return False\n'
         '    with open(file, \'wb\') as f:\n'
         '        f.write(\n'

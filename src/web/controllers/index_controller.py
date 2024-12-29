@@ -15,9 +15,11 @@ from litestar.params import Body
 from litestar.response import Redirect, Template
 
 from common import RGB, check_rgb_str
+from common.i18n import locale_infos, set_locale
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from web.messages import Message
+from web.session import SessionHandler
 from web.urls import index_url
 
 logger: Logger = get_logger()
@@ -36,6 +38,8 @@ class WebContext:
         self.request: HTMXRequest = request
         self.data: dict[str, str] = data
         self.error: ClientRedirect | None = None
+        # sets the session locale to the thread
+        set_locale(SessionHandler.get_session_locale(request))
 
     @property
     def background_image(self) -> str:
@@ -204,6 +208,8 @@ class WebContext:
             'papi_web_config': PapiWebConfig(),
             'admin_auth': self.admin_auth,
             'background_info': self.background_info,
+            'locale_infos': locale_infos,
+            'locale': SessionHandler.get_session_locale(self.request),
         }
 
 
@@ -255,6 +261,13 @@ class AbstractController(Controller):
                 f'Invalid [{self.IF_MODIFIED_SINCE_HEADER}] header [{request.headers[self.IF_MODIFIED_SINCE_HEADER]}]')
             return None
 
+    @staticmethod
+    def set_locale(request: HTMXRequest, locale: str | None):
+        if locale:
+            # sets the locale to the current thread and stores it to the session
+            if set_locale(locale):
+                SessionHandler.set_session_locale(request, locale)
+
 
 class IndexController(AbstractController):
 
@@ -263,8 +276,13 @@ class IndexController(AbstractController):
         name='index',
         cache=1,
     )
-    async def index(self, request: HTMXRequest, ) -> Template:
-        web_context: WebContext = WebContext(request, {})
+    async def index(
+            self,
+            request: HTMXRequest,
+            locale: str | None,
+    ) -> Template:
+        self.set_locale(request, locale)
+        web_context: WebContext = WebContext(request)
         return HTMXTemplate(
             template_name="index.html",
             context=web_context.template_context | {

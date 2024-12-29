@@ -48,16 +48,16 @@ class TournamentUserWebContext(ScreenUserWebContext):
         try:
             self.tournament: Tournament = self.user_event.tournaments_by_id[tournament_id]
         except KeyError:
-            self._redirect_error(f'Le tournoi [{tournament_id}] n\'existe pas.')
+            self._redirect_error(f'Tournament [{tournament_id}] not found.')
             return
         if tournament_started is not None:
             if tournament_started:
                 if not self.tournament.current_round:
-                    self._redirect_error(f'Le tournoi [{self.tournament.uniq_id}] n\'est pas commencé.')
+                    self._redirect_error(f'Tournament [{self.tournament.uniq_id}] is not started yet.')
                     return
             else:
                 if self.tournament.current_round:
-                    self._redirect_error(f'Le tournoi [{self.tournament.uniq_id}] est commencé.')
+                    self._redirect_error(f'Tournament [{self.tournament.uniq_id}] is started.')
                     return
 
     @property
@@ -85,7 +85,7 @@ class BoardUserWebContext(TournamentUserWebContext):
         try:
             self.board = self.tournament.boards[board_id - 1]
         except KeyError:
-            self._redirect_error(f'L\'échiquier [{board_id}] n\'existe pas.')
+            self._redirect_error(f'Board [{board_id}] not found.')
             return
 
     @property
@@ -115,7 +115,7 @@ class PlayerUserWebContext(TournamentUserWebContext):
         try:
             self.player = self.tournament.players_by_id[player_id]
         except KeyError:
-            self._redirect_error(f'Le·la joueur·euse [{player_id}] n\'existe pas.')
+            self._redirect_error(f'Player [{player_id}] not found.')
             return
         self.board = self.tournament.boards[self.player.board_id - 1] if self.player.board_id else None
 
@@ -202,7 +202,7 @@ class IllegalMoveUserController(AbstractInputUserController):
             if not web_context.tournament.delete_illegal_move(web_context.player):
                 Message.error(
                     request,
-                    f'Le·la joueur·euse {web_context.player.id} n\'a pas de coup illégal enregistré.')
+                    f'Player [{web_context.player.id}] has no illegal move recorded.')
             else:
                 SessionHandler.set_session_last_illegal_move_updated(
                     request, web_context.tournament.id, web_context.player.id)
@@ -284,17 +284,16 @@ class ResultUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         if round not in range(1, web_context.tournament.rounds + 1):
-            return AbstractController.redirect_error(
-                request, f'la ronde [{round}] est invalide.')
+            return AbstractController.redirect_error(request, f'Invalid round number [{round}].')
         if result is None:
             if not web_context.admin_auth:
                 return AbstractController.redirect_error(
-                    request, 'la suppression de résultat n\'est pas autorisée.')
+                    request, f'Result deletion is not allowed.')
             with suppress(ValueError):
                 web_context.tournament.delete_result(web_context.board)
         else:
             if result not in (Result.admin_imputable_results() if web_context.admin_auth else Result.user_imputable_results()):
-                return AbstractController.redirect_error(request, f'Le résultat [{result}] est invalide.')
+                return AbstractController.redirect_error(request, f'Invalid result [{result}].')
             web_context.tournament.add_result(web_context.board, Result.from_papi_value(result))
         SessionHandler.set_session_last_result_updated(request, web_context.tournament.id, round, web_context.board.id)
         EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
@@ -361,7 +360,7 @@ class DownloadUserController(AbstractUserController):
         ]
         if not tournament_files:
             return AbstractController.redirect_error(
-                request, f'Aucun fichier de tournoi pour l\'évènement [{web_context.user_event.uniq_id}].')
+                request, f'No Papi file for event [{web_context.user_event.uniq_id}].')
         archive = BytesIO()
         with ZipFile(archive, 'w') as zip_archive:
             for tournament_file in tournament_files:
@@ -387,5 +386,5 @@ class DownloadUserController(AbstractUserController):
             return web_context.error
         if not web_context.tournament.file_exists:
             return AbstractController.redirect_error(
-                request, f'Le fichier [{web_context.tournament.file}] n\'existe pas.')
+                request, f'Papi file [{web_context.tournament.file}] not found.')
         return File(path=web_context.tournament.file, filename=web_context.tournament.file.name)

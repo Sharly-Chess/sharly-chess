@@ -2,11 +2,13 @@ import json
 
 from logging import Logger
 from requests import Session, Response
-from requests.exceptions import ConnectionError, Timeout, RequestException  # pylint: disable=redefined-builtin
+from requests.exceptions import ConnectionError, Timeout, RequestException, \
+    HTTPError  # pylint: disable=redefined-builtin
 
+from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.tournament import Tournament
-from common.logger import get_logger
+from common.logger import get_logger, print_interactive_error
 
 logger: Logger = get_logger()
 
@@ -33,61 +35,63 @@ class ChessEventSession(Session):
             }
             chessevent_string: str = (f'{post["user_id"]}:{"*" * 8}'
                                       f'@{post["event_id"]}/{post["tournament_name"]}')
-            logger.debug('Interrogation de la plateforme Chess Event %s...', chessevent_string)
+            logger.debug('Reading data from the ChessEvent platform (%s)...', chessevent_string)
             # Redirections are handled manually to pass the data at each redirection
             response: Response = self.post(url, data=post, allow_redirects=False)
             while response.status_code in [301, 302]:
                 redirect_url = response.headers['location']
-                logger.debug('redirection vers %s...', redirect_url)
+                logger.debug('Redirection to  %s...', redirect_url)
                 response = self.post(redirect_url, data=post, allow_redirects=False)
-            logger.debug('Code HTTP de la réponse : %s', response.status_code)
-            logger.debug('Entêtes de la réponse : %s', response.headers)
+            logger.debug('Response code: %s', response.status_code)
+            logger.debug('Response headers: %s', response.headers)
             data: str = response.content.decode()
-            logger.debug('Données de la réponse : %s', data)
+            logger.debug('response data (length: %s): %s', len(data), data)
             if response.status_code == 200:
-                logger.debug('Données récupérées de la plateforme Chess Event : %s octets',
-                             len(data))
                 return data
             match response.status_code:
                 case 401:
-                    logger.error('Les identifiants pour %s '
-                                 'ont été rejetés par la plateforme Chess Event (%s), '
-                                 'code d\'erreur : %s',
-                                 post["user_id"], chessevent_string, response.status_code)
+                    print_interactive_error(
+                        _('Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}]).').format(
+                            code=response.status_code, user_id=post['user_id'], chessevent_string=chessevent_string))
                 case 403:
-                    logger.error('L\'accès au tournoi %s n\'est pas '
-                                 'autorisé pour %s '
-                                 '(%s), code d\'erreur : %s',
-                                 post["tournament_name"], post["user_id"],
-                                 chessevent_string, response.status_code)
+                    print_interactive_error(
+                        _('Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}]).').format(
+                            code=response.status_code, user_id=post['user_id'],
+                            tournament_name=post['tournament_name'], chessevent_string=chessevent_string))
                 case 496:
-                    logger.error('Un paramètre est manquant dans la requête à la plateforme Chess Event '
-                                 '(%s, code d\'erreur : %s - '
-                                 '%s)',
-                                 chessevent_string, response.status_code, json.loads(data)["error"])
+                    print_interactive_error(
+                        _('Missing parameter (code: [{code}]): [{error}].').format(
+                            code=response.status_code, error=json.loads(data)['error']))
                 case 497:
-                    logger.error('L\'identifiant %s est introuvable sur la plateforme Chess Event '
-                                 '(%s, code d\'erreur : %s - %s)',
-                                 post["user_id"], chessevent_string, response.status_code,
-                                 json.loads(data)["error"])
+                    print_interactive_error(
+                        _('Id [{user_id}] not found (code: [{code}]): [{error}].').format(
+                            code=response.status_code, user_id=post['user_id'], error=json.loads(data)['error']))
                 case 498:
-                    logger.error('Le tournoi %s est introuvable sur la plateforme Chess Event '
-                                 '(%s, code d\'erreur : %s - %s)',
-                                 post["tournament_name"], chessevent_string, response.status_code,
-                                 json.loads(data)["error"])
+                    print_interactive_error(
+                        _('Tournament [{tournament_name}] not found (code: [{code}]): [{error}].').format(
+                            code=response.status_code, tournament_name=post['tournament_name'],
+                            error=json.loads(data)['error']))
                 case 499:
-                    logger.error('L\'évènement %s est introuvable sur la plateforme Chess Event '
-                                 '(%s, code d\'erreur : %s - %s)',
-                                 post["event_id"], chessevent_string, response.status_code,
-                                 json.loads(data)["error"])
+                    print_interactive_error(
+                        _('Event [{event_id}] not found (code: [{code}]): [{error}].').format(
+                            code=response.status_code, event_id=post['event_id'],
+                            error=json.loads(data)['error']))
                 case _:
-                    logger.error('Réponse invalide de la plateforme Chess Event '
-                                 '(%s, code d\'erreur %s - %s)',
-                                 chessevent_string, response.status_code, response.status_code)
-        except ConnectionError as e:
-            logger.error('Veuillez vérifier votre connection à internet [%s] : %s', url, e)
-        except Timeout as e:
-            logger.error('La plateforme Chess Event est indisponible [%s] : %s', url, e)
-        except RequestException as e:
-            logger.error('La plateforme Chess Event a renvoyé une erreur [%s] : %s', url, e)
+                    print_interactive_error(
+                        _('Unknown response code: [{code}] ([{chessevent_string}]).').format(
+                            code=response.status_code, chessevent_string=chessevent_string))
+        except ConnectionError as ex:
+            print_interactive_error(
+                _('Failed to read [{url}] (connection error): [{ex}].').format(url=url, ex=ex))
+            return None
+        except Timeout as ex:
+            print_interactive_error(_('Failed to read [{url}] (timeout): [{ex}].').format(url=url, ex=ex))
+            return None
+        except HTTPError as ex:
+            print_interactive_error(_('Failed to read [{url}] (error code [{errno}]): [{strerror}].').format(
+                url=url, errno=ex.errno, strerror=ex.strerror))
+            return None
+        except RequestException as ex:
+            print_interactive_error(_('Failed to read [{url}]: [{ex}].').format(url=url, ex=ex))
+            return None
         return None

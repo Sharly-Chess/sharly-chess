@@ -9,6 +9,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common.i18n import _
 from common.logger import get_logger
 from data.loader import EventLoader
 from data.rotator import Rotator
@@ -37,7 +38,7 @@ class RotatorAdminWebContext(EventAdminWebContext):
             try:
                 self.admin_rotator = self.admin_event.rotators_by_id[rotator_id]
             except KeyError:
-                self._redirect_error(f'L\'écran rotatif [{rotator_id}] n\'existe pas')
+                self._redirect_error(f'Rotator [{rotator_id}] not found.')
                 return
 
     @property
@@ -70,26 +71,27 @@ class RotatorAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = 'Veuillez entrer l\'identifiant de l\'écran rotatif.'
+                errors[field] = _('Please enter the rotator id.')
             else:
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.rotators_by_uniq_id:
-                            errors[field] = f'L\'écran rotatif [{uniq_id}] existe déjà.'
+                            errors[field] = _('Rotator [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case 'update':
                         if uniq_id != web_context.admin_rotator.uniq_id \
                                 and uniq_id in web_context.admin_event.rotators_by_uniq_id:
-                            errors[field] = f'L\'écran rotatif [{uniq_id}] existe déjà.'
+                            errors[field] = _('Rotator [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
             public: bool = WebContext.form_data_to_bool(data, 'public')
         match action:
             case 'create' | 'update' | 'clone':
                 public: bool = WebContext.form_data_to_bool(data, 'public')
+                field = 'delay'
                 try:
-                    delay = WebContext.form_data_to_int(data, 'delay', minimum=1)
+                    delay = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
-                    errors['delay'] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 screen_ids = []
                 for screen_id in web_context.admin_event.basic_screens_by_id:
                     field = f'screen_{screen_id}'
@@ -243,7 +245,7 @@ class RotatorAdminController(AbstractEventAdminController):
             rotator_id: int | None,
     ) -> Template | ClientRedirect:
         match action:
-            case 'update' | 'delete' | 'create' | 'clone':
+            case 'update' | 'delete' | 'create':
                 web_context: RotatorAdminWebContext = RotatorAdminWebContext(
                     request, event_uniq_id=event_uniq_id, admin_event_tab='tournaments', rotator_id=rotator_id,
                     data=data)
@@ -262,16 +264,21 @@ class RotatorAdminController(AbstractEventAdminController):
                 case 'create':
                     stored_rotator = event_database.add_stored_rotator(stored_rotator)
                     event_database.commit()
-                    Message.success(request, f'L\'écran rotatif [{stored_rotator.uniq_id}] a été créé.')
+                    Message.success(
+                        request, _('Rotator [{rotator_uniq_id}] has been created.').format(
+                            rotator_uniq_id=stored_rotator.uniq_id))
                 case 'update':
                     stored_rotator = event_database.update_stored_rotator(stored_rotator)
                     event_database.commit()
-                    Message.success(request, f'L\'écran rotatif [{stored_rotator.uniq_id}] a été modifié.')
+                    Message.success(
+                        request, _('Rotator [{rotator_uniq_id}] has been updated.').format(
+                            rotator_uniq_id=stored_rotator.uniq_id))
                 case 'delete':
                     event_database.delete_stored_rotator(web_context.admin_rotator.id)
                     event_database.commit()
                     Message.success(
-                        request, f'L\'écran rotatif [{web_context.admin_rotator.uniq_id}] a été supprimé.')
+                        request, _('Rotator [{rotator_uniq_id}] has been deleted.').format(
+                            rotator_uniq_id=web_context.admin_rotator.uniq_id))
                 case _:
                     raise ValueError(f'action=[{action}]')
         event_loader.clear_cache(event_uniq_id)

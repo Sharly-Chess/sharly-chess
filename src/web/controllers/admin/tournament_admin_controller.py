@@ -10,6 +10,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
@@ -39,7 +40,7 @@ class TournamentAdminWebContext(EventAdminWebContext):
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[tournament_id]
             except KeyError:
-                self._redirect_error(f'Le tournoi [{tournament_id}] n\'existe pas')
+                self._redirect_error(f'Tournament [{tournament_id}] not found.')
                 return
 
     @property
@@ -64,23 +65,23 @@ class TournamentAdminController(AbstractEventAdminController):
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
         if action == 'delete':
             if not uniq_id:
-                errors['uniq_id'] = 'Veuillez entrer l\'identifiant du tournoi.'
+                errors['uniq_id'] = _('Please enter the tournament id.')
             elif uniq_id != web_context.admin_tournament.uniq_id:
-                errors['uniq_id'] = 'L\'identifiant entré n\'est pas valide.'
+                errors['uniq_id'] = _('Tournament id does not match.')
         else:
             if not uniq_id:
-                errors['uniq_id'] = 'Veuillez entrer l\'identifiant du tournoi.'
+                errors['uniq_id'] = _('Please enter the tournament id.')
             elif uniq_id.find('/') != -1:
-                errors['uniq_id'] = "le caractère « / » n\'est pas autorisé"
+                errors['uniq_id'] = _('Character [{char}] is not allowed.').format(char='/')
             else:
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.tournaments_by_uniq_id:
-                            errors['uniq_id'] = f'Le tournoi [{uniq_id}] existe déjà.'
+                            errors['uniq_id'] = _('Tournament [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case 'update':
                         if uniq_id != web_context.admin_tournament.uniq_id \
                                 and uniq_id in web_context.admin_event.tournaments_by_uniq_id:
-                            errors['uniq_id'] = f'Le tournoi [{uniq_id}] existe déjà.'
+                            errors['uniq_id'] = _('Tournament [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
         name: str | None = None
@@ -101,17 +102,17 @@ class TournamentAdminController(AbstractEventAdminController):
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
                 if not name:
-                    errors['name'] = 'Veuillez entrer le nom du tournoi.'
+                    errors['name'] = _('Please enter the tournament name.')
                 path = WebContext.form_data_to_str(data, 'path')
                 filename = WebContext.form_data_to_str(data, 'filename')
                 try:
                     ffe_id = WebContext.form_data_to_int(data, 'ffe_id')
                 except ValueError:
-                    errors['ffe_id'] = 'L\'identifiant FFE est un entier positif.'
+                    errors['ffe_id'] = _('The FFE id is a positive integer.')
                 ffe_password = WebContext.form_data_to_str(data, 'ffe_password')
                 if ffe_password and not re.match('^[A-Z]{10}$', ffe_password):
-                    errors['ffe_password'] = \
-                        'Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules.'
+                    errors['ffe_password'] = _(
+                        'The password of the tournament on the FFE website is made of 10 uppercase letters.')
                 time_control_initial_time = WebContext.form_data_to_int(data, 'time_control_initial_time')
                 time_control_increment = WebContext.form_data_to_int(data, 'time_control_increment')
                 time_control_handicap_penalty_value = WebContext.form_data_to_int(
@@ -186,8 +187,8 @@ class TournamentAdminController(AbstractEventAdminController):
                             uniq_id = web_context.admin_tournament.stored_tournament.uniq_id
                             name = web_context.admin_tournament.stored_tournament.name
                         case 'create':
-                            uniq_id = web_context.admin_event.get_unused_tournament_uniq_id('tournament')
-                            name = web_context.admin_event.get_unused_tournament_name('Nouveau tournoi')
+                            uniq_id = web_context.admin_event.get_unused_tournament_uniq_id(_('tournament'))
+                            name = web_context.admin_event.get_unused_tournament_name(_('New tournament'))
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_tournament_uniq_id(
                                 web_context.admin_tournament.stored_tournament.uniq_id)
@@ -325,9 +326,9 @@ class TournamentAdminController(AbstractEventAdminController):
                     stored_tournament = event_database.add_stored_tournament(stored_tournament)
                     if 'add_screens' in data:
                         for (type, menu, name) in [
-                            ('input', '@input', 'Saisie des résultats', ),
-                            ('boards', '@boards', 'Appariements par échiquier', ),
-                            ('players', '@players', 'Appariements par ordre alphabétique', ),
+                            ('input', '@input', _('Entry of results'), ),
+                            ('boards', '@boards', _('Pairings by board'), ),
+                            ('players', '@players', _('Pairings by player'), ),
                         ]:
                             stored_screen: StoredScreen = event_database.add_stored_screen(StoredScreen(
                                 id=None,
@@ -356,21 +357,31 @@ class TournamentAdminController(AbstractEventAdminController):
                     if 'add_screens' in data:
                         Message.success(
                             request,
-                            f'Le tournoi [{stored_tournament.uniq_id}] a été créé et les écrans par défaut ont été ajoutés.')
+                            _('Tournament [{tournament_uniq_id}] has been created and default screens have been '
+                              'added.').format(tournament_uniq_id=stored_tournament.uniq_id))
                     else:
-                        Message.success(request, f'Le tournoi [{stored_tournament.uniq_id}] a été créé.')
+                        Message.success(
+                            request,
+                            _('Tournament [{tournament_uniq_id}] has been created.').format(
+                                tournament_uniq_id=stored_tournament.uniq_id))
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_tournaments_render(request, event_uniq_id=event_uniq_id)
                 case 'update':
                     stored_tournament = event_database.update_stored_tournament(stored_tournament)
                     event_database.commit()
-                    Message.success(request, f'Le tournoi [{stored_tournament.uniq_id}] a été modifié.')
+                    Message.success(
+                        request,
+                        _('Tournament [{tournament_uniq_id}] has been updated.').format(
+                            tournament_uniq_id=stored_tournament.uniq_id))
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_tournaments_render(request, event_uniq_id=event_uniq_id)
                 case 'delete':
                     event_database.delete_stored_tournament(web_context.admin_tournament.id)
                     event_database.commit()
-                    Message.success(request, f'Le tournoi [{web_context.admin_tournament.uniq_id}] a été supprimé.')
+                    Message.success(
+                        request,
+                        _('Tournament [{tournament_uniq_id}] has been deleted.').format(
+                            tournament_uniq_id=web_context.admin_tournament.uniq_id))
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_tournaments_render(request, event_uniq_id=event_uniq_id)
                 case _:

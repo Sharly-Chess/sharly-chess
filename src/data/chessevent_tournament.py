@@ -60,12 +60,12 @@ class ChessEventTournament:
                     return
                 self.players.append(chessevent_player)
         except KeyError:
-            logger.error('Champ %s non trouvé dans la réponse de Chess Event', key)
+            logger.error('Field [%s] missing in the ChessEvent response', key)
             return
         except (TypeError, ValueError):
             logger.error(
-                'Valeur du champ %s non valide ([%s]) '
-                'dans la réponse de Chess Event', key, chessevent_tournament_info[key])
+                'Invalid value [%s] for field [%s] in the ChessEvent response',
+                chessevent_tournament_info[key], key)
             return
         self.error = False
 

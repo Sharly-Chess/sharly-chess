@@ -598,7 +598,7 @@ def create_empty_papi_database(file: Path, papi_version: str) -> bool:
             raise ValueError()
     if not file.parents[0].is_dir():
         logger.warning(
-            f'Le répertoire [{file.parents[0]}] n\'existe pas, la génération du fichier Papi à partir '
+            f'Directory [{file.parents[0]}] n\'existe pas, la génération du fichier Papi à partir '
             f'de la plateforme ChessEvent est impossible.'
         )
         return False

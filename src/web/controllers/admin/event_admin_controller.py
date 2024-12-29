@@ -11,6 +11,7 @@ from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 
 from common.exception import PapiWebException
+from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
@@ -41,7 +42,7 @@ class EventAdminWebContext(AdminWebContext):
             try:
                 self.admin_event = EventLoader.get(request=self.request).load_event(event_uniq_id)
             except PapiWebException as pwe:
-                self._redirect_error(f'L\'évènement [{event_uniq_id}] est introuvable : {pwe}')
+                self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
                 return
 
     def check_admin_tab(self):
@@ -226,6 +227,7 @@ class EventAdminController(AbstractEventAdminController):
             event_uniq_id: str,
             admin_event_tab: str | None = None,
             admin_columns: int | None = None,
+            locale: str | None = None,
             show_family_screens_on_screen_list: bool | None = None,
             show_details_on_screen_list: bool | None = None,
             show_details_on_family_list: bool | None = None,
@@ -241,8 +243,8 @@ class EventAdminController(AbstractEventAdminController):
             data: dict[str, str] | None = None,
             errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        if admin_columns:
-            SessionHandler.set_session_admin_columns(request, admin_columns)
+        self.set_locale(request, locale)
+        self.set_admin_columns(request, admin_columns)
         if show_family_screens_on_screen_list is not None:
             SessionHandler.set_session_show_family_screens_on_screen_list(request, show_family_screens_on_screen_list)
         if show_details_on_screen_list is not None:
@@ -271,7 +273,7 @@ class EventAdminController(AbstractEventAdminController):
                 SessionHandler.set_session_min_logging_level(request, min_logging_level)
             except ValueError:
                 return AbstractController.redirect_error(
-                    request, f'Le niveau de log [{min_logging_level}] est incorrect.')
+                    request, f'Invalid log level [{min_logging_level}].')
         return self._admin_event_config_render(
             request, admin_event_tab=admin_event_tab, event_uniq_id=event_uniq_id, modal=modal, action=action,
             data=data, errors=errors)
@@ -285,6 +287,7 @@ class EventAdminController(AbstractEventAdminController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             admin_columns: int | None,
+            locale: str | None,
             show_family_screens_on_screen_list: bool | None,
             show_details_on_screen_list: bool | None,
             show_details_on_family_list: bool | None,
@@ -301,6 +304,7 @@ class EventAdminController(AbstractEventAdminController):
             event_uniq_id=event_uniq_id,
             admin_event_tab=None,
             admin_columns=admin_columns,
+            locale=locale,
             show_family_screens_on_screen_list=show_family_screens_on_screen_list,
             show_details_on_screen_list=show_details_on_screen_list,
             show_details_on_family_list=show_details_on_family_list,
@@ -323,6 +327,7 @@ class EventAdminController(AbstractEventAdminController):
             event_uniq_id: str,
             admin_event_tab: str,
             admin_columns: int | None,
+            locale: str | None,
             show_family_screens_on_screen_list: bool | None,
             show_details_on_screen_list: bool | None,
             show_details_on_family_list: bool | None,
@@ -339,6 +344,7 @@ class EventAdminController(AbstractEventAdminController):
             event_uniq_id=event_uniq_id,
             admin_event_tab=admin_event_tab,
             admin_columns=admin_columns,
+            locale=locale,
             show_family_screens_on_screen_list=show_family_screens_on_screen_list,
             show_details_on_screen_list=show_details_on_screen_list,
             show_details_on_family_list=show_details_on_family_list,
@@ -393,16 +399,17 @@ class EventAdminController(AbstractEventAdminController):
                     try:
                         EventDatabase(web_context.admin_event.uniq_id).rename(new_uniq_id=uniq_id)
                     except PermissionError as pe:
-                        return AbstractController.redirect_error(
-                            request, f'Le renommage de la base de données a échoué : {pe}')
+                        return AbstractController.redirect_error(request, f'Renaming the database failed: {pe}')
                 with EventDatabase(uniq_id, write=True) as event_database:
                     event_database.update_stored_event(stored_event)
                     event_database.commit()
                 if rename:
                     Message.success(
                         request,
-                        f'L\'évènement [{web_context.admin_event.uniq_id}] a été renommé ([{uniq_id}) et modifié.')
+                        _('Event [{old_uniq_id}] has been renamed ([{new_uniq_id}) and updated.').format(
+                            olq_uniq_id=web_context.admin_event.uniq_id, new_uniq_id=uniq_id))
                 else:
+                    Message.success(request, _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id))
                     Message.success(request, f'L\'évènement [{uniq_id}] a été modifié.')
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
@@ -411,21 +418,19 @@ class EventAdminController(AbstractEventAdminController):
                 with EventDatabase(uniq_id, write=True) as event_database:
                     event_database.update_stored_event(stored_event)
                     event_database.commit()
-                Message.success(
-                    request, f'L\'évènement [{uniq_id}] a été créé.')
+                Message.success(request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id))
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'delete':
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
                 except PermissionError as pe:
-                    return AbstractController.redirect_error(
-                        request, f'La suppression de la base de données a échoué : {pe}')
+                    return AbstractController.redirect_error(request, 'Archiving the database failed: {pe}')
                 event_loader.clear_cache(web_context.admin_event.uniq_id)
                 Message.success(
-                    request, f'L\'évènement [{web_context.admin_event.uniq_id}] a été supprimé, la base '
-                             f'de données a été archivée ({arch}).')
-                return self._admin_render(request)
+                    request, _('Event [{uniq_id}] has been deleted, the database has been archived ({arch}).').format(
+                        uniq_id=web_context.admin_event.uniq_id, arch=arch))
+                return self._admin_render(AdminWebContext(request, data=None, admin_tab=None))
             case _:
                 raise ValueError(f'action=[{action}]')
 

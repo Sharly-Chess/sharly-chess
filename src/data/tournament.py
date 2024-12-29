@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from common import format_timestamp_date_time
+from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 
 if TYPE_CHECKING:
@@ -35,26 +36,23 @@ class Tournament:
         self.stored_tournament: StoredTournament = stored_tournament
         if not stored_tournament.path:
             self.event.add_debug(
-                f'pas de répertoire défini pour le fichier Papi, par défaut [{self.path}]', tournament=self)
+                _('No directory set for the Papi file, by default [{path}].').format(path=self.path), tournament=self)
         if not self.path.exists():
-            self.event.add_warning(f'le répertoire [{self.path}] n\'existe pas', tournament=self)
+            self.event.add_warning(_('Directory [{path}] not found.').format(path=self.path), tournament=self)
         elif not self.path.is_dir():
-            self.event.add_error(f'[{self.path}] n\'est pas un répertoire', tournament=self)
+            self.event.add_error(_('[{path}] is not a directory.').format(path=self.path), tournament=self)
         if not self.stored_tournament.filename:
             self.event.add_info(
-                f'le nom du fichier Papi n\'est pas défini, par défaut [{self.filename}]', tournament=self)
+                _('The name of the Papi file is not set, by default [{filename}]').format(filename=self.filename),
+                tournament=self)
         if not self.stored_tournament.ffe_id or not self.stored_tournament.ffe_password:
-            self.event.add_info(
-                'le numéro d\'homologation et le mot de passe de connexion au site fédéral sont nécessaires '
-                'pour les opérations sur le site fédéral, elles ne seront pas disponibles',
+            self.event.add_debug(
+                _('Qualification number and FFE password not set, operations on the FFE website will not be available.'),
                 tournament=self)
         if not self.chessevent:
-            self.event.add_info(
-                'la connexion à la plateforme ChessEvent n\'est pas définie', tournament=self)
+            self.event.add_debug(_('ChessEvent connection not defined.'), tournament=self)
         if self.chessevent and not self.stored_tournament.chessevent_tournament_name:
-            self.event.add_warning(
-                f'le nom du tournoi [{self.uniq_id}] n\'est pas renseigné, la connexion à la plateforme '
-                f'ChessEvent ne sera pas fonctionnelle', tournament=self)
+            self.event.add_warning(_('ChessEvent tournament name not set.'), tournament=self)
         self._rounds: int = 0
         self._pairing: TournamentPairing | None = None
         self._rating: TournamentRating | None = None
@@ -436,7 +434,7 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.add_stored_illegal_move(self.id, self.current_round, player.id)
             event_database.commit()
-        logger.info('un coup illégal a été enregistré pour le·la joueur·euse [%s]', player.id)
+        logger.info('An illegal move has been recorded for player [%s].', player.id)
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current
@@ -445,9 +443,9 @@ class Tournament:
             deleted: bool = event_database.delete_stored_illegal_move(self.id, self.current_round, player.id)
             event_database.commit()
         if deleted:
-            logger.info('un coup illégal a été supprimé pour le·la joueur·euse [%s]', player.id)
+            logger.info('An illegal move has been deleted for player [%s].', player.id)
         else:
-            logger.info('aucun coup illégal n\'a été trouvé pour le·la joueur·euse [%s]', player.id)
+            logger.info('No illegal move found for player [%s].', player.id)
         return deleted
 
     def get_illegal_moves(self) -> Counter[int]:
@@ -551,7 +549,7 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.add_stored_result(self.id, self.current_round, board, white_result)
             event_database.commit()
-        logger.info('Added result: %s %s %d.%d %s %s %d %s %s %s %d',
+        logger.info('Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
                     self.event.uniq_id, self.uniq_id, self._current_round, board.id, board.white_player.last_name,
                     board.white_player.first_name, board.white_player.rating, white_result,
                     board.black_player.last_name, board.black_player.first_name,
@@ -566,7 +564,7 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.delete_stored_result(self.id, self.current_round, board.id)
             event_database.commit()
-        logger.info('Removed result: %s %s %d.%d',
+        logger.info('Removed result: %s %s %d.%d.',
                     self.event.uniq_id, self.uniq_id, self._current_round, board.id)
 
     def write_chessevent_info_to_database(

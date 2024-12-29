@@ -10,6 +10,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
+from common.i18n import _
 from common.logger import get_logger
 from data.family import Family
 from data.rotator import Rotator
@@ -44,20 +45,20 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             try:
                 self.screen = self.user_event.screens_by_uniq_id[screen_uniq_id]
             except KeyError:
-                self._redirect_error(f'L\'écran [{screen_uniq_id}] n\'existe pas.')
+                self._redirect_error(f'Screen [{screen_uniq_id}] not found.')
                 return
             if not self.screen.public and not self.admin_auth:
-                self._redirect_error(f'L\'écran [{self.screen.uniq_id}] est réservé aux arbitres.')
+                self._redirect_error(f'Access denied for screen [{self.screen.uniq_id}].')
                 return
             self.user_event_tab = self.screen.type.to_str()
         else:
             try:
                 self.rotator = self.user_event.rotators_by_id[rotator_id]
             except KeyError:
-                self._redirect_error(f'L\'écran rotatif [{rotator_id}] n\'existe pas.')
+                self._redirect_error(f'Rotator [{rotator_id}] not found.')
                 return
             if not self.rotator.public and not self.admin_auth:
-                self._redirect_error(f'L\'écran rotatif [{self.rotator.uniq_id}] est réservé aux arbitres.')
+                self._redirect_error(f'Access denied for rotator [{self.rotator.uniq_id}].')
                 return
             self.rotator_screen_index = self.rotator_screen_index % len(self.rotator.rotating_screens)
             self.screen = self.rotator.rotating_screens[self.rotator_screen_index]
@@ -73,13 +74,10 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         session_password: str | None = SessionHandler.get_stored_password(self.request, self.user_event)
         logger.debug('session_password=%s', "*" * (8 if session_password else 0))
         if session_password is None:
-            Message.error(
-                self.request,
-                f'Veuillez vous identifier pour accéder aux écrans de saisie de l\'évènement '
-                f'[{self.user_event.uniq_id}].')
+            Message.error(self.request, _('Access denied, please authenticate to enter results.'))
             return True
         if session_password != self.user_event.update_password:
-            Message.error(self.request, 'Code d\'accès incorrect.')
+            Message.error(self.request, _('Incorrect password.'))
             SessionHandler.store_password(self.request, self.user_event, None)
             return True
         return False
@@ -116,7 +114,7 @@ class ScreenUserWebContext(ScreenOrRotatorUserWebContext):
         if self.error:
             return
         if screen_needed and not self.screen:
-            self._redirect_error('L\'écran est obligatoire.')
+            self._redirect_error('Screen is mandatory.')
             return
 
 
@@ -150,7 +148,7 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
             try:
                 self.family = self.user_event.families_by_uniq_id[family_uniq_id]
             except KeyError:
-                self._redirect_error(f'La famille [{family_uniq_id}] n\'existe pas.')
+                self._redirect_error(f'Family [{family_uniq_id}] not found.')
                 return
 
     @property
@@ -172,7 +170,7 @@ class LoginUserWebContext(ScreenUserWebContext):
         field: str = 'password'
         self.password: str = self._form_data_to_str(field, None)
         if self.password is None:
-            self._redirect_error(f'La paramètre [{field}] est manquant.')
+            self._redirect_error(f'Missing password.')
 
 
 class AbstractScreenUserController(AbstractUserController):
@@ -211,13 +209,13 @@ class ScreenUserController(AbstractScreenUserController):
         if web_context.error:
             return web_context.error
         if data['password'] == web_context.user_event.update_password:
-            Message.success(request, 'Authentification réussie !')
+            Message.success(request, _('Authentication successful!'))
             SessionHandler.store_password(request, web_context.user_event, web_context.password)
             return self._user_screen_render(web_context)
         if data['password'] == '':
-            Message.warning(request, 'Veuillez indiquer le code d\'accès.')
+            Message.warning(request, _('Please enter the password.'))
         else:
-            Message.error(request, 'Code d\'accès incorrect.')
+            Message.error(request, _('Incorrect password.'))
             SessionHandler.store_password(request, web_context.user_event, None)
         return self._render_messages(request)
 

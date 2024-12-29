@@ -9,6 +9,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common.i18n import _
 from common.logger import get_logger
 from data.family import Family
 from data.loader import EventLoader
@@ -39,7 +40,7 @@ class FamilyAdminWebContext(EventAdminWebContext):
             try:
                 self.admin_family = self.admin_event.families_by_id[family_id]
             except KeyError:
-                self._redirect_error(f'La famille [{family_id}] n\'existe pas')
+                self._redirect_error(f'Family [{family_id}] not found.')
                 return
         self.family_type = family_type
 
@@ -98,18 +99,18 @@ class FamilyAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = 'Veuillez entrer l\'identifiant de la famille.'
+                errors[field] = _('Please enter the family id.')
             elif ':' in uniq_id:
-                errors[field] = 'Le caractère [:] est interdit.'
+                errors[field] = _('Character [{char}] is not allowed.').format(char=':')
             else:
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.families_by_uniq_id:
-                            errors[field] = f'La famille [{uniq_id}] existe déjà.'
+                            errors[field] = _('Family [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case 'update':
                         if uniq_id != web_context.admin_family.uniq_id \
                                 and uniq_id in web_context.admin_event.families_by_uniq_id:
-                            errors[field] = f'La famille [{uniq_id}] existe déjà.'
+                            errors[field] = _('Family [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
             name = WebContext.form_data_to_str(data, 'name')
@@ -126,16 +127,17 @@ class FamilyAdminController(AbstractEventAdminController):
                     else:
                         tournament_id = WebContext.form_data_to_int(data, field)
                         if not tournament_id:
-                            errors[field] = 'Veuillez indiquer le tournoi.'
+                            errors[field] = _('Please choose the tournament.')
                         elif tournament_id not in web_context.admin_event.tournaments_by_id:
-                            errors[field] = f'Le tournoi [{tournament_id}] n\'existe pas.'
+                            errors[field] = _('Tournament [{tournament_id}] not found.').format(
+                                tournament_id=tournament_id)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 field = 'columns'
                 try:
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 menu = WebContext.form_data_to_str(data, 'menu', '')
@@ -143,21 +145,22 @@ class FamilyAdminController(AbstractEventAdminController):
                 try:
                     timer_id = WebContext.form_data_to_int(data, field)
                     if timer_id and timer_id not in web_context.admin_event.timers_by_id:
-                        errors[field] = f'Le chronomètre [{timer_id}] n\'existe pas.'
+                        errors[field] = _('Timer [{timer_id}] not found.').format(timer_id=timer_id)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 field: str = 'first'
                 try:
                     first = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 field: str = 'last'
                 try:
                     last = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 if first and last and first > last:
-                    error: str = f'Les nombres {first} et {last} ne sont pas compatibles ({first} > {last}).'
+                    error: str = _('Numbers {first} and {last} are not compatible ({first} > {last}).').format(
+                        first=first, last=last)
                     errors['first'] = error
                     errors['last'] = error
                 match type:
@@ -173,15 +176,14 @@ class FamilyAdminController(AbstractEventAdminController):
                 try:
                     parts = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 field: str = 'number'
                 try:
                     number = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 if parts and number:
-                    error: str = 'Les découpages en un nombre de parties et un nombre d\'éléments ne sont pas ' \
-                                 'compatibles.'
+                    error: str = _('Specifying the number of parts and the number of items per part is not possible.')
                     errors['parts'] = error
                     errors['number'] = error
                 field = 'message_text'
@@ -265,11 +267,11 @@ class FamilyAdminController(AbstractEventAdminController):
                             basic_name: str
                             match family_type:
                                 case 'input':
-                                    basic_name = 'Saisie des résultats'
+                                    basic_name = _('Entry of results')
                                 case 'boards':
-                                    basic_name = 'Appariements par échiquier'
+                                    basic_name = _('pairings by board')
                                 case 'players':
-                                    basic_name = 'Appariements par ordre alphabétique'
+                                    basic_name = _('Pairings by player')
                                 case _:
                                     raise ValueError(f'family_type=[{family_type}]')
                             name = web_context.admin_event.get_unused_family_name(basic_name)

@@ -84,14 +84,12 @@ class ChessEventPlayer:
                 else:
                     raise ValueError
         except KeyError:
-            logger.error('Champ %s non trouvé pour le·la joueur·euse [%s %s]',
-                         key, self.last_name, self.first_name)
+            logger.error('Field [%s] not found for player [%s %s]', key, self.last_name, self.first_name)
             return
         except (TypeError, ValueError):
             logger.error(
-                'Valeur du champ %s non valide ([%s]) '
-                'pour le·la joueur·euse [%s %s]',
-                key, chessevent_player_info[key], self.last_name, self.first_name)
+                'Invalid value [%s] for field [%s] for player [%s %s]',
+                chessevent_player_info[key], key, self.last_name, self.first_name)
             return
         self.error = False
 

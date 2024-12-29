@@ -7,12 +7,14 @@ from typing import Any
 
 from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
 from requests import Session, Response
-from requests.exceptions import ConnectionError, Timeout, RequestException
+from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError
 from logging import Logger
 
-from common.papi_web_config import TMP_DIR
+from common.i18n import _
+from common.papi_web_config import PapiWebConfig
 from data.tournament import Tournament
-from common.logger import get_logger
+from common.logger import get_logger, print_interactive_error, print_interactive_success, print_interactive_info, \
+    print_interactive_warning
 from database.papi import PapiDatabase
 from database.sqlite import EventDatabase
 
@@ -87,17 +89,21 @@ class FFESession(Session):
             content: str = response.content.decode()
             if self.debug:
                 date_str = datetime.strftime(datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S')
-                debug_file = TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
+                debug_file = PapiWebConfig.tmp_dir / f'{url.replace("/", "_")}-{date_str}-raw.html'
                 with open(debug_file, 'w') as file:
                     file.write(content)
-                logger.info('Raw content stored to %s', debug_file)
+                logger.info('Raw content stored to %s.', debug_file)
             return content
-        except ConnectionError as e:
-            logger.error('Veuillez vérifier votre connection à internet [%s] : %s', url, e)
-        except Timeout as e:
-            logger.error('Le site fédéral est indisponible [%s] : %s', url, e)
-        except RequestException as e:
-            logger.error('Le site fédéral a renvoyé une erreur [%s] : %s', url, e)
+        except ConnectionError as ex:
+            print_interactive_error(
+                _('Failed to read [{url}] (connection error): [{ex}].').format(url=url, ex=ex))
+        except Timeout as ex:
+            print_interactive_error(_('Failed to read [{url}] (timeout): [{ex}].').format(url=url, ex=ex))
+        except HTTPError as ex:
+            print_interactive_error(_('Failed to read [{url}] (error code [{errno}]): [{strerror}].').format(
+                url=url, errno=ex.errno, strerror=ex.strerror))
+        except RequestException as ex:
+            print_interactive_error(_('Failed to read [{url}]: [{ex}].').format(url=url, ex=ex))
         for handler in handlers.values():
             handler.close()
         return None
@@ -110,7 +116,7 @@ class FFESession(Session):
         parser.parseStr(html)
         if self.debug:
             date_str = datetime.strftime(datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S')
-            debug_file = TMP_DIR / f'{self.last_url_read.replace("/", "_")}-{date_str}-parsed.html'
+            debug_file = PapiWebConfig.tmp_dir / f'{self.last_url_read.replace("/", "_")}-{date_str}-parsed.html'
             with open(debug_file, 'w', encoding="utf-8") as file:
                 file.write(parser.getHTML())
             logger.info('Parsed content stored to %s', debug_file)
@@ -132,7 +138,8 @@ class FFESession(Session):
         for id in [VIEW_STATE_INPUT_ID, VIEW_STATE_GENERATOR_INPUT_ID, EVENT_VALIDATION_INPUT_ID, ]:
             tag: AdvancedTag = parser.getElementById(id)
             if not tag:
-                logger.error('Content of URL [%s] is not valid (input[id=[%s] not found)', url, id)
+                print_interactive_error(
+                    _('Content of URL [{url}] is not valid (input[id=[{id]] not found).').format(url=url, id=id))
                 return False
             self.ffe_state[id] = tag.attributesDict['value']
             if self.debug:
@@ -146,17 +153,21 @@ class FFESession(Session):
         """Initializes a session on the FFE admin website (mostly gets state variables).
         Return True on success, False otherwise."""
         url = FFE_URL
+        print_interactive_info(_('Initializing a session to [{url}]...').format(url=url))
         html: str = self._read_url(url=url, data=None, files=None)
         if not html:
             return False
         parser, error = self._parse_html_content(html)
         if error:
             return False
-        return self.read_ffe_state(parser, url)
+        if result:= self.read_ffe_state(parser, url):
+            print_interactive_success(_('OK'))
+        return result
 
     def _ffe_auth(self) -> bool:
         """Authenticates on the FFE admin website."""
         assert self.ffe_state
+        print_interactive_info(_('Authenticating...'))
         url = FFE_URL + '/Default.aspx'
         post_data: dict[str, str] = {
             VIEW_STATE_INPUT_ID: self.ffe_state[VIEW_STATE_INPUT_ID],
@@ -175,7 +186,7 @@ class FFESession(Session):
             return False
         if not self.read_ffe_state(parser, url):
             return False
-        self.auth_state: dict[str, str] = {}
+        self.auth_state = {}
         for id in [SET_VISIBLE_LINK_ID, FEES_LINK_ID, UPLOAD_LINK_ID, UPLOAD_RULES_LINK_ID, ]:
             tag: AdvancedTag = parser.getElementById(id)
             self.auth_state[id] = tag.innerText if tag else None
@@ -186,52 +197,49 @@ class FFESession(Session):
                     if self.auth_state[id] else 'None')
         tag: AdvancedTag = parser.getElementById(VIEW_LINK_ID)
         if not tag:
-            logger.error('L\'authentification a échoué (vérifier les codes)')
+            print_interactive_error(_('Authentication failed.'))
             return False
         self.tournament_ffe_url = tag.attributesDict['href']
         if self.debug:
             logger.info('> tournament_ffe_url=[%s]', self.tournament_ffe_url)
+        print_interactive_success(_('OK'))
         return True
 
     def test_auth(self):
         """Tries to authenticate on the FFE admin website for the tournament."""
-        logger.info('Tournoi [%s] :', self.tournament.ffe_id)
+        logger.info(_('Tournament [{ffe_id}]:').format(ffe_id=self.tournament.ffe_id))
         if not self._ffe_init():
             return
-        # logger.info('init OK')
         if not self._ffe_auth():
             return
-        logger.info('auth OK: %s', self.tournament_ffe_url)
 
     def get_fees(self):
         """Downloads the fees for the tournament."""
-        logger.info('Tournoi [%s] :', self.tournament_ffe_url)
+        print_interactive_info(_('Getting fees for tournament [{ffe_id}]...').format(ffe_id=self.tournament.ffe_id))
         if not self._ffe_init():
             return
-        # logger.info('init OK')
         if not self._ffe_auth():
             return
-        logger.info('auth OK: %s', self.tournament_ffe_url)
+        assert self.auth_state
         if self.debug:
             logger.info('> auth_state[%s]=[%s]', FEES_LINK_ID, self.auth_state[FEES_LINK_ID])
         if self.auth_state[FEES_LINK_ID] is None:
-            logger.warning(
-                'Lien de facturation non trouvé (vérifier qu\'un fichier Papi a déjà été téléchargé '
-                'ou que le tournoi n\'a pas déjà été archivé)')
+            print_interactive_warning(
+                _('Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website.'))
             return
         if self.auth_state[FEES_LINK_ID].lower() == 'tournoi exempté de droits':
-            logger.info('Tournoi exempt de droits d\'homologation')
+            print_interactive_info(_('Tournament exempt from registration fees.'))
             return
         if self.auth_state[FEES_LINK_ID].lower() != 'afficher la facture':
-            logger.error('Invalid fees link text [%s]', self.auth_state[FEES_LINK_ID])
+            print_interactive_error(_('Invalid fees link text [{text}].').format(text=self.auth_state[FEES_LINK_ID]))
             return
         url = FFE_URL + '/MonTournoi.aspx'
         post_data: dict[str, str] = {
             '__EVENTTARGET': FEES_EVENT,
             '__EVENTARGUMENT': '',
-            VIEW_STATE_INPUT_ID: self.auth_state[VIEW_STATE_INPUT_ID],
-            VIEW_STATE_GENERATOR_INPUT_ID: self.auth_state[VIEW_STATE_GENERATOR_INPUT_ID],
-            EVENT_VALIDATION_INPUT_ID: self.auth_state[EVENT_VALIDATION_INPUT_ID],
+            VIEW_STATE_INPUT_ID: self.ffe_state[VIEW_STATE_INPUT_ID],
+            VIEW_STATE_GENERATOR_INPUT_ID: self.ffe_state[VIEW_STATE_GENERATOR_INPUT_ID],
+            EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
         html: str = self._read_url(url=url, data=post_data, files=None)
         if not html:
@@ -247,26 +255,23 @@ class FFESession(Session):
         file: Path = Path(FEES_DIR, str(self.tournament.ffe_id) + '-fees.html')
         with open(file, 'w', encoding="utf-8") as f:
             f.write(parser.getHTML())
-        logger.info('Facture d\'homologation enregistrée dans [%s]', file)
         webbrowser.open(f'file://{file.resolve()}', new=2)
-        logger.info('fees OK')
+        print_interactive_success(_('Invoice saved to [{file}].').format(file=file.resolve()))
         return
 
     def upload(self, set_visible: bool):
         """Upload the tournament to the FFE admin website."""
-        logger.info(
-            'Mise à jour du tournoi [%s] (%s) sur le site fédéral :',
-            self.tournament.ffe_id, self.tournament.file)
+        print_interactive_info(_('Sending tournament [{ffe_id}] ({file}) to the FFE website...').format(
+            ffe_id=self.tournament.ffe_id, file=self.tournament.file))
         if not self._ffe_init():
             return
-        # logger.info('init OK')
         if not self._ffe_auth():
             return
-        logger.info('auth OK: %s', self.tournament_ffe_url)
         if self.debug:
             logger.info('> auth_state[%s]=[%s]', UPLOAD_LINK_ID, self.auth_state[UPLOAD_LINK_ID])
         if self.auth_state[UPLOAD_LINK_ID] is None:
-            logger.warning('Lien de mise en ligne non trouvé (vérifier que le tournoi n\'est pas terminé)')
+            print_interactive_warning(
+                _('Upload link not found, check that the tournament is not finished on the FFE website.'))
             return
         url = FFE_URL + '/MonTournoi.aspx'
         post: dict[str, str] = {
@@ -277,40 +282,43 @@ class FFESession(Session):
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
         date: str = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-        tmp_file: Path = TMP_DIR / 'ffe' / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
+        tmp_file: Path = \
+            PapiWebConfig.tmp_dir / 'ffe' / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
         tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
         logger.debug('Copie de %s vers %s...', self.tournament.file, tmp_file)
         tmp_file.write_bytes(self.tournament.file.read_bytes())
         with PapiDatabase(tmp_file, write=True) as tmp_database:
             tmp_database: PapiDatabase
-            logger.debug('Suppression des données personnelles des joueur·euses...')
+            logger.debug('Deleting personal players\' data...')
             tmp_database.delete_players_personal_data()
-            logger.debug('Suppression des forfaits si aucun appariement...')
+            logger.debug('Deleting forfeits if no pairings...')
             tmp_database.remove_forfeits_if_no_pairings()
             tmp_database.commit()
         html: str = self._read_url(url=url, data=post, files={UPLOAD_FILE_ID: tmp_file, })
         tmp_file.unlink()
         if not html:
             return
-        _, error = self._parse_html_content(html)
+        dummy, error = self._parse_html_content(html)
         if error:
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
             event_database.set_tournament_last_ffe_upload(self.tournament.id)
             event_database.commit()
-        logger.info('upload OK')
+        print_interactive_success(_('Results upload OK'))
         if not set_visible:
             return
+        print_interactive_info(_('Making the tournament visible on the FFE website...'))
         if self.debug:
             logger.info('> auth_state[%s]=[%s]', SET_VISIBLE_LINK_ID, self.auth_state[SET_VISIBLE_LINK_ID])
         if self.auth_state[SET_VISIBLE_LINK_ID] is None:
-            logger.warning('Lien d\'affichage non trouvé (vérifier qu\'un fichier Papi a déjà été téléchargé)')
+            print_interactive_warning(_('Display link not found, check that a Papi file has already been sent.'))
             return
         if self.auth_state[SET_VISIBLE_LINK_ID].lower().startswith('désactiver'):
-            logger.info('Les données sont déjà affichées')
+            print_interactive_info(_('Data are already displayed on the FFE website.'))
             return
         if not self.auth_state[SET_VISIBLE_LINK_ID].lower().startswith('activer'):
-            logger.error('Invalid display link text [%s]', self.auth_state[SET_VISIBLE_LINK_ID])
+            print_interactive_error(
+                _('Invalid display link text [{text}]').format(text=self.auth_state[SET_VISIBLE_LINK_ID]))
             return
         url = FFE_URL + '/MonTournoi.aspx'
         post_data: dict[str, str] = {
@@ -323,23 +331,21 @@ class FFESession(Session):
         html: str = self._read_url(url=url, data=post_data, files=None)
         if not html:
             return
-        logger.info('show OK')
+        print_interactive_success(_('Results upload OK'))
 
     def upload_rules(self):
         """Upload the rules of the tournament to the FFE admin website."""
-        logger.info(
-            'Mise à jour du règlement du tournoi [%s] (%s) sur le site fédéral :',
-            self.tournament.ffe_id, self.tournament.rules)
+        print_interactive_info(_('Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...').format(
+            ffe_id=self.tournament.ffe_id, file=self.tournament.rules))
         if not self._ffe_init():
             return
-        # logger.info('init OK')
         if not self._ffe_auth():
             return
-        logger.info('auth OK: %s', self.tournament_ffe_url)
         if self.debug:
             logger.info('> auth_state[%s]=[%s]', UPLOAD_RULES_LINK_ID, self.auth_state[UPLOAD_RULES_LINK_ID])
         if self.auth_state[UPLOAD_RULES_LINK_ID] is None:
-            logger.warning('Lien de mise en ligne non trouvé (vérifier que le tournoi n\'est pas terminé)')
+            logger.warning(
+                _('Rules upload link not found, check that the tournament is not finished on the FFE website.'))
             return
         url = FFE_URL + '/MonTournoi.aspx'
         post: dict[str, str] = {
@@ -353,11 +359,11 @@ class FFESession(Session):
         if not html:
             logger.error('html')
             return
-        _, error = self._parse_html_content(html)
+        dummy, error = self._parse_html_content(html)
         if error:
             logger.error(error)
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
             event_database.set_tournament_last_ffe_rules_upload(self.tournament.id)
             event_database.commit()
-        logger.info('upload OK')
+        logger.info('Rules upload OK')

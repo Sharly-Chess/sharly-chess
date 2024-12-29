@@ -39,7 +39,31 @@ def __flush_logger():
     logger.handlers[0].flush()
 
 
-def print_interactive(string: str):
+def print_interactive_info(string: str):
+    """Prints the message to stdout with color."""
+    __flush_logger()
+    print(Fore.LIGHTWHITE_EX + Style.BRIGHT + string + Style.RESET_ALL)
+
+
+def print_interactive_success(string: str):
+    """Prints the message to stdout with color."""
+    __flush_logger()
+    print(Fore.GREEN + Style.BRIGHT + string + Style.RESET_ALL)
+
+
+def print_interactive_warning(string: str):
+    """Prints the message to stdout with color."""
+    __flush_logger()
+    print(Fore.YELLOW + Style.BRIGHT + string + Style.RESET_ALL)
+
+
+def print_interactive_error(string: str):
+    """Prints the message to stdout with color."""
+    __flush_logger()
+    print(Fore.RED + Style.BRIGHT + string + Style.RESET_ALL)
+
+
+def print_interactive_input(string: str):
     """Prints the message to stdout with color."""
     __flush_logger()
     print(Fore.CYAN + Style.BRIGHT + string + Style.RESET_ALL)

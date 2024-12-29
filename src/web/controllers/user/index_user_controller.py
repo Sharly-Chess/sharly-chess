@@ -9,6 +9,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
+from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
@@ -52,20 +53,21 @@ class UserWebContext(WebContext):
 
 
 class AbstractUserController(AbstractController):
-    pass
+    """ An abstract class inherited by all the user controllers."""
+
+    @staticmethod
+    def set_user_columns(request: HTMXRequest, user_columns: int | None):
+        if user_columns:
+            SessionHandler.set_session_user_columns(request, user_columns)
 
 
 class IndexUserController(AbstractUserController):
 
     @staticmethod
     def _user_render(
-            request: HTMXRequest,
-            user_tab: str | None,
+            web_context: UserWebContext,
     ) -> Template | ClientRedirect:
-        web_context: UserWebContext = UserWebContext(request, data=None, user_tab=user_tab)
-        if web_context.error:
-            return web_context.error
-        event_loader: EventLoader = EventLoader.get(request=request)
+        event_loader: EventLoader = EventLoader.get(request=web_context.request)
         current_events: list[Event]
         coming_events: list[Event]
         passed_events: list[Event]
@@ -79,25 +81,25 @@ class IndexUserController(AbstractUserController):
             passed_events = event_loader.passed_public_events
         nav_tabs: dict[str, dict] = {
             'current_events': {
-                'title': f'Évènements en cours ({len(current_events) or "-"})',
+                'title': _('Current events ({num})').format(num=len(current_events) or '-'),
                 'events': current_events,
-                'empty_str': 'Aucun évènement en cours.',
+                'empty_str': _('No current events.'),
                 'class': 'bg-primary-subtle',
                 'icon_class': 'bi-calendar',
                 'disabled': not current_events,
             },
             'coming_events': {
-                'title': f'Évènements à venir ({len(coming_events) or "-"})',
+                'title': _('Coming events ({num})').format(num=len(coming_events) or '-'),
                 'events': coming_events,
-                'empty_str': 'Aucun évènement à venir.',
+                'empty_str': _('No coming events.'),
                 'class': 'bg-info-subtle',
                 'icon_class': 'bi-calendar-check',
                 'disabled': not coming_events,
             },
             'passed_events': {
-                'title': f'Évènements passés ({len(passed_events) or "-"})',
+                'title': _('Passed events ({num})').format(num=len(passed_events) or '-'),
                 'events': passed_events,
-                'empty_str': 'Aucun évènement passé.',
+                'empty_str': _('No passed events.'),
                 'class': 'bg-secondary-subtle',
                 'icon_class': 'bi-calendar-minus',
                 'disabled': not passed_events,
@@ -119,13 +121,9 @@ class IndexUserController(AbstractUserController):
 
     @staticmethod
     def _user_refresh_needed(
-            request: HTMXRequest,
-            user_tab: str | None,
+            web_context: UserWebContext,
             date: float, ) -> bool:
-        event_loader: EventLoader = EventLoader.get(request=request)
-        web_context: UserWebContext = UserWebContext(request, data=None, user_tab=user_tab)
-        if web_context.error:
-            return False
+        event_loader: EventLoader = EventLoader.get(request=web_context.request)
         events: list[Event]
         if web_context.admin_auth:
             events = list(event_loader.events_by_id.values())
@@ -143,12 +141,16 @@ class IndexUserController(AbstractUserController):
             self, request: HTMXRequest,
             user_tab: str | None,
             user_columns: int | None,
+            locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
-        if user_columns:
-            SessionHandler.set_session_user_columns(request, user_columns)
+        self.set_locale(request, locale)
+        self.set_user_columns(request, user_columns)
+        web_context: UserWebContext = UserWebContext(request, data=None, user_tab=user_tab)
+        if web_context.error:
+            return web_context.error
         date: float | None = self.get_if_modified_since(request)
-        if date is None or self._user_refresh_needed(request, user_tab, date):
-            return self._user_render(request, user_tab=user_tab)
+        if date is None or self._user_refresh_needed(web_context, date):
+            return self._user_render(web_context)
         else:
             return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
 
@@ -159,8 +161,9 @@ class IndexUserController(AbstractUserController):
     async def htmx_user(
             self, request: HTMXRequest,
             user_columns: int | None,
+            locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
-        return self._user(request, user_tab=None, user_columns=user_columns)
+        return self._user(request, user_tab=None, user_columns=user_columns, locale=locale)
 
     @get(
         path='/user/{user_tab:str}',
@@ -170,5 +173,6 @@ class IndexUserController(AbstractUserController):
             self, request: HTMXRequest,
             user_tab: str,
             user_columns: int | None,
+            locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
-        return self._user(request, user_tab=user_tab, user_columns=user_columns)
+        return self._user(request, user_tab=user_tab, user_columns=user_columns, locale=locale)

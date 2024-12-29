@@ -1,4 +1,3 @@
-from gettext import gettext, ngettext
 from os import urandom
 from pathlib import Path
 from typing import Sequence
@@ -11,7 +10,8 @@ from litestar.static_files import create_static_files_router
 from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 
-from common import BASE_DIR
+from common.i18n import gettext, ngettext
+from common.papi_web_config import PapiWebConfig
 from web.controllers.admin.chessevent_admin_controller import ChessEventAdminController
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
@@ -28,8 +28,8 @@ from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.tournament_user_controller import CheckInUserController, IllegalMoveUserController, \
     ResultUserController, DownloadUserController
 
-template_dir: Path = BASE_DIR / 'src/web/templates'
-static_files_base_dir = BASE_DIR / 'src/web/static'
+template_dir: Path = PapiWebConfig.base_dir / 'src/web/templates'
+static_files_base_dir = PapiWebConfig.base_dir / 'src/web/static'
 
 static_files_folders = [
     static_files_base_dir,
