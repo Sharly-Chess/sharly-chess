@@ -13,53 +13,97 @@
     {% if show_details_on_screen_list %}
         {% if screen.type in ['input', 'boards', 'players', 'results'] %}
             <div>
-                Type : {{ screen_type_icon(screen.type, true) }} {{ screen.type_str }}
+                {{ screen_type_icon(screen.type, true) }}
+                {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
             </div>
             <div>
-                Colonnes : {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+                {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
             </div>
             <div class="{% if not screen.menu_link %}text-secondary{% endif %}">
-                Étiquette de menu :
+                <i class="bi-hand-index"></i>
                 {% if screen.menu_link %}
-                    {{ screen.menu_label }}
+                    {{ _('Menu link label: %(menu_label)s', menu_label=screen.menu_label) }}
                     {% if not screen.menu_text %}
-                        <span class="fst-italic">(par défaut)</span>
+                        <span class="fst-italic">
+                            {{ _('(by default)') }}
+                        </span>
                     {% endif %}
                 {% else %}
-                    <span class="fst-italic">aucune</span>
+                    <span class="fst-italic">
+                        {{ _('Menu link label: none') }}
+                    </span>
                 {% endif %}
             </div>
             <div class="{% if not screen.menu %}text-secondary{% endif %}">
-                Menu : {% if screen.menu %}{{ screen.menu }}{% else %}<span class="fst-italic">aucun</span>{% endif %}
+                <i class="bi-three-dots"></i>
+                {% if screen.menu %}{{ _('Menu: %(menu)s', menu=screen.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
             </div>
             <div class="{% if not screen.timer %}text-secondary{% endif %}">
-                Chronomètre : {% if screen.timer %}<i class="bi-clock-fill"></i> {% if admin_event.timers_by_id|length > 1 %}{{ screen.timer.uniq_id }}{% else %}Oui{% endif %}{% else %}Non{% endif %}
+                <i class="bi-clock-fill"></i>
+                {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
             </div>
         {% endif %}
         {% if screen.type == 'input' %}
             <div>
-                Bouton de sortie d'écran : {% if screen.input_exit_button %}Oui{% else %}Non{% endif %} {% if screen.stored_screen.input_exit_button is none %}(par défaut){% endif %}
+                <i class="bi-x-circle"></i>
+                {{ _('Exit button:') }}
+                {% if screen.input_exit_button %}
+                    {{ _('yes') }}
+                {% else %}
+                    {{ _('no') }}
+                {% endif %}
+                {% if screen.stored_screen.input_exit_button is none %}
+                    {{ _('(by default)') }}
+                {% endif %}
             </div>
         {% endif %}
         {% if screen.type == 'players' %}
             <div>
-                Non apparié·es : {% if screen.players_show_unpaired %}Oui{% else %}Non{% endif %} {% if screen.stored_screen.players_show_unpaired is none %}(par défaut){% endif %}
+                {% if screen.players_show_unpaired %}
+                    {{ _('Unpaired: displayed') }}
+                {% else %}
+                    {{ _('Unpaired: hidden') }}
+                {% endif %}
+                {% if screen.stored_screen.players_show_unpaired is none %}
+                    {{ _('(by default)') }}
+                {% endif %}
             </div>
         {% endif %}
         {% if screen.type == 'results' %}
             <div>
-                Nombre max : {% if screen.results_limit %}{{ screen.results_limit }}{% else %}illimité{% endif %}
+                {% if screen.results_limit %}
+                    {{ _('Max number: %(num)d', num=screen.results_limit) }}
+                {% else %}
+                    {{ _('Max number: unlimited') }}
+                {% endif %}
             </div>
             <div>
-                Âge max : {{ screen.results_max_age }} minute{% if screen.results_max_age > 1 %}s{% endif %} {% if not screen.stored_screen.results_max_age %}<span class="fst-italic">(par défaut)</span>{% endif %}
+                {% if screen.results_max_age %}
+                    {{ ngettext('Max age: %(num)d minute', 'Max age: %(num)d minutes', num=screen.results_max_age) }}
+                {% else %}
+                    {{ _('Max age: unlimited') }}
+                {% endif %}
+                {% if not screen.stored_screen.results_max_age %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
             </div>
         {% endif %}
         {% if screen.type == 'image' %}
+            <i class="bi-image"></i>
             <div>
-                Image : {% if screen.stored_screen.background_image %}{{ screen.stored_screen.background_image }}{% else %}<span class="fst-italic text-danger">par défaut</span>{% endif %}
+                {% if screen.stored_screen.background_image %}
+                    {{ _('Image: %(image)s', image=screen.stored_screen.background_image) }}
+                {% endif %}
             </div>
             <div>
-                Couleur de fond : {% if screen.stored_screen.background_color %}{{ screen.stored_screen.background_color }}{% else %}<span class="fst-italic text-danger">par défaut</span>{% endif %}
+                {{ _('Background color: %(color)s', color=screen.background_color) }}
+                {% if not screen.stored_screen.background_color %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
             </div>
         {% endif %}
         {% if screen.message_text %}
@@ -67,10 +111,18 @@
                     class="px-2 alert-message screen-alert-message"
                     style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
             >
-                {{ screen.message_text }} {% if screen.message_default %}<span class="fst-italic">(par défaut)</span>{% endif %}
+                {{ screen.message_text }}
+                {% if screen.message_default %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
             </div>
         {% else %}
-            <div class="fst-italic">Aucun message d'alerte {% if screen.message_default %}<span class="fst-italic">(par défaut)</span>{% endif %}</div>
+            <div class="fst-italic">
+                {{ _('No alert message') }}
+                {% if screen.message_default %}{{ _('(by default)') }}{% endif %}
+            </div>
         {% endif %}
         <hr/>
     {% endif %}
@@ -87,7 +139,7 @@
             {% if screen.results_tournament_ids %}
                 {{ screen.results_tournament_names }}
             {% else %}
-                Tous les tournois
+                {{ _('All the tournaments') }}
             {% endif %}
         {% endif %}
     </div>
@@ -95,19 +147,29 @@
 
 {% block card_buttons_left %}
     {% if not screen.family  %}
-        <span {{ tooltip_attributes('info', 'Modifier les propriétés de l\'écran.', 'top') }}>
+        <span
+                {{ tooltip_attributes('info', _('Edit the properties of the screen.'), 'top') }}
+        >
             <button
                     class="btn btn-sm btn-primary p-1"
                     hx-get="{{ url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
                     preload
                     hx-target="body"
                     hx-indicator="#please-wait" >
-                <i class="bi-pencil-fill"></i> Éditer
+                <i class="bi-pencil-fill"></i>
+                {{ _('Edit') }}
             </button>
         </span>
     {% endif %}
     {% if not screen.family and screen.type in ['boards', 'input', 'players'] %}
-        <span {{ tooltip_attributes('info', 'Modifier les ensembles d\'échiquiers affichés sur l\'écran.' if screen.type in ['boards', 'input'] else 'Modifier les ensembles de joueur·euses affiché·es sur l\'écran.', 'top') }}>
+        <span
+                {{ tooltip_attributes(
+                    'info',
+                    _('Edit the sets of boards displayed on the screen.')
+                    if screen.type in ['boards', 'input'] else
+                    _('Edit the sets of players displayed on the screen.'),
+                    'top')
+                }}>
             <button
                     class="btn btn-sm btn-primary p-1"
                     hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
@@ -116,9 +178,9 @@
                     hx-indicator="#please-wait" >
                 <i class="bi-collection-fill"></i>
                 {% if screen.type in ['boards', 'input'] %}
-                    Échiquiers
+                    {{ _('Boards') }}
                 {% else %}
-                    Joueur·euses
+                    {{ _('Players') }}
                 {% endif %}
             </button>
         </span>
@@ -127,7 +189,7 @@
 
 {% block card_buttons_right %}
     {% if not screen.family %}
-        <span {{ tooltip_attributes('info', 'Dupliquer l\'écran.', 'top') }}>
+        <span {{ tooltip_attributes('info', 'Clone the screen.', 'top') }}>
             <button
                     class="btn btn-sm btn-primary p-1"
                     hx-get="{{ url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
@@ -137,7 +199,7 @@
                 <i class="bi-copy"></i>
             </button>
         </span>
-        <span {{ tooltip_attributes('info', 'Supprimer l\'écran.', 'top') }}>
+        <span {{ tooltip_attributes('info', 'Delete the screen.', 'top') }}>
             <button
                     class="btn btn-sm btn-danger p-1"
                     hx-get="{{ url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"

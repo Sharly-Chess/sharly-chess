@@ -3,14 +3,14 @@
 
 {% block cards_container_title %}
     {{ event_visibility_icon(admin_event, '') }}
-    {{ admin_event.name }} - Écrans rotatifs
+    {{ admin_event.name }} - {{ _('Rotators') }}
 {% endblock %}
 
 {% block cards_container_right_buttons %}
     {% with id='show-details-on-rotator-list', name='show_details_on_rotator_list' %}
         <div
                 class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ tooltip_attributes('info', 'Activer ou désactiver l\'affichage des détails sur les cartes des écrans rotatifs ci-dessous.', 'top') }}
+                {{ tooltip_attributes('info', _('Enable/disable the details of the rotators on the cards below.'), 'top') }}
         >
             <input
                     hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
@@ -20,10 +20,10 @@
                     class="form-check-input"
                     type="checkbox"
                     id="{{ id }}"
-                    {% if show_details_on_rotator_list %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> Détails</label>
+                    {% if show_details_on_rotator_list %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
-    <span {{ tooltip_attributes('info', 'Rafraîchir cet onglet.', 'top') }}>
+    <span {{ tooltip_attributes('info', 'Refresh this page.', 'top') }}>
         <button
                 class="btn btn-primary text-nowrap ms-1"
                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
@@ -34,7 +34,15 @@
             <i class="bi-arrow-clockwise"></i>
         </button>
     </span>
-    <span {{ tooltip_attributes('info', 'Ajouter un nouvel écran rotatif à l\'évènement.' if admin_event.screens_by_uniq_id else 'Vous devez créer un écran ou une famille d\'écrans avant de pouvoir créer des écrans rotatifs', 'top') }}>
+    <span
+            {{ tooltip_attributes(
+                'info',
+                _('Add a rotator to the event.')
+                if admin_event.screens_by_uniq_id else
+                _('You must create a screen or a family of screens before creating a rotator.'),
+                'top')
+            }}
+    >
         <button
                 class="btn btn-primary text-nowrap ms-1"
                 hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
@@ -45,7 +53,8 @@
                     disabled
                 {% endif %}
         >
-            <i class="bi-plus-square-fill"></i> Créer un écran rotatif
+            <i class="bi-plus-square-fill"></i>
+            {{ _('Create a rotator') }}
         </button>
     </span>
 {% endblock %}
@@ -64,7 +73,7 @@
             {% endfor %}
         {% else %}
             <div class="col-12 mb-3">
-                Aucune famille d'écrans.
+                {{ _('No rotators.') }}
             </div>
         {% endif %}
     </div>

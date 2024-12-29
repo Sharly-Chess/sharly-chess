@@ -9,17 +9,40 @@
     <div id="home-content" class="content home-content">
         <div class="row justify-content-center">
             <div class="d-grid gap-2 col-auto mx-auto">
-                <h1 class="text-center">{{ _('Bienvenue dans Papi-web !') }}</h1>
+                <h1 class="text-center">{{ _('Welcome to Papi-web!') }}</h1>
+                <div
+                        class="row justify-content-md-center"
+                >
+                    {% for l, l_info in locale_infos.items() %}
+                        <div
+                                class="col-md-auto {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}"
+                                {% if l != locale %}
+                                    hx-get="{{ url_for('index') }}"
+                                    hx-vals='{"locale": "{{ l }}"}'
+                                    preload
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% endif %}
+                        >
+                            <img
+                                    src="{{l_info.1}}"
+                                    alt="{{l_info.0}}"
+                                    class="index-locale-flag"
+                            />
+                            {{l_info.0}}
+                        </div>
+                    {% endfor %}
+                </div>
                 <table class="table table-responsive table-sm border-black w-auto bg-light">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col" colspan="2">Accès</th>
+                            <th scope="col" colspan="2">{{ _('Web access') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <th scope="row">
-                                Depuis le serveur Papi-web
+                                {{ _('From the Papi-web server') }}
                             </th>
                             <td>
                                 <a href="{{ papi_web_config.local_url }}" target="_blank">{{ papi_web_config.local_url }}</a>
@@ -27,7 +50,7 @@
                         </tr>
                         <tr>
                             <th scope="row">
-                                Depuis le réseau local (LAN/WAN)
+                                {{ _('From the local network (LAN/WAN)') }}
                             </th>
                             <td>
                                 {% if papi_web_config.lan_url %}
@@ -45,15 +68,15 @@
                         hx-target="body"
                         hx-indicator="#please-wait"
                         class="btn btn-primary btn-lg p-4 w-100"
-                        {{ tooltip_attributes('info', 'Cliquez ici pour accéder aux écrans publics des évènements.', 'right') }}
+                        {{ tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
                 >
-                    Évènements (accès public)
+                    {{ _('Events (public access)') }}
                 </button>
                 <div
                         {% if admin_auth %}
-                            {{ tooltip_attributes('info', 'L\'interface d\'arbitrage permet la gestion des tournois des évènements.', 'right') }}
+                            {{ tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
                         {% else %}
-                            {{ tooltip_attributes('error', 'L\'accès à l\'interface d\'arbitrage n\'est pas autorisé depuis cette machine.', 'right') }}
+                            {{ tooltip_attributes('error', _('Access to the arbiter interface is not allowed from this client.'), 'right') }}
                         {% endif %}
                 >
                     <button
@@ -66,7 +89,7 @@
                                 disabled
                             {% endif %}
                     >
-                        Arbitrage (accès privé)
+                        {{ _('Arbiter interface (private access)') }}
                     </button>
                 </div>
             </div>

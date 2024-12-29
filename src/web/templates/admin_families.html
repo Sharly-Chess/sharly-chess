@@ -3,14 +3,14 @@
 
 {% block cards_container_title %}
     {{ event_visibility_icon(admin_event, '') }}
-    {{ admin_event.name }} - Familles d'écrans
+    {{ admin_event.name }} - {{ _('Screen families') }}
 {% endblock %}
 
 {% block cards_container_right_buttons %}
     {% with id='show-details-on-family-list', name='show_details_on_family_list' %}
         <div
                 class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ tooltip_attributes('info', 'Activer ou désactiver l\'affichage des détails sur les cartes des familles d\'écrans ci-dessous.', 'top') }}
+                {{ tooltip_attributes('info', _('Enable/disable the details of the screen families on the cards below.'), 'top') }}
         >
             <input
                     hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
@@ -20,10 +20,10 @@
                     class="form-check-input"
                     type="checkbox"
                     id="{{ id }}"
-                    {% if show_details_on_family_list %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> Détails</label>
+                    {% if show_details_on_family_list %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
-    <span {{ tooltip_attributes('info', 'Rafraîchir cet onglet.', 'top') }}>
+    <span {{ tooltip_attributes('info', 'Refresh this page.', 'top') }}>
         <button
                 class="btn btn-primary text-nowrap me-2"
                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
@@ -39,19 +39,19 @@
 {% block cards_container_cards %}
     <div class="row">
         <div class="col-12 mb-2">
-            {% set no_tournament_message='Vous devez créer un tournoi avant de pouvoir créer des familles d\'écrans' %}
+            {% set no_tournament_message=_('You must create a tournament before creating a screen family.') %}
             {% for family_type, family_data in {
                 'input': {
-                    'text': 'Saisie des résultats',
-                    'tooltip_text': 'Ajouter à l\'évènement une nouvelle famille d\'écrans de saisie des résultats.',
+                    'text': _('Entry of results'),
+                    'tooltip_text': _('Add a family of screens to enter the results.'),
                 },
                 'boards': {
-                    'text': 'Appariements par échiquiers',
-                    'tooltip_text': 'Ajouter à l\'évènement une nouvelle famille d\'écrans d\'affichage des appariements par échiquier.',
+                    'text': _('Pairings by board'),
+                    'tooltip_text': _('Add a family of screens to display the pairings by board.'),
                 },
                 'players': {
-                    'text': 'Appariements par ordre alphabétique',
-                    'tooltip_text': 'Ajouter à l\'évènement une nouvelle famille d\'écrans d\'affichage des appariements par ordre alphabétique.',
+                    'text': _('Pairings by player'),
+                    'tooltip_text': _('Add a family of screens to display the pairings by alphabetical order.'),
                 },
             }.items() %}
                 <span {{ tooltip_attributes('info', family_data.tooltip_text if admin_event.tournaments_by_id else no_tournament_message, 'top') }}>
@@ -84,7 +84,7 @@
             {% endfor %}
         {% else %}
             <div class="col-12 mb-3">
-                Aucune famille d'écrans.
+                {{ _('No screen families.') }}
             </div>
         {% endif %}
     </div>

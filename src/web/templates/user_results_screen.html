@@ -8,11 +8,11 @@
                 <thead class="table-dark">
                     <tr>
                         <th scope="col" class="time">Heure</th>
-                        {% if print_tournament %}<th scope="col" class="tournament">Tournoi</th>{% endif %}
-                        <th scope="col" class="board-number">Rde.Ech</th>
-                        <th scope="col" class="player">Blancs</th>
-                        <th scope="col" class="score">Score</th>
-                        <th scope="col" class="player">Noirs</th>
+                        {% if print_tournament %}<th scope="col" class="tournament">{{ _('Tournament') }}</th>{% endif %}
+                        <th scope="col" class="board-number">{{ _('Rnd.Boa') }}</th>
+                        <th scope="col" class="player">{{ _('White') }}</th>
+                        <th scope="col" class="score">{{ _('Score') }}</th>
+                        <th scope="col" class="player">{{ _('Black') }}</th>
                     </tr>
                 </thead>
                 <tbody>

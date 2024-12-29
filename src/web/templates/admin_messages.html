@@ -1,8 +1,8 @@
 <table class="table table-striped table-sm table-hover border-black w-auto bg-light mx-auto justify-content-center">
     <thead class="table-dark position-sticky top-0 z-2">
         <tr>
-            <th scope="col" colspan="2" class="text-nowrap">Niveau</th>
-            <th scope="col" class="text-nowrap">Message</th>
+            <th scope="col" colspan="2" class="text-nowrap">{{ _('Level') }}</th>
+            <th scope="col" class="text-nowrap">{{ _('Message') }}</th>
             <th scope="col" class="text-nowrap text-end">
                 {% for logging_level_id, logging_level in logging_levels.items() %}
                     <button
@@ -41,7 +41,7 @@
         {% else %}
             <tr>
                 <td colspan="4">
-                    Aucun message.
+                    {{ _('No messages.') }}
                 </td>
             </tr>
         {% endif %}

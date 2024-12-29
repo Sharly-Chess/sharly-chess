@@ -24,7 +24,7 @@
                     <!-- end block user_header_nav -->
                     <span
                             class="text-nowrap ms-auto mt-1"
-                            {{ tooltip_attributes('info', 'Changer le nombre de colonnes utilisées.', 'top') }}
+                            {{ tooltip_attributes('info', _('Change the number of columns.'), 'top') }}
                     >
                         {% for c in papi_web_config.allowed_columns %}
                             {% if c == user_columns %}
@@ -48,6 +48,7 @@
                                                 url_for('user')
                                             )
                                         }}"
+                                        preload
                                         hx-vals='{"user_columns": "{{ c }}"}'
                                         hx-target="body"
                                         hx-indicator="#please-wait"
@@ -57,6 +58,31 @@
                             {% endif %}
                         {% endfor %}
                     </span>
+                    {% for l, l_info in locale_infos.items() %}
+                        <img
+                                src="{{l_info.1}}"
+                                alt="{{l_info.0}}"
+                                class="user-locale-flag ms-1 mt-2 {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}"
+                                {% if l != locale %}
+                                    hx-get="{{
+                                        (
+                                            url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab)
+                                            if user_event_tab else
+                                            url_for('user-event', event_uniq_id=user_event.uniq_id)
+                                        ) if user_event else (
+                                            url_for('user-tab', user_tab=user_tab)
+                                            if user_event_tab else
+                                            url_for('user')
+                                        )
+                                    }}"
+                                    hx-vals='{"locale": "{{ l }}"}'
+                                    preload
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% endif %}
+                                {{ tooltip_attributes('info', l_info.0, 'right') }}
+                        />
+                    {% endfor %}
                 </div>
             </nav>
         </div>

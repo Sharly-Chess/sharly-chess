@@ -4,88 +4,95 @@
         Configuration de Papi-web
     </div>
     <div class="col text-end">
-        <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-                hx-target="body"
-                preload
-                hx-indicator="#please-wait">
-            <i class="bi-plus-square-fill"></i> Créer un évènement
-        </button>
+        <span {{ tooltip_attributes('info', _('Add an event.'), 'top') }}>
+            <button
+                    class="btn btn-primary text-nowrap"
+                    hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
+                    hx-target="body"
+                    preload
+                    hx-indicator="#please-wait">
+                <i class="bi-plus-square-fill"></i>
+                {{ _('Create an event') }}
+            </button>
+        </span>
     </div>
 </div>
 
 <table class="table table-striped table-sm table-hover border-black w-auto bg-light mx-auto justify-content-center">
     <thead class="table-dark position-sticky top-0 z-2">
         <tr>
-            <th scope="col" class="text-nowrap">Configuration</th>
+            <th scope="col" class="text-nowrap">{{ _('Configuration') }}</th>
             <th scope="col" class=""></th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <th scope="row" class="text-nowrap">Port</th>
+            <th scope="row" class="text-nowrap">{{ _('Port') }}</th>
             <td>{{ papi_web_config.web_port }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Accès depuis le serveur Papi-web</th>
+            <th scope="row" class="text-nowrap">{{ _('Access from the Papi-web server') }}</th>
             <td><a href="{{ papi_web_config.local_url }}" target="_blank">{{ papi_web_config.local_url }}</a></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Accès depuis le réseau local (LAN/WAN)</th>
+            <th scope="row" class="text-nowrap">{{ _('Access from the local network (LAN/WAN)') }}</th>
             <td>{% if papi_web_config.lan_url %}<a href="{{ papi_web_config.lan_url }}" target="_blank">{{ papi_web_config.lan_url }}</a>{% else %}<span class="fst-italic">-</span>{% endif %}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Lancement du navigateur au démarrage du serveur</th>
-            <td>{% if papi_web_config.web_launch_browser %}Oui{% else %}<span class="fst-italic">Non</span>{% endif %}</td>
+            <th scope="row" class="text-nowrap">{{ _('Launching the browser on server startup') }}</th>
+            <td>{% if papi_web_config.web_launch_browser %}{{ _('Yes') }}{% else %}<span class="fst-italic">{{ _('No') }}</span>{% endif %}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de Papi-web</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Papi-web') }}</th>
             <td>{{ papi_web_config['version'] }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de Uvicorn</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Uvicorn') }}</th>
             <td>{{ papi_web_config.uvicorn_version }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de LiteStar</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='LiteStar') }}</th>
             <td>{{ papi_web_config.litestar_version }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de Jinja2</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Jinja2') }}</th>
             <td>{{ papi_web_config.jinja2_version }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de HTMX</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='HTMX') }}</th>
             <td id="htmx-version"></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de jQuery</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jQuery') }}</th>
             <td id="jquery-version"></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de Bootstrap</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Bootstrap') }}</th>
             <td id="bootstrap-version"></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de SortableJS</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='SortableJS') }}</th>
             <td>{{ papi_web_config.sortable_version }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de jsTree</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jsTree') }}</th>
             <td>{{ papi_web_config.jstree_version }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Version de PyODBC</th>
+            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='PyODBC') }}</th>
             <td>{{ papi_web_config.pyodbc_version }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Pilote Access ({% if access_driver in odbc_drivers %}présent{% else %}introuvable{% endif %})</th>
+            <th scope="row" class="text-nowrap">{{
+                _('Access driver (found)')
+                if access_driver in odbc_drivers else
+                _('Access driver (not found)') }}
+            </th>
             <td>{{ access_driver }}</td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">
-                Autres pilotes ODBC trouvés sur le serveur
+                {{ _('Other ODBC drivers found on the server') }}
             </th>
             <td>
                 {% for odbc_driver in odbc_drivers %}

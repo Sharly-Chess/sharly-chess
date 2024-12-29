@@ -8,12 +8,12 @@
                 hx-indicator="#please-wait">
             <div class="admin-screen-set-div edit border border-secondary px-1 mb-1">
                 <h3>
-                    Propriétés
+                    {{ _('Properties') }}
                 </h3>
                 <div class="row">
                     <div class="col-5">
                         {% with id='tournament-id', name='tournament_id' %}
-                            <label for="{{ id }}" class="form-label">Tournoi :</label>
+                            <label for="{{ id }}" class="form-label">{{ _('Tournament:') }}</label>
                             <select
                                     name="{{ name }}"
                                     id="{{ id }}"
@@ -26,11 +26,7 @@
                                 {% endfor %}
                             </select>
                             <div id="{{ id }}-help" class="form-text">
-                                {% if admin_screen.type in ['boards', 'input'] %}
-                                    Le tournoi dont on souhaite afficher les échiquiers, obligatoire.
-                                {% else %}
-                                    Le tournoi dont on souhaite afficher les joueur·euses, obligatoire.
-                                {% endif %}
+                                {{ _('The tournament of which you want to show the pairings, mandatory.') }}
                             </div>
                             {% if name in errors %}
                                 <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -41,16 +37,16 @@
                     </div>
                     <div class="col-5">
                         {% with id='name', name='name' %}
-                            <label for="{{ id }}" class="form-label">Nom :</label>
+                            <label for="{{ id }}" class="form-label">{{ _('Name:') }}</label>
                             <input
                                     name="{{ name }}"
                                     type="text" id="{{ id }}"
                                     class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                     aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="Exemple : {% if admin_screen.type in ['boards', 'input'] %}Échiquiers{% else %}Joueur·euses{% endif %} %f à %l"
+                                    placeholder="{{ _('E.g.: Boards %%f to %%l') if admin_screen.type in ['boards', 'input'] else _('E.g.: Players %%f to %%l') }}"
                                     value="{{ data[name] }}" />
                             <div id="{{ id }}-help" class="form-text">
-                                Le nom de l'ensemble (le nom du premier ensemble d'un écran est par défaut le nom de l'écran).
+                                {{ _('The name of the screen set (the name of the first set of a screen is by default the name of the screen).') }}
                             </div>
                             {% if name in errors %}
                                 <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -65,7 +61,8 @@
                                 hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait">
-                            <i class="bi-floppy-fill"></i> Enregistrer
+                            <i class="bi-floppy-fill"></i>
+                            {{ _('Update') }}
                         </button>
                         <button
                                 class="btn btn-sm btn-secondary text-nowrap mb-1"
@@ -74,16 +71,17 @@
                                 hx-target="body"
                                 hx-trigger="click, keyup[key=='Escape'] from:body"
                                 hx-indicator="#please-wait">
-                            <i class="bi-x-circle-fill"></i> Annuler
+                            <i class="bi-x-circle-fill"></i>
+                            {{ _('Cancel') }}
                         </button>
                     </div>
                 </div>
                 {% if admin_screen.type in ['boards', 'input', 'players'] %}
                     <h3>
                         {% if admin_screen.type in ['boards', 'input'] %}
-                            Sélection des échiquiers (par ordre croissant)
+                            {{ _('Board selection (by number)') }}
                         {% else %}
-                            Sélection des joueur·euses (par ordre alphabétique)
+                            {{ _('Player selection (by alphabetical order)') }}
                         {% endif %}
                     </h3>
                     <div class="row">
@@ -91,9 +89,9 @@
                             {% with id='first', name='first' %}
                                 <label for="{{ id }}" class="form-label">
                                     {% if admin_screen.type in ['boards', 'input'] %}
-                                        Premier échiquier :
+                                        {{ _('First board:') }}
                                     {% else %}
-                                        Premier·e joueur·euse :
+                                        {{ _('First player:') }}
                                     {% endif %}
                                 </label>
                                 <input
@@ -101,13 +99,13 @@
                                         type="number" id="{{ id }}" min="1"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : 15"
+                                        placeholder="{{ _('E.g.: %(num)d', num=15) }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
                                     {% if admin_screen.type in ['boards', 'input'] %}
-                                        Le numéro du premier échiquier à prendre en compte, facultatif (par défaut le premier échiquier).
+                                        {{ _('The number of the first board to select, optional (the first board by default).') }}
                                     {% else %}
-                                        Le numéro du·de la premier·e joueur·euse, facultatif (par défaut le·la premier·e par ordre alphabétique).
+                                        {{ _('The number of the first player to select, optional (the first player by alphabetical order by default).') }}
                                     {% endif %}
                                 </div>
                                 {% if name in errors %}
@@ -121,9 +119,9 @@
                             {% with id='last', name='last' %}
                                 <label for="{{ id }}" class="form-label">
                                     {% if admin_screen.type in ['boards', 'input'] %}
-                                        Dernier échiquier :
+                                        {{ _('Last board:') }}
                                     {% else %}
-                                        Dernier·e joueur·euse :
+                                        {{ _('Last player:') }}
                                     {% endif %}
                                 </label>
                                 <input
@@ -131,13 +129,13 @@
                                         type="number" id="{{ id }}" min="1"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : 40"
+                                        placeholder="{{ _('E.g.: %(num)d', num=40) }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
                                     {% if admin_screen.type in ['boards', 'input'] %}
-                                        Le numéro du dernier échiquier à prendre en compte, facultatif (par défaut le premier échiquier).
+                                        {{ _('The number of the last board to select, optional (the last board by default).') }}
                                     {% else %}
-                                        Le numéro du·de la dernier·e joueur·euse, facultatif (par défaut le·la dernier·e par ordre alphabétique).
+                                        {{ _('The number of the last player to select, optional (the last player by alphabetical order by default).') }}
                                     {% endif %}
                                 </div>
                                 {% if name in errors %}
@@ -150,16 +148,16 @@
                         {% if admin_screen.type in ['boards', 'input'] %}
                             <div class="col-4">
                                 {% with id='fixed-boards-str', name='fixed_boards_str' %}
-                                    <label for="{{ id }}" class="form-label">Échiquiers fixes :</label>
+                                    <label for="{{ id }}" class="form-label">{{ _('Fixed boards:') }}</label>
                                     <input
                                             name="{{ name }}"
                                             type="text" id="{{ id }}"
                                             class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                             aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="Exemple : 501, 502"
+                                            placeholder="{{ _('E.g.: %(string)s', string='501, 502') }}"
                                             value="{{ data[name] }}" />
                                     <div id="{{ id }}-help" class="form-text">
-                                        Les numéros des tables fixes doivent être séparés par des virgules ; si ce champ est utilisé, les champs suivants ne sont pas pris en compte.
+                                        {{ _('Comma-separated board numbers ; if this field is set, other fields are omitted.') }}
                                     </div>
                                     {% if name in errors %}
                                         <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -179,23 +177,26 @@
                 <div class="col-10">
                     <div>
                         <b>
-                            Tournoi :
+
                             {% if screen_set.tournament %}
-                                {{ screen_set.tournament.name }}
+                                {{ _('Tournament: %(tournament_name)s', tournament_name=screen_set.tournament.name) }}
                             {% else %}
-                                <span class="text-danger">non défini</span>
+                                <span class="text-danger">
+                                    {{ _('Tournament: not set') }}
+                                </span>
                             {% endif %}
                         </b>
                     </div>
                     <div>
-                        Sélection : {{ screen_set.numbers_str }}
+                        {{ _('Selection: %(selection)s', selection=screen_set.numbers_str) }}
                     </div>
                     <div>
-                        Nom :
                         {% if screen_set.name %}
-                            {{ screen_set.name }}
+                            {{ _('Name: %(screen_set_name)s', name=screen_set.name) }}
                         {% else %}
-                            <span class="fst-italic">par défaut</span>
+                            <span class="fst-italic">
+                                {{ _('Name: by default') }}
+                            </span>
                         {% endif %}
                     </div>
                 </div>

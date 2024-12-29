@@ -52,3 +52,6 @@ body {
 	background-position: center center;
 	background-size: contain;
 }
+.index-locale-flag {
+    height: 1em;
+}

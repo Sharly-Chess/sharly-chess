@@ -1,5 +1,5 @@
 {% with id='players-show-unpaired', name='players_show_unpaired' %}
-    <label for="{{ id }}" class="form-label">Affichage des joueur·euses non apparié·es :</label>
+    <label for="{{ id }}" class="form-label">{{ _('Display of unpaired players:') }}</label>
     <select
             name="{{ name }}"
             id="{{ id }}"
@@ -12,7 +12,7 @@
         {% endfor %}
     </select>
     <div id="{{ id }}-help" class="form-text">
-      Si les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye.
+      {{ _('When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye).') }}
     </div>
     {% if name in errors %}
         <div id="{{ id }}-error" class="form-text invalid-feedback">

@@ -11,7 +11,8 @@
                 preload
                 hx-target="body"
                 hx-indicator="#please-wait">
-            <i class="bi-pencil-fill"></i> Éditer
+            <i class="bi-pencil-fill"></i>
+            {{ _('Edit') }}
         </button>
         <button
                 class="btn btn-primary text-nowrap ms-1"
@@ -19,7 +20,8 @@
                 preload
                 hx-target="body"
                 hx-indicator="#please-wait">
-            <i class="bi-copy"></i> Dupliquer
+            <i class="bi-copy"></i>
+            {{ _('Clone') }}
         </button>
         <button
                 class="btn btn-danger text-nowrap ms-1"
@@ -27,7 +29,8 @@
                 preload
                 hx-target="body"
                 hx-indicator="#please-wait">
-            <i class="bi-trash-fill"></i> Supprimer
+            <i class="bi-trash-fill"></i>
+            {{ _('Delete') }}
         </button>
     </div>
 </div>
@@ -35,41 +38,48 @@
 <table class="table border-black w-auto bg-light mx-auto justify-content-center">
     <thead class="table-dark position-sticky top-0 z-2">
         <tr>
-            <th scope="col" class="text-nowrap" colspan="2">Personnalisation</th>
+            <th scope="col" class="text-nowrap" colspan="2">{{ _('Customization') }}</th>
             <th scope="col" class=""></th>
        </tr>
     </thead>
     <tbody>
         <tr>
-            <th scope="row" class="text-nowrap">Identifiant unique de l'évènement</th>
+            <th scope="row" class="text-nowrap">{{ _('Unique id') }}</th>
             <td class="text-nowrap">{{ admin_event.uniq_id }}</td>
             <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Début</th>
+            <th scope="row" class="text-nowrap">{{ _('Start') }}</th>
             <td class="">{{ admin_event.formatted_start_date_time }}</td>
             <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Fin</th>
+            <th scope="row" class="text-nowrap">{{ _('End') }}</th>
             <td class="">{{ admin_event.formatted_stop_date_time }}</td>
             <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Visibilité</th>
+            <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
             <td class="">
                 {{ event_visibility_icon(admin_event, '') }}
-                {% if admin_event.public %}Publique{% else %}Privée{% endif %}
+                {{ _('Public event') if admin_event.public else _('Private event') }}
             </td>
             <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Répertoire par défaut des fichiers Papi</th>
-            <td class="">{{ admin_event.path }}{% if not admin_event.stored_event.path %} <span class="fst-italic">(par défaut)</span>{% endif %}</td>
+            <th scope="row" class="text-nowrap">{{ _('Default directory of the Papi files') }}</th>
+            <td class="">
+                {{ admin_event.path }}
+                {% if not admin_event.stored_event.path %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
+            </td>
             <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Image et couleur de fond</th>
+            <th scope="row" class="text-nowrap">{{ _('Background image and color') }}</th>
             <td class="text-nowrap">
                 <div style="width: 160px; height: 90px; background-image: url('{{ admin_event.background_url }}'); background-color: {{ admin_event.background_color }}; background-repeat: no-repeat; background-size: contain; background-position: center center;">
                 </div>
@@ -77,42 +87,76 @@
             <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Mot de passe de saisie des scores</th>
-            <td class="text-nowrap">{% if admin_event.update_password %}********{% else %}<span class="fst-italic">Aucun</span>{% endif %}</td>
-            <td></td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">Nombre maximum de coups illégaux enregistrés</th>
-            <td class="text-nowrap">{% if admin_event.record_illegal_moves %}{{ admin_event.record_illegal_moves }}{% else %}Aucun{% endif %}{% if admin_event.stored_event.record_illegal_moves is none %}<span class="fst-italic"> (par défaut)</span>{% endif %}</td>
-            <td></td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">Règlement</th>
-            <td class="text-nowrap">{% if admin_event.rules %}Oui{% else %}Non{% endif %}</td>
-            <td></td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">Paramètres par défaut des chronomètres</th>
+            <th scope="row" class="text-nowrap">{{ _('Password to enter results') }}</th>
             <td class="text-nowrap">
-                <div class="px-2" style="background-color: {{ admin_event.timer_colors[1] }}">{{ admin_event.timer_delays[1] }} minutes avant</div>
-                <div class="px-2" style="background-color: {{ admin_event.timer_colors[2] }}">{{ admin_event.timer_delays[2] }} minutes avant</div>
-                <div class="px-2" style="background-color: {{ admin_event.timer_colors[3] }}">{{ admin_event.timer_delays[3] }} minutes après</div>
+                {% if admin_event.update_password %}
+                    ********
+                {% else %}
+                    <span class="fst-italic">
+                        {{ _('No password required') }}
+                    </span>
+                {% endif %}
             </td>
             <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Message d'alerte</th>
+            <th scope="row" class="text-nowrap">{{ _('Maximum number of illegal moves') }}</th>
+            <td class="text-nowrap">
+                {% if admin_event.record_illegal_moves %}
+                    {{ admin_event.record_illegal_moves }}
+                {% else %}
+                        {{ _('No recording') }}
+                {% endif %}
+                {% if admin_event.stored_event.record_illegal_moves is none %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">{{ _('Rules') }}</th>
+            <td class="text-nowrap">
+                {% if admin_event.rules %}
+                    {{ admin_event.rules }}
+                {% else %}
+                    <span class="fst-italic">
+                        {{ _('No rules file set') }}
+                    </span>
+                {% endif %}
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">{{ _('Default timer configuration') }}</th>
+            <td class="text-nowrap">
+                <div style="background-color: {{ admin_event.timer_colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[1]) }}</div>
+                <div style="background-color: {{ admin_event.timer_colors[2] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[2]) }}</div>
+                <div style="background-color: {{ admin_event.timer_colors[3] }}" class="px-2">{{ _('%(minutes)d minutes after', minutes=admin_event.timer_delays[3]) }}</div>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">{{ _('Alert message') }}</th>
             <td class="">
                 <div
                         class="px-2 alert-message event-alert-message"
                         style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
                 >
-                    {% if admin_event.message_text %}{{ admin_event.message_text }}{% else %}<span class="fst-italic">Aucun message d'alerte</span>{% endif %}</div>
+                    {% if admin_event.message_text %}
+                        {{ admin_event.message_text }}
+                    {% else %}
+                        <span class="fst-italic">
+                            {{ _('No alert message') }}
+                        </span>
+                    {% endif %}
+                </div>
             </td>
             <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">Dernière mise à jour</th>
+            <th scope="row" class="text-nowrap">{{ _('Last update') }}</th>
             <td class="text-nowrap">{{ admin_event.last_update_str }}</td>
             <td></td>
         </tr>

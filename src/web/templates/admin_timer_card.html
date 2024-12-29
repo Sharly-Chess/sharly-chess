@@ -10,9 +10,9 @@
 {% endblock %}
 
 {% block card_text %}
-    <div style="background-color: {{ timer.colors[1] }}">&nbsp;{{ timer.delays[1] }} minutes avant&nbsp;</div>
-    <div style="background-color: {{ timer.colors[2] }}">&nbsp;{{ timer.delays[2] }} minutes avant&nbsp;</div>
-    <div style="background-color: {{ timer.colors[3] }}">&nbsp;{{ timer.delays[3] }} minutes après&nbsp;</div>
+    <div style="background-color: {{ timer.colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', timer.delays[1]) }}</div>
+    <div style="background-color: {{ timer.colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', timer.delays[2]) }}</div>
+    <div style="background-color: {{ timer.colors[1] }}" class="px-2">{{ _('%(minutes)d minutes after', timer.delays[3]) }}</div>
     <hr/>
     {% if timer.timer_hours_by_id|length > 0 %}
         {% for timer_hour in timer.timer_hours_sorted_by_order %}
@@ -20,28 +20,30 @@
                 {% if timer_hour.error %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
                 {% if timer_hour.date_str %}{{ timer_hour.date_str }} {% endif %}
                 {% if timer_hour.time_str %}{{ timer_hour.time_str }}{% else %}???{% endif %}
-                {% if timer_hour.round %}Ronde n°{{ timer_hour.round }}{% else %}{{ timer_hour.uniq_id }}{% endif %}
+                {% if timer_hour.round %}{{ _('Round #%(round)d', round=timer_hour.round) }}{% else %}{{ timer_hour.uniq_id }}{% endif %}
             </div>
         {% endfor %}
     {% else %}
         <div class=" mb-2 text-danger">
-            <i class="bi-exclamation-triangle-fill"></i> Aucun horaire défini
+            <i class="bi-exclamation-triangle-fill"></i>
+                {{ _('No hours.') }}
         </div>
     {% endif %}
 {% endblock %}
 
 {% block card_buttons_left %}
-    <span {{ tooltip_attributes('info', 'Modifier les propriétés du chronomètre.', 'top') }}>
+    <span {{ tooltip_attributes('info', _('Edit the properties of the timer.'), 'top') }}>
         <button
                 class="btn btn-sm btn-primary p-1"
                 hx-get="{{ url_for('admin-timer-modal', action='update', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
                 preload
                 hx-target="body"
                 hx-indicator="#please-wait" >
-            <i class="bi-pencil-fill"></i> Éditer
+            <i class="bi-pencil-fill"></i>
+            {{ _('Edit') }}
         </button>
     </span>
-    <span {{ tooltip_attributes('info', 'Modifier les horaires du chronomètre.', 'top') }}>
+    <span {{ tooltip_attributes('info', _('Edit the hours of the timer'), 'top') }}>
         <button
                 class="btn btn-sm btn-primary p-1"
                 hx-get="{{ url_for('admin-timer-hours-modal', action='update', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
@@ -49,13 +51,13 @@
                 hx-target="body"
                 hx-indicator="#please-wait" >
             <i class="bi-collection-fill"></i>
-            Horaires
+            {{ _('Hours') }}
         </button>
     </span>
 {% endblock %}
 
 {% block card_buttons_right %}
-    <span {{ tooltip_attributes('info', 'Dupliquer le chronomètre.', 'top') }}>
+    <span {{ tooltip_attributes('info', _('Clone the timer.'), 'top') }}>
         <button
                 class="btn btn-sm btn-primary p-1"
                 hx-get="{{ url_for('admin-timer-modal', action='clone', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
@@ -65,7 +67,7 @@
             <i class="bi-copy"></i>
         </button>
     </span>
-    <span {{ tooltip_attributes('info', 'Supprimer le chronomètre.', 'top') }}>
+    <span {{ tooltip_attributes('info', _('Delete the timer.'), 'top') }}>
         <button
                 class="btn btn-sm btn-danger p-1"
                 hx-get="{{ url_for('admin-timer-modal', action='delete', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"

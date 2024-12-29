@@ -4,7 +4,13 @@
     >
         {% if tournament.current_round %}
             <div class="boards-set">
-                <h2 class="set-title text-center">{{ screen_set.name_for_boards }} (ronde {{ tournament.current_round }})</h2>
+                <h2 class="set-title text-center">
+                    {% if tournament.current_round %}
+                        {{ screen_set.name_for_boards }}
+                    {% else %}
+                        {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_players, round=tournament.current_round) }}
+                    {% endif %}
+                </h2>
                 <div class="row screen-set-row mx-0 w-100">
                     {% for boards in screen_set.boards_lists %}
                         <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
@@ -14,9 +20,9 @@
                                         <th scope="col" class="board-number">Ech</th>
                                         <th scope="col" class="points">Pts</th>
                                         {% if tournament.print_real_points %}<th scope="col" class="points">&nbsp;</th>{% endif %}
-                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and tournament.record_illegal_moves %}colspan="2">{% endif %}Blancs{% if tournament.handicap %} (temps){% endif %}</th>
+                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and tournament.record_illegal_moves %}colspan="2">{% endif %}{{ _('White') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
                                         <th scope="col" class="score">Score</th>
-                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and tournament.record_illegal_moves %}colspan="2">{% endif %}Noirs{% if tournament.handicap %} (temps){% endif %}</th>
+                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and tournament.record_illegal_moves %}colspan="2">{% endif %}{{ _('Black') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
                                         {% if tournament.print_real_points %}<th scope="col" class="points">&nbsp;</th>{% endif %}
                                         <th scope="col" class="points">Pts</th>
                                     </tr>
@@ -80,7 +86,7 @@
                                                 hx-indicator="#please-wait"
                                             {% endif %}
                                         >
-                                            {% if board.result_str %}{{ board.result_str }}{% else %}n°{{ board.number }}{% endif %}
+                                            {% if board.result_str %}{{ board.result_str }}{% else %}{{ _('#%(board_number)d', board_number=board.number) }}{% endif %}
                                         </td>
                                         {% with player=bp %}{% with opponent=wp %}
                                             {% include 'user_boards_screen_board_row_illegal_moves_cell.html' %}
@@ -125,7 +131,9 @@
             </div>
         {% else %}
             <div class="players-set">
-                <h2 class="set-title text-center">{{ screen_set.name_for_boards }} (pointage)</h2>
+                <h2 class="set-title text-center">
+                    {{ _('%(set_name)s (check-in)', set_name=screen_set.name_for_boards) }}
+                </h2>
                 <div class="row screen-set-row mx-0 w-100">
                     {% for players_by_name_tuple in screen_set.players_by_name_tuple_lists %}
                         <div class="col screen-set-col">
@@ -135,7 +143,7 @@
                                         <table class="table table-striped table-sm bg-light">
                                             <thead class="table-dark">
                                                 <tr>
-                                                    <th scope="col" class="player">Joueur·euse / Elo</th>
+                                                    <th scope="col" class="player">{{ _('Player / Elo') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
