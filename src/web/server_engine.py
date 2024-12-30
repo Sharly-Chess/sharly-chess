@@ -10,7 +10,7 @@ from litestar import Litestar
 from litestar.contrib.htmx.request import HTMXRequest
 
 from common.engine import Engine
-from common.i18n import _
+from common.i18n import _, set_locale
 from common.logger import get_logger, print_interactive_info, print_interactive_error
 from common.papi_web_config import PapiWebConfig
 from web.settings import route_handlers, template_config, middlewares
@@ -19,6 +19,8 @@ logger: Logger = get_logger()
 
 
 def launch_browser(url: str):
+    # Set the locale as the function is called in a new thread.
+    set_locale(PapiWebConfig().locale)
     print_interactive_info(_('Opening the welcome page [{url}] in a browser...').format(url=url))
     while True:
         try:
