@@ -1006,35 +1006,35 @@ msgstr ""
 msgid "Rules upload link not found, check that the tournament is not finished on the FFE website."
 msgstr ""
 
-#: src/web/server_engine.py:22
+#: src/web/server_engine.py:24
 msgid "Opening the welcome page [{url}] in a browser..."
 msgstr ""
 
-#: src/web/server_engine.py:28
+#: src/web/server_engine.py:30
 msgid "Web server not started yet ({ex}), waiting..."
 msgstr ""
 
-#: src/web/server_engine.py:38
+#: src/web/server_engine.py:40
 msgid "Starting Papi-web server, please wait..."
 msgstr ""
 
-#: src/web/server_engine.py:40
+#: src/web/server_engine.py:42
 msgid "Logging level: {log_level}"
 msgstr ""
 
-#: src/web/server_engine.py:41
+#: src/web/server_engine.py:43
 msgid "Port: {port}"
 msgstr ""
 
-#: src/web/server_engine.py:42
+#: src/web/server_engine.py:44
 msgid "Local URL: {local_url}"
 msgstr ""
 
-#: src/web/server_engine.py:44
+#: src/web/server_engine.py:46
 msgid "LAN/WAN URL: {lan_url}"
 msgstr ""
 
-#: src/web/server_engine.py:47
+#: src/web/server_engine.py:49
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr ""
 
@@ -1071,11 +1071,41 @@ msgstr ""
 msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:409
+#: src/web/controllers/admin/event_admin_controller.py:114
+msgid "Tournaments ({num})"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:118
+#: src/web/controllers/admin/event_admin_controller.py:130
+msgid "Screens ({num})"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:122
+msgid "Families ({num})"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:126
+#: src/web/controllers/user/event_user_controller.py:125
+msgid "Rotators ({num})"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:134
+msgid "ChessEvent ({num})"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:138
+msgid "Messages ({num})"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:403
+msgid "Renaming the database failed: {ex}."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:410
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}) and updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:412
+#: src/web/controllers/admin/event_admin_controller.py:413
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
@@ -1350,6 +1380,10 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
+#: src/web/controllers/admin/index_admin_controller.py:558
+msgid "Papi-web Configuration"
+msgstr ""
+
 #: src/web/controllers/admin/rotator_admin_controller.py:74
 msgid "Please enter the rotator id."
 msgstr ""
@@ -1535,10 +1569,6 @@ msgstr ""
 
 #: src/web/controllers/user/event_user_controller.py:120
 msgid "Image ({num})"
-msgstr ""
-
-#: src/web/controllers/user/event_user_controller.py:125
-msgid "Rotators ({num})"
 msgstr ""
 
 #: src/web/controllers/user/screen_user_controller.py:77
@@ -3764,5 +3794,14 @@ msgid "Maximum number of results: unlimited"
 msgstr ""
 
 #~ msgid "Access"
+#~ msgstr ""
+
+#~ msgid "Tournois ({num}})"
+#~ msgstr ""
+
+#~ msgid "Tournaments ({num}})"
+#~ msgstr ""
+
+#~ msgid "Renaming the database failed: {ex}"
 #~ msgstr ""
 

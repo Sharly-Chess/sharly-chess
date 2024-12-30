@@ -111,31 +111,31 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 'icon_class': 'bi-gear-fill',
             },
             'tournaments': {
-                'title': f'Tournois ({len(web_context.admin_event.tournaments_by_id) or "-"})',
+                'title': _('Tournaments ({num})').format(num=len(web_context.admin_event.tournaments_by_id) or '-'),
                 'template': 'admin_tournaments.html',
             },
             'screens': {
-                'title': f'Écrans ({len(web_context.admin_event.basic_screens_by_id) or "-"})',
+                'title': _('Screens ({num})').format(num=len(web_context.admin_event.basic_screens_by_id) or '-'),
                 'template': 'admin_screens.html',
             },
             'families': {
-                'title': f'Familles ({len(web_context.admin_event.families_by_id) or  "-"})',
+                'title': _('Families ({num})').format(num=len(web_context.admin_event.families_by_id) or '-'),
                 'template': 'admin_families.html',
             },
             'rotators': {
-                'title': f'Écrans rotatifs ({len(web_context.admin_event.rotators_by_id) or "-"})',
+                'title': _('Rotators ({num})').format(num=len(web_context.admin_event.rotators_by_id) or '-'),
                 'template': 'admin_rotators.html',
             },
             'timers': {
-                'title': f'Chronomètres ({len(web_context.admin_event.timers_by_id) or "-"})',
+                'title': _('Screens ({num})').format(num=len(web_context.admin_event.timers_by_id) or '-'),
                 'template': 'admin_timers.html',
             },
             'chessevents': {
-                'title': f'ChessEvent ({len(web_context.admin_event.chessevents_by_id) or "-"})',
+                'title': _('ChessEvent ({num})').format(num=len(web_context.admin_event.chessevents_by_id) or '-'),
                 'template': 'admin_chessevents.html',
             },
             'messages': {
-                'title': f'Messages ({len(web_context.admin_event.messages) or "-"})',
+                'title': _('Messages ({num})').format(num=len(web_context.admin_event.messages) or '-'),
                 'template': 'admin_messages.html',
             },
         }
@@ -398,8 +398,9 @@ class EventAdminController(AbstractEventAdminController):
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
                     try:
                         EventDatabase(web_context.admin_event.uniq_id).rename(new_uniq_id=uniq_id)
-                    except PermissionError as pe:
-                        return AbstractController.redirect_error(request, f'Renaming the database failed: {pe}')
+                    except PermissionError as ex:
+                        return AbstractController.redirect_error(
+                            request, _('Renaming the database failed: {ex}.').format(ex=ex))
                 with EventDatabase(uniq_id, write=True) as event_database:
                     event_database.update_stored_event(stored_event)
                     event_database.commit()
@@ -410,7 +411,6 @@ class EventAdminController(AbstractEventAdminController):
                             olq_uniq_id=web_context.admin_event.uniq_id, new_uniq_id=uniq_id))
                 else:
                     Message.success(request, _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id))
-                    Message.success(request, f'L\'évènement [{uniq_id}] a été modifié.')
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'clone':
@@ -424,8 +424,8 @@ class EventAdminController(AbstractEventAdminController):
             case 'delete':
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
-                except PermissionError as pe:
-                    return AbstractController.redirect_error(request, 'Archiving the database failed: {pe}')
+                except PermissionError as ex:
+                    return AbstractController.redirect_error(request, 'Archiving the database failed: {ex}')
                 event_loader.clear_cache(web_context.admin_event.uniq_id)
                 Message.success(
                     request, _('Event [{uniq_id}] has been deleted, the database has been archived ({arch}).').format(
