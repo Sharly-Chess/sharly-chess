@@ -32,15 +32,11 @@ _all_translations: dict[str, GNUTranslations] = {
 }
 
 
-def _get_locale() -> str | None:
+def _get_locale() -> str:
     try:
         return _thread_local_data.locale
     except AttributeError:
-        return None
-
-
-def _get_locale_or_default() -> str:
-    return _get_locale() or default_locale
+        return default_locale
 
 
 def set_locale(locale: str) -> bool:
@@ -57,16 +53,14 @@ def set_locale(locale: str) -> bool:
 def locale_flag_url(locale: str):
     return f'/static/images/locales/{locale}.svg'
 
+
 def locale_localized_name(locale: str):
     return capwords(Locale.parse(locale).get_display_name())
-
-def gettext_for_locale(message: str, locale: str):
-    """ Returns the translation of a string for a given locale. """
 
 
 def gettext(message: str, locale: str | None = None):
     """ Overrides the gettext.gettext() function to use the locale of the current thread. """
-    return _all_translations[locale or _get_locale() or default_locale].gettext(message)
+    return _all_translations[locale or _get_locale()].gettext(message)
 
 
 def _(message: str, locale: str | None = None):
@@ -76,4 +70,4 @@ def _(message: str, locale: str | None = None):
 
 def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
     """ Overrides the gettext.ngettext() function to use the locale of the current thread. """
-    return _all_translations[locale or _get_locale() or default_locale].ngettext(singular, plural, n)
+    return _all_translations[locale or _get_locale()].ngettext(singular, plural, n)
