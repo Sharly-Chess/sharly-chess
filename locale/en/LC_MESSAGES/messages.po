@@ -170,7 +170,7 @@ msgstr ""
 msgid "Please choose the event:"
 msgstr ""
 
-#: src/chessevent/event_selector.py:44 src/common/papi_web_config.py:103
+#: src/chessevent/event_selector.py:44 src/common/papi_web_config.py:97
 #: src/ffe/event_selector.py:40
 msgid "Your choice: "
 msgstr ""
@@ -377,11 +377,11 @@ msgstr ""
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr ""
 
-#: src/common/i18n.py:46
+#: src/common/i18n.py:50
 msgid "Locale set to [{locale}]."
 msgstr ""
 
-#: src/common/i18n.py:49
+#: src/common/i18n.py:53
 msgid "Unknown locale [{locale}]."
 msgstr ""
 
@@ -389,86 +389,82 @@ msgstr ""
 msgid "Locale [{locale}] not found."
 msgstr ""
 
-#: src/common/papi_web_config.py:83 src/common/papi_web_config.py:157
+#: src/common/papi_web_config.py:83 src/common/papi_web_config.py:151
 msgid "Option not set."
 msgstr ""
 
-#: src/common/papi_web_config.py:85 src/common/papi_web_config.py:149
-#: src/common/papi_web_config.py:152
+#: src/common/papi_web_config.py:85 src/common/papi_web_config.py:143
+#: src/common/papi_web_config.py:146
 msgid "Section not found."
 msgstr ""
 
 #: src/common/papi_web_config.py:90
-msgid "Setting locale [{locale}] (by default)."
-msgstr ""
-
-#: src/common/papi_web_config.py:95
 msgid "The following languages are available:"
 msgstr ""
 
-#: src/common/papi_web_config.py:140
+#: src/common/papi_web_config.py:134
 msgid "Invalid log level [{level}], by default [{default}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:145 src/common/papi_web_config.py:175
-#: src/common/papi_web_config.py:187
+#: src/common/papi_web_config.py:139 src/common/papi_web_config.py:169
+#: src/common/papi_web_config.py:181
 msgid "Option not set, by default [{default}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:169
+#: src/common/papi_web_config.py:163
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:181
+#: src/common/papi_web_config.py:175
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:194
+#: src/common/papi_web_config.py:188
 #: src/web/controllers/admin/index_admin_controller.py:164
 msgid "Invalid value [{value}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:202
+#: src/common/papi_web_config.py:196
 msgid "Option not set, by default [{ffe_upload_delay}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:209
+#: src/common/papi_web_config.py:203
 msgid "Invalid delay [{delay}], by default [{default}]"
 msgstr ""
 
-#: src/common/papi_web_config.py:213
+#: src/common/papi_web_config.py:207
 msgid "Section not found, default configuration set."
 msgstr ""
 
-#: src/common/papi_web_config.py:224
+#: src/common/papi_web_config.py:218
 msgid "Your file {ini_file} has been saved as {ini_file_org}."
 msgstr ""
 
-#: src/common/papi_web_config.py:227
+#: src/common/papi_web_config.py:221
 msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
 msgstr ""
 
-#: src/common/papi_web_config.py:233
+#: src/common/papi_web_config.py:227
 msgid "Adding lines to {file}..."
 msgstr ""
 
-#: src/common/papi_web_config.py:235
+#: src/common/papi_web_config.py:229
 msgid "[i18n] # Added by Papi-web {version}"
 msgstr ""
 
-#: src/common/papi_web_config.py:246
+#: src/common/papi_web_config.py:240
 msgid "# The line below has been commented by Papi-web {version}"
 msgstr ""
 
-#: src/common/papi_web_config.py:251
+#: src/common/papi_web_config.py:245
 msgid "Your file {ini_file} has been modified."
 msgstr ""
 
-#: src/common/papi_web_config.py:253
+#: src/common/papi_web_config.py:247
 msgid "Could not write to {ini_file}: {ex}."
 msgstr ""
 
-#: src/common/papi_web_config.py:296
+#: src/common/papi_web_config.py:290
 msgid "Papi-web project"
 msgstr ""
 
@@ -3793,57 +3789,60 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
-#: utils/i18n_update.py:123
+#: utils/i18n_update.py:122
 msgid "Return to documentation summary"
 msgstr ""
 
-#: utils/i18n_update.py:124
+#: utils/i18n_update.py:123
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "English translation"
 
-#: utils/i18n_update.py:127
+#: utils/i18n_update.py:126
 msgid "View file {file}"
 msgstr ""
 
-#: utils/i18n_update.py:129
+#: utils/i18n_update.py:128
 msgid "Summary"
 msgstr ""
 
-#: utils/i18n_update.py:133 utils/i18n_update.py:144
+#: utils/i18n_update.py:132 utils/i18n_update.py:143
 msgid "Empty mandatory messages"
 msgstr ""
 
-#: utils/i18n_update.py:136 utils/i18n_update.py:159
+#: utils/i18n_update.py:135 utils/i18n_update.py:158
 msgid "Empty messages"
 msgstr ""
 
-#: utils/i18n_update.py:139 utils/i18n_update.py:178
+#: utils/i18n_update.py:138 utils/i18n_update.py:177
 msgid "Message flagged [{flag}]"
 msgstr ""
 
-#: utils/i18n_update.py:145 utils/i18n_update.py:163 utils/i18n_update.py:180
+#: utils/i18n_update.py:144 utils/i18n_update.py:162 utils/i18n_update.py:179
 msgid "Message id"
 msgstr ""
 
-#: utils/i18n_update.py:145 utils/i18n_update.py:163 utils/i18n_update.py:180
+#: utils/i18n_update.py:144 utils/i18n_update.py:162 utils/i18n_update.py:179
 msgid "Locations"
+msgstr ""
+
+#: utils/i18n_update.py:151 utils/i18n_update.py:169 utils/i18n_update.py:187
+#: utils/i18n_update.py:190
+msgid "Singular:"
 msgstr ""
 
 #: utils/i18n_update.py:152 utils/i18n_update.py:170 utils/i18n_update.py:188
 #: utils/i18n_update.py:191
-msgid "Singular:"
-msgstr ""
-
-#: utils/i18n_update.py:153 utils/i18n_update.py:171 utils/i18n_update.py:189
-#: utils/i18n_update.py:192
 msgid "Plural:"
 msgstr ""
 
-#: utils/i18n_update.py:161
+#: utils/i18n_update.py:160
 msgid "Empty messages are not shown for the default language."
 msgstr ""
 
-#: utils/i18n_update.py:180
+#: utils/i18n_update.py:179
 msgid "Translation"
 msgstr ""
+
+#~ msgid "Setting locale [{locale}] (by default)."
+#~ msgstr ""
 

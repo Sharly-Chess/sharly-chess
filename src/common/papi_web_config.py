@@ -14,7 +14,7 @@ import uvicorn
 from packaging.version import Version
 
 from common.config_reader import ConfigReader
-from common.i18n import locales, set_locale, default_locale, _, LocaleInfo, locale_infos, gettext_for_locale
+from common.i18n import locales, set_locale, default_locale, _, locale_localized_name
 from common.logger import get_logger, configure_logger, print_interactive_error, print_interactive_input, \
     input_interactive, print_interactive_info, print_interactive_success
 from common.singleton import Singleton
@@ -86,18 +86,12 @@ class PapiWebConfig(metaclass=Singleton):
             if self.locale:
                 set_locale(self.locale)
             else:
-                # Babel would not take this string into account if not set here
-                _('Setting locale [{locale}] (by default).')
-                print_interactive_info(
-                    gettext_for_locale('Setting locale [{locale}] (by default).', default_locale).format(
-                        locale=default_locale))
                 set_locale(default_locale)
                 print_interactive_input(_('The following languages are available:'))
                 locale_range = range(1, len(locales) + 1)
                 for num in locale_range:
                     locale: str = locales[num - 1]
-                    locale_info: LocaleInfo = locale_infos[locale]
-                    print_interactive_input(f'  - [{num}] {locale} ({locale_info[0]})')
+                    print_interactive_input(f'  - [{num}] {locale} ({locale_localized_name(locale)})')
                 locale_num: int | None = None
                 while locale_num is None:
                     choice: str = input_interactive(_('Your choice: '))

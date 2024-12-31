@@ -54,8 +54,8 @@
                     </span>
                     {% for l, l_info in locale_infos.items() %}
                         <img
-                                src="{{l_info.1}}"
-                                alt="{{l_info.0}}"
+                                src="{{l_info.flag_url}}"
+                                alt="{{l_info.name}}"
                                 class="admin-locale-flag ms-1 mt-2 {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}"
                                 {% if l != locale %}
                                     hx-get="{{
@@ -74,7 +74,7 @@
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% endif %}
-                                {{ tooltip_attributes('info', l_info.0, 'right') }}
+                                {{ tooltip_attributes('info', l_info.name, 'right') }}
                         />
                     {% endfor %}
                 </div>

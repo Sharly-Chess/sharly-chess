@@ -14,9 +14,9 @@
 | locale=`en` | English |
 |--|:--:|
 |Empty mandatory messages|0/16|
-|Empty messages|845/866|
+|Empty messages|844/865|
 
-## Empty messages (845)
+## Empty messages (844)
 
 Empty messages are not shown for the default language.
 

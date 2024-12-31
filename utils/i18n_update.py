@@ -7,7 +7,7 @@ from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po
 
 from common import get_logger
-from common.i18n import default_locale, set_locale, _, locale_infos
+from common.i18n import default_locale, set_locale, _, locale_localized_name
 from common.papi_web_config import PapiWebConfig
 
 logger: Logger = get_logger()
@@ -113,7 +113,6 @@ class LocaleInfo:
                 print(f'  * Messages flagged [{flag}] ({len(self.flagged_messages)})')
                 for msg_id in msgs:
                     print(f'    - [{msg_id}]')
-        print(f'Wrote {self.doc_file}.')
 
     def write_markdown(self):
         """ Write a markdown file showing the status of this translation. """
@@ -127,7 +126,7 @@ class LocaleInfo:
                 text=_('View file {file}').format(file=file),
                 file=file))
             f.write('## {text}\n\n'.format(text=_('Summary'), locale=self.id))
-            f.write(f'| locale=`{self.id}` | {locale_infos[self.id][0]} |\n')
+            f.write(f'| locale=`{self.id}` | {locale_localized_name(self.id)} |\n')
             f.write('|--|:--:|\n')
             f.write('|{text}|{num}/{total}|\n'.format(
                 text=_('Empty mandatory messages'),
@@ -194,6 +193,7 @@ class LocaleInfo:
                         text1=text1, text2=text2,
                         text3='<br>'.join([f'{location[0]}:{location[1]}' for location in msg.locations])))
                 f.write('\n')
+        print(f'Wrote {self.doc_file}.')
 
 
 class Application:
@@ -203,6 +203,7 @@ class Application:
             locales: list[str],
     ):
         """ The path of the i18n files (this script should be run from the dev root). """
+        self.locales: list[str] = locales
         self.locale_dir: Path = PapiWebConfig.base_dir / 'locale'
         self.pot_file: Path = self.locale_dir / 'messages.pot'
         self.doc_dir: Path = PapiWebConfig.base_dir / 'docs'
@@ -282,11 +283,11 @@ class Application:
             for line in lines_before_comment:
                 f.write(line)
             f.write('| Translations | ' + ' | '.join([
-                locale_info[0] for locale_info in locale_infos.values()
+                locale_localized_name(locale) for locale in self.locales
             ]) + ' |\n')
-            f.write('|--|' + (':--:|' * len (locale_infos)) + '\n')
+            f.write('|--|' + (':--:|' * len (self.locales)) + '\n')
             f.write('| Locale | ' + ' | '.join([
-                f'`{locale}`' for locale in locale_infos
+                f'`{locale}`' for locale in self.locales
             ]) + ' |\n')
             f.write('| Empty mandatory messages | ' + ' | '.join([
                 f'{len(locale_info.empty_mandatory_messages)}/{len(locale_info.mandatory_messages)}'
@@ -312,7 +313,7 @@ class Application:
             for flag in flags:
                 f.write(f'| Message flagged [{flag}] | ' + ' | '.join([
                     f'{len(self.locale_infos[locale].flagged_messages[flag])}/{len(self.locale_infos[locale].messages)}'
-                    for locale in locale_infos
+                    for locale in self.locales
                 ]) + ' |\n')
             for line in lines_after_comment:
                 f.write(line)

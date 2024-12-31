@@ -1,6 +1,5 @@
 import gettext
 import threading
-from collections import namedtuple
 from gettext import GNUTranslations
 from logging import Logger
 from pathlib import Path
@@ -16,27 +15,32 @@ logger: Logger = get_logger()
 default_locale: str = 'en'
 
 """ The directory where to find the i18n files. """
-locale_dir = Path('locale')
+_locale_dir = Path('locale')
 
 """ The available locales, retrieved from the filesystem. """
 locales: list[str] = [
-    entry.name for entry in locale_dir.iterdir() if entry.is_dir()
+    entry.name for entry in _locale_dir.iterdir() if entry.is_dir()
 ]
 assert default_locale in locales
 
 """ Initialize the current thread with the default locale. """
 _thread_local_data = threading.local()
 
+""" Build a dict of all the translations. """
+_all_translations: dict[str, GNUTranslations] = {
+    locale: gettext.translation('messages', _locale_dir, [locale, ]) for locale in locales
+}
 
-def get_locale() -> str | None:
+
+def _get_locale() -> str | None:
     try:
         return _thread_local_data.locale
     except AttributeError:
         return None
 
 
-def get_locale_or_default() -> str:
-    return get_locale() or default_locale
+def _get_locale_or_default() -> str:
+    return _get_locale() or default_locale
 
 
 def set_locale(locale: str) -> bool:
@@ -50,40 +54,26 @@ def set_locale(locale: str) -> bool:
         return False
 
 
-""" Build a dict with the information of the available locales to help in changing the locale used. """
-LocaleInfo = namedtuple('LocaleInfo', ['name', 'flag', ])
-locale_infos: dict[str, LocaleInfo] = {
-    locale: (
-        capwords(Locale.parse(locale).get_display_name()),  # the translated name
-        f'/static/images/locales/{locale}.svg',  # the URL of the corresponding flag image
-    ) for locale in locales
-}
+def locale_flag_url(locale: str):
+    return f'/static/images/locales/{locale}.svg'
 
-""" Build a dict of all the translations. """
-_all_translations: dict[str, GNUTranslations] = {
-    locale: gettext.translation('messages', locale_dir, [locale]) for locale in locales
-}
+def locale_localized_name(locale: str):
+    return capwords(Locale.parse(locale).get_display_name())
 
 def gettext_for_locale(message: str, locale: str):
     """ Returns the translation of a string for a given locale. """
-    return _all_translations[locale].gettext(message)
 
 
-def gettext(message: str):
+def gettext(message: str, locale: str | None = None):
     """ Overrides the gettext.gettext() function to use the locale of the current thread. """
-    return gettext_for_locale(message, get_locale_or_default())
+    return _all_translations[locale or _get_locale() or default_locale].gettext(message)
 
 
-def _(message: str):
+def _(message: str, locale: str | None = None):
     """ An alias for gettext(). """
-    return gettext(message)
+    return gettext(message, locale)
 
 
-def ngettext_for_locale(singular: str, plural: str, n: int, locale: str):
-    """ Returns the translation of a string for a given locale. """
-    return _all_translations[locale].ngettext(singular, plural, n)
-
-
-def ngettext(singular: str, plural: str, n: int):
+def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
     """ Overrides the gettext.ngettext() function to use the locale of the current thread. """
-    return ngettext_for_locale(singular, plural, n, get_locale_or_default())
+    return _all_translations[locale or _get_locale() or default_locale].ngettext(singular, plural, n)

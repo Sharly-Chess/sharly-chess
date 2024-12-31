@@ -15,7 +15,7 @@ from litestar.params import Body
 from litestar.response import Redirect, Template
 
 from common import RGB, check_rgb_str
-from common.i18n import locale_infos, set_locale
+from common.i18n import set_locale, locales, locale_localized_name, locale_flag_url
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from web.messages import Message
@@ -208,7 +208,13 @@ class WebContext:
             'papi_web_config': PapiWebConfig(),
             'admin_auth': self.admin_auth,
             'background_info': self.background_info,
-            'locale_infos': locale_infos,
+            'locale_infos': {
+                locale: {
+                    'name': locale_localized_name(locale),
+                    'flag_url': locale_flag_url(locale),
+                }
+                for locale in locales
+            },
             'locale': SessionHandler.get_session_locale(self.request),
         }
 
