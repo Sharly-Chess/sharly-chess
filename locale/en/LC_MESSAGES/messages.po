@@ -3847,15 +3847,3 @@ msgstr ""
 msgid "Translation"
 msgstr ""
 
-#~ msgid "Setting locale [{locale}] (by default)."
-#~ msgstr ""
-
-#~ msgid "Papi-wb Configuration"
-#~ msgstr ""
-
-#~ msgid "Papi-wb configuration"
-#~ msgstr ""
-
-#~ msgid "Papi-web Configuration"
-#~ msgstr ""
-
