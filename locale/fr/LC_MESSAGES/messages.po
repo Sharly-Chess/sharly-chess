@@ -2018,7 +2018,7 @@ msgstr "%(minutes)d minutes avant"
 #: src/web/templates/admin_timer_card.html:15
 #, python-format
 msgid "%(minutes)d minutes after"
-msgstr "%(minutes)d minutes before"
+msgstr "%(minutes)d minutes après"
 
 #: src/web/templates/admin_event_config.html:141
 #: src/web/templates/admin_event_modal.html:445
