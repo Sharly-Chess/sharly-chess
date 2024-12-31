@@ -3846,7 +3846,3 @@ msgstr "Les messages vides ne sont pas affichés pour la langue par défaut."
 #: utils/i18n_update.py:165
 msgid "Translation"
 msgstr "Traduction"
-
-#~ msgid "Setting locale [{locale}] (by default)."
-#~ msgstr "Positionnement de la langue à [{locale}] (par défaut)."
-
