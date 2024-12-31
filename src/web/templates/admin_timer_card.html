@@ -10,9 +10,9 @@
 {% endblock %}
 
 {% block card_text %}
-    <div style="background-color: {{ timer.colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', timer.delays[1]) }}</div>
-    <div style="background-color: {{ timer.colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', timer.delays[2]) }}</div>
-    <div style="background-color: {{ timer.colors[1] }}" class="px-2">{{ _('%(minutes)d minutes after', timer.delays[3]) }}</div>
+    <div style="background-color: {{ timer.colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=timer.delays[1]) }}</div>
+    <div style="background-color: {{ timer.colors[2] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=timer.delays[2]) }}</div>
+    <div style="background-color: {{ timer.colors[3] }}" class="px-2">{{ _('%(minutes)d minutes after', minutes=timer.delays[3]) }}</div>
     <hr/>
     {% if timer.timer_hours_by_id|length > 0 %}
         {% for timer_hour in timer.timer_hours_sorted_by_order %}
