@@ -353,7 +353,7 @@
                                         type="text" id="{{ id }}"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: %(seconds)d (seconds)', 60) }}"
+                                        placeholder="{{ _('E.g.: %(seconds)d (seconds)', seconds=60) }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
                                   {{ _('The minimum time, whatever the ranking difference between the two players.') }}
@@ -405,7 +405,7 @@
                                 <div id="{{ id }}-help" class="form-text">
                                     {{ _(
                                         'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d).',
-                                        default=admin_event.record_illegal_moves_number
+                                        default=admin_event.record_illegal_moves
                                     ) }}
                                 </div>
                                 {% if name in errors %}
