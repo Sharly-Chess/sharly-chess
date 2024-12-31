@@ -1,4 +1,5 @@
 import sys
+from contextlib import suppress
 from logging import Logger, getLogger, StreamHandler
 from colorlog import ColoredFormatter
 from colorama import Fore, Style
@@ -36,7 +37,8 @@ def get_logger() -> Logger:
 
 
 def __flush_logger():
-    logger.handlers[0].flush()
+    with suppress(KeyError):
+        logger.handlers[0].flush()
 
 
 def print_interactive_info(string: str):
@@ -70,7 +72,7 @@ def print_interactive_input(string: str):
 
 
 def input_interactive(string: str) -> str:
-    """Prints the message to stdout with color, and returns the user message.
+    """Prints the message to stdout with color, and returns the user input.
     If the message could not be Unicode decoded, raises KeyboardInterrupt."""
     __flush_logger()
     print(Fore.CYAN + Style.BRIGHT + string + Style.RESET_ALL, end='')

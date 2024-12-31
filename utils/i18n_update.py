@@ -1,16 +1,14 @@
 import sys
-from logging import Logger
 from pathlib import Path
 
 from babel.messages import Catalog, Message
 from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po
 
-from common import get_logger
 from common.i18n import default_locale, set_locale, _, locale_localized_name
+from common.logger import print_interactive_error, print_interactive_warning, print_interactive_info, \
+    print_interactive_success
 from common.papi_web_config import PapiWebConfig
-
-logger: Logger = get_logger()
 
 
 def run_babel_command(
@@ -51,7 +49,7 @@ class LocaleInfo:
             pot_file: Path,
     ):
         if not self.po_file.exists():
-            print(f'- {self.po_file.parent}...')
+            print_interactive_info(f'- {self.po_file.parent}...')
             self.po_file.parent.mkdir(parents=True, exist_ok=True)
             run_babel_command(
                 'init',
@@ -62,7 +60,7 @@ class LocaleInfo:
                 ],
                 quiet=True,
             )
-        print(f'- {self.po_file}...')
+        print_interactive_info(f'- {self.po_file}...')
         run_babel_command(
             'update',
             [
@@ -101,18 +99,6 @@ class LocaleInfo:
                         if not flag in self.flagged_messages:
                             self.flagged_messages[flag] = {}
                         self.flagged_messages[flag][msg.id] = msg
-        # Print a summary.
-        print(
-            f'- Locale [{self.id}]{" (default)" if self.default else ""}: {"OK" if not self.empty_messages and not self.flagged_messages else ""}')
-        if self.empty_messages:
-            print(f'  * Empty messages ({len(self.empty_messages)})')
-            for msg_id in self.empty_messages:
-                print(f'    - [{msg_id}]')
-        if self.flagged_messages:
-            for flag, msgs in self.flagged_messages.items():
-                print(f'  * Messages flagged [{flag}] ({len(self.flagged_messages)})')
-                for msg_id in msgs:
-                    print(f'    - [{msg_id}]')
 
     def write_markdown(self):
         """ Write a markdown file showing the status of this translation. """
@@ -193,10 +179,31 @@ class LocaleInfo:
                         text1=text1, text2=text2,
                         text3='<br>'.join([f'{location[0]}:{location[1]}' for location in msg.locations])))
                 f.write('\n')
-        print(f'Wrote {self.doc_file}.')
+        print_interactive_info(f'  -  {self.doc_file}.')
+
+    def print_summary(self):
+        """ print a summary of the locale. """
+        print_interactive_info(
+            f'- Locale [{self.id}]{" (default)" if self.default else ""}: {"OK" if not self.empty_messages and not self.flagged_messages else ""}')
+        if self.empty_mandatory_messages:
+            print_interactive_error(f'  * Empty mandatory messages ({len(self.empty_mandatory_messages)})')
+            for msg_id in self.empty_mandatory_messages:
+                print_interactive_error(f'    - [{msg_id}]')
+        if self.empty_messages:
+            if self.id == default_locale:
+                print_interactive_info(f'  * Empty messages ({len(self.empty_messages)}), not listed for the default locale.')
+            else:
+                print_interactive_warning(f'  * Empty messages ({len(self.empty_messages)})')
+                for msg_id in self.empty_messages:
+                    print_interactive_warning(f'    - [{msg_id}]')
+        if self.flagged_messages:
+            for flag, msgs in self.flagged_messages.items():
+                print_interactive_warning(f'  * Messages flagged [{flag}] ({len(self.flagged_messages)})')
+                for msg_id in msgs:
+                    print_interactive_warning(f'    - [{msg_id}]')
 
 
-class Application:
+class I18nHelper:
 
     def __init__(
             self,
@@ -208,24 +215,22 @@ class Application:
         self.pot_file: Path = self.locale_dir / 'messages.pot'
         self.doc_dir: Path = PapiWebConfig.base_dir / 'docs'
         self.doc_file: Path = self.doc_dir / '86-i18n.md'
-        print(f'Extracting i18n strings to {self.pot_file}...')
+        print_interactive_info(f'Extracting i18n strings to {self.pot_file}...')
         self.extract()
         self.locale_infos: dict[str, LocaleInfo] = {
             locale: LocaleInfo(locale, self.locale_dir, self.doc_dir) for locale in locales
         }
-        print('Updating PO files...')
+        print_interactive_info('Updating PO files...')
         for locale_info in self.locale_infos.values():
             locale_info.update(self.pot_file)
-        print('Compiling PO files...')
+        print_interactive_info('Compiling PO files...')
         self.compile()
-        print('Inspecting PO files...')
+        print_interactive_info('Inspecting PO files...')
         for locale_info in self.locale_infos.values():
             locale_info.control()
-        print('Writing MD files...')
-        for locale_info in self.locale_infos.values():
-            locale_info.write_markdown()
+        print_interactive_info('Writing MD files...')
         self.write_markdown()
-        print('Done.')
+        self.print_summary()
 
     def extract(self, ):
         """ The configuration file used to extract stings from the source files. """
@@ -253,7 +258,9 @@ class Application:
         )
 
     def write_markdown(self):
-        # Update the i18n doc file with the status of the translations.
+        """ Update the i18n doc file with the status of the translations. """
+        for locale_info in self.locale_infos.values():
+            locale_info.write_markdown()
         set_locale(default_locale)
         lines_before_comment: list[str] = []
         lines_after_comment: list[str] = []
@@ -267,7 +274,7 @@ class Application:
                     comment_found = True
                     break
             if not comment_found:
-                print(f'Could not edit [{self.doc_file}] (comment [{comment}] not found).')
+                print_interactive_error(f'Could not edit [{self.doc_file}] (comment [{comment}] not found).')
                 return
             comment: str = '<!-- DO NOT EDIT! (END) -->'
             comment_found: bool = False
@@ -277,7 +284,7 @@ class Application:
                 if comment_found:
                     lines_after_comment.append(line)
             if not comment_found:
-                print(f'Could not edit [{self.doc_file}] (comment [{comment}] not found).')
+                print_interactive_error(f'Could not edit [{self.doc_file}] (comment [{comment}] not found).')
                 return
         with open(self.doc_file, 'w', encoding='utf-8') as f:
             for line in lines_before_comment:
@@ -319,13 +326,41 @@ class Application:
                 ]) + ' |\n')
             for line in lines_after_comment:
                 f.write(line)
+        print_interactive_info(f'  -  {self.doc_file}.')
+
+    def print_summary(self):
+        """ Print a summary of all the locales. """
+        for locale_info in self.locale_infos.values():
+            locale_info.print_summary()
+
+    @property
+    def perfect(self) -> bool:
+        perfect: bool = True
+        for locale_info in self.locale_infos.values():
+            if locale_info.empty_mandatory_messages:
+                print_interactive_error('Mandatory translations are missing.')
+                perfect = False
+                break
+        for locale_info in self.locale_infos.values():
+            if not locale_info.default and locale_info.empty_messages:
+                print_interactive_warning('Translations are missing.')
+                perfect = False
+                break
+        for locale_info in self.locale_infos.values():
+            if locale_info.flagged_messages:
+                print_interactive_warning('Translations are flagged.')
+                perfect = False
+                break
+        if perfect:
+            print_interactive_success('Translations seem perfect.')
+        return perfect
 
 
 def main():
-    """ PO and MO files are automatically created from this list; oo add a new locale, add it to this list. """
+    """ PO and MO files are automatically created from this list; to add a new locale, add it to the list. """
     locales: list[str] = ['en', 'fr', ]
 
-    Application(locales)
+    _ = I18nHelper(locales).perfect
 
 
 if __name__ == '__main__':

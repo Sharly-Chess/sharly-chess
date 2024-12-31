@@ -1,18 +1,22 @@
 import os
 import shutil
+import sys
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
 
+from common.i18n import locales
 from common.papi_web_config import PapiWebConfig
-from common.logger import get_logger
+from common.logger import get_logger, print_interactive_info, input_interactive
+from i18n_update import I18nHelper
 
 logger: Logger = get_logger()
 
 BUILD_DIR: Path = PapiWebConfig.base_dir / 'build'
 DIST_DIR: Path = PapiWebConfig.base_dir / 'dist'
 DATA_DIR: Path = PapiWebConfig.base_dir / 'export-data'
+LOCALE_DIR: Path = PapiWebConfig.base_dir / 'locale'
 basename: str = f'papi-web-{PapiWebConfig.version}'
 EXPORT_DIR: Path = PapiWebConfig.base_dir / 'export'
 PROJECT_DIR: Path = EXPORT_DIR / basename
@@ -27,14 +31,14 @@ ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 def clean(clean_zip: bool):
     for d in [BUILD_DIR, DIST_DIR, PROJECT_DIR, ]:
         if Path(d).is_dir():
-            logger.info(f'Deleting folder {d}...')
+            print_interactive_info(f'Deleting folder {d}...')
             shutil.rmtree(d)
     if SPEC_FILE.is_file():
-        logger.info(f'Deleting file {SPEC_FILE}...')
+        print_interactive_info(f'Deleting file {SPEC_FILE}...')
         SPEC_FILE.unlink()
     if clean_zip:
         if ZIP_FILE.is_file():
-            logger.info(f'Deleting file {ZIP_FILE}...')
+            print_interactive_info(f'Deleting file {ZIP_FILE}...')
             ZIP_FILE.unlink()
 
 
@@ -105,6 +109,10 @@ def build_exe():
         file for file in custom_dir.glob('**/*')
         if file.is_file()
     ]
+    files += [
+        file for file in LOCALE_DIR.glob('**/*.mo')
+        if file.is_file()
+    ]
     for file in files:
         pyinstaller_params.append(f'--add-data={file};{file.parent.relative_to(PapiWebConfig.base_dir)}')
     files: list[Path] = []
@@ -121,10 +129,10 @@ def build_exe():
 
 def create_project():
     papi_web_config: PapiWebConfig = PapiWebConfig()
-    logger.info(f'Creating folder {PROJECT_DIR} from {DATA_DIR}...')
+    print_interactive_info(f'Creating folder {PROJECT_DIR} from {DATA_DIR}...')
     shutil.copytree(DATA_DIR, PROJECT_DIR)
     dist_exe_file: Path = DIST_DIR / EXE_FILENAME
-    logger.info(f'Moving {dist_exe_file} to {PROJECT_DIR}...')
+    print_interactive_info(f'Moving {dist_exe_file} to {PROJECT_DIR}...')
     bin_dir: Path = PROJECT_DIR / 'bin'
     bin_dir.mkdir(exist_ok=True)
     shutil.move(dist_exe_file, bin_dir)
@@ -135,7 +143,7 @@ def create_project():
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
     target_file: Path = PROJECT_DIR / 'server.bat'
-    logger.info(f'Creating batch file {target_file}...')
+    print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Démarrage du serveur Papi-web, veuillez patienter...\n'
@@ -143,7 +151,7 @@ def create_project():
                 f'bin\\{EXE_FILENAME} --server\n'
                 f'pause\n')
     target_file = PROJECT_DIR / 'ffe.bat'
-    logger.info(f'Creating batch file {target_file}...')
+    print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Connexion de Papi-web au serveur fédéral, veuillez patienter...\n'
@@ -151,7 +159,7 @@ def create_project():
                 f'bin\\{EXE_FILENAME} --ffe\n'
                 f'pause\n')
     target_file = PROJECT_DIR / 'chessevent.bat'
-    logger.info(f'Creating batch file {target_file}...')
+    print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
                 f'echo Connexion de Papi-web à Chess Event, veuillez patienter...\n'
@@ -161,7 +169,7 @@ def create_project():
 
 
 def create_zip():
-    logger.info(f'Creating archive {ZIP_FILE}...')
+    print_interactive_info(f'Creating archive {ZIP_FILE}...')
     with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
         os.chdir(PROJECT_DIR)
         for folder_name, sub_folders, file_names in os.walk('.'):
@@ -175,16 +183,19 @@ def create_zip():
 
 def build_test():
     if not TEST_DIR.is_dir():
-        logger.info(f'Creating test environment in {TEST_DIR}...')
+        print_interactive_info(f'Creating test environment in {TEST_DIR}...')
         TEST_DIR.mkdir(parents=True)
     else:
-        logger.info(f'Updating test environment in {TEST_DIR}...')
+        print_interactive_info(f'Updating test environment in {TEST_DIR}...')
     with ZipFile(ZIP_FILE, 'r') as zip_file:
         zip_file.extractall(TEST_DIR)
 
 
 def main():
     clean(clean_zip=True)
+    if not I18nHelper(locales).perfect:
+        if (input_interactive('Translations are not perfect, do you want to continue (y/N):').upper() or 'N') != 'Y':
+            return
     build_exe()
     create_project()
     create_zip()

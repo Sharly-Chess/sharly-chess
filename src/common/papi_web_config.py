@@ -330,17 +330,17 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ Other library versions, set manually and checked. """
     bootstrap_version: Version = Version('5.3.3')
-    assert Path(f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist').is_dir()
+    assert (base_dir / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist').is_dir()
     bootstrap_icons_version: Version = Version('1.11.3')
-    assert Path(f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}').is_dir()
+    assert (base_dir / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}').is_dir()
     htmx_version: Version = Version('1.9.12')
-    assert Path(f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
+    assert (base_dir / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
     jquery_version: Version = Version('3.7.1')
-    assert Path(f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js').is_file()
+    assert (base_dir / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js').is_file()
     sortable_version: Version = Version('1.15.2')
-    assert Path(f'src/web/static/lib/sortable/sortable-{sortable_version}').is_dir()
+    assert (base_dir / f'src/web/static/lib/sortable/sortable-{sortable_version}').is_dir()
     jstree_version: Version = Version('3.3.17')
-    assert Path(f'src/web/static/lib/jstree/jstree-{jstree_version}-dist').is_dir()
+    assert (base_dir / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist').is_dir()
 
     def _url(self, ip: str | None) -> str | None:
         """ Returns the URL of the application for the given IP. """

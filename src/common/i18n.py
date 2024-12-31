@@ -1,4 +1,5 @@
 import gettext
+import sys
 import threading
 from gettext import GNUTranslations
 from logging import Logger
@@ -8,6 +9,7 @@ from string import capwords
 from babel import Locale
 
 from common import get_logger
+from common.logger import print_interactive_error
 
 logger: Logger = get_logger()
 
@@ -15,7 +17,8 @@ logger: Logger = get_logger()
 default_locale: str = 'en'
 
 """ The directory where to find the i18n files. """
-_locale_dir = Path('locale')
+_locale_dir: Path = (
+        (Path(sys._MEIPASS) if getattr(sys, 'frozen', False) else Path(__file__).resolve().parents[2]) / "locale")
 
 """ The available locales, retrieved from the filesystem. """
 locales: list[str] = [
