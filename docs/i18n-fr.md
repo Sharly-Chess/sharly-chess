@@ -14,5 +14,5 @@
 | locale=`fr` | Français |
 |--|:--:|
 |Messages obligatoires vides|0/16|
-|Messages vides|0/865|
+|Messages vides|0/866|
 

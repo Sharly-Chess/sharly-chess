@@ -377,11 +377,11 @@ msgstr "Fichier téléchargé : [{zip_file}]."
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "La nouvelle version [{version}] a été installée dans [{dir}]."
 
-#: src/common/i18n.py:50
+#: src/common/i18n.py:46
 msgid "Locale set to [{locale}]."
 msgstr "Langue positionnée à [{locale}]."
 
-#: src/common/i18n.py:53
+#: src/common/i18n.py:49
 msgid "Unknown locale [{locale}]."
 msgstr "Langue [{locale}] inconnue."
 
@@ -1072,7 +1072,6 @@ msgid "Tournaments ({num})"
 msgstr "Tournois ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py:118
-#: src/web/controllers/admin/event_admin_controller.py:130
 msgid "Screens ({num})"
 msgstr "Écrans ({num})"
 
@@ -1084,6 +1083,10 @@ msgstr "Familles ({num})"
 #: src/web/controllers/user/event_user_controller.py:125
 msgid "Rotators ({num})"
 msgstr "Écrans rotatifs ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:130
+msgid "Timers ({num})"
+msgstr "Chronomètres : ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py:134
 msgid "ChessEvent ({num})"
@@ -1377,7 +1380,8 @@ msgid "No archived events."
 msgstr "Aucun évènement archivé."
 
 #: src/web/controllers/admin/index_admin_controller.py:558
-msgid "Papi-web Configuration"
+#: src/web/templates/admin_config.html:4
+msgid "Papi-web configuration"
 msgstr "Configuration Papi-web"
 
 #: src/web/controllers/admin/rotator_admin_controller.py:74
@@ -1748,7 +1752,6 @@ msgstr "Modifier"
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:491
 #: src/web/templates/admin_timer_modal.html:86
-#: src/web/templates/admin_timer_modal.html:102
 #: src/web/templates/admin_tournament_modal.html:435
 msgid "Delete"
 msgstr "Supprimer"
@@ -1760,6 +1763,7 @@ msgstr "Supprimer"
 #: src/web/templates/admin_screen_modal.html:507
 #: src/web/templates/admin_screen_sets_modal.html:66
 #: src/web/templates/admin_screen_sets_modal_set_div.html:75
+#: src/web/templates/admin_timer_modal.html:102
 #: src/web/templates/admin_tournament_modal.html:463
 msgid "Cancel"
 msgstr "Annuler"

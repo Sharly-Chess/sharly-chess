@@ -307,12 +307,14 @@ class Application:
                 + ')'
                 for locale_info in self.locale_infos.values()
             ]) + ' |\n')
-            flags: set[str] = set()
+            flags: list[str] = []
             for locale in self.locale_infos:
-                flags.update(flag for flag in self.locale_infos[locale].flagged_messages)
+                for flag in self.locale_infos[locale].flagged_messages:
+                    if flag not in flags:
+                        flags.append(flag)
             for flag in flags:
                 f.write(f'| Message flagged [{flag}] | ' + ' | '.join([
-                    f'{len(self.locale_infos[locale].flagged_messages[flag])}/{len(self.locale_infos[locale].messages)}'
+                    f'{len(self.locale_infos[locale].flagged_messages[flag]) if flag in self.locale_infos[locale].flagged_messages else 0}/{len(self.locale_infos[locale].messages)}'
                     for locale in self.locales
                 ]) + ' |\n')
             for line in lines_after_comment:

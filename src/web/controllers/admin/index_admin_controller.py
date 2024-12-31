@@ -555,7 +555,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 'icon_class': 'bi-archive-fill',
             },
             'config': {
-                'title': _('Papi-web Configuration'),
+                'title': _('Papi-web configuration'),
                 'template': 'admin_config.html',
                 'icon_class': 'bi-gear-fill',
                 'disabled': False,

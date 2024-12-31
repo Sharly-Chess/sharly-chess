@@ -377,11 +377,11 @@ msgstr ""
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr ""
 
-#: src/common/i18n.py:50
+#: src/common/i18n.py:46
 msgid "Locale set to [{locale}]."
 msgstr ""
 
-#: src/common/i18n.py:53
+#: src/common/i18n.py:49
 msgid "Unknown locale [{locale}]."
 msgstr ""
 
@@ -1072,7 +1072,6 @@ msgid "Tournaments ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py:118
-#: src/web/controllers/admin/event_admin_controller.py:130
 msgid "Screens ({num})"
 msgstr ""
 
@@ -1083,6 +1082,10 @@ msgstr ""
 #: src/web/controllers/admin/event_admin_controller.py:126
 #: src/web/controllers/user/event_user_controller.py:125
 msgid "Rotators ({num})"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:130
+msgid "Timers ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py:134
@@ -1377,7 +1380,8 @@ msgid "No archived events."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:558
-msgid "Papi-web Configuration"
+#: src/web/templates/admin_config.html:4
+msgid "Papi-web configuration"
 msgstr ""
 
 #: src/web/controllers/admin/rotator_admin_controller.py:74
@@ -1748,7 +1752,6 @@ msgstr ""
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:491
 #: src/web/templates/admin_timer_modal.html:86
-#: src/web/templates/admin_timer_modal.html:102
 #: src/web/templates/admin_tournament_modal.html:435
 msgid "Delete"
 msgstr ""
@@ -1760,6 +1763,7 @@ msgstr ""
 #: src/web/templates/admin_screen_modal.html:507
 #: src/web/templates/admin_screen_sets_modal.html:66
 #: src/web/templates/admin_screen_sets_modal_set_div.html:75
+#: src/web/templates/admin_timer_modal.html:102
 #: src/web/templates/admin_tournament_modal.html:463
 msgid "Cancel"
 msgstr ""
@@ -3844,5 +3848,14 @@ msgid "Translation"
 msgstr ""
 
 #~ msgid "Setting locale [{locale}] (by default)."
+#~ msgstr ""
+
+#~ msgid "Papi-wb Configuration"
+#~ msgstr ""
+
+#~ msgid "Papi-wb configuration"
+#~ msgstr ""
+
+#~ msgid "Papi-web Configuration"
 #~ msgstr ""
 
