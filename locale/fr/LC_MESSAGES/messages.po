@@ -3793,3 +3793,57 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
+#: utils/i18n_update.py:123
+msgid "Return to documentation summary"
+msgstr "Retour au sommaire de la documentation"
+
+#: utils/i18n_update.py:124
+msgid "English translation *** TRANSLATE ! ***"
+msgstr "Traduction en français"
+
+#: utils/i18n_update.py:127
+msgid "View file {file}"
+msgstr "Voir le fichier {file}"
+
+#: utils/i18n_update.py:129
+msgid "Summary"
+msgstr "Résumé"
+
+#: utils/i18n_update.py:133 utils/i18n_update.py:144
+msgid "Empty mandatory messages"
+msgstr "Messages obligatoires vides"
+
+#: utils/i18n_update.py:136 utils/i18n_update.py:159
+msgid "Empty messages"
+msgstr "Messages vides"
+
+#: utils/i18n_update.py:139 utils/i18n_update.py:178
+msgid "Message flagged [{flag}]"
+msgstr "Messages marqués [{flag}]"
+
+#: utils/i18n_update.py:145 utils/i18n_update.py:163 utils/i18n_update.py:180
+msgid "Message id"
+msgstr "Identifiant"
+
+#: utils/i18n_update.py:145 utils/i18n_update.py:163 utils/i18n_update.py:180
+msgid "Locations"
+msgstr "Emplacements"
+
+#: utils/i18n_update.py:152 utils/i18n_update.py:170 utils/i18n_update.py:188
+#: utils/i18n_update.py:191
+msgid "Singular:"
+msgstr "Singulier :"
+
+#: utils/i18n_update.py:153 utils/i18n_update.py:171 utils/i18n_update.py:189
+#: utils/i18n_update.py:192
+msgid "Plural:"
+msgstr "Pluriel :"
+
+#: utils/i18n_update.py:161
+msgid "Empty messages are not shown for the default language."
+msgstr "Les messages vides ne sont pas affichés pour la langue par défaut."
+
+#: utils/i18n_update.py:180
+msgid "Translation"
+msgstr "Traduction"
+

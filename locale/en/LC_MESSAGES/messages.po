@@ -3793,15 +3793,57 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
-#~ msgid "Access"
-#~ msgstr ""
+#: utils/i18n_update.py:123
+msgid "Return to documentation summary"
+msgstr ""
 
-#~ msgid "Tournois ({num}})"
-#~ msgstr ""
+#: utils/i18n_update.py:124
+msgid "English translation *** TRANSLATE ! ***"
+msgstr "English translation"
 
-#~ msgid "Tournaments ({num}})"
-#~ msgstr ""
+#: utils/i18n_update.py:127
+msgid "View file {file}"
+msgstr ""
 
-#~ msgid "Renaming the database failed: {ex}"
-#~ msgstr ""
+#: utils/i18n_update.py:129
+msgid "Summary"
+msgstr ""
+
+#: utils/i18n_update.py:133 utils/i18n_update.py:144
+msgid "Empty mandatory messages"
+msgstr ""
+
+#: utils/i18n_update.py:136 utils/i18n_update.py:159
+msgid "Empty messages"
+msgstr ""
+
+#: utils/i18n_update.py:139 utils/i18n_update.py:178
+msgid "Message flagged [{flag}]"
+msgstr ""
+
+#: utils/i18n_update.py:145 utils/i18n_update.py:163 utils/i18n_update.py:180
+msgid "Message id"
+msgstr ""
+
+#: utils/i18n_update.py:145 utils/i18n_update.py:163 utils/i18n_update.py:180
+msgid "Locations"
+msgstr ""
+
+#: utils/i18n_update.py:152 utils/i18n_update.py:170 utils/i18n_update.py:188
+#: utils/i18n_update.py:191
+msgid "Singular:"
+msgstr ""
+
+#: utils/i18n_update.py:153 utils/i18n_update.py:171 utils/i18n_update.py:189
+#: utils/i18n_update.py:192
+msgid "Plural:"
+msgstr ""
+
+#: utils/i18n_update.py:161
+msgid "Empty messages are not shown for the default language."
+msgstr ""
+
+#: utils/i18n_update.py:180
+msgid "Translation"
+msgstr ""
 

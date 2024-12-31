@@ -7,15 +7,16 @@ from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po
 
 from common import get_logger
-from common.i18n import default_locale
+from common.i18n import default_locale, set_locale, _, locale_infos
 from common.papi_web_config import PapiWebConfig
 
 logger: Logger = get_logger()
 
+
 def run_babel_command(
-    babel_command: str,
-    babel_args: list,
-    quiet: bool = False,
+        babel_command: str,
+        babel_args: list,
+        quiet: bool = False,
 ):
     """ Run a Babel command using the command-line interface. """
     argv: list[str] = [sys.argv[0], ]
@@ -24,132 +25,305 @@ def run_babel_command(
     argv += [babel_command, ] + list(map(str, babel_args))  # map to ensure all args are passed as strings
     CommandLineInterface().run(argv)
 
-def extract_strings_to_template(
-    extract_config_file: Path,
-    pot_file: Path,
-):
-    print(f'Extracting i18n strings to {pot_file}...')
-    run_babel_command(
-        'extract',
-        [
-            f'--mapping-file={extract_config_file}',
-            f'--output-file={pot_file}',
-            '--no-wrap',
-            '--omit-header',
-            '.',
-        ],
-        quiet=True,
-    )
 
-def update_po_file(
-        locale_dir: Path,
-        pot_file: Path,
-        locale: str,
-        po_file: Path):
-    if not po_file.exists():
-        print(f'- {po_file.parent}...')
-        po_file.parent.mkdir(parents=True, exist_ok=True)
+class LocaleInfo:
+
+    def __init__(
+            self,
+            id: str,
+            locale_dir: Path,
+            doc_dir: Path,
+    ):
+        self.id: str = id
+        self.default: bool = id == default_locale
+        self.locale_dir: Path = locale_dir
+        self.po_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.po'
+        self.mo_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.mo'
+        self.doc_file: Path = doc_dir / f'i18n-{self.id}.md'
+        self.messages: dict[str, Message] = {}
+        self.empty_messages: dict[str, Message] = {}
+        self.mandatory_messages: dict[str, Message] = {}
+        self.empty_mandatory_messages: dict[str, Message] = {}
+        self.flagged_messages: dict[str, dict[str, Message]] = {}
+
+    def update(
+            self,
+            pot_file: Path,
+    ):
+        if not self.po_file.exists():
+            print(f'- {self.po_file.parent}...')
+            self.po_file.parent.mkdir(parents=True, exist_ok=True)
+            run_babel_command(
+                'init',
+                [
+                    f'--locale={self.id}',
+                    f'--input-file={pot_file}',
+                    f'--output-file={self.po_file}',
+                ],
+                quiet=True,
+            )
+        print(f'- {self.po_file}...')
         run_babel_command(
-            'init',
+            'update',
             [
-                f'--locale={locale}',
+                f'--locale={self.id}',
+                f'--output-dir={self.locale_dir}',
                 f'--input-file={pot_file}',
-                f'--output-file={po_file}',
+                f'--output-file={self.po_file}',
+                '--no-wrap',
+                '--omit-header',
             ],
             quiet=True,
         )
-    print(f'- {po_file}...')
-    run_babel_command(
-        'update',
-        [
-            f'--locale={locale}',
-            f'--output-dir={locale_dir}',
-            f'--input-file={pot_file}',
-            f'--output-file={po_file}',
-            '--no-wrap',
-            '--omit-header',
-        ],
-        quiet=True,
-    )
 
-def update_po_files(
-        locale_dir: Path,
-        pot_file: Path,
-        po_files: dict[str, Path]):
-    print(f'Updating PO files...')
-    for locale, po_file in po_files.items():
-        update_po_file(locale_dir, pot_file, locale, po_file)
+    @staticmethod
+    def escape_gh_md(string: str) -> str:
+        return string.replace('*', '\*')
 
-
-def compile_po_files(
-        locale_dir: Path
-):
-    print(f'Compiling PO files...')
-    run_babel_command(
-        'compile',
-        [
-            '--use-fuzzy',
-            f'--directory={locale_dir}',
-        ],
-        quiet=True,
-    )
-
-def inspect_po_files(
-    po_files: dict[str, Path],
-):
-    print(f'Inspecting PO files...')
-    for locale, po_file in po_files.items():
-        with open(po_file, 'rb') as f:
+    def control(self):
+        # Read the catalog.
+        with open(self.po_file, 'rb') as f:
             catalog: Catalog = read_po(f)
-        flagged_messages: dict[str, list[Message]] = {}
-        empty_messages: list[Message] = []
+        # Control all the messages.
         for msg in catalog:
             if msg.id:
+                self.messages[msg.id] = msg
                 if not msg.string:
-                    if locale != default_locale:
-                        empty_messages.append(msg)
+                    self.empty_messages[msg.id] = msg
+                    continue
+                if msg.id.__contains__('***'):
+                    self.mandatory_messages[msg.id] = msg
+                    if not msg.string:
+                        self.empty_mandatory_messages[msg.id] = msg
+                        continue
+                for flag in msg.flags:
+                    if flag != 'python-format':
+                        if not flag in self.flagged_messages:
+                            self.flagged_messages[flag] = {}
+                        self.flagged_messages[flag][msg.id] = msg
+        # Print a summary.
+        print(
+            f'- Locale [{self.id}]{" (default)" if self.default else ""}: {"OK" if not self.empty_messages and not self.flagged_messages else ""}')
+        if self.empty_messages:
+            print(f'  * Empty messages ({len(self.empty_messages)})')
+            for msg_id in self.empty_messages:
+                print(f'    - [{msg_id}]')
+        if self.flagged_messages:
+            for flag, msgs in self.flagged_messages.items():
+                print(f'  * Messages flagged [{flag}] ({len(self.flagged_messages)})')
+                for msg_id in msgs:
+                    print(f'    - [{msg_id}]')
+        print(f'Wrote {self.doc_file}.')
+
+    def write_markdown(self):
+        """ Write a markdown file showing the status of this translation. """
+        set_locale(self.id)
+        with open(self.doc_file, 'w', encoding='utf-8') as f:
+            f.write('<!--\n    WARNING: DO NOT EDIT!\n    This file has been generated by script i18n_update.\n-->\n\n')
+            f.write('**[{text}](../README.md)**\n\n'.format(text=_('Return to documentation summary')))
+            f.write('# Papi-web - {text}\n\n'.format(text=_("English translation *** TRANSLATE ! ***")))
+            file: str = '/'.join(reversed([self.po_file.name, ] + [d.name for d in self.po_file.parents[:3]]))
+            f.write('- [{text}](../{file})\n\n'.format(
+                text=_('View file {file}').format(file=file),
+                file=file))
+            f.write('## {text}\n\n'.format(text=_('Summary'), locale=self.id))
+            f.write(f'| locale=`{self.id}` | {locale_infos[self.id][0]} |\n')
+            f.write('|--|:--:|\n')
+            f.write('|{text}|{num}/{total}|\n'.format(
+                text=_('Empty mandatory messages'),
+                num=len(self.empty_mandatory_messages), total=len(self.mandatory_messages)))
+            f.write('|{text}|{num}/{total}|\n'.format(
+                text=_('Empty messages'), num=len(self.empty_messages), total=len(self.messages)))
+            for flag, messages in self.flagged_messages.items():
+                f.write('|{text}|{num}/{total}|\n'.format(
+                    text=_('Message flagged [{flag}]'.format(flag=flag)),
+                    num=len(self.flagged_messages[flag]), total=len(self.messages)))
+            f.write('\n')
+            if self.empty_mandatory_messages:
+                f.write('## {text} ({num})\n\n'.format(
+                    text=_('Empty mandatory messages'), num=len(self.empty_mandatory_messages)))
+                f.write('|{text1}|{text2}|\n'.format(text1=_('Message id'), text2=_('Locations')))
+                f.write('|--|--|\n')
+                for msg in self.empty_mandatory_messages.values():
+                    if isinstance(msg.id, str):
+                        text1: str = self.escape_gh_md(msg.id)
+                    else:
+                        text1: str = '**{s}** {st}<br/>**{p}** {pt}'.format(
+                            s=_('Singular:'), st=self.escape_gh_md(msg.id[0]),
+                            p=_('Plural:'), pt=self.escape_gh_md(msg.id[1]))
+                    f.write('|{text1}|{text2}|\n'.format(
+                        text1=text1,
+                        text2='<br>'.join([f'{location[0]}:{location[1]}' for location in msg.locations])))
+            if self.empty_messages:
+                f.write('## {text} ({num})\n\n'.format(
+                    text=_('Empty messages'), num=len(self.empty_messages)))
+                if self.default:
+                    f.write(_('Empty messages are not shown for the default language.') + '\n\n')
                 else:
-                    for flag in msg.flags:
-                        if flag != 'python-format':
-                            if not flag in flagged_messages:
-                                flagged_messages[flag] = []
-                            flagged_messages[flag].append(msg)
-        print(f'- Locale [{locale}]{" (default)" if locale == default_locale else ""}: {"OK" if not empty_messages and not flagged_messages else ""}')
-        if locale != default_locale:
-            if empty_messages:
-                print(f'  * Empty messages ({len(empty_messages)})')
-                for msg in empty_messages:
-                    print(f'    - [{msg.id}]')
-        if flagged_messages:
-            for flag, msgs in flagged_messages.items():
-                print(f'  * Messages flagged [{flag}] ({len(flagged_messages)})')
-                for msg in msgs:
-                    print(f'    - [{msg.id}]')
+                    f.write('|{text1}|{text2}|\n'.format(text1=_('Message id'), text2=_('Locations')))
+                    f.write('|--|--|\n')
+                    for msg in self.empty_messages.values():
+                        if isinstance(msg.id, str):
+                            text1: str = self.escape_gh_md(msg.id)
+                        else:
+                            text1: str = '**{s}** {st}<br/>**{p}** {pt}'.format(
+                                s=_('Singular:'), st=self.escape_gh_md(msg.id[0]),
+                                p=_('Plural:'), pt=self.escape_gh_md(msg.id[1]))
+                        f.write('|{text1}|{text2}|\n'.format(
+                            text1=text1,
+                            text2='<br>'.join([f'{location[0]}:{location[1]}' for location in msg.locations])))
+                    f.write('\n')
+            for flag in self.flagged_messages:
+                f.write('## {text} ({num})\n'.format(
+                    text=_('Message flagged [{flag}]').format(flag=flag), num=len(self.flagged_messages[flag])))
+                f.write('|{text1}|{text2}|{text3}|\n'.format(
+                    text1=_('Message id'), text2=_('Translation'), text3=_('Locations')))
+                f.write('|--|--|--|\n')
+                for msg in self.flagged_messages[flag].values():
+                    if isinstance(msg.id, str):
+                        text1: str = self.escape_gh_md(msg.id)
+                        text2: str = self.escape_gh_md(msg.string)
+                    else:
+                        text1: str = '**{s}** {st}<br/>**{p}** {pt}'.format(
+                            s=_('Singular:'), st=self.escape_gh_md(msg.id[0]),
+                            p=_('Plural:'), pt=self.escape_gh_md(msg.id[1]))
+                        text2: str = '**{s}** {st}<br/>**{p}** {pt}'.format(
+                            s=_('Singular:'), st=self.escape_gh_md(msg.string[0]),
+                            p=_('Plural:'), pt=self.escape_gh_md(msg.string[1]))
+                    f.write('|{text1}|{text2}|{text3}|\n'.format(
+                        text1=text1, text2=text2,
+                        text3='<br>'.join([f'{location[0]}:{location[1]}' for location in msg.locations])))
+                f.write('\n')
 
-def main(
-        extract_config_file: Path,
-        locale_dir: Path,
-        locales: list[str],
-):
-    """ The template file for all locales. """
-    pot_file: Path = locale_dir / 'messages.pot'
-    extract_strings_to_template(extract_config_file, pot_file)
-    po_files: dict[str, Path] = {
-        locale: locale_dir / locale / 'LC_MESSAGES' / 'messages.po' for locale in locales
-    }
-    update_po_files(locale_dir, pot_file, po_files)
-    compile_po_files(locale_dir)
-    inspect_po_files(po_files)
-    print('Done.')
 
-""" PO and MO files are automatically created from this list; oo add a new locale, add it to this list. """
-LOCALES: list[str] = ['en', 'fr', ]
+class Application:
 
-""" The configuration file used to extract stings from the source files. """
-EXTRACT_CONFIG_FILE: Path = PapiWebConfig.base_dir / 'utils' / 'babel.cfg'
+    def __init__(
+            self,
+            locales: list[str],
+    ):
+        """ The path of the i18n files (this script should be run from the dev root). """
+        self.locale_dir: Path = PapiWebConfig.base_dir / 'locale'
+        self.pot_file: Path = self.locale_dir / 'messages.pot'
+        self.doc_dir: Path = PapiWebConfig.base_dir / 'docs'
+        self.doc_file: Path = self.doc_dir / '86-i18n.md'
+        print(f'Extracting i18n strings to {self.pot_file}...')
+        self.extract()
+        self.locale_infos: dict[str, LocaleInfo] = {
+            locale: LocaleInfo(locale, self.locale_dir, self.doc_dir) for locale in locales
+        }
+        print('Updating PO files...')
+        for locale_info in self.locale_infos.values():
+            locale_info.update(self.pot_file)
+        print('Compiling PO files...')
+        self.compile()
+        print('Inspecting PO files...')
+        for locale_info in self.locale_infos.values():
+            locale_info.control()
+        print('Writing MD files...')
+        for locale_info in self.locale_infos.values():
+            locale_info.write_markdown()
+        self.write_markdown()
+        print('Done.')
 
-""" The path of the i18n files (this script should be run from the dev root. """
-LOCALE_DIR: Path = PapiWebConfig.base_dir / 'locale'
+    def extract(self, ):
+        """ The configuration file used to extract stings from the source files. """
+        extract_config_file: Path = PapiWebConfig.base_dir / 'utils' / 'babel.cfg'
+        run_babel_command(
+            'extract',
+            [
+                f'--mapping-file={extract_config_file}',
+                f'--output-file={self.pot_file}',
+                '--no-wrap',
+                '--omit-header',
+                '.',
+            ],
+            quiet=True,
+        )
+
+    def compile(self):
+        run_babel_command(
+            'compile',
+            [
+                '--use-fuzzy',
+                f'--directory={self.locale_dir}',
+            ],
+            quiet=True,
+        )
+
+    def write_markdown(self):
+        # Update the i18n doc file with the status of the translations.
+        set_locale(default_locale)
+        lines_before_comment: list[str] = []
+        lines_after_comment: list[str] = []
+        # Read the lines until the expected comment is found
+        with open(self.doc_file, 'rt', encoding='utf-8') as f:
+            comment: str = '<!-- DO NOT EDIT! (START) -->'
+            comment_found: bool = False
+            for line in f:
+                lines_before_comment.append(line)
+                if line.startswith(comment):
+                    comment_found = True
+                    break
+            if not comment_found:
+                print(f'Could not edit [{self.doc_file}] (comment [{comment}] not found).')
+                return
+            comment: str = '<!-- DO NOT EDIT! (END) -->'
+            comment_found: bool = False
+            for line in f:
+                if line.startswith(comment):
+                    comment_found = True
+                if comment_found:
+                    lines_after_comment.append(line)
+            if not comment_found:
+                print(f'Could not edit [{self.doc_file}] (comment [{comment}] not found).')
+                return
+        with open(self.doc_file, 'w', encoding='utf-8') as f:
+            for line in lines_before_comment:
+                f.write(line)
+            f.write('| Translations | ' + ' | '.join([
+                locale_info[0] for locale_info in locale_infos.values()
+            ]) + ' |\n')
+            f.write('|--|' + (':--:|' * len (locale_infos)) + '\n')
+            f.write('| Locale | ' + ' | '.join([
+                f'`{locale}`' for locale in locale_infos
+            ]) + ' |\n')
+            f.write('| Empty mandatory messages | ' + ' | '.join([
+                f'{len(locale_info.empty_mandatory_messages)}/{len(locale_info.mandatory_messages)}'
+                for locale_info in self.locale_infos.values()
+            ]) + ' |\n')
+            f.write('| Empty messages | ' + ' | '.join([
+                f'{len(locale_info.empty_messages)}/{len(locale_info.messages)}'
+                for locale_info in self.locale_infos.values()
+            ]) + ' |\n')
+            f.write('| Details | ' + ' | '.join([
+                f'[{locale_info.doc_file.name}]({locale_info.doc_file.name})'
+                for locale_info in self.locale_infos.values()
+            ]) + ' |\n')
+            f.write('| PO file | ' + ' | '.join([
+                f'[{locale_info.po_file.name}](' \
+                + '/'.join(reversed([locale_info.po_file.name, ] + [d.name for d in locale_info.po_file.parents[:3]])) \
+                + ')'
+                for locale_info in self.locale_infos.values()
+            ]) + ' |\n')
+            flags: set[str] = set()
+            for locale in self.locale_infos:
+                flags.update(flag for flag in self.locale_infos[locale].flagged_messages)
+            for flag in flags:
+                f.write(f'| Message flagged [{flag}] | ' + ' | '.join([
+                    f'{len(self.locale_infos[locale].flagged_messages[flag])}/{len(self.locale_infos[locale].messages)}'
+                    for locale in locale_infos
+                ]) + ' |\n')
+            for line in lines_after_comment:
+                f.write(line)
+
+
+def main():
+    """ PO and MO files are automatically created from this list; oo add a new locale, add it to this list. """
+    locales: list[str] = ['en', 'fr', ]
+
+    Application(locales)
+
 
 if __name__ == '__main__':
-    main(EXTRACT_CONFIG_FILE, LOCALE_DIR, LOCALES)
+    main()
