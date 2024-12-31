@@ -127,7 +127,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 'template': 'admin_rotators.html',
             },
             'timers': {
-                'title': _('Screens ({num})').format(num=len(web_context.admin_event.timers_by_id) or '-'),
+                'title': _('Timers ({num})').format(num=len(web_context.admin_event.timers_by_id) or '-'),
                 'template': 'admin_timers.html',
             },
             'chessevents': {
