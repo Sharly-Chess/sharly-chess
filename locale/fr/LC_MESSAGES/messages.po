@@ -1041,7 +1041,7 @@ msgstr "Veuillez entrer le l'identifiant unique de la connexion à ChessEvent."
 #: src/web/controllers/admin/chessevent_admin_controller.py:74
 #: src/web/controllers/admin/chessevent_admin_controller.py:79
 msgid "ChessEvent connection [{uniq_id}] already exists."
-msgstr "La connexion ChessEvent [{uniq_id}] existe déjà."
+msgstr "La connexion à ChessEvent [{uniq_id}] existe déjà."
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:88
 msgid "Please enter the id used to connect to the ChessEvent platform."
@@ -1654,7 +1654,7 @@ msgstr "Suppression de la connexion à ChessEvent [%(chessevent_uniq_id)s]"
 
 #: src/web/templates/admin_chessevent_modal.html:31
 msgid "Warning: the deletion of a ChessEvent connection is permanent!"
-msgstr "Attention : la suppression d'une connexion ChessEvent est définitive !"
+msgstr "Attention : la suppression d'une connexion à ChessEvent est définitive !"
 
 #: src/web/templates/admin_chessevent_modal.html:34
 msgid "The following tournaments will not be connected to ChessEvent anymore:"
@@ -1681,7 +1681,7 @@ msgstr "Identifiant (unique) :"
 
 #: src/web/templates/admin_chessevent_modal.html:58
 msgid "The unique id, used to reference the ChessEvent connection."
-msgstr "L'identifiant unique, utilisé pour référencer la connexion ChessEvent'."
+msgstr "L'identifiant unique, utilisé pour référencer la connexion à ChessEvent'."
 
 #: src/web/templates/admin_chessevent_modal.html:70
 msgid "Connection to the ChessEvent platform"
@@ -1778,7 +1778,7 @@ msgstr "Ajouter une connexion à ChessEvent à l'évènement."
 
 #: src/web/templates/admin_chessevents.html:30
 msgid "Create a ChessEvent connection"
-msgstr "Créer une connexion ChessEvent"
+msgstr "Créer une connexion à ChessEvent"
 
 #: src/web/templates/admin_chessevents.html:45
 #: src/web/templates/admin_tournament_modal.html:261
@@ -3394,11 +3394,11 @@ msgstr "La mot de passe est composé de 10 caractères majuscules, il est utilis
 
 #: src/web/templates/admin_tournament_modal.html:216
 msgid "ChessEvent connection:"
-msgstr "Connexion ChessEvent"
+msgstr "Connexion à ChessEvent"
 
 #: src/web/templates/admin_tournament_modal.html:230
 msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
-msgstr "La connexion ChessEvent permet la récupération des inscriptions depuis la plateforme ChessEvent."
+msgstr "La connexion à ChessEvent permet la récupération des inscriptions depuis la plateforme ChessEvent."
 
 #: src/web/templates/admin_tournament_modal.html:241
 msgid "Name of the ChessEvent tournament:"
