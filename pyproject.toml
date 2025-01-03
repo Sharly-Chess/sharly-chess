@@ -33,9 +33,18 @@ dependencies = [
   "transformers ~= 4.17.0",
   "uvicorn ~= 0.32.0",
   "validators ~= 0.34.0",
-  "wheel ~= 0.45.0",
+  "wheel ~= 0.95.0",
 ]
 
 [project.optional-dependencies]
-dev = ["ruff", "pipdeptree"]
+dev = [
+  # Initial version SP
+  "ruff", "pipdeptree",
+  # Needed to run models to generate translations for new locales (PA 20250103)
+  "transformers", "torch", "sentencepiece", "sacremoses",
+  # Needed to validate the dependencies of the project (work in progress, nothing works yet)
+  "validate-pyproject", "toml", "packaging",
+  # Needed to export to EXE
+  "PyInstaller",
+]
 
