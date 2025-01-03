@@ -171,9 +171,9 @@ def create_zip():
     print_interactive_info(f'Creating archive {ZIP_FILE}...')
     with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
         os.chdir(PROJECT_DIR)
-        for folder_name, sub_folders, file_names in os.walk('../../locale'):
+        for folder_name, sub_folders, file_names in os.walk('.'):
             zip_file.write(folder_name, folder_name)
-        for folder_name, sub_folders, file_names in os.walk('../../locale'):
+        for folder_name, sub_folders, file_names in os.walk('.'):
             for filename in file_names:
                 file_path: Path = Path(folder_name, filename)
                 zip_file.write(file_path, file_path)
