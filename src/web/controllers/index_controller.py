@@ -15,7 +15,7 @@ from litestar.params import Body
 from litestar.response import Redirect, Template
 
 from common import RGB, check_rgb_str
-from common.i18n import set_locale, locales, locale_localized_name, locale_flag_url
+from common.i18n import set_locale, locale_localized_name, locale_flag_url, trusted_locales, _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from web.messages import Message
@@ -203,19 +203,26 @@ class WebContext:
         """
         papi_web_config: PapiWebConfig = PapiWebConfig()
         now: float = time.time()
+        locale_infos: dict[str, Any] = {}
+        for locale in papi_web_config.locales:
+            name: str
+            if locale in trusted_locales:
+                name = f'{locale_localized_name(locale)}'
+            else:
+                warning_str: str = _('USE AT YOUR OWN RISKS', locale=locale)
+                name = f'{locale_localized_name(locale)} ({warning_str})'
+            locale_infos[locale] = {
+                'name': name,
+                'flag_url': locale_flag_url(locale),
+                'experimental': locale not in trusted_locales,
+            }
         return {
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'papi_web_config': papi_web_config,
             'admin_auth': self.admin_auth,
             'background_info': self.background_info,
-            'locale_infos': {
-                locale: {
-                    'name': locale_localized_name(locale),
-                    'flag_url': locale_flag_url(locale),
-                }
-                for locale in papi_web_config.locales
-            },
+            'locale_infos': locale_infos,
             'locale': SessionHandler.get_session_locale(self.request),
         }
 

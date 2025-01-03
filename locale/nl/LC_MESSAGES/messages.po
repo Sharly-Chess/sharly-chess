@@ -468,12 +468,12 @@ msgstr "Bestand gedownload: [{zip_file}]."
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "Nieuwe versie [{version}] is geïnstalleerd in [{dir}]."
 
-#: src/common/i18n.py:86
+#: src/common/i18n.py:88
 #, ai_translation
 msgid "Locale set to [{locale}]."
 msgstr "Lokaal ingesteld op [{locale}]."
 
-#: src/common/i18n.py:89
+#: src/common/i18n.py:91
 #, ai_translation
 msgid "Unknown locale [{locale}]."
 msgstr "Onbekende locale [{locale}]."
@@ -1274,6 +1274,11 @@ msgstr "LAN/WAN URL: {lan_url}"
 #, ai_translation
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Port [{port}] reeds in gebruik, kan Papi-webserver niet starten."
+
+#: src/web/controllers/index_controller.py:212
+#, ai_translation
+msgid "USE AT YOUR OWN RISKS"
+msgstr "GEBRUIK OP UW EIGEN RISICO'S"
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:69
 #, ai_translation
@@ -4184,42 +4189,47 @@ msgstr "Geen toernooien."
 msgid "Welcome to Papi-web!"
 msgstr "Welkom op Papi-web!"
 
-#: src/web/templates/index.html:39
+#: src/web/templates/index.html:18
+#, ai_translation
+msgid "Choose your language"
+msgstr "Kies uw taal"
+
+#: src/web/templates/index.html:47
 #, ai_translation
 msgid "Web access"
 msgstr "Webtoegang"
 
-#: src/web/templates/index.html:45
+#: src/web/templates/index.html:53
 #, ai_translation
 msgid "From the Papi-web server"
 msgstr "Van de Papi-webserver"
 
-#: src/web/templates/index.html:53
+#: src/web/templates/index.html:61
 #, ai_translation
 msgid "From the local network (LAN/WAN)"
 msgstr "Vanuit het lokale netwerk (LAN/WAN)"
 
-#: src/web/templates/index.html:71
+#: src/web/templates/index.html:79
 #, ai_translation
 msgid "Click here to access the public screens of the events."
 msgstr "Klik hier om toegang te krijgen tot de publieke schermen van de evenementen."
 
-#: src/web/templates/index.html:73
+#: src/web/templates/index.html:81
 #, ai_translation
 msgid "Events (public access)"
 msgstr "Evenementen (toegang tot het publiek)"
 
-#: src/web/templates/index.html:77
+#: src/web/templates/index.html:85
 #, ai_translation
 msgid "The arbiter interface allows the management of the events."
 msgstr "De Arbiter interface maakt het beheer van de gebeurtenissen mogelijk."
 
-#: src/web/templates/index.html:79
+#: src/web/templates/index.html:87
 #, ai_translation
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Toegang tot de Arbiter interface is niet toegestaan van deze client."
 
-#: src/web/templates/index.html:92
+#: src/web/templates/index.html:100
 #, ai_translation
 msgid "Arbiter interface (private access)"
 msgstr "Arbiter-interface (privétoegang)"
@@ -4531,76 +4541,76 @@ msgstr "Maximum aantal resultaten: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Maximum aantal resultaten: onbeperkt"
 
-#: utils/i18n/i18n_update.py:138
+#: utils/i18n/i18n_update.py:139
 #, ai_translation
 msgid "Return to documentation summary"
 msgstr "Terug naar documentatiesamenvatting"
 
-#: utils/i18n/i18n_update.py:139
+#: utils/i18n/i18n_update.py:140
 #, ai_translation
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Engelse vertaling"
 
-#: utils/i18n/i18n_update.py:142
+#: utils/i18n/i18n_update.py:143
 #, ai_translation
 msgid "View file {file}"
 msgstr "Bestand {file} tonen"
 
-#: utils/i18n/i18n_update.py:144
+#: utils/i18n/i18n_update.py:145
 #, ai_translation
 msgid "Summary"
 msgstr "Samenvatting"
 
-#: utils/i18n/i18n_update.py:148 utils/i18n/i18n_update.py:158
+#: utils/i18n/i18n_update.py:149 utils/i18n/i18n_update.py:159
 #, ai_translation
 msgid "Empty mandatory messages"
 msgstr "Lege verplichte berichten"
 
-#: utils/i18n/i18n_update.py:151 utils/i18n/i18n_update.py:173
+#: utils/i18n/i18n_update.py:152 utils/i18n/i18n_update.py:174
 #, ai_translation
 msgid "Empty messages"
 msgstr "Lege berichten"
 
-#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:196
+#: utils/i18n/i18n_update.py:155 utils/i18n/i18n_update.py:197
 #, ai_translation
 msgid "Message flagged [{flag}]"
 msgstr "Bericht gemarkeerd [{flag}]"
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:178
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:199
 #, ai_translation
 msgid "Message id"
 msgstr "Bericht-id"
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:178
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:199
 #, ai_translation
 msgid "Locations"
 msgstr "Locaties"
 
-#: utils/i18n/i18n_update.py:167 utils/i18n/i18n_update.py:185
-#: utils/i18n/i18n_update.py:206 utils/i18n/i18n_update.py:209
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
 #, ai_translation
 msgid "Singular:"
 msgstr "Enkelvoud:"
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
+#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
+#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
 #, ai_translation
 msgid "Plural:"
 msgstr "Meervoud:"
 
-#: utils/i18n/i18n_update.py:176
+#: utils/i18n/i18n_update.py:177
 #, ai_translation
 msgid "Empty messages are not shown for the default language."
 msgstr "Lege berichten worden niet getoond voor de standaardtaal."
 
-#: utils/i18n/i18n_update.py:192
+#: utils/i18n/i18n_update.py:193
 #, ai_translation
 msgid "Flagged messages"
 msgstr "Gemarkeerde berichten"
 
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:199
 #, ai_translation
 msgid "Translation"
 msgstr "Vertaling"

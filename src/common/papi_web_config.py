@@ -85,7 +85,7 @@ class PapiWebConfig(metaclass=Singleton):
                             section_key, key)
                     elif value:
                         # use all the locales, including the experimental ones.
-                        self.locales += untrusted_locales
+                        self.locales = trusted_locales + untrusted_locales
                 key = 'locale'
                 try:
                     locale = options[key]

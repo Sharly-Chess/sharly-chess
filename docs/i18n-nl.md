@@ -14,16 +14,16 @@
 | locale=`nl` | Nederlands <img src="../src/web/static/images/locales/nl.svg" style="height: 1em;"/> |
 |--|:--:|
 |Lege verplichte berichten|0/16|
-|Lege berichten|0/861|
-|Message flagged [ai_translation]|861/861|
+|Lege berichten|0/863|
+|Message flagged [ai_translation]|863/863|
 
 ## Lege verplichte berichten (-)
 
 ## Lege berichten (-)
 
-## Gemarkeerde berichten (861)
+## Gemarkeerde berichten (863)
 
-### Bericht gemarkeerd [ai_translation] (861)
+### Bericht gemarkeerd [ai_translation] (863)
 
 |Bericht-id|Vertaling|Locaties|
 |--|--|--|
@@ -118,8 +118,8 @@
 |Downloading failed with code [{code}].|Downloaden mislukt met code [{code}].|src/common/engine.py:444|
 |File downloaded: [{zip_file}].|Bestand gedownload: [{zip_file}].|src/common/engine.py:448|
 |New version [{version}] has been installed in [{dir}].|Nieuwe versie [{version}] is geïnstalleerd in [{dir}].|src/common/engine.py:451|
-|Locale set to [{locale}].|Lokaal ingesteld op [{locale}].|src/common/i18n.py:86|
-|Unknown locale [{locale}].|Onbekende locale [{locale}].|src/common/i18n.py:89|
+|Locale set to [{locale}].|Lokaal ingesteld op [{locale}].|src/common/i18n.py:88|
+|Unknown locale [{locale}].|Onbekende locale [{locale}].|src/common/i18n.py:91|
 |Option not set, by default [{default}].|Optie niet ingesteld, standaard [{default}].|src/common/papi_web_config.py:78<br>src/common/papi_web_config.py:154<br>src/common/papi_web_config.py:184<br>src/common/papi_web_config.py:196|
 |Invalid value [{value}].|Ongeldige waarde [{value}].|src/common/papi_web_config.py:84<br>src/common/papi_web_config.py:203<br>src/web/controllers/admin/index_admin_controller.py:164|
 |Locale [{locale}] not found.|Lokaal [{locale}] niet gevonden.|src/common/papi_web_config.py:96|
@@ -276,6 +276,7 @@
 |Local URL: {local_url}|Lokale URL: {local_url}|src/web/server_engine.py:44|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] reeds in gebruik, kan Papi-webserver niet starten.|src/web/server_engine.py:49|
+|USE AT YOUR OWN RISKS|GEBRUIK OP UW EIGEN RISICO'S|src/web/controllers/index_controller.py:212|
 |Please enter the id of ChessEvent connection.|Voer het id van ChessEvent-verbinding in.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|ChessEvent-verbinding [{uniq_id}] bestaat al.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
 |Please enter the id used to connect to the ChessEvent platform.|Voer de id in die gebruikt is om verbinding te maken met het ChessEvent-platform.|src/web/controllers/admin/chessevent_admin_controller.py:88|
@@ -806,14 +807,15 @@
 |Create a tournament|Een toernooi aanmaken|src/web/templates/admin_tournaments.html:30|
 |No tournaments.|Geen toernooien.|src/web/templates/admin_tournaments.html:45|
 |Welcome to Papi-web!|Welkom op Papi-web!|src/web/templates/index.html:12|
-|Web access|Webtoegang|src/web/templates/index.html:39|
-|From the Papi-web server|Van de Papi-webserver|src/web/templates/index.html:45|
-|From the local network (LAN/WAN)|Vanuit het lokale netwerk (LAN/WAN)|src/web/templates/index.html:53|
-|Click here to access the public screens of the events.|Klik hier om toegang te krijgen tot de publieke schermen van de evenementen.|src/web/templates/index.html:71|
-|Events (public access)|Evenementen (toegang tot het publiek)|src/web/templates/index.html:73|
-|The arbiter interface allows the management of the events.|De Arbiter interface maakt het beheer van de gebeurtenissen mogelijk.|src/web/templates/index.html:77|
-|Access to the arbiter interface is not allowed from this client.|Toegang tot de Arbiter interface is niet toegestaan van deze client.|src/web/templates/index.html:79|
-|Arbiter interface (private access)|Arbiter-interface (privétoegang)|src/web/templates/index.html:92|
+|Choose your language|Kies uw taal|src/web/templates/index.html:18|
+|Web access|Webtoegang|src/web/templates/index.html:47|
+|From the Papi-web server|Van de Papi-webserver|src/web/templates/index.html:53|
+|From the local network (LAN/WAN)|Vanuit het lokale netwerk (LAN/WAN)|src/web/templates/index.html:61|
+|Click here to access the public screens of the events.|Klik hier om toegang te krijgen tot de publieke schermen van de evenementen.|src/web/templates/index.html:79|
+|Events (public access)|Evenementen (toegang tot het publiek)|src/web/templates/index.html:81|
+|The arbiter interface allows the management of the events.|De Arbiter interface maakt het beheer van de gebeurtenissen mogelijk.|src/web/templates/index.html:85|
+|Access to the arbiter interface is not allowed from this client.|Toegang tot de Arbiter interface is niet toegestaan van deze client.|src/web/templates/index.html:87|
+|Arbiter interface (private access)|Arbiter-interface (privétoegang)|src/web/templates/index.html:100|
 |This event is public (by default, screens are visible by the users).|Deze gebeurtenis is openbaar (standaard zijn schermen zichtbaar door de gebruikers).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Dit scherm is openbaar (zichtbaar door de gebruikers).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Deze schermfamilie is openbaar (zichtbaar door de gebruikers).|src/web/templates/macros.j2:17|
@@ -874,18 +876,18 @@
 |Unpaired players: hidden|Ongepaarde spelers: verborgen|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Maximum aantal resultaten: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Maximum aantal resultaten: onbeperkt|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Terug naar documentatiesamenvatting|utils/i18n/i18n_update.py:138|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Engelse vertaling|utils/i18n/i18n_update.py:139|
-|View file {file}|Bestand {file} tonen|utils/i18n/i18n_update.py:142|
-|Summary|Samenvatting|utils/i18n/i18n_update.py:144|
-|Empty mandatory messages|Lege verplichte berichten|utils/i18n/i18n_update.py:148<br>utils/i18n/i18n_update.py:158|
-|Empty messages|Lege berichten|utils/i18n/i18n_update.py:151<br>utils/i18n/i18n_update.py:173|
-|Message flagged [{flag}]|Bericht gemarkeerd [{flag}]|utils/i18n/i18n_update.py:154<br>utils/i18n/i18n_update.py:196|
-|Message id|Bericht-id|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:198|
-|Locations|Locaties|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:198|
-|Singular:|Enkelvoud:|utils/i18n/i18n_update.py:167<br>utils/i18n/i18n_update.py:185<br>utils/i18n/i18n_update.py:206<br>utils/i18n/i18n_update.py:209|
-|Plural:|Meervoud:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
-|Empty messages are not shown for the default language.|Lege berichten worden niet getoond voor de standaardtaal.|utils/i18n/i18n_update.py:176|
-|Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:192|
-|Translation|Vertaling|utils/i18n/i18n_update.py:198|
+|Return to documentation summary|Terug naar documentatiesamenvatting|utils/i18n/i18n_update.py:139|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Engelse vertaling|utils/i18n/i18n_update.py:140|
+|View file {file}|Bestand {file} tonen|utils/i18n/i18n_update.py:143|
+|Summary|Samenvatting|utils/i18n/i18n_update.py:145|
+|Empty mandatory messages|Lege verplichte berichten|utils/i18n/i18n_update.py:149<br>utils/i18n/i18n_update.py:159|
+|Empty messages|Lege berichten|utils/i18n/i18n_update.py:152<br>utils/i18n/i18n_update.py:174|
+|Message flagged [{flag}]|Bericht gemarkeerd [{flag}]|utils/i18n/i18n_update.py:155<br>utils/i18n/i18n_update.py:197|
+|Message id|Bericht-id|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
+|Locations|Locaties|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
+|Singular:|Enkelvoud:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
+|Plural:|Meervoud:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
+|Empty messages are not shown for the default language.|Lege berichten worden niet getoond voor de standaardtaal.|utils/i18n/i18n_update.py:177|
+|Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:193|
+|Translation|Vertaling|utils/i18n/i18n_update.py:199|
 

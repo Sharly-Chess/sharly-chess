@@ -14,8 +14,8 @@
 | locale=`de` | Deutsch <img src="../src/web/static/images/locales/de.svg" style="height: 1em;"/> |
 |--|:--:|
 |obligatorische Nachrichten entleeren|0/16|
-|Leere Nachrichten|1/861|
-|Message flagged [ai_translation]|860/861|
+|Leere Nachrichten|1/863|
+|Message flagged [ai_translation]|862/863|
 
 ## obligatorische Nachrichten entleeren (-)
 
@@ -25,9 +25,9 @@
 |--|--|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Gekennzeichnete Nachrichten (860)
+## Gekennzeichnete Nachrichten (862)
 
-### Nachricht markiert [ai_translation] (860)
+### Nachricht markiert [ai_translation] (862)
 
 |Meldungs-ID|Übersetzung|Standorte|
 |--|--|--|
@@ -122,8 +122,8 @@
 |Downloading failed with code [{code}].|Mit Code [{code}] ist das Herunterladen fehlgeschlagen.|src/common/engine.py:444|
 |File downloaded: [{zip_file}].|Datei heruntergeladen: [{zip_file}].|src/common/engine.py:448|
 |New version [{version}] has been installed in [{dir}].|Neue Version [{version}] wurde in [{dir}] installiert.|src/common/engine.py:451|
-|Locale set to [{locale}].|Lokale eingestellt auf [{locale}].|src/common/i18n.py:86|
-|Unknown locale [{locale}].|Unbekannte Lokalität [{locale}].|src/common/i18n.py:89|
+|Locale set to [{locale}].|Lokale eingestellt auf [{locale}].|src/common/i18n.py:88|
+|Unknown locale [{locale}].|Unbekannte Lokalität [{locale}].|src/common/i18n.py:91|
 |Option not set, by default [{default}].|Option nicht gesetzt, standardmäßig [{default}].|src/common/papi_web_config.py:78<br>src/common/papi_web_config.py:154<br>src/common/papi_web_config.py:184<br>src/common/papi_web_config.py:196|
 |Invalid value [{value}].|Ungültiger Wert [{value}].|src/common/papi_web_config.py:84<br>src/common/papi_web_config.py:203<br>src/web/controllers/admin/index_admin_controller.py:164|
 |Locale [{locale}] not found.|Locale [{locale}] nicht gefunden.|src/common/papi_web_config.py:96|
@@ -280,6 +280,7 @@
 |Local URL: {local_url}|Lokale URL: {local_url}|src/web/server_engine.py:44|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] bereits in Betrieb, kann Papi-Web-Server nicht starten.|src/web/server_engine.py:49|
+|USE AT YOUR OWN RISKS|AUSWIRKUNGEN AUF IHRE RISIKEN|src/web/controllers/index_controller.py:212|
 |Please enter the id of ChessEvent connection.|Bitte geben Sie die ID der ChessEvent-Verbindung ein.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|ChessEvent-Verbindung [{uniq_id}] existiert bereits.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
 |Please enter the id used to connect to the ChessEvent platform.|Bitte geben Sie die ID ein, die verwendet wird, um sich mit der ChessEvent-Plattform zu verbinden.|src/web/controllers/admin/chessevent_admin_controller.py:88|
@@ -810,14 +811,15 @@
 |Create a tournament|Erstellen Sie ein Turnier|src/web/templates/admin_tournaments.html:30|
 |No tournaments.|Keine Turniere.|src/web/templates/admin_tournaments.html:45|
 |Welcome to Papi-web!|Willkommen im Papi-Web!|src/web/templates/index.html:12|
-|Web access|Web-Zugang|src/web/templates/index.html:39|
-|From the Papi-web server|Vom Papi-Web-Server|src/web/templates/index.html:45|
-|From the local network (LAN/WAN)|Aus dem lokalen Netzwerk (LAN/WAN)|src/web/templates/index.html:53|
-|Click here to access the public screens of the events.|Klicken Sie hier, um auf die öffentlichen Bildschirme der Veranstaltungen zuzugreifen.|src/web/templates/index.html:71|
-|Events (public access)|Veranstaltungen (öffentlicher Zugang)|src/web/templates/index.html:73|
-|The arbiter interface allows the management of the events.|Die Arbiter-Schnittstelle ermöglicht die Verwaltung der Ereignisse.|src/web/templates/index.html:77|
-|Access to the arbiter interface is not allowed from this client.|Der Zugriff auf die Arbiter-Schnittstelle ist von diesem Client nicht erlaubt.|src/web/templates/index.html:79|
-|Arbiter interface (private access)|Arbiter-Schnittstelle (privater Zugang)|src/web/templates/index.html:92|
+|Choose your language|Wählen Sie Ihre Sprache|src/web/templates/index.html:18|
+|Web access|Web-Zugang|src/web/templates/index.html:47|
+|From the Papi-web server|Vom Papi-Web-Server|src/web/templates/index.html:53|
+|From the local network (LAN/WAN)|Aus dem lokalen Netzwerk (LAN/WAN)|src/web/templates/index.html:61|
+|Click here to access the public screens of the events.|Klicken Sie hier, um auf die öffentlichen Bildschirme der Veranstaltungen zuzugreifen.|src/web/templates/index.html:79|
+|Events (public access)|Veranstaltungen (öffentlicher Zugang)|src/web/templates/index.html:81|
+|The arbiter interface allows the management of the events.|Die Arbiter-Schnittstelle ermöglicht die Verwaltung der Ereignisse.|src/web/templates/index.html:85|
+|Access to the arbiter interface is not allowed from this client.|Der Zugriff auf die Arbiter-Schnittstelle ist von diesem Client nicht erlaubt.|src/web/templates/index.html:87|
+|Arbiter interface (private access)|Arbiter-Schnittstelle (privater Zugang)|src/web/templates/index.html:100|
 |This event is public (by default, screens are visible by the users).|Dieses Ereignis ist öffentlich (standardmäßig sind Bildschirme von den Benutzern sichtbar).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Dieser Bildschirm ist öffentlich (sichtbar durch die Benutzer).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Diese Bildschirmfamilie ist öffentlich (sichtbar durch die Benutzer).|src/web/templates/macros.j2:17|
@@ -877,18 +879,18 @@
 |Unpaired players: hidden|Unpaarte Spieler: versteckt|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Maximale Anzahl der Ergebnisse: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Maximale Anzahl der Ergebnisse: unbegrenzt|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Zurück zur Dokumentationsübersicht|utils/i18n/i18n_update.py:138|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Englische Übersetzung|utils/i18n/i18n_update.py:139|
-|View file {file}|Datei anzeigen {file}|utils/i18n/i18n_update.py:142|
-|Summary|Zusammenfassung|utils/i18n/i18n_update.py:144|
-|Empty mandatory messages|obligatorische Nachrichten entleeren|utils/i18n/i18n_update.py:148<br>utils/i18n/i18n_update.py:158|
-|Empty messages|Leere Nachrichten|utils/i18n/i18n_update.py:151<br>utils/i18n/i18n_update.py:173|
-|Message flagged [{flag}]|Nachricht markiert [{flag}]|utils/i18n/i18n_update.py:154<br>utils/i18n/i18n_update.py:196|
-|Message id|Meldungs-ID|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:198|
-|Locations|Standorte|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:198|
-|Singular:|Singulär:|utils/i18n/i18n_update.py:167<br>utils/i18n/i18n_update.py:185<br>utils/i18n/i18n_update.py:206<br>utils/i18n/i18n_update.py:209|
-|Plural:|Plural:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
-|Empty messages are not shown for the default language.|Leere Nachrichten werden für die Standardsprache nicht angezeigt.|utils/i18n/i18n_update.py:176|
-|Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:192|
-|Translation|Übersetzung|utils/i18n/i18n_update.py:198|
+|Return to documentation summary|Zurück zur Dokumentationsübersicht|utils/i18n/i18n_update.py:139|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Englische Übersetzung|utils/i18n/i18n_update.py:140|
+|View file {file}|Datei anzeigen {file}|utils/i18n/i18n_update.py:143|
+|Summary|Zusammenfassung|utils/i18n/i18n_update.py:145|
+|Empty mandatory messages|obligatorische Nachrichten entleeren|utils/i18n/i18n_update.py:149<br>utils/i18n/i18n_update.py:159|
+|Empty messages|Leere Nachrichten|utils/i18n/i18n_update.py:152<br>utils/i18n/i18n_update.py:174|
+|Message flagged [{flag}]|Nachricht markiert [{flag}]|utils/i18n/i18n_update.py:155<br>utils/i18n/i18n_update.py:197|
+|Message id|Meldungs-ID|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
+|Locations|Standorte|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
+|Singular:|Singulär:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
+|Plural:|Plural:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
+|Empty messages are not shown for the default language.|Leere Nachrichten werden für die Standardsprache nicht angezeigt.|utils/i18n/i18n_update.py:177|
+|Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:193|
+|Translation|Übersetzung|utils/i18n/i18n_update.py:199|
 

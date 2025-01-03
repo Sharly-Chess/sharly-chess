@@ -14,8 +14,8 @@
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
 |Κενά υποχρεωτικά μηνύματα|0/16|
-|Κενά μηνύματα|2/861|
-|Message flagged [ai_translation]|859/861|
+|Κενά μηνύματα|2/863|
+|Message flagged [ai_translation]|861/863|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
@@ -26,9 +26,9 @@
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:367|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Σημειωθέντα μηνύματα (859)
+## Σημειωθέντα μηνύματα (861)
 
-### Μήνυμα που σημαδεύτηκε [ai_translation] (859)
+### Μήνυμα που σημαδεύτηκε [ai_translation] (861)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -123,8 +123,8 @@
 |Downloading failed with code [{code}].|Η λήψη απέτυχε με τον κωδικό [{code}].|src/common/engine.py:444|
 |File downloaded: [{zip_file}].|Κατεβάστε το αρχείο: [{zip_file}].|src/common/engine.py:448|
 |New version [{version}] has been installed in [{dir}].|Η νέα έκδοση [{version}] έχει εγκατασταθεί στο [{dir}].|src/common/engine.py:451|
-|Locale set to [{locale}].|Τοπικά σετ σε [{locale}].|src/common/i18n.py:86|
-|Unknown locale [{locale}].|Άγνωστο locale [{locale}].|src/common/i18n.py:89|
+|Locale set to [{locale}].|Τοπικά σετ σε [{locale}].|src/common/i18n.py:88|
+|Unknown locale [{locale}].|Άγνωστο locale [{locale}].|src/common/i18n.py:91|
 |Option not set, by default [{default}].|Η επιλογή δεν έχει οριστεί, εξ ορισμού [{default}].|src/common/papi_web_config.py:78<br>src/common/papi_web_config.py:154<br>src/common/papi_web_config.py:184<br>src/common/papi_web_config.py:196|
 |Invalid value [{value}].|Μη έγκυρη τιμή [{value}].|src/common/papi_web_config.py:84<br>src/common/papi_web_config.py:203<br>src/web/controllers/admin/index_admin_controller.py:164|
 |Locale [{locale}] not found.|Τοπικά [{locale}] δεν βρέθηκε.|src/common/papi_web_config.py:96|
@@ -281,6 +281,7 @@
 |Local URL: {local_url}|Τοπική URL: {local_url}|src/web/server_engine.py:44|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Η θύρα [{port}] είναι ήδη σε χρήση, δεν μπορεί να ξεκινήσει το διακομιστή Papi-web.|src/web/server_engine.py:49|
+|USE AT YOUR OWN RISKS|ΧΡΗΣΙΜΟΠΟΙΕΙΤΕ ΜΕ δικούς ΣΑΣ ΚΙΝΔΥΝΟΥΣ|src/web/controllers/index_controller.py:212|
 |Please enter the id of ChessEvent connection.|Παρακαλώ εισάγετε την ταυτότητα της σύνδεσης ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|Η σύνδεση σκακιού [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
 |Please enter the id used to connect to the ChessEvent platform.|Παρακαλώ εισάγετε την ταυτότητα που χρησιμοποιήθηκε για να συνδεθείτε με την πλατφόρμα ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:88|
@@ -810,14 +811,15 @@
 |Create a tournament|Δημιουργία ενός τουρνουά|src/web/templates/admin_tournaments.html:30|
 |No tournaments.|Όχι τουρνουά.|src/web/templates/admin_tournaments.html:45|
 |Welcome to Papi-web!|Καλώς ήρθατε στο Papa-web!|src/web/templates/index.html:12|
-|Web access|Πρόσβαση στο διαδίκτυο|src/web/templates/index.html:39|
-|From the Papi-web server|Από τον διακομιστή Papi-web|src/web/templates/index.html:45|
-|From the local network (LAN/WAN)|Από το τοπικό δίκτυο (LAN/WAN)|src/web/templates/index.html:53|
-|Click here to access the public screens of the events.|Κάντε κλικ εδώ για να αποκτήσετε πρόσβαση στις δημόσιες οθόνες των γεγονότων.|src/web/templates/index.html:71|
-|Events (public access)|Εκδηλώσεις (δημόσια πρόσβαση)|src/web/templates/index.html:73|
-|The arbiter interface allows the management of the events.|Η διεπαφή του διαιτητή επιτρέπει τη διαχείριση των γεγονότων.|src/web/templates/index.html:77|
-|Access to the arbiter interface is not allowed from this client.|Η πρόσβαση στη διεπαφή του διαιτητή δεν επιτρέπεται από αυτόν τον πελάτη.|src/web/templates/index.html:79|
-|Arbiter interface (private access)|Διασύνδεση Arbiter (ιδιωτική πρόσβαση)|src/web/templates/index.html:92|
+|Choose your language|Επιλέξτε τη γλώσσα σας|src/web/templates/index.html:18|
+|Web access|Πρόσβαση στο διαδίκτυο|src/web/templates/index.html:47|
+|From the Papi-web server|Από τον διακομιστή Papi-web|src/web/templates/index.html:53|
+|From the local network (LAN/WAN)|Από το τοπικό δίκτυο (LAN/WAN)|src/web/templates/index.html:61|
+|Click here to access the public screens of the events.|Κάντε κλικ εδώ για να αποκτήσετε πρόσβαση στις δημόσιες οθόνες των γεγονότων.|src/web/templates/index.html:79|
+|Events (public access)|Εκδηλώσεις (δημόσια πρόσβαση)|src/web/templates/index.html:81|
+|The arbiter interface allows the management of the events.|Η διεπαφή του διαιτητή επιτρέπει τη διαχείριση των γεγονότων.|src/web/templates/index.html:85|
+|Access to the arbiter interface is not allowed from this client.|Η πρόσβαση στη διεπαφή του διαιτητή δεν επιτρέπεται από αυτόν τον πελάτη.|src/web/templates/index.html:87|
+|Arbiter interface (private access)|Διασύνδεση Arbiter (ιδιωτική πρόσβαση)|src/web/templates/index.html:100|
 |This event is public (by default, screens are visible by the users).|Αυτό το γεγονός είναι δημόσιο (από προεπιλογή, οι οθόνες είναι ορατές από τους χρήστες).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Αυτή η οθόνη είναι δημόσια (ορατή από τους χρήστες).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Αυτή η οικογένεια οθόνης είναι δημόσια (ορατή από τους χρήστες).|src/web/templates/macros.j2:17|
@@ -877,18 +879,18 @@
 |Unpaired players: hidden|Μη ζευγάρι παίκτες: κρυφό|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Μέγιστος αριθμός αποτελεσμάτων: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Μέγιστος αριθμός αποτελεσμάτων: απεριόριστος|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Επιστρέφω στην περίληψη τεκμηρίωσης|utils/i18n/i18n_update.py:138|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Αγγλική μετάφραση|utils/i18n/i18n_update.py:139|
-|View file {file}|Δείτε το αρχείο {file}|utils/i18n/i18n_update.py:142|
-|Summary|Περίληψη|utils/i18n/i18n_update.py:144|
-|Empty mandatory messages|Κενά υποχρεωτικά μηνύματα|utils/i18n/i18n_update.py:148<br>utils/i18n/i18n_update.py:158|
-|Empty messages|Κενά μηνύματα|utils/i18n/i18n_update.py:151<br>utils/i18n/i18n_update.py:173|
-|Message flagged [{flag}]|Μήνυμα που σημαδεύτηκε [{flag}]|utils/i18n/i18n_update.py:154<br>utils/i18n/i18n_update.py:196|
-|Message id|Μήνυμα id|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:198|
-|Locations|Τοποθεσίες|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:198|
-|Singular:|Μοναδικός:|utils/i18n/i18n_update.py:167<br>utils/i18n/i18n_update.py:185<br>utils/i18n/i18n_update.py:206<br>utils/i18n/i18n_update.py:209|
-|Plural:|Πληθυντικός:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
-|Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:176|
-|Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:192|
-|Translation|Μετάφραση|utils/i18n/i18n_update.py:198|
+|Return to documentation summary|Επιστρέφω στην περίληψη τεκμηρίωσης|utils/i18n/i18n_update.py:139|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Αγγλική μετάφραση|utils/i18n/i18n_update.py:140|
+|View file {file}|Δείτε το αρχείο {file}|utils/i18n/i18n_update.py:143|
+|Summary|Περίληψη|utils/i18n/i18n_update.py:145|
+|Empty mandatory messages|Κενά υποχρεωτικά μηνύματα|utils/i18n/i18n_update.py:149<br>utils/i18n/i18n_update.py:159|
+|Empty messages|Κενά μηνύματα|utils/i18n/i18n_update.py:152<br>utils/i18n/i18n_update.py:174|
+|Message flagged [{flag}]|Μήνυμα που σημαδεύτηκε [{flag}]|utils/i18n/i18n_update.py:155<br>utils/i18n/i18n_update.py:197|
+|Message id|Μήνυμα id|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
+|Locations|Τοποθεσίες|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
+|Singular:|Μοναδικός:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
+|Plural:|Πληθυντικός:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
+|Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:177|
+|Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:193|
+|Translation|Μετάφραση|utils/i18n/i18n_update.py:199|
 

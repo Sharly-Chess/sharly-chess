@@ -52,10 +52,12 @@ untrusted_locales: list[str] = list(set(locales) - set(trusted_locales))
 
 """ Mark the untrusted locales as translated by an IA. """
 translators |= {
-    locale: {
+    locale: [
+        {
             'github_user': None,
-            'name': 'Opus-MT (IA translation)',
-        }
+            'name': 'AI (Opus-MT)',
+        },
+    ]
     for locale in locales
     if locale not in trusted_locales
 }

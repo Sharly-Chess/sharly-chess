@@ -13,25 +13,33 @@
                 <div
                         class="row justify-content-md-center"
                 >
-                    {% for l, l_info in locale_infos.items() %}
-                        <div
-                                class="col-md-auto {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}"
-                                {% if l != locale %}
-                                    hx-get="{{ url_for('index') }}"
-                                    hx-vals='{"locale": "{{ l }}"}'
-                                    preload
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                {% endif %}
-                        >
-                            <img
-                                    src="{{l_info.flag_url}}"
-                                    alt="{{l_info.name}}"
-                                    class="index-locale-flag"
-                            />
-                            {{l_info.name}}
-                        </div>
-                    {% endfor %}
+                    <div class="dropdown col-12 text-center">
+                        <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi-translate"></i> {{ _('Choose your language') }}
+                        </button>
+                        <ul class="dropdown-menu locale">
+                            {% for l, l_info in locale_infos.items() %}
+                                <li
+                                    class="dropdown-item text-start {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}"
+                                    {% if l != locale %}
+                                        hx-get="{{ url }}"
+                                        hx-vals='{"locale": "{{ l }}"}'
+                                        preload
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                    {% endif %}
+                                    {{ tooltip_attributes('info', l_info.name, 'right') }}
+                                >
+                                    <img
+                                        src="{{l_info.flag_url}}"
+                                        alt="{{l_info.name}}"
+                                        class="locale-flag"
+                                    />
+                                    {{ l_info.name }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
                 <table class="table table-responsive table-sm border-black w-auto bg-light">
                     <thead class="table-dark">

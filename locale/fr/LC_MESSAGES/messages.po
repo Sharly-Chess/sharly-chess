@@ -377,11 +377,11 @@ msgstr "Fichier téléchargé : [{zip_file}]."
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "La nouvelle version [{version}] a été installée dans [{dir}]."
 
-#: src/common/i18n.py:86
+#: src/common/i18n.py:88
 msgid "Locale set to [{locale}]."
 msgstr "Langue positionnée à [{locale}]."
 
-#: src/common/i18n.py:89
+#: src/common/i18n.py:91
 msgid "Unknown locale [{locale}]."
 msgstr "Langue [{locale}] inconnue."
 
@@ -1029,6 +1029,10 @@ msgstr "URL LAN/WAN : {lan_url}"
 #: src/web/server_engine.py:49
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Le port [{port}] est déjà utilisé, impossible de démarrer le serveur web."
+
+#: src/web/controllers/index_controller.py:212
+msgid "USE AT YOUR OWN RISKS"
+msgstr "UTILISEZ À VOS PROPRES RISQUES"
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:69
 msgid "Please enter the id of ChessEvent connection."
@@ -3487,35 +3491,39 @@ msgstr "Aucun tournoi."
 msgid "Welcome to Papi-web!"
 msgstr "Bienvenue dans Papi-web !"
 
-#: src/web/templates/index.html:39
+#: src/web/templates/index.html:18
+msgid "Choose your language"
+msgstr "Choisissez votre langue"
+
+#: src/web/templates/index.html:47
 msgid "Web access"
 msgstr "Accès web"
 
-#: src/web/templates/index.html:45
+#: src/web/templates/index.html:53
 msgid "From the Papi-web server"
 msgstr "Depuis le serveur Papi-web"
 
-#: src/web/templates/index.html:53
+#: src/web/templates/index.html:61
 msgid "From the local network (LAN/WAN)"
 msgstr "Depuis le réseau local (LAN/WAN)"
 
-#: src/web/templates/index.html:71
+#: src/web/templates/index.html:79
 msgid "Click here to access the public screens of the events."
 msgstr "Cliquez ici pour accéder aux évènements publics des évènements."
 
-#: src/web/templates/index.html:73
+#: src/web/templates/index.html:81
 msgid "Events (public access)"
 msgstr "Évènements (accès public)"
 
-#: src/web/templates/index.html:77
+#: src/web/templates/index.html:85
 msgid "The arbiter interface allows the management of the events."
 msgstr "L'interface d'arbitrage permet la gestion des évènements."
 
-#: src/web/templates/index.html:79
+#: src/web/templates/index.html:87
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "L'accès à l'interface d'arbitrage n'est pas autorisé depuis cette machine."
 
-#: src/web/templates/index.html:92
+#: src/web/templates/index.html:100
 msgid "Arbiter interface (private access)"
 msgstr "Arbitrage (accès privé)"
 
@@ -3775,63 +3783,63 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
-#: utils/i18n/i18n_update.py:138
+#: utils/i18n/i18n_update.py:139
 msgid "Return to documentation summary"
 msgstr "Retour au sommaire de la documentation"
 
-#: utils/i18n/i18n_update.py:139
+#: utils/i18n/i18n_update.py:140
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Traduction en français"
 
-#: utils/i18n/i18n_update.py:142
+#: utils/i18n/i18n_update.py:143
 msgid "View file {file}"
 msgstr "Voir le fichier {file}"
 
-#: utils/i18n/i18n_update.py:144
+#: utils/i18n/i18n_update.py:145
 msgid "Summary"
 msgstr "Résumé"
 
-#: utils/i18n/i18n_update.py:148 utils/i18n/i18n_update.py:158
+#: utils/i18n/i18n_update.py:149 utils/i18n/i18n_update.py:159
 msgid "Empty mandatory messages"
 msgstr "Messages obligatoires vides"
 
-#: utils/i18n/i18n_update.py:151 utils/i18n/i18n_update.py:173
+#: utils/i18n/i18n_update.py:152 utils/i18n/i18n_update.py:174
 msgid "Empty messages"
 msgstr "Messages vides"
 
-#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:196
+#: utils/i18n/i18n_update.py:155 utils/i18n/i18n_update.py:197
 msgid "Message flagged [{flag}]"
 msgstr "Messages marqués [{flag}]"
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:178
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:199
 msgid "Message id"
 msgstr "Identifiant"
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:178
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:199
 msgid "Locations"
 msgstr "Emplacements"
 
-#: utils/i18n/i18n_update.py:167 utils/i18n/i18n_update.py:185
-#: utils/i18n/i18n_update.py:206 utils/i18n/i18n_update.py:209
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
 msgid "Singular:"
 msgstr "Singulier :"
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
+#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
+#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
 msgid "Plural:"
 msgstr "Pluriel :"
 
-#: utils/i18n/i18n_update.py:176
+#: utils/i18n/i18n_update.py:177
 msgid "Empty messages are not shown for the default language."
 msgstr "Les messages vides ne sont pas affichés pour la langue par défaut."
 
-#: utils/i18n/i18n_update.py:192
+#: utils/i18n/i18n_update.py:193
 msgid "Flagged messages"
 msgstr "Messages marqués"
 
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:199
 msgid "Translation"
 msgstr "Traduction"
 

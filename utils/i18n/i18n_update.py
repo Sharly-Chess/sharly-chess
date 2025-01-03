@@ -5,10 +5,11 @@ from babel.messages import Catalog, Message
 from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po
 
-from common.i18n import default_locale, set_locale, _, locale_localized_name, locale_flag_url, trusted_locales
+from common.i18n import default_locale, set_locale, _, locale_localized_name, locale_flag_url, trusted_locales, \
+    translators
 from common.logger import print_interactive_error, print_interactive_warning, print_interactive_info, \
     print_interactive_success, input_interactive, print_interactive_input
-from .i18n_translate import I18nTranslator
+from utils.i18n.i18n_translate import I18nTranslator
 
 
 def run_babel_command(
@@ -335,46 +336,36 @@ class I18nUpdater:
             if not comment_found:
                 print_interactive_error(f'Could not edit [{self.doc_file}] (comment [{comment}] not found).')
                 return
-        lines: list[str] = [
-            '| Translations | ' + ' | '.join([
-                locale_localized_name(locale) for locale in self.locales
-            ]) + ' |\n',
-            '|--|' + (':--:|' * len (self.locales)) + '\n',
-            '| Locale | ' + ' | '.join([
-                f'`{locale}`' for locale in self.locales
-            ]) + ' |\n',
-            '| Flag | ' + ' | '.join([
-                f'<img src="../src/web{locale_flag_url(locale)}" style="height: 1em;"/>' for locale in self.locales
-            ]) + ' |\n',
-            '| Empty mandatory messages | ' + ' | '.join([
-                f'{len(locale_info.empty_mandatory_messages)}/{len(locale_info.mandatory_messages)}'
-                for locale_info in self.locale_infos.values()
-            ]) + ' |\n',
-            '| Empty messages | ' + ' | '.join([
-                f'{len(locale_info.empty_messages)}/{len(locale_info.messages)}'
-                for locale_info in self.locale_infos.values()
-            ]) + ' |\n',
-            '| Details | ' + ' | '.join([
-                f'[{locale_info.doc_file.name}]({locale_info.doc_file.name})'
-                for locale_info in self.locale_infos.values()
-            ]) + ' |\n',
-            '| PO file | ' + ' | '.join([
-                f'[{locale_info.po_file.name}](' \
-                + '/'.join(reversed([locale_info.po_file.name, ] + [d.name for d in locale_info.po_file.parents[:3]] + ['..', ])) \
-                + ')'
-                for locale_info in self.locale_infos.values()
-            ]) + ' |\n',
-        ]
-        flags: list[str] = []
+        lines: list[str] = []
+        flags: set[str] = set()
         for locale in self.locale_infos:
             for flag in self.locale_infos[locale].flagged_messages:
-                if flag not in flags:
-                    flags.append(flag)
-        for flag in flags:
-            lines.append(f'| Message flagged [{flag}] | ' + ' | '.join([
-                f'{len(self.locale_infos[locale].flagged_messages[flag]) if flag in self.locale_infos[locale].flagged_messages else 0}/{len(self.locale_infos[locale].messages)}'
-                for locale in self.locales
-            ]) + ' |\n')
+                flags.add(flag)
+        headers: list[str] = ['Locale', 'Messages', 'Empty messages', 'Empty mandatory messages', ]
+        headers += [f'Messages flagged [{flag}]' for flag in flags]
+        headers += ['Details', 'PO file', 'Translators', ]
+        lines.append('| ' + ' | '.join(headers) +' |\n')
+        lines.append('|--' + ('|:--:' * (len(headers)-1)) + '|\n')
+        for locale, locale_info in self.locale_infos.items():
+            line : str = f'|<img src="../src/web{locale_flag_url(locale)}" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{locale_localized_name(locale)} '
+            line += f'| {len(locale_info.messages)} '
+            line += f'| {len(locale_info.empty_messages)} '
+            line += f'| {len(locale_info.empty_mandatory_messages)} '
+            for flag in flags:
+                line += f'| {len(locale_info.flagged_messages.get(flag, []))} '
+            line += f'| [{locale_info.doc_file.name}]({locale_info.doc_file.name}) '
+            line += f'| [{locale_info.po_file.name}](' \
+                + '/'.join(reversed([locale_info.po_file.name, ] + [d.name for d in locale_info.po_file.parents[:3]] + ['..', ])) \
+                + ') '
+            translator_strings: list[str] = []
+            for translator in translators[locale]:
+                if translator['github_user']:
+                    translator_strings.append(f'[{translator["name"]}](https://github.com/{translator["github_user"]})')
+                else:
+                    translator_strings.append(translator['name'])
+            line += f'| {"<br/>".join(translator_strings)} |\n'
+            lines.append(line)
+        lines.append('\n')
         with open(self.doc_file, 'w', encoding='utf-8') as f:
             for line in lines_before_comment + lines + lines_after_comment:
                 f.write(line)
@@ -416,9 +407,7 @@ if __name__ == '__main__':
     """ PO and MO files are automatically created from this list; to add a new locale, add it to the list. """
     updater = I18nUpdater([
         'en', 'fr',
-        'de', 'el', 'es',
-        # 'fi', 'is',
-        'it', 'pt', 'sv',
+        'de', 'el', 'es', 'it', 'nl', 'sv',
     ])
     if not updater.new_locales:
         updater.check_trusted_locales()

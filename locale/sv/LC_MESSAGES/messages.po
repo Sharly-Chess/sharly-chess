@@ -468,12 +468,12 @@ msgstr "Fil laddad ner: [{zip_file}]."
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "Ny version [{version}] har installerats i [{dir}]."
 
-#: src/common/i18n.py:86
+#: src/common/i18n.py:88
 #, ai_translation
 msgid "Locale set to [{locale}]."
 msgstr "Lokalen sätts till [{locale}]."
 
-#: src/common/i18n.py:89
+#: src/common/i18n.py:91
 #, ai_translation
 msgid "Unknown locale [{locale}]."
 msgstr "Okänd ort [{locale}]."
@@ -1274,6 +1274,11 @@ msgstr "LAN/WAN URL: {lan_url}"
 #, ai_translation
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
+
+#: src/web/controllers/index_controller.py:212
+#, ai_translation
+msgid "USE AT YOUR OWN RISKS"
+msgstr "ANVÄNDNING VID DINA EGNA RISKER"
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:69
 #, ai_translation
@@ -4184,42 +4189,47 @@ msgstr "Inga turneringar."
 msgid "Welcome to Papi-web!"
 msgstr "Välkommen till Papi-webben!"
 
-#: src/web/templates/index.html:39
+#: src/web/templates/index.html:18
+#, ai_translation
+msgid "Choose your language"
+msgstr "Välj ditt språk"
+
+#: src/web/templates/index.html:47
 #, ai_translation
 msgid "Web access"
 msgstr "Webbåtkomst"
 
-#: src/web/templates/index.html:45
+#: src/web/templates/index.html:53
 #, ai_translation
 msgid "From the Papi-web server"
 msgstr "Från Papi- webbservern"
 
-#: src/web/templates/index.html:53
+#: src/web/templates/index.html:61
 #, ai_translation
 msgid "From the local network (LAN/WAN)"
 msgstr "Från det lokala nätverket (LAN/WAN)"
 
-#: src/web/templates/index.html:71
+#: src/web/templates/index.html:79
 #, ai_translation
 msgid "Click here to access the public screens of the events."
 msgstr "Klicka här för att komma åt evenemangens offentliga skärmar."
 
-#: src/web/templates/index.html:73
+#: src/web/templates/index.html:81
 #, ai_translation
 msgid "Events (public access)"
 msgstr "Evenemang (allmän tillgång)"
 
-#: src/web/templates/index.html:77
+#: src/web/templates/index.html:85
 #, ai_translation
 msgid "The arbiter interface allows the management of the events."
 msgstr "Arbiter-gränssnittet gör det möjligt att hantera händelserna."
 
-#: src/web/templates/index.html:79
+#: src/web/templates/index.html:87
 #, ai_translation
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient."
 
-#: src/web/templates/index.html:92
+#: src/web/templates/index.html:100
 #, ai_translation
 msgid "Arbiter interface (private access)"
 msgstr "Skiljemannagränssnitt (privat åtkomst)"
@@ -4531,76 +4541,76 @@ msgstr "Maximalt antal resultat: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Maximalt antal resultat: obegränsad"
 
-#: utils/i18n/i18n_update.py:138
+#: utils/i18n/i18n_update.py:139
 #, ai_translation
 msgid "Return to documentation summary"
 msgstr "Återgå till sammanfattningen av dokumentationen"
 
-#: utils/i18n/i18n_update.py:139
+#: utils/i18n/i18n_update.py:140
 #, ai_translation
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Engelsk översättning"
 
-#: utils/i18n/i18n_update.py:142
+#: utils/i18n/i18n_update.py:143
 #, ai_translation
 msgid "View file {file}"
 msgstr "Visa fil {file}"
 
-#: utils/i18n/i18n_update.py:144
+#: utils/i18n/i18n_update.py:145
 #, ai_translation
 msgid "Summary"
 msgstr "Sammanfattning"
 
-#: utils/i18n/i18n_update.py:148 utils/i18n/i18n_update.py:158
+#: utils/i18n/i18n_update.py:149 utils/i18n/i18n_update.py:159
 #, ai_translation
 msgid "Empty mandatory messages"
 msgstr "Töm obligatoriska meddelanden"
 
-#: utils/i18n/i18n_update.py:151 utils/i18n/i18n_update.py:173
+#: utils/i18n/i18n_update.py:152 utils/i18n/i18n_update.py:174
 #, ai_translation
 msgid "Empty messages"
 msgstr "Tomma meddelanden"
 
-#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:196
+#: utils/i18n/i18n_update.py:155 utils/i18n/i18n_update.py:197
 #, ai_translation
 msgid "Message flagged [{flag}]"
 msgstr "Meddelande flaggat [{flag}]"
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:178
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:199
 #, ai_translation
 msgid "Message id"
 msgstr "Meddelande- id"
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:178
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:199
 #, ai_translation
 msgid "Locations"
 msgstr "Platser"
 
-#: utils/i18n/i18n_update.py:167 utils/i18n/i18n_update.py:185
-#: utils/i18n/i18n_update.py:206 utils/i18n/i18n_update.py:209
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
 #, ai_translation
 msgid "Singular:"
 msgstr "Singular:"
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
+#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
+#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
 #, ai_translation
 msgid "Plural:"
 msgstr "- Vad är det för fel på dig?"
 
-#: utils/i18n/i18n_update.py:176
+#: utils/i18n/i18n_update.py:177
 #, ai_translation
 msgid "Empty messages are not shown for the default language."
 msgstr "Tomma brev visas inte för standardspråket."
 
-#: utils/i18n/i18n_update.py:192
+#: utils/i18n/i18n_update.py:193
 #, ai_translation
 msgid "Flagged messages"
 msgstr "Flaggade meddelanden"
 
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:199
 #, ai_translation
 msgid "Translation"
 msgstr "Översättning"
