@@ -79,7 +79,7 @@
             </div>
             <div>
                 {% if screen.results_max_age %}
-                    {{ ngettext('Max age: %(num)d minute', 'Max age: %(num)d minutes', num=screen.results_max_age) }}
+                    {{ ngettext('Max age: %(num)d minute', 'Max age: %(num)d minutes', screen.results_max_age) }}
                 {% else %}
                     {{ _('Max age: unlimited') }}
                 {% endif %}
