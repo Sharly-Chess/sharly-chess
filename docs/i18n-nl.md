@@ -14,21 +14,27 @@
 | locale=`nl` | Nederlands <img src="../src/web/static/images/locales/nl.svg" style="height: 1em;"/> |
 |--|:--:|
 |Lege verplichte berichten|0/16|
-|Lege berichten|1/865|
-|Message flagged [ai_translation]|864/865|
+|Lege berichten|0/865|
 |Message flagged [fuzzy]|5/865|
+|Message flagged [ai_translation]|865/865|
 
 ## Lege verplichte berichten (-)
 
-## Lege berichten (1)
+## Lege berichten (-)
 
-|Bericht-id|Locaties|
-|--|--|
-|Unable to create Papi files since no tournaments are defined.|src/chessevent/action_selector.py:66|
+## Gemarkeerde berichten (870)
 
-## Gemarkeerde berichten (869)
+### Bericht gemarkeerd [fuzzy] (5)
 
-### Bericht gemarkeerd [ai_translation] (864)
+|Bericht-id|Vertaling|Locaties|
+|--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Dit programma mag niet direct worden gestart, gebruik scripts server.bat, ffe.bat en chessevent.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent verbinding niet ingesteld voor toernooi [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-bestand niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Toernooi [{tournament_uniq_id}] wordt gestart.|src/chessevent/action_selector.py:50|
+|Menus|Menu:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+
+### Bericht gemarkeerd [ai_translation] (865)
 
 |Bericht-id|Vertaling|Locaties|
 |--|--|--|
@@ -37,6 +43,7 @@
 |The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-bestand niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
 |Tournament [{tournament_uniq_id}] has started.|Toernooi [{tournament_uniq_id}] wordt gestart.|src/chessevent/action_selector.py:50|
 |Event: {event_name}|Evenement: {event_name}|src/chessevent/action_selector.py:63<br>src/ffe/action_selector.py:83|
+|Unable to create Papi files since no tournaments are defined.|Kan Papi-bestanden niet aanmaken omdat er geen toernooien zijn gedefinieerd.|src/chessevent/action_selector.py:66|
 |Tournaments: {tournament_names}|Toernooien: {tournament_names}|src/chessevent/action_selector.py:68|
 |C \*\*\* THE LETTER TO ANSWER CREATE \*\*\*|C|src/chessevent/action_selector.py:70|
 |U \*\*\* THE LETTER TO ANSWER UPLOAD \*\*\*|U|src/chessevent/action_selector.py:71<br>src/ffe/action_selector.py:95|
@@ -882,28 +889,18 @@
 |Unpaired players: hidden|Ongepaarde spelers: verborgen|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Maximum aantal resultaten: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Maximum aantal resultaten: onbeperkt|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Terug naar documentatiesamenvatting|utils/i18n/i18n_update.py:144|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Engelse vertaling|utils/i18n/i18n_update.py:145|
-|View file {file}|Bestand {file} tonen|utils/i18n/i18n_update.py:148|
-|Summary|Samenvatting|utils/i18n/i18n_update.py:150|
-|Empty mandatory messages|Lege verplichte berichten|utils/i18n/i18n_update.py:154<br>utils/i18n/i18n_update.py:164|
-|Empty messages|Lege berichten|utils/i18n/i18n_update.py:157<br>utils/i18n/i18n_update.py:179|
-|Message flagged [{flag}]|Bericht gemarkeerd [{flag}]|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:202|
-|Message ID|Bericht-id|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
-|Locations|Locaties|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
-|Singular:|Enkelvoud:|utils/i18n/i18n_update.py:173<br>utils/i18n/i18n_update.py:191<br>utils/i18n/i18n_update.py:212<br>utils/i18n/i18n_update.py:215|
-|Plural:|Meervoud:|utils/i18n/i18n_update.py:174<br>utils/i18n/i18n_update.py:192<br>utils/i18n/i18n_update.py:213<br>utils/i18n/i18n_update.py:216|
-|Empty messages are not shown for the default language.|Lege berichten worden niet getoond voor de standaardtaal.|utils/i18n/i18n_update.py:182|
-|Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:198|
-|Translation|Vertaling|utils/i18n/i18n_update.py:204|
-
-### Bericht gemarkeerd [fuzzy] (5)
-
-|Bericht-id|Vertaling|Locaties|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Dit programma mag niet direct worden gestart, gebruik scripts server.bat, ffe.bat en chessevent.bat.|src/papi_web.py:33|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent verbinding niet ingesteld voor toernooi [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-bestand niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] has started.|Toernooi [{tournament_uniq_id}] wordt gestart.|src/chessevent/action_selector.py:50|
-|Menus|Menu:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Return to documentation summary|Terug naar documentatiesamenvatting|utils/i18n/i18n_update.py:146|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Engelse vertaling|utils/i18n/i18n_update.py:147|
+|View file {file}|Bestand {file} tonen|utils/i18n/i18n_update.py:150|
+|Summary|Samenvatting|utils/i18n/i18n_update.py:152|
+|Empty mandatory messages|Lege verplichte berichten|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:166|
+|Empty messages|Lege berichten|utils/i18n/i18n_update.py:159<br>utils/i18n/i18n_update.py:181|
+|Message flagged [{flag}]|Bericht gemarkeerd [{flag}]|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:204|
+|Message ID|Bericht-id|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
+|Locations|Locaties|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
+|Singular:|Enkelvoud:|utils/i18n/i18n_update.py:175<br>utils/i18n/i18n_update.py:193<br>utils/i18n/i18n_update.py:214<br>utils/i18n/i18n_update.py:217|
+|Plural:|Meervoud:|utils/i18n/i18n_update.py:176<br>utils/i18n/i18n_update.py:194<br>utils/i18n/i18n_update.py:215<br>utils/i18n/i18n_update.py:218|
+|Empty messages are not shown for the default language.|Lege berichten worden niet getoond voor de standaardtaal.|utils/i18n/i18n_update.py:184|
+|Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:200|
+|Translation|Vertaling|utils/i18n/i18n_update.py:206|
 

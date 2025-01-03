@@ -3793,63 +3793,63 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:144
+#: utils/i18n/i18n_update.py:146
 msgid "Return to documentation summary"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:145
+#: utils/i18n/i18n_update.py:147
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "English translation"
 
-#: utils/i18n/i18n_update.py:148
+#: utils/i18n/i18n_update.py:150
 msgid "View file {file}"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:150
+#: utils/i18n/i18n_update.py:152
 msgid "Summary"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:164
+#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:166
 msgid "Empty mandatory messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:157 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:159 utils/i18n/i18n_update.py:181
 msgid "Empty messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:202
+#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:204
 msgid "Message flagged [{flag}]"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:206
 msgid "Message ID"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:206
 msgid "Locations"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:173 utils/i18n/i18n_update.py:191
-#: utils/i18n/i18n_update.py:212 utils/i18n/i18n_update.py:215
+#: utils/i18n/i18n_update.py:175 utils/i18n/i18n_update.py:193
+#: utils/i18n/i18n_update.py:214 utils/i18n/i18n_update.py:217
 msgid "Singular:"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:174 utils/i18n/i18n_update.py:192
-#: utils/i18n/i18n_update.py:213 utils/i18n/i18n_update.py:216
+#: utils/i18n/i18n_update.py:176 utils/i18n/i18n_update.py:194
+#: utils/i18n/i18n_update.py:215 utils/i18n/i18n_update.py:218
 msgid "Plural:"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:182
+#: utils/i18n/i18n_update.py:184
 msgid "Empty messages are not shown for the default language."
 msgstr ""
 
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:200
 msgid "Flagged messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:206
 msgid "Translation"
 msgstr ""
 

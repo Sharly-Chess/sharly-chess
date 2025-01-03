@@ -24,8 +24,9 @@ msgid "Event: {event_name}"
 msgstr "Evento: {event_name}"
 
 #: src/chessevent/action_selector.py:66
+#, ai_translation
 msgid "Unable to create Papi files since no tournaments are defined."
-msgstr ""
+msgstr "No se pueden crear archivos Papi ya que no se definen torneos."
 
 #: src/chessevent/action_selector.py:68
 #, ai_translation
@@ -4552,76 +4553,76 @@ msgstr "Número máximo de resultados: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Número máximo de resultados: ilimitado"
 
-#: utils/i18n/i18n_update.py:144
+#: utils/i18n/i18n_update.py:146
 #, ai_translation
 msgid "Return to documentation summary"
 msgstr "Volver al resumen de la documentación"
 
-#: utils/i18n/i18n_update.py:145
+#: utils/i18n/i18n_update.py:147
 #, ai_translation
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Traducción al inglés"
 
-#: utils/i18n/i18n_update.py:148
+#: utils/i18n/i18n_update.py:150
 #, ai_translation
 msgid "View file {file}"
 msgstr "Ver archivo {file}"
 
-#: utils/i18n/i18n_update.py:150
+#: utils/i18n/i18n_update.py:152
 #, ai_translation
 msgid "Summary"
 msgstr "Resumen"
 
-#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:164
+#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:166
 #, ai_translation
 msgid "Empty mandatory messages"
 msgstr "Mensajes obligatorios vacíos"
 
-#: utils/i18n/i18n_update.py:157 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:159 utils/i18n/i18n_update.py:181
 #, ai_translation
 msgid "Empty messages"
 msgstr "Mensajes vacíos"
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:202
+#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:204
 #, ai_translation
 msgid "Message flagged [{flag}]"
 msgstr "Mensaje marcado [{flag}]"
 
-#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:206
 #, ai_translation
 msgid "Message ID"
 msgstr "id de mensaje"
 
-#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:206
 #, ai_translation
 msgid "Locations"
 msgstr "Ubicaciones"
 
-#: utils/i18n/i18n_update.py:173 utils/i18n/i18n_update.py:191
-#: utils/i18n/i18n_update.py:212 utils/i18n/i18n_update.py:215
+#: utils/i18n/i18n_update.py:175 utils/i18n/i18n_update.py:193
+#: utils/i18n/i18n_update.py:214 utils/i18n/i18n_update.py:217
 #, ai_translation
 msgid "Singular:"
 msgstr "Singular:"
 
-#: utils/i18n/i18n_update.py:174 utils/i18n/i18n_update.py:192
-#: utils/i18n/i18n_update.py:213 utils/i18n/i18n_update.py:216
+#: utils/i18n/i18n_update.py:176 utils/i18n/i18n_update.py:194
+#: utils/i18n/i18n_update.py:215 utils/i18n/i18n_update.py:218
 #, ai_translation
 msgid "Plural:"
 msgstr "Plural:"
 
-#: utils/i18n/i18n_update.py:182
+#: utils/i18n/i18n_update.py:184
 #, ai_translation
 msgid "Empty messages are not shown for the default language."
 msgstr "Los mensajes vacíos no se muestran para el idioma predeterminado."
 
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:200
 #, ai_translation
 msgid "Flagged messages"
 msgstr "Mensajes marcados"
 
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:206
 #, ai_translation
 msgid "Translation"
 msgstr "Traducción"

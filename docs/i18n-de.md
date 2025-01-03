@@ -14,22 +14,31 @@
 | locale=`de` | Deutsch <img src="../src/web/static/images/locales/de.svg" style="height: 1em;"/> |
 |--|:--:|
 |obligatorische Nachrichten entleeren|0/16|
-|Leere Nachrichten|2/865|
-|Message flagged [ai_translation]|863/865|
+|Leere Nachrichten|1/865|
 |Message flagged [fuzzy]|5/865|
+|Message flagged [ai_translation]|864/865|
 
 ## obligatorische Nachrichten entleeren (-)
 
-## Leere Nachrichten (2)
+## Leere Nachrichten (1)
 
 |Meldungs-ID|Standorte|
 |--|--|
-|Unable to create Papi files since no tournaments are defined.|src/chessevent/action_selector.py:66|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Gekennzeichnete Nachrichten (868)
+## Gekennzeichnete Nachrichten (869)
 
-### Nachricht markiert [ai_translation] (863)
+### Nachricht markiert [fuzzy] (5)
+
+|Meldungs-ID|Übersetzung|Standorte|
+|--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie scripts server.bat, ffe.bat und chessevent.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent-Verbindung nicht für Turnier eingestellt [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/chessevent/action_selector.py:50|
+|Menus|Menü:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+
+### Nachricht markiert [ai_translation] (864)
 
 |Meldungs-ID|Übersetzung|Standorte|
 |--|--|--|
@@ -38,6 +47,7 @@
 |The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
 |Tournament [{tournament_uniq_id}] has started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/chessevent/action_selector.py:50|
 |Event: {event_name}|Veranstaltung: {event_name}|src/chessevent/action_selector.py:63<br>src/ffe/action_selector.py:83|
+|Unable to create Papi files since no tournaments are defined.|Papi-Dateien können nicht erstellt werden, da keine Turniere definiert sind.|src/chessevent/action_selector.py:66|
 |Tournaments: {tournament_names}|Turniere: {tournament_names}|src/chessevent/action_selector.py:68|
 |C \*\*\* THE LETTER TO ANSWER CREATE \*\*\*|C|src/chessevent/action_selector.py:70|
 |U \*\*\* THE LETTER TO ANSWER UPLOAD \*\*\*|U . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/chessevent/action_selector.py:71<br>src/ffe/action_selector.py:95|
@@ -882,28 +892,18 @@
 |Unpaired players: hidden|Unpaarte Spieler: versteckt|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Maximale Anzahl der Ergebnisse: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Maximale Anzahl der Ergebnisse: unbegrenzt|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Zurück zur Dokumentationsübersicht|utils/i18n/i18n_update.py:144|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Englische Übersetzung|utils/i18n/i18n_update.py:145|
-|View file {file}|Datei anzeigen {file}|utils/i18n/i18n_update.py:148|
-|Summary|Zusammenfassung|utils/i18n/i18n_update.py:150|
-|Empty mandatory messages|obligatorische Nachrichten entleeren|utils/i18n/i18n_update.py:154<br>utils/i18n/i18n_update.py:164|
-|Empty messages|Leere Nachrichten|utils/i18n/i18n_update.py:157<br>utils/i18n/i18n_update.py:179|
-|Message flagged [{flag}]|Nachricht markiert [{flag}]|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:202|
-|Message ID|Meldungs-ID|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
-|Locations|Standorte|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
-|Singular:|Singulär:|utils/i18n/i18n_update.py:173<br>utils/i18n/i18n_update.py:191<br>utils/i18n/i18n_update.py:212<br>utils/i18n/i18n_update.py:215|
-|Plural:|Plural:|utils/i18n/i18n_update.py:174<br>utils/i18n/i18n_update.py:192<br>utils/i18n/i18n_update.py:213<br>utils/i18n/i18n_update.py:216|
-|Empty messages are not shown for the default language.|Leere Nachrichten werden für die Standardsprache nicht angezeigt.|utils/i18n/i18n_update.py:182|
-|Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:198|
-|Translation|Übersetzung|utils/i18n/i18n_update.py:204|
-
-### Nachricht markiert [fuzzy] (5)
-
-|Meldungs-ID|Übersetzung|Standorte|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie scripts server.bat, ffe.bat und chessevent.bat.|src/papi_web.py:33|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent-Verbindung nicht für Turnier eingestellt [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] has started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/chessevent/action_selector.py:50|
-|Menus|Menü:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Return to documentation summary|Zurück zur Dokumentationsübersicht|utils/i18n/i18n_update.py:146|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Englische Übersetzung|utils/i18n/i18n_update.py:147|
+|View file {file}|Datei anzeigen {file}|utils/i18n/i18n_update.py:150|
+|Summary|Zusammenfassung|utils/i18n/i18n_update.py:152|
+|Empty mandatory messages|obligatorische Nachrichten entleeren|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:166|
+|Empty messages|Leere Nachrichten|utils/i18n/i18n_update.py:159<br>utils/i18n/i18n_update.py:181|
+|Message flagged [{flag}]|Nachricht markiert [{flag}]|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:204|
+|Message ID|Meldungs-ID|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
+|Locations|Standorte|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
+|Singular:|Singulär:|utils/i18n/i18n_update.py:175<br>utils/i18n/i18n_update.py:193<br>utils/i18n/i18n_update.py:214<br>utils/i18n/i18n_update.py:217|
+|Plural:|Plural:|utils/i18n/i18n_update.py:176<br>utils/i18n/i18n_update.py:194<br>utils/i18n/i18n_update.py:215<br>utils/i18n/i18n_update.py:218|
+|Empty messages are not shown for the default language.|Leere Nachrichten werden für die Standardsprache nicht angezeigt.|utils/i18n/i18n_update.py:184|
+|Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:200|
+|Translation|Übersetzung|utils/i18n/i18n_update.py:206|
 

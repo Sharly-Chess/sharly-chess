@@ -20,7 +20,7 @@ msgstr "Évènement : {event_name}"
 
 #: src/chessevent/action_selector.py:66
 msgid "Unable to create Papi files since no tournaments are defined."
-msgstr ""
+msgstr "Impossible de créer les fichiers Papi car aucun tournoi n'est défini."
 
 #: src/chessevent/action_selector.py:68
 msgid "Tournaments: {tournament_names}"
@@ -3793,87 +3793,63 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
-#: utils/i18n/i18n_update.py:144
+#: utils/i18n/i18n_update.py:146
 msgid "Return to documentation summary"
 msgstr "Retour au sommaire de la documentation"
 
-#: utils/i18n/i18n_update.py:145
+#: utils/i18n/i18n_update.py:147
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Traduction en français"
 
-#: utils/i18n/i18n_update.py:148
+#: utils/i18n/i18n_update.py:150
 msgid "View file {file}"
 msgstr "Voir le fichier {file}"
 
-#: utils/i18n/i18n_update.py:150
+#: utils/i18n/i18n_update.py:152
 msgid "Summary"
 msgstr "Résumé"
 
-#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:164
+#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:166
 msgid "Empty mandatory messages"
 msgstr "Messages obligatoires vides"
 
-#: utils/i18n/i18n_update.py:157 utils/i18n/i18n_update.py:179
+#: utils/i18n/i18n_update.py:159 utils/i18n/i18n_update.py:181
 msgid "Empty messages"
 msgstr "Messages vides"
 
-#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:202
+#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:204
 msgid "Message flagged [{flag}]"
 msgstr "Messages marqués [{flag}]"
 
-#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:206
 msgid "Message ID"
 msgstr "Identifiant"
 
-#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:206
 msgid "Locations"
 msgstr "Emplacements"
 
-#: utils/i18n/i18n_update.py:173 utils/i18n/i18n_update.py:191
-#: utils/i18n/i18n_update.py:212 utils/i18n/i18n_update.py:215
+#: utils/i18n/i18n_update.py:175 utils/i18n/i18n_update.py:193
+#: utils/i18n/i18n_update.py:214 utils/i18n/i18n_update.py:217
 msgid "Singular:"
 msgstr "Singulier :"
 
-#: utils/i18n/i18n_update.py:174 utils/i18n/i18n_update.py:192
-#: utils/i18n/i18n_update.py:213 utils/i18n/i18n_update.py:216
+#: utils/i18n/i18n_update.py:176 utils/i18n/i18n_update.py:194
+#: utils/i18n/i18n_update.py:215 utils/i18n/i18n_update.py:218
 msgid "Plural:"
 msgstr "Pluriel :"
 
-#: utils/i18n/i18n_update.py:182
+#: utils/i18n/i18n_update.py:184
 msgid "Empty messages are not shown for the default language."
 msgstr "Les messages vides ne sont pas affichés pour la langue par défaut."
 
-#: utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:200
 msgid "Flagged messages"
 msgstr "Messages marqués"
 
-#: utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:206
 msgid "Translation"
 msgstr "Traduction"
-
-#~ msgid "E.g.: Z00000"
-#~ msgstr "Exemple : Z00000"
-
-#~ msgid "E.g.: 68991"
-#~ msgstr "Exemple : 68991"
-
-#~ msgid "E.g.: KYNPRTZMHX"
-#~ msgstr "Exemple : KYNPRTZMHX"
-
-#~ msgid "E.g.: 300 (5 minutes)"
-#~ msgstr "Exemple : 300 (5 minutes)"
-
-#~ msgid "E.g.: 3"
-#~ msgstr "Exemple : 3"
-
-#~ msgid "E.g.: 30 (seconds)"
-#~ msgstr "Exemple : 30 (secondes)"
-
-#~ msgid "Choose your language"
-#~ msgstr "Choisissez votre langue"
-
-#~ msgid "Papi file not set for tournament [{tournament_uniq_id}]."
-#~ msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
 

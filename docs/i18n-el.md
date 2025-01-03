@@ -14,23 +14,32 @@
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
 |Κενά υποχρεωτικά μηνύματα|0/16|
-|Κενά μηνύματα|3/865|
-|Message flagged [ai_translation]|862/865|
+|Κενά μηνύματα|2/865|
 |Message flagged [fuzzy]|5/865|
+|Message flagged [ai_translation]|863/865|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
-## Κενά μηνύματα (3)
+## Κενά μηνύματα (2)
 
 |Μήνυμα id|Τοποθεσίες|
 |--|--|
-|Unable to create Papi files since no tournaments are defined.|src/chessevent/action_selector.py:66|
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:372|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Σημειωθέντα μηνύματα (867)
+## Σημειωθέντα μηνύματα (868)
 
-### Μήνυμα που σημαδεύτηκε [ai_translation] (862)
+### Μήνυμα που σημαδεύτηκε [fuzzy] (5)
+
+|Μήνυμα id|Μετάφραση|Τοποθεσίες|
+|--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
+|Menus|Μενού:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+
+### Μήνυμα που σημαδεύτηκε [ai_translation] (863)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -39,6 +48,7 @@
 |The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
 |Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
 |Event: {event_name}|Εκδήλωση: {event_name}|src/chessevent/action_selector.py:63<br>src/ffe/action_selector.py:83|
+|Unable to create Papi files since no tournaments are defined.|Αδύνατη η δημιουργία αρχείων Papi δεδομένου ότι δεν ορίζονται τουρνουά.|src/chessevent/action_selector.py:66|
 |Tournaments: {tournament_names}|Τουρνουά: {tournament_names}|src/chessevent/action_selector.py:68|
 |C \*\*\* THE LETTER TO ANSWER CREATE \*\*\*|Γ|src/chessevent/action_selector.py:70|
 |U \*\*\* THE LETTER TO ANSWER UPLOAD \*\*\*|Χ|src/chessevent/action_selector.py:71<br>src/ffe/action_selector.py:95|
@@ -882,28 +892,18 @@
 |Unpaired players: hidden|Μη ζευγάρι παίκτες: κρυφό|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Μέγιστος αριθμός αποτελεσμάτων: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Μέγιστος αριθμός αποτελεσμάτων: απεριόριστος|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Επιστρέφω στην περίληψη τεκμηρίωσης|utils/i18n/i18n_update.py:144|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Αγγλική μετάφραση|utils/i18n/i18n_update.py:145|
-|View file {file}|Δείτε το αρχείο {file}|utils/i18n/i18n_update.py:148|
-|Summary|Περίληψη|utils/i18n/i18n_update.py:150|
-|Empty mandatory messages|Κενά υποχρεωτικά μηνύματα|utils/i18n/i18n_update.py:154<br>utils/i18n/i18n_update.py:164|
-|Empty messages|Κενά μηνύματα|utils/i18n/i18n_update.py:157<br>utils/i18n/i18n_update.py:179|
-|Message flagged [{flag}]|Μήνυμα που σημαδεύτηκε [{flag}]|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:202|
-|Message ID|Μήνυμα id|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
-|Locations|Τοποθεσίες|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
-|Singular:|Μοναδικός:|utils/i18n/i18n_update.py:173<br>utils/i18n/i18n_update.py:191<br>utils/i18n/i18n_update.py:212<br>utils/i18n/i18n_update.py:215|
-|Plural:|Πληθυντικός:|utils/i18n/i18n_update.py:174<br>utils/i18n/i18n_update.py:192<br>utils/i18n/i18n_update.py:213<br>utils/i18n/i18n_update.py:216|
-|Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:182|
-|Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:198|
-|Translation|Μετάφραση|utils/i18n/i18n_update.py:204|
-
-### Μήνυμα που σημαδεύτηκε [fuzzy] (5)
-
-|Μήνυμα id|Μετάφραση|Τοποθεσίες|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:33|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
-|Menus|Μενού:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Return to documentation summary|Επιστρέφω στην περίληψη τεκμηρίωσης|utils/i18n/i18n_update.py:146|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Αγγλική μετάφραση|utils/i18n/i18n_update.py:147|
+|View file {file}|Δείτε το αρχείο {file}|utils/i18n/i18n_update.py:150|
+|Summary|Περίληψη|utils/i18n/i18n_update.py:152|
+|Empty mandatory messages|Κενά υποχρεωτικά μηνύματα|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:166|
+|Empty messages|Κενά μηνύματα|utils/i18n/i18n_update.py:159<br>utils/i18n/i18n_update.py:181|
+|Message flagged [{flag}]|Μήνυμα που σημαδεύτηκε [{flag}]|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:204|
+|Message ID|Μήνυμα id|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
+|Locations|Τοποθεσίες|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
+|Singular:|Μοναδικός:|utils/i18n/i18n_update.py:175<br>utils/i18n/i18n_update.py:193<br>utils/i18n/i18n_update.py:214<br>utils/i18n/i18n_update.py:217|
+|Plural:|Πληθυντικός:|utils/i18n/i18n_update.py:176<br>utils/i18n/i18n_update.py:194<br>utils/i18n/i18n_update.py:215<br>utils/i18n/i18n_update.py:218|
+|Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:184|
+|Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:200|
+|Translation|Μετάφραση|utils/i18n/i18n_update.py:206|
 
