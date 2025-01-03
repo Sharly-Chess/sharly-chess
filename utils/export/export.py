@@ -147,7 +147,7 @@ def create_project():
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
-                f'echo Démarrage du serveur Papi-web, veuillez patienter...\n'
+                f'echo Starting Papi-web, please wait...\n'
                 f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
                 f'bin\\{EXE_FILENAME} --server\n'
                 f'pause\n')
@@ -155,7 +155,7 @@ def create_project():
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
-                f'echo Connexion de Papi-web au serveur fédéral, veuillez patienter...\n'
+                f'echo Starting Papi-web FFE client, please wait...\n'
                 f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
                 f'bin\\{EXE_FILENAME} --ffe\n'
                 f'pause\n')
@@ -163,7 +163,7 @@ def create_project():
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(f'@echo off\n'
-                f'echo Connexion de Papi-web à Chess Event, veuillez patienter...\n'
+                f'echo Starting Papi-web ChessEvent client, please wait...\n'
                 f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
                 f'bin\\{EXE_FILENAME} --chessevent\n'
                 f'pause\n')
