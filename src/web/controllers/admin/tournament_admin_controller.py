@@ -65,12 +65,12 @@ class TournamentAdminController(AbstractEventAdminController):
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
         if action == 'delete':
             if not uniq_id:
-                errors['uniq_id'] = _('Please enter the tournament id.')
+                errors['uniq_id'] = _('Please enter the tournament ID.')
             elif uniq_id != web_context.admin_tournament.uniq_id:
-                errors['uniq_id'] = _('Tournament id does not match.')
+                errors['uniq_id'] = _('tournament ID does not match.')
         else:
             if not uniq_id:
-                errors['uniq_id'] = _('Please enter the tournament id.')
+                errors['uniq_id'] = _('Please enter the tournament ID.')
             elif uniq_id.find('/') != -1:
                 errors['uniq_id'] = _('Character [{char}] is not allowed.').format(char='/')
             else:
@@ -108,7 +108,7 @@ class TournamentAdminController(AbstractEventAdminController):
                 try:
                     ffe_id = WebContext.form_data_to_int(data, 'ffe_id')
                 except ValueError:
-                    errors['ffe_id'] = _('The FFE id is a positive integer.')
+                    errors['ffe_id'] = _('The FFE ID is a positive integer.')
                 ffe_password = WebContext.form_data_to_str(data, 'ffe_password')
                 if ffe_password and not re.match('^[A-Z]{10}$', ffe_password):
                     errors['ffe_password'] = _(
@@ -326,7 +326,7 @@ class TournamentAdminController(AbstractEventAdminController):
                     stored_tournament = event_database.add_stored_tournament(stored_tournament)
                     if 'add_screens' in data:
                         for (type, menu, name) in [
-                            ('input', '@input', _('Entry of results'), ),
+                            ('input', '@input', _('Results entry'), ),
                             ('boards', '@boards', _('Pairings by board'), ),
                             ('players', '@players', _('Pairings by player'), ),
                         ]:

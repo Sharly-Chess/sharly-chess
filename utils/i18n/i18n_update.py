@@ -6,6 +6,10 @@ from babel.messages import Catalog, Message
 from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po
 
+path_root = Path(__file__).parents[2]
+sys.path.append(str(path_root))
+print(sys.path)
+
 from common.i18n import default_locale, set_locale, _, locale_localized_name, locale_flag_url, trusted_locales, \
     translators
 from common.logger import print_interactive_error, print_interactive_warning, print_interactive_info, \
@@ -159,7 +163,7 @@ class LocaleInfo:
             f.write('## {text} ({num})\n\n'.format(
                 text=_('Empty mandatory messages'), num=len(self.empty_mandatory_messages) or '-'))
             if self.empty_mandatory_messages:
-                f.write('|{text1}|{text2}|\n'.format(text1=_('Message id'), text2=_('Locations')))
+                f.write('|{text1}|{text2}|\n'.format(text1=_('Message ID'), text2=_('Locations')))
                 f.write('|--|--|\n')
                 for msg in self.empty_mandatory_messages.values():
                     if isinstance(msg.id, str):
@@ -177,7 +181,7 @@ class LocaleInfo:
                 if self.default:
                     f.write(_('Empty messages are not shown for the default language.') + '\n\n')
                 else:
-                    f.write('|{text1}|{text2}|\n'.format(text1=_('Message id'), text2=_('Locations')))
+                    f.write('|{text1}|{text2}|\n'.format(text1=_('Message ID'), text2=_('Locations')))
                     f.write('|--|--|\n')
                     for msg in self.empty_messages.values():
                         if isinstance(msg.id, str):
@@ -197,7 +201,7 @@ class LocaleInfo:
                 f.write('### {text} ({num})\n\n'.format(
                     text=_('Message flagged [{flag}]').format(flag=flag), num=len(self.flagged_messages[flag])))
                 f.write('|{text1}|{text2}|{text3}|\n'.format(
-                    text1=_('Message id'), text2=_('Translation'), text3=_('Locations')))
+                    text1=_('Message ID'), text2=_('Translation'), text3=_('Locations')))
                 f.write('|--|--|--|\n')
                 for msg in self.flagged_messages[flag].values():
                     if isinstance(msg.id, str):

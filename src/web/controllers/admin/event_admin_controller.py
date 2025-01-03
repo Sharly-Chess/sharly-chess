@@ -407,7 +407,7 @@ class EventAdminController(AbstractEventAdminController):
                 if rename:
                     Message.success(
                         request,
-                        _('Event [{old_uniq_id}] has been renamed ([{new_uniq_id}) and updated.').format(
+                        _('Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.').format(
                             olq_uniq_id=web_context.admin_event.uniq_id, new_uniq_id=uniq_id))
                 else:
                     Message.success(request, _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id))

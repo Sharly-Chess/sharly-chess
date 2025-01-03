@@ -71,7 +71,7 @@ class RotatorAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = _('Please enter the rotator id.')
+                errors[field] = _('Please enter the rotator ID.')
             else:
                 match action:
                     case 'create' | 'clone':

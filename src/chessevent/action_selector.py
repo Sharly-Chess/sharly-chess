@@ -39,15 +39,15 @@ class ActionSelector(metaclass=Singleton):
         for tournament in event.tournaments_by_id.values():
             if not tournament.chessevent_tournament_name:
                 print_interactive_warning(
-                    _('ChessEvent connection not set for tournament [{tournament_uniq_id}].').format(
+                    _('The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].').format(
                         tournament_uniq_id=tournament.uniq_id))
             elif not tournament.file:
                 print_interactive_warning(
-                    _('Papi file not set for tournament [{tournament_uniq_id}].').format(
+                    _('The Papi file is not defined for tournament [{tournament_uniq_id}].').format(
                         tournament_uniq_id=tournament.uniq_id))
             elif tournament.current_round:
                 print_interactive_warning(
-                    _('Tournament [{tournament_uniq_id}] is started.').format(
+                    _('Tournament [{tournament_uniq_id}] has started.').format(
                         tournament_uniq_id=tournament.uniq_id))
             else:
                 yield tournament
@@ -56,14 +56,14 @@ class ActionSelector(metaclass=Singleton):
         """The CLI interface function.
         Gets user input to retrieve the tournament data from chess event, and
         possibly upload the tournament to the FFE website, corresponding to the
-        event with unique id *event_uniq_id*.
+        event with Unique ID *event_uniq_id*.
         Returns False if an error occurred or if it was interrupted.
         Returns True when the one-shot creation (and possibly upload) was okay"""
         event: Event = EventLoader.get(request=None).reload_event(event_uniq_id)
         print_interactive_info(_('Event: {event_name}').format(event_name=event.name))
         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
         if not tournaments:
-            print_interactive_error('Creating Papi files is impossible for all the tournaments.')
+            print_interactive_error(_('Unable to create Papi files since no tournaments are defined.'))
             return False
         print_interactive_info(_('Tournaments: {tournament_names}').format(
             tournament_names=', '.join((tournament.name for tournament in tournaments))))
@@ -138,7 +138,7 @@ class ActionSelector(metaclass=Singleton):
                         event = EventLoader.get(request=None).reload_event(event_uniq_id)
                         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
                         if not tournaments:
-                            print_interactive_error(_('This action can be done on the tournaments of this event.'))
+                            print_interactive_error(_('This action can not be applied to the tournaments of this event.'))
                             return False
                         for tournament in tournaments:
                             data: str | None = ChessEventSession(tournament).read_data()
@@ -183,7 +183,7 @@ class ActionSelector(metaclass=Singleton):
                             if action_choice == upload_answer:
                                 if not tournament.ffe_id or not tournament.ffe_password:
                                     logger.warning(_(
-                                        'FFE id and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.').format(
+                                        'FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.').format(
                                         tournament_name=tournament.name))
                                 else:
                                     FFESession(tournament, debug=False).upload(set_visible=True)

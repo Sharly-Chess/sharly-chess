@@ -14,11 +14,15 @@
 | locale=`fr` | Français <img src="../src/web/static/images/locales/fr.svg" style="height: 1em;"/> |
 |--|:--:|
 |Messages obligatoires vides|0/16|
-|Messages vides|0/864|
+|Messages vides|1/865|
 
 ## Messages obligatoires vides (-)
 
-## Messages vides (-)
+## Messages vides (1)
+
+|Identifiant|Emplacements|
+|--|--|
+|Unable to create Papi files since no tournaments are defined.|src/chessevent/action_selector.py:66|
 
 ## Messages marqués (0)
 

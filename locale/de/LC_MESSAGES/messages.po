@@ -1,27 +1,31 @@
 #: src/papi_web.py:33
-#, ai_translation
-msgid "This program should not be launched directly, use scripts server.bat, ffe.bat and chessevent.bat."
+#, ai_translation, fuzzy
+msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 msgstr "Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie scripts server.bat, ffe.bat und chessevent.bat."
 
 #: src/chessevent/action_selector.py:42
-#, ai_translation
-msgid "ChessEvent connection not set for tournament [{tournament_uniq_id}]."
+#, ai_translation, fuzzy
+msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
 msgstr "ChessEvent-Verbindung nicht für Turnier eingestellt [{tournament_uniq_id}]."
 
 #: src/chessevent/action_selector.py:46
-#, ai_translation
-msgid "Papi file not set for tournament [{tournament_uniq_id}]."
-msgstr "Papi-Datei nicht für Turnier eingestellt [{tournament_uniq_id}]."
+#, ai_translation, fuzzy
+msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
+msgstr "Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}]."
 
 #: src/chessevent/action_selector.py:50
-#, ai_translation
-msgid "Tournament [{tournament_uniq_id}] is started."
+#, ai_translation, fuzzy
+msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr "Turnier [{tournament_uniq_id}] wird gestartet."
 
 #: src/chessevent/action_selector.py:63 src/ffe/action_selector.py:83
 #, ai_translation
 msgid "Event: {event_name}"
 msgstr "Veranstaltung: {event_name}"
+
+#: src/chessevent/action_selector.py:66
+msgid "Unable to create Papi files since no tournaments are defined."
+msgstr ""
 
 #: src/chessevent/action_selector.py:68
 #, ai_translation
@@ -113,7 +117,7 @@ msgstr "Papi-Version: {version}"
 #: src/ffe/action_selector.py:125 src/ffe/action_selector.py:133
 #: src/ffe/action_selector.py:142 src/ffe/action_selector.py:162
 #, ai_translation
-msgid "This action can be done on the tournaments of this event."
+msgid "This action can not be applied to the tournaments of this event."
 msgstr "Diese Aktion kann auf den Turnieren dieser Veranstaltung durchgeführt werden."
 
 #: src/chessevent/action_selector.py:165
@@ -133,7 +137,7 @@ msgstr "Die Papi-Datei [{file}] wurde erstellt (Spieler: {num})."
 
 #: src/chessevent/action_selector.py:185
 #, ai_translation
-msgid "FFE id and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr "FFE-ID und Passwort sind für Turniere nicht richtig eingestellt [{tournament_name}], Daten können nicht an die FFE-Website gesendet werden."
 
 #: src/chessevent/chessevent_session.py:54
@@ -153,7 +157,7 @@ msgstr "Fehlender Parameter (Code: [{code}]): [{error}]."
 
 #: src/chessevent/chessevent_session.py:67
 #, ai_translation
-msgid "Id [{user_id}] not found (code: [{code}]): [{error}]."
+msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
 msgstr "Id [{user_id}] nicht gefunden (Code: [{code}]): [{error}]."
 
 #: src/chessevent/chessevent_session.py:71
@@ -202,7 +206,7 @@ msgstr "Es wurden keine Veranstaltungen gefunden."
 
 #: src/chessevent/event_selector.py:32 src/ffe/event_selector.py:28
 #, ai_translation
-msgid "One event found, type Enter (Q to quit): "
+msgid "One event found, press Enter (Q to quit): "
 msgstr "Ein gefundenes Ereignis, geben Sie Enter (Q zum Beenden) ein:"
 
 #: src/chessevent/event_selector.py:35 src/ffe/event_selector.py:31
@@ -315,7 +319,7 @@ msgstr "- [{q_uc}] Nicht erholen"
 
 #: src/common/engine.py:128
 #, ai_translation
-msgid "Please entre the number of the version to recover [{default}]: "
+msgid "Please enter the number of the version to recover [{default}]: "
 msgstr "Bitte tragen Sie die Nummer der zu erholenden Version ein [{default}]:"
 
 #: src/common/engine.py:150
@@ -335,7 +339,7 @@ msgstr "Ereignis wiederherstellen [{event_uniq_id}]..."
 
 #: src/common/engine.py:182
 #, ai_translation
-msgid "Event [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]..."
+msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
 msgstr "Veranstaltung [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]..."
 
 #: src/common/engine.py:187
@@ -415,7 +419,7 @@ msgstr "Sie verwenden eine neuere Version als die neueste verfügbare stabile Ve
 
 #: src/common/engine.py:364
 #, ai_translation
-msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}] must be done manually (upgrade from the last stable version installed on your server)."
+msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
 msgstr "Es steht eine stabile und neuere Version zur Verfügung ([{new_version}]), aber die Aktualisierung von instabilen Versionen (wie die, die Sie derzeit verwenden: [{old_version}] muss manuell erfolgen (nach oben von der letzten auf Ihrem Server installierten stabilen Version)."
 
 #: src/common/engine.py:368
@@ -425,7 +429,7 @@ msgstr "Sie verwenden unstable Version neuer als die letzte stabile Version ({ve
 
 #: src/common/engine.py:380
 #, ai_translation
-msgid "Looking for a a more recent version on GitHub ([{url}])..."
+msgid "Looking for a more recent version on GitHub ([{url}])..."
 msgstr "Auf der Suche nach einer neueren Version über GitHub ([{url}])..."
 
 #: src/common/engine.py:384 src/common/engine.py:440
@@ -653,12 +657,12 @@ msgstr "Kein Hintergrundbild gesetzt, standardmäßig [{background_image}]"
 
 #: src/data/event.py:206
 #, ai_translation
-msgid "No background color set, by default [{background_color}]"
+msgid "No background colour set, by default [{background_color}]"
 msgstr "Keine Hintergrundfarbe gesetzt, standardmäßig [{background_color}]"
 
 #: src/data/event.py:216
 #, ai_translation
-msgid "No password set for the entry of results"
+msgid "No password set for the results entry"
 msgstr "Kein Passwort für die Eingabe der Ergebnisse gesetzt"
 
 #: src/data/event.py:223
@@ -1025,8 +1029,8 @@ msgstr "ChessEvent Turniername nicht gesetzt."
 #: src/ffe/action_selector.py:30 src/ffe/action_selector.py:43
 #: src/ffe/action_selector.py:63
 #, ai_translation
-msgid "FFE id not defined for tournament [{tournament_uniq_id}]."
-msgstr "FFE id nicht für Turnier definiert [{tournament_uniq_id}]."
+msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
+msgstr "FFE ID nicht für Turnier definiert [{tournament_uniq_id}]."
 
 #: src/ffe/action_selector.py:46
 #, ai_translation
@@ -1197,7 +1201,7 @@ msgstr "Senden des Turniers [{ffe_id}] ({file}) an die FFE-Website..."
 
 #: src/ffe/ffe_session.py:274
 #, ai_translation
-msgid "Upload link not found, check that the tournament is not finished on the FFE website."
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht auf der FFE-Website beendet ist."
 
 #: src/ffe/ffe_session.py:307 src/ffe/ffe_session.py:334
@@ -1217,7 +1221,7 @@ msgstr "Link nicht gefunden anzeigen, überprüfen Sie, ob eine Papi-Datei berei
 
 #: src/ffe/ffe_session.py:317
 #, ai_translation
-msgid "Data are already displayed on the FFE website."
+msgid "Data is already displayed on the FFE website."
 msgstr "Die Daten werden bereits auf der FFE-Website angezeigt."
 
 #: src/ffe/ffe_session.py:321
@@ -1232,7 +1236,7 @@ msgstr "Senden der Turnierregeln [{ffe_id}] ({file}) an die FFE-Website..."
 
 #: src/ffe/ffe_session.py:348
 #, ai_translation
-msgid "Rules upload link not found, check that the tournament is not finished on the FFE website."
+msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Regeln Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht auf der FFE-Website beendet ist."
 
 #: src/web/server_engine.py:24
@@ -1282,7 +1286,7 @@ msgstr "AUSWIRKUNGEN AUF IHRE RISIKEN"
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:69
 #, ai_translation
-msgid "Please enter the id of ChessEvent connection."
+msgid "Please enter the ID of ChessEvent connection."
 msgstr "Bitte geben Sie die ID der ChessEvent-Verbindung ein."
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:74
@@ -1293,7 +1297,7 @@ msgstr "ChessEvent-Verbindung [{uniq_id}] existiert bereits."
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:88
 #, ai_translation
-msgid "Please enter the id used to connect to the ChessEvent platform."
+msgid "Please enter the ID used to connect to the ChessEvent platform."
 msgstr "Bitte geben Sie die ID ein, die verwendet wird, um sich mit der ChessEvent-Plattform zu verbinden."
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:92
@@ -1303,7 +1307,7 @@ msgstr "Bitte geben Sie das Passwort für die Verbindung zur ChessEvent-Plattfor
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:96
 #, ai_translation
-msgid "Please enter the id of the event on the ChessEvent platform."
+msgid "Please enter the ID of the event on the ChessEvent platform."
 msgstr "Bitte geben Sie die ID des Ereignisses auf der ChessEvent-Plattform ein."
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:232
@@ -1364,8 +1368,8 @@ msgstr "Umbenennen der Datenbank fehlgeschlagen: {ex}."
 
 #: src/web/controllers/admin/event_admin_controller.py:410
 #, ai_translation
-msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}) and updated."
-msgstr "Event [{old_uniq_id}] wurde umbenannt ([{new_uniq_id}) und aktualisiert."
+msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
+msgstr "Event [{old_uniq_id}] wurde umbenannt ([{new_uniq_id}]) und aktualisiert."
 
 #: src/web/controllers/admin/event_admin_controller.py:413
 #, ai_translation
@@ -1385,7 +1389,7 @@ msgstr "Event [{uniq_id}] wurde gelöscht, die Datenbank wurde archiviert ({arch
 
 #: src/web/controllers/admin/family_admin_controller.py:102
 #, ai_translation
-msgid "Please enter the family id."
+msgid "Please enter the family ID."
 msgstr "Bitte geben Sie die Familien-ID ein."
 
 #: src/web/controllers/admin/family_admin_controller.py:104
@@ -1453,7 +1457,7 @@ msgstr "Die Angabe der Anzahl der Teile und der Anzahl der Teile pro Teil ist ni
 #: src/web/templates/admin_families.html:45
 #: src/web/templates/admin_screens.html:59
 #, ai_translation
-msgid "Entry of results"
+msgid "Results entry"
 msgstr "Eingabe der Ergebnisse"
 
 #: src/web/controllers/admin/family_admin_controller.py:272
@@ -1495,17 +1499,17 @@ msgstr "Standardmäßig - {option}"
 
 #: src/web/controllers/admin/index_admin_controller.py:88
 #, ai_translation
-msgid "Color #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until color #2 ({delay_2} minutes before the start of the rounds)."
+msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr "Farbe #1 wird bis {delay_1} Minuten vor dem Start der Runden verwendet (Verzögerung #1), die Farbe ändert sich dann allmählich bis Farbe #2 ({delay_2} Minuten vor dem Start der Runden)."
 
 #: src/web/controllers/admin/index_admin_controller.py:91
 #, ai_translation
-msgid "Color #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until color #3 (at the start of the rounds)."
+msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
 msgstr "Farbe #2 wird verwendet {delay_2} Minuten vor dem Start der Runden (Verzögerung #2), ändert sich die Farbe dann allmählich bis Farbe #3 (zum Beginn der Runden)."
 
 #: src/web/controllers/admin/index_admin_controller.py:94
 #, ai_translation
-msgid "Color #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "Farbe #3 wird von Beginn der Runden und für {delay_3} Minuten nach (Verzögerung #3) verwendet."
 
 #: src/web/controllers/admin/index_admin_controller.py:104
@@ -1594,12 +1598,12 @@ msgstr "Ungültige Farbe [{color}] ([#RRGGBB] erwartet)."
 #: src/web/controllers/admin/index_admin_controller.py:226
 #: src/web/controllers/admin/index_admin_controller.py:231
 #, ai_translation
-msgid "Please enter the event id."
+msgid "Please enter the event ID."
 msgstr "Bitte geben Sie die Event-ID ein."
 
 #: src/web/controllers/admin/index_admin_controller.py:228
 #, ai_translation
-msgid "Event id does not match."
+msgid "event ID does not match."
 msgstr "Event-ID passt nicht."
 
 #: src/web/controllers/admin/index_admin_controller.py:239
@@ -1664,13 +1668,13 @@ msgstr "Keine aktuellen Ereignisse."
 #: src/web/controllers/admin/index_admin_controller.py:534
 #: src/web/controllers/user/index_user_controller.py:92
 #, ai_translation
-msgid "Coming events ({num})"
+msgid "Upcoming events ({num})"
 msgstr "Nächste Veranstaltungen ({num})"
 
 #: src/web/controllers/admin/index_admin_controller.py:538
 #: src/web/controllers/user/index_user_controller.py:94
 #, ai_translation
-msgid "No coming events."
+msgid "No upcoming events."
 msgstr "Keine kommenden Ereignisse."
 
 #: src/web/controllers/admin/index_admin_controller.py:542
@@ -1703,7 +1707,7 @@ msgstr "Konfiguration von Papi-web"
 
 #: src/web/controllers/admin/rotator_admin_controller.py:74
 #, ai_translation
-msgid "Please enter the rotator id."
+msgid "Please enter the rotator ID."
 msgstr "Bitte geben Sie die Rotator-ID ein."
 
 #: src/web/controllers/admin/rotator_admin_controller.py:79
@@ -1729,7 +1733,7 @@ msgstr "Rotator [{rotator_uniq_id}] wurde gelöscht."
 
 #: src/web/controllers/admin/screen_admin_controller.py:121
 #, ai_translation
-msgid "Please enter the screen id."
+msgid "Please enter the screen ID."
 msgstr "Bitte geben Sie die Bildschirm-ID ein."
 
 #: src/web/controllers/admin/screen_admin_controller.py:128
@@ -1771,7 +1775,7 @@ msgstr "Der Bildschirm [{screen_uniq_id}] wurde gelöscht."
 
 #: src/web/controllers/admin/timer_admin_controller.py:83
 #, ai_translation
-msgid "Please enter the timer id."
+msgid "Please enter the timer ID."
 msgstr "Bitte geben Sie die Timer-ID ein."
 
 #: src/web/controllers/admin/timer_admin_controller.py:88
@@ -1782,7 +1786,7 @@ msgstr "Timer [{uniq_id}] existiert bereits."
 
 #: src/web/controllers/admin/timer_admin_controller.py:135
 #, ai_translation
-msgid "Please enter the round number or the hour id."
+msgid "Please enter the round number or the hour ID."
 msgstr "Bitte geben Sie die runde Nummer oder die Stunden-ID ein."
 
 #: src/web/controllers/admin/timer_admin_controller.py:139
@@ -1849,12 +1853,12 @@ msgstr "Der Timer [{timer_uniq_id}] wurde gelöscht."
 #: src/web/controllers/admin/tournament_admin_controller.py:68
 #: src/web/controllers/admin/tournament_admin_controller.py:73
 #, ai_translation
-msgid "Please enter the tournament id."
+msgid "Please enter the tournament ID."
 msgstr "Bitte geben Sie die Turnier-ID ein."
 
 #: src/web/controllers/admin/tournament_admin_controller.py:70
 #, ai_translation
-msgid "Tournament id does not match."
+msgid "tournament ID does not match."
 msgstr "Turnier-ID passt nicht."
 
 #: src/web/controllers/admin/tournament_admin_controller.py:80
@@ -1870,7 +1874,7 @@ msgstr "Bitte geben Sie den Turniernamen ein."
 
 #: src/web/controllers/admin/tournament_admin_controller.py:111
 #, ai_translation
-msgid "The FFE id is a positive integer."
+msgid "The FFE ID is a positive integer."
 msgstr "Die FFE-ID ist eine positive Ganzzahl."
 
 #: src/web/controllers/admin/tournament_admin_controller.py:114
@@ -1910,7 +1914,7 @@ msgstr "Turnier [{tournament_uniq_id}] wurde gelöscht."
 
 #: src/web/controllers/user/event_user_controller.py:100
 #, ai_translation
-msgid "Entry of results ({num})"
+msgid "Results entry ({num})"
 msgstr "Eintrag der Ergebnisse ({num})"
 
 #: src/web/controllers/user/event_user_controller.py:105
@@ -1972,8 +1976,8 @@ msgstr "Einchecken"
 
 #: src/web/templates/admin_chessevent_card.html:14
 #, ai_translation, python-format
-msgid "ChessEvent id: %(chessevent_user_id)s"
-msgstr "ChessEvent id: %(chessevent_user_id)s"
+msgid "Chessevent ID: %(chessevent_user_id)s"
+msgstr "Chessevent ID: %(chessevent_user_id)s"
 
 #: src/web/templates/admin_chessevent_card.html:17
 #, ai_translation, python-format
@@ -2054,12 +2058,12 @@ msgstr "Eigenschaften"
 #: src/web/templates/admin_timer_modal.html:42
 #: src/web/templates/admin_tournament_modal.html:76
 #, ai_translation
-msgid "Id (unique):"
+msgid "ID (unique):"
 msgstr "ID (einzigartig):"
 
 #: src/web/templates/admin_chessevent_modal.html:58
 #, ai_translation
-msgid "The unique id, used to reference the ChessEvent connection."
+msgid "The Unique ID, used to reference the ChessEvent connection."
 msgstr "Die einzigartige ID, verwendet, um die ChessEvent-Verbindung zu verweisen."
 
 #: src/web/templates/admin_chessevent_modal.html:70
@@ -2069,8 +2073,8 @@ msgstr "Verbindung zur ChessEvent-Plattform"
 
 #: src/web/templates/admin_chessevent_modal.html:76
 #, ai_translation
-msgid "ChessEvent id:"
-msgstr "ChessEvent ID:"
+msgid "Chessevent ID:"
+msgstr "Chessevent ID:"
 
 #: src/web/templates/admin_chessevent_modal.html:82
 #: src/web/templates/admin_screen_sets_modal_set_div.html:157
@@ -2081,7 +2085,7 @@ msgstr "Z.B.: %(string)s"
 
 #: src/web/templates/admin_chessevent_modal.html:85
 #, ai_translation
-msgid "The id used to connect to the ChessEvent platform."
+msgid "the ID used to connect to the ChessEvent platform."
 msgstr "Die ID wurde verwendet, um sich mit der ChessEvent-Plattform zu verbinden."
 
 #: src/web/templates/admin_chessevent_modal.html:98
@@ -2260,7 +2264,7 @@ msgstr "Andere ODBC-Treiber auf dem Server gefunden"
 
 #: src/web/templates/admin_edit_timer_colors.html:11
 #, ai_translation, python-format
-msgid "Color #%(num)d:"
+msgid "Colour #%(num)d:"
 msgstr "Farbe #%(num)d:"
 
 #: src/web/templates/admin_edit_timer_colors.html:17
@@ -2280,7 +2284,7 @@ msgstr "Verzögerung #%(num)d:"
 
 #: src/web/templates/admin_event_card.html:20
 #, ai_translation, python-format
-msgid "Unique id: %(uniq_id)s"
+msgid "Unique ID: %(uniq_id)s"
 msgstr "Einzigartige ID: %(uniq_id)s"
 
 #: src/web/templates/admin_event_card.html:27
@@ -2341,7 +2345,7 @@ msgstr "Anpassung"
 
 #: src/web/templates/admin_event_config.html:47
 #, ai_translation
-msgid "Unique id"
+msgid "Unique ID"
 msgstr "Einzigartig id"
 
 #: src/web/templates/admin_event_config.html:52
@@ -2398,7 +2402,7 @@ msgstr "(standardmäßig)"
 
 #: src/web/templates/admin_event_config.html:82
 #, ai_translation
-msgid "Background image and color"
+msgid "Background image and colour"
 msgstr "Hintergrundbild und Farbe"
 
 #: src/web/templates/admin_event_config.html:90
@@ -2489,22 +2493,22 @@ msgstr "Warnung: Die Löschung eines Ereignisses ist dauerhaft!"
 
 #: src/web/templates/admin_event_modal.html:35
 #, ai_translation
-msgid "Enter the event id to confirm its deletion:"
+msgid "Enter the event ID to confirm its deletion:"
 msgstr "Geben Sie die Ereignis-ID ein, um ihre Löschung zu bestätigen:"
 
 #: src/web/templates/admin_event_modal.html:41
 #, ai_translation
-msgid "Enter here the event id"
+msgid "Enter here the event ID"
 msgstr "Geben Sie hier die Ereignis-ID ein"
 
 #: src/web/templates/admin_event_modal.html:44
 #, ai_translation
-msgid "Recovering deleted event is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
+msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
 msgstr "Das Wiederherstellen gelöschter Ereignisse ist von der Web-Schnittstelle nicht möglich (jedoch werden die Ereignisse archiviert und können aus dem Dateisystem wiederhergestellt werden."
 
 #: src/web/templates/admin_event_modal.html:69
 #, ai_translation
-msgid "The unique id, used for data storage and export."
+msgid "The Unique ID, used for data storage and export."
 msgstr "Die einzigartige ID, die für die Datenspeicherung und den Export verwendet wird."
 
 #: src/web/templates/admin_event_modal.html:80
@@ -2561,7 +2565,7 @@ msgstr "Standardverzeichnis der Papi-Dateien:"
 
 #: src/web/templates/admin_event_modal.html:179
 #, ai_translation, python-format
-msgid "The default directory of the Papi files of the tournaments (absolute or relative path, by default %(dir)s)."
+msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
 msgstr "Das Standardverzeichnis der Papi-Dateien der Turniere (absolute oder relative Pfad, standardmäßig %(dir)s)."
 
 #: src/web/templates/admin_event_modal.html:195
@@ -2623,13 +2627,13 @@ msgstr "Die URL oder der Pfad des anzuzeigenden Bildes (standardmäßig das Papi
 #: src/web/templates/admin_screen_modal.html:439
 #: src/web/templates/user_screen_card.html:68
 #, ai_translation
-msgid "Background color:"
+msgid "Background colour:"
 msgstr "Hintergrundfarbe:"
 
 #: src/web/templates/admin_event_modal.html:384
 #: src/web/templates/admin_screen_modal.html:464
 #, ai_translation
-msgid "The background color is used when the image dost fill the whole screen."
+msgid "The background colour is used when the image dost fill the whole screen."
 msgstr "Die Hintergrundfarbe wird verwendet, wenn das Bild den gesamten Bildschirm füllt."
 
 #: src/web/templates/admin_event_modal.html:413
@@ -2644,7 +2648,7 @@ msgstr "Zeitmesser"
 
 #: src/web/templates/admin_event_modal.html:495
 #, ai_translation
-msgid "Text color:"
+msgid "Text colour:"
 msgstr "Textfarbe:"
 
 #: src/web/templates/admin_event_modal.html:531
@@ -2866,7 +2870,7 @@ msgstr "Warnung: Das Löschen einer Bildschirmfamilie ist dauerhaft!"
 #: src/web/templates/admin_family_modal.html:48
 #: src/web/templates/admin_screen_modal.html:50
 #, ai_translation
-msgid "Properties (entry of results)"
+msgid "Properties (results entry)"
 msgstr "Eigenschaften (Eingabe der Ergebnisse)"
 
 #: src/web/templates/admin_family_modal.html:50
@@ -2898,7 +2902,7 @@ msgstr "Z.B.: %(family_type)s-Familie"
 
 #: src/web/templates/admin_family_modal.html:105
 #, ai_translation
-msgid "The unique id, used to reference the screen family."
+msgid "The Unique ID, used to reference the screen family."
 msgstr "Die einzigartige ID, verwendet, um die Bildschirmfamilie zu verweisen."
 
 #: src/web/templates/admin_family_modal.html:122
@@ -3012,7 +3016,7 @@ msgstr "Die Anzahl der Bildschirme, auf denen die Bretter verteilt werden, optio
 
 #: src/web/templates/admin_family_modal.html:253
 #, ai_translation
-msgid "The number of screens on which the player will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
+msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
 msgstr "Die Anzahl der Bildschirme, auf denen der Spieler verteilt wird, optional (die Anzahl der Bildschirme ist immer die gleiche und die Anzahl der Spieler pro Bildschirm passt sich der Anzahl der Spieler an."
 
 #: src/web/templates/admin_family_modal.html:268
@@ -3235,7 +3239,7 @@ msgstr "Nur Schiedsrichter können private Rotatoren sehen."
 
 #: src/web/templates/admin_rotator_modal.html:80
 #, ai_translation
-msgid "The unique id, used to reference the rotator."
+msgid "The Unique ID, used to reference the rotator."
 msgstr "Die einzigartige ID, verwendet, um den Rotator zu verweisen."
 
 #: src/web/templates/admin_rotator_modal.html:92
@@ -3267,7 +3271,7 @@ msgstr "Auswahl"
 
 #: src/web/templates/admin_rotator_modal.html:120
 #, ai_translation
-msgid "entry of results"
+msgid "results entry"
 msgstr "Eintrag der Ergebnisse"
 
 #: src/web/templates/admin_rotator_modal.html:122
@@ -3370,7 +3374,7 @@ msgstr "Bild: %(image)s"
 
 #: src/web/templates/admin_screen_card.html:101
 #, ai_translation, python-format
-msgid "Background color: %(color)s"
+msgid "Background colour: %(color)s"
 msgstr "Hintergrundfarbe: %(color)s"
 
 #: src/web/templates/admin_screen_card.html:142
@@ -3466,7 +3470,7 @@ msgstr "Z.B.: %(screen_type)s-Bildschirm"
 
 #: src/web/templates/admin_screen_modal.html:111
 #, ai_translation
-msgid "The unique id, used to reference the screen."
+msgid "The Unique ID, used to reference the screen."
 msgstr "Die eindeutige ID, verwendet, um den Bildschirm zu verweisen."
 
 #: src/web/templates/admin_screen_modal.html:128
@@ -3597,12 +3601,12 @@ msgstr "Wenn ungepaarte Spieler nicht angezeigt werden, gibt es keine Möglichke
 
 #: src/web/templates/admin_screen_sets_modal.html:6
 #, ai_translation, python-format
-msgid "Boards sets of screen [%(screen_uniq_id)s]"
+msgid "Board sets of screen [%(screen_uniq_id)s]"
 msgstr "Boards-Sets des Bildschirms [%(screen_uniq_id)s]"
 
 #: src/web/templates/admin_screen_sets_modal.html:8
 #, ai_translation, python-format
-msgid "Players sets of screen [%(screen_uniq_id)s]"
+msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Spieler-Sets des Bildschirms [%(screen_uniq_id)s]"
 
 #: src/web/templates/admin_screen_sets_modal.html:15
@@ -3889,17 +3893,17 @@ msgstr "Keine Timer."
 
 #: src/web/templates/admin_tournament_card.html:15
 #, ai_translation, python-format
-msgid "The Papi file of the tournament does not exist (%(papi_file)s)."
+msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
 msgstr "Die Papi-Datei des Turniers existiert nicht (%(papi_file)s)."
 
 #: src/web/templates/admin_tournament_card.html:18
 #, ai_translation, python-format
-msgid "The Papi file of the tournament exists but could not be read (%(papi_file)s)."
+msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
 msgstr "Die Papi-Datei des Turniers existiert, konnte aber nicht gelesen werden (%(papi_file)s)."
 
 #: src/web/templates/admin_tournament_card.html:21
 #, ai_translation, python-format
-msgid "The Papi file of the tournament was successfully read (%(papi_file)s)."
+msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr "Die Papi-Datei des Turniers wurde erfolgreich gelesen (%(papi_file)s)."
 
 #: src/web/templates/admin_tournament_card.html:48
@@ -3981,12 +3985,12 @@ msgstr "Die folgenden Bildschirmfamilien werden ebenfalls gelöscht:"
 
 #: src/web/templates/admin_tournament_modal.html:51
 #, ai_translation
-msgid "Enter the tournament id to confirm its deletion:"
+msgid "Enter the tournament ID to confirm its deletion:"
 msgstr "Geben Sie die Turnier-ID ein, um ihre Löschung zu bestätigen:"
 
 #: src/web/templates/admin_tournament_modal.html:57
 #, ai_translation
-msgid "Enter here the tournament id"
+msgid "Enter here the tournament ID"
 msgstr "Geben Sie hier die Turnier-ID ein"
 
 #: src/web/templates/admin_tournament_modal.html:60
@@ -4002,7 +4006,7 @@ msgstr "Z.B.: Haupt"
 
 #: src/web/templates/admin_tournament_modal.html:85
 #, ai_translation
-msgid "The unique id, used to reference the tournament."
+msgid "The Unique ID, used to reference the tournament."
 msgstr "Die einzigartige ID, verwendet, um das Turnier zu verweisen."
 
 #: src/web/templates/admin_tournament_modal.html:102
@@ -4038,7 +4042,7 @@ msgstr "Name der Datei Papi (ohne Erweiterung):"
 
 #: src/web/templates/admin_tournament_modal.html:145
 #, ai_translation
-msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then the unique id of the tournament)."
+msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
 msgstr "Der Name der Papi-Datei, ohne die Erweiterung .papi (standardmäßig die FFE-Qualifikationsnummer des Turniers, dann die eindeutige ID des Turniers)."
 
 #: src/web/templates/admin_tournament_modal.html:156
@@ -4098,7 +4102,7 @@ msgstr "Z.B.: %(seconds)d (%(minutes)d Minuten)"
 
 #: src/web/templates/admin_tournament_modal.html:279
 #, ai_translation
-msgid "The initial time in seconds (may be nul if an increment is set)."
+msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr "Die Anfangszeit in Sekunden (kann nul sein, wenn ein Inkrement gesetzt ist)."
 
 #: src/web/templates/admin_tournament_modal.html:290
@@ -4548,80 +4552,83 @@ msgstr "Maximale Anzahl der Ergebnisse: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Maximale Anzahl der Ergebnisse: unbegrenzt"
 
-#: utils/i18n/i18n_update.py:140
+#: utils/i18n/i18n_update.py:144
 #, ai_translation
 msgid "Return to documentation summary"
 msgstr "Zurück zur Dokumentationsübersicht"
 
-#: utils/i18n/i18n_update.py:141
+#: utils/i18n/i18n_update.py:145
 #, ai_translation
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Englische Übersetzung"
 
-#: utils/i18n/i18n_update.py:144
+#: utils/i18n/i18n_update.py:148
 #, ai_translation
 msgid "View file {file}"
 msgstr "Datei anzeigen {file}"
 
-#: utils/i18n/i18n_update.py:146
+#: utils/i18n/i18n_update.py:150
 #, ai_translation
 msgid "Summary"
 msgstr "Zusammenfassung"
 
-#: utils/i18n/i18n_update.py:150 utils/i18n/i18n_update.py:160
+#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:164
 #, ai_translation
 msgid "Empty mandatory messages"
 msgstr "obligatorische Nachrichten entleeren"
 
-#: utils/i18n/i18n_update.py:153 utils/i18n/i18n_update.py:175
+#: utils/i18n/i18n_update.py:157 utils/i18n/i18n_update.py:179
 #, ai_translation
 msgid "Empty messages"
 msgstr "Leere Nachrichten"
 
-#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:202
 #, ai_translation
 msgid "Message flagged [{flag}]"
 msgstr "Nachricht markiert [{flag}]"
 
-#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:180
-#: utils/i18n/i18n_update.py:200
+#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
+#: utils/i18n/i18n_update.py:204
 #, ai_translation
-msgid "Message id"
+msgid "Message ID"
 msgstr "Meldungs-ID"
 
-#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:180
-#: utils/i18n/i18n_update.py:200
+#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
+#: utils/i18n/i18n_update.py:204
 #, ai_translation
 msgid "Locations"
 msgstr "Standorte"
 
-#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
-#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
+#: utils/i18n/i18n_update.py:173 utils/i18n/i18n_update.py:191
+#: utils/i18n/i18n_update.py:212 utils/i18n/i18n_update.py:215
 #, ai_translation
 msgid "Singular:"
 msgstr "Singulär:"
 
-#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
-#: utils/i18n/i18n_update.py:209 utils/i18n/i18n_update.py:212
+#: utils/i18n/i18n_update.py:174 utils/i18n/i18n_update.py:192
+#: utils/i18n/i18n_update.py:213 utils/i18n/i18n_update.py:216
 #, ai_translation
 msgid "Plural:"
 msgstr "Plural:"
 
-#: utils/i18n/i18n_update.py:178
+#: utils/i18n/i18n_update.py:182
 #, ai_translation
 msgid "Empty messages are not shown for the default language."
 msgstr "Leere Nachrichten werden für die Standardsprache nicht angezeigt."
 
-#: utils/i18n/i18n_update.py:194
+#: utils/i18n/i18n_update.py:198
 #, ai_translation
 msgid "Flagged messages"
 msgstr "Gekennzeichnete Nachrichten"
 
-#: utils/i18n/i18n_update.py:200
+#: utils/i18n/i18n_update.py:204
 #, ai_translation
 msgid "Translation"
 msgstr "Übersetzung"
 
 #~ msgid "Choose your language"
 #~ msgstr "Wählen Sie Ihre Sprache"
+
+#~ msgid "Papi file not set for tournament [{tournament_uniq_id}]."
+#~ msgstr "Papi-Datei nicht für Turnier eingestellt [{tournament_uniq_id}]."
 

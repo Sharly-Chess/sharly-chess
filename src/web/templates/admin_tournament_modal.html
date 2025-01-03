@@ -48,13 +48,13 @@
                     {% endif %}
                     {% with id='uniq-id', name='uniq_id' %}
                         <div>
-                            <label for="{{ id }}" class="form-label">{{ _('Enter the tournament id to confirm its deletion:') }}</label>
+                            <label for="{{ id }}" class="form-label">{{ _('Enter the tournament ID to confirm its deletion:') }}</label>
                             <input
                                     name="{{ name }}"
                                     type="text" id="{{ id }}"
                                     class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                     aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('Enter here the tournament id') }}"
+                                    placeholder="{{ _('Enter here the tournament ID') }}"
                                     value="" />
                             <div id="{{ id }}-help" class="form-text">
                                 {{ _('The Papi-web tournament are deleted but the Papi file is still available on the filesystem.') }}
@@ -73,7 +73,7 @@
                     <div class="row">
                         <div class="col-3">
                             {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Id (unique):') }}</label>
+                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -82,7 +82,7 @@
                                         placeholder="{{ _('E.g.: main') }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The unique id, used to reference the tournament.') }}
+                                    {{ _('The Unique ID, used to reference the tournament.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -142,7 +142,7 @@
                                         placeholder="{{ _('E.g.: main') }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then the unique id of the tournament).') }}
+                                  {{ _('The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament).') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -276,7 +276,7 @@
                                         placeholder="{{ _('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5) }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The initial time in seconds (may be nul if an increment is set).') }}
+                                    {{ _('The initial time in seconds (may be empty if an increment is set).') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">

@@ -125,7 +125,7 @@ class Engine:
                     print_interactive_input(_('  - [{q_uc}] Do not recover').format(q_uc=quit_answer))
                     while True:
                         choice: str = input_interactive(
-                            _('Please entre the number of the version to recover [{default}]: ').format(
+                            _('Please enter the number of the version to recover [{default}]: ').format(
                                 default=previous_versions[-1]))
                         if choice == quit_answer:
                             break
@@ -179,7 +179,7 @@ class Engine:
                 if tournament.path == PapiWebConfig.default_papi_path and src_file.exists():
                     # recover the Papi file where stored in the default folder
                     print_interactive_info(
-                        _('Event [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]...').format(
+                        _('Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]...').format(
                             event_uniq_id=event_uniq_id, tournament_uniq_id=tournament.uniq_id))
                     shutil.copy(src_file, tournament.file)
                     logger.debug(str(src_file) + ' > ' + str(tournament.file))
@@ -361,7 +361,7 @@ class Engine:
         # 'release candidates' X.YrcN
         if last_stable_matches.group('major') > matches.group('major') or last_stable_matches.group('minor') > matches.group('minor'):
             print_interactive_warning(
-                _('A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}] must be done manually (upgrade from the last stable version installed on your server).').format(
+                _('A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).').format(
                     new_version=last_stable_version, old_version=PapiWebConfig.version))
             return None
         print_interactive_info(
@@ -377,7 +377,7 @@ class Engine:
         Otherwise, the last stable version is returned."""
         url: str = 'https://api.github.com/repos/papi-web-org/papi-web/releases'
         try:
-            print_interactive_info(_('Looking for a a more recent version on GitHub ([{url}])...').format(url=url))
+            print_interactive_info(_('Looking for a more recent version on GitHub ([{url}])...').format(url=url))
             response: Response = get(url, allow_redirects=True, timeout=5)
             response.raise_for_status()
             if not response:

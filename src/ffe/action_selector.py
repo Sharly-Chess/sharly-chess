@@ -27,7 +27,7 @@ class ActionSelector(metaclass=Singleton):
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
             if not tournament.ffe_id or not tournament.ffe_password:
-                print_interactive_warning(_('FFE id not defined for tournament [{tournament_uniq_id}].').format(
+                print_interactive_warning(_('FFE ID not defined for tournament [{tournament_uniq_id}].').format(
                     tournament_uniq_id=tournament.uniq_id))
             else:
                 tournaments.append(tournament)
@@ -40,7 +40,7 @@ class ActionSelector(metaclass=Singleton):
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
             if not tournament.ffe_id or not tournament.ffe_password:
-                print_interactive_warning(_('FFE id not defined for tournament [{tournament_uniq_id}].').format(
+                print_interactive_warning(_('FFE ID not defined for tournament [{tournament_uniq_id}].').format(
                     tournament_uniq_id=tournament.uniq_id))
             elif not tournament.file:
                 print_interactive_warning(_('Papi file not defined for tournament [{tournament_uniq_id}].').format(
@@ -60,7 +60,7 @@ class ActionSelector(metaclass=Singleton):
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
             if not tournament.ffe_id or not tournament.ffe_password:
-                print_interactive_warning(_('FFE id not defined for tournament [{tournament_uniq_id}].').format(
+                print_interactive_warning(_('FFE ID not defined for tournament [{tournament_uniq_id}].').format(
                     tournament_uniq_id=tournament.uniq_id))
             elif not tournament.rules:
                 print_interactive_warning(_('Rules file not defined for tournament [{tournament_uniq_id}].').format(
@@ -113,7 +113,7 @@ class ActionSelector(metaclass=Singleton):
         if choice == test_answer:
             tournaments = self.__get_qualified_tournaments(event_loader.reload_event(event_uniq_id))
             if not tournaments:
-                print_interactive_error(_('This action can be done on the tournaments of this event.'))
+                print_interactive_error(_('This action can not be applied to the tournaments of this event.'))
                 return True
             for tournament in tournaments:
                 FFESession(tournament, debug=False).test_auth()
@@ -122,7 +122,7 @@ class ActionSelector(metaclass=Singleton):
             tournaments = self.__get_qualified_tournaments_with_existing_file(event_loader.reload_event(
                 event_uniq_id))
             if not tournaments:
-                print_interactive_error(_('This action can be done on the tournaments of this event.'))
+                print_interactive_error(_('This action can not be applied to the tournaments of this event.'))
                 return True
             for tournament in tournaments:
                 FFESession(tournament, debug=False).upload(set_visible=True)
@@ -130,7 +130,7 @@ class ActionSelector(metaclass=Singleton):
         if choice == fees_answer:
             tournaments = self.__get_qualified_tournaments(event_loader.reload_event(event_uniq_id))
             if not tournaments:
-                print_interactive_error(_('This action can be done on the tournaments of this event.'))
+                print_interactive_error(_('This action can not be applied to the tournaments of this event.'))
                 return True
             for tournament in tournaments:
                 FFESession(tournament, debug=False).get_fees()
@@ -139,7 +139,7 @@ class ActionSelector(metaclass=Singleton):
             tournaments = self.__get_qualified_tournaments_with_existing_local_rules(
                 event_loader.reload_event(event_uniq_id))
             if not tournaments:
-                print_interactive_error(_('This action can be done on the tournaments of this event.'))
+                print_interactive_error(_('This action can not be applied to the tournaments of this event.'))
                 return True
             updated_tournaments: list[Tournament] = []
             for tournament in tournaments:
@@ -159,7 +159,7 @@ class ActionSelector(metaclass=Singleton):
                     tournaments = self.__get_qualified_tournaments_with_existing_file(
                         event_loader.reload_event(event_uniq_id))
                     if not tournaments:
-                        print_interactive_error(_('This action can be done on the tournaments of this event.'))
+                        print_interactive_error(_('This action can not be applied to the tournaments of this event.'))
                         return True
                     updated_tournaments: list[Tournament] = []
                     recent_updates: int = 0

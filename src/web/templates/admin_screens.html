@@ -56,7 +56,7 @@
     {% with screens=admin_event.screens_sorted_by_uniq_id if show_family_screens_on_screen_list else admin_event.basic_screens_by_uniq_id.values() %}
         {% for screen_type, screen_data in {
             'input': {
-                'title': _('Entry of results'),
+                'title': _('Results entry'),
                 'checkbox_tooltip_text': _('Show/hide the input screens.'),
                 'icon_class': 'bi-pencil-fill',
             },

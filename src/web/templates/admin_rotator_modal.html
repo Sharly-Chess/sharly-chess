@@ -68,7 +68,7 @@
                         <div class="col-3">
                             {% with id='uniq-id', name='uniq_id' %}
                                 <div>
-                                    <label for="{{ id }}" class="form-label">{{ _('Id (unique):') }}</label>
+                                    <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
                                     <input
                                             name="{{ name }}"
                                             type="text" id="{{ id }}"
@@ -77,7 +77,7 @@
                                             placeholder="Exemple : Appariements"
                                             value="{{ data[name] }}" />
                                     <div id="{{ id }}-help" class="form-text">
-                                      {{ _('The unique id, used to reference the rotator.') }}
+                                      {{ _('The Unique ID, used to reference the rotator.') }}
                                     </div>
                                     {% if name in errors %}
                                         <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -117,7 +117,7 @@
                     </div>
                     <h3>
                         {{ _('Selection') }}
-                        (<i class="bi-pencil-fill"></i>&nbsp;{{ _('entry of results') }},
+                        (<i class="bi-pencil-fill"></i>&nbsp;{{ _('results entry') }},
                         <i class="bi-card-list"></i>&nbsp;{{ _('pairings by board') }},
                         <i class="bi-people-fill"></i>&nbsp;{{ _('pairings by player') }},
                         <i class="bi-trophy-fill"></i>&nbsp;{{ _('last results') }},

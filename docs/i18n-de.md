@@ -14,28 +14,29 @@
 | locale=`de` | Deutsch <img src="../src/web/static/images/locales/de.svg" style="height: 1em;"/> |
 |--|:--:|
 |obligatorische Nachrichten entleeren|0/16|
-|Leere Nachrichten|1/864|
-|Message flagged [ai_translation]|863/864|
-|Message flagged [fuzzy]|1/864|
+|Leere Nachrichten|2/865|
+|Message flagged [ai_translation]|863/865|
+|Message flagged [fuzzy]|5/865|
 
 ## obligatorische Nachrichten entleeren (-)
 
-## Leere Nachrichten (1)
+## Leere Nachrichten (2)
 
 |Meldungs-ID|Standorte|
 |--|--|
+|Unable to create Papi files since no tournaments are defined.|src/chessevent/action_selector.py:66|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Gekennzeichnete Nachrichten (864)
+## Gekennzeichnete Nachrichten (868)
 
 ### Nachricht markiert [ai_translation] (863)
 
 |Meldungs-ID|Übersetzung|Standorte|
 |--|--|--|
-|This program should not be launched directly, use scripts server.bat, ffe.bat and chessevent.bat.|Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie scripts server.bat, ffe.bat und chessevent.bat.|src/papi_web.py:33|
-|ChessEvent connection not set for tournament [{tournament_uniq_id}].|ChessEvent-Verbindung nicht für Turnier eingestellt [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|Papi file not set for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turnier eingestellt [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] is started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/chessevent/action_selector.py:50|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie scripts server.bat, ffe.bat und chessevent.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent-Verbindung nicht für Turnier eingestellt [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/chessevent/action_selector.py:50|
 |Event: {event_name}|Veranstaltung: {event_name}|src/chessevent/action_selector.py:63<br>src/ffe/action_selector.py:83|
 |Tournaments: {tournament_names}|Turniere: {tournament_names}|src/chessevent/action_selector.py:68|
 |C \*\*\* THE LETTER TO ANSWER CREATE \*\*\*|C|src/chessevent/action_selector.py:70|
@@ -53,15 +54,15 @@
 |Frequency: {frequency}|Häufigkeit: {frequency}|src/chessevent/action_selector.py:108|
 |Please choose the Papi version:|Bitte wählen Sie die Papi-Version:|src/chessevent/action_selector.py:112|
 |Papi version: {version}|Papi-Version: {version}|src/chessevent/action_selector.py:132|
-|This action can be done on the tournaments of this event.|Diese Aktion kann auf den Turnieren dieser Veranstaltung durchgeführt werden.|src/chessevent/action_selector.py:141<br>src/ffe/action_selector.py:116<br>src/ffe/action_selector.py:125<br>src/ffe/action_selector.py:133<br>src/ffe/action_selector.py:142<br>src/ffe/action_selector.py:162|
+|This action can not be applied to the tournaments of this event.|Diese Aktion kann auf den Turnieren dieser Veranstaltung durchgeführt werden.|src/chessevent/action_selector.py:141<br>src/ffe/action_selector.py:116<br>src/ffe/action_selector.py:125<br>src/ffe/action_selector.py:133<br>src/ffe/action_selector.py:142<br>src/ffe/action_selector.py:162|
 |Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}]).|Die Daten zum Turnier [{tournament_uniq_id}] konnten nicht dekodiert werden (Kodierung: [{encoding}]), gespeichert in Datei [{file}] (Fehlerzeile [{line}], Spalte [{column}], Position [{position}]).|src/chessevent/action_selector.py:165|
 |Data for tournament [{tournament_name}] on ChessEvent are unchanged.|Die Daten zum Turnier [{tournament_name}] auf ChessEvent sind unverändert.|src/chessevent/action_selector.py:170|
 |Papi file [{file}] has been created (players: {num}).|Die Papi-Datei [{file}] wurde erstellt (Spieler: {num}).|src/chessevent/action_selector.py:180|
-|FFE id and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.|FFE-ID und Passwort sind für Turniere nicht richtig eingestellt [{tournament_name}], Daten können nicht an die FFE-Website gesendet werden.|src/chessevent/action_selector.py:185|
+|FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.|FFE-ID und Passwort sind für Turniere nicht richtig eingestellt [{tournament_name}], Daten können nicht an die FFE-Website gesendet werden.|src/chessevent/action_selector.py:185|
 |Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}]).|Authentifizierungsfehler (Code: [{code}]) für [{user_id}] ([{chessevent_string}]).|src/chessevent/chessevent_session.py:54|
 |Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}]).|Zugriff verweigert (Code: [{code}]) für [{user_id}] zum Turnier [{tournament_name}] ([{chessevent_string}]).|src/chessevent/chessevent_session.py:58|
 |Missing parameter (code: [{code}]): [{error}].|Fehlender Parameter (Code: [{code}]): [{error}].|src/chessevent/chessevent_session.py:63|
-|Id [{user_id}] not found (code: [{code}]): [{error}].|Id [{user_id}] nicht gefunden (Code: [{code}]): [{error}].|src/chessevent/chessevent_session.py:67|
+|ID [{user_id}] not found (code: [{code}]): [{error}].|Id [{user_id}] nicht gefunden (Code: [{code}]): [{error}].|src/chessevent/chessevent_session.py:67|
 |Tournament [{tournament_name}] not found (code: [{code}]): [{error}].|Turnier [{tournament_name}] nicht gefunden (Code: [{code}]): [{error}].|src/chessevent/chessevent_session.py:71|
 |Event [{event_id}] not found (code: [{code}]): [{error}].|Ereignis [{event_id}] nicht gefunden (Code: [{code}]): [{error}].|src/chessevent/chessevent_session.py:76|
 |Unknown response code: [{code}] ([{chessevent_string}]).|Unbekannter Antwortcode: [{code}] ([{chessevent_string}]).|src/chessevent/chessevent_session.py:81|
@@ -70,7 +71,7 @@
 |Failed to read [{url}] (error code [{errno}]): [{strerror}].|Nicht lesen [{url}] (Fehlercode [{errno}]): [{strerror}].|src/chessevent/chessevent_session.py:91<br>src/common/engine.py:285<br>src/common/engine.py:416<br>src/common/engine.py:462<br>src/ffe/ffe_session.py:103|
 |Failed to read [{url}]: [{ex}].|Nicht lesen [{url}]: [{ex}].|src/chessevent/chessevent_session.py:95<br>src/common/engine.py:288<br>src/common/engine.py:420<br>src/common/engine.py:466<br>src/ffe/ffe_session.py:106|
 |No events found.|Es wurden keine Veranstaltungen gefunden.|src/chessevent/event_selector.py:26<br>src/ffe/event_selector.py:22|
-|One event found, type Enter (Q to quit): |Ein gefundenes Ereignis, geben Sie Enter (Q zum Beenden) ein:|src/chessevent/event_selector.py:32<br>src/ffe/event_selector.py:28|
+|One event found, press Enter (Q to quit): |Ein gefundenes Ereignis, geben Sie Enter (Q zum Beenden) ein:|src/chessevent/event_selector.py:32<br>src/ffe/event_selector.py:28|
 |Please choose the event:|Bitte wählen Sie die Veranstaltung:|src/chessevent/event_selector.py:35<br>src/ffe/event_selector.py:31|
 |Your choice: |Ihre Wahl:|src/chessevent/event_selector.py:44<br>src/common/papi_web_config.py:112<br>src/ffe/event_selector.py:40|
 |Configuration file [{file}] not found.|Konfigurationsdatei [{file}] nicht gefunden.|src/common/config_reader.py:28|
@@ -92,11 +93,11 @@
 |Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?|Möchten Sie die Konfiguration der Version wiederherstellen [{version}] [{y_uc}/{n_lc}]?|src/common/engine.py:110|
 |Please choose the version to recover:|Bitte wählen Sie die zu erholende Version:|src/common/engine.py:119|
 |  - [{q_uc}] Do not recover|- [{q_uc}] Nicht erholen|src/common/engine.py:125|
-|Please entre the number of the version to recover [{default}]: |Bitte tragen Sie die Nummer der zu erholenden Version ein [{default}]:|src/common/engine.py:128|
+|Please enter the number of the version to recover [{default}]: |Bitte tragen Sie die Nummer der zu erholenden Version ein [{default}]:|src/common/engine.py:128|
 |Do you want to install example event databases [{y_uc}/{n_lc}]?|Möchten Sie Beispiel-Ereignisdatenbanken installieren [{y_uc}/{n_lc}]?|src/common/engine.py:150|
 |Recovering events from version {version}...|Ereignisse von der Version {version}...|src/common/engine.py:166|
 |Recovering event [{event_uniq_id}]...|Ereignis wiederherstellen [{event_uniq_id}]...|src/common/engine.py:171|
-|Event [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]...|Veranstaltung [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]...|src/common/engine.py:182|
+|Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]...|Veranstaltung [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]...|src/common/engine.py:182|
 |Recovering custom files...|Wiederherstellen benutzerdefinierter Dateien...|src/common/engine.py:187|
 |Events recovered: {num} (from directory [{dir}]).|Ereignisse wiederhergestellt: {num} (aus dem Verzeichnis [{dir}]).|src/common/engine.py:200|
 |Tournaments recovered: {num} (from directory [{dir}]).|Turniere wiederhergestellt: {num} (aus dem Verzeichnis [{dir}]).|src/common/engine.py:202|
@@ -112,9 +113,9 @@
 |Your Papi-web version is up to date.|Ihre Papi-Web-Version ist aktuell.|src/common/engine.py:346|
 |A more recent version is available ([{version}]).|Eine neuere Version ist verfügbar ([{version}]).|src/common/engine.py:353|
 |You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)|Sie verwenden eine neuere Version als die neueste verfügbare stabile Version ([{version}]), sind Sie ein Entwickler? ;-)|src/common/engine.py:356|
-|A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}] must be done manually (upgrade from the last stable version installed on your server).|Es steht eine stabile und neuere Version zur Verfügung ([{new_version}]), aber die Aktualisierung von instabilen Versionen (wie die, die Sie derzeit verwenden: [{old_version}] muss manuell erfolgen (nach oben von der letzten auf Ihrem Server installierten stabilen Version).|src/common/engine.py:364|
+|A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).|Es steht eine stabile und neuere Version zur Verfügung ([{new_version}]), aber die Aktualisierung von instabilen Versionen (wie die, die Sie derzeit verwenden: [{old_version}] muss manuell erfolgen (nach oben von der letzten auf Ihrem Server installierten stabilen Version).|src/common/engine.py:364|
 |You are using un unstable version more recent than the last stable version available ({version}).|Sie verwenden unstable Version neuer als die letzte stabile Version ({version}).|src/common/engine.py:368|
-|Looking for a a more recent version on GitHub ([{url}])...|Auf der Suche nach einer neueren Version über GitHub ([{url}])...|src/common/engine.py:380|
+|Looking for a more recent version on GitHub ([{url}])...|Auf der Suche nach einer neueren Version über GitHub ([{url}])...|src/common/engine.py:380|
 |No response from GitHub.|Keine Antwort von GitHub.|src/common/engine.py:384<br>src/common/engine.py:440|
 |Invalid response from GitHub: {ex}.|Ungültige Antwort von GitHub: {ex}.|src/common/engine.py:391|
 |No stable version found.|Keine stabile Version gefunden.|src/common/engine.py:403|
@@ -159,8 +160,8 @@
 |Directory [{path}] not found.|Verzeichnis [{path}] nicht gefunden.|src/data/event.py:181<br>src/data/tournament.py:41|
 |[{path}] is not a directory.|[{path}] ist kein Verzeichnis.|src/data/event.py:183<br>src/data/tournament.py:43|
 |No background image set, by default [{background_image}]|Kein Hintergrundbild gesetzt, standardmäßig [{background_image}]|src/data/event.py:192|
-|No background color set, by default [{background_color}]|Keine Hintergrundfarbe gesetzt, standardmäßig [{background_color}]|src/data/event.py:206|
-|No password set for the entry of results|Kein Passwort für die Eingabe der Ergebnisse gesetzt|src/data/event.py:216|
+|No background colour set, by default [{background_color}]|Keine Hintergrundfarbe gesetzt, standardmäßig [{background_color}]|src/data/event.py:206|
+|No password set for the results entry|Kein Passwort für die Eingabe der Ergebnisse gesetzt|src/data/event.py:216|
 |Maximum number of illegal moves not set, by default [{record_illegal_moves}]|Maximale Anzahl nicht festgelegter illegaler Bewegungen, standardmäßig [{record_illegal_moves}]|src/data/event.py:223|
 |Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded.|Fehler wurden auf ChessEvent-Verbindungen gefunden; Timer, Turniere, Bildschirme, Familien und Rotatoren werden nicht geladen.|src/data/event.py:358|
 |Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.|Fehler wurden auf Timern gefunden; Turniere, Bildschirme, Familien und Rotatoren werden nicht geladen.|src/data/event.py:382|
@@ -231,7 +232,7 @@
 |Qualification number and FFE password not set, operations on the FFE website will not be available.|Qualifikationsnummer und FFE-Passwort nicht festgelegt, Operationen auf der FFE-Website werden nicht verfügbar sein.|src/data/tournament.py:50|
 |ChessEvent connection not defined.|ChessEvent-Verbindung nicht definiert.|src/data/tournament.py:53|
 |ChessEvent tournament name not set.|ChessEvent Turniername nicht gesetzt.|src/data/tournament.py:55|
-|FFE id not defined for tournament [{tournament_uniq_id}].|FFE id nicht für Turnier definiert [{tournament_uniq_id}].|src/ffe/action_selector.py:30<br>src/ffe/action_selector.py:43<br>src/ffe/action_selector.py:63|
+|FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/ffe/action_selector.py:30<br>src/ffe/action_selector.py:43<br>src/ffe/action_selector.py:63|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/ffe/action_selector.py:46|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Papi-Datei nicht gefunden [{file}] für Turnier [{tournament_uniq_id}].|src/ffe/action_selector.py:50|
 |Rules file not defined for tournament [{tournament_uniq_id}].|Regeldatei nicht für Turniere definiert [{tournament_uniq_id}].|src/ffe/action_selector.py:66|
@@ -265,14 +266,14 @@
 |Invalid fees link text [{text}].|Ungültige Gebühren Link Text [{text}].|src/ffe/ffe_session.py:234|
 |Invoice saved to [{file}].|Rechnung gespeichert auf [{file}].|src/ffe/ffe_session.py:259|
 |Sending tournament [{ffe_id}] ({file}) to the FFE website...|Senden des Turniers [{ffe_id}] ({file}) an die FFE-Website...|src/ffe/ffe_session.py:264|
-|Upload link not found, check that the tournament is not finished on the FFE website.|Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht auf der FFE-Website beendet ist.|src/ffe/ffe_session.py:274|
+|Upload link not found, check that the tournament is not marked as finished on the FFE website.|Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht auf der FFE-Website beendet ist.|src/ffe/ffe_session.py:274|
 |Results upload OK|Ergebnisse hochladen OK|src/ffe/ffe_session.py:307<br>src/ffe/ffe_session.py:334|
 |Making the tournament visible on the FFE website...|Das Turnier auf der FFE-Website sichtbar machen...|src/ffe/ffe_session.py:310|
 |Display link not found, check that a Papi file has already been sent.|Link nicht gefunden anzeigen, überprüfen Sie, ob eine Papi-Datei bereits gesendet wurde.|src/ffe/ffe_session.py:314|
-|Data are already displayed on the FFE website.|Die Daten werden bereits auf der FFE-Website angezeigt.|src/ffe/ffe_session.py:317|
+|Data is already displayed on the FFE website.|Die Daten werden bereits auf der FFE-Website angezeigt.|src/ffe/ffe_session.py:317|
 |Invalid display link text [{text}]|Ungültiger Anzeigelink-Text [{text}]|src/ffe/ffe_session.py:321|
 |Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...|Senden der Turnierregeln [{ffe_id}] ({file}) an die FFE-Website...|src/ffe/ffe_session.py:338|
-|Rules upload link not found, check that the tournament is not finished on the FFE website.|Regeln Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht auf der FFE-Website beendet ist.|src/ffe/ffe_session.py:348|
+|Rules upload link not found, check that the tournament is not marked as finished on the FFE website.|Regeln Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht auf der FFE-Website beendet ist.|src/ffe/ffe_session.py:348|
 |Opening the welcome page [{url}] in a browser...|Eröffnung der Willkommensseite [{url}] in einem Browser...|src/web/server_engine.py:24|
 |Web server not started yet ({ex}), waiting...|Webserver noch nicht gestartet ({ex}), warten...|src/web/server_engine.py:30|
 |Starting Papi-web server, please wait...|Starten des Papi-Web-Servers, bitte warten...|src/web/server_engine.py:40|
@@ -282,11 +283,11 @@
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] bereits in Betrieb, kann Papi-Web-Server nicht starten.|src/web/server_engine.py:49|
 |USE AT YOUR OWN RISKS|AUSWIRKUNGEN AUF IHRE RISIKEN|src/web/controllers/index_controller.py:213|
-|Please enter the id of ChessEvent connection.|Bitte geben Sie die ID der ChessEvent-Verbindung ein.|src/web/controllers/admin/chessevent_admin_controller.py:69|
+|Please enter the ID of ChessEvent connection.|Bitte geben Sie die ID der ChessEvent-Verbindung ein.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|ChessEvent-Verbindung [{uniq_id}] existiert bereits.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
-|Please enter the id used to connect to the ChessEvent platform.|Bitte geben Sie die ID ein, die verwendet wird, um sich mit der ChessEvent-Plattform zu verbinden.|src/web/controllers/admin/chessevent_admin_controller.py:88|
+|Please enter the ID used to connect to the ChessEvent platform.|Bitte geben Sie die ID ein, die verwendet wird, um sich mit der ChessEvent-Plattform zu verbinden.|src/web/controllers/admin/chessevent_admin_controller.py:88|
 |Please enter the password used to connect to the ChessEvent platform.|Bitte geben Sie das Passwort für die Verbindung zur ChessEvent-Plattform ein.|src/web/controllers/admin/chessevent_admin_controller.py:92|
-|Please enter the id of the event on the ChessEvent platform.|Bitte geben Sie die ID des Ereignisses auf der ChessEvent-Plattform ein.|src/web/controllers/admin/chessevent_admin_controller.py:96|
+|Please enter the ID of the event on the ChessEvent platform.|Bitte geben Sie die ID des Ereignisses auf der ChessEvent-Plattform ein.|src/web/controllers/admin/chessevent_admin_controller.py:96|
 |ChessEvent connection [{chessevent_uniq_id}] has been created.|ChessEvent-Verbindung [{chessevent_uniq_id}] wurde erstellt.|src/web/controllers/admin/chessevent_admin_controller.py:232|
 |ChessEvent connection [{chessevent_uniq_id}] has been updated.|ChessEvent-Verbindung [{chessevent_uniq_id}] wurde aktualisiert.|src/web/controllers/admin/chessevent_admin_controller.py:238|
 |ChessEvent connection [{chessevent_uniq_id}] has been deleted.|ChessEvent-Verbindung [{chessevent_uniq_id}] wurde gelöscht.|src/web/controllers/admin/chessevent_admin_controller.py:244|
@@ -298,11 +299,11 @@
 |ChessEvent ({num})|Schachveranstaltung ({num})|src/web/controllers/admin/event_admin_controller.py:134|
 |Messages ({num})|Nachrichten ({num})|src/web/controllers/admin/event_admin_controller.py:138|
 |Renaming the database failed: {ex}.|Umbenennen der Datenbank fehlgeschlagen: {ex}.|src/web/controllers/admin/event_admin_controller.py:403|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}) and updated.|Event [{old_uniq_id}] wurde umbenannt ([{new_uniq_id}) und aktualisiert.|src/web/controllers/admin/event_admin_controller.py:410|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Event [{old_uniq_id}] wurde umbenannt ([{new_uniq_id}]) und aktualisiert.|src/web/controllers/admin/event_admin_controller.py:410|
 |Event [{uniq_id}] has been updated.|Event [{uniq_id}] wurde aktualisiert.|src/web/controllers/admin/event_admin_controller.py:413|
 |Event [{uniq_id}] has been created.|Event [{uniq_id}] wurde erstellt.|src/web/controllers/admin/event_admin_controller.py:421<br>src/web/controllers/admin/index_admin_controller.py:676|
 |Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Event [{uniq_id}] wurde gelöscht, die Datenbank wurde archiviert ({arch}).|src/web/controllers/admin/event_admin_controller.py:431|
-|Please enter the family id.|Bitte geben Sie die Familien-ID ein.|src/web/controllers/admin/family_admin_controller.py:102|
+|Please enter the family ID.|Bitte geben Sie die Familien-ID ein.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|Zeichen [{char}] ist nicht erlaubt.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:233<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:75|
 |Family [{uniq_id}] already exists.|Familie [{uniq_id}] existiert bereits.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
 |Please choose the tournament.|Bitte wählen Sie das Turnier aus.|src/web/controllers/admin/family_admin_controller.py:130<br>src/web/controllers/admin/screen_admin_controller.py:90<br>src/web/controllers/admin/screen_admin_controller.py:257|
@@ -310,15 +311,15 @@
 |A positive integer is expected.|Eine positive Ganzzahl wird erwartet.|src/web/controllers/admin/family_admin_controller.py:135<br>src/web/controllers/admin/family_admin_controller.py:140<br>src/web/controllers/admin/family_admin_controller.py:150<br>src/web/controllers/admin/family_admin_controller.py:155<br>src/web/controllers/admin/family_admin_controller.py:160<br>src/web/controllers/admin/family_admin_controller.py:179<br>src/web/controllers/admin/family_admin_controller.py:184<br>src/web/controllers/admin/rotator_admin_controller.py:94<br>src/web/controllers/admin/screen_admin_controller.py:143<br>src/web/controllers/admin/screen_admin_controller.py:154<br>src/web/controllers/admin/screen_admin_controller.py:167<br>src/web/controllers/admin/screen_admin_controller.py:172<br>src/web/controllers/admin/screen_admin_controller.py:261<br>src/web/controllers/admin/screen_admin_controller.py:266<br>src/web/controllers/admin/screen_admin_controller.py:271|
 |Timer [{timer_id}] not found.|Timer [{timer_id}] nicht gefunden.|src/web/controllers/admin/family_admin_controller.py:148<br>src/web/controllers/admin/screen_admin_controller.py:152|
 |Specifying the number of parts and the number of items per part is not possible.|Die Angabe der Anzahl der Teile und der Anzahl der Teile pro Teil ist nicht möglich.|src/web/controllers/admin/family_admin_controller.py:186|
-|Entry of results|Eingabe der Ergebnisse|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:45<br>src/web/templates/admin_screens.html:59|
+|Results entry|Eingabe der Ergebnisse|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:45<br>src/web/templates/admin_screens.html:59|
 |pairings by board|Paarungen nach Board|src/web/controllers/admin/family_admin_controller.py:272<br>src/web/controllers/admin/screen_admin_controller.py:355<br>src/web/templates/admin_rotator_modal.html:121|
 |Pairings by player|Kombinationen nach Spieler|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:53<br>src/web/templates/admin_screens.html:69|
 |No recording|Keine Aufzeichnung|src/web/controllers/admin/index_admin_controller.py:77<br>src/web/templates/admin_event_config.html:108|
 |**Singulär:** {num} illegal move max<br/>**Plural:** {num} illegal moves max|**Singulär:** {num} illegaler Umzug max<br/>**Plural:** {num} illegale Bewegungen max|src/web/controllers/admin/index_admin_controller.py:79|
 |By default - {option}|Standardmäßig - {option}|src/web/controllers/admin/index_admin_controller.py:82<br>src/web/controllers/admin/index_admin_controller.py:128<br>src/web/controllers/admin/index_admin_controller.py:139|
-|Color #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until color #2 ({delay_2} minutes before the start of the rounds).|Farbe #1 wird bis {delay_1} Minuten vor dem Start der Runden verwendet (Verzögerung #1), die Farbe ändert sich dann allmählich bis Farbe #2 ({delay_2} Minuten vor dem Start der Runden).|src/web/controllers/admin/index_admin_controller.py:88|
-|Color #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until color #3 (at the start of the rounds).|Farbe #2 wird verwendet {delay_2} Minuten vor dem Start der Runden (Verzögerung #2), ändert sich die Farbe dann allmählich bis Farbe #3 (zum Beginn der Runden).|src/web/controllers/admin/index_admin_controller.py:91|
-|Color #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|Farbe #3 wird von Beginn der Runden und für {delay_3} Minuten nach (Verzögerung #3) verwendet.|src/web/controllers/admin/index_admin_controller.py:94|
+|Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|Farbe #1 wird bis {delay_1} Minuten vor dem Start der Runden verwendet (Verzögerung #1), die Farbe ändert sich dann allmählich bis Farbe #2 ({delay_2} Minuten vor dem Start der Runden).|src/web/controllers/admin/index_admin_controller.py:88|
+|Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Farbe #2 wird verwendet {delay_2} Minuten vor dem Start der Runden (Verzögerung #2), ändert sich die Farbe dann allmählich bis Farbe #3 (zum Beginn der Runden).|src/web/controllers/admin/index_admin_controller.py:91|
+|Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|Farbe #3 wird von Beginn der Runden und für {delay_3} Minuten nach (Verzögerung #3) verwendet.|src/web/controllers/admin/index_admin_controller.py:94|
 |Pairings by board|Kombinationen nach Bord|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:49<br>src/web/templates/admin_screens.html:64|
 |Use no timer|Kein Timer verwenden|src/web/controllers/admin/index_admin_controller.py:115|
 |No timer defined|Kein Timer definiert|src/web/controllers/admin/index_admin_controller.py:115|
@@ -333,8 +334,8 @@
 |File [{file}] not found.|Die Datei [{file}] wurde nicht gefunden.|src/web/controllers/admin/index_admin_controller.py:191<br>src/web/controllers/admin/index_admin_controller.py:305|
 |Wrong file extension [{ext}] ([pdf] expected).|Falsche Dateiendung [{ext}] ([pdf] erwartet).|src/web/controllers/admin/index_admin_controller.py:193|
 |Invalid color [{color}] ([#RRGGBB] expected).|Ungültige Farbe [{color}] ([#RRGGBB] erwartet).|src/web/controllers/admin/index_admin_controller.py:208<br>src/web/controllers/admin/index_admin_controller.py:315<br>src/web/controllers/admin/index_admin_controller.py:330<br>src/web/controllers/admin/index_admin_controller.py:336<br>src/web/controllers/admin/timer_admin_controller.py:104|
-|Please enter the event id.|Bitte geben Sie die Event-ID ein.|src/web/controllers/admin/index_admin_controller.py:226<br>src/web/controllers/admin/index_admin_controller.py:231|
-|Event id does not match.|Event-ID passt nicht.|src/web/controllers/admin/index_admin_controller.py:228|
+|Please enter the event ID.|Bitte geben Sie die Event-ID ein.|src/web/controllers/admin/index_admin_controller.py:226<br>src/web/controllers/admin/index_admin_controller.py:231|
+|event ID does not match.|Event-ID passt nicht.|src/web/controllers/admin/index_admin_controller.py:228|
 |Event [{uniq_id}] already exists.|Event [{uniq_id}] existiert bereits.|src/web/controllers/admin/index_admin_controller.py:239<br>src/web/controllers/admin/index_admin_controller.py:242|
 |Please enter the name of the event.|Bitte geben Sie den Namen des Ereignisses ein.|src/web/controllers/admin/index_admin_controller.py:265|
 |Please enter the start date of the event.|Bitte geben Sie das Startdatum des Events ein.|src/web/controllers/admin/index_admin_controller.py:268|
@@ -346,19 +347,19 @@
 |event|Veranstaltung|src/web/controllers/admin/index_admin_controller.py:429|
 |Current events ({num})|Aktuelle Veranstaltungen ({num})|src/web/controllers/admin/index_admin_controller.py:526<br>src/web/controllers/user/index_user_controller.py:84|
 |No current events.|Keine aktuellen Ereignisse.|src/web/controllers/admin/index_admin_controller.py:530<br>src/web/controllers/user/index_user_controller.py:86|
-|Coming events ({num})|Nächste Veranstaltungen ({num})|src/web/controllers/admin/index_admin_controller.py:534<br>src/web/controllers/user/index_user_controller.py:92|
-|No coming events.|Keine kommenden Ereignisse.|src/web/controllers/admin/index_admin_controller.py:538<br>src/web/controllers/user/index_user_controller.py:94|
+|Upcoming events ({num})|Nächste Veranstaltungen ({num})|src/web/controllers/admin/index_admin_controller.py:534<br>src/web/controllers/user/index_user_controller.py:92|
+|No upcoming events.|Keine kommenden Ereignisse.|src/web/controllers/admin/index_admin_controller.py:538<br>src/web/controllers/user/index_user_controller.py:94|
 |Passed events ({num})|Verabschiedete Veranstaltungen ({num})|src/web/controllers/admin/index_admin_controller.py:542<br>src/web/controllers/user/index_user_controller.py:100|
 |No passed events.|Keine bestandenen Ereignisse.|src/web/controllers/admin/index_admin_controller.py:546<br>src/web/controllers/user/index_user_controller.py:102|
 |Archived events ({num})|Archivierte Veranstaltungen ({num})|src/web/controllers/admin/index_admin_controller.py:550|
 |No archived events.|Keine archivierten Ereignisse.|src/web/controllers/admin/index_admin_controller.py:554|
 |Papi-web configuration|Konfiguration von Papi-web|src/web/controllers/admin/index_admin_controller.py:558<br>src/web/templates/admin_config.html:4|
-|Please enter the rotator id.|Bitte geben Sie die Rotator-ID ein.|src/web/controllers/admin/rotator_admin_controller.py:74|
+|Please enter the rotator ID.|Bitte geben Sie die Rotator-ID ein.|src/web/controllers/admin/rotator_admin_controller.py:74|
 |Rotator [{uniq_id}] already exists.|Rotator [{uniq_id}] existiert bereits.|src/web/controllers/admin/rotator_admin_controller.py:79<br>src/web/controllers/admin/rotator_admin_controller.py:83|
 |Rotator [{rotator_uniq_id}] has been created.|Rotator [{rotator_uniq_id}] wurde erstellt.|src/web/controllers/admin/rotator_admin_controller.py:268|
 |Rotator [{rotator_uniq_id}] has been updated.|Rotator [{rotator_uniq_id}] wurde aktualisiert.|src/web/controllers/admin/rotator_admin_controller.py:274|
 |Rotator [{rotator_uniq_id}] has been deleted.|Rotator [{rotator_uniq_id}] wurde gelöscht.|src/web/controllers/admin/rotator_admin_controller.py:280|
-|Please enter the screen id.|Bitte geben Sie die Bildschirm-ID ein.|src/web/controllers/admin/screen_admin_controller.py:121|
+|Please enter the screen ID.|Bitte geben Sie die Bildschirm-ID ein.|src/web/controllers/admin/screen_admin_controller.py:121|
 |Screen [{uniq_id}] already exists.|Bildschirm [{uniq_id}] existiert bereits.|src/web/controllers/admin/screen_admin_controller.py:128<br>src/web/controllers/admin/screen_admin_controller.py:132|
 |Please enter the image URL.|Bitte geben Sie die Bild-URL ein.|src/web/controllers/admin/screen_admin_controller.py:182|
 |Invalid URL [{background_image}].|Ungültige URL [{background_image}].|src/web/controllers/admin/screen_admin_controller.py:184|
@@ -366,9 +367,9 @@
 |Screen [{screen_uniq_id}] has been created.|Bildschirm [{screen_uniq_id}] wurde erstellt.|src/web/controllers/admin/screen_admin_controller.py:562<br>src/web/controllers/admin/screen_admin_controller.py:571|
 |Screen [{screen_uniq_id}] has been updated.|Bildschirm [{screen_uniq_id}] wurde aktualisiert.|src/web/controllers/admin/screen_admin_controller.py:577|
 |Screen [{screen_uniq_id}] has been deleted.|Der Bildschirm [{screen_uniq_id}] wurde gelöscht.|src/web/controllers/admin/screen_admin_controller.py:583|
-|Please enter the timer id.|Bitte geben Sie die Timer-ID ein.|src/web/controllers/admin/timer_admin_controller.py:83|
+|Please enter the timer ID.|Bitte geben Sie die Timer-ID ein.|src/web/controllers/admin/timer_admin_controller.py:83|
 |Timer [{uniq_id}] already exists.|Timer [{uniq_id}] existiert bereits.|src/web/controllers/admin/timer_admin_controller.py:88<br>src/web/controllers/admin/timer_admin_controller.py:92|
-|Please enter the round number or the hour id.|Bitte geben Sie die runde Nummer oder die Stunden-ID ein.|src/web/controllers/admin/timer_admin_controller.py:135|
+|Please enter the round number or the hour ID.|Bitte geben Sie die runde Nummer oder die Stunden-ID ein.|src/web/controllers/admin/timer_admin_controller.py:135|
 |Please enter the time.|Bitte geben Sie die Zeit ein.|src/web/controllers/admin/timer_admin_controller.py:139|
 |Please enter a valid time.|Bitte geben Sie eine gültige Zeit ein.|src/web/controllers/admin/timer_admin_controller.py:143|
 |Please enter the date of the first hour.|Bitte geben Sie das Datum der ersten Stunde ein.|src/web/controllers/admin/timer_admin_controller.py:145|
@@ -381,11 +382,11 @@
 |Timer [{timer_uniq_id}] has been created.|Der Timer [{timer_uniq_id}] wurde erstellt.|src/web/controllers/admin/timer_admin_controller.py:349<br>src/web/controllers/admin/timer_admin_controller.py:392|
 |Timer [{timer_uniq_id}] has been updated.|Der Timer [{timer_uniq_id}] wurde aktualisiert.|src/web/controllers/admin/timer_admin_controller.py:358|
 |Timer [{timer_uniq_id}] has been deleted.|Der Timer [{timer_uniq_id}] wurde gelöscht.|src/web/controllers/admin/timer_admin_controller.py:381|
-|Please enter the tournament id.|Bitte geben Sie die Turnier-ID ein.|src/web/controllers/admin/tournament_admin_controller.py:68<br>src/web/controllers/admin/tournament_admin_controller.py:73|
-|Tournament id does not match.|Turnier-ID passt nicht.|src/web/controllers/admin/tournament_admin_controller.py:70|
+|Please enter the tournament ID.|Bitte geben Sie die Turnier-ID ein.|src/web/controllers/admin/tournament_admin_controller.py:68<br>src/web/controllers/admin/tournament_admin_controller.py:73|
+|tournament ID does not match.|Turnier-ID passt nicht.|src/web/controllers/admin/tournament_admin_controller.py:70|
 |Tournament [{uniq_id}] already exists.|Turnier [{uniq_id}] existiert bereits.|src/web/controllers/admin/tournament_admin_controller.py:80<br>src/web/controllers/admin/tournament_admin_controller.py:84|
 |Please enter the tournament name.|Bitte geben Sie den Turniernamen ein.|src/web/controllers/admin/tournament_admin_controller.py:105|
-|The FFE id is a positive integer.|Die FFE-ID ist eine positive Ganzzahl.|src/web/controllers/admin/tournament_admin_controller.py:111|
+|The FFE ID is a positive integer.|Die FFE-ID ist eine positive Ganzzahl.|src/web/controllers/admin/tournament_admin_controller.py:111|
 |The password of the tournament on the FFE website is made of 10 uppercase letters.|Das Passwort des Turniers auf der FFE-Website besteht aus 10 Großbuchstaben.|src/web/controllers/admin/tournament_admin_controller.py:114|
 |tournament|Turnier|src/web/controllers/admin/tournament_admin_controller.py:190|
 |New tournament|Neues Turnier|src/web/controllers/admin/tournament_admin_controller.py:191|
@@ -393,7 +394,7 @@
 |Tournament [{tournament_uniq_id}] has been created.|Turnier [{tournament_uniq_id}] wurde erstellt.|src/web/controllers/admin/tournament_admin_controller.py:365|
 |Tournament [{tournament_uniq_id}] has been updated.|Turnier [{tournament_uniq_id}] wurde aktualisiert.|src/web/controllers/admin/tournament_admin_controller.py:374|
 |Tournament [{tournament_uniq_id}] has been deleted.|Turnier [{tournament_uniq_id}] wurde gelöscht.|src/web/controllers/admin/tournament_admin_controller.py:383|
-|Entry of results ({num})|Eintrag der Ergebnisse ({num})|src/web/controllers/user/event_user_controller.py:100|
+|Results entry ({num})|Eintrag der Ergebnisse ({num})|src/web/controllers/user/event_user_controller.py:100|
 |Pairings by board ({num})|Kombinationen nach Vorstand ({num})|src/web/controllers/user/event_user_controller.py:105|
 |Pairings by player ({num})|Kombinationen nach Spieler ({num})|src/web/controllers/user/event_user_controller.py:110|
 |Last results ({num})|Letzte Ergebnisse ({num})|src/web/controllers/user/event_user_controller.py:115|
@@ -405,7 +406,7 @@
 |Archived event|Archivierte Veranstaltung|src/web/templates/admin_archives.html:11|
 |Deletion date|Datum der Löschung|src/web/templates/admin_archives.html:12|
 |Check-in|Einchecken|src/web/templates/admin_check_in.html:1<br>src/web/templates/user_screen.html:249|
-|ChessEvent id: %(chessevent_user_id)s|ChessEvent id: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:14|
+|Chessevent ID: %(chessevent_user_id)s|Chessevent ID: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:14|
 |ChessEvent password: %(chessevent_password)s|ChessEvent-Passwort: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:17|
 |ChessEvent event: %(chessevent_event)s|ChessEvent: %(chessevent_event)s|src/web/templates/admin_chessevent_card.html:20|
 |Edit the properties of the ChessEvent connection.|Bearbeiten Sie die Eigenschaften der ChessEvent-Verbindung.|src/web/templates/admin_chessevent_card.html:25|
@@ -418,12 +419,12 @@
 |Warning: the deletion of a ChessEvent connection is permanent!|Warnung: Das Löschen einer ChessEvent-Verbindung ist dauerhaft!|src/web/templates/admin_chessevent_modal.html:31|
 |The following tournaments will not be connected to ChessEvent anymore:|Die folgenden Turniere werden nicht mehr mit ChessEvent verbunden:|src/web/templates/admin_chessevent_modal.html:34|
 |Properties|Eigenschaften|src/web/templates/admin_chessevent_modal.html:43<br>src/web/templates/admin_event_modal.html:55<br>src/web/templates/admin_rotator_modal.html:35<br>src/web/templates/admin_screen_sets_modal_set_div.html:11<br>src/web/templates/admin_timer_modal.html:37<br>src/web/templates/admin_tournament_modal.html:71|
-|Id (unique):|ID (einzigartig):|src/web/templates/admin_chessevent_modal.html:49<br>src/web/templates/admin_event_modal.html:60<br>src/web/templates/admin_family_modal.html:90<br>src/web/templates/admin_rotator_modal.html:71<br>src/web/templates/admin_screen_modal.html:96<br>src/web/templates/admin_timer_modal.html:42<br>src/web/templates/admin_tournament_modal.html:76|
-|The unique id, used to reference the ChessEvent connection.|Die einzigartige ID, verwendet, um die ChessEvent-Verbindung zu verweisen.|src/web/templates/admin_chessevent_modal.html:58|
+|ID (unique):|ID (einzigartig):|src/web/templates/admin_chessevent_modal.html:49<br>src/web/templates/admin_event_modal.html:60<br>src/web/templates/admin_family_modal.html:90<br>src/web/templates/admin_rotator_modal.html:71<br>src/web/templates/admin_screen_modal.html:96<br>src/web/templates/admin_timer_modal.html:42<br>src/web/templates/admin_tournament_modal.html:76|
+|The Unique ID, used to reference the ChessEvent connection.|Die einzigartige ID, verwendet, um die ChessEvent-Verbindung zu verweisen.|src/web/templates/admin_chessevent_modal.html:58|
 |Connection to the ChessEvent platform|Verbindung zur ChessEvent-Plattform|src/web/templates/admin_chessevent_modal.html:70|
-|ChessEvent id:|ChessEvent ID:|src/web/templates/admin_chessevent_modal.html:76|
+|Chessevent ID:|Chessevent ID:|src/web/templates/admin_chessevent_modal.html:76|
 |E.g.: %(string)s|Z.B.: %(string)s|src/web/templates/admin_chessevent_modal.html:82<br>src/web/templates/admin_screen_sets_modal_set_div.html:157<br>src/web/templates/admin_tournament_modal.html:188|
-|The id used to connect to the ChessEvent platform.|Die ID wurde verwendet, um sich mit der ChessEvent-Plattform zu verbinden.|src/web/templates/admin_chessevent_modal.html:85|
+|the ID used to connect to the ChessEvent platform.|Die ID wurde verwendet, um sich mit der ChessEvent-Plattform zu verbinden.|src/web/templates/admin_chessevent_modal.html:85|
 |Password:|Passwort:|src/web/templates/admin_chessevent_modal.html:98|
 |E.g.: my_password|Z.B.: mein_Passwort|src/web/templates/admin_chessevent_modal.html:105<br>src/web/templates/admin_event_modal.html:202|
 |The password used to connect to the ChessEvent platform.|Das Passwort für die Verbindung zur ChessEvent-Plattform.|src/web/templates/admin_chessevent_modal.html:112|
@@ -450,10 +451,10 @@
 |Access driver (found)|Zugriffstreiber (gefunden)|src/web/templates/admin_config.html:87|
 |Access driver (not found)|Zugriffstreiber (nicht gefunden)|src/web/templates/admin_config.html:89|
 |Other ODBC drivers found on the server|Andere ODBC-Treiber auf dem Server gefunden|src/web/templates/admin_config.html:95|
-|Color #%(num)d:|Farbe #%(num)d:|src/web/templates/admin_edit_timer_colors.html:11|
+|Colour #%(num)d:|Farbe #%(num)d:|src/web/templates/admin_edit_timer_colors.html:11|
 |by default|Standardmäßig|src/web/templates/admin_edit_timer_colors.html:17<br>src/web/templates/admin_event_modal.html:352<br>src/web/templates/admin_event_modal.html:501<br>src/web/templates/admin_screen_modal.html:445<br>src/web/templates/admin_screen_modal_message.html:12<br>src/web/templates/user_screen_card.html:46|
 |Delay #%(num)d:|Verzögerung #%(num)d:|src/web/templates/admin_edit_timer_delays.html:5|
-|Unique id: %(uniq_id)s|Einzigartige ID: %(uniq_id)s|src/web/templates/admin_event_card.html:20|
+|Unique ID: %(uniq_id)s|Einzigartige ID: %(uniq_id)s|src/web/templates/admin_event_card.html:20|
 |Tournaments: %(num)d|Turniere: %(num)d|src/web/templates/admin_event_card.html:27<br>src/web/templates/user_event_card.html:20|
 |ChessEvent connections: %(num)d|ChessEvent-Verbindungen: %(num)d|src/web/templates/admin_event_card.html:34|
 |Timers: %(num)d|Timer: %(num)d|src/web/templates/admin_event_card.html:41|
@@ -465,7 +466,7 @@
 |Informations: %(num)d|Informationen: %(num)d|src/web/templates/admin_event_card.html:83|
 |Clone|Klonen|src/web/templates/admin_event_config.html:24|
 |Customization|Anpassung|src/web/templates/admin_event_config.html:41|
-|Unique id|Einzigartig id|src/web/templates/admin_event_config.html:47|
+|Unique ID|Einzigartig id|src/web/templates/admin_event_config.html:47|
 |Start|Starten|src/web/templates/admin_event_config.html:52|
 |End|Ende|src/web/templates/admin_event_config.html:57|
 |Visibility|Sichtbarkeit|src/web/templates/admin_event_config.html:62|
@@ -473,7 +474,7 @@
 |Private event|Private Veranstaltung|src/web/templates/admin_event_config.html:65|
 |Default directory of the Papi files|Standardverzeichnis der Papi-Dateien|src/web/templates/admin_event_config.html:70|
 |(by default)|(standardmäßig)|src/web/templates/admin_event_config.html:75<br>src/web/templates/admin_event_config.html:112<br>src/web/templates/admin_family_card.html:33<br>src/web/templates/admin_family_card.html:60<br>src/web/templates/admin_family_card.html:72<br>src/web/templates/admin_family_card.html:84<br>src/web/templates/admin_family_card.html:91<br>src/web/templates/admin_rotator_card.html:18<br>src/web/templates/admin_rotator_card.html:30<br>src/web/templates/admin_rotator_card.html:37<br>src/web/templates/admin_screen_card.html:28<br>src/web/templates/admin_screen_card.html:56<br>src/web/templates/admin_screen_card.html:68<br>src/web/templates/admin_screen_card.html:88<br>src/web/templates/admin_screen_card.html:104<br>src/web/templates/admin_screen_card.html:117<br>src/web/templates/admin_screen_card.html:124|
-|Background image and color|Hintergrundbild und Farbe|src/web/templates/admin_event_config.html:82|
+|Background image and colour|Hintergrundbild und Farbe|src/web/templates/admin_event_config.html:82|
 |Password to enter results|Passwort für die Eingabe der Ergebnisse|src/web/templates/admin_event_config.html:90|
 |No password required|Kein Passwort erforderlich|src/web/templates/admin_event_config.html:96|
 |Maximum number of illegal moves|Maximale Anzahl illegaler Bewegungen|src/web/templates/admin_event_config.html:103|
@@ -489,10 +490,10 @@
 |Edition of event [%(event_uniq_id)s]|Ausgabe der Veranstaltung [%(event_uniq_id)s]|src/web/templates/admin_event_modal.html:22|
 |Deletion of event [%(event_uniq_id)s]|Löschung der Veranstaltung [%(event_uniq_id)s]|src/web/templates/admin_event_modal.html:24|
 |Warning: the deletion of an event is permanent!|Warnung: Die Löschung eines Ereignisses ist dauerhaft!|src/web/templates/admin_event_modal.html:31|
-|Enter the event id to confirm its deletion:|Geben Sie die Ereignis-ID ein, um ihre Löschung zu bestätigen:|src/web/templates/admin_event_modal.html:35|
-|Enter here the event id|Geben Sie hier die Ereignis-ID ein|src/web/templates/admin_event_modal.html:41|
-|Recovering deleted event is not possible from the web interface (however the events are archived and can be recovered from the filesystem.|Das Wiederherstellen gelöschter Ereignisse ist von der Web-Schnittstelle nicht möglich (jedoch werden die Ereignisse archiviert und können aus dem Dateisystem wiederhergestellt werden.|src/web/templates/admin_event_modal.html:44|
-|The unique id, used for data storage and export.|Die einzigartige ID, die für die Datenspeicherung und den Export verwendet wird.|src/web/templates/admin_event_modal.html:69|
+|Enter the event ID to confirm its deletion:|Geben Sie die Ereignis-ID ein, um ihre Löschung zu bestätigen:|src/web/templates/admin_event_modal.html:35|
+|Enter here the event ID|Geben Sie hier die Ereignis-ID ein|src/web/templates/admin_event_modal.html:41|
+|Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.|Das Wiederherstellen gelöschter Ereignisse ist von der Web-Schnittstelle nicht möglich (jedoch werden die Ereignisse archiviert und können aus dem Dateisystem wiederhergestellt werden.|src/web/templates/admin_event_modal.html:44|
+|The Unique ID, used for data storage and export.|Die einzigartige ID, die für die Datenspeicherung und den Export verwendet wird.|src/web/templates/admin_event_modal.html:69|
 |Name:|Bezeichnung:|src/web/templates/admin_event_modal.html:80<br>src/web/templates/admin_family_modal.html:116<br>src/web/templates/admin_screen_modal.html:122<br>src/web/templates/admin_screen_sets_modal_set_div.html:40<br>src/web/templates/admin_tournament_modal.html:96|
 |The name of the event, used for display and reports.|Der Name des Ereignisses, der für die Anzeige und Berichte verwendet wird.|src/web/templates/admin_event_modal.html:89|
 |Visibility:|Sichtbarkeit:|src/web/templates/admin_event_modal.html:105<br>src/web/templates/admin_family_modal.html:65<br>src/web/templates/admin_rotator_modal.html:45<br>src/web/templates/admin_screen_modal.html:71|
@@ -502,7 +503,7 @@
 |End:|Ende:|src/web/templates/admin_event_modal.html:151|
 |The end date and time of the event.|Datum und Uhrzeit der Veranstaltung.|src/web/templates/admin_event_modal.html:159|
 |Default directory of the Papi files:|Standardverzeichnis der Papi-Dateien:|src/web/templates/admin_event_modal.html:170|
-|The default directory of the Papi files of the tournaments (absolute or relative path, by default %(dir)s).|Das Standardverzeichnis der Papi-Dateien der Turniere (absolute oder relative Pfad, standardmäßig %(dir)s).|src/web/templates/admin_event_modal.html:179|
+|The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).|Das Standardverzeichnis der Papi-Dateien der Turniere (absolute oder relative Pfad, standardmäßig %(dir)s).|src/web/templates/admin_event_modal.html:179|
 |Password to enter results:|Passwort für die Eingabe der Ergebnisse:|src/web/templates/admin_event_modal.html:195|
 |The password required on input screens to enter results (optional).|Das Passwort, das auf Eingabebildschirmen benötigt wird, um Ergebnisse einzugeben (optional).|src/web/templates/admin_event_modal.html:209|
 |Illegal moves recording:|Illegale Verschiebungen der Aufzeichnung:|src/web/templates/admin_event_modal.html:229<br>src/web/templates/admin_tournament_modal.html:395|
@@ -513,11 +514,11 @@
 |Background image:|Hintergrundbild:|src/web/templates/admin_event_modal.html:290|
 |no background image|kein Hintergrundbild|src/web/templates/admin_event_modal.html:295|
 |The URL or the path of the image to display (by default the Papi-web logo).|Die URL oder der Pfad des anzuzeigenden Bildes (standardmäßig das Papi-Web-Logo).|src/web/templates/admin_event_modal.html:327|
-|Background color:|Hintergrundfarbe:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:439<br>src/web/templates/user_screen_card.html:68|
-|The background color is used when the image dost fill the whole screen.|Die Hintergrundfarbe wird verwendet, wenn das Bild den gesamten Bildschirm füllt.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:464|
+|Background colour:|Hintergrundfarbe:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:439<br>src/web/templates/user_screen_card.html:68|
+|The background colour is used when the image dost fill the whole screen.|Die Hintergrundfarbe wird verwendet, wenn das Bild den gesamten Bildschirm füllt.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:464|
 |Choose a custom image:|Wählen Sie ein benutzerdefiniertes Bild:|src/web/templates/admin_event_modal.html:413|
 |Timers|Zeitmesser|src/web/templates/admin_event_modal.html:436|
-|Text color:|Textfarbe:|src/web/templates/admin_event_modal.html:495|
+|Text colour:|Textfarbe:|src/web/templates/admin_event_modal.html:495|
 |Text:|Text:|src/web/templates/admin_event_modal.html:531|
 |E.g.: Please keep quiet until the end of the round!|Z.B.: Bitte schweigen Sie bis zum Ende der Runde!|src/web/templates/admin_event_modal.html:537<br>src/web/templates/admin_screen_modal_message.html:18|
 |When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.|Wenn definiert, wird die Warnmeldung in einem Scrolling-Banner am unteren Bildschirmrand angezeigt. Die Warnmeldung auf Ereignisebene kann bei Rotator, Bildschirmfamilie oder Bildschirmebene überschrieben werden.|src/web/templates/admin_event_modal.html:540|
@@ -557,13 +558,13 @@
 |Edition of screen family [%(family_uniq_id)s]|Ausgabe der Bildschirmfamilie [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:32|
 |Deletion of screen family [%(family_uniq_id)s]|Löschen der Bildschirmfamilie [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:34|
 |Warning: the deletion of a screen family is permanent!|Warnung: Das Löschen einer Bildschirmfamilie ist dauerhaft!|src/web/templates/admin_family_modal.html:43|
-|Properties (entry of results)|Eigenschaften (Eingabe der Ergebnisse)|src/web/templates/admin_family_modal.html:48<br>src/web/templates/admin_screen_modal.html:50|
+|Properties (results entry)|Eigenschaften (Eingabe der Ergebnisse)|src/web/templates/admin_family_modal.html:48<br>src/web/templates/admin_screen_modal.html:50|
 |Properties (pairings by board)|Eigenschaften (Paarungen nach Board)|src/web/templates/admin_family_modal.html:50<br>src/web/templates/admin_screen_modal.html:52|
 |Properties (pairings by player)|Eigenschaften (Paarungen nach Spieler)|src/web/templates/admin_family_modal.html:52<br>src/web/templates/admin_screen_modal.html:54|
 |Public screen family|Familie mit öffentlichen Bildschirmen|src/web/templates/admin_family_modal.html:76|
 |Only arbiters can see private screen families.|Nur Schiedsrichter können private Bildschirmfamilien sehen.|src/web/templates/admin_family_modal.html:79|
 |E.g.: %(family_type)s-family|Z.B.: %(family_type)s-Familie|src/web/templates/admin_family_modal.html:98|
-|The unique id, used to reference the screen family.|Die einzigartige ID, verwendet, um die Bildschirmfamilie zu verweisen.|src/web/templates/admin_family_modal.html:105|
+|The Unique ID, used to reference the screen family.|Die einzigartige ID, verwendet, um die Bildschirmfamilie zu verweisen.|src/web/templates/admin_family_modal.html:105|
 |E.g.: My screen family|Z.B.: Meine Bildschirmfamilie|src/web/templates/admin_family_modal.html:122|
 |The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament.|Der Name der Bildschirmfamilie, optional. Folgende Token werden automatisch durch die Brettnummern oder Spielernamen ersetzt: %%f=first, %%l=last, %%t=tournament.|src/web/templates/admin_family_modal.html:125|
 |Tournament:|Turnier:|src/web/templates/admin_family_modal.html:136<br>src/web/templates/admin_screen_modal.html:143<br>src/web/templates/admin_screen_sets_modal_set_div.html:16|
@@ -582,7 +583,7 @@
 |On a given number of screens:|Auf einer bestimmten Anzahl von Bildschirmen:|src/web/templates/admin_family_modal.html:240|
 |E.g.: 4 (split on 4 screens)|Z.B.: 4 (auf 4 Bildschirmen aufgeteilt)|src/web/templates/admin_family_modal.html:247|
 |The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards).|Die Anzahl der Bildschirme, auf denen die Bretter verteilt werden, optional (die Anzahl der Bildschirme ist immer die gleiche und die Anzahl der Bretter pro Bildschirm passt sich an die Anzahl der Bretter).|src/web/templates/admin_family_modal.html:251|
-|The number of screens on which the player will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.|Die Anzahl der Bildschirme, auf denen der Spieler verteilt wird, optional (die Anzahl der Bildschirme ist immer die gleiche und die Anzahl der Spieler pro Bildschirm passt sich der Anzahl der Spieler an.|src/web/templates/admin_family_modal.html:253|
+|The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.|Die Anzahl der Bildschirme, auf denen der Spieler verteilt wird, optional (die Anzahl der Bildschirme ist immer die gleiche und die Anzahl der Spieler pro Bildschirm passt sich der Anzahl der Spieler an.|src/web/templates/admin_family_modal.html:253|
 |On fixed size screens:|Auf Bildschirmen mit fester Größe:|src/web/templates/admin_family_modal.html:268|
 |The number of boards per screen, optional (the number of screens adapts to the number of boards).|Die Anzahl der Boards pro Bildschirm, optional (die Anzahl der Screens passt sich der Anzahl der Boards an).|src/web/templates/admin_family_modal.html:279|
 |The number of players per screen, optional (the number of screens adapts to the number of players).|Die Anzahl der Spieler pro Bildschirm, optional (die Anzahl der Bildschirme passt sich der Anzahl der Spieler an).|src/web/templates/admin_family_modal.html:281|
@@ -623,13 +624,13 @@
 |Warning: the deletion of a rotator is permanent!|Warnung: Das Löschen eines Rotators ist dauerhaft!|src/web/templates/admin_rotator_modal.html:31|
 |Public rotator|Öffentlicher Rotator|src/web/templates/admin_rotator_modal.html:56|
 |Only arbiters can view private rotators.|Nur Schiedsrichter können private Rotatoren sehen.|src/web/templates/admin_rotator_modal.html:59|
-|The unique id, used to reference the rotator.|Die einzigartige ID, verwendet, um den Rotator zu verweisen.|src/web/templates/admin_rotator_modal.html:80|
+|The Unique ID, used to reference the rotator.|Die einzigartige ID, verwendet, um den Rotator zu verweisen.|src/web/templates/admin_rotator_modal.html:80|
 |Parameters|Parameter|src/web/templates/admin_rotator_modal.html:92|
 |Delay:|Verzögerung:|src/web/templates/admin_rotator_modal.html:98|
 |E.g.: %(seconds)d (seconds)|Z.B.: %(seconds)d (Sekunden)|src/web/templates/admin_rotator_modal.html:104<br>src/web/templates/admin_tournament_modal.html:316<br>src/web/templates/admin_tournament_modal.html:356|
 |The rotating delay between two screens (by default %(default)d seconds).|Die rotierende Verzögerung zwischen zwei Bildschirmen (standardmäßig %(default)d Sekunden).|src/web/templates/admin_rotator_modal.html:107|
 |Selection|Auswahl|src/web/templates/admin_rotator_modal.html:119|
-|entry of results|Eintrag der Ergebnisse|src/web/templates/admin_rotator_modal.html:120|
+|results entry|Eintrag der Ergebnisse|src/web/templates/admin_rotator_modal.html:120|
 |pairings by player|Paarungen nach Spielern|src/web/templates/admin_rotator_modal.html:122|
 |last results|Letzte Ergebnisse|src/web/templates/admin_rotator_modal.html:123|
 |image|Bild|src/web/templates/admin_rotator_modal.html:124|
@@ -649,7 +650,7 @@
 |**Singulär:** Max age: %(num)d minute<br/>**Plural:** Max age: %(num)d minutes|**Singulär:** Höchstalter: %(num)d Minute<br/>**Plural:** Höchstalter: %(num)d Minuten|src/web/templates/admin_screen_card.html:82|
 |Max age: unlimited|Höchstalter: unbegrenzt|src/web/templates/admin_screen_card.html:84|
 |Image: %(image)s|Bild: %(image)s|src/web/templates/admin_screen_card.html:97|
-|Background color: %(color)s|Hintergrundfarbe: %(color)s|src/web/templates/admin_screen_card.html:101|
+|Background colour: %(color)s|Hintergrundfarbe: %(color)s|src/web/templates/admin_screen_card.html:101|
 |All the tournaments|Alle Turniere|src/web/templates/admin_screen_card.html:142<br>src/web/templates/user_screen_card.html:90|
 |Edit the properties of the screen.|Bearbeiten Sie die Eigenschaften des Bildschirms.|src/web/templates/admin_screen_card.html:151|
 |Edit the sets of boards displayed on the screen.|Bearbeiten Sie die Sätze der auf dem Bildschirm angezeigten Boards.|src/web/templates/admin_screen_card.html:168|
@@ -668,7 +669,7 @@
 |Public screen|Öffentlicher Bildschirm|src/web/templates/admin_screen_modal.html:82|
 |Only arbiters can see private screens.|Nur Schiedsrichter können private Bildschirme sehen.|src/web/templates/admin_screen_modal.html:85|
 |E.g.: %(screen_type)s-screen|Z.B.: %(screen_type)s-Bildschirm|src/web/templates/admin_screen_modal.html:104|
-|The unique id, used to reference the screen.|Die eindeutige ID, verwendet, um den Bildschirm zu verweisen.|src/web/templates/admin_screen_modal.html:111|
+|The Unique ID, used to reference the screen.|Die eindeutige ID, verwendet, um den Bildschirm zu verweisen.|src/web/templates/admin_screen_modal.html:111|
 |E.g.: My screen|Z.B.: Mein Bildschirm|src/web/templates/admin_screen_modal.html:128|
 |The name of the screen, displayed on event screens.|Der Name des Bildschirms, der auf Ereignisbildschirmen angezeigt wird.|src/web/templates/admin_screen_modal.html:131|
 |The first tournament of the screen, mandatory (it is possible to add other tournaments later).|Das erste Turnier des Bildschirms, obligatorisch (es ist möglich, weitere Turniere später hinzuzufügen).|src/web/templates/admin_screen_modal.html:156|
@@ -694,8 +695,8 @@
 |Alert message:|Warnmeldung:|src/web/templates/admin_screen_modal_message.html:7|
 |Display of unpaired players:|Anzeige von ungepaarten Spielern:|src/web/templates/admin_screen_modal_players_show_unpaired.html:2|
 |When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye).|Wenn ungepaarte Spieler nicht angezeigt werden, gibt es keine Möglichkeit, die abwesenden (Nullpunkt) Spieler und die Spieler mit einem Halbpunkt-Bye zu unterscheiden.|src/web/templates/admin_screen_modal_players_show_unpaired.html:15|
-|Boards sets of screen [%(screen_uniq_id)s]|Boards-Sets des Bildschirms [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:6|
-|Players sets of screen [%(screen_uniq_id)s]|Spieler-Sets des Bildschirms [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:8|
+|Board sets of screen [%(screen_uniq_id)s]|Boards-Sets des Bildschirms [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:6|
+|Player sets of screen [%(screen_uniq_id)s]|Spieler-Sets des Bildschirms [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:8|
 |Save the set or cancel.|Speichern Sie das Set oder stornieren.|src/web/templates/admin_screen_sets_modal.html:15|
 |Drag the sets to order them.|Ziehen Sie die Sets, um sie zu bestellen.|src/web/templates/admin_screen_sets_modal.html:17|
 |Add a set|Einen Satz hinzufügen|src/web/templates/admin_screen_sets_modal.html:49|
@@ -752,9 +753,9 @@
 |Add a timer to the event.|Fügen Sie dem Event einen Timer hinzu.|src/web/templates/admin_timers.html:21|
 |Create a timer|Einen Timer erstellen|src/web/templates/admin_timers.html:30|
 |No timers.|Keine Timer.|src/web/templates/admin_timers.html:45|
-|The Papi file of the tournament does not exist (%(papi_file)s).|Die Papi-Datei des Turniers existiert nicht (%(papi_file)s).|src/web/templates/admin_tournament_card.html:15|
-|The Papi file of the tournament exists but could not be read (%(papi_file)s).|Die Papi-Datei des Turniers existiert, konnte aber nicht gelesen werden (%(papi_file)s).|src/web/templates/admin_tournament_card.html:18|
-|The Papi file of the tournament was successfully read (%(papi_file)s).|Die Papi-Datei des Turniers wurde erfolgreich gelesen (%(papi_file)s).|src/web/templates/admin_tournament_card.html:21|
+|The Papi file for the tournament does not exist (%(papi_file)s).|Die Papi-Datei des Turniers existiert nicht (%(papi_file)s).|src/web/templates/admin_tournament_card.html:15|
+|The Papi file for the tournament exists but could not be read (%(papi_file)s).|Die Papi-Datei des Turniers existiert, konnte aber nicht gelesen werden (%(papi_file)s).|src/web/templates/admin_tournament_card.html:18|
+|The Papi file for the tournament was successfully read (%(papi_file)s).|Die Papi-Datei des Turniers wurde erfolgreich gelesen (%(papi_file)s).|src/web/templates/admin_tournament_card.html:21|
 |Players found in the Papi_file : %(num)d|Spieler gefunden in der Papi_file : %(num)d|src/web/templates/admin_tournament_card.html:48|
 |ChessEvent connection [%(chessevent_uniq_id)s] is used.|ChessEvent Verbindung [%(chessevent_uniq_id)s] wird verwendet.|src/web/templates/admin_tournament_card.html:72|
 |No ChessEvent connection is used.|Es wird keine ChessEvent-Verbindung verwendet.|src/web/templates/admin_tournament_card.html:74|
@@ -770,18 +771,18 @@
 |Warning: the deletion of a tournament is permanent!|Achtung: das Löschen eines Turniers ist dauerhaft!|src/web/templates/admin_tournament_modal.html:31|
 |The following screens will also be deleted:|Die folgenden Bildschirme werden ebenfalls gelöscht:|src/web/templates/admin_tournament_modal.html:34|
 |The following screen families will also be deleted:|Die folgenden Bildschirmfamilien werden ebenfalls gelöscht:|src/web/templates/admin_tournament_modal.html:42|
-|Enter the tournament id to confirm its deletion:|Geben Sie die Turnier-ID ein, um ihre Löschung zu bestätigen:|src/web/templates/admin_tournament_modal.html:51|
-|Enter here the tournament id|Geben Sie hier die Turnier-ID ein|src/web/templates/admin_tournament_modal.html:57|
+|Enter the tournament ID to confirm its deletion:|Geben Sie die Turnier-ID ein, um ihre Löschung zu bestätigen:|src/web/templates/admin_tournament_modal.html:51|
+|Enter here the tournament ID|Geben Sie hier die Turnier-ID ein|src/web/templates/admin_tournament_modal.html:57|
 |The Papi-web tournament are deleted but the Papi file is still available on the filesystem.|Das Papi-Web-Turnier wird gelöscht, aber die Papi-Datei ist immer noch auf dem Dateisystem verfügbar.|src/web/templates/admin_tournament_modal.html:60|
 |E.g.: main|Z.B.: Haupt|src/web/templates/admin_tournament_modal.html:82<br>src/web/templates/admin_tournament_modal.html:142|
-|The unique id, used to reference the tournament.|Die einzigartige ID, verwendet, um das Turnier zu verweisen.|src/web/templates/admin_tournament_modal.html:85|
+|The Unique ID, used to reference the tournament.|Die einzigartige ID, verwendet, um das Turnier zu verweisen.|src/web/templates/admin_tournament_modal.html:85|
 |E.g.: Main tournament|Z.B.: Hauptturnier|src/web/templates/admin_tournament_modal.html:102<br>src/web/templates/admin_tournament_modal.html:247|
 |The name of the tournament, used for display.|Der Name des Turniers, verwendet für die Anzeige.|src/web/templates/admin_tournament_modal.html:105|
 |Directory of the Papi file:|Verzeichnis der Papi-Datei:|src/web/templates/admin_tournament_modal.html:116|
 |E.g.: c:\chess\tournaments\papi|Z.B.: c:\chess\tournaments\papi|src/web/templates/admin_tournament_modal.html:122|
 |The directory of the Papi file, by default %(dir)s.|Das Verzeichnis der Papi-Datei, standardmäßig %(dir)s.|src/web/templates/admin_tournament_modal.html:125|
 |Name of the Papi file (with no extension):|Name der Datei Papi (ohne Erweiterung):|src/web/templates/admin_tournament_modal.html:136|
-|The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then the unique id of the tournament).|Der Name der Papi-Datei, ohne die Erweiterung .papi (standardmäßig die FFE-Qualifikationsnummer des Turniers, dann die eindeutige ID des Turniers).|src/web/templates/admin_tournament_modal.html:145|
+|The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament).|Der Name der Papi-Datei, ohne die Erweiterung .papi (standardmäßig die FFE-Qualifikationsnummer des Turniers, dann die eindeutige ID des Turniers).|src/web/templates/admin_tournament_modal.html:145|
 |Connections (FFE and ChessEvent)|Verbindungen (FFE und ChessEvent)|src/web/templates/admin_tournament_modal.html:156|
 |FFE qualification number (optional):|FFE-Qualifikationsnummer (fakultativ):|src/web/templates/admin_tournament_modal.html:161|
 |The qualification number given by the French Federation is an integer, it is used to connect to the FFE website.|Die von der Französischen Föderation angegebene Qualifikationsnummer ist eine ganze Zahl, sie wird verwendet, um sich mit der FFE-Website zu verbinden.|src/web/templates/admin_tournament_modal.html:170|
@@ -793,7 +794,7 @@
 |The name of the tournament on the ChessEvent platform.|Der Name des Turniers auf der ChessEvent-Plattform.|src/web/templates/admin_tournament_modal.html:250|
 |Time control|Zeitkontrolle|src/web/templates/admin_tournament_modal.html:265|
 |E.g.: %(seconds)d (%(minutes)d minutes)|Z.B.: %(seconds)d (%(minutes)d Minuten)|src/web/templates/admin_tournament_modal.html:276|
-|The initial time in seconds (may be nul if an increment is set).|Die Anfangszeit in Sekunden (kann nul sein, wenn ein Inkrement gesetzt ist).|src/web/templates/admin_tournament_modal.html:279|
+|The initial time in seconds (may be empty if an increment is set).|Die Anfangszeit in Sekunden (kann nul sein, wenn ein Inkrement gesetzt ist).|src/web/templates/admin_tournament_modal.html:279|
 |Increment (optional):|Inkrement (fakultativ):|src/web/templates/admin_tournament_modal.html:290|
 |The number of seconds added to the players' clock at each move.|Die Anzahl der Sekunden, die der Spieleruhr bei jedem Zug hinzugefügt wird.|src/web/templates/admin_tournament_modal.html:299|
 |Penalty (handicap):|Strafe (Handicap):|src/web/templates/admin_tournament_modal.html:310|
@@ -881,24 +882,28 @@
 |Unpaired players: hidden|Unpaarte Spieler: versteckt|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Maximale Anzahl der Ergebnisse: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Maximale Anzahl der Ergebnisse: unbegrenzt|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Zurück zur Dokumentationsübersicht|utils/i18n/i18n_update.py:140|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Englische Übersetzung|utils/i18n/i18n_update.py:141|
-|View file {file}|Datei anzeigen {file}|utils/i18n/i18n_update.py:144|
-|Summary|Zusammenfassung|utils/i18n/i18n_update.py:146|
-|Empty mandatory messages|obligatorische Nachrichten entleeren|utils/i18n/i18n_update.py:150<br>utils/i18n/i18n_update.py:160|
-|Empty messages|Leere Nachrichten|utils/i18n/i18n_update.py:153<br>utils/i18n/i18n_update.py:175|
-|Message flagged [{flag}]|Nachricht markiert [{flag}]|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:198|
-|Message id|Meldungs-ID|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
-|Locations|Standorte|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
-|Singular:|Singulär:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
-|Plural:|Plural:|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:209<br>utils/i18n/i18n_update.py:212|
-|Empty messages are not shown for the default language.|Leere Nachrichten werden für die Standardsprache nicht angezeigt.|utils/i18n/i18n_update.py:178|
-|Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:194|
-|Translation|Übersetzung|utils/i18n/i18n_update.py:200|
+|Return to documentation summary|Zurück zur Dokumentationsübersicht|utils/i18n/i18n_update.py:144|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Englische Übersetzung|utils/i18n/i18n_update.py:145|
+|View file {file}|Datei anzeigen {file}|utils/i18n/i18n_update.py:148|
+|Summary|Zusammenfassung|utils/i18n/i18n_update.py:150|
+|Empty mandatory messages|obligatorische Nachrichten entleeren|utils/i18n/i18n_update.py:154<br>utils/i18n/i18n_update.py:164|
+|Empty messages|Leere Nachrichten|utils/i18n/i18n_update.py:157<br>utils/i18n/i18n_update.py:179|
+|Message flagged [{flag}]|Nachricht markiert [{flag}]|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:202|
+|Message ID|Meldungs-ID|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
+|Locations|Standorte|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
+|Singular:|Singulär:|utils/i18n/i18n_update.py:173<br>utils/i18n/i18n_update.py:191<br>utils/i18n/i18n_update.py:212<br>utils/i18n/i18n_update.py:215|
+|Plural:|Plural:|utils/i18n/i18n_update.py:174<br>utils/i18n/i18n_update.py:192<br>utils/i18n/i18n_update.py:213<br>utils/i18n/i18n_update.py:216|
+|Empty messages are not shown for the default language.|Leere Nachrichten werden für die Standardsprache nicht angezeigt.|utils/i18n/i18n_update.py:182|
+|Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:198|
+|Translation|Übersetzung|utils/i18n/i18n_update.py:204|
 
-### Nachricht markiert [fuzzy] (1)
+### Nachricht markiert [fuzzy] (5)
 
 |Meldungs-ID|Übersetzung|Standorte|
 |--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie scripts server.bat, ffe.bat und chessevent.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent-Verbindung nicht für Turnier eingestellt [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/chessevent/action_selector.py:50|
 |Menus|Menü:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
 

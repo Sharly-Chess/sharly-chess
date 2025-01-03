@@ -45,7 +45,7 @@
                 {% else %}
                     <h3>
                         {% if family_type == 'input' %}
-                            {{ _('Properties (entry of results)') }}
+                            {{ _('Properties (results entry)') }}
                         {% elif family_type == 'boards' %}
                             {{ _('Properties (pairings by board)') }}
                         {% elif family_type == 'players' %}
@@ -87,7 +87,7 @@
                         </div>
                         <div class="col-3">
                             {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Id (unique):') }}</label>
+                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -102,7 +102,7 @@
                                         "
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The unique id, used to reference the screen family.') }}
+                                    {{ _('The Unique ID, used to reference the screen family.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -250,7 +250,7 @@
                                     {% if family_type in ['boards', 'input'] %}
                                         {{ _('The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards).') }}
                                     {% elif family_type == 'players' %}
-                                        {{ _('The number of screens on which the player will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.') }}
+                                        {{ _('The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.') }}
                                     {% else %}
                                         ?
                                     {% endif %}

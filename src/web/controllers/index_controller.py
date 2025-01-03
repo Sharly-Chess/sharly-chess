@@ -52,7 +52,7 @@ class WebContext:
     @property
     def background_color(self) -> str:
         """
-        Override this method to make the background color different from the default.
+        Override this method to make the background colour different from the default.
         :return:
         """
         return PapiWebConfig.default_background_color
@@ -61,7 +61,7 @@ class WebContext:
     def background_info(self) -> dict[str, str]:
         """
         The information return by this method is passed to the template engine to make the client call the /background
-        URL if the image and colors are not already loaded on the page.
+        URL if the image and colours are not already loaded on the page.
         This way image URLs are computed only when needed.
         This method should not be overridden (instead override background_image() and background_color()).
         :return: a dict with an image (a relative or absolute URL, or a path of a file located in /custom) and a color.

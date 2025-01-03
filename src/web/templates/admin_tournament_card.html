@@ -12,13 +12,13 @@
 {% block card_text %}
     <div class="">
         {% if not tournament.file_exists %}
-            {% set text=_('The Papi file of the tournament does not exist (%(papi_file)s).', papi_file=tournament.file) %}
+            {% set text=_('The Papi file for the tournament does not exist (%(papi_file)s).', papi_file=tournament.file) %}
             {% set type='error' %}
         {% elif not tournament.rounds %}
-            {% set text=_('The Papi file of the tournament exists but could not be read (%(papi_file)s).', papi_file=tournament.file) %}
+            {% set text=_('The Papi file for the tournament exists but could not be read (%(papi_file)s).', papi_file=tournament.file) %}
             {% set type='error' %}
         {% else %}
-            {% set text=_('The Papi file of the tournament was successfully read (%(papi_file)s).', papi_file=tournament.file) %}
+            {% set text=_('The Papi file for the tournament was successfully read (%(papi_file)s).', papi_file=tournament.file) %}
             {% set type='info' %}
         {% endif %}
         <span

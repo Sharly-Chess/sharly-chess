@@ -89,9 +89,9 @@ class IndexUserController(AbstractUserController):
                 'disabled': not current_events,
             },
             'coming_events': {
-                'title': _('Coming events ({num})').format(num=len(coming_events) or '-'),
+                'title': _('Upcoming events ({num})').format(num=len(coming_events) or '-'),
                 'events': coming_events,
-                'empty_str': _('No coming events.'),
+                'empty_str': _('No upcoming events.'),
                 'class': 'bg-info-subtle',
                 'icon_class': 'bi-calendar-check',
                 'disabled': not coming_events,

@@ -10,7 +10,7 @@ version = "2.4.14"
 authors = [
   {name = "Pascal Aubry", email = "papi-web@echecs-bretagne.fr"},
   {name = "Sammy Plat", email = "papi-web@echecs-bretagne.fr"},
-  {name = "Timothy Armes"},
+  {name = "Timothy Armes", email = "tim@timothyarmes.com"},
 ]
 license = { text = "AGPL v3.0" }
 readme = "README.md"
@@ -30,6 +30,7 @@ dependencies = [
   "pyodbc ~= 5.2.0",
   "pywin32-ctypes ~= 0.2.3",
   "requests ~= 2.32.2",
+  "transformers ~= 4.17.0",
   "uvicorn ~= 0.32.0",
   "validators ~= 0.34.0",
   "wheel ~= 0.45.0",

@@ -30,6 +30,6 @@ try:
         ce: ChessEventEngine = ChessEventEngine()
     else:
         parser.print_help(sys.stderr)
-        logger.error(_('This program should not be launched directly, use scripts server.bat, ffe.bat and chessevent.bat.'))
+        logger.error(_('This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.'))
 except KeyboardInterrupt:
     pass

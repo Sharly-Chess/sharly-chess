@@ -412,10 +412,10 @@ class PapiWebConfig(metaclass=Singleton):
             3: 10,
         }
 
-    """ The default text color for the alert messages. """
+    """ The default text colour for the alert messages. """
     default_message_color: str = '#FF0000'
 
-    """ The default background color for the alert messages. """
+    """ The default background colour for the alert messages. """
     default_message_background_color: str = '#FFFF00'
 
     """ True to show an exit button on input screens by default (may be changed for each screen). """
@@ -457,13 +457,13 @@ class PapiWebConfig(metaclass=Singleton):
     """ The error background image. """
     error_background_image: str = '/static/images/papi-web-error.png'
 
-    """ The default event background color. """
+    """ The default event background colour. """
     default_background_color: str = '#e9ecef'
 
-    """ The default background color for arbiter pages. """
+    """ The default background colour for arbiter pages. """
     admin_background_color: str = '#dbcdff'
 
-    """ The default background color for user pages. """
+    """ The default background colour for user pages. """
     user_background_color: str = default_background_color
 
     """ The maximum number of results shown on results screens (0 = no limit). """

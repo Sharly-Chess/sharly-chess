@@ -14,29 +14,30 @@
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
 |Κενά υποχρεωτικά μηνύματα|0/16|
-|Κενά μηνύματα|2/864|
-|Message flagged [ai_translation]|862/864|
-|Message flagged [fuzzy]|1/864|
+|Κενά μηνύματα|3/865|
+|Message flagged [ai_translation]|862/865|
+|Message flagged [fuzzy]|5/865|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
-## Κενά μηνύματα (2)
+## Κενά μηνύματα (3)
 
 |Μήνυμα id|Τοποθεσίες|
 |--|--|
+|Unable to create Papi files since no tournaments are defined.|src/chessevent/action_selector.py:66|
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:372|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Σημειωθέντα μηνύματα (863)
+## Σημειωθέντα μηνύματα (867)
 
 ### Μήνυμα που σημαδεύτηκε [ai_translation] (862)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
-|This program should not be launched directly, use scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:33|
-|ChessEvent connection not set for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|Papi file not set for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] is started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
 |Event: {event_name}|Εκδήλωση: {event_name}|src/chessevent/action_selector.py:63<br>src/ffe/action_selector.py:83|
 |Tournaments: {tournament_names}|Τουρνουά: {tournament_names}|src/chessevent/action_selector.py:68|
 |C \*\*\* THE LETTER TO ANSWER CREATE \*\*\*|Γ|src/chessevent/action_selector.py:70|
@@ -54,15 +55,15 @@
 |Frequency: {frequency}|Συχνότητα: {frequency}|src/chessevent/action_selector.py:108|
 |Please choose the Papi version:|Παρακαλώ επιλέξτε την έκδοση Papi:|src/chessevent/action_selector.py:112|
 |Papi version: {version}|Papi έκδοση: {version}|src/chessevent/action_selector.py:132|
-|This action can be done on the tournaments of this event.|Αυτή η δράση μπορεί να γίνει στα τουρνουά αυτής της εκδήλωσης.|src/chessevent/action_selector.py:141<br>src/ffe/action_selector.py:116<br>src/ffe/action_selector.py:125<br>src/ffe/action_selector.py:133<br>src/ffe/action_selector.py:142<br>src/ffe/action_selector.py:162|
+|This action can not be applied to the tournaments of this event.|Αυτή η δράση μπορεί να γίνει στα τουρνουά αυτής της εκδήλωσης.|src/chessevent/action_selector.py:141<br>src/ffe/action_selector.py:116<br>src/ffe/action_selector.py:125<br>src/ffe/action_selector.py:133<br>src/ffe/action_selector.py:142<br>src/ffe/action_selector.py:162|
 |Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}]).|Τα δεδομένα για το τουρνουά [{tournament_uniq_id}] δεν μπορούσαν να αποκωδικοποιηθούν (κωδικοποίηση: [{encoding}]), αποθηκευμένα στο αρχείο [{file}] (γραμμή πυρός [{line}], στήλη [{column}], θέση [{position}].|src/chessevent/action_selector.py:165|
 |Data for tournament [{tournament_name}] on ChessEvent are unchanged.|Τα δεδομένα για το τουρνουά [{tournament_name}] στο ΣκάκιEvent είναι αμετάβλητα.|src/chessevent/action_selector.py:170|
 |Papi file [{file}] has been created (players: {num}).|Το αρχείο Papi [{file}] έχει δημιουργηθεί (παίκτες: {num}).|src/chessevent/action_selector.py:180|
-|FFE id and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.|FFE id και ο κωδικός πρόσβασης δεν έχουν οριστεί σωστά για το τουρνουά [{tournament_name}], τα δεδομένα δεν μπορούν να σταλούν στην ιστοσελίδα του FFE.|src/chessevent/action_selector.py:185|
+|FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.|FFE ID και ο κωδικός πρόσβασης δεν έχουν οριστεί σωστά για το τουρνουά [{tournament_name}], τα δεδομένα δεν μπορούν να σταλούν στην ιστοσελίδα του FFE.|src/chessevent/action_selector.py:185|
 |Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}]).|Σφάλμα ταυτοποίησης (κωδικός: [{code}]) για [{user_id}] ([{chessevent_string}]).|src/chessevent/chessevent_session.py:54|
 |Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}]).|Απαγορεύεται η πρόσβαση (κωδικός: [{code}]) για [{user_id}] στο τουρνουά [{tournament_name}] ([{chessevent_string}].|src/chessevent/chessevent_session.py:58|
 |Missing parameter (code: [{code}]): [{error}].|Χαμένη παράμετρος (κωδικός: [{code}]): [{error}].|src/chessevent/chessevent_session.py:63|
-|Id [{user_id}] not found (code: [{code}]): [{error}].|Id [{user_id}] δεν βρέθηκε (κωδικός: [{code}]): [{error}].|src/chessevent/chessevent_session.py:67|
+|ID [{user_id}] not found (code: [{code}]): [{error}].|Id [{user_id}] δεν βρέθηκε (κωδικός: [{code}]): [{error}].|src/chessevent/chessevent_session.py:67|
 |Tournament [{tournament_name}] not found (code: [{code}]): [{error}].|Τουρνουά [{tournament_name}] δεν βρέθηκε (κωδικός: [{code}]): [{error}].|src/chessevent/chessevent_session.py:71|
 |Event [{event_id}] not found (code: [{code}]): [{error}].|Γεγονός [{event_id}] δεν βρέθηκε (κωδικός: [{code}]): [{error}].|src/chessevent/chessevent_session.py:76|
 |Unknown response code: [{code}] ([{chessevent_string}]).|Άγνωστος κωδικός απάντησης: [{code}] ([{chessevent_string}]).|src/chessevent/chessevent_session.py:81|
@@ -71,7 +72,7 @@
 |Failed to read [{url}] (error code [{errno}]): [{strerror}].|Απέτυχε να διαβάσει [{url}] (κώδικας σφάλματος [{errno}]): [{strerror}].|src/chessevent/chessevent_session.py:91<br>src/common/engine.py:285<br>src/common/engine.py:416<br>src/common/engine.py:462<br>src/ffe/ffe_session.py:103|
 |Failed to read [{url}]: [{ex}].|Απέτυχε να διαβάσει [{url}]: [{ex}].|src/chessevent/chessevent_session.py:95<br>src/common/engine.py:288<br>src/common/engine.py:420<br>src/common/engine.py:466<br>src/ffe/ffe_session.py:106|
 |No events found.|Δεν βρέθηκαν γεγονότα.|src/chessevent/event_selector.py:26<br>src/ffe/event_selector.py:22|
-|One event found, type Enter (Q to quit): |Βρέθηκε ένα γεγονός, πληκτρολογήστε Enter (Q για να παραιτηθεί):|src/chessevent/event_selector.py:32<br>src/ffe/event_selector.py:28|
+|One event found, press Enter (Q to quit): |Βρέθηκε ένα γεγονός, πληκτρολογήστε Enter (Q για να παραιτηθεί):|src/chessevent/event_selector.py:32<br>src/ffe/event_selector.py:28|
 |Please choose the event:|Παρακαλώ επιλέξτε την εκδήλωση:|src/chessevent/event_selector.py:35<br>src/ffe/event_selector.py:31|
 |Your choice: |Η επιλογή σας:|src/chessevent/event_selector.py:44<br>src/common/papi_web_config.py:112<br>src/ffe/event_selector.py:40|
 |Configuration file [{file}] not found.|Το αρχείο ρύθμισης [{file}] δεν βρέθηκε.|src/common/config_reader.py:28|
@@ -93,11 +94,11 @@
 |Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?|Θέλετε να ανακτήσει τη διαμόρφωση της έκδοσης [{version}] [{y_uc}/{n_lc}];|src/common/engine.py:110|
 |Please choose the version to recover:|Παρακαλώ επιλέξτε την έκδοση για να ανακτήσει:|src/common/engine.py:119|
 |  - [{q_uc}] Do not recover|- [{q_uc}] Μην ανακάμψετε|src/common/engine.py:125|
-|Please entre the number of the version to recover [{default}]: |Παρακαλώ εισάγετε τον αριθμό της έκδοσης για να ανακτήσει [{default}]:|src/common/engine.py:128|
+|Please enter the number of the version to recover [{default}]: |Παρακαλώ εισάγετε τον αριθμό της έκδοσης για να ανακτήσει [{default}]:|src/common/engine.py:128|
 |Do you want to install example event databases [{y_uc}/{n_lc}]?|Θέλετε να εγκαταστήσετε παραδείγματα βάσεων δεδομένων γεγονότων [{y_uc}/{n_lc}];|src/common/engine.py:150|
 |Recovering events from version {version}...|Ανάκτηση γεγονότων από την έκδοση {version}...|src/common/engine.py:166|
 |Recovering event [{event_uniq_id}]...|Ανάκτηση γεγονότος [{event_uniq_id}]...|src/common/engine.py:171|
-|Event [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]...|Γεγονός [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]...|src/common/engine.py:182|
+|Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]...|Γεγονός [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]...|src/common/engine.py:182|
 |Recovering custom files...|Ανάκτηση προσαρμοσμένου αρχείου...|src/common/engine.py:187|
 |Events recovered: {num} (from directory [{dir}]).|Γεγονότα που ανακτήθηκαν: {num} (από τον κατάλογο [{dir}]).|src/common/engine.py:200|
 |Tournaments recovered: {num} (from directory [{dir}]).|Τουρνουά ανακτήθηκε: {num} (από τον κατάλογο [{dir}]).|src/common/engine.py:202|
@@ -113,9 +114,9 @@
 |Your Papi-web version is up to date.|Η δική σου έκδοση στο διαδίκτυο είναι ενημερωμένη.|src/common/engine.py:346|
 |A more recent version is available ([{version}]).|Μια πιο πρόσφατη έκδοση είναι διαθέσιμη ([{version}].|src/common/engine.py:353|
 |You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)|Χρησιμοποιείτε μια έκδοση νεότερη από την τελευταία σταθερή έκδοση διαθέσιμη ([{version}]), είστε προγραμματιστής; ?-)|src/common/engine.py:356|
-|A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}] must be done manually (upgrade from the last stable version installed on your server).|Μια σταθερή και πιο πρόσφατη έκδοση είναι διαθέσιμη ([{new_version}]) αλλά η αναβάθμιση ασταθών εκδόσεων (όπως αυτή που χρησιμοποιείτε αυτή τη στιγμή: [{old_version}] πρέπει να γίνει χειροκίνητα (αναβάθμιση από την τελευταία σταθερή έκδοση που είναι εγκατεστημένη στον διακομιστή σας).|src/common/engine.py:364|
+|A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).|Μια σταθερή και πιο πρόσφατη έκδοση είναι διαθέσιμη ([{new_version}]) αλλά η αναβάθμιση ασταθών εκδόσεων (όπως αυτή που χρησιμοποιείτε αυτή τη στιγμή: [{old_version}] πρέπει να γίνει χειροκίνητα (αναβάθμιση από την τελευταία σταθερή έκδοση που είναι εγκατεστημένη στον διακομιστή σας).|src/common/engine.py:364|
 |You are using un unstable version more recent than the last stable version available ({version}).|Χρησιμοποιείτε μια ασταθή έκδοση πιο πρόσφατη από την τελευταία σταθερή έκδοση που είναι διαθέσιμη ({version}).|src/common/engine.py:368|
-|Looking for a a more recent version on GitHub ([{url}])...|Ψάχνοντας για μια πιο πρόσφατη έκδοση στο GitHub ([{url}])...|src/common/engine.py:380|
+|Looking for a more recent version on GitHub ([{url}])...|Ψάχνοντας για μια πιο πρόσφατη έκδοση στο GitHub ([{url}])...|src/common/engine.py:380|
 |No response from GitHub.|Καμία απάντηση από το GitHub.|src/common/engine.py:384<br>src/common/engine.py:440|
 |Invalid response from GitHub: {ex}.|Μη έγκυρη απάντηση από το GitHub: {ex}.|src/common/engine.py:391|
 |No stable version found.|Δεν βρέθηκε σταθερή έκδοση.|src/common/engine.py:403|
@@ -160,8 +161,8 @@
 |Directory [{path}] not found.|Κατάλογος [{path}] δεν βρέθηκε.|src/data/event.py:181<br>src/data/tournament.py:41|
 |[{path}] is not a directory.|[{path}] δεν είναι ένας κατάλογος.|src/data/event.py:183<br>src/data/tournament.py:43|
 |No background image set, by default [{background_image}]|Κανένα σύνολο εικόνας φόντου, από προεπιλογή [{background_image}]|src/data/event.py:192|
-|No background color set, by default [{background_color}]|Κανένα σύνολο χρωμάτων φόντου, από προεπιλογή [{background_color}]|src/data/event.py:206|
-|No password set for the entry of results|Δεν έχει οριστεί κωδικός πρόσβασης για την είσοδο των αποτελεσμάτων|src/data/event.py:216|
+|No background colour set, by default [{background_color}]|Κανένα σύνολο χρωμάτων φόντου, από προεπιλογή [{background_color}]|src/data/event.py:206|
+|No password set for the results entry|Δεν έχει οριστεί κωδικός πρόσβασης για την είσοδο των αποτελεσμάτων|src/data/event.py:216|
 |Maximum number of illegal moves not set, by default [{record_illegal_moves}]|Μέγιστος αριθμός παράνομων κινήσεων που δεν έχουν οριστεί, εξ ορισμού [{record_illegal_moves}]|src/data/event.py:223|
 |Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded.|Σφάλματα έχουν βρεθεί στις συνδέσεις Σκακιού; χρονοδιακόπτες, τουρνουά, οθόνες, οικογένειες και περιστροφείς δεν θα φορτωθούν.|src/data/event.py:358|
 |Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.|Σφάλματα έχουν βρεθεί σε χρονοδιακόπτες· τουρνουά, οθόνες, οικογένειες και περιστροφείς δεν θα φορτωθούν.|src/data/event.py:382|
@@ -232,7 +233,7 @@
 |Qualification number and FFE password not set, operations on the FFE website will not be available.|Ο αριθμός προσόντων και ο κωδικός πρόσβασης FFE δεν έχουν οριστεί, οι λειτουργίες στην ιστοσελίδα του FFE δεν θα είναι διαθέσιμες.|src/data/tournament.py:50|
 |ChessEvent connection not defined.|Δεν ορίζεται σύνδεση σκακιού.|src/data/tournament.py:53|
 |ChessEvent tournament name not set.|Το όνομα τουρνουά του Σκακιού δεν έχει οριστεί.|src/data/tournament.py:55|
-|FFE id not defined for tournament [{tournament_uniq_id}].|FFE id δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:30<br>src/ffe/action_selector.py:43<br>src/ffe/action_selector.py:63|
+|FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:30<br>src/ffe/action_selector.py:43<br>src/ffe/action_selector.py:63|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:46|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν βρέθηκε [{file}] για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:50|
 |Rules file not defined for tournament [{tournament_uniq_id}].|Το αρχείο κανόνων δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:66|
@@ -266,14 +267,14 @@
 |Invalid fees link text [{text}].|Μη έγκυρο κείμενο σύνδεσης τελών [{text}].|src/ffe/ffe_session.py:234|
 |Invoice saved to [{file}].|Τιμολόγιο αποθηκευμένο σε [{file}].|src/ffe/ffe_session.py:259|
 |Sending tournament [{ffe_id}] ({file}) to the FFE website...|Αποστολή τουρνουά [{ffe_id}] ({file}) στην ιστοσελίδα του FFE...|src/ffe/ffe_session.py:264|
-|Upload link not found, check that the tournament is not finished on the FFE website.|Ανεβάστε το σύνδεσμο δεν βρέθηκε, ελέγξτε ότι το τουρνουά δεν έχει ολοκληρωθεί στην ιστοσελίδα του FFE.|src/ffe/ffe_session.py:274|
+|Upload link not found, check that the tournament is not marked as finished on the FFE website.|Ανεβάστε το σύνδεσμο δεν βρέθηκε, ελέγξτε ότι το τουρνουά δεν έχει ολοκληρωθεί στην ιστοσελίδα του FFE.|src/ffe/ffe_session.py:274|
 |Results upload OK|Ανεβάστε τα αποτελέσματα OK|src/ffe/ffe_session.py:307<br>src/ffe/ffe_session.py:334|
 |Making the tournament visible on the FFE website...|Κάνοντας το τουρνουά ορατό στην ιστοσελίδα του FFE...|src/ffe/ffe_session.py:310|
 |Display link not found, check that a Papi file has already been sent.|Ο σύνδεσμος εμφάνισης δεν βρέθηκε, ελέγξτε ότι ένα αρχείο Papi έχει ήδη σταλεί.|src/ffe/ffe_session.py:314|
-|Data are already displayed on the FFE website.|Τα δεδομένα εμφανίζονται ήδη στην ιστοσελίδα του FFE.|src/ffe/ffe_session.py:317|
+|Data is already displayed on the FFE website.|Τα δεδομένα εμφανίζονται ήδη στην ιστοσελίδα του FFE.|src/ffe/ffe_session.py:317|
 |Invalid display link text [{text}]|Μη έγκυρο κείμενο σύνδεσης οθόνης [{text}]|src/ffe/ffe_session.py:321|
 |Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...|Αποστολή των κανόνων του τουρνουά [{ffe_id}] ({file}) στην ιστοσελίδα του FFE...|src/ffe/ffe_session.py:338|
-|Rules upload link not found, check that the tournament is not finished on the FFE website.|Κανόνες Ανεβάστε το σύνδεσμο δεν βρέθηκε, ελέγξτε ότι το τουρνουά δεν έχει ολοκληρωθεί στην ιστοσελίδα του FFE.|src/ffe/ffe_session.py:348|
+|Rules upload link not found, check that the tournament is not marked as finished on the FFE website.|Κανόνες Ανεβάστε το σύνδεσμο δεν βρέθηκε, ελέγξτε ότι το τουρνουά δεν έχει ολοκληρωθεί στην ιστοσελίδα του FFE.|src/ffe/ffe_session.py:348|
 |Opening the welcome page [{url}] in a browser...|Άνοιγμα της σελίδας καλωσορίσματος [{url}] σε ένα πρόγραμμα περιήγησης...|src/web/server_engine.py:24|
 |Web server not started yet ({ex}), waiting...|Ο διακομιστής Web δεν ξεκίνησε ακόμα ({ex}), περιμένοντας...|src/web/server_engine.py:30|
 |Starting Papi-web server, please wait...|Εκκίνηση διακομιστή Papi-web, παρακαλώ περιμένετε...|src/web/server_engine.py:40|
@@ -283,11 +284,11 @@
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Η θύρα [{port}] είναι ήδη σε χρήση, δεν μπορεί να ξεκινήσει το διακομιστή Papi-web.|src/web/server_engine.py:49|
 |USE AT YOUR OWN RISKS|ΧΡΗΣΙΜΟΠΟΙΕΙΤΕ ΜΕ δικούς ΣΑΣ ΚΙΝΔΥΝΟΥΣ|src/web/controllers/index_controller.py:213|
-|Please enter the id of ChessEvent connection.|Παρακαλώ εισάγετε την ταυτότητα της σύνδεσης ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:69|
+|Please enter the ID of ChessEvent connection.|Παρακαλώ εισάγετε την ταυτότητα της σύνδεσης ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|Η σύνδεση σκακιού [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
-|Please enter the id used to connect to the ChessEvent platform.|Παρακαλώ εισάγετε την ταυτότητα που χρησιμοποιήθηκε για να συνδεθείτε με την πλατφόρμα ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:88|
+|Please enter the ID used to connect to the ChessEvent platform.|Παρακαλώ εισάγετε την ταυτότητα που χρησιμοποιήθηκε για να συνδεθείτε με την πλατφόρμα ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:88|
 |Please enter the password used to connect to the ChessEvent platform.|Παρακαλώ εισάγετε τον κωδικό πρόσβασης που χρησιμοποιήθηκε για να συνδεθείτε στην πλατφόρμα ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:92|
-|Please enter the id of the event on the ChessEvent platform.|Παρακαλώ εισάγετε το id της εκδήλωσης στην πλατφόρμα ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:96|
+|Please enter the ID of the event on the ChessEvent platform.|Παρακαλώ εισάγετε το id της εκδήλωσης στην πλατφόρμα ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:96|
 |ChessEvent connection [{chessevent_uniq_id}] has been created.|Η σύνδεση σκακιού [{chessevent_uniq_id}] έχει δημιουργηθεί.|src/web/controllers/admin/chessevent_admin_controller.py:232|
 |ChessEvent connection [{chessevent_uniq_id}] has been updated.|Η σύνδεση με το σκάκι [{chessevent_uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/chessevent_admin_controller.py:238|
 |ChessEvent connection [{chessevent_uniq_id}] has been deleted.|Η σύνδεση σκακιού [{chessevent_uniq_id}] έχει διαγραφεί.|src/web/controllers/admin/chessevent_admin_controller.py:244|
@@ -299,11 +300,11 @@
 |ChessEvent ({num})|Σκακιστικό ({num})|src/web/controllers/admin/event_admin_controller.py:134|
 |Messages ({num})|Μηνύματα ({num})|src/web/controllers/admin/event_admin_controller.py:138|
 |Renaming the database failed: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/web/controllers/admin/event_admin_controller.py:403|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}) and updated.|Το γεγονός [{old_uniq_id}] έχει μετονομαστεί ([{new_uniq_id}) και έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:410|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Το γεγονός [{old_uniq_id}] έχει μετονομαστεί ([{new_uniq_id}]) και έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:410|
 |Event [{uniq_id}] has been updated.|Το γεγονός [{uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:413|
 |Event [{uniq_id}] has been created.|Το γεγονός [{uniq_id}] δημιουργήθηκε.|src/web/controllers/admin/event_admin_controller.py:421<br>src/web/controllers/admin/index_admin_controller.py:676|
 |Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Το γεγονός [{uniq_id}] έχει διαγραφεί, η βάση δεδομένων έχει αρχειοθετηθεί ({arch}).|src/web/controllers/admin/event_admin_controller.py:431|
-|Please enter the family id.|Παρακαλώ εισάγετε την ταυτότητα της οικογένειας.|src/web/controllers/admin/family_admin_controller.py:102|
+|Please enter the family ID.|Παρακαλώ εισάγετε την ταυτότητα της οικογένειας.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|Ο χαρακτήρας [{char}] δεν επιτρέπεται.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:233<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:75|
 |Family [{uniq_id}] already exists.|Η οικογένεια [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
 |Please choose the tournament.|Παρακαλώ επιλέξτε το τουρνουά.|src/web/controllers/admin/family_admin_controller.py:130<br>src/web/controllers/admin/screen_admin_controller.py:90<br>src/web/controllers/admin/screen_admin_controller.py:257|
@@ -311,15 +312,15 @@
 |A positive integer is expected.|Αναμένεται ένας θετικός ακέραιος αριθμός.|src/web/controllers/admin/family_admin_controller.py:135<br>src/web/controllers/admin/family_admin_controller.py:140<br>src/web/controllers/admin/family_admin_controller.py:150<br>src/web/controllers/admin/family_admin_controller.py:155<br>src/web/controllers/admin/family_admin_controller.py:160<br>src/web/controllers/admin/family_admin_controller.py:179<br>src/web/controllers/admin/family_admin_controller.py:184<br>src/web/controllers/admin/rotator_admin_controller.py:94<br>src/web/controllers/admin/screen_admin_controller.py:143<br>src/web/controllers/admin/screen_admin_controller.py:154<br>src/web/controllers/admin/screen_admin_controller.py:167<br>src/web/controllers/admin/screen_admin_controller.py:172<br>src/web/controllers/admin/screen_admin_controller.py:261<br>src/web/controllers/admin/screen_admin_controller.py:266<br>src/web/controllers/admin/screen_admin_controller.py:271|
 |Timer [{timer_id}] not found.|Ο χρονοδιακόπτης [{timer_id}] δεν βρέθηκε.|src/web/controllers/admin/family_admin_controller.py:148<br>src/web/controllers/admin/screen_admin_controller.py:152|
 |Specifying the number of parts and the number of items per part is not possible.|Ο προσδιορισμός του αριθμού των μερών και του αριθμού των στοιχείων ανά μέρος δεν είναι δυνατός.|src/web/controllers/admin/family_admin_controller.py:186|
-|Entry of results|Είσοδος των αποτελεσμάτων|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:45<br>src/web/templates/admin_screens.html:59|
+|Results entry|Είσοδος των αποτελεσμάτων|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:45<br>src/web/templates/admin_screens.html:59|
 |pairings by board|Συναρμολογήσεις με το διοικητικό συμβούλιο|src/web/controllers/admin/family_admin_controller.py:272<br>src/web/controllers/admin/screen_admin_controller.py:355<br>src/web/templates/admin_rotator_modal.html:121|
 |Pairings by player|Ζευγάρωμα από τον παίκτη|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:53<br>src/web/templates/admin_screens.html:69|
 |No recording|Χωρίς εγγραφή|src/web/controllers/admin/index_admin_controller.py:77<br>src/web/templates/admin_event_config.html:108|
 |**Μοναδικός:** {num} illegal move max<br/>**Πληθυντικός:** {num} illegal moves max|**Μοναδικός:** {num} παράνομη κίνηση max<br/>**Πληθυντικός:** {num} παράνομες κινήσεις max|src/web/controllers/admin/index_admin_controller.py:79|
 |By default - {option}|Από προεπιλογή - {option}|src/web/controllers/admin/index_admin_controller.py:82<br>src/web/controllers/admin/index_admin_controller.py:128<br>src/web/controllers/admin/index_admin_controller.py:139|
-|Color #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until color #2 ({delay_2} minutes before the start of the rounds).|Χρώμα #1 χρησιμοποιείται μέχρι {delay_1} λεπτά πριν από την έναρξη των γύρων (Delay #1), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #2 ({delay_2} λεπτά πριν από την έναρξη των γύρων).|src/web/controllers/admin/index_admin_controller.py:88|
-|Color #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until color #3 (at the start of the rounds).|Χρώμα #2 χρησιμοποιείται {delay_2} λεπτά πριν από την έναρξη των γύρων (delay #2), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #3 (στην αρχή των γύρων).|src/web/controllers/admin/index_admin_controller.py:91|
-|Color #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|Χρώμα #3 χρησιμοποιείται από την αρχή των γύρων και για {delay_3} λεπτά μετά (delay #3).|src/web/controllers/admin/index_admin_controller.py:94|
+|Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|Χρώμα #1 χρησιμοποιείται μέχρι {delay_1} λεπτά πριν από την έναρξη των γύρων (Delay #1), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #2 ({delay_2} λεπτά πριν από την έναρξη των γύρων).|src/web/controllers/admin/index_admin_controller.py:88|
+|Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Χρώμα #2 χρησιμοποιείται {delay_2} λεπτά πριν από την έναρξη των γύρων (delay #2), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #3 (στην αρχή των γύρων).|src/web/controllers/admin/index_admin_controller.py:91|
+|Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|Χρώμα #3 χρησιμοποιείται από την αρχή των γύρων και για {delay_3} λεπτά μετά (delay #3).|src/web/controllers/admin/index_admin_controller.py:94|
 |Pairings by board|Ζευγαρώματα με βάση το πλοίο|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:49<br>src/web/templates/admin_screens.html:64|
 |Use no timer|Μη χρησιμοποιείτε χρονοδιακόπτη|src/web/controllers/admin/index_admin_controller.py:115|
 |No timer defined|Δεν ορίζεται χρονοδιακόπτης|src/web/controllers/admin/index_admin_controller.py:115|
@@ -334,8 +335,8 @@
 |File [{file}] not found.|Το αρχείο [{file}] δεν βρέθηκε.|src/web/controllers/admin/index_admin_controller.py:191<br>src/web/controllers/admin/index_admin_controller.py:305|
 |Wrong file extension [{ext}] ([pdf] expected).|Λάθος επέκταση αρχείου [{ext}] ([pdf] αναμένεται).|src/web/controllers/admin/index_admin_controller.py:193|
 |Invalid color [{color}] ([#RRGGBB] expected).|Μη έγκυρο χρώμα [{color}] ([#RRGGBB] αναμένεται).|src/web/controllers/admin/index_admin_controller.py:208<br>src/web/controllers/admin/index_admin_controller.py:315<br>src/web/controllers/admin/index_admin_controller.py:330<br>src/web/controllers/admin/index_admin_controller.py:336<br>src/web/controllers/admin/timer_admin_controller.py:104|
-|Please enter the event id.|Παρακαλώ εισάγετε την ταυτότητα της εκδήλωσης.|src/web/controllers/admin/index_admin_controller.py:226<br>src/web/controllers/admin/index_admin_controller.py:231|
-|Event id does not match.|Η ταυτότητα του γεγονότος δεν ταιριάζει.|src/web/controllers/admin/index_admin_controller.py:228|
+|Please enter the event ID.|Παρακαλώ εισάγετε την ταυτότητα της εκδήλωσης.|src/web/controllers/admin/index_admin_controller.py:226<br>src/web/controllers/admin/index_admin_controller.py:231|
+|event ID does not match.|Η ταυτότητα του γεγονότος δεν ταιριάζει.|src/web/controllers/admin/index_admin_controller.py:228|
 |Event [{uniq_id}] already exists.|Το γεγονός [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/index_admin_controller.py:239<br>src/web/controllers/admin/index_admin_controller.py:242|
 |Please enter the name of the event.|Παρακαλώ εισάγετε το όνομα της εκδήλωσης.|src/web/controllers/admin/index_admin_controller.py:265|
 |Please enter the start date of the event.|Παρακαλώ εισάγετε την ημερομηνία έναρξης της εκδήλωσης.|src/web/controllers/admin/index_admin_controller.py:268|
@@ -347,19 +348,19 @@
 |event|γεγονός|src/web/controllers/admin/index_admin_controller.py:429|
 |Current events ({num})|Τρέχοντα γεγονότα ({num})|src/web/controllers/admin/index_admin_controller.py:526<br>src/web/controllers/user/index_user_controller.py:84|
 |No current events.|Δεν υπάρχουν τρέχοντα γεγονότα.|src/web/controllers/admin/index_admin_controller.py:530<br>src/web/controllers/user/index_user_controller.py:86|
-|Coming events ({num})|Ερχόμενα γεγονότα ({num})|src/web/controllers/admin/index_admin_controller.py:534<br>src/web/controllers/user/index_user_controller.py:92|
-|No coming events.|Δεν θα έρθουν γεγονότα.|src/web/controllers/admin/index_admin_controller.py:538<br>src/web/controllers/user/index_user_controller.py:94|
+|Upcoming events ({num})|Ερχόμενα γεγονότα ({num})|src/web/controllers/admin/index_admin_controller.py:534<br>src/web/controllers/user/index_user_controller.py:92|
+|No upcoming events.|Δεν θα έρθουν γεγονότα.|src/web/controllers/admin/index_admin_controller.py:538<br>src/web/controllers/user/index_user_controller.py:94|
 |Passed events ({num})|Περασμένα γεγονότα ({num})|src/web/controllers/admin/index_admin_controller.py:542<br>src/web/controllers/user/index_user_controller.py:100|
 |No passed events.|Δεν πέρασαν τα γεγονότα.|src/web/controllers/admin/index_admin_controller.py:546<br>src/web/controllers/user/index_user_controller.py:102|
 |Archived events ({num})|Αρχειοθετημένες εκδηλώσεις ({num})|src/web/controllers/admin/index_admin_controller.py:550|
 |No archived events.|Δεν υπάρχουν αρχειοθετημένα γεγονότα.|src/web/controllers/admin/index_admin_controller.py:554|
 |Papi-web configuration|Ρυθμίσεις Papi-webName|src/web/controllers/admin/index_admin_controller.py:558<br>src/web/templates/admin_config.html:4|
-|Please enter the rotator id.|Παρακαλώ εισάγετε την ταυτότητα του περιστροφέα.|src/web/controllers/admin/rotator_admin_controller.py:74|
+|Please enter the rotator ID.|Παρακαλώ εισάγετε την ταυτότητα του περιστροφέα.|src/web/controllers/admin/rotator_admin_controller.py:74|
 |Rotator [{uniq_id}] already exists.|Ο περιστροφέας [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/rotator_admin_controller.py:79<br>src/web/controllers/admin/rotator_admin_controller.py:83|
 |Rotator [{rotator_uniq_id}] has been created.|Ο περιστροφέας [{rotator_uniq_id}] έχει δημιουργηθεί.|src/web/controllers/admin/rotator_admin_controller.py:268|
 |Rotator [{rotator_uniq_id}] has been updated.|Ο περιστροφέας [{rotator_uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/rotator_admin_controller.py:274|
 |Rotator [{rotator_uniq_id}] has been deleted.|Ο περιστροφέας [{rotator_uniq_id}] έχει διαγραφεί.|src/web/controllers/admin/rotator_admin_controller.py:280|
-|Please enter the screen id.|Παρακαλώ εισάγετε την ταυτότητα οθόνης.|src/web/controllers/admin/screen_admin_controller.py:121|
+|Please enter the screen ID.|Παρακαλώ εισάγετε την ταυτότητα οθόνης.|src/web/controllers/admin/screen_admin_controller.py:121|
 |Screen [{uniq_id}] already exists.|Η οθόνη [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/screen_admin_controller.py:128<br>src/web/controllers/admin/screen_admin_controller.py:132|
 |Please enter the image URL.|Παρακαλώ εισάγετε το URL εικόνας.|src/web/controllers/admin/screen_admin_controller.py:182|
 |Invalid URL [{background_image}].|Μη έγκυρο URL [{background_image}].|src/web/controllers/admin/screen_admin_controller.py:184|
@@ -367,9 +368,9 @@
 |Screen [{screen_uniq_id}] has been created.|Η οθόνη [{screen_uniq_id}] έχει δημιουργηθεί.|src/web/controllers/admin/screen_admin_controller.py:562<br>src/web/controllers/admin/screen_admin_controller.py:571|
 |Screen [{screen_uniq_id}] has been updated.|Η οθόνη [{screen_uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/screen_admin_controller.py:577|
 |Screen [{screen_uniq_id}] has been deleted.|Η οθόνη [{screen_uniq_id}] έχει διαγραφεί.|src/web/controllers/admin/screen_admin_controller.py:583|
-|Please enter the timer id.|Παρακαλώ εισάγετε την ταυτότητα του χρονοδιακόπτη.|src/web/controllers/admin/timer_admin_controller.py:83|
+|Please enter the timer ID.|Παρακαλώ εισάγετε την ταυτότητα του χρονοδιακόπτη.|src/web/controllers/admin/timer_admin_controller.py:83|
 |Timer [{uniq_id}] already exists.|Ο χρονοδιακόπτης [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/timer_admin_controller.py:88<br>src/web/controllers/admin/timer_admin_controller.py:92|
-|Please enter the round number or the hour id.|Παρακαλώ εισάγετε τον αριθμό γύρου ή την ταυτότητα ώρας.|src/web/controllers/admin/timer_admin_controller.py:135|
+|Please enter the round number or the hour ID.|Παρακαλώ εισάγετε τον αριθμό γύρου ή την ταυτότητα ώρας.|src/web/controllers/admin/timer_admin_controller.py:135|
 |Please enter the time.|Παρακαλώ εισάγετε την ώρα.|src/web/controllers/admin/timer_admin_controller.py:139|
 |Please enter a valid time.|Παρακαλώ εισάγετε μια έγκυρη ώρα.|src/web/controllers/admin/timer_admin_controller.py:143|
 |Please enter the date of the first hour.|Παρακαλώ εισάγετε την ημερομηνία της πρώτης ώρας.|src/web/controllers/admin/timer_admin_controller.py:145|
@@ -382,11 +383,11 @@
 |Timer [{timer_uniq_id}] has been created.|Ο χρονοδιακόπτης [{timer_uniq_id}] δημιουργήθηκε.|src/web/controllers/admin/timer_admin_controller.py:349<br>src/web/controllers/admin/timer_admin_controller.py:392|
 |Timer [{timer_uniq_id}] has been updated.|Ο χρονοδιακόπτης [{timer_uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/timer_admin_controller.py:358|
 |Timer [{timer_uniq_id}] has been deleted.|Ο χρονοδιακόπτης [{timer_uniq_id}] έχει διαγραφεί.|src/web/controllers/admin/timer_admin_controller.py:381|
-|Please enter the tournament id.|Παρακαλώ εισάγετε την ταυτότητα του τουρνουά.|src/web/controllers/admin/tournament_admin_controller.py:68<br>src/web/controllers/admin/tournament_admin_controller.py:73|
-|Tournament id does not match.|Η ταυτότητα τουρνουά δεν ταιριάζει.|src/web/controllers/admin/tournament_admin_controller.py:70|
+|Please enter the tournament ID.|Παρακαλώ εισάγετε την ταυτότητα του τουρνουά.|src/web/controllers/admin/tournament_admin_controller.py:68<br>src/web/controllers/admin/tournament_admin_controller.py:73|
+|tournament ID does not match.|Η ταυτότητα τουρνουά δεν ταιριάζει.|src/web/controllers/admin/tournament_admin_controller.py:70|
 |Tournament [{uniq_id}] already exists.|Τουρνουά [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/tournament_admin_controller.py:80<br>src/web/controllers/admin/tournament_admin_controller.py:84|
 |Please enter the tournament name.|Παρακαλώ εισάγετε το όνομα τουρνουά.|src/web/controllers/admin/tournament_admin_controller.py:105|
-|The FFE id is a positive integer.|Η ταυτότητα FFE είναι ένας θετικός ακέραιος αριθμός.|src/web/controllers/admin/tournament_admin_controller.py:111|
+|The FFE ID is a positive integer.|Η ταυτότητα FFE είναι ένας θετικός ακέραιος αριθμός.|src/web/controllers/admin/tournament_admin_controller.py:111|
 |The password of the tournament on the FFE website is made of 10 uppercase letters.|Ο κωδικός πρόσβασης του τουρνουά στην ιστοσελίδα του FFE είναι κατασκευασμένος από 10 κεφαλαία γράμματα.|src/web/controllers/admin/tournament_admin_controller.py:114|
 |tournament|τουρνουά|src/web/controllers/admin/tournament_admin_controller.py:190|
 |New tournament|Νέο τουρνουά|src/web/controllers/admin/tournament_admin_controller.py:191|
@@ -394,7 +395,7 @@
 |Tournament [{tournament_uniq_id}] has been created.|Το τουρνουά [{tournament_uniq_id}] έχει δημιουργηθεί.|src/web/controllers/admin/tournament_admin_controller.py:365|
 |Tournament [{tournament_uniq_id}] has been updated.|Το τουρνουά [{tournament_uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/tournament_admin_controller.py:374|
 |Tournament [{tournament_uniq_id}] has been deleted.|Το τουρνουά [{tournament_uniq_id}] έχει διαγραφεί.|src/web/controllers/admin/tournament_admin_controller.py:383|
-|Entry of results ({num})|Είσοδος των αποτελεσμάτων ({num})|src/web/controllers/user/event_user_controller.py:100|
+|Results entry ({num})|Είσοδος των αποτελεσμάτων ({num})|src/web/controllers/user/event_user_controller.py:100|
 |Pairings by board ({num})|Ζευγάρωμα με το πλοίο ({num})|src/web/controllers/user/event_user_controller.py:105|
 |Pairings by player ({num})|Ζευγάρωμα από τον παίκτη ({num})|src/web/controllers/user/event_user_controller.py:110|
 |Last results ({num})|Τελευταία αποτελέσματα ({num})|src/web/controllers/user/event_user_controller.py:115|
@@ -406,7 +407,7 @@
 |Archived event|Αρχειοθετήθηκε εκδήλωση|src/web/templates/admin_archives.html:11|
 |Deletion date|Ημερομηνία διαγραφής|src/web/templates/admin_archives.html:12|
 |Check-in|Check-in|src/web/templates/admin_check_in.html:1<br>src/web/templates/user_screen.html:249|
-|ChessEvent id: %(chessevent_user_id)s|Σκάκι ταυτότητα: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:14|
+|Chessevent ID: %(chessevent_user_id)s|Σκάκι ταυτότητα: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:14|
 |ChessEvent password: %(chessevent_password)s|Κωδικός πρόσβασης για το σκάκι: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:17|
 |ChessEvent event: %(chessevent_event)s|Εκδήλωση σκακιού: %(chessevent_event)s|src/web/templates/admin_chessevent_card.html:20|
 |Edit the properties of the ChessEvent connection.|Επεξεργασία των ιδιοτήτων της σύνδεσης σκακιού.|src/web/templates/admin_chessevent_card.html:25|
@@ -419,12 +420,12 @@
 |Warning: the deletion of a ChessEvent connection is permanent!|Προειδοποίηση: η διαγραφή μιας σύνδεσης σκακιού είναι μόνιμη!|src/web/templates/admin_chessevent_modal.html:31|
 |The following tournaments will not be connected to ChessEvent anymore:|Τα ακόλουθα τουρνουά δεν θα συνδέονται με το Σκάκι πια:|src/web/templates/admin_chessevent_modal.html:34|
 |Properties|Ιδιότητες|src/web/templates/admin_chessevent_modal.html:43<br>src/web/templates/admin_event_modal.html:55<br>src/web/templates/admin_rotator_modal.html:35<br>src/web/templates/admin_screen_sets_modal_set_div.html:11<br>src/web/templates/admin_timer_modal.html:37<br>src/web/templates/admin_tournament_modal.html:71|
-|Id (unique):|Id (μοναδικό):|src/web/templates/admin_chessevent_modal.html:49<br>src/web/templates/admin_event_modal.html:60<br>src/web/templates/admin_family_modal.html:90<br>src/web/templates/admin_rotator_modal.html:71<br>src/web/templates/admin_screen_modal.html:96<br>src/web/templates/admin_timer_modal.html:42<br>src/web/templates/admin_tournament_modal.html:76|
-|The unique id, used to reference the ChessEvent connection.|Η μοναδική ταυτότητα, που χρησιμοποιείται για να αναφέρει τη σύνδεση σκακιού.|src/web/templates/admin_chessevent_modal.html:58|
+|ID (unique):|Id (μοναδικό):|src/web/templates/admin_chessevent_modal.html:49<br>src/web/templates/admin_event_modal.html:60<br>src/web/templates/admin_family_modal.html:90<br>src/web/templates/admin_rotator_modal.html:71<br>src/web/templates/admin_screen_modal.html:96<br>src/web/templates/admin_timer_modal.html:42<br>src/web/templates/admin_tournament_modal.html:76|
+|The Unique ID, used to reference the ChessEvent connection.|Η μοναδική ταυτότητα, που χρησιμοποιείται για να αναφέρει τη σύνδεση σκακιού.|src/web/templates/admin_chessevent_modal.html:58|
 |Connection to the ChessEvent platform|Σύνδεση με την πλατφόρμα ChessEvent|src/web/templates/admin_chessevent_modal.html:70|
-|ChessEvent id:|ID σκακιού:|src/web/templates/admin_chessevent_modal.html:76|
+|Chessevent ID:|ID σκακιού:|src/web/templates/admin_chessevent_modal.html:76|
 |E.g.: %(string)s|Π.χ.: %(string)s|src/web/templates/admin_chessevent_modal.html:82<br>src/web/templates/admin_screen_sets_modal_set_div.html:157<br>src/web/templates/admin_tournament_modal.html:188|
-|The id used to connect to the ChessEvent platform.|Η ταυτότητα συνήθιζε να συνδέεται με την πλατφόρμα του Σκακιού.|src/web/templates/admin_chessevent_modal.html:85|
+|the ID used to connect to the ChessEvent platform.|Η ταυτότητα συνήθιζε να συνδέεται με την πλατφόρμα του Σκακιού.|src/web/templates/admin_chessevent_modal.html:85|
 |Password:|Κωδικός πρόσβασης:|src/web/templates/admin_chessevent_modal.html:98|
 |E.g.: my_password|Π.χ.: my_password|src/web/templates/admin_chessevent_modal.html:105<br>src/web/templates/admin_event_modal.html:202|
 |The password used to connect to the ChessEvent platform.|Ο κωδικός πρόσβασης που χρησιμοποιήθηκε για να συνδεθεί με την πλατφόρμα ChessEvent.|src/web/templates/admin_chessevent_modal.html:112|
@@ -451,10 +452,10 @@
 |Access driver (found)|Οδηγός πρόσβασης (βρέθηκε)|src/web/templates/admin_config.html:87|
 |Access driver (not found)|Οδηγός πρόσβασης (δεν βρέθηκε)|src/web/templates/admin_config.html:89|
 |Other ODBC drivers found on the server|Άλλοι οδηγοί ODBC που βρέθηκαν στο διακομιστή|src/web/templates/admin_config.html:95|
-|Color #%(num)d:|Χρώμα #%(num)d:|src/web/templates/admin_edit_timer_colors.html:11|
+|Colour #%(num)d:|Χρώμα #%(num)d:|src/web/templates/admin_edit_timer_colors.html:11|
 |by default|εξ ορισμού|src/web/templates/admin_edit_timer_colors.html:17<br>src/web/templates/admin_event_modal.html:352<br>src/web/templates/admin_event_modal.html:501<br>src/web/templates/admin_screen_modal.html:445<br>src/web/templates/admin_screen_modal_message.html:12<br>src/web/templates/user_screen_card.html:46|
 |Delay #%(num)d:|Καθυστέρηση #%(num)d:|src/web/templates/admin_edit_timer_delays.html:5|
-|Unique id: %(uniq_id)s|Μοναδική ταυτότητα: %(uniq_id)s|src/web/templates/admin_event_card.html:20|
+|Unique ID: %(uniq_id)s|Μοναδική ταυτότητα: %(uniq_id)s|src/web/templates/admin_event_card.html:20|
 |Tournaments: %(num)d|Τουρνουά: %(num)d|src/web/templates/admin_event_card.html:27<br>src/web/templates/user_event_card.html:20|
 |ChessEvent connections: %(num)d|Συνδέσεις Σκακιού: %(num)d|src/web/templates/admin_event_card.html:34|
 |Timers: %(num)d|Χρονοδιακόπτες: %(num)d|src/web/templates/admin_event_card.html:41|
@@ -466,7 +467,7 @@
 |Informations: %(num)d|Πληροφορίες: %(num)d|src/web/templates/admin_event_card.html:83|
 |Clone|ΚλώνοςCity name (optional, probably does not need a translation)|src/web/templates/admin_event_config.html:24|
 |Customization|Προσαρμογή|src/web/templates/admin_event_config.html:41|
-|Unique id|Μοναδική ταυτότητα|src/web/templates/admin_event_config.html:47|
+|Unique ID|Μοναδική ταυτότητα|src/web/templates/admin_event_config.html:47|
 |Start|Έναρξη|src/web/templates/admin_event_config.html:52|
 |End|Τέλος|src/web/templates/admin_event_config.html:57|
 |Visibility|Ορατότητα|src/web/templates/admin_event_config.html:62|
@@ -474,7 +475,7 @@
 |Private event|Ιδιωτική εκδήλωση|src/web/templates/admin_event_config.html:65|
 |Default directory of the Papi files|Προκαθορισμένος κατάλογος των αρχείων Papi|src/web/templates/admin_event_config.html:70|
 |(by default)|(από προεπιλογή)|src/web/templates/admin_event_config.html:75<br>src/web/templates/admin_event_config.html:112<br>src/web/templates/admin_family_card.html:33<br>src/web/templates/admin_family_card.html:60<br>src/web/templates/admin_family_card.html:72<br>src/web/templates/admin_family_card.html:84<br>src/web/templates/admin_family_card.html:91<br>src/web/templates/admin_rotator_card.html:18<br>src/web/templates/admin_rotator_card.html:30<br>src/web/templates/admin_rotator_card.html:37<br>src/web/templates/admin_screen_card.html:28<br>src/web/templates/admin_screen_card.html:56<br>src/web/templates/admin_screen_card.html:68<br>src/web/templates/admin_screen_card.html:88<br>src/web/templates/admin_screen_card.html:104<br>src/web/templates/admin_screen_card.html:117<br>src/web/templates/admin_screen_card.html:124|
-|Background image and color|Εικόνα φόντου και χρώμα|src/web/templates/admin_event_config.html:82|
+|Background image and colour|Εικόνα φόντου και χρώμα|src/web/templates/admin_event_config.html:82|
 |Password to enter results|Κωδικός πρόσβασης για να εισάγετε τα αποτελέσματα|src/web/templates/admin_event_config.html:90|
 |No password required|Δεν απαιτείται κωδικός πρόσβασης|src/web/templates/admin_event_config.html:96|
 |Maximum number of illegal moves|Μέγιστος αριθμός παράνομων κινήσεων|src/web/templates/admin_event_config.html:103|
@@ -490,10 +491,10 @@
 |Edition of event [%(event_uniq_id)s]|Έκδοση της εκδήλωσης [%(event_uniq_id)s]|src/web/templates/admin_event_modal.html:22|
 |Deletion of event [%(event_uniq_id)s]|Διαγραφή γεγονότος [%(event_uniq_id)s]|src/web/templates/admin_event_modal.html:24|
 |Warning: the deletion of an event is permanent!|Προειδοποίηση: η διαγραφή ενός γεγονότος είναι μόνιμη!|src/web/templates/admin_event_modal.html:31|
-|Enter the event id to confirm its deletion:|Εισάγετε την ταυτότητα του γεγονότος για να επιβεβαιώσετε τη διαγραφή του:|src/web/templates/admin_event_modal.html:35|
-|Enter here the event id|Εισάγετε εδώ την ταυτότητα εκδήλωσης|src/web/templates/admin_event_modal.html:41|
-|Recovering deleted event is not possible from the web interface (however the events are archived and can be recovered from the filesystem.|Η ανάκτηση διαγραμμένου γεγονότος δεν είναι δυνατή από τη διεπαφή ιστού (παρότι τα γεγονότα αρχειοθετούνται και μπορούν να ανακτηθούν από το σύστημα αρχείων.|src/web/templates/admin_event_modal.html:44|
-|The unique id, used for data storage and export.|Η μοναδική ταυτότητα, που χρησιμοποιείται για την αποθήκευση και εξαγωγή δεδομένων.|src/web/templates/admin_event_modal.html:69|
+|Enter the event ID to confirm its deletion:|Εισάγετε την ταυτότητα του γεγονότος για να επιβεβαιώσετε τη διαγραφή του:|src/web/templates/admin_event_modal.html:35|
+|Enter here the event ID|Εισάγετε εδώ την ταυτότητα εκδήλωσης|src/web/templates/admin_event_modal.html:41|
+|Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.|Η ανάκτηση διαγραμμένου γεγονότος δεν είναι δυνατή από τη διεπαφή ιστού (παρότι τα γεγονότα αρχειοθετούνται και μπορούν να ανακτηθούν από το σύστημα αρχείων.|src/web/templates/admin_event_modal.html:44|
+|The Unique ID, used for data storage and export.|Η μοναδική ταυτότητα, που χρησιμοποιείται για την αποθήκευση και εξαγωγή δεδομένων.|src/web/templates/admin_event_modal.html:69|
 |Name:|Όνομα:|src/web/templates/admin_event_modal.html:80<br>src/web/templates/admin_family_modal.html:116<br>src/web/templates/admin_screen_modal.html:122<br>src/web/templates/admin_screen_sets_modal_set_div.html:40<br>src/web/templates/admin_tournament_modal.html:96|
 |The name of the event, used for display and reports.|Το όνομα του γεγονότος, που χρησιμοποιείται για την εμφάνιση και τις αναφορές.|src/web/templates/admin_event_modal.html:89|
 |Visibility:|Ορατότητα:|src/web/templates/admin_event_modal.html:105<br>src/web/templates/admin_family_modal.html:65<br>src/web/templates/admin_rotator_modal.html:45<br>src/web/templates/admin_screen_modal.html:71|
@@ -503,7 +504,7 @@
 |End:|Τέλος:|src/web/templates/admin_event_modal.html:151|
 |The end date and time of the event.|Η ημερομηνία λήξης και η ώρα της εκδήλωσης.|src/web/templates/admin_event_modal.html:159|
 |Default directory of the Papi files:|Προκαθορισμένος κατάλογος των αρχείων Papi:|src/web/templates/admin_event_modal.html:170|
-|The default directory of the Papi files of the tournaments (absolute or relative path, by default %(dir)s).|Ο προεπιλεγμένος κατάλογος των αρχείων Papi των τουρνουά (απόλυτη ή σχετική διαδρομή, από προεπιλογή %(dir)s).|src/web/templates/admin_event_modal.html:179|
+|The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).|Ο προεπιλεγμένος κατάλογος των αρχείων Papi των τουρνουά (απόλυτη ή σχετική διαδρομή, από προεπιλογή %(dir)s).|src/web/templates/admin_event_modal.html:179|
 |Password to enter results:|Κωδικός πρόσβασης για να εισάγετε τα αποτελέσματα:|src/web/templates/admin_event_modal.html:195|
 |The password required on input screens to enter results (optional).|Ο κωδικός πρόσβασης που απαιτείται στις οθόνες εισόδου για να εισάγετε τα αποτελέσματα (προαιρετικά).|src/web/templates/admin_event_modal.html:209|
 |Illegal moves recording:|Καταγραφή παράνομων κινήσεων:|src/web/templates/admin_event_modal.html:229<br>src/web/templates/admin_tournament_modal.html:395|
@@ -514,11 +515,11 @@
 |Background image:|Εικόνα φόντου:|src/web/templates/admin_event_modal.html:290|
 |no background image|καμία εικόνα φόντου|src/web/templates/admin_event_modal.html:295|
 |The URL or the path of the image to display (by default the Papi-web logo).|Το URL ή το μονοπάτι της εικόνας για να εμφανιστεί (από προεπιλογή το λογότυπο Papi-web).|src/web/templates/admin_event_modal.html:327|
-|Background color:|Χρώμα φόντου:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:439<br>src/web/templates/user_screen_card.html:68|
-|The background color is used when the image dost fill the whole screen.|Το χρώμα φόντου χρησιμοποιείται όταν η dost εικόνα γεμίσει ολόκληρη την οθόνη.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:464|
+|Background colour:|Χρώμα φόντου:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:439<br>src/web/templates/user_screen_card.html:68|
+|The background colour is used when the image dost fill the whole screen.|Το χρώμα φόντου χρησιμοποιείται όταν η dost εικόνα γεμίσει ολόκληρη την οθόνη.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:464|
 |Choose a custom image:|Επιλέξτε μια προσαρμοσμένη εικόνα:|src/web/templates/admin_event_modal.html:413|
 |Timers|Χρονοδιακόπτες|src/web/templates/admin_event_modal.html:436|
-|Text color:|Χρώμα κειμένου:|src/web/templates/admin_event_modal.html:495|
+|Text colour:|Χρώμα κειμένου:|src/web/templates/admin_event_modal.html:495|
 |Text:|Κείμενο:|src/web/templates/admin_event_modal.html:531|
 |E.g.: Please keep quiet until the end of the round!|Π.χ.: Παρακαλώ κάντε ησυχία μέχρι το τέλος του γύρου!|src/web/templates/admin_event_modal.html:537<br>src/web/templates/admin_screen_modal_message.html:18|
 |When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.|Όταν ορίζεται, το μήνυμα ειδοποίησης εμφανίζεται σε ένα λάβαρο κύλισης στο κάτω μέρος των οθονών. Το μήνυμα συναγερμού που ορίζεται στο επίπεδο γεγονότων μπορεί να παρακαμφθεί σε περιστροφέα, οικογένεια οθόνης ή επίπεδο οθόνης.|src/web/templates/admin_event_modal.html:540|
@@ -558,13 +559,13 @@
 |Edition of screen family [%(family_uniq_id)s]|Έκδοση της οικογένειας οθόνης [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:32|
 |Deletion of screen family [%(family_uniq_id)s]|Διαγραφή της οικογένειας οθόνης [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:34|
 |Warning: the deletion of a screen family is permanent!|Προειδοποίηση: η διαγραφή μιας οικογένειας οθόνης είναι μόνιμη!|src/web/templates/admin_family_modal.html:43|
-|Properties (entry of results)|Ιδιότητες (καταχώριση αποτελεσμάτων)|src/web/templates/admin_family_modal.html:48<br>src/web/templates/admin_screen_modal.html:50|
+|Properties (results entry)|Ιδιότητες (καταχώριση αποτελεσμάτων)|src/web/templates/admin_family_modal.html:48<br>src/web/templates/admin_screen_modal.html:50|
 |Properties (pairings by board)|Ιδιότητες (ζευγάρια ανά πλοίο)|src/web/templates/admin_family_modal.html:50<br>src/web/templates/admin_screen_modal.html:52|
 |Properties (pairings by player)|Ιδιότητες (ζευγάρια από τον παίκτη)|src/web/templates/admin_family_modal.html:52<br>src/web/templates/admin_screen_modal.html:54|
 |Public screen family|Οικογένεια δημόσιας οθόνης|src/web/templates/admin_family_modal.html:76|
 |Only arbiters can see private screen families.|Μόνο οι στρατιώτες μπορούν να δουν ιδιωτικές οικογένειες.|src/web/templates/admin_family_modal.html:79|
 |E.g.: %(family_type)s-family|Π.χ.: %(family_type)s-οικογένεια|src/web/templates/admin_family_modal.html:98|
-|The unique id, used to reference the screen family.|Η μοναδική ταυτότητα, που χρησιμοποιείται για την αναφορά της οικογένειας οθόνης.|src/web/templates/admin_family_modal.html:105|
+|The Unique ID, used to reference the screen family.|Η μοναδική ταυτότητα, που χρησιμοποιείται για την αναφορά της οικογένειας οθόνης.|src/web/templates/admin_family_modal.html:105|
 |E.g.: My screen family|Π.χ.: Η οικογένειά μου στην οθόνη|src/web/templates/admin_family_modal.html:122|
 |The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament.|Το όνομα της οικογένειας οθόνης, προαιρετικό. Οι ακόλουθες μάρκες αντικαθίστανται αυτόματα από τους αριθμούς του πίνακα ή τα ονόματα των παικτών: %%f=πρώτο, %%l=τελευταίο, %%t=τουρνουά.|src/web/templates/admin_family_modal.html:125|
 |Tournament:|Τουρνουά:|src/web/templates/admin_family_modal.html:136<br>src/web/templates/admin_screen_modal.html:143<br>src/web/templates/admin_screen_sets_modal_set_div.html:16|
@@ -583,7 +584,7 @@
 |On a given number of screens:|Σε έναν δεδομένο αριθμό οθονών:|src/web/templates/admin_family_modal.html:240|
 |E.g.: 4 (split on 4 screens)|Π.χ.: 4 (διαιρεμένο σε 4 οθόνες)|src/web/templates/admin_family_modal.html:247|
 |The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards).|Ο αριθμός των οθονών στις οποίες θα διανεμηθούν οι πίνακες, προαιρετικός (ο αριθμός των οθονών είναι πάντα ο ίδιος και ο αριθμός των σανίδων ανά οθόνη προσαρμόζεται στον αριθμό των σανίδων).|src/web/templates/admin_family_modal.html:251|
-|The number of screens on which the player will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.|Ο αριθμός των οθονών στις οποίες θα διανεμηθεί ο παίκτης, προαιρετικός (ο αριθμός των οθονών είναι πάντα ο ίδιος και ο αριθμός των παικτών ανά οθόνη προσαρμόζεται στον αριθμό των παικτών.|src/web/templates/admin_family_modal.html:253|
+|The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.|Ο αριθμός των οθονών στις οποίες θα διανεμηθεί ο παίκτης, προαιρετικός (ο αριθμός των οθονών είναι πάντα ο ίδιος και ο αριθμός των παικτών ανά οθόνη προσαρμόζεται στον αριθμό των παικτών.|src/web/templates/admin_family_modal.html:253|
 |On fixed size screens:|Στις οθόνες σταθερού μεγέθους:|src/web/templates/admin_family_modal.html:268|
 |The number of boards per screen, optional (the number of screens adapts to the number of boards).|Ο αριθμός των σανίδων ανά οθόνη, προαιρετικός (ο αριθμός των οθονών προσαρμόζεται στον αριθμό των σανίδων).|src/web/templates/admin_family_modal.html:279|
 |The number of players per screen, optional (the number of screens adapts to the number of players).|Ο αριθμός των παικτών ανά οθόνη, προαιρετικός (ο αριθμός των οθονών προσαρμόζεται στον αριθμό των παικτών).|src/web/templates/admin_family_modal.html:281|
@@ -624,13 +625,13 @@
 |Warning: the deletion of a rotator is permanent!|Προειδοποίηση: η διαγραφή ενός περιστροφέα είναι μόνιμη!|src/web/templates/admin_rotator_modal.html:31|
 |Public rotator|Δημόσιος περιστροφέας|src/web/templates/admin_rotator_modal.html:56|
 |Only arbiters can view private rotators.|Μόνο οι άρμπιτερ μπορούν να δουν ιδιωτικούς περιστροφείς.|src/web/templates/admin_rotator_modal.html:59|
-|The unique id, used to reference the rotator.|Το μοναδικό ID, που χρησιμοποιείται για την αναφορά του περιστροφέα.|src/web/templates/admin_rotator_modal.html:80|
+|The Unique ID, used to reference the rotator.|Το μοναδικό ID, που χρησιμοποιείται για την αναφορά του περιστροφέα.|src/web/templates/admin_rotator_modal.html:80|
 |Parameters|Παράμετροι|src/web/templates/admin_rotator_modal.html:92|
 |Delay:|Καθυστέρηση:|src/web/templates/admin_rotator_modal.html:98|
 |E.g.: %(seconds)d (seconds)|Π.χ.: %(seconds)d (δευτερόλεπτα)|src/web/templates/admin_rotator_modal.html:104<br>src/web/templates/admin_tournament_modal.html:316<br>src/web/templates/admin_tournament_modal.html:356|
 |The rotating delay between two screens (by default %(default)d seconds).|Η περιστρεφόμενη καθυστέρηση μεταξύ δύο οθονών (από προεπιλογή %(default)d δευτερόλεπτα).|src/web/templates/admin_rotator_modal.html:107|
 |Selection|Επιλογή|src/web/templates/admin_rotator_modal.html:119|
-|entry of results|καταχώρηση των αποτελεσμάτων|src/web/templates/admin_rotator_modal.html:120|
+|results entry|καταχώρηση των αποτελεσμάτων|src/web/templates/admin_rotator_modal.html:120|
 |pairings by player|ζευγάρωμα από τον παίκτη|src/web/templates/admin_rotator_modal.html:122|
 |last results|τελευταία αποτελέσματα|src/web/templates/admin_rotator_modal.html:123|
 |image|εικόνα|src/web/templates/admin_rotator_modal.html:124|
@@ -650,7 +651,7 @@
 |**Μοναδικός:** Max age: %(num)d minute<br/>**Πληθυντικός:** Max age: %(num)d minutes|**Μοναδικός:** Μέγιστη ηλικία: %(num)d λεπτό<br/>**Πληθυντικός:** Μέγιστη ηλικία: %(num)d λεπτά|src/web/templates/admin_screen_card.html:82|
 |Max age: unlimited|Μέγιστη ηλικία: απεριόριστος|src/web/templates/admin_screen_card.html:84|
 |Image: %(image)s|Εικόνα: %(image)s|src/web/templates/admin_screen_card.html:97|
-|Background color: %(color)s|Χρώμα φόντου: %(color)s|src/web/templates/admin_screen_card.html:101|
+|Background colour: %(color)s|Χρώμα φόντου: %(color)s|src/web/templates/admin_screen_card.html:101|
 |All the tournaments|Όλα τα τουρνουά|src/web/templates/admin_screen_card.html:142<br>src/web/templates/user_screen_card.html:90|
 |Edit the properties of the screen.|Επεξεργασία των ιδιοτήτων της οθόνης.|src/web/templates/admin_screen_card.html:151|
 |Edit the sets of boards displayed on the screen.|Επεξεργαστείτε τα σύνολα των πινάκων που εμφανίζονται στην οθόνη.|src/web/templates/admin_screen_card.html:168|
@@ -669,7 +670,7 @@
 |Public screen|Δημόσια οθόνη|src/web/templates/admin_screen_modal.html:82|
 |Only arbiters can see private screens.|Μόνο οι στρατιώτες μπορούν να δουν ιδιωτικές οθόνες.|src/web/templates/admin_screen_modal.html:85|
 |E.g.: %(screen_type)s-screen|Π.χ.: %(screen_type)s-screen|src/web/templates/admin_screen_modal.html:104|
-|The unique id, used to reference the screen.|Το μοναδικό ID, που χρησιμοποιείται για την αναφορά στην οθόνη.|src/web/templates/admin_screen_modal.html:111|
+|The Unique ID, used to reference the screen.|Το μοναδικό ID, που χρησιμοποιείται για την αναφορά στην οθόνη.|src/web/templates/admin_screen_modal.html:111|
 |E.g.: My screen|Π.χ.: Η οθόνη μου|src/web/templates/admin_screen_modal.html:128|
 |The name of the screen, displayed on event screens.|Το όνομα της οθόνης, εμφανίζεται στις οθόνες γεγονότων.|src/web/templates/admin_screen_modal.html:131|
 |The first tournament of the screen, mandatory (it is possible to add other tournaments later).|Το πρώτο τουρνουά της οθόνης, υποχρεωτικό (μπορεί να προσθέσει και άλλα τουρνουά αργότερα).|src/web/templates/admin_screen_modal.html:156|
@@ -694,8 +695,8 @@
 |Alert message:|Μήνυμα ειδοποίησης:|src/web/templates/admin_screen_modal_message.html:7|
 |Display of unpaired players:|Εμφάνιση μη ζευγαρωμένων παικτών:|src/web/templates/admin_screen_modal_players_show_unpaired.html:2|
 |When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye).|Όταν οι παίκτες που δεν είναι ζευγάρι δεν εμφανίζονται, δεν υπάρχει τρόπος να ξεχωρίσετε τους παίκτες χωρίς (μηδενικό σημείο) και τους παίκτες με μισό σημείο αντίο).|src/web/templates/admin_screen_modal_players_show_unpaired.html:15|
-|Boards sets of screen [%(screen_uniq_id)s]|Σετ σανίδων οθόνης [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:6|
-|Players sets of screen [%(screen_uniq_id)s]|Σετ οθόνης παικτών [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:8|
+|Board sets of screen [%(screen_uniq_id)s]|Σετ σανίδων οθόνης [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:6|
+|Player sets of screen [%(screen_uniq_id)s]|Σετ οθόνης παικτών [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:8|
 |Save the set or cancel.|Αποθηκεύστε το σετ ή ακυρώστε.|src/web/templates/admin_screen_sets_modal.html:15|
 |Drag the sets to order them.|Σύρετε τα σετ για να τα παραγγείλετε.|src/web/templates/admin_screen_sets_modal.html:17|
 |Add a set|Προσθήκη ενός συνόλου|src/web/templates/admin_screen_sets_modal.html:49|
@@ -752,9 +753,9 @@
 |Add a timer to the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_timers.html:21|
 |Create a timer|Δημιουργία χρονοδιακόπτη|src/web/templates/admin_timers.html:30|
 |No timers.|Χωρίς χρονοδιακόπτες.|src/web/templates/admin_timers.html:45|
-|The Papi file of the tournament does not exist (%(papi_file)s).|Το αρχείο Papi του τουρνουά δεν υπάρχει (%(papi_file)s).|src/web/templates/admin_tournament_card.html:15|
-|The Papi file of the tournament exists but could not be read (%(papi_file)s).|Το αρχείο Papi του τουρνουά υπάρχει αλλά δεν μπορούσε να διαβαστεί (%(papi_file)s).|src/web/templates/admin_tournament_card.html:18|
-|The Papi file of the tournament was successfully read (%(papi_file)s).|Το αρχείο Papi του τουρνουά διαβάστηκε με επιτυχία (%(papi_file)s).|src/web/templates/admin_tournament_card.html:21|
+|The Papi file for the tournament does not exist (%(papi_file)s).|Το αρχείο Papi του τουρνουά δεν υπάρχει (%(papi_file)s).|src/web/templates/admin_tournament_card.html:15|
+|The Papi file for the tournament exists but could not be read (%(papi_file)s).|Το αρχείο Papi του τουρνουά υπάρχει αλλά δεν μπορούσε να διαβαστεί (%(papi_file)s).|src/web/templates/admin_tournament_card.html:18|
+|The Papi file for the tournament was successfully read (%(papi_file)s).|Το αρχείο Papi του τουρνουά διαβάστηκε με επιτυχία (%(papi_file)s).|src/web/templates/admin_tournament_card.html:21|
 |Players found in the Papi_file : %(num)d|Οι παίκτες βρέθηκαν στο αρχείο Papi_: %(num)d|src/web/templates/admin_tournament_card.html:48|
 |ChessEvent connection [%(chessevent_uniq_id)s] is used.|Η σύνδεση σκακιού [%(chessevent_uniq_id)s] χρησιμοποιείται.|src/web/templates/admin_tournament_card.html:72|
 |No ChessEvent connection is used.|Δεν χρησιμοποιείται σύνδεση σκακιού.|src/web/templates/admin_tournament_card.html:74|
@@ -770,18 +771,18 @@
 |Warning: the deletion of a tournament is permanent!|Προειδοποίηση: η διαγραφή ενός τουρνουά είναι μόνιμη!|src/web/templates/admin_tournament_modal.html:31|
 |The following screens will also be deleted:|Οι ακόλουθες οθόνες διαγράφονται επίσης:|src/web/templates/admin_tournament_modal.html:34|
 |The following screen families will also be deleted:|Οι ακόλουθες οικογένειες οθόνης διαγράφονται επίσης:|src/web/templates/admin_tournament_modal.html:42|
-|Enter the tournament id to confirm its deletion:|Εισάγετε την ταυτότητα τουρνουά για να επιβεβαιώσετε τη διαγραφή του:|src/web/templates/admin_tournament_modal.html:51|
-|Enter here the tournament id|Εισάγετε εδώ την ταυτότητα του τουρνουά|src/web/templates/admin_tournament_modal.html:57|
+|Enter the tournament ID to confirm its deletion:|Εισάγετε την ταυτότητα τουρνουά για να επιβεβαιώσετε τη διαγραφή του:|src/web/templates/admin_tournament_modal.html:51|
+|Enter here the tournament ID|Εισάγετε εδώ την ταυτότητα του τουρνουά|src/web/templates/admin_tournament_modal.html:57|
 |The Papi-web tournament are deleted but the Papi file is still available on the filesystem.|Το τουρνουά Papi-web διαγράφεται, αλλά το αρχείο Papi είναι ακόμα διαθέσιμο στο σύστημα αρχείων.|src/web/templates/admin_tournament_modal.html:60|
 |E.g.: main|Π.χ.: κύρια|src/web/templates/admin_tournament_modal.html:82<br>src/web/templates/admin_tournament_modal.html:142|
-|The unique id, used to reference the tournament.|Η μοναδική ταυτότητα, που χρησιμοποιείται για να αναφέρει το τουρνουά.|src/web/templates/admin_tournament_modal.html:85|
+|The Unique ID, used to reference the tournament.|Η μοναδική ταυτότητα, που χρησιμοποιείται για να αναφέρει το τουρνουά.|src/web/templates/admin_tournament_modal.html:85|
 |E.g.: Main tournament|Π.χ.: Κύριο τουρνουά|src/web/templates/admin_tournament_modal.html:102<br>src/web/templates/admin_tournament_modal.html:247|
 |The name of the tournament, used for display.|Το όνομα του τουρνουά, που χρησιμοποιείται για επίδειξη.|src/web/templates/admin_tournament_modal.html:105|
 |Directory of the Papi file:|Κατάλογος του αρχείου Papi:|src/web/templates/admin_tournament_modal.html:116|
 |E.g.: c:\chess\tournaments\papi|Π.χ.: c:\chess\ tournaments\papi|src/web/templates/admin_tournament_modal.html:122|
 |The directory of the Papi file, by default %(dir)s.|Ο κατάλογος του αρχείου Papi, από προεπιλογή %(dir)s.|src/web/templates/admin_tournament_modal.html:125|
 |Name of the Papi file (with no extension):|Όνομα του αρχείου Papi (χωρίς επέκταση):|src/web/templates/admin_tournament_modal.html:136|
-|The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then the unique id of the tournament).|Το όνομα του αρχείου Papi, χωρίς την επέκταση .papi (από προεπιλογή ο αριθμός προσόν FFE του τουρνουά, στη συνέχεια η μοναδική ταυτότητα του τουρνουά).|src/web/templates/admin_tournament_modal.html:145|
+|The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament).|Το όνομα του αρχείου Papi, χωρίς την επέκταση .papi (από προεπιλογή ο αριθμός προσόν FFE του τουρνουά, στη συνέχεια η μοναδική ταυτότητα του τουρνουά).|src/web/templates/admin_tournament_modal.html:145|
 |Connections (FFE and ChessEvent)|Συνδέσεις (FFE και σκάκι)|src/web/templates/admin_tournament_modal.html:156|
 |FFE qualification number (optional):|Αριθμός αναγνώρισης FFE (προαιρετικά):|src/web/templates/admin_tournament_modal.html:161|
 |The qualification number given by the French Federation is an integer, it is used to connect to the FFE website.|Ο αριθμός προεπιλογής που δίνεται από τη Γαλλική Ομοσπονδία είναι ακέραιος, χρησιμοποιείται για να συνδεθεί με την ιστοσελίδα του FFE.|src/web/templates/admin_tournament_modal.html:170|
@@ -793,7 +794,7 @@
 |The name of the tournament on the ChessEvent platform.|Το όνομα του τουρνουά στην πλατφόρμα ChessEvent.|src/web/templates/admin_tournament_modal.html:250|
 |Time control|Χρονικός έλεγχος|src/web/templates/admin_tournament_modal.html:265|
 |E.g.: %(seconds)d (%(minutes)d minutes)|Π.χ.: %(seconds)d (%(minutes)d λεπτά)|src/web/templates/admin_tournament_modal.html:276|
-|The initial time in seconds (may be nul if an increment is set).|Ο αρχικός χρόνος σε δευτερόλεπτα (μπορεί να είναι αρνητικός εάν οριστεί αύξηση).|src/web/templates/admin_tournament_modal.html:279|
+|The initial time in seconds (may be empty if an increment is set).|Ο αρχικός χρόνος σε δευτερόλεπτα (μπορεί να είναι αρνητικός εάν οριστεί αύξηση).|src/web/templates/admin_tournament_modal.html:279|
 |Increment (optional):|Στέγασμα (προαιρετικά):|src/web/templates/admin_tournament_modal.html:290|
 |The number of seconds added to the players' clock at each move.|Ο αριθμός των δευτερολέπτων που προστίθενται στο ρολόι των παικτών σε κάθε κίνηση.|src/web/templates/admin_tournament_modal.html:299|
 |Penalty (handicap):|Πέναλτι (χειροκίνητο):|src/web/templates/admin_tournament_modal.html:310|
@@ -881,24 +882,28 @@
 |Unpaired players: hidden|Μη ζευγάρι παίκτες: κρυφό|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Μέγιστος αριθμός αποτελεσμάτων: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Μέγιστος αριθμός αποτελεσμάτων: απεριόριστος|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Επιστρέφω στην περίληψη τεκμηρίωσης|utils/i18n/i18n_update.py:140|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Αγγλική μετάφραση|utils/i18n/i18n_update.py:141|
-|View file {file}|Δείτε το αρχείο {file}|utils/i18n/i18n_update.py:144|
-|Summary|Περίληψη|utils/i18n/i18n_update.py:146|
-|Empty mandatory messages|Κενά υποχρεωτικά μηνύματα|utils/i18n/i18n_update.py:150<br>utils/i18n/i18n_update.py:160|
-|Empty messages|Κενά μηνύματα|utils/i18n/i18n_update.py:153<br>utils/i18n/i18n_update.py:175|
-|Message flagged [{flag}]|Μήνυμα που σημαδεύτηκε [{flag}]|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:198|
-|Message id|Μήνυμα id|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
-|Locations|Τοποθεσίες|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
-|Singular:|Μοναδικός:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
-|Plural:|Πληθυντικός:|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:209<br>utils/i18n/i18n_update.py:212|
-|Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:178|
-|Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:194|
-|Translation|Μετάφραση|utils/i18n/i18n_update.py:200|
+|Return to documentation summary|Επιστρέφω στην περίληψη τεκμηρίωσης|utils/i18n/i18n_update.py:144|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Αγγλική μετάφραση|utils/i18n/i18n_update.py:145|
+|View file {file}|Δείτε το αρχείο {file}|utils/i18n/i18n_update.py:148|
+|Summary|Περίληψη|utils/i18n/i18n_update.py:150|
+|Empty mandatory messages|Κενά υποχρεωτικά μηνύματα|utils/i18n/i18n_update.py:154<br>utils/i18n/i18n_update.py:164|
+|Empty messages|Κενά μηνύματα|utils/i18n/i18n_update.py:157<br>utils/i18n/i18n_update.py:179|
+|Message flagged [{flag}]|Μήνυμα που σημαδεύτηκε [{flag}]|utils/i18n/i18n_update.py:160<br>utils/i18n/i18n_update.py:202|
+|Message ID|Μήνυμα id|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
+|Locations|Τοποθεσίες|utils/i18n/i18n_update.py:166<br>utils/i18n/i18n_update.py:184<br>utils/i18n/i18n_update.py:204|
+|Singular:|Μοναδικός:|utils/i18n/i18n_update.py:173<br>utils/i18n/i18n_update.py:191<br>utils/i18n/i18n_update.py:212<br>utils/i18n/i18n_update.py:215|
+|Plural:|Πληθυντικός:|utils/i18n/i18n_update.py:174<br>utils/i18n/i18n_update.py:192<br>utils/i18n/i18n_update.py:213<br>utils/i18n/i18n_update.py:216|
+|Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:182|
+|Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:198|
+|Translation|Μετάφραση|utils/i18n/i18n_update.py:204|
 
-### Μήνυμα που σημαδεύτηκε [fuzzy] (1)
+### Μήνυμα που σημαδεύτηκε [fuzzy] (5)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
 |Menus|Μενού:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
 

@@ -97,7 +97,7 @@ class EventUserController(AbstractUserController):
             rotators = web_context.user_event.public_rotators_sorted_by_uniq_id
         nav_tabs: dict[str, dict] = {
             'input': {
-                'title': _('Entry of results ({num})').format(num=len(input_screens) or "-"),
+                'title': _('Results entry ({num})').format(num=len(input_screens) or "-"),
                 'screens': input_screens,
                 'disabled': not input_screens,
             },

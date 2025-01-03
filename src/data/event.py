@@ -203,7 +203,7 @@ class Event:
     def background_color(self) -> str:
         background_color: str = PapiWebConfig.default_background_color
         if not self.stored_event.background_color:
-            self.add_debug(_('No background color set, by default [{background_color}]').format(
+            self.add_debug(_('No background colour set, by default [{background_color}]').format(
                 background_color=background_color))
         else:
             background_color = self.stored_event.background_color
@@ -213,7 +213,7 @@ class Event:
     def update_password(self) -> str | None:
         update_password: str | None = self.stored_event.update_password
         if not update_password:
-            self.add_debug(_('No password set for the entry of results'))
+            self.add_debug(_('No password set for the results entry'))
         return update_password
 
     @cached_property

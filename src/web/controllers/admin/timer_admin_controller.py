@@ -80,7 +80,7 @@ class TimerAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = _('Please enter the timer id.')
+                errors[field] = _('Please enter the timer ID.')
             else:
                 match action:
                     case 'create' | 'clone':
@@ -132,7 +132,7 @@ class TimerAdminController(AbstractEventAdminController):
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
         if not uniq_id:
-            errors['uniq_id'] = _('Please enter the round number or the hour id.')
+            errors['uniq_id'] = _('Please enter the round number or the hour ID.')
         time_str: str = WebContext.form_data_to_str(data, 'time_str')
         date_str: str = WebContext.form_data_to_str(data, 'date_str')
         if not time_str:

@@ -32,16 +32,16 @@
                     </h3>
                     {% with id='uniq-id', name='uniq_id' %}
                         <div>
-                            <label for="{{ id }}" class="form-label">{{ _('Enter the event id to confirm its deletion:') }}</label>
+                            <label for="{{ id }}" class="form-label">{{ _('Enter the event ID to confirm its deletion:') }}</label>
                             <input
                                     name="{{ name }}"
                                     type="text" id="{{ id }}"
                                     class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                     aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('Enter here the event id') }}"
+                                    placeholder="{{ _('Enter here the event ID') }}"
                                     value="" />
                             <div id="{{ id }}-help" class="form-text">
-                                {{ _('Recovering deleted event is not possible from the web interface (however the events are archived and can be recovered from the filesystem.') }}
+                                {{ _('Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.') }}
                             </div>
                             {% if name in errors %}
                                 <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -57,7 +57,7 @@
                     <div class="row">
                         <div class="col-4">
                             {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Id (unique):') }}</label>
+                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -66,7 +66,7 @@
                                         placeholder="Exemple : france-jeunes"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The unique id, used for data storage and export.') }}
+                                  {{ _('The Unique ID, used for data storage and export.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -176,7 +176,7 @@
                                         placeholder="Exemple : C:\echecs\ligue\tournois"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The default directory of the Papi files of the tournaments (absolute or relative path, by default %(dir)s).', dir=papi_web_config.default_papi_path) }}
+                                  {{ _('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=papi_web_config.default_papi_path) }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -187,7 +187,7 @@
                         </div>
                     </div>
                     <h3>
-                        {{ _('Entry of results') }}
+                        {{ _('Results entry') }}
                     </h3>
                     <div class="row">
                         <div class="col-6">
@@ -344,7 +344,7 @@
                                 checkbox_name='background_color_checkbox'
                             %}
                                 <div>
-                                    <label for="{{ id }}" class="form-label">{{ _('Background color:') }}</label>
+                                    <label for="{{ id }}" class="form-label">{{ _('Background colour:') }}</label>
                                     <input
                                             name="{{ checkbox_name }}"
                                             type="checkbox" id="{{ checkbox_id }}"
@@ -381,7 +381,7 @@
                                             class="form-text"
                                             style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
                                     >
-                                        {{ _('The background color is used when the image dost fill the whole screen.') }}
+                                        {{ _('The background colour is used when the image dost fill the whole screen.') }}
                                     </div>
                                     {% if name in errors %}
                                         <div
@@ -452,7 +452,7 @@
                                 checkbox_id='message-background-color-checkbox',
                                 checkbox_name='message_background_color_checkbox'
                             %}
-                                <label for="{{ id }}" class="form-label">{{ _('Background color:') }}</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Background colour:') }}</label>
                                 <input
                                         name="{{ checkbox_name }}"
                                         type="checkbox" id="{{ checkbox_id }}"
@@ -492,7 +492,7 @@
                                 checkbox_id='message-color-checkbox',
                                 checkbox_name='message_color_checkbox'
                             %}
-                                <label for="{{ id }}" class="form-label">{{ _('Text color:') }}</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Text colour:') }}</label>
                                 <input
                                         name="{{ checkbox_name }}"
                                         type="checkbox" id="{{ checkbox_id }}"

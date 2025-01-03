@@ -1,21 +1,25 @@
 #: src/papi_web.py:33
-msgid "This program should not be launched directly, use scripts server.bat, ffe.bat and chessevent.bat."
+msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 msgstr ""
 
 #: src/chessevent/action_selector.py:42
-msgid "ChessEvent connection not set for tournament [{tournament_uniq_id}]."
+msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/chessevent/action_selector.py:46
-msgid "Papi file not set for tournament [{tournament_uniq_id}]."
+msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/chessevent/action_selector.py:50
-msgid "Tournament [{tournament_uniq_id}] is started."
+msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr ""
 
 #: src/chessevent/action_selector.py:63 src/ffe/action_selector.py:83
 msgid "Event: {event_name}"
+msgstr ""
+
+#: src/chessevent/action_selector.py:66
+msgid "Unable to create Papi files since no tournaments are defined."
 msgstr ""
 
 #: src/chessevent/action_selector.py:68
@@ -91,7 +95,7 @@ msgstr ""
 #: src/chessevent/action_selector.py:141 src/ffe/action_selector.py:116
 #: src/ffe/action_selector.py:125 src/ffe/action_selector.py:133
 #: src/ffe/action_selector.py:142 src/ffe/action_selector.py:162
-msgid "This action can be done on the tournaments of this event."
+msgid "This action can not be applied to the tournaments of this event."
 msgstr ""
 
 #: src/chessevent/action_selector.py:165
@@ -107,7 +111,7 @@ msgid "Papi file [{file}] has been created (players: {num})."
 msgstr ""
 
 #: src/chessevent/action_selector.py:185
-msgid "FFE id and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr ""
 
 #: src/chessevent/chessevent_session.py:54
@@ -123,7 +127,7 @@ msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr ""
 
 #: src/chessevent/chessevent_session.py:67
-msgid "Id [{user_id}] not found (code: [{code}]): [{error}]."
+msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
 #: src/chessevent/chessevent_session.py:71
@@ -163,7 +167,7 @@ msgid "No events found."
 msgstr ""
 
 #: src/chessevent/event_selector.py:32 src/ffe/event_selector.py:28
-msgid "One event found, type Enter (Q to quit): "
+msgid "One event found, press Enter (Q to quit): "
 msgstr ""
 
 #: src/chessevent/event_selector.py:35 src/ffe/event_selector.py:31
@@ -254,7 +258,7 @@ msgid "  - [{q_uc}] Do not recover"
 msgstr ""
 
 #: src/common/engine.py:128
-msgid "Please entre the number of the version to recover [{default}]: "
+msgid "Please enter the number of the version to recover [{default}]: "
 msgstr ""
 
 #: src/common/engine.py:150
@@ -270,7 +274,7 @@ msgid "Recovering event [{event_uniq_id}]..."
 msgstr ""
 
 #: src/common/engine.py:182
-msgid "Event [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]..."
+msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
 msgstr ""
 
 #: src/common/engine.py:187
@@ -334,7 +338,7 @@ msgid "You are using a version newer than the latest stable version available ([
 msgstr ""
 
 #: src/common/engine.py:364
-msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}] must be done manually (upgrade from the last stable version installed on your server)."
+msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
 msgstr ""
 
 #: src/common/engine.py:368
@@ -342,7 +346,7 @@ msgid "You are using un unstable version more recent than the last stable versio
 msgstr ""
 
 #: src/common/engine.py:380
-msgid "Looking for a a more recent version on GitHub ([{url}])..."
+msgid "Looking for a more recent version on GitHub ([{url}])..."
 msgstr ""
 
 #: src/common/engine.py:384 src/common/engine.py:440
@@ -525,11 +529,11 @@ msgid "No background image set, by default [{background_image}]"
 msgstr ""
 
 #: src/data/event.py:206
-msgid "No background color set, by default [{background_color}]"
+msgid "No background colour set, by default [{background_color}]"
 msgstr ""
 
 #: src/data/event.py:216
-msgid "No password set for the entry of results"
+msgid "No password set for the results entry"
 msgstr ""
 
 #: src/data/event.py:223
@@ -829,7 +833,7 @@ msgstr ""
 
 #: src/ffe/action_selector.py:30 src/ffe/action_selector.py:43
 #: src/ffe/action_selector.py:63
-msgid "FFE id not defined for tournament [{tournament_uniq_id}]."
+msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/ffe/action_selector.py:46
@@ -967,7 +971,7 @@ msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
 #: src/ffe/ffe_session.py:274
-msgid "Upload link not found, check that the tournament is not finished on the FFE website."
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
 #: src/ffe/ffe_session.py:307 src/ffe/ffe_session.py:334
@@ -983,7 +987,7 @@ msgid "Display link not found, check that a Papi file has already been sent."
 msgstr ""
 
 #: src/ffe/ffe_session.py:317
-msgid "Data are already displayed on the FFE website."
+msgid "Data is already displayed on the FFE website."
 msgstr ""
 
 #: src/ffe/ffe_session.py:321
@@ -995,7 +999,7 @@ msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...
 msgstr ""
 
 #: src/ffe/ffe_session.py:348
-msgid "Rules upload link not found, check that the tournament is not finished on the FFE website."
+msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
 #: src/web/server_engine.py:24
@@ -1035,7 +1039,7 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:69
-msgid "Please enter the id of ChessEvent connection."
+msgid "Please enter the ID of ChessEvent connection."
 msgstr ""
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:74
@@ -1044,7 +1048,7 @@ msgid "ChessEvent connection [{uniq_id}] already exists."
 msgstr ""
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:88
-msgid "Please enter the id used to connect to the ChessEvent platform."
+msgid "Please enter the ID used to connect to the ChessEvent platform."
 msgstr ""
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:92
@@ -1052,7 +1056,7 @@ msgid "Please enter the password used to connect to the ChessEvent platform."
 msgstr ""
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:96
-msgid "Please enter the id of the event on the ChessEvent platform."
+msgid "Please enter the ID of the event on the ChessEvent platform."
 msgstr ""
 
 #: src/web/controllers/admin/chessevent_admin_controller.py:232
@@ -1101,7 +1105,7 @@ msgid "Renaming the database failed: {ex}."
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py:410
-msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}) and updated."
+msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py:413
@@ -1118,7 +1122,7 @@ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py:102
-msgid "Please enter the family id."
+msgid "Please enter the family ID."
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py:104
@@ -1178,7 +1182,7 @@ msgstr ""
 #: src/web/templates/admin_event_modal.html:190
 #: src/web/templates/admin_families.html:45
 #: src/web/templates/admin_screens.html:59
-msgid "Entry of results"
+msgid "Results entry"
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py:272
@@ -1214,15 +1218,15 @@ msgid "By default - {option}"
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:88
-msgid "Color #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until color #2 ({delay_2} minutes before the start of the rounds)."
+msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:91
-msgid "Color #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until color #3 (at the start of the rounds)."
+msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:94
-msgid "Color #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:104
@@ -1296,11 +1300,11 @@ msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:226
 #: src/web/controllers/admin/index_admin_controller.py:231
-msgid "Please enter the event id."
+msgid "Please enter the event ID."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:228
-msgid "Event id does not match."
+msgid "event ID does not match."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:239
@@ -1353,12 +1357,12 @@ msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:534
 #: src/web/controllers/user/index_user_controller.py:92
-msgid "Coming events ({num})"
+msgid "Upcoming events ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:538
 #: src/web/controllers/user/index_user_controller.py:94
-msgid "No coming events."
+msgid "No upcoming events."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:542
@@ -1385,7 +1389,7 @@ msgid "Papi-web configuration"
 msgstr ""
 
 #: src/web/controllers/admin/rotator_admin_controller.py:74
-msgid "Please enter the rotator id."
+msgid "Please enter the rotator ID."
 msgstr ""
 
 #: src/web/controllers/admin/rotator_admin_controller.py:79
@@ -1406,7 +1410,7 @@ msgid "Rotator [{rotator_uniq_id}] has been deleted."
 msgstr ""
 
 #: src/web/controllers/admin/screen_admin_controller.py:121
-msgid "Please enter the screen id."
+msgid "Please enter the screen ID."
 msgstr ""
 
 #: src/web/controllers/admin/screen_admin_controller.py:128
@@ -1440,7 +1444,7 @@ msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
 #: src/web/controllers/admin/timer_admin_controller.py:83
-msgid "Please enter the timer id."
+msgid "Please enter the timer ID."
 msgstr ""
 
 #: src/web/controllers/admin/timer_admin_controller.py:88
@@ -1449,7 +1453,7 @@ msgid "Timer [{uniq_id}] already exists."
 msgstr ""
 
 #: src/web/controllers/admin/timer_admin_controller.py:135
-msgid "Please enter the round number or the hour id."
+msgid "Please enter the round number or the hour ID."
 msgstr ""
 
 #: src/web/controllers/admin/timer_admin_controller.py:139
@@ -1503,11 +1507,11 @@ msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py:68
 #: src/web/controllers/admin/tournament_admin_controller.py:73
-msgid "Please enter the tournament id."
+msgid "Please enter the tournament ID."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py:70
-msgid "Tournament id does not match."
+msgid "tournament ID does not match."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py:80
@@ -1520,7 +1524,7 @@ msgid "Please enter the tournament name."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py:111
-msgid "The FFE id is a positive integer."
+msgid "The FFE ID is a positive integer."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py:114
@@ -1552,7 +1556,7 @@ msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr ""
 
 #: src/web/controllers/user/event_user_controller.py:100
-msgid "Entry of results ({num})"
+msgid "Results entry ({num})"
 msgstr ""
 
 #: src/web/controllers/user/event_user_controller.py:105
@@ -1603,7 +1607,7 @@ msgstr ""
 
 #: src/web/templates/admin_chessevent_card.html:14
 #, python-format
-msgid "ChessEvent id: %(chessevent_user_id)s"
+msgid "Chessevent ID: %(chessevent_user_id)s"
 msgstr ""
 
 #: src/web/templates/admin_chessevent_card.html:17
@@ -1676,11 +1680,11 @@ msgstr ""
 #: src/web/templates/admin_screen_modal.html:96
 #: src/web/templates/admin_timer_modal.html:42
 #: src/web/templates/admin_tournament_modal.html:76
-msgid "Id (unique):"
+msgid "ID (unique):"
 msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:58
-msgid "The unique id, used to reference the ChessEvent connection."
+msgid "The Unique ID, used to reference the ChessEvent connection."
 msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:70
@@ -1688,7 +1692,7 @@ msgid "Connection to the ChessEvent platform"
 msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:76
-msgid "ChessEvent id:"
+msgid "Chessevent ID:"
 msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:82
@@ -1699,7 +1703,7 @@ msgid "E.g.: %(string)s"
 msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:85
-msgid "The id used to connect to the ChessEvent platform."
+msgid "the ID used to connect to the ChessEvent platform."
 msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:98
@@ -1853,7 +1857,7 @@ msgstr ""
 
 #: src/web/templates/admin_edit_timer_colors.html:11
 #, python-format
-msgid "Color #%(num)d:"
+msgid "Colour #%(num)d:"
 msgstr ""
 
 #: src/web/templates/admin_edit_timer_colors.html:17
@@ -1872,7 +1876,7 @@ msgstr ""
 
 #: src/web/templates/admin_event_card.html:20
 #, python-format
-msgid "Unique id: %(uniq_id)s"
+msgid "Unique ID: %(uniq_id)s"
 msgstr ""
 
 #: src/web/templates/admin_event_card.html:27
@@ -1930,7 +1934,7 @@ msgid "Customization"
 msgstr ""
 
 #: src/web/templates/admin_event_config.html:47
-msgid "Unique id"
+msgid "Unique ID"
 msgstr ""
 
 #: src/web/templates/admin_event_config.html:52
@@ -1979,7 +1983,7 @@ msgid "(by default)"
 msgstr ""
 
 #: src/web/templates/admin_event_config.html:82
-msgid "Background image and color"
+msgid "Background image and colour"
 msgstr ""
 
 #: src/web/templates/admin_event_config.html:90
@@ -2058,19 +2062,19 @@ msgid "Warning: the deletion of an event is permanent!"
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:35
-msgid "Enter the event id to confirm its deletion:"
+msgid "Enter the event ID to confirm its deletion:"
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:41
-msgid "Enter here the event id"
+msgid "Enter here the event ID"
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:44
-msgid "Recovering deleted event is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
+msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:69
-msgid "The unique id, used for data storage and export."
+msgid "The Unique ID, used for data storage and export."
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:80
@@ -2118,7 +2122,7 @@ msgstr ""
 
 #: src/web/templates/admin_event_modal.html:179
 #, python-format
-msgid "The default directory of the Papi files of the tournaments (absolute or relative path, by default %(dir)s)."
+msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:195
@@ -2170,12 +2174,12 @@ msgstr ""
 #: src/web/templates/admin_event_modal.html:455
 #: src/web/templates/admin_screen_modal.html:439
 #: src/web/templates/user_screen_card.html:68
-msgid "Background color:"
+msgid "Background colour:"
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:384
 #: src/web/templates/admin_screen_modal.html:464
-msgid "The background color is used when the image dost fill the whole screen."
+msgid "The background colour is used when the image dost fill the whole screen."
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:413
@@ -2187,7 +2191,7 @@ msgid "Timers"
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:495
-msgid "Text color:"
+msgid "Text colour:"
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:531
@@ -2380,7 +2384,7 @@ msgstr ""
 
 #: src/web/templates/admin_family_modal.html:48
 #: src/web/templates/admin_screen_modal.html:50
-msgid "Properties (entry of results)"
+msgid "Properties (results entry)"
 msgstr ""
 
 #: src/web/templates/admin_family_modal.html:50
@@ -2407,7 +2411,7 @@ msgid "E.g.: %(family_type)s-family"
 msgstr ""
 
 #: src/web/templates/admin_family_modal.html:105
-msgid "The unique id, used to reference the screen family."
+msgid "The Unique ID, used to reference the screen family."
 msgstr ""
 
 #: src/web/templates/admin_family_modal.html:122
@@ -2504,7 +2508,7 @@ msgid "The number of screens on which the boards will be distributed, optional (
 msgstr ""
 
 #: src/web/templates/admin_family_modal.html:253
-msgid "The number of screens on which the player will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
+msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
 msgstr ""
 
 #: src/web/templates/admin_family_modal.html:268
@@ -2692,7 +2696,7 @@ msgid "Only arbiters can view private rotators."
 msgstr ""
 
 #: src/web/templates/admin_rotator_modal.html:80
-msgid "The unique id, used to reference the rotator."
+msgid "The Unique ID, used to reference the rotator."
 msgstr ""
 
 #: src/web/templates/admin_rotator_modal.html:92
@@ -2720,7 +2724,7 @@ msgid "Selection"
 msgstr ""
 
 #: src/web/templates/admin_rotator_modal.html:120
-msgid "entry of results"
+msgid "results entry"
 msgstr ""
 
 #: src/web/templates/admin_rotator_modal.html:122
@@ -2808,7 +2812,7 @@ msgstr ""
 
 #: src/web/templates/admin_screen_card.html:101
 #, python-format
-msgid "Background color: %(color)s"
+msgid "Background colour: %(color)s"
 msgstr ""
 
 #: src/web/templates/admin_screen_card.html:142
@@ -2888,7 +2892,7 @@ msgid "E.g.: %(screen_type)s-screen"
 msgstr ""
 
 #: src/web/templates/admin_screen_modal.html:111
-msgid "The unique id, used to reference the screen."
+msgid "The Unique ID, used to reference the screen."
 msgstr ""
 
 #: src/web/templates/admin_screen_modal.html:128
@@ -2996,12 +3000,12 @@ msgstr ""
 
 #: src/web/templates/admin_screen_sets_modal.html:6
 #, python-format
-msgid "Boards sets of screen [%(screen_uniq_id)s]"
+msgid "Board sets of screen [%(screen_uniq_id)s]"
 msgstr ""
 
 #: src/web/templates/admin_screen_sets_modal.html:8
 #, python-format
-msgid "Players sets of screen [%(screen_uniq_id)s]"
+msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr ""
 
 #: src/web/templates/admin_screen_sets_modal.html:15
@@ -3240,17 +3244,17 @@ msgstr ""
 
 #: src/web/templates/admin_tournament_card.html:15
 #, python-format
-msgid "The Papi file of the tournament does not exist (%(papi_file)s)."
+msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html:18
 #, python-format
-msgid "The Papi file of the tournament exists but could not be read (%(papi_file)s)."
+msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html:21
 #, python-format
-msgid "The Papi file of the tournament was successfully read (%(papi_file)s)."
+msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html:48
@@ -3321,11 +3325,11 @@ msgid "The following screen families will also be deleted:"
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:51
-msgid "Enter the tournament id to confirm its deletion:"
+msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:57
-msgid "Enter here the tournament id"
+msgid "Enter here the tournament ID"
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:60
@@ -3338,7 +3342,7 @@ msgid "E.g.: main"
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:85
-msgid "The unique id, used to reference the tournament."
+msgid "The Unique ID, used to reference the tournament."
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:102
@@ -3368,7 +3372,7 @@ msgid "Name of the Papi file (with no extension):"
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:145
-msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then the unique id of the tournament)."
+msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:156
@@ -3417,7 +3421,7 @@ msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:279
-msgid "The initial time in seconds (may be nul if an increment is set)."
+msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr ""
 
 #: src/web/templates/admin_tournament_modal.html:290
@@ -3789,63 +3793,63 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:140
+#: utils/i18n/i18n_update.py:144
 msgid "Return to documentation summary"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:141
+#: utils/i18n/i18n_update.py:145
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "English translation"
 
-#: utils/i18n/i18n_update.py:144
+#: utils/i18n/i18n_update.py:148
 msgid "View file {file}"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:146
+#: utils/i18n/i18n_update.py:150
 msgid "Summary"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:150 utils/i18n/i18n_update.py:160
+#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:164
 msgid "Empty mandatory messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:153 utils/i18n/i18n_update.py:175
+#: utils/i18n/i18n_update.py:157 utils/i18n/i18n_update.py:179
 msgid "Empty messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:198
+#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:202
 msgid "Message flagged [{flag}]"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:180
-#: utils/i18n/i18n_update.py:200
-msgid "Message id"
+#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
+#: utils/i18n/i18n_update.py:204
+msgid "Message ID"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:180
-#: utils/i18n/i18n_update.py:200
+#: utils/i18n/i18n_update.py:166 utils/i18n/i18n_update.py:184
+#: utils/i18n/i18n_update.py:204
 msgid "Locations"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
-#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
+#: utils/i18n/i18n_update.py:173 utils/i18n/i18n_update.py:191
+#: utils/i18n/i18n_update.py:212 utils/i18n/i18n_update.py:215
 msgid "Singular:"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
-#: utils/i18n/i18n_update.py:209 utils/i18n/i18n_update.py:212
+#: utils/i18n/i18n_update.py:174 utils/i18n/i18n_update.py:192
+#: utils/i18n/i18n_update.py:213 utils/i18n/i18n_update.py:216
 msgid "Plural:"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:178
+#: utils/i18n/i18n_update.py:182
 msgid "Empty messages are not shown for the default language."
 msgstr ""
 
-#: utils/i18n/i18n_update.py:194
+#: utils/i18n/i18n_update.py:198
 msgid "Flagged messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:200
+#: utils/i18n/i18n_update.py:204
 msgid "Translation"
 msgstr ""
 
@@ -3871,5 +3875,17 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Choose your language"
+#~ msgstr ""
+
+#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+#~ msgstr ""
+
+#~ msgid "ChessEvent connection not set for tournament [{tournament_uniq_id}]."
+#~ msgstr ""
+
+#~ msgid "Papi file not set for tournament [{tournament_uniq_id}]."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}] is started."
 #~ msgstr ""
 

@@ -271,7 +271,7 @@ class FFESession(Session):
             logger.info('> auth_state[%s]=[%s]', UPLOAD_LINK_ID, self.auth_state[UPLOAD_LINK_ID])
         if self.auth_state[UPLOAD_LINK_ID] is None:
             print_interactive_warning(
-                _('Upload link not found, check that the tournament is not finished on the FFE website.'))
+                _('Upload link not found, check that the tournament is not marked as finished on the FFE website.'))
             return
         url = FFE_URL + '/MonTournoi.aspx'
         post: dict[str, str] = {
@@ -314,7 +314,7 @@ class FFESession(Session):
             print_interactive_warning(_('Display link not found, check that a Papi file has already been sent.'))
             return
         if self.auth_state[SET_VISIBLE_LINK_ID].lower().startswith('désactiver'):
-            print_interactive_info(_('Data are already displayed on the FFE website.'))
+            print_interactive_info(_('Data is already displayed on the FFE website.'))
             return
         if not self.auth_state[SET_VISIBLE_LINK_ID].lower().startswith('activer'):
             print_interactive_error(
@@ -345,7 +345,7 @@ class FFESession(Session):
             logger.info('> auth_state[%s]=[%s]', UPLOAD_RULES_LINK_ID, self.auth_state[UPLOAD_RULES_LINK_ID])
         if self.auth_state[UPLOAD_RULES_LINK_ID] is None:
             logger.warning(
-                _('Rules upload link not found, check that the tournament is not finished on the FFE website.'))
+                _('Rules upload link not found, check that the tournament is not marked as finished on the FFE website.'))
             return
         url = FFE_URL + '/MonTournoi.aspx'
         post: dict[str, str] = {

@@ -64,7 +64,7 @@ class ChessEventSession(Session):
                             code=response.status_code, error=json.loads(data)['error']))
                 case 497:
                     print_interactive_error(
-                        _('Id [{user_id}] not found (code: [{code}]): [{error}].').format(
+                        _('ID [{user_id}] not found (code: [{code}]): [{error}].').format(
                             code=response.status_code, user_id=post['user_id'], error=json.loads(data)['error']))
                 case 498:
                     print_interactive_error(

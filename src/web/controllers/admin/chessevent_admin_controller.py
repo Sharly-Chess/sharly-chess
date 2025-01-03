@@ -66,7 +66,7 @@ class ChessEventAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = _('Please enter the id of ChessEvent connection.')
+                errors[field] = _('Please enter the ID of ChessEvent connection.')
             else:
                 match action:
                     case 'create' | 'clone':
@@ -85,7 +85,7 @@ class ChessEventAdminController(AbstractEventAdminController):
                 field = 'user_id'
                 user_id = WebContext.form_data_to_str(data, field)
                 if not user_id:
-                    errors[field] = _('Please enter the id used to connect to the ChessEvent platform.')
+                    errors[field] = _('Please enter the ID used to connect to the ChessEvent platform.')
                 field = 'password'
                 password = WebContext.form_data_to_str(data, field)
                 if not password:
@@ -93,7 +93,7 @@ class ChessEventAdminController(AbstractEventAdminController):
                 field = 'event_id'
                 event_id = WebContext.form_data_to_str(data, field)
                 if not event_id:
-                    errors[field] = _('Please enter the id of the event on the ChessEvent platform.')
+                    errors[field] = _('Please enter the ID of the event on the ChessEvent platform.')
             case 'delete':
                 pass
             case _:

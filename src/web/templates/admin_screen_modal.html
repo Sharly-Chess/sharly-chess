@@ -47,7 +47,7 @@
                 {% else %}
                     <h3>
                         {% if screen_type == 'input' %}
-                            {{ _('Properties (entry of results)') }}
+                            {{ _('Properties (results entry)') }}
                         {% elif screen_type == 'boards' %}
                             {{ _('Properties (pairings by board)') }}
                         {% elif screen_type == 'players' %}
@@ -93,7 +93,7 @@
                         </div>
                         <div class="col-3">
                             {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Id (unique):') }}</label>
+                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -108,7 +108,7 @@
                                         "
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The unique id, used to reference the screen.') }}
+                                    {{ _('The Unique ID, used to reference the screen.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -436,7 +436,7 @@
                                         checkbox_id='background-color-checkbox',
                                         checkbox_name='background_color_checkbox'
                                     %}
-                                        <label for="{{ id }}" class="form-label">{{ _('Background color:') }}</label>
+                                        <label for="{{ id }}" class="form-label">{{ _('Background colour:') }}</label>
                                         <input
                                                 name="{{ checkbox_name }}"
                                                 type="checkbox" id="{{ checkbox_id }}"
@@ -461,7 +461,7 @@
                                                 value="{{ data[name] }}"
                                                 {% if data[checkbox_name] %}disabled{% endif %}/>
                                         <div id="{{ id }}-help" class="form-text">
-                                            {{ _('The background color is used when the image dost fill the whole screen.') }}
+                                            {{ _('The background colour is used when the image dost fill the whole screen.') }}
                                         </div>
                                         {% if name in errors %}
                                             <div id="{{ id }}-error" class="form-text invalid-feedback">

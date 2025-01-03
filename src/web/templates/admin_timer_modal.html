@@ -39,7 +39,7 @@
                     <div class="row">
                         <div class="col">
                             {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Id (unique):') }}</label>
+                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -48,7 +48,7 @@
                                         placeholder="{{ _('E.g.: timer') }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  _('The unique id, used to reference the timer.')
+                                  _('The Unique ID, used to reference the timer.')
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">

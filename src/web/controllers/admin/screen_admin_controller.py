@@ -118,7 +118,7 @@ class ScreenAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = _('Please enter the screen id.')
+                errors[field] = _('Please enter the screen ID.')
             elif ':' in uniq_id:
                 errors[field] = _('Character [{char}] is not allowed.').format(char=':')
             else:
@@ -350,7 +350,7 @@ class ScreenAdminController(AbstractEventAdminController):
                             basic_name: str
                             match screen_type:
                                 case 'input':
-                                    basic_name = _('Entry of results')
+                                    basic_name = _('Results entry')
                                 case 'boards':
                                     basic_name = _('pairings by board')
                                 case 'players':

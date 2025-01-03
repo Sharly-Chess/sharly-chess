@@ -86,13 +86,13 @@ class AbstractAdminController(AbstractController):
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
         return {
             1: _(
-                'Color #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until color #2 ({delay_2} minutes before the start of the rounds).'
+                'Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).'
             ).format(delay_1=delays[1], delay_2=delays[2]),
             2: _(
-                'Color #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until color #3 (at the start of the rounds).'
+                'Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).'
             ).format(delay_2=delays[2]),
             3: _(
-                'Color #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).'
+                'Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).'
             ).format(delay_3=delays[3]),
         }
 
@@ -100,7 +100,7 @@ class AbstractAdminController(AbstractController):
     def _get_screen_type_options(family_screens_only: bool) -> dict[str, str]:
         options: dict[str, str] = {
             '': '-',
-            'input': _('Entry of results'),
+            'input': _('Results entry'),
             'boards': _('Pairings by board'),
             'players': _('Pairings by player'),
         }
@@ -223,12 +223,12 @@ class AbstractIndexAdminController(AbstractAdminController):
         uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
         if action == 'delete':
             if not uniq_id:
-                errors['uniq_id'] = _('Please enter the event id.')
+                errors['uniq_id'] = _('Please enter the event ID.')
             elif uniq_id != admin_event.uniq_id:
-                errors['uniq_id'] = _('Event id does not match.')
+                errors['uniq_id'] = _('event ID does not match.')
         else:
             if not uniq_id:
-                errors['uniq_id'] = _('Please enter the event id.')
+                errors['uniq_id'] = _('Please enter the event ID.')
             elif uniq_id.find('/') != -1:
                 errors['uniq_id'] = _('Character [{char}] is not allowed.').format(char='/')
             else:
@@ -531,11 +531,11 @@ class AbstractIndexAdminController(AbstractAdminController):
                 'icon_class': 'bi-calendar',
             },
             'coming_events': {
-                'title': _('Coming events ({num})').format(num=len(event_loader.coming_events) or '-'),
+                'title': _('Upcoming events ({num})').format(num=len(event_loader.coming_events) or '-'),
                 'template': 'admin_events.html',
                 'events': event_loader.coming_events,
                 'disabled': not event_loader.coming_events,
-                'empty_str': _('No coming events.'),
+                'empty_str': _('No upcoming events.'),
                 'icon_class': 'bi-calendar-check',
             },
             'passed_events': {
