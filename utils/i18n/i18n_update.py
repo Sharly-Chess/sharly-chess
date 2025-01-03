@@ -6,9 +6,11 @@ from babel.messages import Catalog, Message
 from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po
 
-path_root = Path(__file__).parents[2]
-sys.path.append(str(path_root))
-print(sys.path)
+sys.path.extend(map(str,
+    [
+        Path(__file__).parents[2],  # The root path
+        Path(__file__).parents[2] / 'src',  # The path to the source of the application
+    ]))
 
 from common.i18n import default_locale, set_locale, _, locale_localized_name, locale_flag_url, trusted_locales, \
     translators
