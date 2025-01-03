@@ -16,6 +16,7 @@ license = { text = "AGPL v3.0" }
 readme = "README.md"
 dependencies = [
   "AdvancedHTMLParser ~= 9.0.2",
+  "babel ~= 2.16.0",
   "chardet ~= 5.2.0",
   "colorama ~= 0.4.6",
   "colorlog ~= 6.9.0",
