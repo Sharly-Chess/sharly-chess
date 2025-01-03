@@ -14,16 +14,17 @@
 | locale=`es` | Español <img src="../src/web/static/images/locales/es.svg" style="height: 1em;"/> |
 |--|:--:|
 |Mensajes obligatorios vacíos|0/16|
-|Mensajes vacíos|0/863|
-|Message flagged [ai_translation]|862/863|
+|Mensajes vacíos|0/864|
+|Message flagged [ai_translation]|863/864|
+|Message flagged [fuzzy]|1/864|
 
 ## Mensajes obligatorios vacíos (-)
 
 ## Mensajes vacíos (-)
 
-## Mensajes marcados (862)
+## Mensajes marcados (864)
 
-### Mensaje marcado [ai_translation] (862)
+### Mensaje marcado [ai_translation] (863)
 
 |id de mensaje|Traducción|Ubicaciones|
 |--|--|--|
@@ -424,10 +425,10 @@
 |The password used to connect to the ChessEvent platform.|La contraseña utilizada para conectarse a la plataforma ChessEvent.|src/web/templates/admin_chessevent_modal.html:112|
 |ChessEvent event:|Evento ChessEvent:|src/web/templates/admin_chessevent_modal.html:134|
 |The name of the event on the ChessEvent password.|El nombre del evento en la contraseña ChessEvent.|src/web/templates/admin_chessevent_modal.html:143|
-|Create|Crear|src/web/templates/admin_chessevent_modal.html:166<br>src/web/templates/admin_event_modal.html:561<br>src/web/templates/admin_family_modal.html:475<br>src/web/templates/admin_rotator_modal.html:221<br>src/web/templates/admin_screen_modal.html:487<br>src/web/templates/admin_timer_modal.html:82<br>src/web/templates/admin_tournament_modal.html:431|
-|Update|Actualizar|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:477<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:489<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
-|Delete|Eliminar|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:479<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:491<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
-|Cancel|Cancelar|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:495<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:507<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
+|Create|Crear|src/web/templates/admin_chessevent_modal.html:166<br>src/web/templates/admin_event_modal.html:561<br>src/web/templates/admin_family_modal.html:480<br>src/web/templates/admin_rotator_modal.html:221<br>src/web/templates/admin_screen_modal.html:492<br>src/web/templates/admin_timer_modal.html:82<br>src/web/templates/admin_tournament_modal.html:431|
+|Update|Actualizar|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
+|Delete|Eliminar|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
+|Cancel|Cancelar|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
 |Refresh this page.|Actualizar esta página.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:42<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Añade una conexión ChessEvent al evento.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Crear una conexión ChessEvent|src/web/templates/admin_chessevents.html:30|
@@ -446,7 +447,7 @@
 |Access driver (not found)|Controlador de acceso (no encontrado)|src/web/templates/admin_config.html:89|
 |Other ODBC drivers found on the server|Otros controladores ODBC encontrados en el servidor|src/web/templates/admin_config.html:95|
 |Color #%(num)d:|Color #%(num)d:|src/web/templates/admin_edit_timer_colors.html:11|
-|by default|por defecto|src/web/templates/admin_edit_timer_colors.html:17<br>src/web/templates/admin_event_modal.html:352<br>src/web/templates/admin_event_modal.html:501<br>src/web/templates/admin_screen_modal.html:440<br>src/web/templates/admin_screen_modal_message.html:12<br>src/web/templates/user_screen_card.html:46|
+|by default|por defecto|src/web/templates/admin_edit_timer_colors.html:17<br>src/web/templates/admin_event_modal.html:352<br>src/web/templates/admin_event_modal.html:501<br>src/web/templates/admin_screen_modal.html:445<br>src/web/templates/admin_screen_modal_message.html:12<br>src/web/templates/user_screen_card.html:46|
 |Delay #%(num)d:|Demora #%(num)d:|src/web/templates/admin_edit_timer_delays.html:5|
 |Unique id: %(uniq_id)s|id único: %(uniq_id)s|src/web/templates/admin_event_card.html:20|
 |Tournaments: %(num)d|Torneos: %(num)d|src/web/templates/admin_event_card.html:27<br>src/web/templates/user_event_card.html:20|
@@ -504,12 +505,12 @@
 |The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.|El número máximo de movimientos ilegales que se pueden registrar por ronda para un jugador (de 0 a 3, por defecto %(default)d). Este valor se puede modificar para cada torneo.|src/web/templates/admin_event_modal.html:240|
 |Rules file location:|Ubicación del archivo de reglas:|src/web/templates/admin_event_modal.html:259<br>src/web/templates/admin_tournament_modal.html:375|
 |A URL, or the path to the rules file on the server, in PDF format (optional).|Una URL, o la ruta al archivo de reglas en el servidor, en formato PDF (opcional).|src/web/templates/admin_event_modal.html:268|
-|Display|Visor|src/web/templates/admin_event_modal.html:279<br>src/web/templates/admin_rotator_modal.html:199<br>src/web/templates/admin_screen_modal.html:302|
+|Display|Visor|src/web/templates/admin_event_modal.html:279<br>src/web/templates/admin_rotator_modal.html:199<br>src/web/templates/admin_screen_modal.html:307|
 |Background image:|Imagen de fondo:|src/web/templates/admin_event_modal.html:290|
 |no background image|sin imagen de fondo|src/web/templates/admin_event_modal.html:295|
 |The URL or the path of the image to display (by default the Papi-web logo).|La URL o la ruta de la imagen a mostrar (por defecto el logotipo Papi-web).|src/web/templates/admin_event_modal.html:327|
-|Background color:|Color del fondo:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:434<br>src/web/templates/user_screen_card.html:68|
-|The background color is used when the image dost fill the whole screen.|El color de fondo se utiliza cuando la imagen dost llena toda la pantalla.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:459|
+|Background color:|Color del fondo:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:439<br>src/web/templates/user_screen_card.html:68|
+|The background color is used when the image dost fill the whole screen.|El color de fondo se utiliza cuando la imagen dost llena toda la pantalla.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:464|
 |Choose a custom image:|Elija una imagen personalizada:|src/web/templates/admin_event_modal.html:413|
 |Timers|Temporizadores|src/web/templates/admin_event_modal.html:436|
 |Text color:|Color del texto:|src/web/templates/admin_event_modal.html:495|
@@ -567,7 +568,7 @@
 |Player selection (by alphabetical order)|Selección del jugador (por orden alfabético)|src/web/templates/admin_family_modal.html:163<br>src/web/templates/admin_screen_sets_modal_set_div.html:84|
 |First board:|Primer tablero:|src/web/templates/admin_family_modal.html:173<br>src/web/templates/admin_screen_sets_modal_set_div.html:92|
 |First player:|Primer jugador:|src/web/templates/admin_family_modal.html:175<br>src/web/templates/admin_screen_sets_modal_set_div.html:94|
-|E.g.: %(num)d|Por ejemplo: %(num)d|src/web/templates/admin_family_modal.html:185<br>src/web/templates/admin_family_modal.html:330<br>src/web/templates/admin_screen_modal.html:208<br>src/web/templates/admin_screen_modal.html:344<br>src/web/templates/admin_screen_sets_modal_set_div.html:102<br>src/web/templates/admin_screen_sets_modal_set_div.html:132<br>src/web/templates/admin_tournament_modal.html:167<br>src/web/templates/admin_tournament_modal.html:296|
+|E.g.: %(num)d|Por ejemplo: %(num)d|src/web/templates/admin_family_modal.html:185<br>src/web/templates/admin_family_modal.html:330<br>src/web/templates/admin_screen_modal.html:208<br>src/web/templates/admin_screen_modal.html:349<br>src/web/templates/admin_screen_sets_modal_set_div.html:102<br>src/web/templates/admin_screen_sets_modal_set_div.html:132<br>src/web/templates/admin_tournament_modal.html:167<br>src/web/templates/admin_tournament_modal.html:296|
 |The number of the first board to select, optional (the first board by default).|El número del primer tablero a seleccionar, opcional (el primer tablero por defecto).|src/web/templates/admin_family_modal.html:189<br>src/web/templates/admin_screen_sets_modal_set_div.html:106|
 |The number of the first player to select, optional (the first player by alphabetical order by default).|El número del primer jugador a seleccionar, opcional (el primer jugador por orden alfabético por defecto).|src/web/templates/admin_family_modal.html:191<br>src/web/templates/admin_screen_sets_modal_set_div.html:108|
 |Last board:|Último tablero:|src/web/templates/admin_family_modal.html:207<br>src/web/templates/admin_screen_sets_modal_set_div.html:122|
@@ -581,20 +582,22 @@
 |On fixed size screens:|En pantallas de tamaño fijo:|src/web/templates/admin_family_modal.html:268|
 |The number of boards per screen, optional (the number of screens adapts to the number of boards).|El número de placas por pantalla, opcional (el número de pantallas se adapta al número de placas).|src/web/templates/admin_family_modal.html:279|
 |The number of players per screen, optional (the number of screens adapts to the number of players).|El número de reproductores por pantalla, opcional (el número de pantallas se adapta al número de reproductores).|src/web/templates/admin_family_modal.html:281|
+|Layout|Distribución|src/web/templates/admin_family_modal.html:295<br>src/web/templates/admin_screen_modal.html:169|
 |Timer:|Temporizador:|src/web/templates/admin_family_modal.html:300<br>src/web/templates/admin_screen_modal.html:174<br>src/web/templates/user_screen_card.html:31|
 |The timer displayed on the screens of the family.|El temporizador mostrado en las pantallas de la familia.|src/web/templates/admin_family_modal.html:313|
 |The number of columns used to display data.|El número de columnas utilizadas para mostrar los datos.|src/web/templates/admin_family_modal.html:333<br>src/web/templates/admin_screen_modal.html:211|
-|Links displayed on the screen menu:|Enlaces mostrados en el menú de la pantalla:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|E.g.: @boards, @family, another-screen|Por ejemplo: @boards, @family, other-screen|src/web/templates/admin_family_modal.html:350|
-|This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screens.|Este campo le permite especificar las pantallas cuyos enlaces se mostrarán en el menú de las pantallas de la familia. Los identificadores de pantalla deben ser separados por comas, las palabras clave @family (todas las pantallas de la familia), @boards (todas las pantallas de tableros), @input (todas las pantallas de entrada), @players (todas las pantallas de reproductores) así como el comodín \* puede ser utilizado. Si este campo se deja vacío, no se mostrará ningún menú en las pantallas.|src/web/templates/admin_family_modal.html:353|
-|Links to this screen:|Enlaces a esta pantalla:|src/web/templates/admin_family_modal.html:367<br>src/web/templates/admin_screen_modal.html:245|
-|Allow|Permitir|src/web/templates/admin_family_modal.html:375<br>src/web/templates/admin_screen_modal.html:253|
-|Check the box to allow other screens to display a link to the screen of this family.|Marque la casilla para permitir que otras pantallas muestren un enlace a la pantalla de esta familia.|src/web/templates/admin_family_modal.html:387|
-|Menu link label:|Etiqueta del enlace del menú:|src/web/templates/admin_family_modal.html:399<br>src/web/templates/admin_screen_modal.html:277|
-|E.g.: Boards %%f-%%l|Por ejemplo: Tableros|src/web/templates/admin_family_modal.html:407|
-|E.g.: Players %%f-%%l|Por ejemplo: Jugadores|src/web/templates/admin_family_modal.html:409|
-|This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.|Esta etiqueta se utilizará para el enlace a otras pantallas a las pantallas de la familia. Si se deja vacía, se utilizará una etiqueta predeterminada.|src/web/templates/admin_family_modal.html:420|
-|When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).|Cuando no se define a nivel familiar, se utiliza el mensaje de alerta definido a nivel de rotador o evento (si no se establece ningún mensaje de alerta, no se muestra el banner de desplazamiento en la parte inferior de las pantallas de la familia).|src/web/templates/admin_family_modal.html:434|
+|Menus|Menú:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Links displayed on the screen menu:|Enlaces mostrados en el menú de la pantalla:|src/web/templates/admin_family_modal.html:349<br>src/web/templates/admin_screen_modal.html:227|
+|E.g.: @boards, @family, another-screen|Por ejemplo: @boards, @family, other-screen|src/web/templates/admin_family_modal.html:355|
+|This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screens.|Este campo le permite especificar las pantallas cuyos enlaces se mostrarán en el menú de las pantallas de la familia. Los identificadores de pantalla deben ser separados por comas, las palabras clave @family (todas las pantallas de la familia), @boards (todas las pantallas de tableros), @input (todas las pantallas de entrada), @players (todas las pantallas de reproductores) así como el comodín \* puede ser utilizado. Si este campo se deja vacío, no se mostrará ningún menú en las pantallas.|src/web/templates/admin_family_modal.html:358|
+|Links to this screen:|Enlaces a esta pantalla:|src/web/templates/admin_family_modal.html:372<br>src/web/templates/admin_screen_modal.html:250|
+|Allow|Permitir|src/web/templates/admin_family_modal.html:380<br>src/web/templates/admin_screen_modal.html:258|
+|Check the box to allow other screens to display a link to the screen of this family.|Marque la casilla para permitir que otras pantallas muestren un enlace a la pantalla de esta familia.|src/web/templates/admin_family_modal.html:392|
+|Menu link label:|Etiqueta del enlace del menú:|src/web/templates/admin_family_modal.html:404<br>src/web/templates/admin_screen_modal.html:282|
+|E.g.: Boards %%f-%%l|Por ejemplo: Tableros|src/web/templates/admin_family_modal.html:412|
+|E.g.: Players %%f-%%l|Por ejemplo: Jugadores|src/web/templates/admin_family_modal.html:414|
+|This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.|Esta etiqueta se utilizará para el enlace a otras pantallas a las pantallas de la familia. Si se deja vacía, se utilizará una etiqueta predeterminada.|src/web/templates/admin_family_modal.html:425|
+|When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).|Cuando no se define a nivel familiar, se utiliza el mensaje de alerta definido a nivel de rotador o evento (si no se establece ningún mensaje de alerta, no se muestra el banner de desplazamiento en la parte inferior de las pantallas de la familia).|src/web/templates/admin_family_modal.html:439|
 |Go back to the home page.|Vuelve a la página principal.|src/web/templates/admin_index.html:11<br>src/web/templates/user_index.html:11|
 |Level|Nivel|src/web/templates/admin_messages.html:4|
 |Message|Mensaje|src/web/templates/admin_messages.html:5|
@@ -665,24 +668,23 @@
 |E.g.: My screen|Por ejemplo: Mi pantalla|src/web/templates/admin_screen_modal.html:128|
 |The name of the screen, displayed on event screens.|El nombre de la pantalla, que se muestra en las pantallas de eventos.|src/web/templates/admin_screen_modal.html:131|
 |The first tournament of the screen, mandatory (it is possible to add other tournaments later).|El primer torneo de la pantalla, obligatorio (es posible añadir otros torneos más tarde).|src/web/templates/admin_screen_modal.html:156|
-|Layout|Distribución|src/web/templates/admin_screen_modal.html:169|
 |The timer displayed on the screen.|El temporizador mostrado en la pantalla.|src/web/templates/admin_screen_modal.html:191|
-|E.g.: @boards, fixed-boards, tournament-a-\*|Por ejemplo: @boards, tableros fijos, torneo-a-\*|src/web/templates/admin_screen_modal.html:228|
-|This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screen.|Este campo le permite especificar las pantallas cuyos enlaces se mostrarán en el menú de la pantalla. Los identificadores de pantalla deben estar separados por comas, se pueden usar las palabras clave @boards (todas las pantallas), @input (todas las pantallas de entrada), @players (todas las pantallas de reproductores) así como el comodín \*. Si este campo queda vacío, no se mostrará ningún menú en la pantalla.|src/web/templates/admin_screen_modal.html:231|
-|Check the box to allow other screens to display a link to this screen.|Marque la casilla para permitir que otras pantallas muestren un enlace a esta pantalla.|src/web/templates/admin_screen_modal.html:265|
-|E.g.: Link to my screen|Por ejemplo: Enlace a mi pantalla|src/web/templates/admin_screen_modal.html:283|
-|This label will be used for the link to other screens to this screen. If left empty, a default label will be used.|Esta etiqueta se utilizará para el enlace a otras pantallas a esta pantalla. Si se deja vacía, se utilizará una etiqueta predeterminada.|src/web/templates/admin_screen_modal.html:290|
-|When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).|Cuando no se define a nivel de pantalla, se utiliza el mensaje de alerta definido a nivel de rotador o evento (si no se establece ningún mensaje de alerta, no se muestra el banner de desplazamiento en la parte inferior de la pantalla).|src/web/templates/admin_screen_modal.html:305|
-|Maximum number of results displayed:|Número máximo de resultados mostrados:|src/web/templates/admin_screen_modal.html:338|
-|The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).|El número máximo de resultados mostrados en la pantalla, opcional (si se deja vacío, se muestran todos los resultados).|src/web/templates/admin_screen_modal.html:347|
-|Maximum age of the results:|Edad máxima de los resultados:|src/web/templates/admin_screen_modal.html:358|
-|E.g.: %(minutes)d (minutes)|Por ejemplo: %(minutes)d (minutos)|src/web/templates/admin_screen_modal.html:364|
-|The maximum age of the results, in minutes (by default %(minutes)d minutes).|La edad máxima de los resultados, en minutos (por defecto %(minutes)d minutos).|src/web/templates/admin_screen_modal.html:367|
-|Tournaments displayed:|Torneos mostrados:|src/web/templates/admin_screen_modal.html:377|
-|When not tournament is selected, the results of all the tournaments are displayed.|Cuando no se selecciona el torneo, se muestran los resultados de todos los torneos.|src/web/templates/admin_screen_modal.html:395|
-|Image:|Imagen:|src/web/templates/admin_screen_modal.html:409<br>src/web/templates/user_screen_card.html:60|
-|E.g.: https://my.club.us/tournament.jpg|Por ejemplo: https://my.club.us/tournament.jpg|src/web/templates/admin_screen_modal.html:415|
-|The URL of the image to display.|La URL de la imagen a mostrar.|src/web/templates/admin_screen_modal.html:418|
+|E.g.: @boards, fixed-boards, tournament-a-\*|Por ejemplo: @boards, tableros fijos, torneo-a-\*|src/web/templates/admin_screen_modal.html:233|
+|This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screen.|Este campo le permite especificar las pantallas cuyos enlaces se mostrarán en el menú de la pantalla. Los identificadores de pantalla deben estar separados por comas, se pueden usar las palabras clave @boards (todas las pantallas), @input (todas las pantallas de entrada), @players (todas las pantallas de reproductores) así como el comodín \*. Si este campo queda vacío, no se mostrará ningún menú en la pantalla.|src/web/templates/admin_screen_modal.html:236|
+|Check the box to allow other screens to display a link to this screen.|Marque la casilla para permitir que otras pantallas muestren un enlace a esta pantalla.|src/web/templates/admin_screen_modal.html:270|
+|E.g.: Link to my screen|Por ejemplo: Enlace a mi pantalla|src/web/templates/admin_screen_modal.html:288|
+|This label will be used for the link to other screens to this screen. If left empty, a default label will be used.|Esta etiqueta se utilizará para el enlace a otras pantallas a esta pantalla. Si se deja vacía, se utilizará una etiqueta predeterminada.|src/web/templates/admin_screen_modal.html:295|
+|When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).|Cuando no se define a nivel de pantalla, se utiliza el mensaje de alerta definido a nivel de rotador o evento (si no se establece ningún mensaje de alerta, no se muestra el banner de desplazamiento en la parte inferior de la pantalla).|src/web/templates/admin_screen_modal.html:310|
+|Maximum number of results displayed:|Número máximo de resultados mostrados:|src/web/templates/admin_screen_modal.html:343|
+|The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).|El número máximo de resultados mostrados en la pantalla, opcional (si se deja vacío, se muestran todos los resultados).|src/web/templates/admin_screen_modal.html:352|
+|Maximum age of the results:|Edad máxima de los resultados:|src/web/templates/admin_screen_modal.html:363|
+|E.g.: %(minutes)d (minutes)|Por ejemplo: %(minutes)d (minutos)|src/web/templates/admin_screen_modal.html:369|
+|The maximum age of the results, in minutes (by default %(minutes)d minutes).|La edad máxima de los resultados, en minutos (por defecto %(minutes)d minutos).|src/web/templates/admin_screen_modal.html:372|
+|Tournaments displayed:|Torneos mostrados:|src/web/templates/admin_screen_modal.html:382|
+|When not tournament is selected, the results of all the tournaments are displayed.|Cuando no se selecciona el torneo, se muestran los resultados de todos los torneos.|src/web/templates/admin_screen_modal.html:400|
+|Image:|Imagen:|src/web/templates/admin_screen_modal.html:414<br>src/web/templates/user_screen_card.html:60|
+|E.g.: https://my.club.us/tournament.jpg|Por ejemplo: https://my.club.us/tournament.jpg|src/web/templates/admin_screen_modal.html:420|
+|The URL of the image to display.|La URL de la imagen a mostrar.|src/web/templates/admin_screen_modal.html:423|
 |Display of a screen exit button:|Visualización de un botón de salida de pantalla:|src/web/templates/admin_screen_modal_input_exit_button.html:2|
 |When not displaying the exit button, users can not accidentally exit input screens.|Cuando no se muestra el botón de salida, los usuarios no pueden salir accidentalmente de las pantallas de entrada.|src/web/templates/admin_screen_modal_input_exit_button.html:15|
 |Alert message:|Mensaje de alerta:|src/web/templates/admin_screen_modal_message.html:7|
@@ -807,14 +809,14 @@
 |Change the number of columns.|Cambiar el número de columnas.|src/web/templates/columns_dropdown.html:13|
 |Welcome to Papi-web!|¡Bienvenidos a Papi-web!|src/web/templates/index.html:12|
 |Language|Idioma|src/web/templates/index.html:18|
-|Web access|Acceso a la Web|src/web/templates/index.html:51|
-|From the Papi-web server|Desde el servidor Papi-web|src/web/templates/index.html:57|
-|From the local network (LAN/WAN)|Desde la red local (LAN/WAN)|src/web/templates/index.html:65|
-|Click here to access the public screens of the events.|Haga clic aquí para acceder a las pantallas públicas de los eventos.|src/web/templates/index.html:83|
-|Events (public access)|Eventos (acceso público)|src/web/templates/index.html:85|
-|The arbiter interface allows the management of the events.|La interfaz del árbitro permite la gestión de los eventos.|src/web/templates/index.html:89|
-|Access to the arbiter interface is not allowed from this client.|El acceso a la interfaz del árbitro no está permitido desde este cliente.|src/web/templates/index.html:91|
-|Arbiter interface (private access)|Interfaz Arbiter (acceso privado)|src/web/templates/index.html:104|
+|Web access|Acceso a la Web|src/web/templates/index.html:52|
+|From the Papi-web server|Desde el servidor Papi-web|src/web/templates/index.html:58|
+|From the local network (LAN/WAN)|Desde la red local (LAN/WAN)|src/web/templates/index.html:66|
+|Click here to access the public screens of the events.|Haga clic aquí para acceder a las pantallas públicas de los eventos.|src/web/templates/index.html:84|
+|Events (public access)|Eventos (acceso público)|src/web/templates/index.html:86|
+|The arbiter interface allows the management of the events.|La interfaz del árbitro permite la gestión de los eventos.|src/web/templates/index.html:90|
+|Access to the arbiter interface is not allowed from this client.|El acceso a la interfaz del árbitro no está permitido desde este cliente.|src/web/templates/index.html:92|
+|Arbiter interface (private access)|Interfaz Arbiter (acceso privado)|src/web/templates/index.html:105|
 |This event is public (by default, screens are visible by the users).|Este evento es público (por defecto, las pantallas son visibles por los usuarios).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Esta pantalla es pública (visible por los usuarios).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Esta familia de pantalla es pública (visible por los usuarios).|src/web/templates/macros.j2:17|
@@ -875,18 +877,24 @@
 |Unpaired players: hidden|Jugadores sin emparejar: ocultos|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Número máximo de resultados: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Número máximo de resultados: ilimitado|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Volver al resumen de la documentación|utils/i18n/i18n_update.py:139|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Traducción al inglés|utils/i18n/i18n_update.py:140|
-|View file {file}|Ver archivo {file}|utils/i18n/i18n_update.py:143|
-|Summary|Resumen|utils/i18n/i18n_update.py:145|
-|Empty mandatory messages|Mensajes obligatorios vacíos|utils/i18n/i18n_update.py:149<br>utils/i18n/i18n_update.py:159|
-|Empty messages|Mensajes vacíos|utils/i18n/i18n_update.py:152<br>utils/i18n/i18n_update.py:174|
-|Message flagged [{flag}]|Mensaje marcado [{flag}]|utils/i18n/i18n_update.py:155<br>utils/i18n/i18n_update.py:197|
-|Message id|id de mensaje|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
-|Locations|Ubicaciones|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
-|Singular:|Singular:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
-|Plural:|Plural:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
-|Empty messages are not shown for the default language.|Los mensajes vacíos no se muestran para el idioma predeterminado.|utils/i18n/i18n_update.py:177|
-|Flagged messages|Mensajes marcados|utils/i18n/i18n_update.py:193|
-|Translation|Traducción|utils/i18n/i18n_update.py:199|
+|Return to documentation summary|Volver al resumen de la documentación|utils/i18n/i18n_update.py:140|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Traducción al inglés|utils/i18n/i18n_update.py:141|
+|View file {file}|Ver archivo {file}|utils/i18n/i18n_update.py:144|
+|Summary|Resumen|utils/i18n/i18n_update.py:146|
+|Empty mandatory messages|Mensajes obligatorios vacíos|utils/i18n/i18n_update.py:150<br>utils/i18n/i18n_update.py:160|
+|Empty messages|Mensajes vacíos|utils/i18n/i18n_update.py:153<br>utils/i18n/i18n_update.py:175|
+|Message flagged [{flag}]|Mensaje marcado [{flag}]|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:198|
+|Message id|id de mensaje|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
+|Locations|Ubicaciones|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
+|Singular:|Singular:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
+|Plural:|Plural:|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:209<br>utils/i18n/i18n_update.py:212|
+|Empty messages are not shown for the default language.|Los mensajes vacíos no se muestran para el idioma predeterminado.|utils/i18n/i18n_update.py:178|
+|Flagged messages|Mensajes marcados|utils/i18n/i18n_update.py:194|
+|Translation|Traducción|utils/i18n/i18n_update.py:200|
+
+### Mensaje marcado [fuzzy] (1)
+
+|id de mensaje|Traducción|Ubicaciones|
+|--|--|--|
+|Menus|Menú:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
 

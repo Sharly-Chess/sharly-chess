@@ -14,16 +14,17 @@
 | locale=`sv` | Svenska <img src="../src/web/static/images/locales/sv.svg" style="height: 1em;"/> |
 |--|:--:|
 |Töm obligatoriska meddelanden|0/16|
-|Tomma meddelanden|0/863|
-|Message flagged [ai_translation]|863/863|
+|Tomma meddelanden|0/864|
+|Message flagged [ai_translation]|864/864|
+|Message flagged [fuzzy]|1/864|
 
 ## Töm obligatoriska meddelanden (-)
 
 ## Tomma meddelanden (-)
 
-## Flaggade meddelanden (863)
+## Flaggade meddelanden (865)
 
-### Meddelande flaggat [ai_translation] (863)
+### Meddelande flaggat [ai_translation] (864)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -424,10 +425,10 @@
 |The password used to connect to the ChessEvent platform.|Lösenordet som användes för att ansluta till ChessEvent-plattformen.|src/web/templates/admin_chessevent_modal.html:112|
 |ChessEvent event:|ChessEvent-evenemang:|src/web/templates/admin_chessevent_modal.html:134|
 |The name of the event on the ChessEvent password.|Namnet på händelsen på lösenordet ChessEvent.|src/web/templates/admin_chessevent_modal.html:143|
-|Create|Skapa|src/web/templates/admin_chessevent_modal.html:166<br>src/web/templates/admin_event_modal.html:561<br>src/web/templates/admin_family_modal.html:475<br>src/web/templates/admin_rotator_modal.html:221<br>src/web/templates/admin_screen_modal.html:487<br>src/web/templates/admin_timer_modal.html:82<br>src/web/templates/admin_tournament_modal.html:431|
-|Update|Uppdatera|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:477<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:489<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
-|Delete|Ta bort|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:479<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:491<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
-|Cancel|Avbryt|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:495<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:507<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
+|Create|Skapa|src/web/templates/admin_chessevent_modal.html:166<br>src/web/templates/admin_event_modal.html:561<br>src/web/templates/admin_family_modal.html:480<br>src/web/templates/admin_rotator_modal.html:221<br>src/web/templates/admin_screen_modal.html:492<br>src/web/templates/admin_timer_modal.html:82<br>src/web/templates/admin_tournament_modal.html:431|
+|Update|Uppdatera|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
+|Delete|Ta bort|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
+|Cancel|Avbryt|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
 |Refresh this page.|Uppdatera den här sidan.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:42<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Lägg till en ChessEvent-anslutning till evenemanget.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Skapa en schackevent-anslutning|src/web/templates/admin_chessevents.html:30|
@@ -446,7 +447,7 @@
 |Access driver (not found)|Åtkomstdrivrutin (finns inte)|src/web/templates/admin_config.html:89|
 |Other ODBC drivers found on the server|Andra ODBC-drivrutiner hittades på servern|src/web/templates/admin_config.html:95|
 |Color #%(num)d:|Färg # %(num)d:|src/web/templates/admin_edit_timer_colors.html:11|
-|by default|Som standard|src/web/templates/admin_edit_timer_colors.html:17<br>src/web/templates/admin_event_modal.html:352<br>src/web/templates/admin_event_modal.html:501<br>src/web/templates/admin_screen_modal.html:440<br>src/web/templates/admin_screen_modal_message.html:12<br>src/web/templates/user_screen_card.html:46|
+|by default|Som standard|src/web/templates/admin_edit_timer_colors.html:17<br>src/web/templates/admin_event_modal.html:352<br>src/web/templates/admin_event_modal.html:501<br>src/web/templates/admin_screen_modal.html:445<br>src/web/templates/admin_screen_modal_message.html:12<br>src/web/templates/user_screen_card.html:46|
 |Delay #%(num)d:|Försening nr %(num)d:|src/web/templates/admin_edit_timer_delays.html:5|
 |Unique id: %(uniq_id)s|Unikt id: %(uniq_id)s|src/web/templates/admin_event_card.html:20|
 |Tournaments: %(num)d|Turneringar: %(num)d|src/web/templates/admin_event_card.html:27<br>src/web/templates/user_event_card.html:20|
@@ -504,12 +505,12 @@
 |The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.|Det maximala antalet olagliga drag som kan registreras per runda för en spelare (från 0 till 3, som standard %(default)d). Detta värde kan ändras för varje turnering.|src/web/templates/admin_event_modal.html:240|
 |Rules file location:|Regler filplats:|src/web/templates/admin_event_modal.html:259<br>src/web/templates/admin_tournament_modal.html:375|
 |A URL, or the path to the rules file on the server, in PDF format (optional).|En webbadress, eller sökvägen till regelfilen på servern, i PDF-format (valfritt).|src/web/templates/admin_event_modal.html:268|
-|Display|Visa|src/web/templates/admin_event_modal.html:279<br>src/web/templates/admin_rotator_modal.html:199<br>src/web/templates/admin_screen_modal.html:302|
+|Display|Visa|src/web/templates/admin_event_modal.html:279<br>src/web/templates/admin_rotator_modal.html:199<br>src/web/templates/admin_screen_modal.html:307|
 |Background image:|Bakgrundsbild:|src/web/templates/admin_event_modal.html:290|
 |no background image|ingen bakgrundsbild|src/web/templates/admin_event_modal.html:295|
 |The URL or the path of the image to display (by default the Papi-web logo).|Webbadressen eller sökvägen för bilden att visa (som standard papi-web-logotypen).|src/web/templates/admin_event_modal.html:327|
-|Background color:|Bakgrundsfärg:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:434<br>src/web/templates/user_screen_card.html:68|
-|The background color is used when the image dost fill the whole screen.|Bakgrundsfärgen används när bildens dost fyller hela skärmen.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:459|
+|Background color:|Bakgrundsfärg:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:439<br>src/web/templates/user_screen_card.html:68|
+|The background color is used when the image dost fill the whole screen.|Bakgrundsfärgen används när bildens dost fyller hela skärmen.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:464|
 |Choose a custom image:|Välj en egen bild:|src/web/templates/admin_event_modal.html:413|
 |Timers|Tidtagare|src/web/templates/admin_event_modal.html:436|
 |Text color:|Textfärg:|src/web/templates/admin_event_modal.html:495|
@@ -567,7 +568,7 @@
 |Player selection (by alphabetical order)|Val av spelare (i alfabetisk ordning)|src/web/templates/admin_family_modal.html:163<br>src/web/templates/admin_screen_sets_modal_set_div.html:84|
 |First board:|Första brädet:|src/web/templates/admin_family_modal.html:173<br>src/web/templates/admin_screen_sets_modal_set_div.html:92|
 |First player:|Första spelare:|src/web/templates/admin_family_modal.html:175<br>src/web/templates/admin_screen_sets_modal_set_div.html:94|
-|E.g.: %(num)d|T.ex.: %(num)d|src/web/templates/admin_family_modal.html:185<br>src/web/templates/admin_family_modal.html:330<br>src/web/templates/admin_screen_modal.html:208<br>src/web/templates/admin_screen_modal.html:344<br>src/web/templates/admin_screen_sets_modal_set_div.html:102<br>src/web/templates/admin_screen_sets_modal_set_div.html:132<br>src/web/templates/admin_tournament_modal.html:167<br>src/web/templates/admin_tournament_modal.html:296|
+|E.g.: %(num)d|T.ex.: %(num)d|src/web/templates/admin_family_modal.html:185<br>src/web/templates/admin_family_modal.html:330<br>src/web/templates/admin_screen_modal.html:208<br>src/web/templates/admin_screen_modal.html:349<br>src/web/templates/admin_screen_sets_modal_set_div.html:102<br>src/web/templates/admin_screen_sets_modal_set_div.html:132<br>src/web/templates/admin_tournament_modal.html:167<br>src/web/templates/admin_tournament_modal.html:296|
 |The number of the first board to select, optional (the first board by default).|Numret på det första brädet att välja, valfritt (det första brädet som standard).|src/web/templates/admin_family_modal.html:189<br>src/web/templates/admin_screen_sets_modal_set_div.html:106|
 |The number of the first player to select, optional (the first player by alphabetical order by default).|Antalet av den första spelaren att välja, valfritt (den första spelaren i alfabetisk ordning som standard).|src/web/templates/admin_family_modal.html:191<br>src/web/templates/admin_screen_sets_modal_set_div.html:108|
 |Last board:|Sista brädet:|src/web/templates/admin_family_modal.html:207<br>src/web/templates/admin_screen_sets_modal_set_div.html:122|
@@ -581,20 +582,22 @@
 |On fixed size screens:|På skärmar med fast storlek:|src/web/templates/admin_family_modal.html:268|
 |The number of boards per screen, optional (the number of screens adapts to the number of boards).|Antalet tavlor per skärm, valfritt (antalet skärmar anpassar sig till antalet tavlor).|src/web/templates/admin_family_modal.html:279|
 |The number of players per screen, optional (the number of screens adapts to the number of players).|Antalet spelare per skärm, valfritt (antalet skärmar anpassar sig till antalet spelare).|src/web/templates/admin_family_modal.html:281|
+|Layout|Layout (layout)|src/web/templates/admin_family_modal.html:295<br>src/web/templates/admin_screen_modal.html:169|
 |Timer:|Tidpunkt:|src/web/templates/admin_family_modal.html:300<br>src/web/templates/admin_screen_modal.html:174<br>src/web/templates/user_screen_card.html:31|
 |The timer displayed on the screens of the family.|Timern visas på skärmar i familjen.|src/web/templates/admin_family_modal.html:313|
 |The number of columns used to display data.|Antalet kolumner som används för att visa data.|src/web/templates/admin_family_modal.html:333<br>src/web/templates/admin_screen_modal.html:211|
-|Links displayed on the screen menu:|Länkar som visas på skärmens meny:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|E.g.: @boards, @family, another-screen|T.ex.: @ boards, @ family, another-screen|src/web/templates/admin_family_modal.html:350|
-|This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screens.|Fältet låter dig ange skärmar vars länkar kommer att visas på menyn på skärmar i familjen. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ familj (alla skärmar i familjen), @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken \* kan användas. Om fältet lämnas tomt, visas ingen meny på skärmarna.|src/web/templates/admin_family_modal.html:353|
-|Links to this screen:|Länkar till den här skärmen:|src/web/templates/admin_family_modal.html:367<br>src/web/templates/admin_screen_modal.html:245|
-|Allow|Tillåt|src/web/templates/admin_family_modal.html:375<br>src/web/templates/admin_screen_modal.html:253|
-|Check the box to allow other screens to display a link to the screen of this family.|Markera rutan för att låta andra skärmar visa en länk till den här familjens skärm.|src/web/templates/admin_family_modal.html:387|
-|Menu link label:|Menyn länketikett:|src/web/templates/admin_family_modal.html:399<br>src/web/templates/admin_screen_modal.html:277|
-|E.g.: Boards %%f-%%l|T.ex.: styrelser %%f-%%l|src/web/templates/admin_family_modal.html:407|
-|E.g.: Players %%f-%%l|Till exempel: Spelare %%f-%%l|src/web/templates/admin_family_modal.html:409|
-|This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.|Den här etiketten används för länken till andra skärmar i familjen. Om den lämnas tom, används en förvald etikett.|src/web/templates/admin_family_modal.html:420|
-|When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).|När det inte definieras på familjenivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmarna i familjen).|src/web/templates/admin_family_modal.html:434|
+|Menus|Menyn:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Links displayed on the screen menu:|Länkar som visas på skärmens meny:|src/web/templates/admin_family_modal.html:349<br>src/web/templates/admin_screen_modal.html:227|
+|E.g.: @boards, @family, another-screen|T.ex.: @ boards, @ family, another-screen|src/web/templates/admin_family_modal.html:355|
+|This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screens.|Fältet låter dig ange skärmar vars länkar kommer att visas på menyn på skärmar i familjen. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ familj (alla skärmar i familjen), @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken \* kan användas. Om fältet lämnas tomt, visas ingen meny på skärmarna.|src/web/templates/admin_family_modal.html:358|
+|Links to this screen:|Länkar till den här skärmen:|src/web/templates/admin_family_modal.html:372<br>src/web/templates/admin_screen_modal.html:250|
+|Allow|Tillåt|src/web/templates/admin_family_modal.html:380<br>src/web/templates/admin_screen_modal.html:258|
+|Check the box to allow other screens to display a link to the screen of this family.|Markera rutan för att låta andra skärmar visa en länk till den här familjens skärm.|src/web/templates/admin_family_modal.html:392|
+|Menu link label:|Menyn länketikett:|src/web/templates/admin_family_modal.html:404<br>src/web/templates/admin_screen_modal.html:282|
+|E.g.: Boards %%f-%%l|T.ex.: styrelser %%f-%%l|src/web/templates/admin_family_modal.html:412|
+|E.g.: Players %%f-%%l|Till exempel: Spelare %%f-%%l|src/web/templates/admin_family_modal.html:414|
+|This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.|Den här etiketten används för länken till andra skärmar i familjen. Om den lämnas tom, används en förvald etikett.|src/web/templates/admin_family_modal.html:425|
+|When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).|När det inte definieras på familjenivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmarna i familjen).|src/web/templates/admin_family_modal.html:439|
 |Go back to the home page.|Gå tillbaka till hemsidan.|src/web/templates/admin_index.html:11<br>src/web/templates/user_index.html:11|
 |Level|Nivå|src/web/templates/admin_messages.html:4|
 |Message|Meddelande|src/web/templates/admin_messages.html:5|
@@ -665,24 +668,23 @@
 |E.g.: My screen|T.ex. min skärm|src/web/templates/admin_screen_modal.html:128|
 |The name of the screen, displayed on event screens.|Namn på skärmen, visas på händelseskärmar.|src/web/templates/admin_screen_modal.html:131|
 |The first tournament of the screen, mandatory (it is possible to add other tournaments later).|Den första turneringen på skärmen, obligatorisk (det är möjligt att lägga till andra turneringar senare).|src/web/templates/admin_screen_modal.html:156|
-|Layout|Layout (layout)|src/web/templates/admin_screen_modal.html:169|
 |The timer displayed on the screen.|Timern som visas på skärmen.|src/web/templates/admin_screen_modal.html:191|
-|E.g.: @boards, fixed-boards, tournament-a-\*|T.ex.: @ boards, fasta boards, turnering-a-\*|src/web/templates/admin_screen_modal.html:228|
-|This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screen.|Fältet låter dig ange skärmar vars länkar kommer att visas på skärmens meny. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken \* kan användas. Om fältet lämnas tomt, visas ingen meny på skärmen.|src/web/templates/admin_screen_modal.html:231|
-|Check the box to allow other screens to display a link to this screen.|Markera rutan för att låta andra skärmar visa en länk till den här skärmen.|src/web/templates/admin_screen_modal.html:265|
-|E.g.: Link to my screen|T.ex.: Länk till min skärm|src/web/templates/admin_screen_modal.html:283|
-|This label will be used for the link to other screens to this screen. If left empty, a default label will be used.|Den här etiketten används för länken till andra skärmar till den här skärmen. Om den lämnas tom, används en förvald etikett.|src/web/templates/admin_screen_modal.html:290|
-|When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).|När det inte definieras på skärmnivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmen).|src/web/templates/admin_screen_modal.html:305|
-|Maximum number of results displayed:|Maximalt antal resultat som visas:|src/web/templates/admin_screen_modal.html:338|
-|The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).|Maximalt antal resultat som visas på skärmen, valfritt (om det lämnas tomt, visas alla resultat).|src/web/templates/admin_screen_modal.html:347|
-|Maximum age of the results:|Högsta ålder på resultaten:|src/web/templates/admin_screen_modal.html:358|
-|E.g.: %(minutes)d (minutes)|T.ex.: %(minutes)d (minuter)|src/web/templates/admin_screen_modal.html:364|
-|The maximum age of the results, in minutes (by default %(minutes)d minutes).|Den maximala åldern för resultaten, i minuter (som standard %(minutes)d minuter).|src/web/templates/admin_screen_modal.html:367|
-|Tournaments displayed:|Turneringar visade:|src/web/templates/admin_screen_modal.html:377|
-|When not tournament is selected, the results of all the tournaments are displayed.|När inte turnering väljs visas resultaten av alla turneringar.|src/web/templates/admin_screen_modal.html:395|
-|Image:|Bild:|src/web/templates/admin_screen_modal.html:409<br>src/web/templates/user_screen_card.html:60|
-|E.g.: https://my.club.us/tournament.jpg|Till exempel: https://my.club.us/tournament.jpg|src/web/templates/admin_screen_modal.html:415|
-|The URL of the image to display.|Webbadressen till bilden som ska visas.|src/web/templates/admin_screen_modal.html:418|
+|E.g.: @boards, fixed-boards, tournament-a-\*|T.ex.: @ boards, fasta boards, turnering-a-\*|src/web/templates/admin_screen_modal.html:233|
+|This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screen.|Fältet låter dig ange skärmar vars länkar kommer att visas på skärmens meny. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken \* kan användas. Om fältet lämnas tomt, visas ingen meny på skärmen.|src/web/templates/admin_screen_modal.html:236|
+|Check the box to allow other screens to display a link to this screen.|Markera rutan för att låta andra skärmar visa en länk till den här skärmen.|src/web/templates/admin_screen_modal.html:270|
+|E.g.: Link to my screen|T.ex.: Länk till min skärm|src/web/templates/admin_screen_modal.html:288|
+|This label will be used for the link to other screens to this screen. If left empty, a default label will be used.|Den här etiketten används för länken till andra skärmar till den här skärmen. Om den lämnas tom, används en förvald etikett.|src/web/templates/admin_screen_modal.html:295|
+|When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).|När det inte definieras på skärmnivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmen).|src/web/templates/admin_screen_modal.html:310|
+|Maximum number of results displayed:|Maximalt antal resultat som visas:|src/web/templates/admin_screen_modal.html:343|
+|The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).|Maximalt antal resultat som visas på skärmen, valfritt (om det lämnas tomt, visas alla resultat).|src/web/templates/admin_screen_modal.html:352|
+|Maximum age of the results:|Högsta ålder på resultaten:|src/web/templates/admin_screen_modal.html:363|
+|E.g.: %(minutes)d (minutes)|T.ex.: %(minutes)d (minuter)|src/web/templates/admin_screen_modal.html:369|
+|The maximum age of the results, in minutes (by default %(minutes)d minutes).|Den maximala åldern för resultaten, i minuter (som standard %(minutes)d minuter).|src/web/templates/admin_screen_modal.html:372|
+|Tournaments displayed:|Turneringar visade:|src/web/templates/admin_screen_modal.html:382|
+|When not tournament is selected, the results of all the tournaments are displayed.|När inte turnering väljs visas resultaten av alla turneringar.|src/web/templates/admin_screen_modal.html:400|
+|Image:|Bild:|src/web/templates/admin_screen_modal.html:414<br>src/web/templates/user_screen_card.html:60|
+|E.g.: https://my.club.us/tournament.jpg|Till exempel: https://my.club.us/tournament.jpg|src/web/templates/admin_screen_modal.html:420|
+|The URL of the image to display.|Webbadressen till bilden som ska visas.|src/web/templates/admin_screen_modal.html:423|
 |Display of a screen exit button:|Visa en skärmutgångsknapp:|src/web/templates/admin_screen_modal_input_exit_button.html:2|
 |When not displaying the exit button, users can not accidentally exit input screens.|När du inte visar utgångsknappen, kan användare inte av misstag avsluta inmatningsskärmar.|src/web/templates/admin_screen_modal_input_exit_button.html:15|
 |Alert message:|Varningsmeddelande:|src/web/templates/admin_screen_modal_message.html:7|
@@ -808,14 +810,14 @@
 |Change the number of columns.|Ändra antal kolumner.|src/web/templates/columns_dropdown.html:13|
 |Welcome to Papi-web!|Välkommen till Papi-webben!|src/web/templates/index.html:12|
 |Language|Språk|src/web/templates/index.html:18|
-|Web access|Webbåtkomst|src/web/templates/index.html:51|
-|From the Papi-web server|Från Papi- webbservern|src/web/templates/index.html:57|
-|From the local network (LAN/WAN)|Från det lokala nätverket (LAN/WAN)|src/web/templates/index.html:65|
-|Click here to access the public screens of the events.|Klicka här för att komma åt evenemangens offentliga skärmar.|src/web/templates/index.html:83|
-|Events (public access)|Evenemang (allmän tillgång)|src/web/templates/index.html:85|
-|The arbiter interface allows the management of the events.|Arbiter-gränssnittet gör det möjligt att hantera händelserna.|src/web/templates/index.html:89|
-|Access to the arbiter interface is not allowed from this client.|Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient.|src/web/templates/index.html:91|
-|Arbiter interface (private access)|Skiljemannagränssnitt (privat åtkomst)|src/web/templates/index.html:104|
+|Web access|Webbåtkomst|src/web/templates/index.html:52|
+|From the Papi-web server|Från Papi- webbservern|src/web/templates/index.html:58|
+|From the local network (LAN/WAN)|Från det lokala nätverket (LAN/WAN)|src/web/templates/index.html:66|
+|Click here to access the public screens of the events.|Klicka här för att komma åt evenemangens offentliga skärmar.|src/web/templates/index.html:84|
+|Events (public access)|Evenemang (allmän tillgång)|src/web/templates/index.html:86|
+|The arbiter interface allows the management of the events.|Arbiter-gränssnittet gör det möjligt att hantera händelserna.|src/web/templates/index.html:90|
+|Access to the arbiter interface is not allowed from this client.|Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient.|src/web/templates/index.html:92|
+|Arbiter interface (private access)|Skiljemannagränssnitt (privat åtkomst)|src/web/templates/index.html:105|
 |This event is public (by default, screens are visible by the users).|Denna händelse är offentlig (som standard är skärmarna synliga av användarna).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Den här skärmen är offentlig (synlig för användarna).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Denna skärmfamilj är offentlig (synlig för användarna).|src/web/templates/macros.j2:17|
@@ -876,18 +878,24 @@
 |Unpaired players: hidden|Oparerade spelare: gömda|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Maximalt antal resultat: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Maximalt antal resultat: obegränsad|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Återgå till sammanfattningen av dokumentationen|utils/i18n/i18n_update.py:139|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Engelsk översättning|utils/i18n/i18n_update.py:140|
-|View file {file}|Visa fil {file}|utils/i18n/i18n_update.py:143|
-|Summary|Sammanfattning|utils/i18n/i18n_update.py:145|
-|Empty mandatory messages|Töm obligatoriska meddelanden|utils/i18n/i18n_update.py:149<br>utils/i18n/i18n_update.py:159|
-|Empty messages|Tomma meddelanden|utils/i18n/i18n_update.py:152<br>utils/i18n/i18n_update.py:174|
-|Message flagged [{flag}]|Meddelande flaggat [{flag}]|utils/i18n/i18n_update.py:155<br>utils/i18n/i18n_update.py:197|
-|Message id|Meddelande- id|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
-|Locations|Platser|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
-|Singular:|Singular:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
-|Plural:|- Vad är det för fel på dig?|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
-|Empty messages are not shown for the default language.|Tomma brev visas inte för standardspråket.|utils/i18n/i18n_update.py:177|
-|Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:193|
-|Translation|Översättning|utils/i18n/i18n_update.py:199|
+|Return to documentation summary|Återgå till sammanfattningen av dokumentationen|utils/i18n/i18n_update.py:140|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Engelsk översättning|utils/i18n/i18n_update.py:141|
+|View file {file}|Visa fil {file}|utils/i18n/i18n_update.py:144|
+|Summary|Sammanfattning|utils/i18n/i18n_update.py:146|
+|Empty mandatory messages|Töm obligatoriska meddelanden|utils/i18n/i18n_update.py:150<br>utils/i18n/i18n_update.py:160|
+|Empty messages|Tomma meddelanden|utils/i18n/i18n_update.py:153<br>utils/i18n/i18n_update.py:175|
+|Message flagged [{flag}]|Meddelande flaggat [{flag}]|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:198|
+|Message id|Meddelande- id|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
+|Locations|Platser|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
+|Singular:|Singular:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
+|Plural:|- Vad är det för fel på dig?|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:209<br>utils/i18n/i18n_update.py:212|
+|Empty messages are not shown for the default language.|Tomma brev visas inte för standardspråket.|utils/i18n/i18n_update.py:178|
+|Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:194|
+|Translation|Översättning|utils/i18n/i18n_update.py:200|
+
+### Meddelande flaggat [fuzzy] (1)
+
+|Meddelande- id|Översättning|Platser|
+|--|--|--|
+|Menus|Menyn:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
 

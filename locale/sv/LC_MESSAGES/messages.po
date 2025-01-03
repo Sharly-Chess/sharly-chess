@@ -4548,76 +4548,76 @@ msgstr "Maximalt antal resultat: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Maximalt antal resultat: obegränsad"
 
-#: utils/i18n/i18n_update.py:139
+#: utils/i18n/i18n_update.py:140
 #, ai_translation
 msgid "Return to documentation summary"
 msgstr "Återgå till sammanfattningen av dokumentationen"
 
-#: utils/i18n/i18n_update.py:140
+#: utils/i18n/i18n_update.py:141
 #, ai_translation
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Engelsk översättning"
 
-#: utils/i18n/i18n_update.py:143
+#: utils/i18n/i18n_update.py:144
 #, ai_translation
 msgid "View file {file}"
 msgstr "Visa fil {file}"
 
-#: utils/i18n/i18n_update.py:145
+#: utils/i18n/i18n_update.py:146
 #, ai_translation
 msgid "Summary"
 msgstr "Sammanfattning"
 
-#: utils/i18n/i18n_update.py:149 utils/i18n/i18n_update.py:159
+#: utils/i18n/i18n_update.py:150 utils/i18n/i18n_update.py:160
 #, ai_translation
 msgid "Empty mandatory messages"
 msgstr "Töm obligatoriska meddelanden"
 
-#: utils/i18n/i18n_update.py:152 utils/i18n/i18n_update.py:174
+#: utils/i18n/i18n_update.py:153 utils/i18n/i18n_update.py:175
 #, ai_translation
 msgid "Empty messages"
 msgstr "Tomma meddelanden"
 
-#: utils/i18n/i18n_update.py:155 utils/i18n/i18n_update.py:197
+#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:198
 #, ai_translation
 msgid "Message flagged [{flag}]"
 msgstr "Meddelande flaggat [{flag}]"
 
-#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
-#: utils/i18n/i18n_update.py:199
+#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:180
+#: utils/i18n/i18n_update.py:200
 #, ai_translation
 msgid "Message id"
 msgstr "Meddelande- id"
 
-#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
-#: utils/i18n/i18n_update.py:199
+#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:180
+#: utils/i18n/i18n_update.py:200
 #, ai_translation
 msgid "Locations"
 msgstr "Platser"
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
+#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
+#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
 #, ai_translation
 msgid "Singular:"
 msgstr "Singular:"
 
-#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
-#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
+#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
+#: utils/i18n/i18n_update.py:209 utils/i18n/i18n_update.py:212
 #, ai_translation
 msgid "Plural:"
 msgstr "- Vad är det för fel på dig?"
 
-#: utils/i18n/i18n_update.py:177
+#: utils/i18n/i18n_update.py:178
 #, ai_translation
 msgid "Empty messages are not shown for the default language."
 msgstr "Tomma brev visas inte för standardspråket."
 
-#: utils/i18n/i18n_update.py:193
+#: utils/i18n/i18n_update.py:194
 #, ai_translation
 msgid "Flagged messages"
 msgstr "Flaggade meddelanden"
 
-#: utils/i18n/i18n_update.py:199
+#: utils/i18n/i18n_update.py:200
 #, ai_translation
 msgid "Translation"
 msgstr "Översättning"

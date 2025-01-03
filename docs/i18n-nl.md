@@ -14,16 +14,17 @@
 | locale=`nl` | Nederlands <img src="../src/web/static/images/locales/nl.svg" style="height: 1em;"/> |
 |--|:--:|
 |Lege verplichte berichten|0/16|
-|Lege berichten|0/863|
-|Message flagged [ai_translation]|863/863|
+|Lege berichten|0/864|
+|Message flagged [ai_translation]|864/864|
+|Message flagged [fuzzy]|1/864|
 
 ## Lege verplichte berichten (-)
 
 ## Lege berichten (-)
 
-## Gemarkeerde berichten (863)
+## Gemarkeerde berichten (865)
 
-### Bericht gemarkeerd [ai_translation] (863)
+### Bericht gemarkeerd [ai_translation] (864)
 
 |Bericht-id|Vertaling|Locaties|
 |--|--|--|
@@ -424,10 +425,10 @@
 |The password used to connect to the ChessEvent platform.|Het wachtwoord gebruikt om verbinding te maken met het platform van ChessEvent.|src/web/templates/admin_chessevent_modal.html:112|
 |ChessEvent event:|Schaakevenement:|src/web/templates/admin_chessevent_modal.html:134|
 |The name of the event on the ChessEvent password.|De naam van het evenement op het ChessEvent wachtwoord.|src/web/templates/admin_chessevent_modal.html:143|
-|Create|Aanmaken|src/web/templates/admin_chessevent_modal.html:166<br>src/web/templates/admin_event_modal.html:561<br>src/web/templates/admin_family_modal.html:475<br>src/web/templates/admin_rotator_modal.html:221<br>src/web/templates/admin_screen_modal.html:487<br>src/web/templates/admin_timer_modal.html:82<br>src/web/templates/admin_tournament_modal.html:431|
-|Update|Bijwerken|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:477<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:489<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
-|Delete|Verwijderen|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:479<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:491<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
-|Cancel|Annuleren|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:495<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:507<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
+|Create|Aanmaken|src/web/templates/admin_chessevent_modal.html:166<br>src/web/templates/admin_event_modal.html:561<br>src/web/templates/admin_family_modal.html:480<br>src/web/templates/admin_rotator_modal.html:221<br>src/web/templates/admin_screen_modal.html:492<br>src/web/templates/admin_timer_modal.html:82<br>src/web/templates/admin_tournament_modal.html:431|
+|Update|Bijwerken|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
+|Delete|Verwijderen|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
+|Cancel|Annuleren|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
 |Refresh this page.|Vernieuw deze pagina.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:42<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Voeg een ChessEvent-verbinding toe aan het evenement.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Een ChessEvent-verbinding maken|src/web/templates/admin_chessevents.html:30|
@@ -446,7 +447,7 @@
 |Access driver (not found)|Toegangsstuurprogramma (niet gevonden)|src/web/templates/admin_config.html:89|
 |Other ODBC drivers found on the server|Andere ODBC-drivers gevonden op de server|src/web/templates/admin_config.html:95|
 |Color #%(num)d:|Kleur #%(num)d:|src/web/templates/admin_edit_timer_colors.html:11|
-|by default|standaard|src/web/templates/admin_edit_timer_colors.html:17<br>src/web/templates/admin_event_modal.html:352<br>src/web/templates/admin_event_modal.html:501<br>src/web/templates/admin_screen_modal.html:440<br>src/web/templates/admin_screen_modal_message.html:12<br>src/web/templates/user_screen_card.html:46|
+|by default|standaard|src/web/templates/admin_edit_timer_colors.html:17<br>src/web/templates/admin_event_modal.html:352<br>src/web/templates/admin_event_modal.html:501<br>src/web/templates/admin_screen_modal.html:445<br>src/web/templates/admin_screen_modal_message.html:12<br>src/web/templates/user_screen_card.html:46|
 |Delay #%(num)d:|Vertraging #%(num)d:|src/web/templates/admin_edit_timer_delays.html:5|
 |Unique id: %(uniq_id)s|Uniek id: %(uniq_id)s|src/web/templates/admin_event_card.html:20|
 |Tournaments: %(num)d|Toernooien: %(num)d|src/web/templates/admin_event_card.html:27<br>src/web/templates/user_event_card.html:20|
@@ -504,12 +505,12 @@
 |The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.|Het maximale aantal illegale bewegingen dat per ronde kan worden opgenomen voor een speler (van 0 tot 3, standaard %(default)d). Deze waarde kan worden gewijzigd voor elk toernooi.|src/web/templates/admin_event_modal.html:240|
 |Rules file location:|Ligging van de regels van het bestand:|src/web/templates/admin_event_modal.html:259<br>src/web/templates/admin_tournament_modal.html:375|
 |A URL, or the path to the rules file on the server, in PDF format (optional).|Een URL, of het pad naar het regelsbestand op de server, in PDF-formaat (optioneel).|src/web/templates/admin_event_modal.html:268|
-|Display|Weergave|src/web/templates/admin_event_modal.html:279<br>src/web/templates/admin_rotator_modal.html:199<br>src/web/templates/admin_screen_modal.html:302|
+|Display|Weergave|src/web/templates/admin_event_modal.html:279<br>src/web/templates/admin_rotator_modal.html:199<br>src/web/templates/admin_screen_modal.html:307|
 |Background image:|Achtergrondafbeelding:|src/web/templates/admin_event_modal.html:290|
 |no background image|geen achtergrondafbeelding|src/web/templates/admin_event_modal.html:295|
 |The URL or the path of the image to display (by default the Papi-web logo).|De URL of het pad van de te tonen afbeelding (standaard het Papi-weblogo).|src/web/templates/admin_event_modal.html:327|
-|Background color:|Achtergrondkleur:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:434<br>src/web/templates/user_screen_card.html:68|
-|The background color is used when the image dost fill the whole screen.|De achtergrondkleur wordt gebruikt wanneer de afbeelding het hele scherm vult.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:459|
+|Background color:|Achtergrondkleur:|src/web/templates/admin_event_modal.html:347<br>src/web/templates/admin_event_modal.html:455<br>src/web/templates/admin_screen_modal.html:439<br>src/web/templates/user_screen_card.html:68|
+|The background color is used when the image dost fill the whole screen.|De achtergrondkleur wordt gebruikt wanneer de afbeelding het hele scherm vult.|src/web/templates/admin_event_modal.html:384<br>src/web/templates/admin_screen_modal.html:464|
 |Choose a custom image:|Kies een aangepaste afbeelding:|src/web/templates/admin_event_modal.html:413|
 |Timers|Timers|src/web/templates/admin_event_modal.html:436|
 |Text color:|Tekstkleur:|src/web/templates/admin_event_modal.html:495|
@@ -567,7 +568,7 @@
 |Player selection (by alphabetical order)|Spelerselectie (op alfabetische volgorde)|src/web/templates/admin_family_modal.html:163<br>src/web/templates/admin_screen_sets_modal_set_div.html:84|
 |First board:|Eerste bord:|src/web/templates/admin_family_modal.html:173<br>src/web/templates/admin_screen_sets_modal_set_div.html:92|
 |First player:|Eerste speler:|src/web/templates/admin_family_modal.html:175<br>src/web/templates/admin_screen_sets_modal_set_div.html:94|
-|E.g.: %(num)d|Bijvoorbeeld: %(num)d|src/web/templates/admin_family_modal.html:185<br>src/web/templates/admin_family_modal.html:330<br>src/web/templates/admin_screen_modal.html:208<br>src/web/templates/admin_screen_modal.html:344<br>src/web/templates/admin_screen_sets_modal_set_div.html:102<br>src/web/templates/admin_screen_sets_modal_set_div.html:132<br>src/web/templates/admin_tournament_modal.html:167<br>src/web/templates/admin_tournament_modal.html:296|
+|E.g.: %(num)d|Bijvoorbeeld: %(num)d|src/web/templates/admin_family_modal.html:185<br>src/web/templates/admin_family_modal.html:330<br>src/web/templates/admin_screen_modal.html:208<br>src/web/templates/admin_screen_modal.html:349<br>src/web/templates/admin_screen_sets_modal_set_div.html:102<br>src/web/templates/admin_screen_sets_modal_set_div.html:132<br>src/web/templates/admin_tournament_modal.html:167<br>src/web/templates/admin_tournament_modal.html:296|
 |The number of the first board to select, optional (the first board by default).|Het nummer van het eerste te selecteren bord, optioneel (standaard het eerste bord).|src/web/templates/admin_family_modal.html:189<br>src/web/templates/admin_screen_sets_modal_set_div.html:106|
 |The number of the first player to select, optional (the first player by alphabetical order by default).|Het nummer van de eerste te selecteren speler, optioneel (de eerste speler op alfabetische volgorde standaard).|src/web/templates/admin_family_modal.html:191<br>src/web/templates/admin_screen_sets_modal_set_div.html:108|
 |Last board:|Laatste bord:|src/web/templates/admin_family_modal.html:207<br>src/web/templates/admin_screen_sets_modal_set_div.html:122|
@@ -581,20 +582,22 @@
 |On fixed size screens:|Op schermen met vaste grootte:|src/web/templates/admin_family_modal.html:268|
 |The number of boards per screen, optional (the number of screens adapts to the number of boards).|Het aantal borden per scherm, facultatief (het aantal schermen past zich aan het aantal borden aan).|src/web/templates/admin_family_modal.html:279|
 |The number of players per screen, optional (the number of screens adapts to the number of players).|Het aantal spelers per scherm, optioneel (het aantal schermen past zich aan het aantal spelers).|src/web/templates/admin_family_modal.html:281|
+|Layout|Opmaak|src/web/templates/admin_family_modal.html:295<br>src/web/templates/admin_screen_modal.html:169|
 |Timer:|Timer:|src/web/templates/admin_family_modal.html:300<br>src/web/templates/admin_screen_modal.html:174<br>src/web/templates/user_screen_card.html:31|
 |The timer displayed on the screens of the family.|De timer die op de schermen van de familie wordt weergegeven.|src/web/templates/admin_family_modal.html:313|
 |The number of columns used to display data.|Het aantal kolommen dat gebruikt wordt om gegevens weer te geven.|src/web/templates/admin_family_modal.html:333<br>src/web/templates/admin_screen_modal.html:211|
-|Links displayed on the screen menu:|Links weergegeven in het schermmenu:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|E.g.: @boards, @family, another-screen|Bijvoorbeeld: @boards, @family, een ander scherm|src/web/templates/admin_family_modal.html:350|
-|This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screens.|Dit veld geeft u de schermen aan waarvan de links op het menu van de schermen van de familie worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @family (alle schermen van de familie), @boards (alle boards screens), @input (alle invoerschermen), @players (alle spelers screens) en de wildcard \* kunnen worden gebruikt. Als dit veld leeg blijft, zal er geen menu op de schermen worden weergegeven.|src/web/templates/admin_family_modal.html:353|
-|Links to this screen:|Links naar dit scherm:|src/web/templates/admin_family_modal.html:367<br>src/web/templates/admin_screen_modal.html:245|
-|Allow|Toestaan|src/web/templates/admin_family_modal.html:375<br>src/web/templates/admin_screen_modal.html:253|
-|Check the box to allow other screens to display a link to the screen of this family.|Vink het vakje aan om andere schermen een link naar het scherm van deze familie te laten weergeven.|src/web/templates/admin_family_modal.html:387|
-|Menu link label:|Menu-linklabel:|src/web/templates/admin_family_modal.html:399<br>src/web/templates/admin_screen_modal.html:277|
-|E.g.: Boards %%f-%%l|Bijvoorbeeld: Borden %%f-%%l|src/web/templates/admin_family_modal.html:407|
-|E.g.: Players %%f-%%l|Bijvoorbeeld: Spelers %%f-%%l|src/web/templates/admin_family_modal.html:409|
-|This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.|Dit label zal gebruikt worden voor de link naar andere schermen naar de schermen van de familie. Indien leeg gelaten, zal er een standaard label gebruikt worden.|src/web/templates/admin_family_modal.html:420|
-|When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).|Wanneer het alarmbericht niet op familieniveau is gedefinieerd, wordt het alarmbericht dat op rotator- of gebeurtenisniveau is gedefinieerd gebruikt (als er geen waarschuwingsbericht is ingesteld, wordt de schuifbanner onderaan de schermen van de familie niet weergegeven).|src/web/templates/admin_family_modal.html:434|
+|Menus|Menu:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Links displayed on the screen menu:|Links weergegeven in het schermmenu:|src/web/templates/admin_family_modal.html:349<br>src/web/templates/admin_screen_modal.html:227|
+|E.g.: @boards, @family, another-screen|Bijvoorbeeld: @boards, @family, een ander scherm|src/web/templates/admin_family_modal.html:355|
+|This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screens.|Dit veld geeft u de schermen aan waarvan de links op het menu van de schermen van de familie worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @family (alle schermen van de familie), @boards (alle boards screens), @input (alle invoerschermen), @players (alle spelers screens) en de wildcard \* kunnen worden gebruikt. Als dit veld leeg blijft, zal er geen menu op de schermen worden weergegeven.|src/web/templates/admin_family_modal.html:358|
+|Links to this screen:|Links naar dit scherm:|src/web/templates/admin_family_modal.html:372<br>src/web/templates/admin_screen_modal.html:250|
+|Allow|Toestaan|src/web/templates/admin_family_modal.html:380<br>src/web/templates/admin_screen_modal.html:258|
+|Check the box to allow other screens to display a link to the screen of this family.|Vink het vakje aan om andere schermen een link naar het scherm van deze familie te laten weergeven.|src/web/templates/admin_family_modal.html:392|
+|Menu link label:|Menu-linklabel:|src/web/templates/admin_family_modal.html:404<br>src/web/templates/admin_screen_modal.html:282|
+|E.g.: Boards %%f-%%l|Bijvoorbeeld: Borden %%f-%%l|src/web/templates/admin_family_modal.html:412|
+|E.g.: Players %%f-%%l|Bijvoorbeeld: Spelers %%f-%%l|src/web/templates/admin_family_modal.html:414|
+|This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.|Dit label zal gebruikt worden voor de link naar andere schermen naar de schermen van de familie. Indien leeg gelaten, zal er een standaard label gebruikt worden.|src/web/templates/admin_family_modal.html:425|
+|When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).|Wanneer het alarmbericht niet op familieniveau is gedefinieerd, wordt het alarmbericht dat op rotator- of gebeurtenisniveau is gedefinieerd gebruikt (als er geen waarschuwingsbericht is ingesteld, wordt de schuifbanner onderaan de schermen van de familie niet weergegeven).|src/web/templates/admin_family_modal.html:439|
 |Go back to the home page.|Ga terug naar de homepage.|src/web/templates/admin_index.html:11<br>src/web/templates/user_index.html:11|
 |Level|Niveau|src/web/templates/admin_messages.html:4|
 |Message|Bericht|src/web/templates/admin_messages.html:5|
@@ -665,24 +668,23 @@
 |E.g.: My screen|Bijvoorbeeld: Mijn scherm|src/web/templates/admin_screen_modal.html:128|
 |The name of the screen, displayed on event screens.|De naam van het scherm, weergegeven op evenementenschermen.|src/web/templates/admin_screen_modal.html:131|
 |The first tournament of the screen, mandatory (it is possible to add other tournaments later).|Het eerste toernooi van het scherm, verplicht (het is mogelijk om andere toernooien later toe te voegen).|src/web/templates/admin_screen_modal.html:156|
-|Layout|Opmaak|src/web/templates/admin_screen_modal.html:169|
 |The timer displayed on the screen.|De timer die op het scherm wordt weergegeven.|src/web/templates/admin_screen_modal.html:191|
-|E.g.: @boards, fixed-boards, tournament-a-\*|Bijvoorbeeld: @boards, fixed-boards, toernooi-a-\*|src/web/templates/admin_screen_modal.html:228|
-|This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screen.|Dit veld geeft u de schermen aan waarvan de links op het schermmenu worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @boards (alle boards), @input (alle invoerschermen), @players (alle spelersschermen) en de wildcard \* kunnen worden gebruikt. Als dit veld leeg blijft, zal er geen menu op het scherm worden weergegeven.|src/web/templates/admin_screen_modal.html:231|
-|Check the box to allow other screens to display a link to this screen.|Vink het vakje aan om andere schermen een link naar dit scherm te laten weergeven.|src/web/templates/admin_screen_modal.html:265|
-|E.g.: Link to my screen|Bijvoorbeeld: Link naar mijn scherm|src/web/templates/admin_screen_modal.html:283|
-|This label will be used for the link to other screens to this screen. If left empty, a default label will be used.|Dit label zal gebruikt worden voor de link naar andere schermen naar dit scherm. Indien leeg gelaten, zal er een standaard label gebruikt worden.|src/web/templates/admin_screen_modal.html:290|
-|When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).|Wanneer het alarmbericht niet op schermniveau is gedefinieerd, wordt het alarmbericht dat op draai- of gebeurtenisniveau is gedefinieerd gebruikt (als er geen waarschuwingsbericht is ingesteld, wordt de schuifbanner onderaan het scherm niet weergegeven).|src/web/templates/admin_screen_modal.html:305|
-|Maximum number of results displayed:|Maximum aantal weergegeven resultaten:|src/web/templates/admin_screen_modal.html:338|
-|The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).|Het maximum aantal resultaten op het scherm, optioneel (indien leeg gelaten, worden alle resultaten weergegeven).|src/web/templates/admin_screen_modal.html:347|
-|Maximum age of the results:|Maximumleeftijd van de resultaten:|src/web/templates/admin_screen_modal.html:358|
-|E.g.: %(minutes)d (minutes)|Bijvoorbeeld: %(minutes)d (minuten)|src/web/templates/admin_screen_modal.html:364|
-|The maximum age of the results, in minutes (by default %(minutes)d minutes).|De maximale leeftijd van de resultaten, in minuten (standaard %(minutes)d minuten).|src/web/templates/admin_screen_modal.html:367|
-|Tournaments displayed:|Toernooien getoond:|src/web/templates/admin_screen_modal.html:377|
-|When not tournament is selected, the results of all the tournaments are displayed.|Wanneer geen toernooi is geselecteerd, worden de resultaten van alle toernooien weergegeven.|src/web/templates/admin_screen_modal.html:395|
-|Image:|Afbeelding:|src/web/templates/admin_screen_modal.html:409<br>src/web/templates/user_screen_card.html:60|
-|E.g.: https://my.club.us/tournament.jpg|Bijvoorbeeld: https://my.club.us/tournament.jpg|src/web/templates/admin_screen_modal.html:415|
-|The URL of the image to display.|De URL van de te tonen afbeelding.|src/web/templates/admin_screen_modal.html:418|
+|E.g.: @boards, fixed-boards, tournament-a-\*|Bijvoorbeeld: @boards, fixed-boards, toernooi-a-\*|src/web/templates/admin_screen_modal.html:233|
+|This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screen.|Dit veld geeft u de schermen aan waarvan de links op het schermmenu worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @boards (alle boards), @input (alle invoerschermen), @players (alle spelersschermen) en de wildcard \* kunnen worden gebruikt. Als dit veld leeg blijft, zal er geen menu op het scherm worden weergegeven.|src/web/templates/admin_screen_modal.html:236|
+|Check the box to allow other screens to display a link to this screen.|Vink het vakje aan om andere schermen een link naar dit scherm te laten weergeven.|src/web/templates/admin_screen_modal.html:270|
+|E.g.: Link to my screen|Bijvoorbeeld: Link naar mijn scherm|src/web/templates/admin_screen_modal.html:288|
+|This label will be used for the link to other screens to this screen. If left empty, a default label will be used.|Dit label zal gebruikt worden voor de link naar andere schermen naar dit scherm. Indien leeg gelaten, zal er een standaard label gebruikt worden.|src/web/templates/admin_screen_modal.html:295|
+|When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).|Wanneer het alarmbericht niet op schermniveau is gedefinieerd, wordt het alarmbericht dat op draai- of gebeurtenisniveau is gedefinieerd gebruikt (als er geen waarschuwingsbericht is ingesteld, wordt de schuifbanner onderaan het scherm niet weergegeven).|src/web/templates/admin_screen_modal.html:310|
+|Maximum number of results displayed:|Maximum aantal weergegeven resultaten:|src/web/templates/admin_screen_modal.html:343|
+|The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).|Het maximum aantal resultaten op het scherm, optioneel (indien leeg gelaten, worden alle resultaten weergegeven).|src/web/templates/admin_screen_modal.html:352|
+|Maximum age of the results:|Maximumleeftijd van de resultaten:|src/web/templates/admin_screen_modal.html:363|
+|E.g.: %(minutes)d (minutes)|Bijvoorbeeld: %(minutes)d (minuten)|src/web/templates/admin_screen_modal.html:369|
+|The maximum age of the results, in minutes (by default %(minutes)d minutes).|De maximale leeftijd van de resultaten, in minuten (standaard %(minutes)d minuten).|src/web/templates/admin_screen_modal.html:372|
+|Tournaments displayed:|Toernooien getoond:|src/web/templates/admin_screen_modal.html:382|
+|When not tournament is selected, the results of all the tournaments are displayed.|Wanneer geen toernooi is geselecteerd, worden de resultaten van alle toernooien weergegeven.|src/web/templates/admin_screen_modal.html:400|
+|Image:|Afbeelding:|src/web/templates/admin_screen_modal.html:414<br>src/web/templates/user_screen_card.html:60|
+|E.g.: https://my.club.us/tournament.jpg|Bijvoorbeeld: https://my.club.us/tournament.jpg|src/web/templates/admin_screen_modal.html:420|
+|The URL of the image to display.|De URL van de te tonen afbeelding.|src/web/templates/admin_screen_modal.html:423|
 |Display of a screen exit button:|Weergave van een schermafsluitknop:|src/web/templates/admin_screen_modal_input_exit_button.html:2|
 |When not displaying the exit button, users can not accidentally exit input screens.|Wanneer de exit-knop niet wordt weergegeven, kunnen gebruikers niet per ongeluk de invoerschermen verlaten.|src/web/templates/admin_screen_modal_input_exit_button.html:15|
 |Alert message:|Waarschuwingsbericht:|src/web/templates/admin_screen_modal_message.html:7|
@@ -808,14 +810,14 @@
 |Change the number of columns.|Verander het aantal kolommen.|src/web/templates/columns_dropdown.html:13|
 |Welcome to Papi-web!|Welkom op Papi-web!|src/web/templates/index.html:12|
 |Language|Taal|src/web/templates/index.html:18|
-|Web access|Webtoegang|src/web/templates/index.html:51|
-|From the Papi-web server|Van de Papi-webserver|src/web/templates/index.html:57|
-|From the local network (LAN/WAN)|Vanuit het lokale netwerk (LAN/WAN)|src/web/templates/index.html:65|
-|Click here to access the public screens of the events.|Klik hier om toegang te krijgen tot de publieke schermen van de evenementen.|src/web/templates/index.html:83|
-|Events (public access)|Evenementen (toegang tot het publiek)|src/web/templates/index.html:85|
-|The arbiter interface allows the management of the events.|De Arbiter interface maakt het beheer van de gebeurtenissen mogelijk.|src/web/templates/index.html:89|
-|Access to the arbiter interface is not allowed from this client.|Toegang tot de Arbiter interface is niet toegestaan van deze client.|src/web/templates/index.html:91|
-|Arbiter interface (private access)|Arbiter-interface (privétoegang)|src/web/templates/index.html:104|
+|Web access|Webtoegang|src/web/templates/index.html:52|
+|From the Papi-web server|Van de Papi-webserver|src/web/templates/index.html:58|
+|From the local network (LAN/WAN)|Vanuit het lokale netwerk (LAN/WAN)|src/web/templates/index.html:66|
+|Click here to access the public screens of the events.|Klik hier om toegang te krijgen tot de publieke schermen van de evenementen.|src/web/templates/index.html:84|
+|Events (public access)|Evenementen (toegang tot het publiek)|src/web/templates/index.html:86|
+|The arbiter interface allows the management of the events.|De Arbiter interface maakt het beheer van de gebeurtenissen mogelijk.|src/web/templates/index.html:90|
+|Access to the arbiter interface is not allowed from this client.|Toegang tot de Arbiter interface is niet toegestaan van deze client.|src/web/templates/index.html:92|
+|Arbiter interface (private access)|Arbiter-interface (privétoegang)|src/web/templates/index.html:105|
 |This event is public (by default, screens are visible by the users).|Deze gebeurtenis is openbaar (standaard zijn schermen zichtbaar door de gebruikers).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Dit scherm is openbaar (zichtbaar door de gebruikers).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Deze schermfamilie is openbaar (zichtbaar door de gebruikers).|src/web/templates/macros.j2:17|
@@ -876,18 +878,24 @@
 |Unpaired players: hidden|Ongepaarde spelers: verborgen|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Maximum aantal resultaten: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Maximum aantal resultaten: onbeperkt|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Terug naar documentatiesamenvatting|utils/i18n/i18n_update.py:139|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Engelse vertaling|utils/i18n/i18n_update.py:140|
-|View file {file}|Bestand {file} tonen|utils/i18n/i18n_update.py:143|
-|Summary|Samenvatting|utils/i18n/i18n_update.py:145|
-|Empty mandatory messages|Lege verplichte berichten|utils/i18n/i18n_update.py:149<br>utils/i18n/i18n_update.py:159|
-|Empty messages|Lege berichten|utils/i18n/i18n_update.py:152<br>utils/i18n/i18n_update.py:174|
-|Message flagged [{flag}]|Bericht gemarkeerd [{flag}]|utils/i18n/i18n_update.py:155<br>utils/i18n/i18n_update.py:197|
-|Message id|Bericht-id|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
-|Locations|Locaties|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:179<br>utils/i18n/i18n_update.py:199|
-|Singular:|Enkelvoud:|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:207<br>utils/i18n/i18n_update.py:210|
-|Plural:|Meervoud:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
-|Empty messages are not shown for the default language.|Lege berichten worden niet getoond voor de standaardtaal.|utils/i18n/i18n_update.py:177|
-|Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:193|
-|Translation|Vertaling|utils/i18n/i18n_update.py:199|
+|Return to documentation summary|Terug naar documentatiesamenvatting|utils/i18n/i18n_update.py:140|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Engelse vertaling|utils/i18n/i18n_update.py:141|
+|View file {file}|Bestand {file} tonen|utils/i18n/i18n_update.py:144|
+|Summary|Samenvatting|utils/i18n/i18n_update.py:146|
+|Empty mandatory messages|Lege verplichte berichten|utils/i18n/i18n_update.py:150<br>utils/i18n/i18n_update.py:160|
+|Empty messages|Lege berichten|utils/i18n/i18n_update.py:153<br>utils/i18n/i18n_update.py:175|
+|Message flagged [{flag}]|Bericht gemarkeerd [{flag}]|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:198|
+|Message id|Bericht-id|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
+|Locations|Locaties|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:180<br>utils/i18n/i18n_update.py:200|
+|Singular:|Enkelvoud:|utils/i18n/i18n_update.py:169<br>utils/i18n/i18n_update.py:187<br>utils/i18n/i18n_update.py:208<br>utils/i18n/i18n_update.py:211|
+|Plural:|Meervoud:|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:209<br>utils/i18n/i18n_update.py:212|
+|Empty messages are not shown for the default language.|Lege berichten worden niet getoond voor de standaardtaal.|utils/i18n/i18n_update.py:178|
+|Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:194|
+|Translation|Vertaling|utils/i18n/i18n_update.py:200|
+
+### Bericht gemarkeerd [fuzzy] (1)
+
+|Bericht-id|Vertaling|Locaties|
+|--|--|--|
+|Menus|Menu:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
 

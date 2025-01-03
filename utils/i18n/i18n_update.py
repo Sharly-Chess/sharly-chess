@@ -1,4 +1,5 @@
 import sys
+from collections import OrderedDict
 from pathlib import Path
 
 from babel.messages import Catalog, Message
@@ -258,9 +259,9 @@ class I18nUpdater:
         self.new_locales: list[str] = []
         print_interactive_info(f'Extracting i18n strings to {self.pot_file}...')
         self.extract()
-        self.locale_infos: dict[str, LocaleInfo] = {
-            locale: LocaleInfo(locale, self.locale_dir, self.doc_dir) for locale in locales
-        }
+        self.locale_infos: dict[str, LocaleInfo] = OrderedDict()
+        for locale in self.locales:
+            self.locale_infos[locale] = LocaleInfo(locale, self.locale_dir, self.doc_dir)
         print_interactive_info('Updating PO files...')
         for locale_info in self.locale_infos.values():
             if locale_info.update(self.pot_file):
@@ -341,8 +342,8 @@ class I18nUpdater:
         for locale in self.locale_infos:
             for flag in self.locale_infos[locale].flagged_messages:
                 flags.add(flag)
-        headers: list[str] = ['Locale', 'Messages', 'Empty messages', 'Empty mandatory messages', ]
-        headers += [f'Messages flagged [{flag}]' for flag in flags]
+        headers: list[str] = ['Locale', 'Messages', 'Empty', 'Empty mandatory', ]
+        headers += [f'[{flag}]' for flag in flags]
         headers += ['Details', 'PO file', 'Translators', ]
         lines.append('| ' + ' | '.join(headers) +' |\n')
         lines.append('|--' + ('|:--:' * (len(headers)-1)) + '|\n')

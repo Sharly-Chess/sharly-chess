@@ -2541,9 +2541,8 @@ msgstr "Le nombre de colonnes utilisé pour afficher les données."
 
 #: src/web/templates/admin_family_modal.html:344
 #: src/web/templates/admin_screen_modal.html:222
-#, fuzzy
 msgid "Menus"
-msgstr "Menu :"
+msgstr "Menus"
 
 #: src/web/templates/admin_family_modal.html:349
 #: src/web/templates/admin_screen_modal.html:227
@@ -3790,63 +3789,63 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
-#: utils/i18n/i18n_update.py:139
+#: utils/i18n/i18n_update.py:140
 msgid "Return to documentation summary"
 msgstr "Retour au sommaire de la documentation"
 
-#: utils/i18n/i18n_update.py:140
+#: utils/i18n/i18n_update.py:141
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Traduction en français"
 
-#: utils/i18n/i18n_update.py:143
+#: utils/i18n/i18n_update.py:144
 msgid "View file {file}"
 msgstr "Voir le fichier {file}"
 
-#: utils/i18n/i18n_update.py:145
+#: utils/i18n/i18n_update.py:146
 msgid "Summary"
 msgstr "Résumé"
 
-#: utils/i18n/i18n_update.py:149 utils/i18n/i18n_update.py:159
+#: utils/i18n/i18n_update.py:150 utils/i18n/i18n_update.py:160
 msgid "Empty mandatory messages"
 msgstr "Messages obligatoires vides"
 
-#: utils/i18n/i18n_update.py:152 utils/i18n/i18n_update.py:174
+#: utils/i18n/i18n_update.py:153 utils/i18n/i18n_update.py:175
 msgid "Empty messages"
 msgstr "Messages vides"
 
-#: utils/i18n/i18n_update.py:155 utils/i18n/i18n_update.py:197
+#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:198
 msgid "Message flagged [{flag}]"
 msgstr "Messages marqués [{flag}]"
 
-#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
-#: utils/i18n/i18n_update.py:199
+#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:180
+#: utils/i18n/i18n_update.py:200
 msgid "Message id"
 msgstr "Identifiant"
 
-#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:179
-#: utils/i18n/i18n_update.py:199
+#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:180
+#: utils/i18n/i18n_update.py:200
 msgid "Locations"
 msgstr "Emplacements"
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
+#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
+#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
 msgid "Singular:"
 msgstr "Singulier :"
 
-#: utils/i18n/i18n_update.py:169 utils/i18n/i18n_update.py:187
-#: utils/i18n/i18n_update.py:208 utils/i18n/i18n_update.py:211
+#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
+#: utils/i18n/i18n_update.py:209 utils/i18n/i18n_update.py:212
 msgid "Plural:"
 msgstr "Pluriel :"
 
-#: utils/i18n/i18n_update.py:177
+#: utils/i18n/i18n_update.py:178
 msgid "Empty messages are not shown for the default language."
 msgstr "Les messages vides ne sont pas affichés pour la langue par défaut."
 
-#: utils/i18n/i18n_update.py:193
+#: utils/i18n/i18n_update.py:194
 msgid "Flagged messages"
 msgstr "Messages marqués"
 
-#: utils/i18n/i18n_update.py:199
+#: utils/i18n/i18n_update.py:200
 msgid "Translation"
 msgstr "Traduction"
 
