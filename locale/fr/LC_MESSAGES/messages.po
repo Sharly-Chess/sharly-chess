@@ -1794,7 +1794,7 @@ msgstr "Pas de connexion à ChessEvent."
 
 #: src/web/templates/admin_config.html:7 src/web/templates/admin_events.html:20
 msgid "Add an event."
-msgstr "Ajouter un évènement"
+msgstr "Ajouter un évènement."
 
 #: src/web/templates/admin_config.html:15
 #: src/web/templates/admin_events.html:28
