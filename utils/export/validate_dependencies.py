@@ -1,7 +1,8 @@
-import toml
+import tomllib
 from validate_pyproject import api, errors
 
-pyproject_as_dict = toml.load('pyproject.toml')
+with open('pyproject.toml', 'rb') as f:
+    pyproject_as_dict = tomllib.load(f)
 print(pyproject_as_dict)
 validator = api.Validator()
 
