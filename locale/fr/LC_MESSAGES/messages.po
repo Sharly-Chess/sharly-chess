@@ -1092,7 +1092,7 @@ msgstr "Écrans rotatifs ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py:130
 msgid "Timers ({num})"
-msgstr "Chronomètres : ({num})"
+msgstr "Chronomètres ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py:134
 msgid "ChessEvent ({num})"
