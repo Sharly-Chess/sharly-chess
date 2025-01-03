@@ -79,7 +79,7 @@
                                             type="text" id="{{ id }}"
                                             class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                             aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="{{ _('E.g.: Z00000') }}"
+                                            placeholder="{{ _('E.g.: %(string)s', string='Z00000') }}"
                                             value="{{ data[name] }}" />
                                     <div id="{{ id }}-help" class="form-text">
                                         {{ _('The id used to connect to the ChessEvent platform.') }}

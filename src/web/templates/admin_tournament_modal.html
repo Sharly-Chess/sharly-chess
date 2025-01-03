@@ -164,7 +164,7 @@
                                         type="int" id="{{ id }}"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: 68991') }}"
+                                        placeholder="{{ _('E.g.: %(num)d', num=68991) }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
                                   {{ _('The qualification number given by the French Federation is an integer, it is used to connect to the FFE website.') }}
@@ -185,7 +185,7 @@
                                             type="password" id="{{ id }}"
                                             class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                             aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="{{ _('E.g.: KYNPRTZMHX') }}"
+                                            placeholder="{{ _('E.g.: %(string)s', string='KYNPRTZMHX') }}"
                                             value="{{ data[name] }}" />
                                     <i
                                             id="toggle-password"
@@ -273,7 +273,7 @@
                                         type="text" id="{{ id }}"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: 300 (5 minutes)') }}"
+                                        placeholder="{{ _('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5) }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
                                     {{ _('The initial time in seconds (may be nul if an increment is set).') }}
@@ -293,7 +293,7 @@
                                         type="text" id="{{ id }}"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: 3') }}"
+                                        placeholder="{{ _('E.g.: %(num)d', num=3) }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
                                   {{ _('The number of seconds added to the players\' clock at each move.') }}
@@ -313,7 +313,7 @@
                                         type="text" id="{{ id }}"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: 30 (seconds)') }}"
+                                        placeholder="{{ _('E.g.: %(seconds)d (seconds)', seconds=30) }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
                                     {{ _('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).') }}

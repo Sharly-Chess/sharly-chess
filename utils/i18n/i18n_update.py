@@ -5,10 +5,10 @@ from babel.messages import Catalog, Message
 from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po
 
-from common.i18n import default_locale, set_locale, _, locale_localized_name
+from common.i18n import default_locale, set_locale, _, locale_localized_name, locale_flag_url, trusted_locales
 from common.logger import print_interactive_error, print_interactive_warning, print_interactive_info, \
-    print_interactive_success
-from common.papi_web_config import PapiWebConfig
+    print_interactive_success, input_interactive, print_interactive_input
+from .i18n_translate import I18nTranslator
 
 
 def run_babel_command(
@@ -47,7 +47,9 @@ class LocaleInfo:
     def update(
             self,
             pot_file: Path,
-    ):
+    ) -> bool:
+        """ Updates the PO file from the POT file, returns True if the locale is new. """
+        new_locale: bool = False
         if not self.po_file.exists():
             print_interactive_info(f'- {self.po_file.parent}...')
             self.po_file.parent.mkdir(parents=True, exist_ok=True)
@@ -60,6 +62,7 @@ class LocaleInfo:
                 ],
                 quiet=True,
             )
+            new_locale = True
         print_interactive_info(f'- {self.po_file}...')
         run_babel_command(
             'update',
@@ -73,22 +76,49 @@ class LocaleInfo:
             ],
             quiet=True,
         )
+        return new_locale
+
+    def compile(
+            self,
+    ):
+        """ Compiles the PO file to the MO file. """
+        print_interactive_info(f'- {self.mo_file}...')
+        run_babel_command(
+            'compile',
+            [
+                '--use-fuzzy',
+                f'--directory={self.locale_dir}',
+                f'--locale={self.id}',
+            ],
+            quiet=True,
+        )
 
     @staticmethod
     def escape_gh_md(string: str) -> str:
+        """ Escapes a string for GitHub markdown. """
         return string.replace('*', '\*')
 
     def control(self):
         # Read the catalog.
+        print_interactive_info(f'- {self.mo_file}...')
         with open(self.po_file, 'rb') as f:
             catalog: Catalog = read_po(f)
+        self.messages = {}
+        self.empty_messages = {}
+        self.empty_mandatory_messages = {}
+        self.flagged_messages = {}
         # Control all the messages.
         for msg in catalog:
             if msg.id:
                 self.messages[msg.id] = msg
-                if not msg.string:
-                    self.empty_messages[msg.id] = msg
-                    continue
+                if isinstance(msg.id, str):
+                    if not msg.string:
+                        self.empty_messages[msg.id] = msg
+                        continue
+                else:
+                    if not msg.string[0] or not msg.string[1]:
+                        self.empty_messages[msg.id] = msg
+                        continue
                 if msg.id.__contains__('***'):
                     self.mandatory_messages[msg.id] = msg
                     if not msg.string:
@@ -112,7 +142,7 @@ class LocaleInfo:
                 text=_('View file {file}').format(file=file),
                 file=file))
             f.write('## {text}\n\n'.format(text=_('Summary'), locale=self.id))
-            f.write(f'| locale=`{self.id}` | {locale_localized_name(self.id)} |\n')
+            f.write(f'| locale=`{self.id}` | {locale_localized_name(self.id)} <img src="../src/web{locale_flag_url(self.id)}" style="height: 1em;"/> |\n')
             f.write('|--|:--:|\n')
             f.write('|{text}|{num}/{total}|\n'.format(
                 text=_('Empty mandatory messages'),
@@ -124,9 +154,9 @@ class LocaleInfo:
                     text=_('Message flagged [{flag}]'.format(flag=flag)),
                     num=len(self.flagged_messages[flag]), total=len(self.messages)))
             f.write('\n')
+            f.write('## {text} ({num})\n\n'.format(
+                text=_('Empty mandatory messages'), num=len(self.empty_mandatory_messages) or '-'))
             if self.empty_mandatory_messages:
-                f.write('## {text} ({num})\n\n'.format(
-                    text=_('Empty mandatory messages'), num=len(self.empty_mandatory_messages)))
                 f.write('|{text1}|{text2}|\n'.format(text1=_('Message id'), text2=_('Locations')))
                 f.write('|--|--|\n')
                 for msg in self.empty_mandatory_messages.values():
@@ -139,9 +169,9 @@ class LocaleInfo:
                     f.write('|{text1}|{text2}|\n'.format(
                         text1=text1,
                         text2='<br>'.join([f'{location[0]}:{location[1]}' for location in msg.locations])))
+            f.write('## {text} ({num})\n\n'.format(
+                text=_('Empty messages'), num=len(self.empty_messages) or '-'))
             if self.empty_messages:
-                f.write('## {text} ({num})\n\n'.format(
-                    text=_('Empty messages'), num=len(self.empty_messages)))
                 if self.default:
                     f.write(_('Empty messages are not shown for the default language.') + '\n\n')
                 else:
@@ -158,8 +188,11 @@ class LocaleInfo:
                             text1=text1,
                             text2='<br>'.join([f'{location[0]}:{location[1]}' for location in msg.locations])))
                     f.write('\n')
+            f.write('## {text} ({num})\n\n'.format(
+                text=_('Flagged messages'),
+                num=sum([len(self.flagged_messages[flag]) for flag in self.flagged_messages])))
             for flag in self.flagged_messages:
-                f.write('## {text} ({num})\n'.format(
+                f.write('### {text} ({num})\n\n'.format(
                     text=_('Message flagged [{flag}]').format(flag=flag), num=len(self.flagged_messages[flag])))
                 f.write('|{text1}|{text2}|{text3}|\n'.format(
                     text1=_('Message id'), text2=_('Translation'), text3=_('Locations')))
@@ -189,21 +222,27 @@ class LocaleInfo:
             print_interactive_error(f'  * Empty mandatory messages ({len(self.empty_mandatory_messages)})')
             for msg_id in self.empty_mandatory_messages:
                 print_interactive_error(f'    - [{msg_id}]')
+        empty_messages_max: int = 5
         if self.empty_messages:
             if self.id == default_locale:
                 print_interactive_info(f'  * Empty messages ({len(self.empty_messages)}), not listed for the default locale.')
             else:
                 print_interactive_warning(f'  * Empty messages ({len(self.empty_messages)})')
-                for msg_id in self.empty_messages:
+                for msg_id in list(self.empty_messages.keys())[:empty_messages_max]:
                     print_interactive_warning(f'    - [{msg_id}]')
+                if len(self.empty_messages) > empty_messages_max:
+                    print_interactive_warning(f'    - ({len(self.empty_messages) - empty_messages_max} more)')
         if self.flagged_messages:
+            flagged_messages_max: int = 5
             for flag, msgs in self.flagged_messages.items():
-                print_interactive_warning(f'  * Messages flagged [{flag}] ({len(self.flagged_messages)})')
-                for msg_id in msgs:
+                print_interactive_warning(f'  * Messages flagged [{flag}] ({len(self.flagged_messages[flag])})')
+                for msg_id in list(msgs.keys())[:flagged_messages_max]:
                     print_interactive_warning(f'    - [{msg_id}]')
+                if len(self.flagged_messages[flag]) > flagged_messages_max:
+                    print_interactive_warning(f'    - ({len(self.flagged_messages[flag]) - flagged_messages_max} more)')
 
 
-class I18nHelper:
+class I18nUpdater:
 
     def __init__(
             self,
@@ -211,10 +250,11 @@ class I18nHelper:
     ):
         """ The path of the i18n files (this script should be run from the dev root). """
         self.locales: list[str] = locales
-        self.locale_dir: Path = PapiWebConfig.base_dir / 'locale'
+        self.locale_dir: Path = Path('locale')
         self.pot_file: Path = self.locale_dir / 'messages.pot'
-        self.doc_dir: Path = PapiWebConfig.base_dir / 'docs'
+        self.doc_dir: Path = Path('docs')
         self.doc_file: Path = self.doc_dir / '86-i18n.md'
+        self.new_locales: list[str] = []
         print_interactive_info(f'Extracting i18n strings to {self.pot_file}...')
         self.extract()
         self.locale_infos: dict[str, LocaleInfo] = {
@@ -222,19 +262,38 @@ class I18nHelper:
         }
         print_interactive_info('Updating PO files...')
         for locale_info in self.locale_infos.values():
-            locale_info.update(self.pot_file)
+            if locale_info.update(self.pot_file):
+                self.new_locales.append(locale_info.id)
         print_interactive_info('Compiling PO files...')
-        self.compile()
+        for locale_info in self.locale_infos.values():
+            locale_info.compile()
+        if self.new_locales:
+            print_interactive_success('New locales created, please re-run.')
+            return
         print_interactive_info('Inspecting PO files...')
+        untrusted_locales_with_missing_translations: list[str] = []
         for locale_info in self.locale_infos.values():
             locale_info.control()
+            if locale_info.id not in trusted_locales and locale_info.empty_messages:
+                untrusted_locales_with_missing_translations.append(locale_info.id)
+        self.print_summary()
+        print_interactive_input(f'Some translations are missing for the following untrusted locales: {", ".join(untrusted_locales_with_missing_translations)}')
+        if (input_interactive('Do you want to add the missing translations (y/N)? ').upper() or 'N') == 'Y':
+            for locale in untrusted_locales_with_missing_translations:
+                I18nTranslator(locale).add_missing_translations()
+            print_interactive_info('Inspecting PO files...')
+            for locale in untrusted_locales_with_missing_translations:
+                self.locale_infos[locale].control()
+            print_interactive_info('Compiling PO files...')
+            for locale in untrusted_locales_with_missing_translations:
+                self.locale_infos[locale].compile()
         print_interactive_info('Writing MD files...')
         self.write_markdown()
         self.print_summary()
 
     def extract(self, ):
         """ The configuration file used to extract stings from the source files. """
-        extract_config_file: Path = PapiWebConfig.base_dir / 'utils' / 'babel.cfg'
+        extract_config_file: Path = Path() / 'utils' / 'i18n' / 'babel.cfg'
         run_babel_command(
             'extract',
             [
@@ -243,16 +302,6 @@ class I18nHelper:
                 '--no-wrap',
                 '--omit-header',
                 '.',
-            ],
-            quiet=True,
-        )
-
-    def compile(self):
-        run_babel_command(
-            'compile',
-            [
-                '--use-fuzzy',
-                f'--directory={self.locale_dir}',
             ],
             quiet=True,
         )
@@ -286,45 +335,48 @@ class I18nHelper:
             if not comment_found:
                 print_interactive_error(f'Could not edit [{self.doc_file}] (comment [{comment}] not found).')
                 return
-        with open(self.doc_file, 'w', encoding='utf-8') as f:
-            for line in lines_before_comment:
-                f.write(line)
-            f.write('| Translations | ' + ' | '.join([
+        lines: list[str] = [
+            '| Translations | ' + ' | '.join([
                 locale_localized_name(locale) for locale in self.locales
-            ]) + ' |\n')
-            f.write('|--|' + (':--:|' * len (self.locales)) + '\n')
-            f.write('| Locale | ' + ' | '.join([
+            ]) + ' |\n',
+            '|--|' + (':--:|' * len (self.locales)) + '\n',
+            '| Locale | ' + ' | '.join([
                 f'`{locale}`' for locale in self.locales
-            ]) + ' |\n')
-            f.write('| Empty mandatory messages | ' + ' | '.join([
+            ]) + ' |\n',
+            '| Flag | ' + ' | '.join([
+                f'<img src="../src/web{locale_flag_url(locale)}" style="height: 1em;"/>' for locale in self.locales
+            ]) + ' |\n',
+            '| Empty mandatory messages | ' + ' | '.join([
                 f'{len(locale_info.empty_mandatory_messages)}/{len(locale_info.mandatory_messages)}'
                 for locale_info in self.locale_infos.values()
-            ]) + ' |\n')
-            f.write('| Empty messages | ' + ' | '.join([
+            ]) + ' |\n',
+            '| Empty messages | ' + ' | '.join([
                 f'{len(locale_info.empty_messages)}/{len(locale_info.messages)}'
                 for locale_info in self.locale_infos.values()
-            ]) + ' |\n')
-            f.write('| Details | ' + ' | '.join([
+            ]) + ' |\n',
+            '| Details | ' + ' | '.join([
                 f'[{locale_info.doc_file.name}]({locale_info.doc_file.name})'
                 for locale_info in self.locale_infos.values()
-            ]) + ' |\n')
-            f.write('| PO file | ' + ' | '.join([
+            ]) + ' |\n',
+            '| PO file | ' + ' | '.join([
                 f'[{locale_info.po_file.name}](' \
-                + '/'.join(reversed([locale_info.po_file.name, ] + [d.name for d in locale_info.po_file.parents[:3]])) \
+                + '/'.join(reversed([locale_info.po_file.name, ] + [d.name for d in locale_info.po_file.parents[:3]] + ['..', ])) \
                 + ')'
                 for locale_info in self.locale_infos.values()
+            ]) + ' |\n',
+        ]
+        flags: list[str] = []
+        for locale in self.locale_infos:
+            for flag in self.locale_infos[locale].flagged_messages:
+                if flag not in flags:
+                    flags.append(flag)
+        for flag in flags:
+            lines.append(f'| Message flagged [{flag}] | ' + ' | '.join([
+                f'{len(self.locale_infos[locale].flagged_messages[flag]) if flag in self.locale_infos[locale].flagged_messages else 0}/{len(self.locale_infos[locale].messages)}'
+                for locale in self.locales
             ]) + ' |\n')
-            flags: list[str] = []
-            for locale in self.locale_infos:
-                for flag in self.locale_infos[locale].flagged_messages:
-                    if flag not in flags:
-                        flags.append(flag)
-            for flag in flags:
-                f.write(f'| Message flagged [{flag}] | ' + ' | '.join([
-                    f'{len(self.locale_infos[locale].flagged_messages[flag]) if flag in self.locale_infos[locale].flagged_messages else 0}/{len(self.locale_infos[locale].messages)}'
-                    for locale in self.locales
-                ]) + ' |\n')
-            for line in lines_after_comment:
+        with open(self.doc_file, 'w', encoding='utf-8') as f:
+            for line in lines_before_comment + lines + lines_after_comment:
                 f.write(line)
         print_interactive_info(f'  -  {self.doc_file}.')
 
@@ -333,35 +385,40 @@ class I18nHelper:
         for locale_info in self.locale_infos.values():
             locale_info.print_summary()
 
-    @property
-    def perfect(self) -> bool:
+    def check_trusted_locales(self) -> bool:
+        assert not self.new_locales
+        print_interactive_info('Checking trusted locales...')
         perfect: bool = True
-        for locale_info in self.locale_infos.values():
-            if locale_info.empty_mandatory_messages:
-                print_interactive_error('Mandatory translations are missing.')
-                perfect = False
-                break
-        for locale_info in self.locale_infos.values():
-            if not locale_info.default and locale_info.empty_messages:
-                print_interactive_warning('Translations are missing.')
-                perfect = False
-                break
-        for locale_info in self.locale_infos.values():
-            if locale_info.flagged_messages:
-                print_interactive_warning('Translations are flagged.')
-                perfect = False
-                break
+        for locale, locale_info in self.locale_infos.items():
+            if locale in trusted_locales:
+                if locale_info.empty_mandatory_messages:
+                    print_interactive_error('Mandatory translations are missing for trusted locales.')
+                    perfect = False
+                    break
+        for locale, locale_info in self.locale_infos.items():
+            if locale in trusted_locales:
+                if not locale_info.default and locale_info.empty_messages:
+                    print_interactive_warning('Translations are missing for trusted locales.')
+                    perfect = False
+                    break
+        for locale, locale_info in self.locale_infos.items():
+            if locale in trusted_locales:
+                if locale_info.flagged_messages:
+                    print_interactive_warning('Translations are flagged for trusted locales.')
+                    perfect = False
+                    break
         if perfect:
-            print_interactive_success('Translations seem perfect.')
+            print_interactive_success('Translations seem perfect for trusted locales.')
         return perfect
 
 
-def main():
-    """ PO and MO files are automatically created from this list; to add a new locale, add it to the list. """
-    locales: list[str] = ['en', 'fr', ]
-
-    _ = I18nHelper(locales).perfect
-
-
 if __name__ == '__main__':
-    main()
+    """ PO and MO files are automatically created from this list; to add a new locale, add it to the list. """
+    updater = I18nUpdater([
+        'en', 'fr',
+        'de', 'el', 'es',
+        # 'fi', 'is',
+        'it', 'pt', 'sv',
+    ])
+    if not updater.new_locales:
+        updater.check_trusted_locales()

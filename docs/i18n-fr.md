@@ -11,8 +11,14 @@
 
 ## Résumé
 
-| locale=`fr` | Français |
+| locale=`fr` | Français <img src="../src/web/static/images/locales/fr.svg" style="height: 1em;"/> |
 |--|:--:|
 |Messages obligatoires vides|0/16|
-|Messages vides|0/866|
+|Messages vides|0/861|
+
+## Messages obligatoires vides (-)
+
+## Messages vides (-)
+
+## Messages marqués (0)
 

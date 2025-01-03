@@ -1,0 +1,4607 @@
+#: src/papi_web.py:33
+#, ai_translation
+msgid "This program should not be launched directly, use scripts server.bat, ffe.bat and chessevent.bat."
+msgstr "Questo programma non dovrebbe essere lanciato direttamente, utilizzare script server.bat, ffe.bat e chessevent.bat."
+
+#: src/chessevent/action_selector.py:42
+#, ai_translation
+msgid "ChessEvent connection not set for tournament [{tournament_uniq_id}]."
+msgstr "Connessione a scacchiEvent non impostata per il torneo [{tournament_uniq_id}]."
+
+#: src/chessevent/action_selector.py:46
+#, ai_translation
+msgid "Papi file not set for tournament [{tournament_uniq_id}]."
+msgstr "File Papi non impostato per il torneo [{tournament_uniq_id}]."
+
+#: src/chessevent/action_selector.py:50
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] is started."
+msgstr "Il torneo [{tournament_uniq_id}] è iniziato."
+
+#: src/chessevent/action_selector.py:63 src/ffe/action_selector.py:83
+#, ai_translation
+msgid "Event: {event_name}"
+msgstr "Evento: {event_name}"
+
+#: src/chessevent/action_selector.py:68
+#, ai_translation
+msgid "Tournaments: {tournament_names}"
+msgstr "Tornei: {tournament_names}"
+
+#: src/chessevent/action_selector.py:70
+#, ai_translation
+msgid "C *** THE LETTER TO ANSWER CREATE ***"
+msgstr "C"
+
+#: src/chessevent/action_selector.py:71 src/ffe/action_selector.py:95
+#, ai_translation
+msgid "U *** THE LETTER TO ANSWER UPLOAD ***"
+msgstr "U"
+
+#: src/chessevent/action_selector.py:72 src/chessevent/action_selector.py:92
+#: src/chessevent/action_selector.py:113 src/chessevent/event_selector.py:29
+#: src/common/engine.py:124 src/ffe/action_selector.py:96
+#: src/ffe/event_selector.py:25
+#, ai_translation
+msgid "Q *** THE LETTER TO ANSWER QUIT ***"
+msgstr "QCity name (optional, probably does not need a translation)"
+
+#: src/chessevent/action_selector.py:75
+#, ai_translation
+msgid "Create the Papi files"
+msgstr "Crea i file Papi"
+
+#: src/chessevent/action_selector.py:76
+#, ai_translation
+msgid "Create the Papi files and send them to the FFE website"
+msgstr "Creare i file Papi e inviarli al sito FFE"
+
+#: src/chessevent/action_selector.py:77 src/chessevent/action_selector.py:97
+#: src/chessevent/action_selector.py:117 src/chessevent/event_selector.py:39
+#: src/ffe/action_selector.py:103 src/ffe/event_selector.py:35
+#, ai_translation
+msgid "Quit"
+msgstr "Esci"
+
+#: src/chessevent/action_selector.py:85 src/chessevent/action_selector.py:105
+#: src/chessevent/action_selector.py:125
+#, ai_translation
+msgid "Your choice (by default {default}): "
+msgstr "La tua scelta (per impostazione predefinita {default}):"
+
+#: src/chessevent/action_selector.py:86 src/ffe/action_selector.py:110
+#, ai_translation
+msgid "Action: {action}"
+msgstr "Azione: {action}"
+
+#: src/chessevent/action_selector.py:90
+#, ai_translation
+msgid "1 *** THE LETTER TO ANSWER ONCE ***"
+msgstr "1"
+
+#: src/chessevent/action_selector.py:91
+#, ai_translation
+msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY ***"
+msgstr "C"
+
+#: src/chessevent/action_selector.py:95
+#, ai_translation
+msgid "Once"
+msgstr "Una volta"
+
+#: src/chessevent/action_selector.py:96
+#, ai_translation
+msgid "Continuously"
+msgstr "Continuamente"
+
+#: src/chessevent/action_selector.py:108
+#, ai_translation
+msgid "Frequency: {frequency}"
+msgstr "Frequenza: {frequency}"
+
+#: src/chessevent/action_selector.py:112
+#, ai_translation
+msgid "Please choose the Papi version:"
+msgstr "Scegli la versione Papi:"
+
+#: src/chessevent/action_selector.py:132
+#, ai_translation
+msgid "Papi version: {version}"
+msgstr "Versione Papi: {version}"
+
+#: src/chessevent/action_selector.py:141 src/ffe/action_selector.py:116
+#: src/ffe/action_selector.py:125 src/ffe/action_selector.py:133
+#: src/ffe/action_selector.py:142 src/ffe/action_selector.py:162
+#, ai_translation
+msgid "This action can be done on the tournaments of this event."
+msgstr "Questa azione può essere fatta sui tornei di questo evento."
+
+#: src/chessevent/action_selector.py:165
+#, ai_translation
+msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
+msgstr "I dati per il torneo [{tournament_uniq_id}] non possono essere decodificati (codificazione: [{encoding}]), salvati nel file [{file}] (linea Error [{line}], colonna [{column}], posizione [{position}])."
+
+#: src/chessevent/action_selector.py:170
+#, ai_translation
+msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
+msgstr "I dati per il torneo [{tournament_name}] su ChessEvent sono immutati."
+
+#: src/chessevent/action_selector.py:180
+#, ai_translation
+msgid "Papi file [{file}] has been created (players: {num})."
+msgstr "Il file Papi [{file}] è stato creato (giocatori: {num})."
+
+#: src/chessevent/action_selector.py:185
+#, ai_translation
+msgid "FFE id and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+msgstr "FFE id e password non sono impostati correttamente per il torneo [{tournament_name}], i dati non possono essere inviati al sito web di FFE."
+
+#: src/chessevent/chessevent_session.py:54
+#, ai_translation
+msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
+msgstr "Errore di autenticazione (codice: [{code}]) per [{user_id}] ([{chessevent_string}])."
+
+#: src/chessevent/chessevent_session.py:58
+#, ai_translation
+msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
+msgstr "Accesso negato (codice: [{code}]) per [{user_id}] nel torneo [{tournament_name}] ([{chessevent_string}])."
+
+#: src/chessevent/chessevent_session.py:63
+#, ai_translation
+msgid "Missing parameter (code: [{code}]): [{error}]."
+msgstr "parametro mancante (codice: [{code}]): [{error}]."
+
+#: src/chessevent/chessevent_session.py:67
+#, ai_translation
+msgid "Id [{user_id}] not found (code: [{code}]): [{error}]."
+msgstr "Id [{user_id}] non trovato (codice: [{code}]): [{error}]."
+
+#: src/chessevent/chessevent_session.py:71
+#, ai_translation
+msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
+msgstr "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
+
+#: src/chessevent/chessevent_session.py:76
+#, ai_translation
+msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
+msgstr "Evento [{event_id}] non trovato (codice: [{code}]): [{error}]."
+
+#: src/chessevent/chessevent_session.py:81
+#, ai_translation
+msgid "Unknown response code: [{code}] ([{chessevent_string}])."
+msgstr "Codice di risposta sconosciuto: [{code}] ([{chessevent_string}])."
+
+#: src/chessevent/chessevent_session.py:85 src/common/engine.py:281
+#: src/common/engine.py:410 src/common/engine.py:456 src/ffe/ffe_session.py:99
+#, ai_translation
+msgid "Failed to read [{url}] (connection error): [{ex}]."
+msgstr "Lettura di [{url}] (errore di connessione): [{ex}]."
+
+#: src/chessevent/chessevent_session.py:88 src/common/engine.py:283
+#: src/common/engine.py:413 src/common/engine.py:459 src/ffe/ffe_session.py:101
+#, ai_translation
+msgid "Failed to read [{url}] (timeout): [{ex}]."
+msgstr "Lettura di [{url}] (timeout): [{ex}]."
+
+#: src/chessevent/chessevent_session.py:91 src/common/engine.py:285
+#: src/common/engine.py:416 src/common/engine.py:462 src/ffe/ffe_session.py:103
+#, ai_translation
+msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
+msgstr "Lettura non riuscita [{url}] (codice dell'errore [{errno}]): [{strerror}]."
+
+#: src/chessevent/chessevent_session.py:95 src/common/engine.py:288
+#: src/common/engine.py:420 src/common/engine.py:466 src/ffe/ffe_session.py:106
+#, ai_translation
+msgid "Failed to read [{url}]: [{ex}]."
+msgstr "Lettura non riuscita [{url}]: [{ex}]."
+
+#: src/chessevent/event_selector.py:26 src/ffe/event_selector.py:22
+#, ai_translation
+msgid "No events found."
+msgstr "Non sono stati trovati eventi."
+
+#: src/chessevent/event_selector.py:32 src/ffe/event_selector.py:28
+#, ai_translation
+msgid "One event found, type Enter (Q to quit): "
+msgstr "Trovato un evento, digita Invio (Q per uscire):"
+
+#: src/chessevent/event_selector.py:35 src/ffe/event_selector.py:31
+#, ai_translation
+msgid "Please choose the event:"
+msgstr "Scegli l'evento:"
+
+#: src/chessevent/event_selector.py:44 src/common/papi_web_config.py:112
+#: src/ffe/event_selector.py:40
+#, ai_translation
+msgid "Your choice: "
+msgstr "A te la scelta:"
+
+#: src/common/config_reader.py:28
+#, ai_translation
+msgid "Configuration file [{file}] not found."
+msgstr "File di configurazione [{file}] non trovato."
+
+#: src/common/config_reader.py:31
+#, ai_translation
+msgid "Configuration file [{file}] is not a file."
+msgstr "Il file di configurazione [{file}] non è un file."
+
+#: src/common/config_reader.py:50
+#, ai_translation
+msgid "Could not read file [{file}]."
+msgstr "Impossibile leggere il file [{file}]."
+
+#: src/common/config_reader.py:53
+#, ai_translation
+msgid "Duplicated section at line [{lineno}]."
+msgstr "Sezione duplicata alla linea [{lineno}]."
+
+#: src/common/config_reader.py:57
+#, ai_translation
+msgid "Duplicated option at line [{lineno}]."
+msgstr "Opzione duplicata alla riga [{lineno}]."
+
+#: src/common/config_reader.py:62
+#, ai_translation
+msgid "Parsing error: [{ex}]."
+msgstr "Errore di analisi: [{ex}]."
+
+#: src/common/config_reader.py:66
+#, ai_translation
+msgid "Error: [{ex}]."
+msgstr "Errore: [{ex}]."
+
+#: src/common/engine.py:40
+#, ai_translation
+msgid "Checking Papi-web version..."
+msgstr "Controllo della versione Papi-web..."
+
+#: src/common/engine.py:45 src/common/engine.py:106 src/common/engine.py:146
+#: src/common/engine.py:210
+#, ai_translation
+msgid "Y *** THE LETTER TO ANSWER YES ***"
+msgstr "Y"
+
+#: src/common/engine.py:46 src/common/engine.py:107 src/common/engine.py:147
+#: src/common/engine.py:211
+#, ai_translation
+msgid "N *** THE LETTER TO ANSWER NO ***"
+msgstr "N"
+
+#: src/common/engine.py:49
+#, ai_translation
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+msgstr "Vuoi eseguire l'aggiornamento da [{old_version}] a [{new_version}] [{y_lc}/{n_uc}}?"
+
+#: src/common/engine.py:57
+#, ai_translation
+msgid "The installation of version [{version}] failed."
+msgstr "L'installazione della versione [{version}] non è riuscita."
+
+#: src/common/engine.py:90
+#, ai_translation
+msgid "- Version {version} ({events})"
+msgstr "- Versione {version} ({events})"
+
+#: src/common/engine.py:94
+#, ai_translation
+msgid "- Version {version}: no events"
+msgstr "- Versione {version}: nessun evento"
+
+#: src/common/engine.py:96
+#, ai_translation
+msgid "No event found in previously installed versions."
+msgstr "Nessun evento trovato nelle versioni precedentemente installate."
+
+#: src/common/engine.py:98
+#, ai_translation
+msgid "No previously installed version found."
+msgstr "Nessuna versione precedentemente installata trovata."
+
+#: src/common/engine.py:110
+#, ai_translation
+msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
+msgstr "Vuoi recuperare la configurazione della versione [{version}] [{y_uc}/{n_lc}]?"
+
+#: src/common/engine.py:119
+#, ai_translation
+msgid "Please choose the version to recover:"
+msgstr "Si prega di scegliere la versione per recuperare:"
+
+#: src/common/engine.py:125
+#, ai_translation
+msgid "  - [{q_uc}] Do not recover"
+msgstr "- [{q_uc}] Non recuperare"
+
+#: src/common/engine.py:128
+#, ai_translation
+msgid "Please entre the number of the version to recover [{default}]: "
+msgstr "Si prega di inserire il numero della versione per recuperare [{default}]:"
+
+#: src/common/engine.py:150
+#, ai_translation
+msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
+msgstr "Vuoi installare i database degli eventi di esempio [{y_uc}/{n_lc}]?"
+
+#: src/common/engine.py:166
+#, ai_translation
+msgid "Recovering events from version {version}..."
+msgstr "Recupero eventi dalla versione {version}..."
+
+#: src/common/engine.py:171
+#, ai_translation
+msgid "Recovering event [{event_uniq_id}]..."
+msgstr "Recuperare evento [{event_uniq_id}]..."
+
+#: src/common/engine.py:182
+#, ai_translation
+msgid "Event [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]..."
+msgstr "Evento [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]..."
+
+#: src/common/engine.py:187
+#, ai_translation
+msgid "Recovering custom files..."
+msgstr "Recupero file personalizzati..."
+
+#: src/common/engine.py:200
+#, ai_translation
+msgid "Events recovered: {num} (from directory [{dir}])."
+msgstr "Eventi recuperati: {num} (da directory [{dir}])."
+
+#: src/common/engine.py:202
+#, ai_translation
+msgid "Tournaments recovered: {num} (from directory [{dir}])."
+msgstr "Tornei recuperati: {num} (da directory [{dir}])."
+
+#: src/common/engine.py:206
+#, ai_translation
+msgid "Custom files recovered: {num} (from directory [{dir}])."
+msgstr "File personalizzati recuperati: {num} (da directory [{dir}])."
+
+#: src/common/engine.py:214
+#, ai_translation
+msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
+msgstr "Vuoi inviare questi file personalizzati agli sviluppatori Papi-web per migliorare le versioni future [{y_uc}/{n_lc}]?"
+
+#: src/common/engine.py:304
+#, ai_translation
+msgid "Sending the files to a server..."
+msgstr "Inviare i file a un server..."
+
+#: src/common/engine.py:310
+#, ai_translation
+msgid "Files have been sent to bin {bin_name}."
+msgstr "I file sono stati inviati a bin {bin_name}."
+
+#: src/common/engine.py:311
+#, ai_translation
+msgid "- View the files on filebin.net: {bin_url}"
+msgstr "- Visualizza i file su filebin.net: {bin_url}"
+
+#: src/common/engine.py:312
+#, ai_translation
+msgid "- Download the files (ZIP archive): {bin_zip_url}"
+msgstr "- Scaricare i file (archivio ZIP): {bin_zip_url}"
+
+#: src/common/engine.py:314
+#, ai_translation
+msgid "[Papi-web {version}] Request for the integration of custom files"
+msgstr "[Papi-web {version}] Richiesta per l'integrazione di file personalizzati"
+
+#: src/common/engine.py:331
+#, ai_translation
+msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
+msgstr "Una finestra si aprirà per inviare un'email al progetto Papi-web; Se la finestra non si apre, fare clic sul link qui sotto o inviare manualmente un'email a {email}."
+
+#: src/common/engine.py:343
+#, ai_translation
+msgid "Checking the version failed."
+msgstr "Controllo della versione non riuscita."
+
+#: src/common/engine.py:346
+#, ai_translation
+msgid "Your Papi-web version is up to date."
+msgstr "La tua versione Papi-web è aggiornata."
+
+#: src/common/engine.py:353
+#, ai_translation
+msgid "A more recent version is available ([{version}])."
+msgstr "È disponibile una versione più recente ([{version}])."
+
+#: src/common/engine.py:356
+#, ai_translation
+msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
+msgstr "Stai usando una versione più recente dell'ultima versione stabile disponibile ([{version}]), sei uno sviluppatore? ;-)"
+
+#: src/common/engine.py:364
+#, ai_translation
+msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}] must be done manually (upgrade from the last stable version installed on your server)."
+msgstr "È disponibile una versione stabile e più recente ([{new_version}]) ma l'aggiornamento delle versioni unstable (come quella che stai usando attualmente: [{old_version}] deve essere effettuato manualmente (upgrade dall'ultima versione stabile installata sul tuo server)."
+
+#: src/common/engine.py:368
+#, ai_translation
+msgid "You are using un unstable version more recent than the last stable version available ({version})."
+msgstr "Stai usando una versione unstable più recente dell'ultima versione stabile disponibile ({version})."
+
+#: src/common/engine.py:380
+#, ai_translation
+msgid "Looking for a a more recent version on GitHub ([{url}])..."
+msgstr "Alla ricerca di una versione più recente su GitHub ([{url}])..."
+
+#: src/common/engine.py:384 src/common/engine.py:440
+#, ai_translation
+msgid "No response from GitHub."
+msgstr "Nessuna risposta da parte di GitHub."
+
+#: src/common/engine.py:391
+#, ai_translation
+msgid "Invalid response from GitHub: {ex}."
+msgstr "Risposta non valida da GitHub: {ex}."
+
+#: src/common/engine.py:403
+#, ai_translation
+msgid "No stable version found."
+msgstr "Nessuna versione stabile trovata."
+
+#: src/common/engine.py:431
+#, ai_translation
+msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
+msgstr "La versione [{version}] è già installata nella directory [{dir}], si prega di eliminare manualmente questa cartella prima di installare."
+
+#: src/common/engine.py:436
+#, ai_translation
+msgid "Downloading version {version} from GitHub ([{url}])..."
+msgstr "Scaricamento versione {version} da GitHub ([{url}])..."
+
+#: src/common/engine.py:444
+#, ai_translation
+msgid "Downloading failed with code [{code}]."
+msgstr "Scaricamento non riuscito con codice [{code}]."
+
+#: src/common/engine.py:448
+#, ai_translation
+msgid "File downloaded: [{zip_file}]."
+msgstr "File scaricato: [{zip_file}]."
+
+#: src/common/engine.py:451
+#, ai_translation
+msgid "New version [{version}] has been installed in [{dir}]."
+msgstr "La nuova versione [{version}] è stata installata in [{dir}]."
+
+#: src/common/i18n.py:86
+#, ai_translation
+msgid "Locale set to [{locale}]."
+msgstr "Locale impostato a [{locale}]."
+
+#: src/common/i18n.py:89
+#, ai_translation
+msgid "Unknown locale [{locale}]."
+msgstr "Località sconosciuta [{locale}]."
+
+#: src/common/papi_web_config.py:78 src/common/papi_web_config.py:154
+#: src/common/papi_web_config.py:184 src/common/papi_web_config.py:196
+#, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Opzione non impostata, per impostazione predefinita [{default}]."
+
+#: src/common/papi_web_config.py:84 src/common/papi_web_config.py:203
+#: src/web/controllers/admin/index_admin_controller.py:164
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Valore non valido [{value}]."
+
+#: src/common/papi_web_config.py:96
+#, ai_translation
+msgid "Locale [{locale}] not found."
+msgstr "Locale [{locale}] non trovato."
+
+#: src/common/papi_web_config.py:98 src/common/papi_web_config.py:166
+#, ai_translation
+msgid "Option not set."
+msgstr "Opzione non impostata."
+
+#: src/common/papi_web_config.py:100 src/common/papi_web_config.py:158
+#: src/common/papi_web_config.py:161
+#, ai_translation
+msgid "Section not found."
+msgstr "Sezione non trovata."
+
+#: src/common/papi_web_config.py:105
+#, ai_translation
+msgid "The following languages are available:"
+msgstr "Sono disponibili le seguenti lingue:"
+
+#: src/common/papi_web_config.py:149
+#, ai_translation
+msgid "Invalid log level [{level}], by default [{default}]."
+msgstr "Livello di registro non valido [{level}], per impostazione predefinita [{default}]."
+
+#: src/common/papi_web_config.py:178
+#, ai_translation
+msgid "Invalid host configuration [{host}], by default [{default}]."
+msgstr "Configurazione dell'host non valida [{host}], per impostazione predefinita [{default}]."
+
+#: src/common/papi_web_config.py:190
+#, ai_translation
+msgid "Invalid port [{port}], by default [{default}]."
+msgstr "Porta non valida [{port}], per impostazione predefinita [{default}]."
+
+#: src/common/papi_web_config.py:211
+#, ai_translation
+msgid "Option not set, by default [{ffe_upload_delay}]."
+msgstr "Opzione non impostata, per impostazione predefinita [{ffe_upload_delay}]."
+
+#: src/common/papi_web_config.py:218
+#, ai_translation
+msgid "Invalid delay [{delay}], by default [{default}]"
+msgstr "Ritardo non valido [{delay}], per impostazione predefinita [{default}]"
+
+#: src/common/papi_web_config.py:222
+#, ai_translation
+msgid "Section not found, default configuration set."
+msgstr "Sezione non trovata, impostazione di configurazione predefinita."
+
+#: src/common/papi_web_config.py:233
+#, ai_translation
+msgid "Your file {ini_file} has been saved as {ini_file_org}."
+msgstr "Il file {ini_file} è stato salvato come {ini_file_org}."
+
+#: src/common/papi_web_config.py:236
+#, ai_translation
+msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
+msgstr "Impossibile salvare {ini_file} in {ini_file_org}: {ex}."
+
+#: src/common/papi_web_config.py:242
+#, ai_translation
+msgid "Adding lines to {file}..."
+msgstr "Aggiunta di righe a {file}..."
+
+#: src/common/papi_web_config.py:244
+#, ai_translation
+msgid "[i18n] # Added by Papi-web {version}"
+msgstr "[i18n] # Aggiunto da Papi-web {version}"
+
+#: src/common/papi_web_config.py:255
+#, ai_translation
+msgid "# The line below has been commented by Papi-web {version}"
+msgstr "# La linea qui sotto è stata commentata da Papi-web {version}"
+
+#: src/common/papi_web_config.py:260
+#, ai_translation
+msgid "Your file {ini_file} has been modified."
+msgstr "Il file {ini_file} è stato modificato."
+
+#: src/common/papi_web_config.py:262
+#, ai_translation
+msgid "Could not write to {ini_file}: {ex}."
+msgstr "Impossibile scrivere a {ini_file}: {ex}."
+
+#: src/common/papi_web_config.py:305
+#, ai_translation
+msgid "Papi-web project"
+msgstr "Progetto Papi-web"
+
+#: src/data/event.py:54
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}]: {text}"
+msgstr "Torneo [{tournament_uniq_id}]: {text}"
+
+#: src/data/event.py:56
+#, ai_translation
+msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
+msgstr "Connessione a scacchi [{chessevent_uniq_id}]: {text}"
+
+#: src/data/event.py:58
+#, ai_translation
+msgid "Family [{family_uniq_id}]: {text}"
+msgstr "Famiglia [{family_uniq_id}]: {text}"
+
+#: src/data/event.py:60
+#, ai_translation
+msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
+msgstr "Timer [{timer_uniq_id}], ora [{hour_order}]: {text}"
+
+#: src/data/event.py:62
+#, ai_translation
+msgid "Timer [{timer_uniq_id}]: {text}"
+msgstr "Timer [{timer_uniq_id}]: {text}"
+
+#: src/data/event.py:64
+#, ai_translation
+msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
+msgstr "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
+
+#: src/data/event.py:66
+#, ai_translation
+msgid "Screen [{screen_uniq_id}]: {text}"
+msgstr "Schermata [{screen_uniq_id}]: {text}"
+
+#: src/data/event.py:68
+#, ai_translation
+msgid "Rotator [{rotator_uniq_id}]: {text}"
+msgstr "Rotator [{rotator_uniq_id}]: {text}"
+
+#: src/data/event.py:84
+#, ai_translation
+msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
+msgstr "Sono stati trovati errori sull'evento; connessioni ChessEvent, timer, tornei, schermi, famiglie e rotatori non saranno caricati."
+
+#: src/data/event.py:132
+#, ai_translation
+msgid "No name set, by default [{name}]"
+msgstr "Nessun nome impostato, per impostazione predefinita [{name}]"
+
+#: src/data/event.py:177
+#, ai_translation
+msgid "No directory set for Papi files, by default [{path}]."
+msgstr "Nessun set di directory per i file Papi, per impostazione predefinita [{path}]."
+
+#: src/data/event.py:181 src/data/tournament.py:41
+#, ai_translation
+msgid "Directory [{path}] not found."
+msgstr "Directory [{path}] non trovata."
+
+#: src/data/event.py:183 src/data/tournament.py:43
+#, ai_translation
+msgid "[{path}] is not a directory."
+msgstr "[{path}] non è una directory."
+
+#: src/data/event.py:192
+#, ai_translation
+msgid "No background image set, by default [{background_image}]"
+msgstr "Nessuna immagine di sfondo impostata, per impostazione predefinita [{background_image}]"
+
+#: src/data/event.py:206
+#, ai_translation
+msgid "No background color set, by default [{background_color}]"
+msgstr "Nessun set di colori di sfondo, per impostazione predefinita [{background_color}]"
+
+#: src/data/event.py:216
+#, ai_translation
+msgid "No password set for the entry of results"
+msgstr "Nessun set di password per l'inserimento dei risultati"
+
+#: src/data/event.py:223
+#, ai_translation
+msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
+msgstr "Numero massimo di mosse illegali non impostate, per impostazione predefinita [{record_illegal_moves}]"
+
+#: src/data/event.py:358
+#, ai_translation
+msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
+msgstr "Sono stati trovati errori sulle connessioni ChessEvent; timer, tornei, schermi, famiglie e rotatori non saranno caricati."
+
+#: src/data/event.py:382
+#, ai_translation
+msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
+msgstr "Sono stati trovati errori su timer; tornei, schermi, famiglie e rotatori non saranno caricati."
+
+#: src/data/event.py:406
+#, ai_translation
+msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
+msgstr "Sono stati trovati errori nei tornei; schermi, famiglie e rotatori non saranno caricati."
+
+#: src/data/event.py:436
+#, ai_translation
+msgid "Errors have been found on screens; families and rotators will not be loaded."
+msgstr "Sono stati trovati errori sugli schermi; le famiglie e i rotatori non saranno caricati."
+
+#: src/data/event.py:465
+#, ai_translation
+msgid "Errors have been found on families; rotators will not be loaded."
+msgstr "Sono stati trovati errori sulle famiglie; i rotatori non saranno caricati."
+
+#: src/data/event.py:508
+#, ai_translation
+msgid "Errors have been found on rotators."
+msgstr "Sono stati trovati errori sui rotatori."
+
+#: src/data/family.py:49
+#, ai_translation, python-format
+msgid "%t (%f to %l)"
+msgstr "%t (%f a %l)"
+
+#: src/data/family.py:157
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
+msgstr "Torneo [{tournament_uniq_id}] non può essere letto, famiglia ignorata."
+
+#: src/data/family.py:169
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
+msgstr "Il torneo [{tournament_uniq_id}] ha solo [{boards_number}] schede (< [{first}]), famiglia ignorata."
+
+#: src/data/family.py:200
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored."
+msgstr "Il torneo [{tournament_uniq_id}] ha solo [{players_number}] giocatori (< [{first}]), famiglia ignorata."
+
+#: src/data/family.py:218
+#, ai_translation
+msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
+msgstr "Niente da visualizzare per il torneo [{tournament_uniq_id}], famiglia ignorata."
+
+#: src/data/family.py:279 src/data/screen_set.py:287
+#, ai_translation
+msgid "all the boards"
+msgstr "tutte le tavole"
+
+#: src/data/family.py:281 src/data/screen_set.py:289
+#, ai_translation
+msgid "boards from #{first} to end"
+msgstr "schede da #{first} a fine"
+
+#: src/data/family.py:283 src/data/screen_set.py:293
+#, ai_translation
+msgid "boards from start to #{last}"
+msgstr "schede dall'inizio a #{last}"
+
+#: src/data/family.py:285 src/data/screen_set.py:291
+#, ai_translation
+msgid "boards from #{first} to #{last}"
+msgstr "schede da #{first} a #{last}"
+
+#: src/data/family.py:287
+#, ai_translation
+msgid "screens of {number} boards"
+msgstr "schermi di schede {number}"
+
+#: src/data/family.py:289
+#, ai_translation
+msgid "screens of {number} boards from #{first} to end"
+msgstr "schermi di schede {number} da #{first} a fine"
+
+#: src/data/family.py:291
+#, ai_translation
+msgid "screens of {number} boards from start to #{last}"
+msgstr "schermi delle schede {number} dall'inizio a #{last}"
+
+#: src/data/family.py:293
+#, ai_translation
+msgid "screens of {number} boards from #{first} to #{last}"
+msgstr "Schermi di schede {number} da #{first} a #{last}"
+
+#: src/data/family.py:295
+#, ai_translation
+msgid "boards on {parts} screens"
+msgstr "schede su schermi {parts}"
+
+#: src/data/family.py:297
+#, ai_translation
+msgid "boards from #{first} to end, on {parts} screens"
+msgstr "schede da #{first} a fine, su schermi {parts}"
+
+#: src/data/family.py:299
+#, ai_translation
+msgid "boards from start to #{last}, on {parts} screens"
+msgstr "schede dall'inizio a #{last}, su schermi {parts}"
+
+#: src/data/family.py:301
+#, ai_translation
+msgid "boards from #{first} to #{last}, on {parts} screens"
+msgstr "schede da #{first} a #{last}, su schermi {parts}"
+
+#: src/data/family.py:308 src/data/screen_set.py:300
+#, ai_translation
+msgid "all the players"
+msgstr "tutti i giocatori"
+
+#: src/data/family.py:310 src/data/screen_set.py:302
+#, ai_translation
+msgid "players from #{first} to end"
+msgstr "giocatori da #{first} a fine"
+
+#: src/data/family.py:312 src/data/screen_set.py:306
+#, ai_translation
+msgid "players from start to #{last}"
+msgstr "giocatori dall'inizio a #{last}"
+
+#: src/data/family.py:314 src/data/screen_set.py:304
+#, ai_translation
+msgid "players from #{first} to #{last}"
+msgstr "giocatori da #{first} a #{last}"
+
+#: src/data/family.py:316
+#, ai_translation
+msgid "screens of {number} players"
+msgstr "schermi dei lettori {number}"
+
+#: src/data/family.py:318
+#, ai_translation
+msgid "screens of {number} players from #{first} to end"
+msgstr "schermi di lettori {number} da #{first} a fine"
+
+#: src/data/family.py:320
+#, ai_translation
+msgid "screens of {number} players from start to #{last}"
+msgstr "schermi dei giocatori {number} dall'inizio a #{last}"
+
+#: src/data/family.py:322
+#, ai_translation
+msgid "screens of {number} players from #{first} to #{last}"
+msgstr "Schermi di lettori {number} da #{first} a #{last}"
+
+#: src/data/family.py:324
+#, ai_translation
+msgid "players on {parts} screens"
+msgstr "giocatori su schermi {parts}"
+
+#: src/data/family.py:326
+#, ai_translation
+msgid "players from #{first} to end, on {parts} screens"
+msgstr "giocatori da #{first} a fine, su schermi {parts}"
+
+#: src/data/family.py:328
+#, ai_translation
+msgid "players from start to #{last}, on {parts} screens"
+msgstr "giocatori dall'inizio a #{last}, su schermi {parts}"
+
+#: src/data/family.py:330
+#, ai_translation
+msgid "players from #{first} to #{last}, on {parts} screens"
+msgstr "giocatori da #{first} a #{last}, su schermi {parts}"
+
+#: src/data/player.py:92
+#, ai_translation
+msgid "Unpaired *** FEMALE ***"
+msgstr "Non accoppiata"
+
+#: src/data/player.py:92
+#, ai_translation
+msgid "Unpaired *** MALE ***"
+msgstr "Non accoppiata"
+
+#: src/data/player.py:96
+#, ai_translation
+msgid "Exempt *** FEMALE ***"
+msgstr "Esente"
+
+#: src/data/player.py:96
+#, ai_translation
+msgid "Exempt *** MALE ***"
+msgstr "Esente"
+
+#: src/data/screen.py:97 src/data/screen.py:178
+#: src/web/controllers/admin/index_admin_controller.py:108
+#: src/web/controllers/admin/screen_admin_controller.py:359
+#: src/web/templates/admin_screens.html:74
+#, ai_translation
+msgid "Last results"
+msgstr "Ultimi risultati"
+
+#: src/data/screen.py:99
+#: src/web/controllers/admin/index_admin_controller.py:109
+#: src/web/controllers/admin/screen_admin_controller.py:361
+#: src/web/templates/admin_screens.html:79
+#, ai_translation
+msgid "Image"
+msgstr "Immagine"
+
+#: src/data/screen.py:125 src/data/screen_set.py:124
+#, ai_translation, python-format
+msgid "Boards %f-%l"
+msgstr "Schede %f-%l"
+
+#: src/data/screen.py:127
+#, ai_translation
+msgid "By board"
+msgstr "A bordo"
+
+#: src/data/screen.py:130
+#, ai_translation, python-format
+msgid "%t [Boards %f-%l]"
+msgstr "%t [Barre %f-%l]"
+
+#: src/data/screen.py:132
+#, ai_translation
+msgid "%t (by board)"
+msgstr "%t (per scheda)"
+
+#: src/data/screen.py:140
+#, ai_translation
+msgid "By player"
+msgstr "Per giocatore"
+
+#: src/data/screen.py:145
+#, ai_translation
+msgid "%t (by player)"
+msgstr "%t (per giocatore)"
+
+#: src/data/screen.py:193 src/data/screen.py:203 src/data/screen.py:213
+#: src/data/screen.py:223
+#, ai_translation
+msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
+msgstr "Nessuna schermata di tipo [{screen_type}] per il menu dello schermo [{screen_uniq_id}]."
+
+#: src/data/screen.py:231
+#, ai_translation
+msgid "Pattern [{pattern}] can be used by screen families."
+msgstr "Il modello [{pattern}] può essere utilizzato dalle famiglie dello schermo."
+
+#: src/data/screen.py:239
+#, ai_translation
+msgid "Pattern [{pattern}] matches no screen."
+msgstr "Il modello [{pattern}] non corrisponde a nessuna schermata."
+
+#: src/data/screen.py:249
+#, ai_translation
+msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
+msgstr "Schermo [{pattern}] non trovato per il menu dello schermo [{screen_uniq_id}]."
+
+#: src/data/screen.py:326
+#, ai_translation
+msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
+msgstr "Numero massimo di risultati impostati su [{results_limit}] per adattarsi alle colonne [{columns}]."
+
+#: src/data/screen_set.py:60
+#: src/web/controllers/admin/screen_admin_controller.py:286
+#, ai_translation
+msgid "Invalid board number [{fixed_board_str}]."
+msgstr "Numero della scheda non valido [{fixed_board_str}]."
+
+#: src/data/screen_set.py:78
+#: src/web/controllers/admin/family_admin_controller.py:162
+#: src/web/controllers/admin/screen_admin_controller.py:273
+#, ai_translation
+msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
+msgstr "I numeri {first} e {last} non sono compatibili ({first} > {last})."
+
+#: src/data/screen_set.py:142
+#, ai_translation, python-format
+msgid "%f to %l"
+msgstr "%f a %l"
+
+#: src/data/screen_set.py:283
+#, ai_translation
+msgid "boards {board_numbers}"
+msgstr "schede {board_numbers}"
+
+#: src/data/screen_set.py:312
+#, ai_translation
+msgid "Tournament {tournament_uniq_id} ({numbers_str})"
+msgstr "Torneo {tournament_uniq_id} ({numbers_str})"
+
+#: src/data/timer.py:152
+#, ai_translation
+msgid "Time is not defined."
+msgstr "Il tempo non è definito."
+
+#: src/data/timer.py:157
+#, ai_translation
+msgid "Invalid time [{time_str}]."
+msgstr "Ora non valida [{time_str}]."
+
+#: src/data/timer.py:160
+#, ai_translation
+msgid "The date of the first hour is not defined (mandatory)."
+msgstr "La data della prima ora non è definita (obbligatorio)."
+
+#: src/data/timer.py:167
+#, ai_translation
+msgid "Invalid date [{date_str}]."
+msgstr "Data non valida [{date_str}]."
+
+#: src/data/timer.py:179
+#: src/web/controllers/admin/timer_admin_controller.py:159
+#, ai_translation
+msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
+msgstr "Ora non valida [{hour}] (prima dell'ora precedente [{previous_hour}])."
+
+#: src/data/timer.py:185
+#, ai_translation
+msgid "Invalid date and time [{datetime_str}]."
+msgstr "Data e ora non valide [{datetime_str}]."
+
+#: src/data/timer.py:196
+#, ai_translation
+msgid "No valid hour defined."
+msgstr "Non è stata definita alcuna ora valida."
+
+#: src/data/tournament.py:39
+#, ai_translation
+msgid "No directory set for the Papi file, by default [{path}]."
+msgstr "Nessuna directory impostata per il file Papi, per impostazione predefinita [{path}]."
+
+#: src/data/tournament.py:46
+#, ai_translation
+msgid "The name of the Papi file is not set, by default [{filename}]"
+msgstr "Il nome del file Papi non è impostato, per impostazione predefinita [{filename}]"
+
+#: src/data/tournament.py:50
+#, ai_translation
+msgid "Qualification number and FFE password not set, operations on the FFE website will not be available."
+msgstr "Numero di qualifica e password FFE non impostati, le operazioni sul sito FFE non saranno disponibili."
+
+#: src/data/tournament.py:53
+#, ai_translation
+msgid "ChessEvent connection not defined."
+msgstr "Connessione a scacchiEvent non definita."
+
+#: src/data/tournament.py:55
+#, ai_translation
+msgid "ChessEvent tournament name not set."
+msgstr "Nome del torneo di ChessEvent non impostato."
+
+#: src/ffe/action_selector.py:30 src/ffe/action_selector.py:43
+#: src/ffe/action_selector.py:63
+#, ai_translation
+msgid "FFE id not defined for tournament [{tournament_uniq_id}]."
+msgstr "FFE id non definito per il torneo [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py:46
+#, ai_translation
+msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
+msgstr "File Papi non definito per il torneo [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py:50
+#, ai_translation
+msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+msgstr "File Papi non trovato [{file}] per il torneo [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py:66
+#, ai_translation
+msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
+msgstr "File di regole non definito per il torneo [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py:70
+#, ai_translation
+msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
+msgstr "File regole definito da un URL per il torneo [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py:74
+#, ai_translation
+msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
+msgstr "File regole [{file}] non trovato per il torneo [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py:86
+#, ai_translation
+msgid "No FFE operations can be done on the tournaments of this event."
+msgstr "Nessuna operazione FFE può essere effettuata nei tornei di questo evento."
+
+#: src/ffe/action_selector.py:89
+#, ai_translation
+msgid "Tournaments: {tournament_ffe_ids}"
+msgstr "Tornei: {tournament_ffe_ids}"
+
+#: src/ffe/action_selector.py:91
+#, ai_translation
+msgid "T *** THE LETTER TO ANSWER TEST ***"
+msgstr "T"
+
+#: src/ffe/action_selector.py:92
+#, ai_translation
+msgid "V *** THE LETTER TO ANSWER VISIBLE ***"
+msgstr "V"
+
+#: src/ffe/action_selector.py:93
+#, ai_translation
+msgid "F *** THE LETTER TO ANSWER FEES ***"
+msgstr "F"
+
+#: src/ffe/action_selector.py:94
+#, ai_translation
+msgid "R *** THE LETTER TO ANSWER RULES ***"
+msgstr "R"
+
+#: src/ffe/action_selector.py:98
+#, ai_translation
+msgid "Test the tournament passwords on the FFE website"
+msgstr "Prova le password del torneo sul sito FFE"
+
+#: src/ffe/action_selector.py:99
+#, ai_translation
+msgid "Make the tournaments visible on the FFE website"
+msgstr "Rendere i tornei visibili sul sito FFE"
+
+#: src/ffe/action_selector.py:100
+#, ai_translation
+msgid "Download fees invoices"
+msgstr "Scaricare le fatture"
+
+#: src/ffe/action_selector.py:101
+#, ai_translation
+msgid "Upload the rules of the tournaments"
+msgstr "Carica le regole dei tornei"
+
+#: src/ffe/action_selector.py:102
+#, ai_translation
+msgid "Upload the results of the tournaments"
+msgstr "Carica i risultati dei tornei"
+
+#: src/ffe/action_selector.py:105
+#, ai_translation
+msgid "Actions:"
+msgstr "Azioni:"
+
+#: src/ffe/action_selector.py:151
+#, ai_translation
+msgid "No need to upload the rules to the FFE website (up to date)."
+msgstr "Non è necessario caricare le regole sul sito web dell'FFE (fino ad oggi)."
+
+#: src/ffe/action_selector.py:177
+#, ai_translation
+msgid "No need to upload the results to the FFE website (up to date)."
+msgstr "Non è necessario caricare i risultati sul sito web dell'FFE (fino ad oggi)."
+
+#: src/ffe/action_selector.py:179
+#, ai_translation
+msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
+msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
+msgstr[0] "{recent_updates} torneo è stato aggiornato meno di {ffe_upload_delay} secondi fa, in attesa."
+msgstr[1] "I tornei {recent_updates} sono stati aggiornati meno di {ffe_upload_delay} secondi fa, in attesa."
+
+#: src/ffe/action_selector.py:188
+#, ai_translation
+msgid "End of upload (Ctrl-C)"
+msgstr "Fine del caricamento (Ctrl-C)"
+
+#: src/ffe/ffe_session.py:142
+#, ai_translation
+msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
+msgstr "Il contenuto dell'URL [{url}] non è valido (input[id=[{id]] non trovato)."
+
+#: src/ffe/ffe_session.py:156
+#, ai_translation
+msgid "Initializing a session to [{url}]..."
+msgstr "Inizializzazione di una sessione a [{url}]..."
+
+#: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
+#, ai_translation
+msgid "OK"
+msgstr "OK"
+
+#: src/ffe/ffe_session.py:170
+#, ai_translation
+msgid "Authenticating..."
+msgstr "Autenticante..."
+
+#: src/ffe/ffe_session.py:200
+#, ai_translation
+msgid "Authentication failed."
+msgstr "Autenticazione non riuscita."
+
+#: src/ffe/ffe_session.py:210
+#, ai_translation
+msgid "Tournament [{ffe_id}]:"
+msgstr "Torneo [{ffe_id}]:"
+
+#: src/ffe/ffe_session.py:218
+#, ai_translation
+msgid "Getting fees for tournament [{ffe_id}]..."
+msgstr "Ottenere commissioni per il torneo [{ffe_id}]..."
+
+#: src/ffe/ffe_session.py:228
+#, ai_translation
+msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
+msgstr "Collegamento tasse non trovato, controllare che un file Papi sia già stato inviato e che il torneo non sia stato archiviato sul sito web dell'FFE."
+
+#: src/ffe/ffe_session.py:231
+#, ai_translation
+msgid "Tournament exempt from registration fees."
+msgstr "Torneo esente da tasse di iscrizione."
+
+#: src/ffe/ffe_session.py:234
+#, ai_translation
+msgid "Invalid fees link text [{text}]."
+msgstr "Tasse non valide link testo [{text}]."
+
+#: src/ffe/ffe_session.py:259
+#, ai_translation
+msgid "Invoice saved to [{file}]."
+msgstr "Fattura salvata in [{file}]."
+
+#: src/ffe/ffe_session.py:264
+#, ai_translation
+msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr "Invio del torneo [{ffe_id}] ({file}) al sito FFE..."
+
+#: src/ffe/ffe_session.py:274
+#, ai_translation
+msgid "Upload link not found, check that the tournament is not finished on the FFE website."
+msgstr "Carica collegamento non trovato, controlla che il torneo non sia finito sul sito web dell'FFE."
+
+#: src/ffe/ffe_session.py:307 src/ffe/ffe_session.py:334
+#, ai_translation
+msgid "Results upload OK"
+msgstr "Risultati caricati OK"
+
+#: src/ffe/ffe_session.py:310
+#, ai_translation
+msgid "Making the tournament visible on the FFE website..."
+msgstr "Rendere il torneo visibile sul sito FFE..."
+
+#: src/ffe/ffe_session.py:314
+#, ai_translation
+msgid "Display link not found, check that a Papi file has already been sent."
+msgstr "Mostra collegamento non trovato, controlla che un file Papi sia già stato inviato."
+
+#: src/ffe/ffe_session.py:317
+#, ai_translation
+msgid "Data are already displayed on the FFE website."
+msgstr "I dati sono già visualizzati sul sito web dell'FFE."
+
+#: src/ffe/ffe_session.py:321
+#, ai_translation
+msgid "Invalid display link text [{text}]"
+msgstr "Testo del collegamento di visualizzazione non valido [{text}]"
+
+#: src/ffe/ffe_session.py:338
+#, ai_translation
+msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr "Invio delle regole del torneo [{ffe_id}] ({file}) al sito FFE..."
+
+#: src/ffe/ffe_session.py:348
+#, ai_translation
+msgid "Rules upload link not found, check that the tournament is not finished on the FFE website."
+msgstr "Rules upload link non trovato, controllare che il torneo non è finito sul sito FFE."
+
+#: src/web/server_engine.py:24
+#, ai_translation
+msgid "Opening the welcome page [{url}] in a browser..."
+msgstr "Apertura della pagina di benvenuto [{url}] in un browser..."
+
+#: src/web/server_engine.py:30
+#, ai_translation
+msgid "Web server not started yet ({ex}), waiting..."
+msgstr "Server web non ancora avviato ({ex}), in attesa..."
+
+#: src/web/server_engine.py:40
+#, ai_translation
+msgid "Starting Papi-web server, please wait..."
+msgstr "Avviare il server Papi-web, attendere..."
+
+#: src/web/server_engine.py:42
+#, ai_translation
+msgid "Logging level: {log_level}"
+msgstr "Livello di registrazione: {log_level}"
+
+#: src/web/server_engine.py:43
+#, ai_translation
+msgid "Port: {port}"
+msgstr "Porta: {port}"
+
+#: src/web/server_engine.py:44
+#, ai_translation
+msgid "Local URL: {local_url}"
+msgstr "URL locale: {local_url}"
+
+#: src/web/server_engine.py:46
+#, ai_translation
+msgid "LAN/WAN URL: {lan_url}"
+msgstr "URL LAN/WAN: {lan_url}"
+
+#: src/web/server_engine.py:49
+#, ai_translation
+msgid "Port [{port}] already in use, can not start Papi-web server."
+msgstr "Porta [{port}] già in uso, non è possibile avviare il server Papi-web."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py:69
+#, ai_translation
+msgid "Please enter the id of ChessEvent connection."
+msgstr "Inserire l'id della connessione ChessEvent."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py:74
+#: src/web/controllers/admin/chessevent_admin_controller.py:79
+#, ai_translation
+msgid "ChessEvent connection [{uniq_id}] already exists."
+msgstr "La connessione ChessEvent [{uniq_id}] esiste già."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py:88
+#, ai_translation
+msgid "Please enter the id used to connect to the ChessEvent platform."
+msgstr "Inserire l'id usato per connettersi alla piattaforma ChessEvent."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py:92
+#, ai_translation
+msgid "Please enter the password used to connect to the ChessEvent platform."
+msgstr "Inserire la password usata per connettersi alla piattaforma ChessEvent."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py:96
+#, ai_translation
+msgid "Please enter the id of the event on the ChessEvent platform."
+msgstr "Inserire l'id dell'evento sulla piattaforma ChessEvent."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py:232
+#, ai_translation
+msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
+msgstr "È stata creata la connessione ChessEvent [{chessevent_uniq_id}]."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py:238
+#, ai_translation
+msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
+msgstr "La connessione ChessEvent [{chessevent_uniq_id}] è stata aggiornata."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py:244
+#, ai_translation
+msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
+msgstr "La connessione ChessEvent [{chessevent_uniq_id}] è stata eliminata."
+
+#: src/web/controllers/admin/event_admin_controller.py:114
+#, ai_translation
+msgid "Tournaments ({num})"
+msgstr "Tornei ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:118
+#, ai_translation
+msgid "Screens ({num})"
+msgstr "Schermi ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:122
+#, ai_translation
+msgid "Families ({num})"
+msgstr "Famiglie ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:126
+#: src/web/controllers/user/event_user_controller.py:125
+#, ai_translation
+msgid "Rotators ({num})"
+msgstr "Rotatori ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:130
+#, ai_translation
+msgid "Timers ({num})"
+msgstr "Timer ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:134
+#, ai_translation
+msgid "ChessEvent ({num})"
+msgstr "Evento di scacchi ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:138
+#, ai_translation
+msgid "Messages ({num})"
+msgstr "Messaggi ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:403
+#, ai_translation
+msgid "Renaming the database failed: {ex}."
+msgstr "Rinomina del database non riuscita: {ex}."
+
+#: src/web/controllers/admin/event_admin_controller.py:410
+#, ai_translation
+msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}) and updated."
+msgstr "L'evento [{old_uniq_id}] è stato rinominato ([{new_uniq_id}) e aggiornato."
+
+#: src/web/controllers/admin/event_admin_controller.py:413
+#, ai_translation
+msgid "Event [{uniq_id}] has been updated."
+msgstr "Evento [{uniq_id}] è stato aggiornato."
+
+#: src/web/controllers/admin/event_admin_controller.py:421
+#: src/web/controllers/admin/index_admin_controller.py:676
+#, ai_translation
+msgid "Event [{uniq_id}] has been created."
+msgstr "Evento [{uniq_id}] è stato creato."
+
+#: src/web/controllers/admin/event_admin_controller.py:431
+#, ai_translation
+msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
+msgstr "Evento [{uniq_id}] è stato eliminato, il database è stato archiviato ({arch})."
+
+#: src/web/controllers/admin/family_admin_controller.py:102
+#, ai_translation
+msgid "Please enter the family id."
+msgstr "Inserire l'ID della famiglia."
+
+#: src/web/controllers/admin/family_admin_controller.py:104
+#: src/web/controllers/admin/index_admin_controller.py:233
+#: src/web/controllers/admin/screen_admin_controller.py:123
+#: src/web/controllers/admin/tournament_admin_controller.py:75
+#, ai_translation
+msgid "Character [{char}] is not allowed."
+msgstr "Il carattere [{char}] non è consentito."
+
+#: src/web/controllers/admin/family_admin_controller.py:109
+#: src/web/controllers/admin/family_admin_controller.py:113
+#, ai_translation
+msgid "Family [{uniq_id}] already exists."
+msgstr "La famiglia [{uniq_id}] esiste già."
+
+#: src/web/controllers/admin/family_admin_controller.py:130
+#: src/web/controllers/admin/screen_admin_controller.py:90
+#: src/web/controllers/admin/screen_admin_controller.py:257
+#, ai_translation
+msgid "Please choose the tournament."
+msgstr "Per favore scegli il torneo."
+
+#: src/web/controllers/admin/family_admin_controller.py:132
+#: src/web/controllers/admin/screen_admin_controller.py:259
+#, ai_translation
+msgid "Tournament [{tournament_id}] not found."
+msgstr "Torneo [{tournament_id}] non trovato."
+
+#: src/web/controllers/admin/family_admin_controller.py:135
+#: src/web/controllers/admin/family_admin_controller.py:140
+#: src/web/controllers/admin/family_admin_controller.py:150
+#: src/web/controllers/admin/family_admin_controller.py:155
+#: src/web/controllers/admin/family_admin_controller.py:160
+#: src/web/controllers/admin/family_admin_controller.py:179
+#: src/web/controllers/admin/family_admin_controller.py:184
+#: src/web/controllers/admin/rotator_admin_controller.py:94
+#: src/web/controllers/admin/screen_admin_controller.py:143
+#: src/web/controllers/admin/screen_admin_controller.py:154
+#: src/web/controllers/admin/screen_admin_controller.py:167
+#: src/web/controllers/admin/screen_admin_controller.py:172
+#: src/web/controllers/admin/screen_admin_controller.py:261
+#: src/web/controllers/admin/screen_admin_controller.py:266
+#: src/web/controllers/admin/screen_admin_controller.py:271
+#, ai_translation
+msgid "A positive integer is expected."
+msgstr "Ci si aspetta un intero positivo."
+
+#: src/web/controllers/admin/family_admin_controller.py:148
+#: src/web/controllers/admin/screen_admin_controller.py:152
+#, ai_translation
+msgid "Timer [{timer_id}] not found."
+msgstr "Timer [{timer_id}] non trovato."
+
+#: src/web/controllers/admin/family_admin_controller.py:186
+#, ai_translation
+msgid "Specifying the number of parts and the number of items per part is not possible."
+msgstr "Non è possibile specificare il numero di parti e il numero di elementi per parte."
+
+#: src/web/controllers/admin/family_admin_controller.py:270
+#: src/web/controllers/admin/index_admin_controller.py:103
+#: src/web/controllers/admin/screen_admin_controller.py:353
+#: src/web/controllers/admin/tournament_admin_controller.py:329
+#: src/web/templates/admin_event_modal.html:190
+#: src/web/templates/admin_families.html:45
+#: src/web/templates/admin_screens.html:59
+#, ai_translation
+msgid "Entry of results"
+msgstr "Inserimento dei risultati"
+
+#: src/web/controllers/admin/family_admin_controller.py:272
+#: src/web/controllers/admin/screen_admin_controller.py:355
+#: src/web/templates/admin_rotator_modal.html:121
+#, ai_translation
+msgid "pairings by board"
+msgstr "Abbinamenti a bordo"
+
+#: src/web/controllers/admin/family_admin_controller.py:274
+#: src/web/controllers/admin/index_admin_controller.py:105
+#: src/web/controllers/admin/screen_admin_controller.py:357
+#: src/web/controllers/admin/tournament_admin_controller.py:331
+#: src/web/templates/admin_families.html:53
+#: src/web/templates/admin_screens.html:69
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Abbinamenti per giocatore"
+
+#: src/web/controllers/admin/index_admin_controller.py:77
+#: src/web/templates/admin_event_config.html:108
+#, ai_translation
+msgid "No recording"
+msgstr "Nessuna registrazione"
+
+#: src/web/controllers/admin/index_admin_controller.py:79
+#, ai_translation
+msgid "{num} illegal move max"
+msgid_plural "{num} illegal moves max"
+msgstr[0] "{num} movimento illegale max"
+msgstr[1] "{num} mosse illegali max"
+
+#: src/web/controllers/admin/index_admin_controller.py:82
+#: src/web/controllers/admin/index_admin_controller.py:128
+#: src/web/controllers/admin/index_admin_controller.py:139
+#, ai_translation
+msgid "By default - {option}"
+msgstr "Per impostazione predefinita - {option}"
+
+#: src/web/controllers/admin/index_admin_controller.py:88
+#, ai_translation
+msgid "Color #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until color #2 ({delay_2} minutes before the start of the rounds)."
+msgstr "Il colore #1 viene usato fino a quando {delay_1} minuti prima dell'inizio dei giri (ritardo #1), il colore poi cambia gradualmente fino al colore #2 ({delay_2} minuti prima dell'inizio dei giri)."
+
+#: src/web/controllers/admin/index_admin_controller.py:91
+#, ai_translation
+msgid "Color #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until color #3 (at the start of the rounds)."
+msgstr "Il colore #2 viene usato {delay_2} minuti prima dell'inizio dei giri (ritardo #2), il colore poi cambia gradualmente fino al colore #3 (all'inizio dei giri)."
+
+#: src/web/controllers/admin/index_admin_controller.py:94
+#, ai_translation
+msgid "Color #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr "Il colore #3 viene usato dall'inizio dei giri e per {delay_3} minuti dopo (ritardo #3)."
+
+#: src/web/controllers/admin/index_admin_controller.py:104
+#: src/web/controllers/admin/tournament_admin_controller.py:330
+#: src/web/templates/admin_families.html:49
+#: src/web/templates/admin_screens.html:64
+#, ai_translation
+msgid "Pairings by board"
+msgstr "Abbinamenti a bordo"
+
+#: src/web/controllers/admin/index_admin_controller.py:115
+#, ai_translation
+msgid "Use no timer"
+msgstr "Non usare nessun timer"
+
+#: src/web/controllers/admin/index_admin_controller.py:115
+#, ai_translation
+msgid "No timer defined"
+msgstr "Nessun timer definito"
+
+#: src/web/controllers/admin/index_admin_controller.py:118
+#, ai_translation
+msgid "Timer {timer_uniq_id}"
+msgstr "Timer {timer_uniq_id}"
+
+#: src/web/controllers/admin/index_admin_controller.py:125
+#, ai_translation
+msgid "Display the exit button"
+msgstr "Mostra il pulsante di uscita"
+
+#: src/web/controllers/admin/index_admin_controller.py:126
+#, ai_translation
+msgid "Hide the exit button"
+msgstr "Nascondi il pulsante di uscita"
+
+#: src/web/controllers/admin/index_admin_controller.py:136
+#, ai_translation
+msgid "Display only paired players"
+msgstr "Mostra solo i giocatori accoppiati"
+
+#: src/web/controllers/admin/index_admin_controller.py:137
+#, ai_translation
+msgid "Display all the players, paired and unpaired"
+msgstr "Mostra tutti i giocatori, abbinati e non abbinati"
+
+#: src/web/controllers/admin/index_admin_controller.py:179
+#: src/web/controllers/admin/index_admin_controller.py:289
+#: src/web/controllers/admin/screen_admin_controller.py:189
+#, ai_translation
+msgid "URL [{url}] responded code [{code}]."
+msgstr "URL [{url}] ha risposto codice [{code}]."
+
+#: src/web/controllers/admin/index_admin_controller.py:182
+#: src/web/controllers/admin/index_admin_controller.py:293
+#: src/web/controllers/admin/screen_admin_controller.py:193
+#, ai_translation
+msgid "URL [{url}] did not respond (error: [{error}])."
+msgstr "URL [{url}] non ha risposto (errore: [{error}])."
+
+#: src/web/controllers/admin/index_admin_controller.py:186
+#: src/web/controllers/admin/index_admin_controller.py:301
+#, ai_translation
+msgid "Incorrect path [{path}]."
+msgstr "Percorso errato [{path}]."
+
+#: src/web/controllers/admin/index_admin_controller.py:191
+#: src/web/controllers/admin/index_admin_controller.py:305
+#, ai_translation
+msgid "File [{file}] not found."
+msgstr "File [{file}] non trovato."
+
+#: src/web/controllers/admin/index_admin_controller.py:193
+#, ai_translation
+msgid "Wrong file extension [{ext}] ([pdf] expected)."
+msgstr "Estensione del file errata [{ext}] ([pdf] atteso)."
+
+#: src/web/controllers/admin/index_admin_controller.py:208
+#: src/web/controllers/admin/index_admin_controller.py:315
+#: src/web/controllers/admin/index_admin_controller.py:330
+#: src/web/controllers/admin/index_admin_controller.py:336
+#: src/web/controllers/admin/timer_admin_controller.py:104
+#, ai_translation
+msgid "Invalid color [{color}] ([#RRGGBB] expected)."
+msgstr "Colore non valido [{color}] ([#RRGGBB] atteso)."
+
+#: src/web/controllers/admin/index_admin_controller.py:226
+#: src/web/controllers/admin/index_admin_controller.py:231
+#, ai_translation
+msgid "Please enter the event id."
+msgstr "Inserire l'ID dell'evento."
+
+#: src/web/controllers/admin/index_admin_controller.py:228
+#, ai_translation
+msgid "Event id does not match."
+msgstr "L'ID dell'evento non corrisponde."
+
+#: src/web/controllers/admin/index_admin_controller.py:239
+#: src/web/controllers/admin/index_admin_controller.py:242
+#, ai_translation
+msgid "Event [{uniq_id}] already exists."
+msgstr "Evento [{uniq_id}] esiste già."
+
+#: src/web/controllers/admin/index_admin_controller.py:265
+#, ai_translation
+msgid "Please enter the name of the event."
+msgstr "Inserire il nome dell'evento."
+
+#: src/web/controllers/admin/index_admin_controller.py:268
+#, ai_translation
+msgid "Please enter the start date of the event."
+msgstr "Inserire la data di inizio dell'evento."
+
+#: src/web/controllers/admin/index_admin_controller.py:273
+#, ai_translation
+msgid "Please enter the end date of the event."
+msgstr "Inserire la data di fine dell'evento."
+
+#: src/web/controllers/admin/index_admin_controller.py:277
+#, ai_translation
+msgid "Please enter a date after the start date."
+msgstr "Inserire una data dopo la data di inizio."
+
+#: src/web/controllers/admin/index_admin_controller.py:297
+#, ai_translation
+msgid "Please enter a URL or select an image on the right hand side."
+msgstr "Inserire un URL o selezionare un'immagine sul lato destro."
+
+#: src/web/controllers/admin/index_admin_controller.py:321
+#: src/web/controllers/admin/timer_admin_controller.py:110
+#, ai_translation
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr "Ritardo non valido [{delay}] (atteso numero intero positivo)."
+
+#: src/web/controllers/admin/index_admin_controller.py:428
+#, ai_translation
+msgid "New event"
+msgstr "Nuovo evento"
+
+#: src/web/controllers/admin/index_admin_controller.py:429
+#, ai_translation
+msgid "event"
+msgstr "evento"
+
+#: src/web/controllers/admin/index_admin_controller.py:526
+#: src/web/controllers/user/index_user_controller.py:84
+#, ai_translation
+msgid "Current events ({num})"
+msgstr "Eventi attuali ({num})"
+
+#: src/web/controllers/admin/index_admin_controller.py:530
+#: src/web/controllers/user/index_user_controller.py:86
+#, ai_translation
+msgid "No current events."
+msgstr "Non ci sono eventi attuali."
+
+#: src/web/controllers/admin/index_admin_controller.py:534
+#: src/web/controllers/user/index_user_controller.py:92
+#, ai_translation
+msgid "Coming events ({num})"
+msgstr "Eventi in arrivo ({num})"
+
+#: src/web/controllers/admin/index_admin_controller.py:538
+#: src/web/controllers/user/index_user_controller.py:94
+#, ai_translation
+msgid "No coming events."
+msgstr "Non ci saranno eventi in arrivo."
+
+#: src/web/controllers/admin/index_admin_controller.py:542
+#: src/web/controllers/user/index_user_controller.py:100
+#, ai_translation
+msgid "Passed events ({num})"
+msgstr "Eventi passati ({num})"
+
+#: src/web/controllers/admin/index_admin_controller.py:546
+#: src/web/controllers/user/index_user_controller.py:102
+#, ai_translation
+msgid "No passed events."
+msgstr "Nessun evento passato."
+
+#: src/web/controllers/admin/index_admin_controller.py:550
+#, ai_translation
+msgid "Archived events ({num})"
+msgstr "Eventi archiviati ({num})"
+
+#: src/web/controllers/admin/index_admin_controller.py:554
+#, ai_translation
+msgid "No archived events."
+msgstr "Nessun evento archiviato."
+
+#: src/web/controllers/admin/index_admin_controller.py:558
+#: src/web/templates/admin_config.html:4
+#, ai_translation
+msgid "Papi-web configuration"
+msgstr "Configurazione papi-web"
+
+#: src/web/controllers/admin/rotator_admin_controller.py:74
+#, ai_translation
+msgid "Please enter the rotator id."
+msgstr "Inserire l'ID del rotatore."
+
+#: src/web/controllers/admin/rotator_admin_controller.py:79
+#: src/web/controllers/admin/rotator_admin_controller.py:83
+#, ai_translation
+msgid "Rotator [{uniq_id}] already exists."
+msgstr "Rotator [{uniq_id}] esiste già."
+
+#: src/web/controllers/admin/rotator_admin_controller.py:268
+#, ai_translation
+msgid "Rotator [{rotator_uniq_id}] has been created."
+msgstr "Rotator [{rotator_uniq_id}] è stato creato."
+
+#: src/web/controllers/admin/rotator_admin_controller.py:274
+#, ai_translation
+msgid "Rotator [{rotator_uniq_id}] has been updated."
+msgstr "Rotator [{rotator_uniq_id}] è stato aggiornato."
+
+#: src/web/controllers/admin/rotator_admin_controller.py:280
+#, ai_translation
+msgid "Rotator [{rotator_uniq_id}] has been deleted."
+msgstr "Rotator [{rotator_uniq_id}] è stato eliminato."
+
+#: src/web/controllers/admin/screen_admin_controller.py:121
+#, ai_translation
+msgid "Please enter the screen id."
+msgstr "Inserire l'ID dello schermo."
+
+#: src/web/controllers/admin/screen_admin_controller.py:128
+#: src/web/controllers/admin/screen_admin_controller.py:132
+#, ai_translation
+msgid "Screen [{uniq_id}] already exists."
+msgstr "Lo schermo [{uniq_id}] esiste già."
+
+#: src/web/controllers/admin/screen_admin_controller.py:182
+#, ai_translation
+msgid "Please enter the image URL."
+msgstr "Inserire l'URL immagine."
+
+#: src/web/controllers/admin/screen_admin_controller.py:184
+#, ai_translation
+msgid "Invalid URL [{background_image}]."
+msgstr "URL [{background_image}] non valido."
+
+#: src/web/controllers/admin/screen_admin_controller.py:349
+#, ai_translation
+msgid "{screen_type}-screen"
+msgstr "Schermo {screen_type}"
+
+#: src/web/controllers/admin/screen_admin_controller.py:562
+#: src/web/controllers/admin/screen_admin_controller.py:571
+#, ai_translation
+msgid "Screen [{screen_uniq_id}] has been created."
+msgstr "Screen [{screen_uniq_id}] è stato creato."
+
+#: src/web/controllers/admin/screen_admin_controller.py:577
+#, ai_translation
+msgid "Screen [{screen_uniq_id}] has been updated."
+msgstr "Schermo [{screen_uniq_id}] è stato aggiornato."
+
+#: src/web/controllers/admin/screen_admin_controller.py:583
+#, ai_translation
+msgid "Screen [{screen_uniq_id}] has been deleted."
+msgstr "Schermo [{screen_uniq_id}] è stato eliminato."
+
+#: src/web/controllers/admin/timer_admin_controller.py:83
+#, ai_translation
+msgid "Please enter the timer id."
+msgstr "Inserire l'ID del timer."
+
+#: src/web/controllers/admin/timer_admin_controller.py:88
+#: src/web/controllers/admin/timer_admin_controller.py:92
+#, ai_translation
+msgid "Timer [{uniq_id}] already exists."
+msgstr "Timer [{uniq_id}] esiste già."
+
+#: src/web/controllers/admin/timer_admin_controller.py:135
+#, ai_translation
+msgid "Please enter the round number or the hour id."
+msgstr "Inserire il numero rotondo o l'ID dell'ora."
+
+#: src/web/controllers/admin/timer_admin_controller.py:139
+#, ai_translation
+msgid "Please enter the time."
+msgstr "Inserire l'ora."
+
+#: src/web/controllers/admin/timer_admin_controller.py:143
+#, ai_translation
+msgid "Please enter a valid time."
+msgstr "Inserire un'ora valida."
+
+#: src/web/controllers/admin/timer_admin_controller.py:145
+#, ai_translation
+msgid "Please enter the date of the first hour."
+msgstr "Inserire la data della prima ora."
+
+#: src/web/controllers/admin/timer_admin_controller.py:148
+#, ai_translation
+msgid "Please enter a valid date."
+msgstr "Inserire una data valida."
+
+#: src/web/controllers/admin/timer_admin_controller.py:165
+#, ai_translation
+msgid "Please enter valid date and time."
+msgstr "Inserire data e ora validi."
+
+#: src/web/controllers/admin/timer_admin_controller.py:169
+#, ai_translation
+msgid "Hour [{uniq_id}] already exists."
+msgstr "L'ora [{uniq_id}] esiste già."
+
+#: src/web/controllers/admin/timer_admin_controller.py:175
+#, ai_translation
+msgid "Round numbers must be positive integers."
+msgstr "I numeri tondi devono essere interi positivi."
+
+#: src/web/controllers/admin/timer_admin_controller.py:178
+#, ai_translation
+msgid "Please enter the text to display before the hour (mandatory except for rounds)."
+msgstr "Inserire il testo da visualizzare prima dell'ora (obbligatorio tranne i giri)."
+
+#: src/web/controllers/admin/timer_admin_controller.py:181
+#, ai_translation
+msgid "Please enter the text to display after the hour (mandatory except for rounds)."
+msgstr "Inserire il testo da visualizzare dopo l'ora (obbligatorio tranne i giri)."
+
+#: src/web/controllers/admin/timer_admin_controller.py:349
+#: src/web/controllers/admin/timer_admin_controller.py:392
+#, ai_translation
+msgid "Timer [{timer_uniq_id}] has been created."
+msgstr "Timer [{timer_uniq_id}] è stato creato."
+
+#: src/web/controllers/admin/timer_admin_controller.py:358
+#, ai_translation
+msgid "Timer [{timer_uniq_id}] has been updated."
+msgstr "Timer [{timer_uniq_id}] è stato aggiornato."
+
+#: src/web/controllers/admin/timer_admin_controller.py:381
+#, ai_translation
+msgid "Timer [{timer_uniq_id}] has been deleted."
+msgstr "Timer [{timer_uniq_id}] è stato eliminato."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:68
+#: src/web/controllers/admin/tournament_admin_controller.py:73
+#, ai_translation
+msgid "Please enter the tournament id."
+msgstr "Inserire l'ID del torneo."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:70
+#, ai_translation
+msgid "Tournament id does not match."
+msgstr "L'ID del torneo non corrisponde."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:80
+#: src/web/controllers/admin/tournament_admin_controller.py:84
+#, ai_translation
+msgid "Tournament [{uniq_id}] already exists."
+msgstr "Il torneo [{uniq_id}] esiste già."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:105
+#, ai_translation
+msgid "Please enter the tournament name."
+msgstr "Inserire il nome del torneo."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:111
+#, ai_translation
+msgid "The FFE id is a positive integer."
+msgstr "L'ID FFE è un intero positivo."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:114
+#, ai_translation
+msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
+msgstr "La password del torneo sul sito FFE è composta da 10 lettere maiuscole."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:190
+#, ai_translation
+msgid "tournament"
+msgstr "torneo"
+
+#: src/web/controllers/admin/tournament_admin_controller.py:191
+#, ai_translation
+msgid "New tournament"
+msgstr "Nuovo torneo"
+
+#: src/web/controllers/admin/tournament_admin_controller.py:360
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
+msgstr "Il torneo [{tournament_uniq_id}] è stato creato e le schermate predefinite sono state aggiunte."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:365
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has been created."
+msgstr "Il torneo [{tournament_uniq_id}] è stato creato."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:374
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has been updated."
+msgstr "Il torneo [{tournament_uniq_id}] è stato aggiornato."
+
+#: src/web/controllers/admin/tournament_admin_controller.py:383
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has been deleted."
+msgstr "Il torneo [{tournament_uniq_id}] è stato eliminato."
+
+#: src/web/controllers/user/event_user_controller.py:100
+#, ai_translation
+msgid "Entry of results ({num})"
+msgstr "Inserimento dei risultati ({num})"
+
+#: src/web/controllers/user/event_user_controller.py:105
+#, ai_translation
+msgid "Pairings by board ({num})"
+msgstr "Abbinamenti per asse ({num})"
+
+#: src/web/controllers/user/event_user_controller.py:110
+#, ai_translation
+msgid "Pairings by player ({num})"
+msgstr "Abbinamenti per giocatore ({num})"
+
+#: src/web/controllers/user/event_user_controller.py:115
+#, ai_translation
+msgid "Last results ({num})"
+msgstr "Ultimi risultati ({num})"
+
+#: src/web/controllers/user/event_user_controller.py:120
+#, ai_translation
+msgid "Image ({num})"
+msgstr "Immagine ({num})"
+
+#: src/web/controllers/user/screen_user_controller.py:77
+#, ai_translation
+msgid "Access denied, please authenticate to enter results."
+msgstr "Accesso negato, autenticarsi per inserire i risultati."
+
+#: src/web/controllers/user/screen_user_controller.py:80
+#: src/web/controllers/user/screen_user_controller.py:218
+#, ai_translation
+msgid "Incorrect password."
+msgstr "Password errata."
+
+#: src/web/controllers/user/screen_user_controller.py:212
+#, ai_translation
+msgid "Authentication successful!"
+msgstr "Autenticazione riuscita!"
+
+#: src/web/controllers/user/screen_user_controller.py:216
+#, ai_translation
+msgid "Please enter the password."
+msgstr "Inserire la password."
+
+#: src/web/templates/admin_archives.html:11
+#, ai_translation
+msgid "Archived event"
+msgstr "Evento archiviato"
+
+#: src/web/templates/admin_archives.html:12
+#, ai_translation
+msgid "Deletion date"
+msgstr "Data di cancellazione"
+
+#: src/web/templates/admin_base.html:31 src/web/templates/user_base.html:36
+#, ai_translation
+msgid "Change the number of columns."
+msgstr "Cambia il numero di colonne."
+
+#: src/web/templates/admin_check_in.html:1
+#: src/web/templates/user_screen.html:249
+#, ai_translation
+msgid "Check-in"
+msgstr "Check-in"
+
+#: src/web/templates/admin_chessevent_card.html:14
+#, ai_translation, python-format
+msgid "ChessEvent id: %(chessevent_user_id)s"
+msgstr "Id evento di scacchi: %(chessevent_user_id)s"
+
+#: src/web/templates/admin_chessevent_card.html:17
+#, ai_translation, python-format
+msgid "ChessEvent password: %(chessevent_password)s"
+msgstr "Password di ChessEvent: %(chessevent_password)s"
+
+#: src/web/templates/admin_chessevent_card.html:20
+#, ai_translation, python-format
+msgid "ChessEvent event: %(chessevent_event)s"
+msgstr "Evento di scacchi: %(chessevent_event)s"
+
+#: src/web/templates/admin_chessevent_card.html:25
+#, ai_translation
+msgid "Edit the properties of the ChessEvent connection."
+msgstr "Modifica le proprietà della connessione ChessEvent."
+
+#: src/web/templates/admin_chessevent_card.html:33
+#: src/web/templates/admin_event_config.html:15
+#: src/web/templates/admin_family_card.html:125
+#: src/web/templates/admin_rotator_card.html:92
+#: src/web/templates/admin_screen_card.html:160
+#: src/web/templates/admin_timer_card.html:43
+#: src/web/templates/admin_tournament_card.html:136
+#, ai_translation
+msgid "Edit"
+msgstr "Modifica"
+
+#: src/web/templates/admin_chessevent_card.html:39
+#, ai_translation
+msgid "Clone the ChessEvent connection."
+msgstr "Clonare la connessione ChessEvent."
+
+#: src/web/templates/admin_chessevent_card.html:48
+#, ai_translation
+msgid "Delete the ChessEvent connection."
+msgstr "Elimina la connessione ChessEvent."
+
+#: src/web/templates/admin_chessevent_modal.html:18
+#, ai_translation
+msgid "ChessEvent connection creation"
+msgstr "Creazione connessione ChessEvent"
+
+#: src/web/templates/admin_chessevent_modal.html:20
+#, ai_translation, python-format
+msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
+msgstr "Edizione della connessione ChessEvent [%(chessevent_uniq_id)s]"
+
+#: src/web/templates/admin_chessevent_modal.html:22
+#, ai_translation, python-format
+msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
+msgstr "Cancellazione della connessione a scacchi [%(chessevent_uniq_id)s]"
+
+#: src/web/templates/admin_chessevent_modal.html:31
+#, ai_translation
+msgid "Warning: the deletion of a ChessEvent connection is permanent!"
+msgstr "Attenzione: la cancellazione di una connessione a ChessEvent è permanente!"
+
+#: src/web/templates/admin_chessevent_modal.html:34
+#, ai_translation
+msgid "The following tournaments will not be connected to ChessEvent anymore:"
+msgstr "I seguenti tornei non saranno più collegati a ChessEvent:"
+
+#: src/web/templates/admin_chessevent_modal.html:43
+#: src/web/templates/admin_event_modal.html:55
+#: src/web/templates/admin_rotator_modal.html:35
+#: src/web/templates/admin_screen_sets_modal_set_div.html:11
+#: src/web/templates/admin_timer_modal.html:37
+#: src/web/templates/admin_tournament_modal.html:71
+#, ai_translation
+msgid "Properties"
+msgstr "Proprietà"
+
+#: src/web/templates/admin_chessevent_modal.html:49
+#: src/web/templates/admin_event_modal.html:60
+#: src/web/templates/admin_family_modal.html:90
+#: src/web/templates/admin_rotator_modal.html:71
+#: src/web/templates/admin_screen_modal.html:96
+#: src/web/templates/admin_timer_modal.html:42
+#: src/web/templates/admin_tournament_modal.html:76
+#, ai_translation
+msgid "Id (unique):"
+msgstr "Id (unico):"
+
+#: src/web/templates/admin_chessevent_modal.html:58
+#, ai_translation
+msgid "The unique id, used to reference the ChessEvent connection."
+msgstr "L'ID unico, usato per fare riferimento alla connessione ChessEvent."
+
+#: src/web/templates/admin_chessevent_modal.html:70
+#, ai_translation
+msgid "Connection to the ChessEvent platform"
+msgstr "Connessione alla piattaforma ChessEvent"
+
+#: src/web/templates/admin_chessevent_modal.html:76
+#, ai_translation
+msgid "ChessEvent id:"
+msgstr "Id scacchi:"
+
+#: src/web/templates/admin_chessevent_modal.html:82
+#: src/web/templates/admin_screen_sets_modal_set_div.html:157
+#: src/web/templates/admin_tournament_modal.html:188
+#, ai_translation, python-format
+msgid "E.g.: %(string)s"
+msgstr "Ad esempio: %(string)s"
+
+#: src/web/templates/admin_chessevent_modal.html:85
+#, ai_translation
+msgid "The id used to connect to the ChessEvent platform."
+msgstr "L'id utilizzato per connettersi alla piattaforma ChessEvent."
+
+#: src/web/templates/admin_chessevent_modal.html:98
+#, ai_translation
+msgid "Password:"
+msgstr "Password:"
+
+#: src/web/templates/admin_chessevent_modal.html:105
+#: src/web/templates/admin_event_modal.html:202
+#, ai_translation
+msgid "E.g.: my_password"
+msgstr "Ad es.: my_password"
+
+#: src/web/templates/admin_chessevent_modal.html:112
+#, ai_translation
+msgid "The password used to connect to the ChessEvent platform."
+msgstr "La password usata per connettersi alla piattaforma ChessEvent."
+
+#: src/web/templates/admin_chessevent_modal.html:134
+#, ai_translation
+msgid "ChessEvent event:"
+msgstr "Evento di scacchi:"
+
+#: src/web/templates/admin_chessevent_modal.html:143
+#, ai_translation
+msgid "The name of the event on the ChessEvent password."
+msgstr "Il nome dell'evento sulla password di ChessEvent."
+
+#: src/web/templates/admin_chessevent_modal.html:166
+#: src/web/templates/admin_event_modal.html:561
+#: src/web/templates/admin_family_modal.html:475
+#: src/web/templates/admin_rotator_modal.html:221
+#: src/web/templates/admin_screen_modal.html:487
+#: src/web/templates/admin_timer_modal.html:82
+#: src/web/templates/admin_tournament_modal.html:431
+#, ai_translation
+msgid "Create"
+msgstr "Crea"
+
+#: src/web/templates/admin_chessevent_modal.html:168
+#: src/web/templates/admin_event_modal.html:563
+#: src/web/templates/admin_family_modal.html:477
+#: src/web/templates/admin_rotator_modal.html:223
+#: src/web/templates/admin_screen_modal.html:489
+#: src/web/templates/admin_screen_sets_modal_set_div.html:65
+#: src/web/templates/admin_timer_modal.html:84
+#: src/web/templates/admin_tournament_modal.html:433
+#, ai_translation
+msgid "Update"
+msgstr "Aggiorna"
+
+#: src/web/templates/admin_chessevent_modal.html:170
+#: src/web/templates/admin_event_config.html:33
+#: src/web/templates/admin_event_modal.html:565
+#: src/web/templates/admin_family_modal.html:479
+#: src/web/templates/admin_rotator_modal.html:225
+#: src/web/templates/admin_screen_modal.html:491
+#: src/web/templates/admin_timer_modal.html:86
+#: src/web/templates/admin_tournament_modal.html:435
+#, ai_translation
+msgid "Delete"
+msgstr "Elimina"
+
+#: src/web/templates/admin_chessevent_modal.html:186
+#: src/web/templates/admin_event_modal.html:584
+#: src/web/templates/admin_family_modal.html:495
+#: src/web/templates/admin_rotator_modal.html:240
+#: src/web/templates/admin_screen_modal.html:507
+#: src/web/templates/admin_screen_sets_modal.html:66
+#: src/web/templates/admin_screen_sets_modal_set_div.html:75
+#: src/web/templates/admin_timer_modal.html:102
+#: src/web/templates/admin_tournament_modal.html:463
+#, ai_translation
+msgid "Cancel"
+msgstr "Annulla"
+
+#: src/web/templates/admin_chessevents.html:10
+#: src/web/templates/admin_events.html:9
+#: src/web/templates/admin_screens.html:42
+#: src/web/templates/admin_timers.html:10
+#: src/web/templates/admin_tournaments.html:10
+#, ai_translation
+msgid "Refresh this page."
+msgstr "Aggiorna questa pagina."
+
+#: src/web/templates/admin_chessevents.html:21
+#, ai_translation
+msgid "Add a ChessEvent connection to the event."
+msgstr "Aggiungi una connessione ChessEvent all'evento."
+
+#: src/web/templates/admin_chessevents.html:30
+#, ai_translation
+msgid "Create a ChessEvent connection"
+msgstr "Crea una connessione a ChessEvent"
+
+#: src/web/templates/admin_chessevents.html:45
+#: src/web/templates/admin_tournament_modal.html:261
+#, ai_translation
+msgid "No ChessEvent connections."
+msgstr "Niente connessioni con gli scacchi."
+
+#: src/web/templates/admin_config.html:7 src/web/templates/admin_events.html:20
+#, ai_translation
+msgid "Add an event."
+msgstr "Aggiungi un evento."
+
+#: src/web/templates/admin_config.html:15
+#: src/web/templates/admin_events.html:28
+#, ai_translation
+msgid "Create an event"
+msgstr "Crea un evento"
+
+#: src/web/templates/admin_config.html:24
+#, ai_translation
+msgid "Configuration"
+msgstr "Configurazione"
+
+#: src/web/templates/admin_config.html:30
+#, ai_translation
+msgid "Port"
+msgstr "Porta"
+
+#: src/web/templates/admin_config.html:34
+#, ai_translation
+msgid "Access from the Papi-web server"
+msgstr "Accesso dal server Papi-web"
+
+#: src/web/templates/admin_config.html:38
+#, ai_translation
+msgid "Access from the local network (LAN/WAN)"
+msgstr "Accesso dalla rete locale (LAN/WAN)"
+
+#: src/web/templates/admin_config.html:42
+#, ai_translation
+msgid "Launching the browser on server startup"
+msgstr "Avvio del browser all'avvio del server"
+
+#: src/web/templates/admin_config.html:43
+#, ai_translation
+msgid "Yes"
+msgstr "Sì"
+
+#: src/web/templates/admin_config.html:43
+#, ai_translation
+msgid "No"
+msgstr "No."
+
+#: src/web/templates/admin_config.html:46
+#: src/web/templates/admin_config.html:50
+#: src/web/templates/admin_config.html:54
+#: src/web/templates/admin_config.html:58
+#: src/web/templates/admin_config.html:62
+#: src/web/templates/admin_config.html:66
+#: src/web/templates/admin_config.html:70
+#: src/web/templates/admin_config.html:74
+#: src/web/templates/admin_config.html:78
+#: src/web/templates/admin_config.html:82
+#, ai_translation, python-format
+msgid "%(lib)s version"
+msgstr "Versione %(lib)s"
+
+#: src/web/templates/admin_config.html:87
+#, ai_translation
+msgid "Access driver (found)"
+msgstr "Driver di accesso (trovato)"
+
+#: src/web/templates/admin_config.html:89
+#, ai_translation
+msgid "Access driver (not found)"
+msgstr "Driver di accesso (non trovato)"
+
+#: src/web/templates/admin_config.html:95
+#, ai_translation
+msgid "Other ODBC drivers found on the server"
+msgstr "Altri driver ODBC trovati sul server"
+
+#: src/web/templates/admin_edit_timer_colors.html:11
+#, ai_translation, python-format
+msgid "Color #%(num)d:"
+msgstr "Colore #%(num)d:"
+
+#: src/web/templates/admin_edit_timer_colors.html:17
+#: src/web/templates/admin_event_modal.html:352
+#: src/web/templates/admin_event_modal.html:501
+#: src/web/templates/admin_screen_modal.html:440
+#: src/web/templates/admin_screen_modal_message.html:12
+#: src/web/templates/user_screen_card.html:46
+#, ai_translation
+msgid "by default"
+msgstr "per impostazione predefinita"
+
+#: src/web/templates/admin_edit_timer_delays.html:5
+#, ai_translation, python-format
+msgid "Delay #%(num)d:"
+msgstr "Ritardo #%(num)d:"
+
+#: src/web/templates/admin_event_card.html:20
+#, ai_translation, python-format
+msgid "Unique id: %(uniq_id)s"
+msgstr "Id unico: %(uniq_id)s"
+
+#: src/web/templates/admin_event_card.html:27
+#: src/web/templates/user_event_card.html:20
+#, ai_translation, python-format
+msgid "Tournaments: %(num)d"
+msgstr "Tornei: %(num)d"
+
+#: src/web/templates/admin_event_card.html:34
+#, ai_translation, python-format
+msgid "ChessEvent connections: %(num)d"
+msgstr "Collegamenti a scacchiEventi: %(num)d"
+
+#: src/web/templates/admin_event_card.html:41
+#, ai_translation, python-format
+msgid "Timers: %(num)d"
+msgstr "Timer: %(num)d"
+
+#: src/web/templates/admin_event_card.html:48
+#, ai_translation, python-format
+msgid "Screens: %(num)d"
+msgstr "Schermi: %(num)d"
+
+#: src/web/templates/admin_event_card.html:55
+#, ai_translation, python-format
+msgid "Families: %(num)d"
+msgstr "Famiglie: %(num)d"
+
+#: src/web/templates/admin_event_card.html:62
+#, ai_translation, python-format
+msgid "Rotators: %(num)d"
+msgstr "Rotatori: %(num)d"
+
+#: src/web/templates/admin_event_card.html:69
+#, ai_translation, python-format
+msgid "Errors: %(num)d"
+msgstr "Errori: %(num)d"
+
+#: src/web/templates/admin_event_card.html:76
+#, ai_translation, python-format
+msgid "Warnings: %(num)d"
+msgstr "Avvertenze: %(num)d"
+
+#: src/web/templates/admin_event_card.html:83
+#, ai_translation, python-format
+msgid "Informations: %(num)d"
+msgstr "Informazioni: %(num)d"
+
+#: src/web/templates/admin_event_config.html:24
+#, ai_translation
+msgid "Clone"
+msgstr "Clone"
+
+#: src/web/templates/admin_event_config.html:41
+#, ai_translation
+msgid "Customization"
+msgstr "Personalizzazione"
+
+#: src/web/templates/admin_event_config.html:47
+#, ai_translation
+msgid "Unique id"
+msgstr "Id unico"
+
+#: src/web/templates/admin_event_config.html:52
+#, ai_translation
+msgid "Start"
+msgstr "Avvia"
+
+#: src/web/templates/admin_event_config.html:57
+#, ai_translation
+msgid "End"
+msgstr "Fine"
+
+#: src/web/templates/admin_event_config.html:62
+#, ai_translation
+msgid "Visibility"
+msgstr "Visibilità"
+
+#: src/web/templates/admin_event_config.html:65
+#: src/web/templates/admin_event_modal.html:116
+#, ai_translation
+msgid "Public event"
+msgstr "Evento pubblico"
+
+#: src/web/templates/admin_event_config.html:65
+#, ai_translation
+msgid "Private event"
+msgstr "Evento privato"
+
+#: src/web/templates/admin_event_config.html:70
+#, ai_translation
+msgid "Default directory of the Papi files"
+msgstr "Directory predefinita dei file Papi"
+
+#: src/web/templates/admin_event_config.html:75
+#: src/web/templates/admin_event_config.html:112
+#: src/web/templates/admin_family_card.html:33
+#: src/web/templates/admin_family_card.html:60
+#: src/web/templates/admin_family_card.html:72
+#: src/web/templates/admin_family_card.html:84
+#: src/web/templates/admin_family_card.html:91
+#: src/web/templates/admin_rotator_card.html:18
+#: src/web/templates/admin_rotator_card.html:30
+#: src/web/templates/admin_rotator_card.html:37
+#: src/web/templates/admin_screen_card.html:28
+#: src/web/templates/admin_screen_card.html:56
+#: src/web/templates/admin_screen_card.html:68
+#: src/web/templates/admin_screen_card.html:88
+#: src/web/templates/admin_screen_card.html:104
+#: src/web/templates/admin_screen_card.html:117
+#: src/web/templates/admin_screen_card.html:124
+#, ai_translation
+msgid "(by default)"
+msgstr "(per impostazione predefinita)"
+
+#: src/web/templates/admin_event_config.html:82
+#, ai_translation
+msgid "Background image and color"
+msgstr "Immagine di sfondo e colore"
+
+#: src/web/templates/admin_event_config.html:90
+#, ai_translation
+msgid "Password to enter results"
+msgstr "Password per inserire i risultati"
+
+#: src/web/templates/admin_event_config.html:96
+#, ai_translation
+msgid "No password required"
+msgstr "Nessuna password richiesta"
+
+#: src/web/templates/admin_event_config.html:103
+#, ai_translation
+msgid "Maximum number of illegal moves"
+msgstr "Numero massimo di movimenti illegali"
+
+#: src/web/templates/admin_event_config.html:119
+#: src/web/templates/admin_event_modal.html:254
+#: src/web/templates/admin_tournament_modal.html:370
+#, ai_translation
+msgid "Rules"
+msgstr "Regole"
+
+#: src/web/templates/admin_event_config.html:125
+#: src/web/templates/admin_tournament_card.html:107
+#, ai_translation
+msgid "No rules file set"
+msgstr "Nessun file di regole impostato"
+
+#: src/web/templates/admin_event_config.html:132
+#, ai_translation
+msgid "Default timer configuration"
+msgstr "Configurazione predefinita del timer"
+
+#: src/web/templates/admin_event_config.html:134
+#: src/web/templates/admin_event_config.html:135
+#: src/web/templates/admin_timer_card.html:13
+#: src/web/templates/admin_timer_card.html:14
+#, ai_translation, python-format
+msgid "%(minutes)d minutes before"
+msgstr "%(minutes)d minuti prima"
+
+#: src/web/templates/admin_event_config.html:136
+#: src/web/templates/admin_timer_card.html:15
+#, ai_translation, python-format
+msgid "%(minutes)d minutes after"
+msgstr "%(minutes)d minuti dopo"
+
+#: src/web/templates/admin_event_config.html:141
+#: src/web/templates/admin_event_modal.html:445
+#, ai_translation
+msgid "Alert message"
+msgstr "Messaggio di allerta"
+
+#: src/web/templates/admin_event_config.html:151
+#: src/web/templates/admin_family_card.html:90
+#: src/web/templates/admin_rotator_card.html:36
+#: src/web/templates/admin_screen_card.html:123
+#, ai_translation
+msgid "No alert message"
+msgstr "Nessun messaggio di avviso"
+
+#: src/web/templates/admin_event_config.html:159
+#, ai_translation
+msgid "Last update"
+msgstr "Ultimo aggiornamento"
+
+#: src/web/templates/admin_event_modal.html:20
+#, ai_translation
+msgid "Event creation"
+msgstr "Creazione evento"
+
+#: src/web/templates/admin_event_modal.html:22
+#, ai_translation, python-format
+msgid "Edition of event [%(event_uniq_id)s]"
+msgstr "Edizione dell'evento [%(event_uniq_id)s]"
+
+#: src/web/templates/admin_event_modal.html:24
+#, ai_translation, python-format
+msgid "Deletion of event [%(event_uniq_id)s]"
+msgstr "Cancellazione dell'evento [%(event_uniq_id)s]"
+
+#: src/web/templates/admin_event_modal.html:31
+#, ai_translation
+msgid "Warning: the deletion of an event is permanent!"
+msgstr "Attenzione: la cancellazione di un evento è permanente!"
+
+#: src/web/templates/admin_event_modal.html:35
+#, ai_translation
+msgid "Enter the event id to confirm its deletion:"
+msgstr "Inserire l'id evento per confermare la sua cancellazione:"
+
+#: src/web/templates/admin_event_modal.html:41
+#, ai_translation
+msgid "Enter here the event id"
+msgstr "Inserisci qui l' id evento"
+
+#: src/web/templates/admin_event_modal.html:44
+#, ai_translation
+msgid "Recovering deleted event is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
+msgstr "Recuperare eventi cancellati non è possibile dall'interfaccia web (comunque gli eventi sono archiviati e possono essere recuperati dal filesystem."
+
+#: src/web/templates/admin_event_modal.html:69
+#, ai_translation
+msgid "The unique id, used for data storage and export."
+msgstr "L'ID unico, utilizzato per la memorizzazione e l'esportazione dei dati."
+
+#: src/web/templates/admin_event_modal.html:80
+#: src/web/templates/admin_family_modal.html:116
+#: src/web/templates/admin_screen_modal.html:122
+#: src/web/templates/admin_screen_sets_modal_set_div.html:40
+#: src/web/templates/admin_tournament_modal.html:96
+#, ai_translation
+msgid "Name:"
+msgstr "Nome:"
+
+#: src/web/templates/admin_event_modal.html:89
+#, ai_translation
+msgid "The name of the event, used for display and reports."
+msgstr "Il nome dell'evento, utilizzato per la visualizzazione e i report."
+
+#: src/web/templates/admin_event_modal.html:105
+#: src/web/templates/admin_family_modal.html:65
+#: src/web/templates/admin_rotator_modal.html:45
+#: src/web/templates/admin_screen_modal.html:71
+#, ai_translation
+msgid "Visibility:"
+msgstr "Visibilità:"
+
+#: src/web/templates/admin_event_modal.html:119
+#, ai_translation
+msgid "Only arbiters can see private events."
+msgstr "Solo gli arbitri possono vedere eventi privati."
+
+#: src/web/templates/admin_event_modal.html:132
+#, ai_translation
+msgid "Start:"
+msgstr "Inizio:"
+
+#: src/web/templates/admin_event_modal.html:140
+#, ai_translation
+msgid "The start date and time of the event."
+msgstr "La data di inizio e l'ora dell'evento."
+
+#: src/web/templates/admin_event_modal.html:151
+#, ai_translation
+msgid "End:"
+msgstr "Fine:"
+
+#: src/web/templates/admin_event_modal.html:159
+#, ai_translation
+msgid "The end date and time of the event."
+msgstr "La data e l'ora di fine dell'evento."
+
+#: src/web/templates/admin_event_modal.html:170
+#, ai_translation
+msgid "Default directory of the Papi files:"
+msgstr "Directory predefinita dei file Papi:"
+
+#: src/web/templates/admin_event_modal.html:179
+#, ai_translation, python-format
+msgid "The default directory of the Papi files of the tournaments (absolute or relative path, by default %(dir)s)."
+msgstr "La directory predefinita dei file Papi dei tornei (percorso assoluto o relativo, per impostazione predefinita %(dir)s)."
+
+#: src/web/templates/admin_event_modal.html:195
+#, ai_translation
+msgid "Password to enter results:"
+msgstr "Password per inserire i risultati:"
+
+#: src/web/templates/admin_event_modal.html:209
+#, ai_translation
+msgid "The password required on input screens to enter results (optional)."
+msgstr "La password richiesta sulle schermate di ingresso per inserire i risultati (opzionale)."
+
+#: src/web/templates/admin_event_modal.html:229
+#: src/web/templates/admin_tournament_modal.html:395
+#, ai_translation
+msgid "Illegal moves recording:"
+msgstr "Registrazione movimenti illegali:"
+
+#: src/web/templates/admin_event_modal.html:240
+#, ai_translation, python-format
+msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament."
+msgstr "Il numero massimo di mosse illegali che possono essere registrate per turno per un giocatore (da 0 a 3, per impostazione predefinita %(default)d). Questo valore può essere modificato per ogni torneo."
+
+#: src/web/templates/admin_event_modal.html:259
+#: src/web/templates/admin_tournament_modal.html:375
+#, ai_translation
+msgid "Rules file location:"
+msgstr "Posizione file regole:"
+
+#: src/web/templates/admin_event_modal.html:268
+#, ai_translation
+msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
+msgstr "Un URL, o il percorso del file regole sul server, in formato PDF (opzionale)."
+
+#: src/web/templates/admin_event_modal.html:279
+#: src/web/templates/admin_rotator_modal.html:199
+#: src/web/templates/admin_screen_modal.html:302
+#, ai_translation
+msgid "Display"
+msgstr "Visualizzazione"
+
+#: src/web/templates/admin_event_modal.html:290
+#, ai_translation
+msgid "Background image:"
+msgstr "Immagine di sfondo:"
+
+#: src/web/templates/admin_event_modal.html:295
+#, ai_translation
+msgid "no background image"
+msgstr "nessuna immagine di sfondo"
+
+#: src/web/templates/admin_event_modal.html:327
+#, ai_translation
+msgid "The URL or the path of the image to display (by default the Papi-web logo)."
+msgstr "L'URL o il percorso dell'immagine da visualizzare (per impostazione predefinita il logo Papi-web)."
+
+#: src/web/templates/admin_event_modal.html:347
+#: src/web/templates/admin_event_modal.html:455
+#: src/web/templates/admin_screen_modal.html:434
+#: src/web/templates/user_screen_card.html:68
+#, ai_translation
+msgid "Background color:"
+msgstr "Colore di sfondo:"
+
+#: src/web/templates/admin_event_modal.html:384
+#: src/web/templates/admin_screen_modal.html:459
+#, ai_translation
+msgid "The background color is used when the image dost fill the whole screen."
+msgstr "Il colore di sfondo viene usato quando l'immagine dost riempie l'intero schermo."
+
+#: src/web/templates/admin_event_modal.html:413
+#, ai_translation
+msgid "Choose a custom image:"
+msgstr "Scegliere un'immagine personalizzata:"
+
+#: src/web/templates/admin_event_modal.html:436
+#, ai_translation
+msgid "Timers"
+msgstr "Timer"
+
+#: src/web/templates/admin_event_modal.html:495
+#, ai_translation
+msgid "Text color:"
+msgstr "Colore testo:"
+
+#: src/web/templates/admin_event_modal.html:531
+#, ai_translation
+msgid "Text:"
+msgstr "Testo:"
+
+#: src/web/templates/admin_event_modal.html:537
+#: src/web/templates/admin_screen_modal_message.html:18
+#, ai_translation
+msgid "E.g.: Please keep quiet until the end of the round!"
+msgstr "E.g.: Si prega di stare zitti fino alla fine del giro!"
+
+#: src/web/templates/admin_event_modal.html:540
+#, ai_translation
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
+msgstr "Quando definito, il messaggio di avviso viene visualizzato in un banner di scorrimento nella parte inferiore delle schermate. Il messaggio di avviso definito a livello di evento può essere superato a rotazione, famiglia di schermo o livello di schermo."
+
+#: src/web/templates/admin_families.html:6
+#, ai_translation
+msgid "Screen families"
+msgstr "Famiglia di schermi"
+
+#: src/web/templates/admin_families.html:13
+#, ai_translation
+msgid "Enable/disable the details of the screen families on the cards below."
+msgstr "Abilita/Disabilita i dettagli delle famiglie dello schermo sulle schede sottostanti."
+
+#: src/web/templates/admin_families.html:23
+#: src/web/templates/admin_rotators.html:23
+#: src/web/templates/admin_screens.html:39
+#, ai_translation
+msgid "Details"
+msgstr "Dettagli"
+
+#: src/web/templates/admin_families.html:42
+#, ai_translation
+msgid "You must create a tournament before creating a screen family."
+msgstr "È necessario creare un torneo prima di creare una famiglia di schermi."
+
+#: src/web/templates/admin_families.html:46
+#, ai_translation
+msgid "Add a family of screens to enter the results."
+msgstr "Aggiungere una famiglia di schermi per inserire i risultati."
+
+#: src/web/templates/admin_families.html:50
+#, ai_translation
+msgid "Add a family of screens to display the pairings by board."
+msgstr "Aggiungi una famiglia di schermi per visualizzare gli accoppiamenti a bordo."
+
+#: src/web/templates/admin_families.html:54
+#, ai_translation
+msgid "Add a family of screens to display the pairings by alphabetical order."
+msgstr "Aggiungi una famiglia di schermi per visualizzare gli abbinamenti per ordine alfabetico."
+
+#: src/web/templates/admin_families.html:87
+#: src/web/templates/admin_rotator_modal.html:190
+#, ai_translation
+msgid "No screen families."
+msgstr "Niente famiglie dello schermo."
+
+#: src/web/templates/admin_family_card.html:16
+#, ai_translation, python-format
+msgid "Type: %(family_type)s"
+msgstr "Tipo: %(family_type)s"
+
+#: src/web/templates/admin_family_card.html:19
+#: src/web/templates/admin_screen_sets_modal_set_div.html:182
+#, ai_translation, python-format
+msgid "Tournament: %(tournament_name)s"
+msgstr "Torneo: %(tournament_name)s"
+
+#: src/web/templates/admin_family_card.html:22
+#: src/web/templates/admin_screen_sets_modal_set_div.html:191
+#, ai_translation, python-format
+msgid "Selection: %(selection)s"
+msgstr "Selezione: %(selection)s"
+
+#: src/web/templates/admin_family_card.html:25
+#: src/web/templates/admin_family_modal.html:324
+#: src/web/templates/admin_screen_card.html:20
+#: src/web/templates/admin_screen_modal.html:202
+#: src/web/templates/user_screen_card.html:19
+#, ai_translation
+msgid "Columns:"
+msgstr "Colonne:"
+
+#: src/web/templates/admin_family_card.html:30
+#: src/web/templates/admin_screen_card.html:25
+#, ai_translation, python-format
+msgid "Menu link label: %(menu_label)s"
+msgstr "Etichetta link del menu: %(menu_label)s"
+
+#: src/web/templates/admin_family_card.html:38
+#: src/web/templates/admin_screen_card.html:33
+#, ai_translation
+msgid "Menu link label: none"
+msgstr "Etichetta link menu: nessuno"
+
+#: src/web/templates/admin_family_card.html:44
+#: src/web/templates/admin_screen_card.html:39
+#, ai_translation, python-format
+msgid "Menu: %(menu)s"
+msgstr "Menu: %(menu)s"
+
+#: src/web/templates/admin_family_card.html:44
+#: src/web/templates/admin_screen_card.html:39
+#, ai_translation
+msgid "Menu: none"
+msgstr "Menu: nessuno"
+
+#: src/web/templates/admin_family_card.html:48
+#: src/web/templates/admin_screen_card.html:43
+#, ai_translation, python-format
+msgid "Timer: %(timer_uniq_id)s"
+msgstr "Timer: %(timer_uniq_id)s"
+
+#: src/web/templates/admin_family_card.html:48
+#: src/web/templates/admin_screen_card.html:43
+#, ai_translation
+msgid "Timer: none"
+msgstr "Timer: nessuno"
+
+#: src/web/templates/admin_family_card.html:53
+#: src/web/templates/admin_screen_card.html:49
+#, ai_translation
+msgid "Exit button:"
+msgstr "Pulsante di uscita:"
+
+#: src/web/templates/admin_family_card.html:55
+#: src/web/templates/admin_screen_card.html:51
+#, ai_translation
+msgid "yes"
+msgstr "sì"
+
+#: src/web/templates/admin_family_card.html:57
+#: src/web/templates/admin_screen_card.html:53
+#, ai_translation
+msgid "no"
+msgstr "no"
+
+#: src/web/templates/admin_family_card.html:67
+#: src/web/templates/admin_screen_card.html:63
+#, ai_translation
+msgid "Unpaired: displayed"
+msgstr "Non accoppiato: visualizzato"
+
+#: src/web/templates/admin_family_card.html:69
+#: src/web/templates/admin_screen_card.html:65
+#, ai_translation
+msgid "Unpaired: hidden"
+msgstr "Non accoppiata: nascosta"
+
+#: src/web/templates/admin_family_card.html:102
+#, ai_translation, python-format
+msgid "Boards from #%(first)d to #%(last)d"
+msgstr "Tabelle da #%(first)d a #%(last)d"
+
+#: src/web/templates/admin_family_card.html:104
+#, ai_translation, python-format
+msgid "Players from #%(first)s to #%(last)s"
+msgstr "Giocatori da #%(first)s a #%(last)s"
+
+#: src/web/templates/admin_family_card.html:110
+#, ai_translation
+msgid "No screens"
+msgstr "Nessuna schermata"
+
+#: src/web/templates/admin_family_card.html:117
+#, ai_translation
+msgid "Edit the properties of the screen family."
+msgstr "Modifica le proprietà della famiglia dello schermo."
+
+#: src/web/templates/admin_family_card.html:131
+#, ai_translation
+msgid "Clone the screen family."
+msgstr "Clonare la famiglia dello schermo."
+
+#: src/web/templates/admin_family_card.html:141
+#, ai_translation
+msgid "Delete the screen family."
+msgstr "Elimina la famiglia dello schermo."
+
+#: src/web/templates/admin_family_modal.html:21
+#, ai_translation
+msgid "Input screen family creation"
+msgstr "Creazione della famiglia di schermate di input"
+
+#: src/web/templates/admin_family_modal.html:23
+#, ai_translation
+msgid "Boards screen family creation"
+msgstr "Creazione di una famiglia di schermate"
+
+#: src/web/templates/admin_family_modal.html:25
+#, ai_translation
+msgid "Players screen family creation"
+msgstr "Creazione della famiglia di schermate dei giocatori"
+
+#: src/web/templates/admin_family_modal.html:30
+#, ai_translation, python-format
+msgid "Cloning of screen family [%(family_uniq_id)s]"
+msgstr "Clonazione della famiglia di schermi [%(family_uniq_id)s]"
+
+#: src/web/templates/admin_family_modal.html:32
+#, ai_translation, python-format
+msgid "Edition of screen family [%(family_uniq_id)s]"
+msgstr "Edizione della famiglia di schermi [%(family_uniq_id)s]"
+
+#: src/web/templates/admin_family_modal.html:34
+#, ai_translation, python-format
+msgid "Deletion of screen family [%(family_uniq_id)s]"
+msgstr "Cancellazione della famiglia di schermi [%(family_uniq_id)s]"
+
+#: src/web/templates/admin_family_modal.html:43
+#, ai_translation
+msgid "Warning: the deletion of a screen family is permanent!"
+msgstr "Attenzione: la cancellazione di una famiglia di schermi è permanente!"
+
+#: src/web/templates/admin_family_modal.html:48
+#: src/web/templates/admin_screen_modal.html:50
+#, ai_translation
+msgid "Properties (entry of results)"
+msgstr "Proprietà (entrata dei risultati)"
+
+#: src/web/templates/admin_family_modal.html:50
+#: src/web/templates/admin_screen_modal.html:52
+#, ai_translation
+msgid "Properties (pairings by board)"
+msgstr "Proprietà (coppie a bordo)"
+
+#: src/web/templates/admin_family_modal.html:52
+#: src/web/templates/admin_screen_modal.html:54
+#, ai_translation
+msgid "Properties (pairings by player)"
+msgstr "Proprietà (pailing per giocatore)"
+
+#: src/web/templates/admin_family_modal.html:76
+#, ai_translation
+msgid "Public screen family"
+msgstr "Famiglia dello schermo pubblico"
+
+#: src/web/templates/admin_family_modal.html:79
+#, ai_translation
+msgid "Only arbiters can see private screen families."
+msgstr "Solo gli arbitri possono vedere le famiglie private dello schermo."
+
+#: src/web/templates/admin_family_modal.html:98
+#, ai_translation, python-format
+msgid "E.g.: %(family_type)s-family"
+msgstr "Ad esempio: %(family_type)s-famiglia"
+
+#: src/web/templates/admin_family_modal.html:105
+#, ai_translation
+msgid "The unique id, used to reference the screen family."
+msgstr "L'ID unico, usato per fare riferimento alla famiglia dello schermo."
+
+#: src/web/templates/admin_family_modal.html:122
+#, ai_translation
+msgid "E.g.: My screen family"
+msgstr "Ad es.: La mia famiglia di schermi"
+
+#: src/web/templates/admin_family_modal.html:125
+#, ai_translation, python-format
+msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
+msgstr "Il nome della famiglia dello schermo, opzionale. I seguenti token sono automaticamente sostituiti dai numeri della scheda o dai nomi dei giocatori): %%f=first, %%l=last, %%t=torneo."
+
+#: src/web/templates/admin_family_modal.html:136
+#: src/web/templates/admin_screen_modal.html:143
+#: src/web/templates/admin_screen_sets_modal_set_div.html:16
+#, ai_translation
+msgid "Tournament:"
+msgstr "Torneo:"
+
+#: src/web/templates/admin_family_modal.html:149
+#, ai_translation
+msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
+msgstr "Il torneo degli schermi della famiglia, obbligatorio (a differenza degli schermi di base, solo un torneo può essere visualizzato sugli schermi della famiglia)."
+
+#: src/web/templates/admin_family_modal.html:161
+#: src/web/templates/admin_screen_sets_modal_set_div.html:82
+#, ai_translation
+msgid "Board selection (by number)"
+msgstr "Selezione del consiglio di amministrazione (per numero)"
+
+#: src/web/templates/admin_family_modal.html:163
+#: src/web/templates/admin_screen_sets_modal_set_div.html:84
+#, ai_translation
+msgid "Player selection (by alphabetical order)"
+msgstr "Selezione del giocatore (in ordine alfabetico)"
+
+#: src/web/templates/admin_family_modal.html:173
+#: src/web/templates/admin_screen_sets_modal_set_div.html:92
+#, ai_translation
+msgid "First board:"
+msgstr "Prima tavola:"
+
+#: src/web/templates/admin_family_modal.html:175
+#: src/web/templates/admin_screen_sets_modal_set_div.html:94
+#, ai_translation
+msgid "First player:"
+msgstr "Primo giocatore:"
+
+#: src/web/templates/admin_family_modal.html:185
+#: src/web/templates/admin_family_modal.html:330
+#: src/web/templates/admin_screen_modal.html:208
+#: src/web/templates/admin_screen_modal.html:344
+#: src/web/templates/admin_screen_sets_modal_set_div.html:102
+#: src/web/templates/admin_screen_sets_modal_set_div.html:132
+#: src/web/templates/admin_tournament_modal.html:167
+#: src/web/templates/admin_tournament_modal.html:296
+#, ai_translation, python-format
+msgid "E.g.: %(num)d"
+msgstr "Ad esempio: %(num)d"
+
+#: src/web/templates/admin_family_modal.html:189
+#: src/web/templates/admin_screen_sets_modal_set_div.html:106
+#, ai_translation
+msgid "The number of the first board to select, optional (the first board by default)."
+msgstr "Il numero della prima scheda da selezionare, opzionale (la prima scheda per impostazione predefinita)."
+
+#: src/web/templates/admin_family_modal.html:191
+#: src/web/templates/admin_screen_sets_modal_set_div.html:108
+#, ai_translation
+msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
+msgstr "Il numero del primo giocatore da selezionare, opzionale (il primo giocatore per ordine alfabetico per impostazione predefinita)."
+
+#: src/web/templates/admin_family_modal.html:207
+#: src/web/templates/admin_screen_sets_modal_set_div.html:122
+#, ai_translation
+msgid "Last board:"
+msgstr "Ultima tavola:"
+
+#: src/web/templates/admin_family_modal.html:209
+#: src/web/templates/admin_screen_sets_modal_set_div.html:124
+#, ai_translation
+msgid "Last player:"
+msgstr "Ultimo giocatore:"
+
+#: src/web/templates/admin_family_modal.html:223
+#: src/web/templates/admin_screen_sets_modal_set_div.html:136
+#, ai_translation
+msgid "The number of the last board to select, optional (the last board by default)."
+msgstr "Il numero dell'ultima scheda da selezionare, opzionale (l'ultima scheda per impostazione predefinita)."
+
+#: src/web/templates/admin_family_modal.html:225
+#: src/web/templates/admin_screen_sets_modal_set_div.html:138
+#, ai_translation
+msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
+msgstr "Il numero dell'ultimo giocatore da selezionare, opzionale (l'ultimo giocatore per ordine alfabetico per impostazione predefinita)."
+
+#: src/web/templates/admin_family_modal.html:240
+#, ai_translation
+msgid "On a given number of screens:"
+msgstr "Su un certo numero di schermi:"
+
+#: src/web/templates/admin_family_modal.html:247
+#, ai_translation
+msgid "E.g.: 4 (split on 4 screens)"
+msgstr "Ad esempio: 4 (split su 4 schermi)"
+
+#: src/web/templates/admin_family_modal.html:251
+#, ai_translation
+msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
+msgstr "Il numero di schermi su cui le schede saranno distribuite, opzionale (il numero di schermi è sempre lo stesso e il numero di schede per schermo si adatta al numero di schede)."
+
+#: src/web/templates/admin_family_modal.html:253
+#, ai_translation
+msgid "The number of screens on which the player will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
+msgstr "Il numero di schermi su cui il giocatore sarà distribuito, opzionale (il numero di schermi è sempre lo stesso e il numero di giocatori per schermo si adatta al numero di giocatori."
+
+#: src/web/templates/admin_family_modal.html:268
+#, ai_translation
+msgid "On fixed size screens:"
+msgstr "Su schermi di dimensioni fisse:"
+
+#: src/web/templates/admin_family_modal.html:279
+#, ai_translation
+msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
+msgstr "Il numero di schede per schermo, opzionale (il numero di schermi si adatta al numero di schede)."
+
+#: src/web/templates/admin_family_modal.html:281
+#, ai_translation
+msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
+msgstr "Il numero di giocatori per schermo, opzionale (il numero di schermi si adatta al numero di giocatori)."
+
+#: src/web/templates/admin_family_modal.html:300
+#: src/web/templates/admin_screen_modal.html:174
+#: src/web/templates/user_screen_card.html:31
+#, ai_translation
+msgid "Timer:"
+msgstr "Timer:"
+
+#: src/web/templates/admin_family_modal.html:313
+#, ai_translation
+msgid "The timer displayed on the screens of the family."
+msgstr "Il timer visualizzato sugli schermi della famiglia."
+
+#: src/web/templates/admin_family_modal.html:333
+#: src/web/templates/admin_screen_modal.html:211
+#, ai_translation
+msgid "The number of columns used to display data."
+msgstr "Il numero di colonne utilizzate per visualizzare i dati."
+
+#: src/web/templates/admin_family_modal.html:344
+#: src/web/templates/admin_screen_modal.html:222
+#, ai_translation
+msgid "Links displayed on the screen menu:"
+msgstr "Collegamenti visualizzati nel menu dello schermo:"
+
+#: src/web/templates/admin_family_modal.html:350
+#, ai_translation
+msgid "E.g.: @boards, @family, another-screen"
+msgstr "Ad esempio: @boards, @family, un altro schermo"
+
+#: src/web/templates/admin_family_modal.html:353
+#, ai_translation
+msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
+msgstr "Questo campo consente di specificare le schermate i cui collegamenti saranno visualizzati sul menu delle schermate della famiglia. Gli identificatori dello schermo devono essere separati da virgole, le parole chiave @family (tutte le schermate della famiglia), @boards (tutte le schermate delle board), @input (tutte le schermate di input), @players (tutte le schermate dei giocatori) e il jolly * possono essere utilizzati. Se questo campo è lasciato vuoto, nessun menu verrà visualizzato sulle schermate."
+
+#: src/web/templates/admin_family_modal.html:367
+#: src/web/templates/admin_screen_modal.html:245
+#, ai_translation
+msgid "Links to this screen:"
+msgstr "Collegamenti a questa schermata:"
+
+#: src/web/templates/admin_family_modal.html:375
+#: src/web/templates/admin_screen_modal.html:253
+#, ai_translation
+msgid "Allow"
+msgstr "Permetti"
+
+#: src/web/templates/admin_family_modal.html:387
+#, ai_translation
+msgid "Check the box to allow other screens to display a link to the screen of this family."
+msgstr "Selezionare la casella per consentire ad altri schermi di visualizzare un collegamento allo schermo di questa famiglia."
+
+#: src/web/templates/admin_family_modal.html:399
+#: src/web/templates/admin_screen_modal.html:277
+#, ai_translation
+msgid "Menu link label:"
+msgstr "Etichetta collegamento menu:"
+
+#: src/web/templates/admin_family_modal.html:407
+#, ai_translation, python-format
+msgid "E.g.: Boards %%f-%%l"
+msgstr "Ad esempio: schede %%f-%l"
+
+#: src/web/templates/admin_family_modal.html:409
+#, ai_translation, python-format
+msgid "E.g.: Players %%f-%%l"
+msgstr "Ad esempio: Giocatori %%f-%%l"
+
+#: src/web/templates/admin_family_modal.html:420
+#, ai_translation
+msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
+msgstr "Questa etichetta sarà usata per il collegamento ad altri schermi agli schermi della famiglia. Se lasciata vuota, verrà usata un' etichetta predefinita."
+
+#: src/web/templates/admin_family_modal.html:434
+#, ai_translation
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
+msgstr "Quando non è definito a livello di famiglia, viene utilizzato il messaggio di avviso definito a livello di rotazione o evento (se nessun messaggio di avviso è impostato, non viene visualizzato il banner di scorrimento in fondo agli schermi della famiglia)."
+
+#: src/web/templates/admin_index.html:11 src/web/templates/user_index.html:11
+#, ai_translation
+msgid "Go back to the home page."
+msgstr "Torna alla home page."
+
+#: src/web/templates/admin_messages.html:4
+#, ai_translation
+msgid "Level"
+msgstr "Livello"
+
+#: src/web/templates/admin_messages.html:5
+#, ai_translation
+msgid "Message"
+msgstr "Messaggio"
+
+#: src/web/templates/admin_messages.html:44
+#, ai_translation
+msgid "No messages."
+msgstr "Niente messaggi."
+
+#: src/web/templates/admin_pairings.html:1
+#, ai_translation
+msgid "Pairings"
+msgstr "Abbinamenti"
+
+#: src/web/templates/admin_players.html:1
+#: src/web/templates/admin_screen_card.html:183
+#, ai_translation
+msgid "Players"
+msgstr "Giocatori"
+
+#: src/web/templates/admin_rotator_card.html:15
+#: src/web/templates/user_rotator_card.html:18
+#, ai_translation, python-format
+msgid "Rotation delay: %(seconds)d sec."
+msgstr "Ritardo di rotazione: %(seconds)d sec."
+
+#: src/web/templates/admin_rotator_card.html:43
+#: src/web/templates/user_rotator_card.html:22
+#, ai_translation
+msgid "No screen neither family to rotate."
+msgstr "Nessun schermo né famiglia per ruotare."
+
+#: src/web/templates/admin_rotator_card.html:49
+#: src/web/templates/admin_rotator_modal.html:128
+#: src/web/templates/user_rotator_card.html:28
+#, ai_translation
+msgid "Screens:"
+msgstr "Schermi:"
+
+#: src/web/templates/admin_rotator_card.html:60
+#: src/web/templates/admin_rotator_modal.html:163
+#: src/web/templates/user_rotator_card.html:39
+#, ai_translation
+msgid "Screen families:"
+msgstr "Famiglie dello schermo:"
+
+#: src/web/templates/admin_rotator_card.html:68
+#, ai_translation, python-format
+msgid "(%(num)d screen)"
+msgid_plural "(%(num)d screens)"
+msgstr[0] "(schermata %(num)d)"
+msgstr[1] "(schermate %(num)d)"
+
+#: src/web/templates/admin_rotator_card.html:74
+#, ai_translation
+msgid "(no screens)"
+msgstr "(Nessun schermo)"
+
+#: src/web/templates/admin_rotator_card.html:84
+#, ai_translation
+msgid "Edit the properties of the rotator."
+msgstr "Modificare le proprietà del rotatore."
+
+#: src/web/templates/admin_rotator_card.html:98
+#, ai_translation
+msgid "Clone the rotator."
+msgstr "Clonare il rotatore."
+
+#: src/web/templates/admin_rotator_card.html:107
+#, ai_translation
+msgid "Delete the rotator."
+msgstr "Cancellare il rotatore."
+
+#: src/web/templates/admin_rotator_modal.html:18
+#, ai_translation
+msgid "Rotator creation"
+msgstr "Creazione rotatore"
+
+#: src/web/templates/admin_rotator_modal.html:20
+#, ai_translation, python-format
+msgid "Edition of rotator [%(rotator_uniq_id)s]"
+msgstr "Edizione del rotatore [%(rotator_uniq_id)s]"
+
+#: src/web/templates/admin_rotator_modal.html:22
+#, ai_translation, python-format
+msgid "Deletion of rotator [%(rotator_uniq_id)s]"
+msgstr "Cancellazione del rotatore [%(rotator_uniq_id)s]"
+
+#: src/web/templates/admin_rotator_modal.html:31
+#, ai_translation
+msgid "Warning: the deletion of a rotator is permanent!"
+msgstr "Attenzione: la cancellazione di un rotatore è permanente!"
+
+#: src/web/templates/admin_rotator_modal.html:56
+#, ai_translation
+msgid "Public rotator"
+msgstr "Rotatore pubblico"
+
+#: src/web/templates/admin_rotator_modal.html:59
+#, ai_translation
+msgid "Only arbiters can view private rotators."
+msgstr "Solo gli arbitri possono visualizzare i rotatori privati."
+
+#: src/web/templates/admin_rotator_modal.html:80
+#, ai_translation
+msgid "The unique id, used to reference the rotator."
+msgstr "L'ID unico, usato per fare riferimento al rotatore."
+
+#: src/web/templates/admin_rotator_modal.html:92
+#, ai_translation
+msgid "Parameters"
+msgstr "Parametri"
+
+#: src/web/templates/admin_rotator_modal.html:98
+#, ai_translation
+msgid "Delay:"
+msgstr "Ritardo:"
+
+#: src/web/templates/admin_rotator_modal.html:104
+#: src/web/templates/admin_tournament_modal.html:316
+#: src/web/templates/admin_tournament_modal.html:356
+#, ai_translation, python-format
+msgid "E.g.: %(seconds)d (seconds)"
+msgstr "Ad esempio: %(seconds)d (secondi)"
+
+#: src/web/templates/admin_rotator_modal.html:107
+#, ai_translation, python-format
+msgid "The rotating delay between two screens (by default %(default)d seconds)."
+msgstr "Il ritardo di rotazione tra due schermi (per impostazione predefinita %(default)d secondi)."
+
+#: src/web/templates/admin_rotator_modal.html:119
+#, ai_translation
+msgid "Selection"
+msgstr "Selezione"
+
+#: src/web/templates/admin_rotator_modal.html:120
+#, ai_translation
+msgid "entry of results"
+msgstr "inserimento dei risultati"
+
+#: src/web/templates/admin_rotator_modal.html:122
+#, ai_translation
+msgid "pairings by player"
+msgstr "accoppiamenti per giocatore"
+
+#: src/web/templates/admin_rotator_modal.html:123
+#, ai_translation
+msgid "last results"
+msgstr "ultimi risultati"
+
+#: src/web/templates/admin_rotator_modal.html:124
+#, ai_translation
+msgid "image"
+msgstr "immagine"
+
+#: src/web/templates/admin_rotator_modal.html:155
+#, ai_translation
+msgid "No screens."
+msgstr "Niente schermi."
+
+#: src/web/templates/admin_rotator_modal.html:159
+#, ai_translation
+msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
+msgstr "Gli schermi da ruotare (gli schermi di ingresso sono enfatizzati perché non dovrebbero apparire sui rotatori)."
+
+#: src/web/templates/admin_rotator_modal.html:194
+#, ai_translation
+msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
+msgstr "Le famiglie dello schermo da ruotare (le famiglie dello schermo di ingresso sono enfatizzate perché non dovrebbero apparire sui rotatori)."
+
+#: src/web/templates/admin_rotator_modal.html:202
+#, ai_translation
+msgid "When not defined at rotator-level, the alert message defined at event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed). The alert message defined at rotator-level can be overridden at screen or family-level."
+msgstr "Quando non è definito a livello di rotatore, viene usato il messaggio di avviso definito a livello di evento (se nessun messaggio di avviso è impostato, il banner di scorrimento in fondo allo schermo non è visualizzato). Il messaggio di avviso definito a livello di rotatore può essere sovrascritto a livello di schermo o famiglia."
+
+#: src/web/templates/admin_rotators.html:6
+#, ai_translation
+msgid "Rotators"
+msgstr "Rotatori"
+
+#: src/web/templates/admin_rotators.html:13
+#, ai_translation
+msgid "Enable/disable the details of the rotators on the cards below."
+msgstr "Abilita/Disabilita i dettagli dei rotatori sulle schede sottostanti."
+
+#: src/web/templates/admin_rotators.html:40
+#, ai_translation
+msgid "Add a rotator to the event."
+msgstr "Aggiungi un rotatore all'evento."
+
+#: src/web/templates/admin_rotators.html:42
+#, ai_translation
+msgid "You must create a screen or a family of screens before creating a rotator."
+msgstr "È necessario creare uno schermo o una famiglia di schermi prima di creare un rotatore."
+
+#: src/web/templates/admin_rotators.html:57
+#, ai_translation
+msgid "Create a rotator"
+msgstr "Crea un rotatore"
+
+#: src/web/templates/admin_rotators.html:76
+#: src/web/templates/user_event.html:100
+#, ai_translation
+msgid "No rotators."
+msgstr "Niente rotatori."
+
+#: src/web/templates/admin_screen_card.html:17
+#, ai_translation, python-format
+msgid "Type: %(screen_type)s"
+msgstr "Tipo: %(screen_type)s"
+
+#: src/web/templates/admin_screen_card.html:75
+#, ai_translation, python-format
+msgid "Max number: %(num)d"
+msgstr "Numero massimo: %(num)d"
+
+#: src/web/templates/admin_screen_card.html:77
+#, ai_translation
+msgid "Max number: unlimited"
+msgstr "Numero massimo: illimitato"
+
+#: src/web/templates/admin_screen_card.html:82
+#, ai_translation, python-format
+msgid "Max age: %(num)d minute"
+msgid_plural "Max age: %(num)d minutes"
+msgstr[0] "Età massima: %(num)d minuto"
+msgstr[1] "Età massima: %(num)d minuti"
+
+#: src/web/templates/admin_screen_card.html:84
+#, ai_translation
+msgid "Max age: unlimited"
+msgstr "Età massima: illimitata"
+
+#: src/web/templates/admin_screen_card.html:97
+#, ai_translation, python-format
+msgid "Image: %(image)s"
+msgstr "Immagine: %(image)s"
+
+#: src/web/templates/admin_screen_card.html:101
+#, ai_translation, python-format
+msgid "Background color: %(color)s"
+msgstr "Colore di sfondo: %(color)s"
+
+#: src/web/templates/admin_screen_card.html:142
+#: src/web/templates/user_screen_card.html:90
+#, ai_translation
+msgid "All the tournaments"
+msgstr "Tutti i tornei"
+
+#: src/web/templates/admin_screen_card.html:151
+#, ai_translation
+msgid "Edit the properties of the screen."
+msgstr "Modifica le proprietà dello schermo."
+
+#: src/web/templates/admin_screen_card.html:168
+#, ai_translation
+msgid "Edit the sets of boards displayed on the screen."
+msgstr "Modifica i set di schede visualizzati sullo schermo."
+
+#: src/web/templates/admin_screen_card.html:170
+#, ai_translation
+msgid "Edit the sets of players displayed on the screen."
+msgstr "Modifica i set di giocatori visualizzati sullo schermo."
+
+#: src/web/templates/admin_screen_card.html:181
+#, ai_translation
+msgid "Boards"
+msgstr "Quadri"
+
+#: src/web/templates/admin_screen_modal.html:21
+#, ai_translation
+msgid "Input screen creation"
+msgstr "Creazione dello schermo di input"
+
+#: src/web/templates/admin_screen_modal.html:23
+#, ai_translation
+msgid "Boards screen creation"
+msgstr "Creazione schermata schede"
+
+#: src/web/templates/admin_screen_modal.html:25
+#, ai_translation
+msgid "Players screen creation"
+msgstr "Creazione dello schermo dei giocatori"
+
+#: src/web/templates/admin_screen_modal.html:27
+#, ai_translation
+msgid "Results screen creation"
+msgstr "Creazione dello schermo dei risultati"
+
+#: src/web/templates/admin_screen_modal.html:29
+#, ai_translation
+msgid "Image screen creation"
+msgstr "Creazione schermata immagine"
+
+#: src/web/templates/admin_screen_modal.html:34
+#, ai_translation, python-format
+msgid "Edition of screen [%(screen_uniq_id)s]"
+msgstr "Edizione dello schermo [%(screen_uniq_id)s]"
+
+#: src/web/templates/admin_screen_modal.html:36
+#, ai_translation, python-format
+msgid "Deletion of screen [%(screen_uniq_id)s]"
+msgstr "Cancellazione dello schermo [%(screen_uniq_id)s]"
+
+#: src/web/templates/admin_screen_modal.html:45
+#, ai_translation
+msgid "Warning: the deletion of a screen is permanent!"
+msgstr "Attenzione: la cancellazione di uno schermo è permanente!"
+
+#: src/web/templates/admin_screen_modal.html:56
+#, ai_translation
+msgid "Properties (last results)"
+msgstr "Proprietà (ultimi risultati)"
+
+#: src/web/templates/admin_screen_modal.html:58
+#, ai_translation
+msgid "Properties (image)"
+msgstr "Proprietà (immagine)"
+
+#: src/web/templates/admin_screen_modal.html:82
+#, ai_translation
+msgid "Public screen"
+msgstr "Schermo pubblico"
+
+#: src/web/templates/admin_screen_modal.html:85
+#, ai_translation
+msgid "Only arbiters can see private screens."
+msgstr "Solo gli arbitri possono vedere schermi privati."
+
+#: src/web/templates/admin_screen_modal.html:104
+#, ai_translation, python-format
+msgid "E.g.: %(screen_type)s-screen"
+msgstr "Ad esempio: %(screen_type)s-screen"
+
+#: src/web/templates/admin_screen_modal.html:111
+#, ai_translation
+msgid "The unique id, used to reference the screen."
+msgstr "L'ID unico, usato per fare riferimento allo schermo."
+
+#: src/web/templates/admin_screen_modal.html:128
+#, ai_translation
+msgid "E.g.: My screen"
+msgstr "Es.: Il mio schermo"
+
+#: src/web/templates/admin_screen_modal.html:131
+#, ai_translation
+msgid "The name of the screen, displayed on event screens."
+msgstr "Il nome dello schermo, visualizzato sulle schermate degli eventi."
+
+#: src/web/templates/admin_screen_modal.html:156
+#, ai_translation
+msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
+msgstr "Il primo torneo dello schermo, obbligatorio (è possibile aggiungere altri tornei più tardi)."
+
+#: src/web/templates/admin_screen_modal.html:169
+#, ai_translation
+msgid "Layout"
+msgstr "Disposizione"
+
+#: src/web/templates/admin_screen_modal.html:191
+#, ai_translation
+msgid "The timer displayed on the screen."
+msgstr "Il timer visualizzato sullo schermo."
+
+#: src/web/templates/admin_screen_modal.html:228
+#, ai_translation
+msgid "E.g.: @boards, fixed-boards, tournament-a-*"
+msgstr "Ad esempio: @boards, fixed-boards, torneo-a-*"
+
+#: src/web/templates/admin_screen_modal.html:231
+#, ai_translation
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr "Questo campo consente di specificare le schermate i cui collegamenti saranno visualizzati sul menu dello schermo. Gli identificatori dello schermo devono essere separati da virgole, le parole chiave @boards (tutte le schermate delle schede), @input (tutte le schermate di ingresso), @players (tutte le schermate dei giocatori) e la jolly * possono essere utilizzate. Se questo campo è lasciato vuoto, non verrà visualizzato alcun menu sullo schermo."
+
+#: src/web/templates/admin_screen_modal.html:265
+#, ai_translation
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr "Selezionare la casella per consentire ad altri schermi di visualizzare un collegamento a questa schermata."
+
+#: src/web/templates/admin_screen_modal.html:283
+#, ai_translation
+msgid "E.g.: Link to my screen"
+msgstr "E.g.: Collegamento al mio schermo"
+
+#: src/web/templates/admin_screen_modal.html:290
+#, ai_translation
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr "Questa etichetta sarà usata per il collegamento ad altre schermate a questa schermata. Se lasciata vuota, verrà usata un' etichetta predefinita."
+
+#: src/web/templates/admin_screen_modal.html:305
+#, ai_translation
+msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgstr "Quando non è definito a livello di schermo, viene utilizzato il messaggio di avviso definito a livello di rotazione o evento (se nessun messaggio di avviso è impostato, non viene visualizzato il banner di scorrimento in fondo allo schermo)."
+
+#: src/web/templates/admin_screen_modal.html:338
+#, ai_translation
+msgid "Maximum number of results displayed:"
+msgstr "Numero massimo di risultati visualizzati:"
+
+#: src/web/templates/admin_screen_modal.html:347
+#, ai_translation
+msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr "Il numero massimo di risultati visualizzati sullo schermo, opzionale (se lasciato vuoto, vengono visualizzati tutti i risultati)."
+
+#: src/web/templates/admin_screen_modal.html:358
+#, ai_translation
+msgid "Maximum age of the results:"
+msgstr "Età massima dei risultati:"
+
+#: src/web/templates/admin_screen_modal.html:364
+#, ai_translation, python-format
+msgid "E.g.: %(minutes)d (minutes)"
+msgstr "Ad esempio: %(minutes)d (minuti)"
+
+#: src/web/templates/admin_screen_modal.html:367
+#, ai_translation, python-format
+msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
+msgstr "L'età massima dei risultati, in minuti (per impostazione predefinita %(minutes)d minuti)."
+
+#: src/web/templates/admin_screen_modal.html:377
+#, ai_translation
+msgid "Tournaments displayed:"
+msgstr "Tornei visualizzati:"
+
+#: src/web/templates/admin_screen_modal.html:395
+#, ai_translation
+msgid "When not tournament is selected, the results of all the tournaments are displayed."
+msgstr "Quando non è selezionato il torneo, vengono visualizzati i risultati di tutti i tornei."
+
+#: src/web/templates/admin_screen_modal.html:409
+#: src/web/templates/user_screen_card.html:60
+#, ai_translation
+msgid "Image:"
+msgstr "Immagine:"
+
+#: src/web/templates/admin_screen_modal.html:415
+#, ai_translation
+msgid "E.g.: https://my.club.us/tournament.jpg"
+msgstr "Data di designazione da parte dell'Unione europea: 1o gennaio 2014."
+
+#: src/web/templates/admin_screen_modal.html:418
+#, ai_translation
+msgid "The URL of the image to display."
+msgstr "L'URL dell'immagine da visualizzare."
+
+#: src/web/templates/admin_screen_modal_input_exit_button.html:2
+#, ai_translation
+msgid "Display of a screen exit button:"
+msgstr "Visualizzazione di un pulsante di uscita dello schermo:"
+
+#: src/web/templates/admin_screen_modal_input_exit_button.html:15
+#, ai_translation
+msgid "When not displaying the exit button, users can not accidentally exit input screens."
+msgstr "Quando non viene visualizzato il pulsante di uscita, gli utenti non possono uscire accidentalmente dalle schermate di ingresso."
+
+#: src/web/templates/admin_screen_modal_message.html:7
+#, ai_translation
+msgid "Alert message:"
+msgstr "Messaggio di allerta:"
+
+#: src/web/templates/admin_screen_modal_players_show_unpaired.html:2
+#, ai_translation
+msgid "Display of unpaired players:"
+msgstr "Visualizzazione dei giocatori non abbinati:"
+
+#: src/web/templates/admin_screen_modal_players_show_unpaired.html:15
+#, ai_translation
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
+msgstr "Quando i giocatori non accoppiati non vengono visualizzati, non c'è modo di distinguere i giocatori assenti (zero-point) e i giocatori con un mezzo punto bye)."
+
+#: src/web/templates/admin_screen_sets_modal.html:6
+#, ai_translation, python-format
+msgid "Boards sets of screen [%(screen_uniq_id)s]"
+msgstr "Set di schede di schermo [%(screen_uniq_id)s]"
+
+#: src/web/templates/admin_screen_sets_modal.html:8
+#, ai_translation, python-format
+msgid "Players sets of screen [%(screen_uniq_id)s]"
+msgstr "Impostazioni dello schermo dei giocatori [%(screen_uniq_id)s]"
+
+#: src/web/templates/admin_screen_sets_modal.html:15
+#, ai_translation
+msgid "Save the set or cancel."
+msgstr "Salva il set o annulla."
+
+#: src/web/templates/admin_screen_sets_modal.html:17
+#, ai_translation
+msgid "Drag the sets to order them."
+msgstr "Trascinare i set per ordinarli."
+
+#: src/web/templates/admin_screen_sets_modal.html:49
+#, ai_translation
+msgid "Add a set"
+msgstr "Aggiungi un insieme"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:29
+#, ai_translation
+msgid "The tournament of which you want to show the pairings, mandatory."
+msgstr "Il torneo di cui si vuole mostrare le coppie, obbligatorio."
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:46
+#, ai_translation, python-format
+msgid "E.g.: Boards %%f to %%l"
+msgstr "Ad esempio: schede da %%f a %%l"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:46
+#, ai_translation, python-format
+msgid "E.g.: Players %%f to %%l"
+msgstr "Ad esempio: Giocatori %%f a %%l"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:49
+#, ai_translation
+msgid "The name of the screen set (the name of the first set of a screen is by default the name of the screen)."
+msgstr "Il nome della schermata impostata (il nome della prima schermata è di default il nome della schermata)."
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:151
+#, ai_translation
+msgid "Fixed boards:"
+msgstr "Pannelli fissi:"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:160
+#, ai_translation
+msgid "Comma-separated board numbers ; if this field is set, other fields are omitted."
+msgstr "Numeri di board separati da virgole; se questo campo è impostato, vengono omessi altri campi."
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:185
+#, ai_translation
+msgid "Tournament: not set"
+msgstr "Torneo: non impostato"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:195
+#, ai_translation, python-format
+msgid "Name: %(screen_set_name)s"
+msgstr "Nome: %(screen_set_name)s"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html:198
+#, ai_translation
+msgid "Name: by default"
+msgstr "Nome: per impostazione predefinita"
+
+#: src/web/templates/admin_screens.html:6
+#, ai_translation
+msgid "Screens"
+msgstr "Schermi"
+
+#: src/web/templates/admin_screens.html:13
+#, ai_translation
+msgid "Show/hide the screens created from screen families."
+msgstr "Mostra/nascondi gli schermi creati dalle famiglie dello schermo."
+
+#: src/web/templates/admin_screens.html:23
+#, ai_translation
+msgid "Families"
+msgstr "Famiglie"
+
+#: src/web/templates/admin_screens.html:29
+#, ai_translation
+msgid "Enable/disable the details of the screens on the cards below."
+msgstr "Abilita/Disabilita i dettagli delle schermate sulle schede sottostanti."
+
+#: src/web/templates/admin_screens.html:60
+#, ai_translation
+msgid "Show/hide the input screens."
+msgstr "Mostra/nascondi le schermate di ingresso."
+
+#: src/web/templates/admin_screens.html:65
+#, ai_translation
+msgid "Show/hide the boards screens."
+msgstr "Mostra/nascondi le schermate delle schede."
+
+#: src/web/templates/admin_screens.html:70
+#, ai_translation
+msgid "Show/hide the players screens."
+msgstr "Mostra/nascondi le schermate dei giocatori."
+
+#: src/web/templates/admin_screens.html:75
+#, ai_translation
+msgid "Show/hide the results screens."
+msgstr "Mostra/nascondi le schermate dei risultati."
+
+#: src/web/templates/admin_screens.html:80
+#, ai_translation
+msgid "Show/hide the image screens."
+msgstr "Mostra/nascondi le schermate dell'immagine."
+
+#: src/web/templates/admin_screens.html:110
+#, ai_translation
+msgid "Add a screen to the event."
+msgstr "Aggiunge una schermata all'evento."
+
+#: src/web/templates/admin_screens.html:112
+#, ai_translation
+msgid "You must create a tournament before creating screens."
+msgstr "È necessario creare un torneo prima di creare schermate."
+
+#: src/web/templates/admin_screens.html:150
+#: src/web/templates/user_event.html:117
+#, ai_translation
+msgid "No such screens."
+msgstr "Non ci sono schermi del genere."
+
+#: src/web/templates/admin_timer_card.html:23
+#, ai_translation, python-format
+msgid "Round #%(round)d"
+msgstr "Round #%(round)d"
+
+#: src/web/templates/admin_timer_card.html:29
+#: src/web/templates/admin_timer_hours_modal.html:29
+#, ai_translation
+msgid "No hours."
+msgstr "Niente ore."
+
+#: src/web/templates/admin_timer_card.html:35
+#, ai_translation
+msgid "Edit the properties of the timer."
+msgstr "Modifica le proprietà del timer."
+
+#: src/web/templates/admin_timer_card.html:46
+#, ai_translation
+msgid "Edit the hours of the timer"
+msgstr "Modifica le ore del timer"
+
+#: src/web/templates/admin_timer_card.html:54
+#, ai_translation
+msgid "Hours"
+msgstr "Ore"
+
+#: src/web/templates/admin_timer_card.html:60
+#, ai_translation
+msgid "Clone the timer."
+msgstr "Clonate il timer."
+
+#: src/web/templates/admin_timer_card.html:70
+#, ai_translation
+msgid "Delete the timer."
+msgstr "Cancella il timer."
+
+#: src/web/templates/admin_timer_hours_modal.html:5
+#, ai_translation
+msgid "Timer hours"
+msgstr "Orario del timer"
+
+#: src/web/templates/admin_timer_hours_modal.html:11
+#, ai_translation
+msgid "Save the hour or cancel."
+msgstr "Risparmia l'ora o annulla."
+
+#: src/web/templates/admin_timer_hours_modal.html:13
+#, ai_translation
+msgid "Drag the hours to order them."
+msgstr "Trascina le ore per ordinarle."
+
+#: src/web/templates/admin_timer_hours_modal.html:49
+#, ai_translation
+msgid "Add a hour"
+msgstr "Aggiungi un'ora"
+
+#: src/web/templates/admin_timer_hours_modal.html:65
+#, ai_translation
+msgid "Close"
+msgstr "Chiudi"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:13
+#, ai_translation
+msgid "Date:"
+msgstr "Data:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:19
+#, ai_translation
+msgid "Format: YYYY-MM-DD"
+msgstr "Formato: AAAA-MM-GG"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:22
+#, ai_translation
+msgid "Mandatory for the first hour, optional for next hours."
+msgstr "Obbligatoria per la prima ora, opzionale per le prossime ore."
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:33
+#, ai_translation
+msgid "Hour:"
+msgstr "Ora:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:39
+#, ai_translation
+msgid "Format: HH-MM"
+msgstr "Formato: HH-MM"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:42
+#, ai_translation
+msgid "Mandatory for all the hours."
+msgstr "Obbligatoria per tutte le ore."
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:53
+#, ai_translation
+msgid "Round number or text:"
+msgstr "Numero o testo rotondo:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:59
+#, ai_translation
+msgid "E.g.: Start of check-in"
+msgstr "Ad esempio: inizio del check-in"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:62
+#, ai_translation
+msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
+msgstr "I testi prima e dopo l'ora sottostante sono facoltativi per i numeri rotondi, altrimenti obbligatori."
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:95
+#, ai_translation
+msgid "Text before the hour:"
+msgstr "Testo prima dell'ora:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:101
+#, ai_translation, python-format
+msgid "E.g.: Start of check-in in %%s"
+msgstr "Ad esempio: inizio del check-in in %%s"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:104
+#, ai_translation, python-format
+msgid "%%s is replaced by the time left before the hour."
+msgstr "%%s è sostituito dal tempo rimasto prima dell' ora."
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:115
+#, ai_translation
+msgid "Text after the hour:"
+msgstr "Testo dopo l'ora:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:121
+#, ai_translation, python-format
+msgid "E.g.: Check-in started for %%s"
+msgstr "Ad esempio: il check-in è iniziato per %%s"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html:124
+#, ai_translation, python-format
+msgid "%%s is replaced by the time elapsed since the hour."
+msgstr "%%s è sostituito dal tempo trascorso dall'ora."
+
+#: src/web/templates/admin_timer_modal.html:33
+#, ai_translation
+msgid "Warning: the deletion of a timer is permanent!"
+msgstr "Attenzione: la cancellazione di un timer è permanente!"
+
+#: src/web/templates/admin_timer_modal.html:48
+#, ai_translation
+msgid "E.g.: timer"
+msgstr "E.g.: timer"
+
+#: src/web/templates/admin_timers.html:21
+#, ai_translation
+msgid "Add a timer to the event."
+msgstr "Aggiungi un timer all'evento."
+
+#: src/web/templates/admin_timers.html:30
+#, ai_translation
+msgid "Create a timer"
+msgstr "Crea un timer"
+
+#: src/web/templates/admin_timers.html:45
+#, ai_translation
+msgid "No timers."
+msgstr "Niente timer."
+
+#: src/web/templates/admin_tournament_card.html:15
+#, ai_translation, python-format
+msgid "The Papi file of the tournament does not exist (%(papi_file)s)."
+msgstr "Il file Papi del torneo non esiste (%(papi_file)s)."
+
+#: src/web/templates/admin_tournament_card.html:18
+#, ai_translation, python-format
+msgid "The Papi file of the tournament exists but could not be read (%(papi_file)s)."
+msgstr "Il file Papi del torneo esiste ma non può essere letto (%(papi_file)s)."
+
+#: src/web/templates/admin_tournament_card.html:21
+#, ai_translation, python-format
+msgid "The Papi file of the tournament was successfully read (%(papi_file)s)."
+msgstr "Il file Papi del torneo è stato letto con successo (%(papi_file)s)."
+
+#: src/web/templates/admin_tournament_card.html:48
+#, ai_translation, python-format
+msgid "Players found in the Papi_file : %(num)d"
+msgstr "I giocatori trovati nel file Papi_file : %(num)d"
+
+#: src/web/templates/admin_tournament_card.html:72
+#, ai_translation, python-format
+msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
+msgstr "Viene utilizzata la connessione ChessEvent [%(chessevent_uniq_id)s]."
+
+#: src/web/templates/admin_tournament_card.html:74
+#, ai_translation
+msgid "No ChessEvent connection is used."
+msgstr "Non viene utilizzata alcuna connessione a ChessEvent."
+
+#: src/web/templates/admin_tournament_card.html:86
+#, ai_translation
+msgid "Illegal moves are not recorded."
+msgstr "Le mosse illegali non sono registrate."
+
+#: src/web/templates/admin_tournament_card.html:88
+#, ai_translation, python-format
+msgid "At most one illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] "Al massimo si registra una mossa illegale."
+msgstr[1] "Al massimo %(num)d vengono registrate mosse illegali."
+
+#: src/web/templates/admin_tournament_card.html:105
+#, ai_translation
+msgid "Rules file set"
+msgstr "Imposta file regole"
+
+#: src/web/templates/admin_tournament_card.html:127
+#, ai_translation
+msgid "Edit the properties of the tournament."
+msgstr "Modifica le proprietà del torneo."
+
+#: src/web/templates/admin_tournament_card.html:142
+#, ai_translation
+msgid "Clone the tournament."
+msgstr "Clonate il torneo."
+
+#: src/web/templates/admin_tournament_card.html:152
+#, ai_translation
+msgid "Delete the tournament."
+msgstr "Elimina il torneo."
+
+#: src/web/templates/admin_tournament_modal.html:18
+#, ai_translation
+msgid "Tournament creation"
+msgstr "Creazione del torneo"
+
+#: src/web/templates/admin_tournament_modal.html:20
+#, ai_translation, python-format
+msgid "Edition of tournament [%(tournament_uniq_id)s]"
+msgstr "Edizione del torneo [%(tournament_uniq_id)s]"
+
+#: src/web/templates/admin_tournament_modal.html:22
+#, ai_translation, python-format
+msgid "Deletion of tournament [%(tournament_uniq_id)s]"
+msgstr "Cancellazione del torneo [%(tournament_uniq_id)s]"
+
+#: src/web/templates/admin_tournament_modal.html:31
+#, ai_translation
+msgid "Warning: the deletion of a tournament is permanent!"
+msgstr "Attenzione: la cancellazione di un torneo è permanente!"
+
+#: src/web/templates/admin_tournament_modal.html:34
+#, ai_translation
+msgid "The following screens will also be deleted:"
+msgstr "Saranno inoltre eliminate le seguenti schermate:"
+
+#: src/web/templates/admin_tournament_modal.html:42
+#, ai_translation
+msgid "The following screen families will also be deleted:"
+msgstr "Saranno soppresse anche le seguenti famiglie di schermi:"
+
+#: src/web/templates/admin_tournament_modal.html:51
+#, ai_translation
+msgid "Enter the tournament id to confirm its deletion:"
+msgstr "Inserire l'id del torneo per confermare la sua cancellazione:"
+
+#: src/web/templates/admin_tournament_modal.html:57
+#, ai_translation
+msgid "Enter here the tournament id"
+msgstr "Inserisci qui l'id del torneo"
+
+#: src/web/templates/admin_tournament_modal.html:60
+#, ai_translation
+msgid "The Papi-web tournament are deleted but the Papi file is still available on the filesystem."
+msgstr "Il torneo Papi-web viene eliminato ma il file Papi è ancora disponibile sul filesystem."
+
+#: src/web/templates/admin_tournament_modal.html:82
+#: src/web/templates/admin_tournament_modal.html:142
+#, ai_translation
+msgid "E.g.: main"
+msgstr "E.g.: principale"
+
+#: src/web/templates/admin_tournament_modal.html:85
+#, ai_translation
+msgid "The unique id, used to reference the tournament."
+msgstr "L'ID unico, usato per fare riferimento al torneo."
+
+#: src/web/templates/admin_tournament_modal.html:102
+#: src/web/templates/admin_tournament_modal.html:247
+#, ai_translation
+msgid "E.g.: Main tournament"
+msgstr "Ad esempio: torneo principale"
+
+#: src/web/templates/admin_tournament_modal.html:105
+#, ai_translation
+msgid "The name of the tournament, used for display."
+msgstr "Il nome del torneo, utilizzato per la visualizzazione."
+
+#: src/web/templates/admin_tournament_modal.html:116
+#, ai_translation
+msgid "Directory of the Papi file:"
+msgstr "Directory del file Papi:"
+
+#: src/web/templates/admin_tournament_modal.html:122
+#, ai_translation
+msgid "E.g.: c:\\chess\\tournaments\\papi"
+msgstr "E.g.: c:\\chess\\tornaments\\papi"
+
+#: src/web/templates/admin_tournament_modal.html:125
+#, ai_translation, python-format
+msgid "The directory of the Papi file, by default %(dir)s."
+msgstr "La directory del file Papi, per impostazione predefinita %(dir)s."
+
+#: src/web/templates/admin_tournament_modal.html:136
+#, ai_translation
+msgid "Name of the Papi file (with no extension):"
+msgstr "Nome del file Papi (senza estensione):"
+
+#: src/web/templates/admin_tournament_modal.html:145
+#, ai_translation
+msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then the unique id of the tournament)."
+msgstr "Il nome del file Papi, senza estensione .papi (per impostazione predefinita il numero di qualificazione FFE del torneo, quindi l'ID unico del torneo)."
+
+#: src/web/templates/admin_tournament_modal.html:156
+#, ai_translation
+msgid "Connections (FFE and ChessEvent)"
+msgstr "Connessioni (FFE e ChessEvent)"
+
+#: src/web/templates/admin_tournament_modal.html:161
+#, ai_translation
+msgid "FFE qualification number (optional):"
+msgstr "Numero di qualifica FFE (facoltativo):"
+
+#: src/web/templates/admin_tournament_modal.html:170
+#, ai_translation
+msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
+msgstr "Il numero di qualifica dato dalla Federazione Francese è un intero, viene utilizzato per connettersi al sito web dell'FFE."
+
+#: src/web/templates/admin_tournament_modal.html:181
+#, ai_translation
+msgid "FFE password:"
+msgstr "Password FFE:"
+
+#: src/web/templates/admin_tournament_modal.html:195
+#, ai_translation
+msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
+msgstr "La password è composta da 10 lettere maiuscole, viene utilizzata per connettersi al sito web dell'FFE."
+
+#: src/web/templates/admin_tournament_modal.html:216
+#, ai_translation
+msgid "ChessEvent connection:"
+msgstr "Connessione a scacchi:"
+
+#: src/web/templates/admin_tournament_modal.html:230
+#, ai_translation
+msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
+msgstr "La connessione ChessEvent consente il recupero delle registrazioni dalla piattaforma ChessEvent."
+
+#: src/web/templates/admin_tournament_modal.html:241
+#, ai_translation
+msgid "Name of the ChessEvent tournament:"
+msgstr "Nome del torneo di ChessEvent:"
+
+#: src/web/templates/admin_tournament_modal.html:250
+#, ai_translation
+msgid "The name of the tournament on the ChessEvent platform."
+msgstr "Il nome del torneo sulla piattaforma ChessEvent."
+
+#: src/web/templates/admin_tournament_modal.html:265
+#, ai_translation
+msgid "Time control"
+msgstr "Controllo del tempo"
+
+#: src/web/templates/admin_tournament_modal.html:276
+#, ai_translation, python-format
+msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
+msgstr "E.g.: %(seconds)d (%(minutes)d minutes)"
+
+#: src/web/templates/admin_tournament_modal.html:279
+#, ai_translation
+msgid "The initial time in seconds (may be nul if an increment is set)."
+msgstr "Il tempo iniziale in secondi (può essere nul se un incremento è impostato)."
+
+#: src/web/templates/admin_tournament_modal.html:290
+#, ai_translation
+msgid "Increment (optional):"
+msgstr "Incremento (facoltativo):"
+
+#: src/web/templates/admin_tournament_modal.html:299
+#, ai_translation
+msgid "The number of seconds added to the players' clock at each move."
+msgstr "Il numero di secondi aggiunti all'orologio dei giocatori ad ogni mossa."
+
+#: src/web/templates/admin_tournament_modal.html:310
+#, ai_translation
+msgid "Penalty (handicap):"
+msgstr "Pena (handicap):"
+
+#: src/web/templates/admin_tournament_modal.html:319
+#, ai_translation
+msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
+msgstr "Il tempo sottratto dal giocatore più alto, in secondi (questo tempo è moltiplicato per il numero di passi di differenza tra i due giocatori)."
+
+#: src/web/templates/admin_tournament_modal.html:330
+#, ai_translation
+msgid "Elo step (handicap):"
+msgstr "Passo Elo (handicap):"
+
+#: src/web/templates/admin_tournament_modal.html:336
+#, ai_translation
+msgid "E.g.: 50 (Elo)"
+msgstr "E.g.: 50 (Elo)"
+
+#: src/web/templates/admin_tournament_modal.html:339
+#, ai_translation
+msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+msgstr "Il numero di punti differenza tra la classifica dei giocatori utilizzati per calcolare il numero di penalità applicate al giocatore più alto classificato."
+
+#: src/web/templates/admin_tournament_modal.html:350
+#, ai_translation
+msgid "Minimal time (handicap):"
+msgstr "Tempo minimo (handicap):"
+
+#: src/web/templates/admin_tournament_modal.html:359
+#, ai_translation
+msgid "The minimum time, whatever the ranking difference between the two players."
+msgstr "Il tempo minimo, qualunque sia la differenza di classifica tra i due giocatori."
+
+#: src/web/templates/admin_tournament_modal.html:381
+#, ai_translation
+msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
+msgstr "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
+
+#: src/web/templates/admin_tournament_modal.html:384
+#, ai_translation
+msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
+msgstr "Un URL, o il percorso del file delle regole sul server, in formato PDF (opzionale, per impostazione predefinita i file delle regole dell'evento)."
+
+#: src/web/templates/admin_tournament_modal.html:406
+#, ai_translation, python-format
+msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
+msgstr "Il numero massimo di mosse illegali che possono essere registrate per turno per un giocatore (da 0 a 3, per impostazione predefinita %(default)d)."
+
+#: src/web/templates/admin_tournament_modal.html:449
+#, ai_translation
+msgid "Create and add default screens"
+msgstr "Crea e aggiungi schermate predefinite"
+
+#: src/web/templates/admin_tournaments.html:6
+#, ai_translation
+msgid "Tournaments"
+msgstr "Tornei"
+
+#: src/web/templates/admin_tournaments.html:21
+#, ai_translation
+msgid "Add a tournament to the event."
+msgstr "Aggiungi un torneo all'evento."
+
+#: src/web/templates/admin_tournaments.html:30
+#, ai_translation
+msgid "Create a tournament"
+msgstr "Crea un torneo"
+
+#: src/web/templates/admin_tournaments.html:45
+#, ai_translation
+msgid "No tournaments."
+msgstr "Niente tornei."
+
+#: src/web/templates/index.html:12
+#, ai_translation
+msgid "Welcome to Papi-web!"
+msgstr "Benvenuti a Papi-web!"
+
+#: src/web/templates/index.html:39
+#, ai_translation
+msgid "Web access"
+msgstr "Accesso Web"
+
+#: src/web/templates/index.html:45
+#, ai_translation
+msgid "From the Papi-web server"
+msgstr "Dal server Papi-web"
+
+#: src/web/templates/index.html:53
+#, ai_translation
+msgid "From the local network (LAN/WAN)"
+msgstr "Dalla rete locale (LAN/WAN)"
+
+#: src/web/templates/index.html:71
+#, ai_translation
+msgid "Click here to access the public screens of the events."
+msgstr "Clicca qui per accedere agli schermi pubblici degli eventi."
+
+#: src/web/templates/index.html:73
+#, ai_translation
+msgid "Events (public access)"
+msgstr "Manifestazioni (accesso pubblico)"
+
+#: src/web/templates/index.html:77
+#, ai_translation
+msgid "The arbiter interface allows the management of the events."
+msgstr "L'interfaccia arbiter permette la gestione degli eventi."
+
+#: src/web/templates/index.html:79
+#, ai_translation
+msgid "Access to the arbiter interface is not allowed from this client."
+msgstr "L'accesso all'interfaccia Arbiter non è consentito da questo client."
+
+#: src/web/templates/index.html:92
+#, ai_translation
+msgid "Arbiter interface (private access)"
+msgstr "Interfaccia Arbiter (accesso privato)"
+
+#: src/web/templates/macros.j2:13
+#, ai_translation
+msgid "This event is public (by default, screens are visible by the users)."
+msgstr "Questo evento è pubblico (per impostazione predefinita, gli schermi sono visibili dagli utenti)."
+
+#: src/web/templates/macros.j2:15
+#, ai_translation
+msgid "This screen is public (visible by the users)."
+msgstr "Questa schermata è pubblica (visibile dagli utenti)."
+
+#: src/web/templates/macros.j2:17
+#, ai_translation
+msgid "This screen family is public (visible by the users)."
+msgstr "Questa famiglia di schermi è pubblica (visibile dagli utenti)."
+
+#: src/web/templates/macros.j2:19
+#, ai_translation
+msgid "This rotator is public (visible by the users)."
+msgstr "Questo rotatore è pubblico (visibile dagli utenti)."
+
+#: src/web/templates/macros.j2:26
+#, ai_translation
+msgid "This event is private (by default, screens are not visible by the users)."
+msgstr "Questo evento è privato (per impostazione predefinita, gli schermi non sono visibili dagli utenti)."
+
+#: src/web/templates/macros.j2:28
+#, ai_translation
+msgid "This screen is private (not visible by the users)."
+msgstr "Questa schermata è privata (non visibile dagli utenti)."
+
+#: src/web/templates/macros.j2:30
+#, ai_translation
+msgid "This screen family is private (not visible by the users)."
+msgstr "Questa famiglia di schermi è privata (non visibile dagli utenti)."
+
+#: src/web/templates/macros.j2:32
+#, ai_translation
+msgid "This rotator is private (not visible by the users)."
+msgstr "Questo rotatore è privato (non visibile dagli utenti)."
+
+#: src/web/templates/macros.j2:73
+#, ai_translation
+msgid "The tournament is not started yet."
+msgstr "Il torneo non è ancora iniziato."
+
+#: src/web/templates/macros.j2:76
+#, ai_translation, python-format
+msgid "Round %(round)d is running."
+msgstr "%(round)d è in esecuzione."
+
+#: src/web/templates/macros.j2:79
+#, ai_translation, python-format
+msgid "Round #%(round)d is finished."
+msgstr "Round #%(round)d è finito."
+
+#: src/web/templates/macros.j2:82
+#, ai_translation
+msgid "The tournament is finished."
+msgstr "Il torneo è finito."
+
+#: src/web/templates/macros.j2:96
+#, ai_translation
+msgid "Boards screens show pairings by board number."
+msgstr "Le schermate mostrano gli accoppiamenti per numero di board."
+
+#: src/web/templates/macros.j2:99
+#, ai_translation
+msgid "Input screens show pairings by board number and allow people to enter results."
+msgstr "Gli schermi di ingresso mostrano le coppie per numero di bordo e permettono alle persone di inserire i risultati."
+
+#: src/web/templates/macros.j2:102
+#, ai_translation
+msgid "Players screens show pairings by alphabetical order."
+msgstr "Le schermate dei giocatori mostrano le coppie per ordine alfabetico."
+
+#: src/web/templates/macros.j2:105
+#, ai_translation
+msgid "Results screens show the last results (most recent first)."
+msgstr "Le schermate dei risultati mostrano gli ultimi risultati (prima più recenti)."
+
+#: src/web/templates/macros.j2:108
+#, ai_translation
+msgid "Image screens show an image (local or remote)."
+msgstr "Gli schermi delle immagini mostrano un'immagine (locale o remota)."
+
+#: src/web/templates/macros.j2:125
+#, ai_translation
+msgid "Rotator automatically rotate between multiple screens."
+msgstr "Rotator ruota automaticamente tra più schermi."
+
+#: src/web/templates/user_boards_screen_board_row_player_cell.html:15
+#, ai_translation
+msgid "EXEMPT"
+msgstr "ESENZIONE"
+
+#: src/web/templates/user_boards_screen_board_row_player_cell.html:18
+#, ai_translation
+msgid "/move"
+msgstr "/muovi"
+
+#: src/web/templates/user_boards_screen_set.html:11
+#: src/web/templates/user_players_screen_set.html:9
+#, ai_translation, python-format
+msgid "%(set_name)s (round %(round)d)"
+msgstr "%(set_name)s (intorno %(round)d)"
+
+#: src/web/templates/user_boards_screen_set.html:23
+#: src/web/templates/user_results_screen.html:13
+#, ai_translation
+msgid "White"
+msgstr "Bianco"
+
+#: src/web/templates/user_boards_screen_set.html:23
+#: src/web/templates/user_boards_screen_set.html:25
+#, ai_translation
+msgid "time control"
+msgstr "tempo di controllo"
+
+#: src/web/templates/user_boards_screen_set.html:25
+#: src/web/templates/user_results_screen.html:15
+#, ai_translation
+msgid "Black"
+msgstr "Nero"
+
+#: src/web/templates/user_boards_screen_set.html:89
+#, ai_translation, python-format
+msgid "#%(board_number)d"
+msgstr "#%(board_number)d"
+
+#: src/web/templates/user_boards_screen_set.html:135
+#, ai_translation, python-format
+msgid "%(set_name)s (check-in)"
+msgstr "%(set_name)s (check-in)"
+
+#: src/web/templates/user_boards_screen_set.html:146
+#, ai_translation
+msgid "Player / Elo"
+msgstr "Giocatore / Elo"
+
+#: src/web/templates/user_event.html:19
+#, ai_translation
+msgid "Go back to the events page."
+msgstr "Torna alla pagina degli eventi."
+
+#: src/web/templates/user_players_screen_set.html:18
+#, ai_translation
+msgid "Player Elo [Pts]"
+msgstr "Giocatore Elo [Pts]"
+
+#: src/web/templates/user_players_screen_set.html:18
+#, ai_translation
+msgid "Player Elo"
+msgstr "Giocatore Elo"
+
+#: src/web/templates/user_players_screen_set.html:19
+#, ai_translation
+msgid "Board & color"
+msgstr "& Colore tavola"
+
+#: src/web/templates/user_players_screen_set.html:20
+#, ai_translation
+msgid "Opponent Elo [Pts]"
+msgstr "Opponente Elo [Pts]"
+
+#: src/web/templates/user_players_screen_set.html:20
+#, ai_translation
+msgid "Opponent Elo"
+msgstr "Opponente Elo"
+
+#: src/web/templates/user_players_screen_set.html:38
+#, ai_translation, python-format
+msgid "Board #%(board_number)d with %(color)s"
+msgstr "#%(board_number)d con %(color)s"
+
+#: src/web/templates/user_players_screen_set.html:39
+#, ai_translation
+msgid "vs"
+msgstr "vs"
+
+#: src/web/templates/user_results_screen.html:11
+#, ai_translation
+msgid "Tournament"
+msgstr "Torneo"
+
+#: src/web/templates/user_results_screen.html:12
+#, ai_translation
+msgid "Rnd.Boa"
+msgstr "Rnd.BoaCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/user_results_screen.html:14
+#, ai_translation
+msgid "Score"
+msgstr "Punteggio"
+
+#: src/web/templates/user_rotator_card.html:43
+#, ai_translation, python-format
+msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
+msgstr "%(family_uniq_id)s %(family_name)s (schermi %(screens_number)d)"
+
+#: src/web/templates/user_screen.html:130
+#, ai_translation
+msgid "Please enter the password to enter results:"
+msgstr "Inserire la password per inserire i risultati:"
+
+#: src/web/templates/user_screen.html:138
+#, ai_translation
+msgid "Event"
+msgstr "Evento"
+
+#: src/web/templates/user_screen.html:140
+#, ai_translation, python-format
+msgid "A password is required to enter results for the event %(event_uniq_id)s."
+msgstr "È necessaria una password per inserire i risultati dell'evento %(event_uniq_id)s."
+
+#: src/web/templates/user_screen.html:143
+#, ai_translation
+msgid "Password"
+msgstr "Password"
+
+#: src/web/templates/user_screen.html:150
+#, ai_translation
+msgid "Please ask the organizer to get the password."
+msgstr "Chiedere all'organizzatore di ottenere la password."
+
+#: src/web/templates/user_screen.html:176
+#, ai_translation
+msgid "Enter the result"
+msgstr "Inserisci il risultato"
+
+#: src/web/templates/user_screen.html:185
+#: src/web/templates/user_screen.html:205
+#, ai_translation
+msgid "WHITE WINS"
+msgstr "WINS BIANCO"
+
+#: src/web/templates/user_screen.html:191
+#, ai_translation
+msgid "DRAW"
+msgstr "DISPONIBILE"
+
+#: src/web/templates/user_screen.html:196
+#: src/web/templates/user_screen.html:216
+#, ai_translation
+msgid "BLACK WINS"
+msgstr "VINCE NERO"
+
+#: src/web/templates/user_screen.html:205
+#: src/web/templates/user_screen.html:216
+#, ai_translation
+msgid "BY FORFEIT"
+msgstr "PER FORFEIT"
+
+#: src/web/templates/user_screen.html:211
+#, ai_translation
+msgid "DOUBLE"
+msgstr "DOPPIA"
+
+#: src/web/templates/user_screen.html:211
+#, ai_translation
+msgid "FORFEIT"
+msgstr "DISTRIBUZIONE"
+
+#: src/web/templates/user_screen.html:228
+#, ai_translation
+msgid "CLEAR THE RESULT"
+msgstr "CREARE IL RISULTATO"
+
+#: src/web/templates/user_screen.html:258
+#, ai_translation
+msgid "CHECK-IN"
+msgstr "CHECK-IN"
+
+#: src/web/templates/user_screen.html:258
+#, ai_translation
+msgid "CHECK-OUT"
+msgstr "CHECK-OUT"
+
+#: src/web/templates/user_screen_card.html:23
+#, ai_translation
+msgid "Menu label:"
+msgstr "Etichetta del menu:"
+
+#: src/web/templates/user_screen_card.html:27
+#, ai_translation
+msgid "Menu:"
+msgstr "Menu:"
+
+#: src/web/templates/user_screen_card.html:42
+#, ai_translation
+msgid "Unpaired players: displayed"
+msgstr "Giocatori non abbinati: visualizzati"
+
+#: src/web/templates/user_screen_card.html:44
+#, ai_translation
+msgid "Unpaired players: hidden"
+msgstr "Giocatori non abbinati: nascosti"
+
+#: src/web/templates/user_screen_card.html:52
+#, ai_translation, python-format
+msgid "Maximum number of results: %(num)d"
+msgstr "Numero massimo di risultati: %(num)d"
+
+#: src/web/templates/user_screen_card.html:54
+#, ai_translation
+msgid "Maximum number of results: unlimited"
+msgstr "Numero massimo di risultati: illimitato"
+
+#: utils/i18n/i18n_update.py:138
+#, ai_translation
+msgid "Return to documentation summary"
+msgstr "Ritorna al sommario della documentazione"
+
+#: utils/i18n/i18n_update.py:139
+#, ai_translation
+msgid "English translation *** TRANSLATE ! ***"
+msgstr "Traduzione inglese"
+
+#: utils/i18n/i18n_update.py:142
+#, ai_translation
+msgid "View file {file}"
+msgstr "Visualizza file {file}"
+
+#: utils/i18n/i18n_update.py:144
+#, ai_translation
+msgid "Summary"
+msgstr "Sommario"
+
+#: utils/i18n/i18n_update.py:148 utils/i18n/i18n_update.py:158
+#, ai_translation
+msgid "Empty mandatory messages"
+msgstr "Messaggi obbligatori vuoti"
+
+#: utils/i18n/i18n_update.py:151 utils/i18n/i18n_update.py:173
+#, ai_translation
+msgid "Empty messages"
+msgstr "Messaggi vuoti"
+
+#: utils/i18n/i18n_update.py:154 utils/i18n/i18n_update.py:196
+#, ai_translation
+msgid "Message flagged [{flag}]"
+msgstr "Messaggio segnalato [{flag}]"
+
+#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:178
+#: utils/i18n/i18n_update.py:198
+#, ai_translation
+msgid "Message id"
+msgstr "Id messaggio"
+
+#: utils/i18n/i18n_update.py:160 utils/i18n/i18n_update.py:178
+#: utils/i18n/i18n_update.py:198
+#, ai_translation
+msgid "Locations"
+msgstr "Sedi"
+
+#: utils/i18n/i18n_update.py:167 utils/i18n/i18n_update.py:185
+#: utils/i18n/i18n_update.py:206 utils/i18n/i18n_update.py:209
+#, ai_translation
+msgid "Singular:"
+msgstr "Singolare:"
+
+#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:207 utils/i18n/i18n_update.py:210
+#, ai_translation
+msgid "Plural:"
+msgstr "Plurale:"
+
+#: utils/i18n/i18n_update.py:176
+#, ai_translation
+msgid "Empty messages are not shown for the default language."
+msgstr "I messaggi vuoti non vengono mostrati per la lingua predefinita."
+
+#: utils/i18n/i18n_update.py:192
+#, ai_translation
+msgid "Flagged messages"
+msgstr "Messaggi contrassegnati"
+
+#: utils/i18n/i18n_update.py:198
+#, ai_translation
+msgid "Translation"
+msgstr "Traduzione"
+

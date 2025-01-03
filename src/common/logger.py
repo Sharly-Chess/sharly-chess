@@ -37,7 +37,7 @@ def get_logger() -> Logger:
 
 
 def __flush_logger():
-    with suppress(KeyError):
+    with suppress(IndexError):
         logger.handlers[0].flush()
 
 

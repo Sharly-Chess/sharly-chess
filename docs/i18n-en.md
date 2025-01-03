@@ -11,12 +11,16 @@
 
 ## Summary
 
-| locale=`en` | English |
+| locale=`en` | English <img src="../src/web/static/images/locales/en.svg" style="height: 1em;"/> |
 |--|:--:|
 |Empty mandatory messages|0/16|
-|Empty messages|845/866|
+|Empty messages|845/861|
+
+## Empty mandatory messages (-)
 
 ## Empty messages (845)
 
 Empty messages are not shown for the default language.
+
+## Flagged messages (0)
 

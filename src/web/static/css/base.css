@@ -55,3 +55,9 @@ body {
 .index-locale-flag {
     height: 1em;
 }
+.dropdown-menu.locale {
+    min-width: 0;
+}
+.dropdown-menu.locale .locale-flag {
+    height: 1em;
+}

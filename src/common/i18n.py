@@ -9,7 +9,6 @@ from string import capwords
 from babel import Locale
 
 from common import get_logger
-from common.logger import print_interactive_error
 
 logger: Logger = get_logger()
 
@@ -22,17 +21,55 @@ _locale_dir: Path = (
 
 """ The available locales, retrieved from the filesystem. """
 locales: list[str] = [
-    entry.name for entry in _locale_dir.iterdir() if entry.is_dir()
+    entry.name for entry in _locale_dir.iterdir()
+    if entry.is_dir() and (entry / 'LC_MESSAGES' / 'messages.mo').is_file()
 ]
 assert default_locale in locales
+
+""" The translators (assigned to the trusted locales). """
+translators: dict[str, list[dict[str, str | None]]] = {
+    'en': [
+        {
+            'github_user': 'timothyarmes',
+            'name': 'Timothy ARMES',
+        },
+    ],
+    'fr': [
+        {
+            'github_user': 'pascalaubry',
+            'name': 'Pascal AUBRY',
+        },
+        {
+            'github_user': 'Amaras',
+            'name': 'Sammy PLAT',
+        },
+    ],
+}
+
+""" Trusted locales are the ones with translators assigned. """
+trusted_locales: list[str] = list(translators.keys())
+untrusted_locales: list[str] = list(set(locales) - set(trusted_locales))
+
+""" Mark the untrusted locales as translated by an IA. """
+translators |= {
+    locale: {
+            'github_user': None,
+            'name': 'Opus-MT (IA translation)',
+        }
+    for locale in locales
+    if locale not in trusted_locales
+}
 
 """ Initialize the current thread with the default locale. """
 _thread_local_data = threading.local()
 
 """ Build a dict of all the translations. """
-_all_translations: dict[str, GNUTranslations] = {
-    locale: gettext.translation('messages', _locale_dir, [locale, ]) for locale in locales
-}
+_all_translations: dict[str, GNUTranslations] = {}
+for locale in locales:
+    try:
+        _all_translations[locale] = gettext.translation('messages', _locale_dir, [locale, ])
+    except Exception as ex:
+        logger.warning(f'Could not load locale [{locale}]: {ex}')
 
 
 def _get_locale() -> str:

@@ -1,6 +1,5 @@
 import os
 import shutil
-import sys
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
@@ -9,7 +8,7 @@ from PyInstaller.__main__ import run
 from common.i18n import locales
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger, print_interactive_info, input_interactive
-from i18n_update import I18nHelper
+from utils.i18n.i18n_update import I18nUpdater
 
 logger: Logger = get_logger()
 
@@ -172,9 +171,9 @@ def create_zip():
     print_interactive_info(f'Creating archive {ZIP_FILE}...')
     with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
         os.chdir(PROJECT_DIR)
-        for folder_name, sub_folders, file_names in os.walk('.'):
+        for folder_name, sub_folders, file_names in os.walk('../../locale'):
             zip_file.write(folder_name, folder_name)
-        for folder_name, sub_folders, file_names in os.walk('.'):
+        for folder_name, sub_folders, file_names in os.walk('../../locale'):
             for filename in file_names:
                 file_path: Path = Path(folder_name, filename)
                 zip_file.write(file_path, file_path)
@@ -193,8 +192,10 @@ def build_test():
 
 def main():
     clean(clean_zip=True)
-    if not I18nHelper(locales).perfect:
-        if (input_interactive('Translations are not perfect, do you want to continue (y/N):').upper() or 'N') != 'Y':
+    if not I18nUpdater(locales).check_trusted_locales():
+        if (input_interactive(
+                'Translations are not perfect for trusted locales, do you want to continue (y/N):'
+        ).upper() or 'N') != 'Y':
             return
     build_exe()
     create_project()

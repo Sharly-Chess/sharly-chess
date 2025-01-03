@@ -60,7 +60,7 @@ class ActionSelector(metaclass=Singleton):
         Returns False if an error occurred or if it was interrupted.
         Returns True when the one-shot creation (and possibly upload) was okay"""
         event: Event = EventLoader.get(request=None).reload_event(event_uniq_id)
-        print_interactive_info(_('Event : {event_name}').format(event_name=event.name))
+        print_interactive_info(_('Event: {event_name}').format(event_name=event.name))
         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
         if not tournaments:
             print_interactive_error('Creating Papi files is impossible for all the tournaments.')

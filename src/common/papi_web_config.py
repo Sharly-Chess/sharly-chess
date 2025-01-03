@@ -14,7 +14,7 @@ import uvicorn
 from packaging.version import Version
 
 from common.config_reader import ConfigReader
-from common.i18n import locales, set_locale, default_locale, _, locale_localized_name
+from common.i18n import set_locale, default_locale, _, locale_localized_name, trusted_locales, untrusted_locales
 from common.logger import get_logger, configure_logger, print_interactive_error, print_interactive_input, \
     input_interactive, print_interactive_info, print_interactive_success
 from common.singleton import Singleton
@@ -63,6 +63,7 @@ class PapiWebConfig(metaclass=Singleton):
         self._web_port: int | None = None
         self._web_launch_browser: bool | None = None
         self._ffe_upload_delay: int | None = None
+        self.locales: list[str] = trusted_locales
         self.locale: str | None = None
         self._local_ip: str | None = None
         self._lan_ip: str | None = None
@@ -71,10 +72,24 @@ class PapiWebConfig(metaclass=Singleton):
             section_key = 'i18n'
             try:
                 options = self.reader[section_key]
+                key = 'experimental_locales'
+                if key not in options:
+                    self.reader.add_warning(
+                        _('Option not set, by default [{default}].').format(default='off'),
+                        section_key, key)
+                else:
+                    value: bool | None = self.reader.getboolean_safe(section_key, key)
+                    if value is None:
+                        self.reader.add_error(
+                            _('Invalid value [{value}].').format(value=self.reader.get(section_key, key)),
+                            section_key, key)
+                    elif value:
+                        # use all the locales, including the experimental ones.
+                        self.locales += untrusted_locales
                 key = 'locale'
                 try:
                     locale = options[key]
-                    if locale in locales:
+                    if locale in self.locales:
                         self.locale = locale
                     else:
                         self.reader.add_warning(
@@ -88,9 +103,9 @@ class PapiWebConfig(metaclass=Singleton):
             else:
                 set_locale(default_locale)
                 print_interactive_input(_('The following languages are available:'))
-                locale_range = range(1, len(locales) + 1)
+                locale_range = range(1, len(self.locales) + 1)
                 for num in locale_range:
-                    locale: str = locales[num - 1]
+                    locale: str = self.locales[num - 1]
                     print_interactive_input(f'  - [{num}] {locale} ({locale_localized_name(locale)})')
                 locale_num: int | None = None
                 while locale_num is None:
@@ -101,7 +116,7 @@ class PapiWebConfig(metaclass=Singleton):
                             locale_num = None
                     except ValueError:
                         pass
-                self.locale = locales[locale_num - 1]
+                self.locale = self.locales[locale_num - 1]
                 set_locale(self.locale)
                 self.save_locale_preference()
             # Once the language is set, make sure that important directories can be used
@@ -179,7 +194,7 @@ class PapiWebConfig(metaclass=Singleton):
                 if key not in web_section:
                     self.reader.add_warning(
                         _('Option not set, by default [{default}].').format(
-                            'on' if self._default_web_launch_browser else 'off'),
+                            default='on' if self._default_web_launch_browser else 'off'),
                         section_key, key)
                 else:
                     self._web_launch_browser = self.reader.getboolean_safe(section_key, key)

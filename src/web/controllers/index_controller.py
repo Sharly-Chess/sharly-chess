@@ -201,11 +201,12 @@ class WebContext:
         Override this method to pass more parameters to the template engine.
         :return: a dict containing named parameters.
         """
+        papi_web_config: PapiWebConfig = PapiWebConfig()
         now: float = time.time()
         return {
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
-            'papi_web_config': PapiWebConfig(),
+            'papi_web_config': papi_web_config,
             'admin_auth': self.admin_auth,
             'background_info': self.background_info,
             'locale_infos': {
@@ -213,7 +214,7 @@ class WebContext:
                     'name': locale_localized_name(locale),
                     'flag_url': locale_flag_url(locale),
                 }
-                for locale in locales
+                for locale in papi_web_config.locales
             },
             'locale': SessionHandler.get_session_locale(self.request),
         }
