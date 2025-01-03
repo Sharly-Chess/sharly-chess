@@ -169,7 +169,7 @@
                             {{ _('Layout') }}
                         </h3>
                         <div class="row">
-                            <div class="col-2">
+                            <div class="col-3">
                                 {% with id='timer-id', name='timer_id' %}
                                     <label for="{{ id }}" class="form-label">{{ _('Timer:') }}</label>
                                     <select
@@ -197,7 +197,7 @@
                                     {% endif %}
                                 {% endwith %}
                             </div>
-                            <div class="col-1">
+                            <div class="col-3">
                                 {% with id='columns', name='columns' %}
                                     <label for="{{ id }}" class="form-label">{{ _('Columns:') }}</label>
                                     <input
@@ -217,7 +217,12 @@
                                     {% endif %}
                                 {% endwith %}
                             </div>
-                            <div class="col-4">
+                        </div>
+                        <h3>
+                            {{ _('Menus') }}
+                        </h3>
+                        <div class="row">
+                            <div class="col-5">
                                 {% with id='menu', name='menu' %}
                                     <label for="{{ id }}" class="form-label">{{ _('Links displayed on the screen menu:') }}</label>
                                     <input
@@ -239,7 +244,7 @@
                                     {% endif %}
                                 {% endwith %}
                             </div>
-                            <div class="col-2">
+                            <div class="col-3">
                                 {% with id='menu-link', name='menu_link' %}
                                     <div>
                                         <label for="{{ id }}" class="form-label">{{ _('Links to this screen:') }}</label>
@@ -272,7 +277,7 @@
                                     </div>
                                 {% endwith %}
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 {% with id='menu-text', name='menu_text' %}
                                     <label for="{{ id }}" class="form-label">{{ _('Menu link label:') }}</label>
                                     <input
