@@ -1030,7 +1030,7 @@ msgstr ""
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr ""
 
-#: src/web/controllers/index_controller.py:212
+#: src/web/controllers/index_controller.py:213
 msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
@@ -1594,10 +1594,6 @@ msgstr ""
 
 #: src/web/templates/admin_archives.html:12
 msgid "Deletion date"
-msgstr ""
-
-#: src/web/templates/admin_base.html:31 src/web/templates/user_base.html:36
-msgid "Change the number of columns."
 msgstr ""
 
 #: src/web/templates/admin_check_in.html:1
@@ -3487,43 +3483,47 @@ msgstr ""
 msgid "No tournaments."
 msgstr ""
 
+#: src/web/templates/columns_dropdown.html:13
+msgid "Change the number of columns."
+msgstr ""
+
 #: src/web/templates/index.html:12
 msgid "Welcome to Papi-web!"
 msgstr ""
 
 #: src/web/templates/index.html:18
-msgid "Choose your language"
+msgid "Language"
 msgstr ""
 
-#: src/web/templates/index.html:47
+#: src/web/templates/index.html:51
 msgid "Web access"
 msgstr ""
 
-#: src/web/templates/index.html:53
+#: src/web/templates/index.html:57
 msgid "From the Papi-web server"
 msgstr ""
 
-#: src/web/templates/index.html:61
+#: src/web/templates/index.html:65
 msgid "From the local network (LAN/WAN)"
 msgstr ""
 
-#: src/web/templates/index.html:79
+#: src/web/templates/index.html:83
 msgid "Click here to access the public screens of the events."
 msgstr ""
 
-#: src/web/templates/index.html:81
+#: src/web/templates/index.html:85
 msgid "Events (public access)"
 msgstr ""
 
-#: src/web/templates/index.html:85
+#: src/web/templates/index.html:89
 msgid "The arbiter interface allows the management of the events."
 msgstr ""
 
-#: src/web/templates/index.html:87
+#: src/web/templates/index.html:91
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr ""
 
-#: src/web/templates/index.html:100
+#: src/web/templates/index.html:104
 msgid "Arbiter interface (private access)"
 msgstr ""
 

@@ -7,7 +7,12 @@
     <ul class="dropdown-menu locale">
         {% for l, l_info in locale_infos.items() %}
             <li
-                class="dropdown-item text-center {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}"
+                class="
+                    dropdown-item
+                    text-center
+                    {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
+                    {% if l_info.experimental %}bg-dark-subtle{% endif %}"
+                "
                 {% if l != locale %}
                     hx-get="{{ url }}"
                     hx-vals='{"locale": "{{ l }}"}'
@@ -15,7 +20,7 @@
                     hx-target="body"
                     hx-indicator="#please-wait"
                 {% endif %}
-                {{ tooltip_attributes('info', l_info.name, 'left') }}
+                {{ tooltip_attributes('info', l_info.name_and_warning, 'left') }}
             >
                 <img
                     src="{{l_info.flag_url}}"

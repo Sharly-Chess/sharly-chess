@@ -1275,7 +1275,7 @@ msgstr "LAN/WAN URL: {lan_url}"
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Port [{port}] bereits in Betrieb, kann Papi-Web-Server nicht starten."
 
-#: src/web/controllers/index_controller.py:212
+#: src/web/controllers/index_controller.py:213
 #, ai_translation
 msgid "USE AT YOUR OWN RISKS"
 msgstr "AUSWIRKUNGEN AUF IHRE RISIKEN"
@@ -1963,11 +1963,6 @@ msgstr "Archivierte Veranstaltung"
 #, ai_translation
 msgid "Deletion date"
 msgstr "Datum der Löschung"
-
-#: src/web/templates/admin_base.html:31 src/web/templates/user_base.html:36
-#, ai_translation
-msgid "Change the number of columns."
-msgstr "Ändern Sie die Anzahl der Spalten."
 
 #: src/web/templates/admin_check_in.html:1
 #: src/web/templates/user_screen.html:249
@@ -4184,6 +4179,11 @@ msgstr "Erstellen Sie ein Turnier"
 msgid "No tournaments."
 msgstr "Keine Turniere."
 
+#: src/web/templates/columns_dropdown.html:13
+#, ai_translation
+msgid "Change the number of columns."
+msgstr "Ändern Sie die Anzahl der Spalten."
+
 #: src/web/templates/index.html:12
 #, ai_translation
 msgid "Welcome to Papi-web!"
@@ -4191,45 +4191,45 @@ msgstr "Willkommen im Papi-Web!"
 
 #: src/web/templates/index.html:18
 #, ai_translation
-msgid "Choose your language"
-msgstr "Wählen Sie Ihre Sprache"
+msgid "Language"
+msgstr "Sprache"
 
-#: src/web/templates/index.html:47
+#: src/web/templates/index.html:51
 #, ai_translation
 msgid "Web access"
 msgstr "Web-Zugang"
 
-#: src/web/templates/index.html:53
+#: src/web/templates/index.html:57
 #, ai_translation
 msgid "From the Papi-web server"
 msgstr "Vom Papi-Web-Server"
 
-#: src/web/templates/index.html:61
+#: src/web/templates/index.html:65
 #, ai_translation
 msgid "From the local network (LAN/WAN)"
 msgstr "Aus dem lokalen Netzwerk (LAN/WAN)"
 
-#: src/web/templates/index.html:79
+#: src/web/templates/index.html:83
 #, ai_translation
 msgid "Click here to access the public screens of the events."
 msgstr "Klicken Sie hier, um auf die öffentlichen Bildschirme der Veranstaltungen zuzugreifen."
 
-#: src/web/templates/index.html:81
+#: src/web/templates/index.html:85
 #, ai_translation
 msgid "Events (public access)"
 msgstr "Veranstaltungen (öffentlicher Zugang)"
 
-#: src/web/templates/index.html:85
+#: src/web/templates/index.html:89
 #, ai_translation
 msgid "The arbiter interface allows the management of the events."
 msgstr "Die Arbiter-Schnittstelle ermöglicht die Verwaltung der Ereignisse."
 
-#: src/web/templates/index.html:87
+#: src/web/templates/index.html:91
 #, ai_translation
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Der Zugriff auf die Arbiter-Schnittstelle ist von diesem Client nicht erlaubt."
 
-#: src/web/templates/index.html:100
+#: src/web/templates/index.html:104
 #, ai_translation
 msgid "Arbiter interface (private access)"
 msgstr "Arbiter-Schnittstelle (privater Zugang)"
@@ -4614,4 +4614,7 @@ msgstr "Gekennzeichnete Nachrichten"
 #, ai_translation
 msgid "Translation"
 msgstr "Übersetzung"
+
+#~ msgid "Choose your language"
+#~ msgstr "Wählen Sie Ihre Sprache"
 

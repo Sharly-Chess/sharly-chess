@@ -15,12 +15,16 @@
                 >
                     <div class="dropdown col-12 text-center">
                         <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi-translate"></i> {{ _('Choose your language') }}
+                            <i class="bi-translate"></i> {{ _('Language') }}
                         </button>
                         <ul class="dropdown-menu locale">
                             {% for l, l_info in locale_infos.items() %}
                                 <li
-                                    class="dropdown-item text-start {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}"
+                                    class="
+                                        dropdown-item
+                                        text-start
+                                        {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
+                                        {% if l_info.experimental %}bg-dark-subtle{% endif %}"
                                     {% if l != locale %}
                                         hx-get="{{ url }}"
                                         hx-vals='{"locale": "{{ l }}"}'
@@ -28,7 +32,7 @@
                                         hx-target="body"
                                         hx-indicator="#please-wait"
                                     {% endif %}
-                                    {{ tooltip_attributes('info', l_info.name, 'right') }}
+                                    {{ tooltip_attributes('info', l_info.name_and_warning, 'right') }}
                                 >
                                     <img
                                         src="{{l_info.flag_url}}"

@@ -280,7 +280,7 @@
 |Local URL: {local_url}|Lokale URL: {local_url}|src/web/server_engine.py:44|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] bereits in Betrieb, kann Papi-Web-Server nicht starten.|src/web/server_engine.py:49|
-|USE AT YOUR OWN RISKS|AUSWIRKUNGEN AUF IHRE RISIKEN|src/web/controllers/index_controller.py:212|
+|USE AT YOUR OWN RISKS|AUSWIRKUNGEN AUF IHRE RISIKEN|src/web/controllers/index_controller.py:213|
 |Please enter the id of ChessEvent connection.|Bitte geben Sie die ID der ChessEvent-Verbindung ein.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|ChessEvent-Verbindung [{uniq_id}] existiert bereits.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
 |Please enter the id used to connect to the ChessEvent platform.|Bitte geben Sie die ID ein, die verwendet wird, um sich mit der ChessEvent-Plattform zu verbinden.|src/web/controllers/admin/chessevent_admin_controller.py:88|
@@ -403,7 +403,6 @@
 |Please enter the password.|Bitte geben Sie das Passwort ein.|src/web/controllers/user/screen_user_controller.py:216|
 |Archived event|Archivierte Veranstaltung|src/web/templates/admin_archives.html:11|
 |Deletion date|Datum der Löschung|src/web/templates/admin_archives.html:12|
-|Change the number of columns.|Ändern Sie die Anzahl der Spalten.|src/web/templates/admin_base.html:31<br>src/web/templates/user_base.html:36|
 |Check-in|Einchecken|src/web/templates/admin_check_in.html:1<br>src/web/templates/user_screen.html:249|
 |ChessEvent id: %(chessevent_user_id)s|ChessEvent id: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:14|
 |ChessEvent password: %(chessevent_password)s|ChessEvent-Passwort: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:17|
@@ -810,16 +809,17 @@
 |Add a tournament to the event.|Fügen Sie dem Event ein Turnier hinzu.|src/web/templates/admin_tournaments.html:21|
 |Create a tournament|Erstellen Sie ein Turnier|src/web/templates/admin_tournaments.html:30|
 |No tournaments.|Keine Turniere.|src/web/templates/admin_tournaments.html:45|
+|Change the number of columns.|Ändern Sie die Anzahl der Spalten.|src/web/templates/columns_dropdown.html:13|
 |Welcome to Papi-web!|Willkommen im Papi-Web!|src/web/templates/index.html:12|
-|Choose your language|Wählen Sie Ihre Sprache|src/web/templates/index.html:18|
-|Web access|Web-Zugang|src/web/templates/index.html:47|
-|From the Papi-web server|Vom Papi-Web-Server|src/web/templates/index.html:53|
-|From the local network (LAN/WAN)|Aus dem lokalen Netzwerk (LAN/WAN)|src/web/templates/index.html:61|
-|Click here to access the public screens of the events.|Klicken Sie hier, um auf die öffentlichen Bildschirme der Veranstaltungen zuzugreifen.|src/web/templates/index.html:79|
-|Events (public access)|Veranstaltungen (öffentlicher Zugang)|src/web/templates/index.html:81|
-|The arbiter interface allows the management of the events.|Die Arbiter-Schnittstelle ermöglicht die Verwaltung der Ereignisse.|src/web/templates/index.html:85|
-|Access to the arbiter interface is not allowed from this client.|Der Zugriff auf die Arbiter-Schnittstelle ist von diesem Client nicht erlaubt.|src/web/templates/index.html:87|
-|Arbiter interface (private access)|Arbiter-Schnittstelle (privater Zugang)|src/web/templates/index.html:100|
+|Language|Sprache|src/web/templates/index.html:18|
+|Web access|Web-Zugang|src/web/templates/index.html:51|
+|From the Papi-web server|Vom Papi-Web-Server|src/web/templates/index.html:57|
+|From the local network (LAN/WAN)|Aus dem lokalen Netzwerk (LAN/WAN)|src/web/templates/index.html:65|
+|Click here to access the public screens of the events.|Klicken Sie hier, um auf die öffentlichen Bildschirme der Veranstaltungen zuzugreifen.|src/web/templates/index.html:83|
+|Events (public access)|Veranstaltungen (öffentlicher Zugang)|src/web/templates/index.html:85|
+|The arbiter interface allows the management of the events.|Die Arbiter-Schnittstelle ermöglicht die Verwaltung der Ereignisse.|src/web/templates/index.html:89|
+|Access to the arbiter interface is not allowed from this client.|Der Zugriff auf die Arbiter-Schnittstelle ist von diesem Client nicht erlaubt.|src/web/templates/index.html:91|
+|Arbiter interface (private access)|Arbiter-Schnittstelle (privater Zugang)|src/web/templates/index.html:104|
 |This event is public (by default, screens are visible by the users).|Dieses Ereignis ist öffentlich (standardmäßig sind Bildschirme von den Benutzern sichtbar).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Dieser Bildschirm ist öffentlich (sichtbar durch die Benutzer).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Diese Bildschirmfamilie ist öffentlich (sichtbar durch die Benutzer).|src/web/templates/macros.j2:17|

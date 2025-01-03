@@ -276,7 +276,7 @@
 |Local URL: {local_url}|Lokale URL: {local_url}|src/web/server_engine.py:44|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] reeds in gebruik, kan Papi-webserver niet starten.|src/web/server_engine.py:49|
-|USE AT YOUR OWN RISKS|GEBRUIK OP UW EIGEN RISICO'S|src/web/controllers/index_controller.py:212|
+|USE AT YOUR OWN RISKS|GEBRUIK OP UW EIGEN RISICO'S|src/web/controllers/index_controller.py:213|
 |Please enter the id of ChessEvent connection.|Voer het id van ChessEvent-verbinding in.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|ChessEvent-verbinding [{uniq_id}] bestaat al.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
 |Please enter the id used to connect to the ChessEvent platform.|Voer de id in die gebruikt is om verbinding te maken met het ChessEvent-platform.|src/web/controllers/admin/chessevent_admin_controller.py:88|
@@ -399,7 +399,6 @@
 |Please enter the password.|Voer het wachtwoord in.|src/web/controllers/user/screen_user_controller.py:216|
 |Archived event|Gearchiveerde gebeurtenis|src/web/templates/admin_archives.html:11|
 |Deletion date|Schrappingsdatum|src/web/templates/admin_archives.html:12|
-|Change the number of columns.|Verander het aantal kolommen.|src/web/templates/admin_base.html:31<br>src/web/templates/user_base.html:36|
 |Check-in|Check-in|src/web/templates/admin_check_in.html:1<br>src/web/templates/user_screen.html:249|
 |ChessEvent id: %(chessevent_user_id)s|ChessEvent id: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:14|
 |ChessEvent password: %(chessevent_password)s|ChessEvent wachtwoord: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:17|
@@ -806,16 +805,17 @@
 |Add a tournament to the event.|Voeg een toernooi toe aan het evenement.|src/web/templates/admin_tournaments.html:21|
 |Create a tournament|Een toernooi aanmaken|src/web/templates/admin_tournaments.html:30|
 |No tournaments.|Geen toernooien.|src/web/templates/admin_tournaments.html:45|
+|Change the number of columns.|Verander het aantal kolommen.|src/web/templates/columns_dropdown.html:13|
 |Welcome to Papi-web!|Welkom op Papi-web!|src/web/templates/index.html:12|
-|Choose your language|Kies uw taal|src/web/templates/index.html:18|
-|Web access|Webtoegang|src/web/templates/index.html:47|
-|From the Papi-web server|Van de Papi-webserver|src/web/templates/index.html:53|
-|From the local network (LAN/WAN)|Vanuit het lokale netwerk (LAN/WAN)|src/web/templates/index.html:61|
-|Click here to access the public screens of the events.|Klik hier om toegang te krijgen tot de publieke schermen van de evenementen.|src/web/templates/index.html:79|
-|Events (public access)|Evenementen (toegang tot het publiek)|src/web/templates/index.html:81|
-|The arbiter interface allows the management of the events.|De Arbiter interface maakt het beheer van de gebeurtenissen mogelijk.|src/web/templates/index.html:85|
-|Access to the arbiter interface is not allowed from this client.|Toegang tot de Arbiter interface is niet toegestaan van deze client.|src/web/templates/index.html:87|
-|Arbiter interface (private access)|Arbiter-interface (privétoegang)|src/web/templates/index.html:100|
+|Language|Taal|src/web/templates/index.html:18|
+|Web access|Webtoegang|src/web/templates/index.html:51|
+|From the Papi-web server|Van de Papi-webserver|src/web/templates/index.html:57|
+|From the local network (LAN/WAN)|Vanuit het lokale netwerk (LAN/WAN)|src/web/templates/index.html:65|
+|Click here to access the public screens of the events.|Klik hier om toegang te krijgen tot de publieke schermen van de evenementen.|src/web/templates/index.html:83|
+|Events (public access)|Evenementen (toegang tot het publiek)|src/web/templates/index.html:85|
+|The arbiter interface allows the management of the events.|De Arbiter interface maakt het beheer van de gebeurtenissen mogelijk.|src/web/templates/index.html:89|
+|Access to the arbiter interface is not allowed from this client.|Toegang tot de Arbiter interface is niet toegestaan van deze client.|src/web/templates/index.html:91|
+|Arbiter interface (private access)|Arbiter-interface (privétoegang)|src/web/templates/index.html:104|
 |This event is public (by default, screens are visible by the users).|Deze gebeurtenis is openbaar (standaard zijn schermen zichtbaar door de gebruikers).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Dit scherm is openbaar (zichtbaar door de gebruikers).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Deze schermfamilie is openbaar (zichtbaar door de gebruikers).|src/web/templates/macros.j2:17|

@@ -1275,7 +1275,7 @@ msgstr "LAN/WAN URL: {lan_url}"
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Η θύρα [{port}] είναι ήδη σε χρήση, δεν μπορεί να ξεκινήσει το διακομιστή Papi-web."
 
-#: src/web/controllers/index_controller.py:212
+#: src/web/controllers/index_controller.py:213
 #, ai_translation
 msgid "USE AT YOUR OWN RISKS"
 msgstr "ΧΡΗΣΙΜΟΠΟΙΕΙΤΕ ΜΕ δικούς ΣΑΣ ΚΙΝΔΥΝΟΥΣ"
@@ -1963,11 +1963,6 @@ msgstr "Αρχειοθετήθηκε εκδήλωση"
 #, ai_translation
 msgid "Deletion date"
 msgstr "Ημερομηνία διαγραφής"
-
-#: src/web/templates/admin_base.html:31 src/web/templates/user_base.html:36
-#, ai_translation
-msgid "Change the number of columns."
-msgstr "Αλλάξτε τον αριθμό των στηλών."
 
 #: src/web/templates/admin_check_in.html:1
 #: src/web/templates/user_screen.html:249
@@ -4184,6 +4179,11 @@ msgstr "Δημιουργία ενός τουρνουά"
 msgid "No tournaments."
 msgstr "Όχι τουρνουά."
 
+#: src/web/templates/columns_dropdown.html:13
+#, ai_translation
+msgid "Change the number of columns."
+msgstr "Αλλάξτε τον αριθμό των στηλών."
+
 #: src/web/templates/index.html:12
 #, ai_translation
 msgid "Welcome to Papi-web!"
@@ -4191,45 +4191,45 @@ msgstr "Καλώς ήρθατε στο Papa-web!"
 
 #: src/web/templates/index.html:18
 #, ai_translation
-msgid "Choose your language"
-msgstr "Επιλέξτε τη γλώσσα σας"
+msgid "Language"
+msgstr "Γλώσσα"
 
-#: src/web/templates/index.html:47
+#: src/web/templates/index.html:51
 #, ai_translation
 msgid "Web access"
 msgstr "Πρόσβαση στο διαδίκτυο"
 
-#: src/web/templates/index.html:53
+#: src/web/templates/index.html:57
 #, ai_translation
 msgid "From the Papi-web server"
 msgstr "Από τον διακομιστή Papi-web"
 
-#: src/web/templates/index.html:61
+#: src/web/templates/index.html:65
 #, ai_translation
 msgid "From the local network (LAN/WAN)"
 msgstr "Από το τοπικό δίκτυο (LAN/WAN)"
 
-#: src/web/templates/index.html:79
+#: src/web/templates/index.html:83
 #, ai_translation
 msgid "Click here to access the public screens of the events."
 msgstr "Κάντε κλικ εδώ για να αποκτήσετε πρόσβαση στις δημόσιες οθόνες των γεγονότων."
 
-#: src/web/templates/index.html:81
+#: src/web/templates/index.html:85
 #, ai_translation
 msgid "Events (public access)"
 msgstr "Εκδηλώσεις (δημόσια πρόσβαση)"
 
-#: src/web/templates/index.html:85
+#: src/web/templates/index.html:89
 #, ai_translation
 msgid "The arbiter interface allows the management of the events."
 msgstr "Η διεπαφή του διαιτητή επιτρέπει τη διαχείριση των γεγονότων."
 
-#: src/web/templates/index.html:87
+#: src/web/templates/index.html:91
 #, ai_translation
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Η πρόσβαση στη διεπαφή του διαιτητή δεν επιτρέπεται από αυτόν τον πελάτη."
 
-#: src/web/templates/index.html:100
+#: src/web/templates/index.html:104
 #, ai_translation
 msgid "Arbiter interface (private access)"
 msgstr "Διασύνδεση Arbiter (ιδιωτική πρόσβαση)"
@@ -4614,4 +4614,7 @@ msgstr "Σημειωθέντα μηνύματα"
 #, ai_translation
 msgid "Translation"
 msgstr "Μετάφραση"
+
+#~ msgid "Choose your language"
+#~ msgstr "Επιλέξτε τη γλώσσα σας"
 

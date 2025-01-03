@@ -205,14 +205,16 @@ class WebContext:
         now: float = time.time()
         locale_infos: dict[str, Any] = {}
         for locale in papi_web_config.locales:
-            name: str
+            name: str = f'{locale_localized_name(locale)}'
+            name_and_warning: str
             if locale in trusted_locales:
-                name = f'{locale_localized_name(locale)}'
+                name_and_warning = name
             else:
                 warning_str: str = _('USE AT YOUR OWN RISKS', locale=locale)
-                name = f'{locale_localized_name(locale)} ({warning_str})'
+                name_and_warning = f'{name} ({warning_str})'
             locale_infos[locale] = {
                 'name': name,
+                'name_and_warning': name_and_warning,
                 'flag_url': locale_flag_url(locale),
                 'experimental': locale not in trusted_locales,
             }

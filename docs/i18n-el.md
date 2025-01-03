@@ -281,7 +281,7 @@
 |Local URL: {local_url}|Τοπική URL: {local_url}|src/web/server_engine.py:44|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Η θύρα [{port}] είναι ήδη σε χρήση, δεν μπορεί να ξεκινήσει το διακομιστή Papi-web.|src/web/server_engine.py:49|
-|USE AT YOUR OWN RISKS|ΧΡΗΣΙΜΟΠΟΙΕΙΤΕ ΜΕ δικούς ΣΑΣ ΚΙΝΔΥΝΟΥΣ|src/web/controllers/index_controller.py:212|
+|USE AT YOUR OWN RISKS|ΧΡΗΣΙΜΟΠΟΙΕΙΤΕ ΜΕ δικούς ΣΑΣ ΚΙΝΔΥΝΟΥΣ|src/web/controllers/index_controller.py:213|
 |Please enter the id of ChessEvent connection.|Παρακαλώ εισάγετε την ταυτότητα της σύνδεσης ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|Η σύνδεση σκακιού [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
 |Please enter the id used to connect to the ChessEvent platform.|Παρακαλώ εισάγετε την ταυτότητα που χρησιμοποιήθηκε για να συνδεθείτε με την πλατφόρμα ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:88|
@@ -404,7 +404,6 @@
 |Please enter the password.|Παρακαλώ εισάγετε τον κωδικό πρόσβασης.|src/web/controllers/user/screen_user_controller.py:216|
 |Archived event|Αρχειοθετήθηκε εκδήλωση|src/web/templates/admin_archives.html:11|
 |Deletion date|Ημερομηνία διαγραφής|src/web/templates/admin_archives.html:12|
-|Change the number of columns.|Αλλάξτε τον αριθμό των στηλών.|src/web/templates/admin_base.html:31<br>src/web/templates/user_base.html:36|
 |Check-in|Check-in|src/web/templates/admin_check_in.html:1<br>src/web/templates/user_screen.html:249|
 |ChessEvent id: %(chessevent_user_id)s|Σκάκι ταυτότητα: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:14|
 |ChessEvent password: %(chessevent_password)s|Κωδικός πρόσβασης για το σκάκι: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:17|
@@ -810,16 +809,17 @@
 |Add a tournament to the event.|Προσθέστε ένα τουρνουά στην εκδήλωση.|src/web/templates/admin_tournaments.html:21|
 |Create a tournament|Δημιουργία ενός τουρνουά|src/web/templates/admin_tournaments.html:30|
 |No tournaments.|Όχι τουρνουά.|src/web/templates/admin_tournaments.html:45|
+|Change the number of columns.|Αλλάξτε τον αριθμό των στηλών.|src/web/templates/columns_dropdown.html:13|
 |Welcome to Papi-web!|Καλώς ήρθατε στο Papa-web!|src/web/templates/index.html:12|
-|Choose your language|Επιλέξτε τη γλώσσα σας|src/web/templates/index.html:18|
-|Web access|Πρόσβαση στο διαδίκτυο|src/web/templates/index.html:47|
-|From the Papi-web server|Από τον διακομιστή Papi-web|src/web/templates/index.html:53|
-|From the local network (LAN/WAN)|Από το τοπικό δίκτυο (LAN/WAN)|src/web/templates/index.html:61|
-|Click here to access the public screens of the events.|Κάντε κλικ εδώ για να αποκτήσετε πρόσβαση στις δημόσιες οθόνες των γεγονότων.|src/web/templates/index.html:79|
-|Events (public access)|Εκδηλώσεις (δημόσια πρόσβαση)|src/web/templates/index.html:81|
-|The arbiter interface allows the management of the events.|Η διεπαφή του διαιτητή επιτρέπει τη διαχείριση των γεγονότων.|src/web/templates/index.html:85|
-|Access to the arbiter interface is not allowed from this client.|Η πρόσβαση στη διεπαφή του διαιτητή δεν επιτρέπεται από αυτόν τον πελάτη.|src/web/templates/index.html:87|
-|Arbiter interface (private access)|Διασύνδεση Arbiter (ιδιωτική πρόσβαση)|src/web/templates/index.html:100|
+|Language|Γλώσσα|src/web/templates/index.html:18|
+|Web access|Πρόσβαση στο διαδίκτυο|src/web/templates/index.html:51|
+|From the Papi-web server|Από τον διακομιστή Papi-web|src/web/templates/index.html:57|
+|From the local network (LAN/WAN)|Από το τοπικό δίκτυο (LAN/WAN)|src/web/templates/index.html:65|
+|Click here to access the public screens of the events.|Κάντε κλικ εδώ για να αποκτήσετε πρόσβαση στις δημόσιες οθόνες των γεγονότων.|src/web/templates/index.html:83|
+|Events (public access)|Εκδηλώσεις (δημόσια πρόσβαση)|src/web/templates/index.html:85|
+|The arbiter interface allows the management of the events.|Η διεπαφή του διαιτητή επιτρέπει τη διαχείριση των γεγονότων.|src/web/templates/index.html:89|
+|Access to the arbiter interface is not allowed from this client.|Η πρόσβαση στη διεπαφή του διαιτητή δεν επιτρέπεται από αυτόν τον πελάτη.|src/web/templates/index.html:91|
+|Arbiter interface (private access)|Διασύνδεση Arbiter (ιδιωτική πρόσβαση)|src/web/templates/index.html:104|
 |This event is public (by default, screens are visible by the users).|Αυτό το γεγονός είναι δημόσιο (από προεπιλογή, οι οθόνες είναι ορατές από τους χρήστες).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Αυτή η οθόνη είναι δημόσια (ορατή από τους χρήστες).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Αυτή η οικογένεια οθόνης είναι δημόσια (ορατή από τους χρήστες).|src/web/templates/macros.j2:17|

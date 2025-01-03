@@ -276,7 +276,7 @@
 |Local URL: {local_url}|Lokal webbadress: {local_url}|src/web/server_engine.py:44|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:46|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] redan i bruk, kan inte starta Papi-webbserver.|src/web/server_engine.py:49|
-|USE AT YOUR OWN RISKS|ANVÄNDNING VID DINA EGNA RISKER|src/web/controllers/index_controller.py:212|
+|USE AT YOUR OWN RISKS|ANVÄNDNING VID DINA EGNA RISKER|src/web/controllers/index_controller.py:213|
 |Please enter the id of ChessEvent connection.|Vänligen ange identifikationen för ChessEvent-anslutningen.|src/web/controllers/admin/chessevent_admin_controller.py:69|
 |ChessEvent connection [{uniq_id}] already exists.|ChessEvent-anslutning [{uniq_id}] finns redan.|src/web/controllers/admin/chessevent_admin_controller.py:74<br>src/web/controllers/admin/chessevent_admin_controller.py:79|
 |Please enter the id used to connect to the ChessEvent platform.|Ange det id som används för att ansluta till ChessEvent-plattformen.|src/web/controllers/admin/chessevent_admin_controller.py:88|
@@ -399,7 +399,6 @@
 |Please enter the password.|Ange lösenordet.|src/web/controllers/user/screen_user_controller.py:216|
 |Archived event|Arkiverad händelse|src/web/templates/admin_archives.html:11|
 |Deletion date|Datum för borttagning|src/web/templates/admin_archives.html:12|
-|Change the number of columns.|Ändra antal kolumner.|src/web/templates/admin_base.html:31<br>src/web/templates/user_base.html:36|
 |Check-in|Incheckning|src/web/templates/admin_check_in.html:1<br>src/web/templates/user_screen.html:249|
 |ChessEvent id: %(chessevent_user_id)s|ChessEvent id: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:14|
 |ChessEvent password: %(chessevent_password)s|ChessEvent lösenord: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:17|
@@ -806,16 +805,17 @@
 |Add a tournament to the event.|Lägg till en turnering i evenemanget.|src/web/templates/admin_tournaments.html:21|
 |Create a tournament|Skapa en turnering|src/web/templates/admin_tournaments.html:30|
 |No tournaments.|Inga turneringar.|src/web/templates/admin_tournaments.html:45|
+|Change the number of columns.|Ändra antal kolumner.|src/web/templates/columns_dropdown.html:13|
 |Welcome to Papi-web!|Välkommen till Papi-webben!|src/web/templates/index.html:12|
-|Choose your language|Välj ditt språk|src/web/templates/index.html:18|
-|Web access|Webbåtkomst|src/web/templates/index.html:47|
-|From the Papi-web server|Från Papi- webbservern|src/web/templates/index.html:53|
-|From the local network (LAN/WAN)|Från det lokala nätverket (LAN/WAN)|src/web/templates/index.html:61|
-|Click here to access the public screens of the events.|Klicka här för att komma åt evenemangens offentliga skärmar.|src/web/templates/index.html:79|
-|Events (public access)|Evenemang (allmän tillgång)|src/web/templates/index.html:81|
-|The arbiter interface allows the management of the events.|Arbiter-gränssnittet gör det möjligt att hantera händelserna.|src/web/templates/index.html:85|
-|Access to the arbiter interface is not allowed from this client.|Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient.|src/web/templates/index.html:87|
-|Arbiter interface (private access)|Skiljemannagränssnitt (privat åtkomst)|src/web/templates/index.html:100|
+|Language|Språk|src/web/templates/index.html:18|
+|Web access|Webbåtkomst|src/web/templates/index.html:51|
+|From the Papi-web server|Från Papi- webbservern|src/web/templates/index.html:57|
+|From the local network (LAN/WAN)|Från det lokala nätverket (LAN/WAN)|src/web/templates/index.html:65|
+|Click here to access the public screens of the events.|Klicka här för att komma åt evenemangens offentliga skärmar.|src/web/templates/index.html:83|
+|Events (public access)|Evenemang (allmän tillgång)|src/web/templates/index.html:85|
+|The arbiter interface allows the management of the events.|Arbiter-gränssnittet gör det möjligt att hantera händelserna.|src/web/templates/index.html:89|
+|Access to the arbiter interface is not allowed from this client.|Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient.|src/web/templates/index.html:91|
+|Arbiter interface (private access)|Skiljemannagränssnitt (privat åtkomst)|src/web/templates/index.html:104|
 |This event is public (by default, screens are visible by the users).|Denna händelse är offentlig (som standard är skärmarna synliga av användarna).|src/web/templates/macros.j2:13|
 |This screen is public (visible by the users).|Den här skärmen är offentlig (synlig för användarna).|src/web/templates/macros.j2:15|
 |This screen family is public (visible by the users).|Denna skärmfamilj är offentlig (synlig för användarna).|src/web/templates/macros.j2:17|
