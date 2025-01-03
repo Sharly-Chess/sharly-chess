@@ -869,7 +869,8 @@ msgstr "Exento"
 #: src/data/screen.py:97 src/data/screen.py:178
 #: src/web/controllers/admin/index_admin_controller.py:108
 #: src/web/controllers/admin/screen_admin_controller.py:359
-#: src/web/templates/admin_screens.html:74
+#: src/web/templates/admin_screens.html:36
+#: src/web/templates/admin_screens.html:117
 #, ai_translation
 msgid "Last results"
 msgstr "Últimos resultados"
@@ -877,7 +878,8 @@ msgstr "Últimos resultados"
 #: src/data/screen.py:99
 #: src/web/controllers/admin/index_admin_controller.py:109
 #: src/web/controllers/admin/screen_admin_controller.py:361
-#: src/web/templates/admin_screens.html:79
+#: src/web/templates/admin_screens.html:37
+#: src/web/templates/admin_screens.html:122
 #, ai_translation
 msgid "Image"
 msgstr "Imagen"
@@ -1455,8 +1457,9 @@ msgstr "No es posible especificar el número de piezas y el número de elementos
 #: src/web/controllers/admin/screen_admin_controller.py:353
 #: src/web/controllers/admin/tournament_admin_controller.py:329
 #: src/web/templates/admin_event_modal.html:190
-#: src/web/templates/admin_families.html:45
-#: src/web/templates/admin_screens.html:59
+#: src/web/templates/admin_families.html:34
+#: src/web/templates/admin_screens.html:33
+#: src/web/templates/admin_screens.html:102
 #, ai_translation
 msgid "Results entry"
 msgstr "Entrada de los resultados"
@@ -1472,8 +1475,9 @@ msgstr "emparejamientos a bordo"
 #: src/web/controllers/admin/index_admin_controller.py:105
 #: src/web/controllers/admin/screen_admin_controller.py:357
 #: src/web/controllers/admin/tournament_admin_controller.py:331
-#: src/web/templates/admin_families.html:53
-#: src/web/templates/admin_screens.html:69
+#: src/web/templates/admin_families.html:36
+#: src/web/templates/admin_screens.html:35
+#: src/web/templates/admin_screens.html:112
 #, ai_translation
 msgid "Pairings by player"
 msgstr "Maridajes por jugador"
@@ -1515,8 +1519,9 @@ msgstr "El colour #3 se utiliza desde el inicio de las rondas y para {delay_3} m
 
 #: src/web/controllers/admin/index_admin_controller.py:104
 #: src/web/controllers/admin/tournament_admin_controller.py:330
-#: src/web/templates/admin_families.html:49
-#: src/web/templates/admin_screens.html:64
+#: src/web/templates/admin_families.html:35
+#: src/web/templates/admin_screens.html:34
+#: src/web/templates/admin_screens.html:107
 #, ai_translation
 msgid "Pairings by board"
 msgstr "Maridajes a bordo"
@@ -2165,7 +2170,7 @@ msgstr "Cancelar"
 
 #: src/web/templates/admin_chessevents.html:10
 #: src/web/templates/admin_events.html:9
-#: src/web/templates/admin_screens.html:42
+#: src/web/templates/admin_screens.html:85
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
 #, ai_translation
@@ -2673,39 +2678,44 @@ msgstr "Cuando se define, el mensaje de alerta se muestra en un banner de despla
 msgid "Screen families"
 msgstr "Familias de cribado"
 
-#: src/web/templates/admin_families.html:13
-#, ai_translation
-msgid "Enable/disable the details of the screen families on the cards below."
-msgstr "Activar/desactivar los detalles de las familias de pantalla en las tarjetas de abajo."
-
-#: src/web/templates/admin_families.html:23
-#: src/web/templates/admin_rotators.html:23
-#: src/web/templates/admin_screens.html:39
-#, ai_translation
-msgid "Details"
-msgstr "Detalles"
-
-#: src/web/templates/admin_families.html:42
+#: src/web/templates/admin_families.html:15
 #, ai_translation
 msgid "You must create a tournament before creating a screen family."
 msgstr "Debe crear un torneo antes de crear una familia de pantalla."
 
-#: src/web/templates/admin_families.html:46
+#: src/web/templates/admin_families.html:29
+#, ai_translation, fuzzy
+msgid "Create a screen family"
+msgstr "Borrar la familia de pantalla."
+
+#: src/web/templates/admin_families.html:34
 #, ai_translation
 msgid "Add a family of screens to enter the results."
 msgstr "Añadir una familia de pantallas para introducir los resultados."
 
-#: src/web/templates/admin_families.html:50
+#: src/web/templates/admin_families.html:35
 #, ai_translation
 msgid "Add a family of screens to display the pairings by board."
 msgstr "Añadir una familia de pantallas para mostrar los emparejamientos por tablero."
 
-#: src/web/templates/admin_families.html:54
+#: src/web/templates/admin_families.html:36
 #, ai_translation
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético."
 
-#: src/web/templates/admin_families.html:87
+#: src/web/templates/admin_families.html:55
+#, ai_translation
+msgid "Enable/disable the details of the screen families on the cards below."
+msgstr "Activar/desactivar los detalles de las familias de pantalla en las tarjetas de abajo."
+
+#: src/web/templates/admin_families.html:65
+#: src/web/templates/admin_rotators.html:23
+#: src/web/templates/admin_screens.html:82
+#, ai_translation
+msgid "Details"
+msgstr "Detalles"
+
+#: src/web/templates/admin_families.html:95
 #: src/web/templates/admin_rotator_modal.html:190
 #, ai_translation
 msgid "No screen families."
@@ -3675,57 +3685,82 @@ msgstr "Nombre: por defecto"
 msgid "Screens"
 msgstr "Pantallas"
 
-#: src/web/templates/admin_screens.html:13
-#, ai_translation
-msgid "Show/hide the screens created from screen families."
-msgstr "Mostrar/ocultar las pantallas creadas a partir de las familias de pantallas."
-
-#: src/web/templates/admin_screens.html:23
-#, ai_translation
-msgid "Families"
-msgstr "Familias"
-
-#: src/web/templates/admin_screens.html:29
-#, ai_translation
-msgid "Enable/disable the details of the screens on the cards below."
-msgstr "Activar/desactivar los detalles de las pantallas de las tarjetas de abajo."
-
-#: src/web/templates/admin_screens.html:60
-#, ai_translation
-msgid "Show/hide the input screens."
-msgstr "Mostrar/ocultar las pantallas de entrada."
-
-#: src/web/templates/admin_screens.html:65
-#, ai_translation
-msgid "Show/hide the boards screens."
-msgstr "Mostrar/ocultar las pantallas de los tableros."
-
-#: src/web/templates/admin_screens.html:70
-#, ai_translation
-msgid "Show/hide the players screens."
-msgstr "Mostrar/ocultar las pantallas de los reproductores."
-
-#: src/web/templates/admin_screens.html:75
-#, ai_translation
-msgid "Show/hide the results screens."
-msgstr "Mostrar/ocultar las pantallas de resultados."
-
-#: src/web/templates/admin_screens.html:80
-#, ai_translation
-msgid "Show/hide the image screens."
-msgstr "Mostrar/ocultar las pantallas de imagen."
-
-#: src/web/templates/admin_screens.html:110
-#, ai_translation
-msgid "Add a screen to the event."
-msgstr "Agregue una pantalla al evento."
-
-#: src/web/templates/admin_screens.html:112
+#: src/web/templates/admin_screens.html:15
 #, ai_translation
 msgid "You must create a tournament before creating screens."
 msgstr "Debes crear un torneo antes de crear pantallas."
 
-#: src/web/templates/admin_screens.html:150
+#: src/web/templates/admin_screens.html:29
+#, ai_translation, fuzzy
+msgid "Create a screen"
+msgstr "Crear un evento"
+
+#: src/web/templates/admin_screens.html:33
+#, ai_translation, fuzzy
+msgid "Add a screen to enter the results."
+msgstr "Añadir una familia de pantallas para introducir los resultados."
+
+#: src/web/templates/admin_screens.html:34
+#, ai_translation, fuzzy
+msgid "Add a screen to display the pairings by board."
+msgstr "Añadir una familia de pantallas para mostrar los emparejamientos por tablero."
+
+#: src/web/templates/admin_screens.html:35
+#, ai_translation, fuzzy
+msgid "Add a screen to display the pairings by alphabetical order."
+msgstr "Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético."
+
+#: src/web/templates/admin_screens.html:36
+#, ai_translation, fuzzy
+msgid "Add a screen to display the last results."
+msgstr "Agregue una pantalla al evento."
+
+#: src/web/templates/admin_screens.html:37
+#, ai_translation, fuzzy
+msgid "Add a screen to display an image."
+msgstr "Agregue una pantalla al evento."
+
+#: src/web/templates/admin_screens.html:56
+#, ai_translation
+msgid "Show/hide the screens created from screen families."
+msgstr "Mostrar/ocultar las pantallas creadas a partir de las familias de pantallas."
+
+#: src/web/templates/admin_screens.html:66
+#, ai_translation
+msgid "Families"
+msgstr "Familias"
+
+#: src/web/templates/admin_screens.html:72
+#, ai_translation
+msgid "Enable/disable the details of the screens on the cards below."
+msgstr "Activar/desactivar los detalles de las pantallas de las tarjetas de abajo."
+
+#: src/web/templates/admin_screens.html:103
+#, ai_translation
+msgid "Show/hide the input screens."
+msgstr "Mostrar/ocultar las pantallas de entrada."
+
+#: src/web/templates/admin_screens.html:108
+#, ai_translation
+msgid "Show/hide the boards screens."
+msgstr "Mostrar/ocultar las pantallas de los tableros."
+
+#: src/web/templates/admin_screens.html:113
+#, ai_translation
+msgid "Show/hide the players screens."
+msgstr "Mostrar/ocultar las pantallas de los reproductores."
+
+#: src/web/templates/admin_screens.html:118
+#, ai_translation
+msgid "Show/hide the results screens."
+msgstr "Mostrar/ocultar las pantallas de resultados."
+
+#: src/web/templates/admin_screens.html:123
+#, ai_translation
+msgid "Show/hide the image screens."
+msgstr "Mostrar/ocultar las pantallas de imagen."
+
+#: src/web/templates/admin_screens.html:168
 #: src/web/templates/user_event.html:117
 #, ai_translation
 msgid "No such screens."

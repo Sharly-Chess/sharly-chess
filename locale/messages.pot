@@ -700,14 +700,16 @@ msgstr ""
 #: src/data/screen.py:97 src/data/screen.py:178
 #: src/web/controllers/admin/index_admin_controller.py:108
 #: src/web/controllers/admin/screen_admin_controller.py:359
-#: src/web/templates/admin_screens.html:74
+#: src/web/templates/admin_screens.html:36
+#: src/web/templates/admin_screens.html:117
 msgid "Last results"
 msgstr ""
 
 #: src/data/screen.py:99
 #: src/web/controllers/admin/index_admin_controller.py:109
 #: src/web/controllers/admin/screen_admin_controller.py:361
-#: src/web/templates/admin_screens.html:79
+#: src/web/templates/admin_screens.html:37
+#: src/web/templates/admin_screens.html:122
 msgid "Image"
 msgstr ""
 
@@ -1180,8 +1182,9 @@ msgstr ""
 #: src/web/controllers/admin/screen_admin_controller.py:353
 #: src/web/controllers/admin/tournament_admin_controller.py:329
 #: src/web/templates/admin_event_modal.html:190
-#: src/web/templates/admin_families.html:45
-#: src/web/templates/admin_screens.html:59
+#: src/web/templates/admin_families.html:34
+#: src/web/templates/admin_screens.html:33
+#: src/web/templates/admin_screens.html:102
 msgid "Results entry"
 msgstr ""
 
@@ -1195,8 +1198,9 @@ msgstr ""
 #: src/web/controllers/admin/index_admin_controller.py:105
 #: src/web/controllers/admin/screen_admin_controller.py:357
 #: src/web/controllers/admin/tournament_admin_controller.py:331
-#: src/web/templates/admin_families.html:53
-#: src/web/templates/admin_screens.html:69
+#: src/web/templates/admin_families.html:36
+#: src/web/templates/admin_screens.html:35
+#: src/web/templates/admin_screens.html:112
 msgid "Pairings by player"
 msgstr ""
 
@@ -1231,8 +1235,9 @@ msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:104
 #: src/web/controllers/admin/tournament_admin_controller.py:330
-#: src/web/templates/admin_families.html:49
-#: src/web/templates/admin_screens.html:64
+#: src/web/templates/admin_families.html:35
+#: src/web/templates/admin_screens.html:34
+#: src/web/templates/admin_screens.html:107
 msgid "Pairings by board"
 msgstr ""
 
@@ -1773,7 +1778,7 @@ msgstr ""
 
 #: src/web/templates/admin_chessevents.html:10
 #: src/web/templates/admin_events.html:9
-#: src/web/templates/admin_screens.html:42
+#: src/web/templates/admin_screens.html:85
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
 msgid "Refresh this page."
@@ -2211,33 +2216,37 @@ msgstr ""
 msgid "Screen families"
 msgstr ""
 
-#: src/web/templates/admin_families.html:13
-msgid "Enable/disable the details of the screen families on the cards below."
-msgstr ""
-
-#: src/web/templates/admin_families.html:23
-#: src/web/templates/admin_rotators.html:23
-#: src/web/templates/admin_screens.html:39
-msgid "Details"
-msgstr ""
-
-#: src/web/templates/admin_families.html:42
+#: src/web/templates/admin_families.html:15
 msgid "You must create a tournament before creating a screen family."
 msgstr ""
 
-#: src/web/templates/admin_families.html:46
+#: src/web/templates/admin_families.html:29
+msgid "Create a screen family"
+msgstr ""
+
+#: src/web/templates/admin_families.html:34
 msgid "Add a family of screens to enter the results."
 msgstr ""
 
-#: src/web/templates/admin_families.html:50
+#: src/web/templates/admin_families.html:35
 msgid "Add a family of screens to display the pairings by board."
 msgstr ""
 
-#: src/web/templates/admin_families.html:54
+#: src/web/templates/admin_families.html:36
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr ""
 
-#: src/web/templates/admin_families.html:87
+#: src/web/templates/admin_families.html:55
+msgid "Enable/disable the details of the screen families on the cards below."
+msgstr ""
+
+#: src/web/templates/admin_families.html:65
+#: src/web/templates/admin_rotators.html:23
+#: src/web/templates/admin_screens.html:82
+msgid "Details"
+msgstr ""
+
+#: src/web/templates/admin_families.html:95
 #: src/web/templates/admin_rotator_modal.html:190
 msgid "No screen families."
 msgstr ""
@@ -3063,47 +3072,67 @@ msgstr ""
 msgid "Screens"
 msgstr ""
 
-#: src/web/templates/admin_screens.html:13
-msgid "Show/hide the screens created from screen families."
-msgstr ""
-
-#: src/web/templates/admin_screens.html:23
-msgid "Families"
-msgstr ""
-
-#: src/web/templates/admin_screens.html:29
-msgid "Enable/disable the details of the screens on the cards below."
-msgstr ""
-
-#: src/web/templates/admin_screens.html:60
-msgid "Show/hide the input screens."
-msgstr ""
-
-#: src/web/templates/admin_screens.html:65
-msgid "Show/hide the boards screens."
-msgstr ""
-
-#: src/web/templates/admin_screens.html:70
-msgid "Show/hide the players screens."
-msgstr ""
-
-#: src/web/templates/admin_screens.html:75
-msgid "Show/hide the results screens."
-msgstr ""
-
-#: src/web/templates/admin_screens.html:80
-msgid "Show/hide the image screens."
-msgstr ""
-
-#: src/web/templates/admin_screens.html:110
-msgid "Add a screen to the event."
-msgstr ""
-
-#: src/web/templates/admin_screens.html:112
+#: src/web/templates/admin_screens.html:15
 msgid "You must create a tournament before creating screens."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:150
+#: src/web/templates/admin_screens.html:29
+msgid "Create a screen"
+msgstr ""
+
+#: src/web/templates/admin_screens.html:33
+msgid "Add a screen to enter the results."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:34
+msgid "Add a screen to display the pairings by board."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:35
+msgid "Add a screen to display the pairings by alphabetical order."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:36
+msgid "Add a screen to display the last results."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:37
+msgid "Add a screen to display an image."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:56
+msgid "Show/hide the screens created from screen families."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:66
+msgid "Families"
+msgstr ""
+
+#: src/web/templates/admin_screens.html:72
+msgid "Enable/disable the details of the screens on the cards below."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:103
+msgid "Show/hide the input screens."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:108
+msgid "Show/hide the boards screens."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:113
+msgid "Show/hide the players screens."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:118
+msgid "Show/hide the results screens."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:123
+msgid "Show/hide the image screens."
+msgstr ""
+
+#: src/web/templates/admin_screens.html:168
 #: src/web/templates/user_event.html:117
 msgid "No such screens."
 msgstr ""

@@ -14,9 +14,9 @@
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
 |Κενά υποχρεωτικά μηνύματα|0/16|
-|Κενά μηνύματα|2/865|
-|Message flagged [fuzzy]|5/865|
-|Message flagged [ai_translation]|863/865|
+|Κενά μηνύματα|2/871|
+|Message flagged [fuzzy]|12/871|
+|Message flagged [ai_translation]|869/871|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
@@ -27,9 +27,9 @@
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:372|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Σημειωθέντα μηνύματα (868)
+## Σημειωθέντα μηνύματα (881)
 
-### Μήνυμα που σημαδεύτηκε [fuzzy] (5)
+### Μήνυμα που σημαδεύτηκε [fuzzy] (12)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -37,9 +37,16 @@
 |The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
 |The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
 |Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
+|Create a screen family|Διαγράψτε την οικογένεια οθόνης.|src/web/templates/admin_families.html:29|
 |Menus|Μενού:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Create a screen|Δημιουργία ενός γεγονότος|src/web/templates/admin_screens.html:29|
+|Add a screen to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_screens.html:33|
+|Add a screen to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_screens.html:34|
+|Add a screen to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_screens.html:35|
+|Add a screen to display the last results.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:36|
+|Add a screen to display an image.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:37|
 
-### Μήνυμα που σημαδεύτηκε [ai_translation] (863)
+### Μήνυμα που σημαδεύτηκε [ai_translation] (869)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -213,8 +220,8 @@
 |Unpaired \*\*\* MALE \*\*\*|Μη ζευγάρι|src/data/player.py:92|
 |Exempt \*\*\* FEMALE \*\*\*|Απομάκρυνση|src/data/player.py:96|
 |Exempt \*\*\* MALE \*\*\*|Απομάκρυνση|src/data/player.py:96|
-|Last results|Τελευταία αποτελέσματα|src/data/screen.py:97<br>src/data/screen.py:178<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:359<br>src/web/templates/admin_screens.html:74|
-|Image|Εικόνα|src/data/screen.py:99<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:361<br>src/web/templates/admin_screens.html:79|
+|Last results|Τελευταία αποτελέσματα|src/data/screen.py:97<br>src/data/screen.py:178<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:359<br>src/web/templates/admin_screens.html:36<br>src/web/templates/admin_screens.html:117|
+|Image|Εικόνα|src/data/screen.py:99<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:361<br>src/web/templates/admin_screens.html:37<br>src/web/templates/admin_screens.html:122|
 |Boards %f-%l|Δ.Σ. %f-%l|src/data/screen.py:125<br>src/data/screen_set.py:124|
 |By board|Με το διοικητικό συμβούλιο|src/data/screen.py:127|
 |%t [Boards %f-%l]|%t [Συμβόλαια %f-%l]|src/data/screen.py:130|
@@ -322,16 +329,16 @@
 |A positive integer is expected.|Αναμένεται ένας θετικός ακέραιος αριθμός.|src/web/controllers/admin/family_admin_controller.py:135<br>src/web/controllers/admin/family_admin_controller.py:140<br>src/web/controllers/admin/family_admin_controller.py:150<br>src/web/controllers/admin/family_admin_controller.py:155<br>src/web/controllers/admin/family_admin_controller.py:160<br>src/web/controllers/admin/family_admin_controller.py:179<br>src/web/controllers/admin/family_admin_controller.py:184<br>src/web/controllers/admin/rotator_admin_controller.py:94<br>src/web/controllers/admin/screen_admin_controller.py:143<br>src/web/controllers/admin/screen_admin_controller.py:154<br>src/web/controllers/admin/screen_admin_controller.py:167<br>src/web/controllers/admin/screen_admin_controller.py:172<br>src/web/controllers/admin/screen_admin_controller.py:261<br>src/web/controllers/admin/screen_admin_controller.py:266<br>src/web/controllers/admin/screen_admin_controller.py:271|
 |Timer [{timer_id}] not found.|Ο χρονοδιακόπτης [{timer_id}] δεν βρέθηκε.|src/web/controllers/admin/family_admin_controller.py:148<br>src/web/controllers/admin/screen_admin_controller.py:152|
 |Specifying the number of parts and the number of items per part is not possible.|Ο προσδιορισμός του αριθμού των μερών και του αριθμού των στοιχείων ανά μέρος δεν είναι δυνατός.|src/web/controllers/admin/family_admin_controller.py:186|
-|Results entry|Είσοδος των αποτελεσμάτων|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:45<br>src/web/templates/admin_screens.html:59|
+|Results entry|Είσοδος των αποτελεσμάτων|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:34<br>src/web/templates/admin_screens.html:33<br>src/web/templates/admin_screens.html:102|
 |pairings by board|Συναρμολογήσεις με το διοικητικό συμβούλιο|src/web/controllers/admin/family_admin_controller.py:272<br>src/web/controllers/admin/screen_admin_controller.py:355<br>src/web/templates/admin_rotator_modal.html:121|
-|Pairings by player|Ζευγάρωμα από τον παίκτη|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:53<br>src/web/templates/admin_screens.html:69|
+|Pairings by player|Ζευγάρωμα από τον παίκτη|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:36<br>src/web/templates/admin_screens.html:35<br>src/web/templates/admin_screens.html:112|
 |No recording|Χωρίς εγγραφή|src/web/controllers/admin/index_admin_controller.py:77<br>src/web/templates/admin_event_config.html:108|
 |**Μοναδικός:** {num} illegal move max<br/>**Πληθυντικός:** {num} illegal moves max|**Μοναδικός:** {num} παράνομη κίνηση max<br/>**Πληθυντικός:** {num} παράνομες κινήσεις max|src/web/controllers/admin/index_admin_controller.py:79|
 |By default - {option}|Από προεπιλογή - {option}|src/web/controllers/admin/index_admin_controller.py:82<br>src/web/controllers/admin/index_admin_controller.py:128<br>src/web/controllers/admin/index_admin_controller.py:139|
 |Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|Χρώμα #1 χρησιμοποιείται μέχρι {delay_1} λεπτά πριν από την έναρξη των γύρων (Delay #1), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #2 ({delay_2} λεπτά πριν από την έναρξη των γύρων).|src/web/controllers/admin/index_admin_controller.py:88|
 |Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Χρώμα #2 χρησιμοποιείται {delay_2} λεπτά πριν από την έναρξη των γύρων (delay #2), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #3 (στην αρχή των γύρων).|src/web/controllers/admin/index_admin_controller.py:91|
 |Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|Χρώμα #3 χρησιμοποιείται από την αρχή των γύρων και για {delay_3} λεπτά μετά (delay #3).|src/web/controllers/admin/index_admin_controller.py:94|
-|Pairings by board|Ζευγαρώματα με βάση το πλοίο|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:49<br>src/web/templates/admin_screens.html:64|
+|Pairings by board|Ζευγαρώματα με βάση το πλοίο|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:35<br>src/web/templates/admin_screens.html:34<br>src/web/templates/admin_screens.html:107|
 |Use no timer|Μη χρησιμοποιείτε χρονοδιακόπτη|src/web/controllers/admin/index_admin_controller.py:115|
 |No timer defined|Δεν ορίζεται χρονοδιακόπτης|src/web/controllers/admin/index_admin_controller.py:115|
 |Timer {timer_uniq_id}|Χρονοδιακόπτης {timer_uniq_id}|src/web/controllers/admin/index_admin_controller.py:118|
@@ -445,7 +452,7 @@
 |Update|Ενημέρωση|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
 |Delete|Διαγραφή|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
 |Cancel|Ακύρωση|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
-|Refresh this page.|Ανανέωση αυτής της σελίδας.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:42<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
+|Refresh this page.|Ανανέωση αυτής της σελίδας.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:85<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Προσθέστε μια σύνδεση σκακιού στο γεγονός.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Δημιουργία σύνδεσης σκακιού|src/web/templates/admin_chessevents.html:30|
 |No ChessEvent connections.|Καμία σύνδεση με το Σκάκι.|src/web/templates/admin_chessevents.html:45<br>src/web/templates/admin_tournament_modal.html:261|
@@ -534,13 +541,14 @@
 |E.g.: Please keep quiet until the end of the round!|Π.χ.: Παρακαλώ κάντε ησυχία μέχρι το τέλος του γύρου!|src/web/templates/admin_event_modal.html:537<br>src/web/templates/admin_screen_modal_message.html:18|
 |When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.|Όταν ορίζεται, το μήνυμα ειδοποίησης εμφανίζεται σε ένα λάβαρο κύλισης στο κάτω μέρος των οθονών. Το μήνυμα συναγερμού που ορίζεται στο επίπεδο γεγονότων μπορεί να παρακαμφθεί σε περιστροφέα, οικογένεια οθόνης ή επίπεδο οθόνης.|src/web/templates/admin_event_modal.html:540|
 |Screen families|Οικογένειες οθόνης|src/web/templates/admin_families.html:6|
-|Enable/disable the details of the screen families on the cards below.|Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των οικογενειών οθόνης στις παρακάτω κάρτες.|src/web/templates/admin_families.html:13|
-|Details|Λεπτομέρειες|src/web/templates/admin_families.html:23<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:39|
-|You must create a tournament before creating a screen family.|Πρέπει να δημιουργήσετε ένα τουρνουά πριν από τη δημιουργία μιας οικογένειας οθόνη.|src/web/templates/admin_families.html:42|
-|Add a family of screens to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_families.html:46|
-|Add a family of screens to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_families.html:50|
-|Add a family of screens to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_families.html:54|
-|No screen families.|Δεν υπάρχουν οικογένειες για την οθόνη.|src/web/templates/admin_families.html:87<br>src/web/templates/admin_rotator_modal.html:190|
+|You must create a tournament before creating a screen family.|Πρέπει να δημιουργήσετε ένα τουρνουά πριν από τη δημιουργία μιας οικογένειας οθόνη.|src/web/templates/admin_families.html:15|
+|Create a screen family|Διαγράψτε την οικογένεια οθόνης.|src/web/templates/admin_families.html:29|
+|Add a family of screens to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_families.html:34|
+|Add a family of screens to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_families.html:35|
+|Add a family of screens to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_families.html:36|
+|Enable/disable the details of the screen families on the cards below.|Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των οικογενειών οθόνης στις παρακάτω κάρτες.|src/web/templates/admin_families.html:55|
+|Details|Λεπτομέρειες|src/web/templates/admin_families.html:65<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:82|
+|No screen families.|Δεν υπάρχουν οικογένειες για την οθόνη.|src/web/templates/admin_families.html:95<br>src/web/templates/admin_rotator_modal.html:190|
 |Type: %(family_type)s|Τύπος: %(family_type)s|src/web/templates/admin_family_card.html:16|
 |Tournament: %(tournament_name)s|Τουρνουά: %(tournament_name)s|src/web/templates/admin_family_card.html:19<br>src/web/templates/admin_screen_sets_modal_set_div.html:182|
 |Selection: %(selection)s|Επιλογή: %(selection)s|src/web/templates/admin_family_card.html:22<br>src/web/templates/admin_screen_sets_modal_set_div.html:191|
@@ -720,17 +728,22 @@
 |Name: %(screen_set_name)s|Όνομα: %(screen_set_name)s|src/web/templates/admin_screen_sets_modal_set_div.html:195|
 |Name: by default|Όνομα: εξ ορισμού|src/web/templates/admin_screen_sets_modal_set_div.html:198|
 |Screens|Οθόνες|src/web/templates/admin_screens.html:6|
-|Show/hide the screens created from screen families.|Εμφάνιση/απόκρυψη των οθονών που δημιουργούνται από οικογένειες οθόνης.|src/web/templates/admin_screens.html:13|
-|Families|Οικογένειες|src/web/templates/admin_screens.html:23|
-|Enable/disable the details of the screens on the cards below.|Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των οθονών στις παρακάτω κάρτες.|src/web/templates/admin_screens.html:29|
-|Show/hide the input screens.|Εμφάνιση/απόκρυψη των οθονών εισόδου.|src/web/templates/admin_screens.html:60|
-|Show/hide the boards screens.|Εμφάνιση / απόκρυψη των οθονών πίνακες.|src/web/templates/admin_screens.html:65|
-|Show/hide the players screens.|Εμφάνιση/απόκρυψη των οθονών των παικτών.|src/web/templates/admin_screens.html:70|
-|Show/hide the results screens.|Εμφάνιση/απόκρυψη των οθονών αποτελεσμάτων.|src/web/templates/admin_screens.html:75|
-|Show/hide the image screens.|Εμφάνιση/απόκρυψη των οθονών εικόνας.|src/web/templates/admin_screens.html:80|
-|Add a screen to the event.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:110|
-|You must create a tournament before creating screens.|Πρέπει να δημιουργήσετε ένα τουρνουά πριν δημιουργήσετε οθόνες.|src/web/templates/admin_screens.html:112|
-|No such screens.|Δεν υπάρχουν τέτοιες οθόνες.|src/web/templates/admin_screens.html:150<br>src/web/templates/user_event.html:117|
+|You must create a tournament before creating screens.|Πρέπει να δημιουργήσετε ένα τουρνουά πριν δημιουργήσετε οθόνες.|src/web/templates/admin_screens.html:15|
+|Create a screen|Δημιουργία ενός γεγονότος|src/web/templates/admin_screens.html:29|
+|Add a screen to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_screens.html:33|
+|Add a screen to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_screens.html:34|
+|Add a screen to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_screens.html:35|
+|Add a screen to display the last results.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:36|
+|Add a screen to display an image.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:37|
+|Show/hide the screens created from screen families.|Εμφάνιση/απόκρυψη των οθονών που δημιουργούνται από οικογένειες οθόνης.|src/web/templates/admin_screens.html:56|
+|Families|Οικογένειες|src/web/templates/admin_screens.html:66|
+|Enable/disable the details of the screens on the cards below.|Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των οθονών στις παρακάτω κάρτες.|src/web/templates/admin_screens.html:72|
+|Show/hide the input screens.|Εμφάνιση/απόκρυψη των οθονών εισόδου.|src/web/templates/admin_screens.html:103|
+|Show/hide the boards screens.|Εμφάνιση / απόκρυψη των οθονών πίνακες.|src/web/templates/admin_screens.html:108|
+|Show/hide the players screens.|Εμφάνιση/απόκρυψη των οθονών των παικτών.|src/web/templates/admin_screens.html:113|
+|Show/hide the results screens.|Εμφάνιση/απόκρυψη των οθονών αποτελεσμάτων.|src/web/templates/admin_screens.html:118|
+|Show/hide the image screens.|Εμφάνιση/απόκρυψη των οθονών εικόνας.|src/web/templates/admin_screens.html:123|
+|No such screens.|Δεν υπάρχουν τέτοιες οθόνες.|src/web/templates/admin_screens.html:168<br>src/web/templates/user_event.html:117|
 |Round #%(round)d|Στρογγυλός #%(round)d|src/web/templates/admin_timer_card.html:23|
 |No hours.|Όχι ώρες.|src/web/templates/admin_timer_card.html:29<br>src/web/templates/admin_timer_hours_modal.html:29|
 |Edit the properties of the timer.|Επεξεργασία των ιδιοτήτων του χρονοδιακόπτη.|src/web/templates/admin_timer_card.html:35|

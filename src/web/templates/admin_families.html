@@ -7,6 +7,48 @@
 {% endblock %}
 
 {% block cards_container_right_buttons %}
+    <span
+            class="dropdown pe-3"
+            {% if not admin_event.tournaments_by_id %}
+                {{ tooltip_attributes(
+                    'info',
+                    _('You must create a tournament before creating a screen family.'),
+                    'left'
+                ) }}
+            {% endif %}
+    >
+        <button
+                class="btn btn-primary dropdown-toggle mx-auto"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                {% if not admin_event.tournaments_by_id %}
+                    disabled
+                {% endif %}
+        >
+            <i class="bi-plus-square"></i> {{ _('Create a screen family') }}
+        </button>
+        <ul class="dropdown-menu">
+            {% set no_tournament_message=_('') %}
+            {% for family_type, family_data in {
+                'input': { 'title': _('Results entry'), 'icon_class': 'bi-pencil-fill', 'tooltip_text': _('Add a family of screens to enter the results.'), },
+                'boards': { 'title': _('Pairings by board'), 'icon_class': 'bi-card-list', 'tooltip_text': _('Add a family of screens to display the pairings by board.'), },
+                'players': { 'title': _('Pairings by player'), 'icon_class': 'bi-people-fill', 'tooltip_text': _('Add a family of screens to display the pairings by alphabetical order.'), },
+            }.items() %}
+                <li
+                    class="dropdown-item text-start cursor-pointer"
+                    hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {{ tooltip_attributes('info', family_data.tooltip_text, 'left') }}
+                >
+                    <i class="{{ family_data['icon_class'] }}"></i>
+                    {{ family_data['title'] }}
+                </li>
+            {% endfor %}
+        </ul>
+    </span>
     {% with id='show-details-on-family-list', name='show_details_on_family_list' %}
         <div
                 class="form-check form-switch d-inline-block pe-3 mt-2"
@@ -25,7 +67,7 @@
     {% endwith %}
     <span {{ tooltip_attributes('info', 'Refresh this page.', 'top') }}>
         <button
-                class="btn btn-primary text-nowrap me-2"
+                class="btn btn-primary text-nowrap"
                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
                 preload
                 hx-target="body"
@@ -37,40 +79,6 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row">
-        <div class="col-12 mb-2">
-            {% set no_tournament_message=_('You must create a tournament before creating a screen family.') %}
-            {% for family_type, family_data in {
-                'input': {
-                    'text': _('Results entry'),
-                    'tooltip_text': _('Add a family of screens to enter the results.'),
-                },
-                'boards': {
-                    'text': _('Pairings by board'),
-                    'tooltip_text': _('Add a family of screens to display the pairings by board.'),
-                },
-                'players': {
-                    'text': _('Pairings by player'),
-                    'tooltip_text': _('Add a family of screens to display the pairings by alphabetical order.'),
-                },
-            }.items() %}
-                <span {{ tooltip_attributes('info', family_data.tooltip_text if admin_event.tournaments_by_id else no_tournament_message, 'top') }}>
-                    <button
-                            class="btn btn-primary text-nowrap"
-                            hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
-                            preload
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            {% if not admin_event.tournaments_by_id %}
-                                disabled
-                            {% endif %}
-                    >
-                        <i class="bi-plus-square-fill"></i> {{ family_data.text }}
-                    </button>
-                </span>
-            {% endfor %}
-        </div>
-    </div>
     <div class="row">
         {% if admin_event.families_by_id %}
             {% for family in admin_event.families_by_id.values() %}

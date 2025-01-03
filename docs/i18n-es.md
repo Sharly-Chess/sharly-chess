@@ -14,17 +14,17 @@
 | locale=`es` | Español <img src="../src/web/static/images/locales/es.svg" style="height: 1em;"/> |
 |--|:--:|
 |Mensajes obligatorios vacíos|0/16|
-|Mensajes vacíos|0/865|
-|Message flagged [fuzzy]|5/865|
-|Message flagged [ai_translation]|864/865|
+|Mensajes vacíos|0/871|
+|Message flagged [fuzzy]|12/871|
+|Message flagged [ai_translation]|870/871|
 
 ## Mensajes obligatorios vacíos (-)
 
 ## Mensajes vacíos (-)
 
-## Mensajes marcados (869)
+## Mensajes marcados (882)
 
-### Mensaje marcado [fuzzy] (5)
+### Mensaje marcado [fuzzy] (12)
 
 |id de mensaje|Traducción|Ubicaciones|
 |--|--|--|
@@ -32,9 +32,16 @@
 |The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Conexión ChessEvent no establecida para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
 |The Papi file is not defined for tournament [{tournament_uniq_id}].|Archivo Papi no definido para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
 |Tournament [{tournament_uniq_id}] has started.|El torneo [{tournament_uniq_id}] ha comenzado.|src/chessevent/action_selector.py:50|
+|Create a screen family|Borrar la familia de pantalla.|src/web/templates/admin_families.html:29|
 |Menus|Menú:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Create a screen|Crear un evento|src/web/templates/admin_screens.html:29|
+|Add a screen to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_screens.html:33|
+|Add a screen to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_screens.html:34|
+|Add a screen to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_screens.html:35|
+|Add a screen to display the last results.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:36|
+|Add a screen to display an image.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:37|
 
-### Mensaje marcado [ai_translation] (864)
+### Mensaje marcado [ai_translation] (870)
 
 |id de mensaje|Traducción|Ubicaciones|
 |--|--|--|
@@ -208,8 +215,8 @@
 |Unpaired \*\*\* MALE \*\*\*|Sin emparejar|src/data/player.py:92|
 |Exempt \*\*\* FEMALE \*\*\*|Exento|src/data/player.py:96|
 |Exempt \*\*\* MALE \*\*\*|Exento|src/data/player.py:96|
-|Last results|Últimos resultados|src/data/screen.py:97<br>src/data/screen.py:178<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:359<br>src/web/templates/admin_screens.html:74|
-|Image|Imagen|src/data/screen.py:99<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:361<br>src/web/templates/admin_screens.html:79|
+|Last results|Últimos resultados|src/data/screen.py:97<br>src/data/screen.py:178<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:359<br>src/web/templates/admin_screens.html:36<br>src/web/templates/admin_screens.html:117|
+|Image|Imagen|src/data/screen.py:99<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:361<br>src/web/templates/admin_screens.html:37<br>src/web/templates/admin_screens.html:122|
 |Boards %f-%l|Tablas %f-%l|src/data/screen.py:125<br>src/data/screen_set.py:124|
 |By board|Por tablero|src/data/screen.py:127|
 |%t [Boards %f-%l]|%t [Boards %f-%l]|src/data/screen.py:130|
@@ -317,16 +324,16 @@
 |A positive integer is expected.|Se espera un número entero positivo.|src/web/controllers/admin/family_admin_controller.py:135<br>src/web/controllers/admin/family_admin_controller.py:140<br>src/web/controllers/admin/family_admin_controller.py:150<br>src/web/controllers/admin/family_admin_controller.py:155<br>src/web/controllers/admin/family_admin_controller.py:160<br>src/web/controllers/admin/family_admin_controller.py:179<br>src/web/controllers/admin/family_admin_controller.py:184<br>src/web/controllers/admin/rotator_admin_controller.py:94<br>src/web/controllers/admin/screen_admin_controller.py:143<br>src/web/controllers/admin/screen_admin_controller.py:154<br>src/web/controllers/admin/screen_admin_controller.py:167<br>src/web/controllers/admin/screen_admin_controller.py:172<br>src/web/controllers/admin/screen_admin_controller.py:261<br>src/web/controllers/admin/screen_admin_controller.py:266<br>src/web/controllers/admin/screen_admin_controller.py:271|
 |Timer [{timer_id}] not found.|Temporizador [{timer_id}] no encontrado.|src/web/controllers/admin/family_admin_controller.py:148<br>src/web/controllers/admin/screen_admin_controller.py:152|
 |Specifying the number of parts and the number of items per part is not possible.|No es posible especificar el número de piezas y el número de elementos por pieza.|src/web/controllers/admin/family_admin_controller.py:186|
-|Results entry|Entrada de los resultados|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:45<br>src/web/templates/admin_screens.html:59|
+|Results entry|Entrada de los resultados|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:34<br>src/web/templates/admin_screens.html:33<br>src/web/templates/admin_screens.html:102|
 |pairings by board|emparejamientos a bordo|src/web/controllers/admin/family_admin_controller.py:272<br>src/web/controllers/admin/screen_admin_controller.py:355<br>src/web/templates/admin_rotator_modal.html:121|
-|Pairings by player|Maridajes por jugador|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:53<br>src/web/templates/admin_screens.html:69|
+|Pairings by player|Maridajes por jugador|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:36<br>src/web/templates/admin_screens.html:35<br>src/web/templates/admin_screens.html:112|
 |No recording|Sin grabación|src/web/controllers/admin/index_admin_controller.py:77<br>src/web/templates/admin_event_config.html:108|
 |**Singular:** {num} illegal move max<br/>**Plural:** {num} illegal moves max|**Singular:** {num} movimiento ilegal max<br/>**Plural:** {num} movimientos ilegales max|src/web/controllers/admin/index_admin_controller.py:79|
 |By default - {option}|Por defecto - {option}|src/web/controllers/admin/index_admin_controller.py:82<br>src/web/controllers/admin/index_admin_controller.py:128<br>src/web/controllers/admin/index_admin_controller.py:139|
 |Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|El colour #1 se utiliza hasta que {delay_1} minutos antes del inicio de las rondas (retraso #1), el color cambia gradualmente hasta el colour #2 ({delay_2} minutos antes del inicio de las rondas).|src/web/controllers/admin/index_admin_controller.py:88|
 |Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Colour #2 se utiliza {delay_2} minutos antes del inicio de las rondas (retraso #2), el color cambia gradualmente hasta el colour #3 (al comienzo de las rondas).|src/web/controllers/admin/index_admin_controller.py:91|
 |Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|El colour #3 se utiliza desde el inicio de las rondas y para {delay_3} minutos después (retraso #3).|src/web/controllers/admin/index_admin_controller.py:94|
-|Pairings by board|Maridajes a bordo|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:49<br>src/web/templates/admin_screens.html:64|
+|Pairings by board|Maridajes a bordo|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:35<br>src/web/templates/admin_screens.html:34<br>src/web/templates/admin_screens.html:107|
 |Use no timer|Usar sin temporizador|src/web/controllers/admin/index_admin_controller.py:115|
 |No timer defined|No se ha definido ningún temporizador|src/web/controllers/admin/index_admin_controller.py:115|
 |Timer {timer_uniq_id}|Cronómetro {timer_uniq_id}|src/web/controllers/admin/index_admin_controller.py:118|
@@ -440,7 +447,7 @@
 |Update|Actualizar|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
 |Delete|Eliminar|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
 |Cancel|Cancelar|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
-|Refresh this page.|Actualizar esta página.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:42<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
+|Refresh this page.|Actualizar esta página.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:85<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Añade una conexión ChessEvent al evento.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Crear una conexión ChessEvent|src/web/templates/admin_chessevents.html:30|
 |No ChessEvent connections.|Sin conexiones ChessEvent.|src/web/templates/admin_chessevents.html:45<br>src/web/templates/admin_tournament_modal.html:261|
@@ -529,13 +536,14 @@
 |E.g.: Please keep quiet until the end of the round!|E.g.: ¡Por favor, guarde silencio hasta el final de la ronda!|src/web/templates/admin_event_modal.html:537<br>src/web/templates/admin_screen_modal_message.html:18|
 |When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.|Cuando se define, el mensaje de alerta se muestra en un banner de desplazamiento en la parte inferior de las pantallas. El mensaje de alerta definido a nivel de evento puede ser anulado en el rotador, la familia de pantalla o el nivel de pantalla.|src/web/templates/admin_event_modal.html:540|
 |Screen families|Familias de cribado|src/web/templates/admin_families.html:6|
-|Enable/disable the details of the screen families on the cards below.|Activar/desactivar los detalles de las familias de pantalla en las tarjetas de abajo.|src/web/templates/admin_families.html:13|
-|Details|Detalles|src/web/templates/admin_families.html:23<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:39|
-|You must create a tournament before creating a screen family.|Debe crear un torneo antes de crear una familia de pantalla.|src/web/templates/admin_families.html:42|
-|Add a family of screens to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_families.html:46|
-|Add a family of screens to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_families.html:50|
-|Add a family of screens to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_families.html:54|
-|No screen families.|No hay familias de pantalla.|src/web/templates/admin_families.html:87<br>src/web/templates/admin_rotator_modal.html:190|
+|You must create a tournament before creating a screen family.|Debe crear un torneo antes de crear una familia de pantalla.|src/web/templates/admin_families.html:15|
+|Create a screen family|Borrar la familia de pantalla.|src/web/templates/admin_families.html:29|
+|Add a family of screens to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_families.html:34|
+|Add a family of screens to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_families.html:35|
+|Add a family of screens to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_families.html:36|
+|Enable/disable the details of the screen families on the cards below.|Activar/desactivar los detalles de las familias de pantalla en las tarjetas de abajo.|src/web/templates/admin_families.html:55|
+|Details|Detalles|src/web/templates/admin_families.html:65<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:82|
+|No screen families.|No hay familias de pantalla.|src/web/templates/admin_families.html:95<br>src/web/templates/admin_rotator_modal.html:190|
 |Type: %(family_type)s|Tipo: %(family_type)s|src/web/templates/admin_family_card.html:16|
 |Tournament: %(tournament_name)s|Torneo: %(tournament_name)s|src/web/templates/admin_family_card.html:19<br>src/web/templates/admin_screen_sets_modal_set_div.html:182|
 |Selection: %(selection)s|Selección: %(selection)s|src/web/templates/admin_family_card.html:22<br>src/web/templates/admin_screen_sets_modal_set_div.html:191|
@@ -715,17 +723,22 @@
 |Name: %(screen_set_name)s|Nombre: %(screen_set_name)s|src/web/templates/admin_screen_sets_modal_set_div.html:195|
 |Name: by default|Nombre: por defecto|src/web/templates/admin_screen_sets_modal_set_div.html:198|
 |Screens|Pantallas|src/web/templates/admin_screens.html:6|
-|Show/hide the screens created from screen families.|Mostrar/ocultar las pantallas creadas a partir de las familias de pantallas.|src/web/templates/admin_screens.html:13|
-|Families|Familias|src/web/templates/admin_screens.html:23|
-|Enable/disable the details of the screens on the cards below.|Activar/desactivar los detalles de las pantallas de las tarjetas de abajo.|src/web/templates/admin_screens.html:29|
-|Show/hide the input screens.|Mostrar/ocultar las pantallas de entrada.|src/web/templates/admin_screens.html:60|
-|Show/hide the boards screens.|Mostrar/ocultar las pantallas de los tableros.|src/web/templates/admin_screens.html:65|
-|Show/hide the players screens.|Mostrar/ocultar las pantallas de los reproductores.|src/web/templates/admin_screens.html:70|
-|Show/hide the results screens.|Mostrar/ocultar las pantallas de resultados.|src/web/templates/admin_screens.html:75|
-|Show/hide the image screens.|Mostrar/ocultar las pantallas de imagen.|src/web/templates/admin_screens.html:80|
-|Add a screen to the event.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:110|
-|You must create a tournament before creating screens.|Debes crear un torneo antes de crear pantallas.|src/web/templates/admin_screens.html:112|
-|No such screens.|No hay tales pantallas.|src/web/templates/admin_screens.html:150<br>src/web/templates/user_event.html:117|
+|You must create a tournament before creating screens.|Debes crear un torneo antes de crear pantallas.|src/web/templates/admin_screens.html:15|
+|Create a screen|Crear un evento|src/web/templates/admin_screens.html:29|
+|Add a screen to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_screens.html:33|
+|Add a screen to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_screens.html:34|
+|Add a screen to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_screens.html:35|
+|Add a screen to display the last results.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:36|
+|Add a screen to display an image.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:37|
+|Show/hide the screens created from screen families.|Mostrar/ocultar las pantallas creadas a partir de las familias de pantallas.|src/web/templates/admin_screens.html:56|
+|Families|Familias|src/web/templates/admin_screens.html:66|
+|Enable/disable the details of the screens on the cards below.|Activar/desactivar los detalles de las pantallas de las tarjetas de abajo.|src/web/templates/admin_screens.html:72|
+|Show/hide the input screens.|Mostrar/ocultar las pantallas de entrada.|src/web/templates/admin_screens.html:103|
+|Show/hide the boards screens.|Mostrar/ocultar las pantallas de los tableros.|src/web/templates/admin_screens.html:108|
+|Show/hide the players screens.|Mostrar/ocultar las pantallas de los reproductores.|src/web/templates/admin_screens.html:113|
+|Show/hide the results screens.|Mostrar/ocultar las pantallas de resultados.|src/web/templates/admin_screens.html:118|
+|Show/hide the image screens.|Mostrar/ocultar las pantallas de imagen.|src/web/templates/admin_screens.html:123|
+|No such screens.|No hay tales pantallas.|src/web/templates/admin_screens.html:168<br>src/web/templates/user_event.html:117|
 |Round #%(round)d|Ronda #%(round)d|src/web/templates/admin_timer_card.html:23|
 |No hours.|No hay horas.|src/web/templates/admin_timer_card.html:29<br>src/web/templates/admin_timer_hours_modal.html:29|
 |Edit the properties of the timer.|Editar las propiedades del temporizador.|src/web/templates/admin_timer_card.html:35|
