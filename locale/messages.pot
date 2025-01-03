@@ -1725,9 +1725,9 @@ msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:166
 #: src/web/templates/admin_event_modal.html:561
-#: src/web/templates/admin_family_modal.html:475
+#: src/web/templates/admin_family_modal.html:480
 #: src/web/templates/admin_rotator_modal.html:221
-#: src/web/templates/admin_screen_modal.html:487
+#: src/web/templates/admin_screen_modal.html:492
 #: src/web/templates/admin_timer_modal.html:82
 #: src/web/templates/admin_tournament_modal.html:431
 msgid "Create"
@@ -1735,9 +1735,9 @@ msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:168
 #: src/web/templates/admin_event_modal.html:563
-#: src/web/templates/admin_family_modal.html:477
+#: src/web/templates/admin_family_modal.html:482
 #: src/web/templates/admin_rotator_modal.html:223
-#: src/web/templates/admin_screen_modal.html:489
+#: src/web/templates/admin_screen_modal.html:494
 #: src/web/templates/admin_screen_sets_modal_set_div.html:65
 #: src/web/templates/admin_timer_modal.html:84
 #: src/web/templates/admin_tournament_modal.html:433
@@ -1747,9 +1747,9 @@ msgstr ""
 #: src/web/templates/admin_chessevent_modal.html:170
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
-#: src/web/templates/admin_family_modal.html:479
+#: src/web/templates/admin_family_modal.html:484
 #: src/web/templates/admin_rotator_modal.html:225
-#: src/web/templates/admin_screen_modal.html:491
+#: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
 #: src/web/templates/admin_tournament_modal.html:435
 msgid "Delete"
@@ -1757,9 +1757,9 @@ msgstr ""
 
 #: src/web/templates/admin_chessevent_modal.html:186
 #: src/web/templates/admin_event_modal.html:584
-#: src/web/templates/admin_family_modal.html:495
+#: src/web/templates/admin_family_modal.html:500
 #: src/web/templates/admin_rotator_modal.html:240
-#: src/web/templates/admin_screen_modal.html:507
+#: src/web/templates/admin_screen_modal.html:512
 #: src/web/templates/admin_screen_sets_modal.html:66
 #: src/web/templates/admin_screen_sets_modal_set_div.html:75
 #: src/web/templates/admin_timer_modal.html:102
@@ -1859,7 +1859,7 @@ msgstr ""
 #: src/web/templates/admin_edit_timer_colors.html:17
 #: src/web/templates/admin_event_modal.html:352
 #: src/web/templates/admin_event_modal.html:501
-#: src/web/templates/admin_screen_modal.html:440
+#: src/web/templates/admin_screen_modal.html:445
 #: src/web/templates/admin_screen_modal_message.html:12
 #: src/web/templates/user_screen_card.html:46
 msgid "by default"
@@ -2150,7 +2150,7 @@ msgstr ""
 
 #: src/web/templates/admin_event_modal.html:279
 #: src/web/templates/admin_rotator_modal.html:199
-#: src/web/templates/admin_screen_modal.html:302
+#: src/web/templates/admin_screen_modal.html:307
 msgid "Display"
 msgstr ""
 
@@ -2168,13 +2168,13 @@ msgstr ""
 
 #: src/web/templates/admin_event_modal.html:347
 #: src/web/templates/admin_event_modal.html:455
-#: src/web/templates/admin_screen_modal.html:434
+#: src/web/templates/admin_screen_modal.html:439
 #: src/web/templates/user_screen_card.html:68
 msgid "Background color:"
 msgstr ""
 
 #: src/web/templates/admin_event_modal.html:384
-#: src/web/templates/admin_screen_modal.html:459
+#: src/web/templates/admin_screen_modal.html:464
 msgid "The background color is used when the image dost fill the whole screen."
 msgstr ""
 
@@ -2452,7 +2452,7 @@ msgstr ""
 #: src/web/templates/admin_family_modal.html:185
 #: src/web/templates/admin_family_modal.html:330
 #: src/web/templates/admin_screen_modal.html:208
-#: src/web/templates/admin_screen_modal.html:344
+#: src/web/templates/admin_screen_modal.html:349
 #: src/web/templates/admin_screen_sets_modal_set_div.html:102
 #: src/web/templates/admin_screen_sets_modal_set_div.html:132
 #: src/web/templates/admin_tournament_modal.html:167
@@ -2519,6 +2519,11 @@ msgstr ""
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr ""
 
+#: src/web/templates/admin_family_modal.html:295
+#: src/web/templates/admin_screen_modal.html:169
+msgid "Layout"
+msgstr ""
+
 #: src/web/templates/admin_family_modal.html:300
 #: src/web/templates/admin_screen_modal.html:174
 #: src/web/templates/user_screen_card.html:31
@@ -2536,51 +2541,56 @@ msgstr ""
 
 #: src/web/templates/admin_family_modal.html:344
 #: src/web/templates/admin_screen_modal.html:222
+msgid "Menus"
+msgstr ""
+
+#: src/web/templates/admin_family_modal.html:349
+#: src/web/templates/admin_screen_modal.html:227
 msgid "Links displayed on the screen menu:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:350
+#: src/web/templates/admin_family_modal.html:355
 msgid "E.g.: @boards, @family, another-screen"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:353
+#: src/web/templates/admin_family_modal.html:358
 msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:367
-#: src/web/templates/admin_screen_modal.html:245
+#: src/web/templates/admin_family_modal.html:372
+#: src/web/templates/admin_screen_modal.html:250
 msgid "Links to this screen:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:375
-#: src/web/templates/admin_screen_modal.html:253
+#: src/web/templates/admin_family_modal.html:380
+#: src/web/templates/admin_screen_modal.html:258
 msgid "Allow"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:387
+#: src/web/templates/admin_family_modal.html:392
 msgid "Check the box to allow other screens to display a link to the screen of this family."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:399
-#: src/web/templates/admin_screen_modal.html:277
+#: src/web/templates/admin_family_modal.html:404
+#: src/web/templates/admin_screen_modal.html:282
 msgid "Menu link label:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:407
+#: src/web/templates/admin_family_modal.html:412
 #, python-format
 msgid "E.g.: Boards %%f-%%l"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:409
+#: src/web/templates/admin_family_modal.html:414
 #, python-format
 msgid "E.g.: Players %%f-%%l"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:420
+#: src/web/templates/admin_family_modal.html:425
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:434
+#: src/web/templates/admin_family_modal.html:439
 msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr ""
 
@@ -2893,78 +2903,74 @@ msgstr ""
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:169
-msgid "Layout"
-msgstr ""
-
 #: src/web/templates/admin_screen_modal.html:191
 msgid "The timer displayed on the screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:228
+#: src/web/templates/admin_screen_modal.html:233
 msgid "E.g.: @boards, fixed-boards, tournament-a-*"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:231
+#: src/web/templates/admin_screen_modal.html:236
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:265
+#: src/web/templates/admin_screen_modal.html:270
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:283
+#: src/web/templates/admin_screen_modal.html:288
 msgid "E.g.: Link to my screen"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:290
+#: src/web/templates/admin_screen_modal.html:295
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:305
+#: src/web/templates/admin_screen_modal.html:310
 msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:338
+#: src/web/templates/admin_screen_modal.html:343
 msgid "Maximum number of results displayed:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:347
+#: src/web/templates/admin_screen_modal.html:352
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:358
+#: src/web/templates/admin_screen_modal.html:363
 msgid "Maximum age of the results:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:364
+#: src/web/templates/admin_screen_modal.html:369
 #, python-format
 msgid "E.g.: %(minutes)d (minutes)"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:367
+#: src/web/templates/admin_screen_modal.html:372
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:377
+#: src/web/templates/admin_screen_modal.html:382
 msgid "Tournaments displayed:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:395
+#: src/web/templates/admin_screen_modal.html:400
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:409
+#: src/web/templates/admin_screen_modal.html:414
 #: src/web/templates/user_screen_card.html:60
 msgid "Image:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:415
+#: src/web/templates/admin_screen_modal.html:420
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:418
+#: src/web/templates/admin_screen_modal.html:423
 msgid "The URL of the image to display."
 msgstr ""
 
@@ -3495,35 +3501,35 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: src/web/templates/index.html:51
+#: src/web/templates/index.html:52
 msgid "Web access"
 msgstr ""
 
-#: src/web/templates/index.html:57
+#: src/web/templates/index.html:58
 msgid "From the Papi-web server"
 msgstr ""
 
-#: src/web/templates/index.html:65
+#: src/web/templates/index.html:66
 msgid "From the local network (LAN/WAN)"
 msgstr ""
 
-#: src/web/templates/index.html:83
+#: src/web/templates/index.html:84
 msgid "Click here to access the public screens of the events."
 msgstr ""
 
-#: src/web/templates/index.html:85
+#: src/web/templates/index.html:86
 msgid "Events (public access)"
 msgstr ""
 
-#: src/web/templates/index.html:89
+#: src/web/templates/index.html:90
 msgid "The arbiter interface allows the management of the events."
 msgstr ""
 
-#: src/web/templates/index.html:91
+#: src/web/templates/index.html:92
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr ""
 
-#: src/web/templates/index.html:104
+#: src/web/templates/index.html:105
 msgid "Arbiter interface (private access)"
 msgstr ""
 

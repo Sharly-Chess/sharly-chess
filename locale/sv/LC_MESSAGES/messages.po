@@ -2112,9 +2112,9 @@ msgstr "Namnet på händelsen på lösenordet ChessEvent."
 
 #: src/web/templates/admin_chessevent_modal.html:166
 #: src/web/templates/admin_event_modal.html:561
-#: src/web/templates/admin_family_modal.html:475
+#: src/web/templates/admin_family_modal.html:480
 #: src/web/templates/admin_rotator_modal.html:221
-#: src/web/templates/admin_screen_modal.html:487
+#: src/web/templates/admin_screen_modal.html:492
 #: src/web/templates/admin_timer_modal.html:82
 #: src/web/templates/admin_tournament_modal.html:431
 #, ai_translation
@@ -2123,9 +2123,9 @@ msgstr "Skapa"
 
 #: src/web/templates/admin_chessevent_modal.html:168
 #: src/web/templates/admin_event_modal.html:563
-#: src/web/templates/admin_family_modal.html:477
+#: src/web/templates/admin_family_modal.html:482
 #: src/web/templates/admin_rotator_modal.html:223
-#: src/web/templates/admin_screen_modal.html:489
+#: src/web/templates/admin_screen_modal.html:494
 #: src/web/templates/admin_screen_sets_modal_set_div.html:65
 #: src/web/templates/admin_timer_modal.html:84
 #: src/web/templates/admin_tournament_modal.html:433
@@ -2136,9 +2136,9 @@ msgstr "Uppdatera"
 #: src/web/templates/admin_chessevent_modal.html:170
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
-#: src/web/templates/admin_family_modal.html:479
+#: src/web/templates/admin_family_modal.html:484
 #: src/web/templates/admin_rotator_modal.html:225
-#: src/web/templates/admin_screen_modal.html:491
+#: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
 #: src/web/templates/admin_tournament_modal.html:435
 #, ai_translation
@@ -2147,9 +2147,9 @@ msgstr "Ta bort"
 
 #: src/web/templates/admin_chessevent_modal.html:186
 #: src/web/templates/admin_event_modal.html:584
-#: src/web/templates/admin_family_modal.html:495
+#: src/web/templates/admin_family_modal.html:500
 #: src/web/templates/admin_rotator_modal.html:240
-#: src/web/templates/admin_screen_modal.html:507
+#: src/web/templates/admin_screen_modal.html:512
 #: src/web/templates/admin_screen_sets_modal.html:66
 #: src/web/templates/admin_screen_sets_modal_set_div.html:75
 #: src/web/templates/admin_timer_modal.html:102
@@ -2266,7 +2266,7 @@ msgstr "Färg # %(num)d:"
 #: src/web/templates/admin_edit_timer_colors.html:17
 #: src/web/templates/admin_event_modal.html:352
 #: src/web/templates/admin_event_modal.html:501
-#: src/web/templates/admin_screen_modal.html:440
+#: src/web/templates/admin_screen_modal.html:445
 #: src/web/templates/admin_screen_modal_message.html:12
 #: src/web/templates/user_screen_card.html:46
 #, ai_translation
@@ -2598,7 +2598,7 @@ msgstr "En webbadress, eller sökvägen till regelfilen på servern, i PDF-forma
 
 #: src/web/templates/admin_event_modal.html:279
 #: src/web/templates/admin_rotator_modal.html:199
-#: src/web/templates/admin_screen_modal.html:302
+#: src/web/templates/admin_screen_modal.html:307
 #, ai_translation
 msgid "Display"
 msgstr "Visa"
@@ -2620,14 +2620,14 @@ msgstr "Webbadressen eller sökvägen för bilden att visa (som standard papi-we
 
 #: src/web/templates/admin_event_modal.html:347
 #: src/web/templates/admin_event_modal.html:455
-#: src/web/templates/admin_screen_modal.html:434
+#: src/web/templates/admin_screen_modal.html:439
 #: src/web/templates/user_screen_card.html:68
 #, ai_translation
 msgid "Background color:"
 msgstr "Bakgrundsfärg:"
 
 #: src/web/templates/admin_event_modal.html:384
-#: src/web/templates/admin_screen_modal.html:459
+#: src/web/templates/admin_screen_modal.html:464
 #, ai_translation
 msgid "The background color is used when the image dost fill the whole screen."
 msgstr "Bakgrundsfärgen används när bildens dost fyller hela skärmen."
@@ -2950,7 +2950,7 @@ msgstr "Första spelare:"
 #: src/web/templates/admin_family_modal.html:185
 #: src/web/templates/admin_family_modal.html:330
 #: src/web/templates/admin_screen_modal.html:208
-#: src/web/templates/admin_screen_modal.html:344
+#: src/web/templates/admin_screen_modal.html:349
 #: src/web/templates/admin_screen_sets_modal_set_div.html:102
 #: src/web/templates/admin_screen_sets_modal_set_div.html:132
 #: src/web/templates/admin_tournament_modal.html:167
@@ -3030,6 +3030,12 @@ msgstr "Antalet tavlor per skärm, valfritt (antalet skärmar anpassar sig till 
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "Antalet spelare per skärm, valfritt (antalet skärmar anpassar sig till antalet spelare)."
 
+#: src/web/templates/admin_family_modal.html:295
+#: src/web/templates/admin_screen_modal.html:169
+#, ai_translation
+msgid "Layout"
+msgstr "Layout (layout)"
+
 #: src/web/templates/admin_family_modal.html:300
 #: src/web/templates/admin_screen_modal.html:174
 #: src/web/templates/user_screen_card.html:31
@@ -3050,59 +3056,65 @@ msgstr "Antalet kolumner som används för att visa data."
 
 #: src/web/templates/admin_family_modal.html:344
 #: src/web/templates/admin_screen_modal.html:222
+#, ai_translation, fuzzy
+msgid "Menus"
+msgstr "Menyn:"
+
+#: src/web/templates/admin_family_modal.html:349
+#: src/web/templates/admin_screen_modal.html:227
 #, ai_translation
 msgid "Links displayed on the screen menu:"
 msgstr "Länkar som visas på skärmens meny:"
 
-#: src/web/templates/admin_family_modal.html:350
+#: src/web/templates/admin_family_modal.html:355
 #, ai_translation
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "T.ex.: @ boards, @ family, another-screen"
 
-#: src/web/templates/admin_family_modal.html:353
+#: src/web/templates/admin_family_modal.html:358
 #, ai_translation
 msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
 msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på menyn på skärmar i familjen. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ familj (alla skärmar i familjen), @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmarna."
 
-#: src/web/templates/admin_family_modal.html:367
-#: src/web/templates/admin_screen_modal.html:245
+#: src/web/templates/admin_family_modal.html:372
+#: src/web/templates/admin_screen_modal.html:250
 #, ai_translation
 msgid "Links to this screen:"
 msgstr "Länkar till den här skärmen:"
 
-#: src/web/templates/admin_family_modal.html:375
-#: src/web/templates/admin_screen_modal.html:253
+#: src/web/templates/admin_family_modal.html:380
+#: src/web/templates/admin_screen_modal.html:258
 #, ai_translation
 msgid "Allow"
 msgstr "Tillåt"
 
-#: src/web/templates/admin_family_modal.html:387
+#: src/web/templates/admin_family_modal.html:392
 #, ai_translation
 msgid "Check the box to allow other screens to display a link to the screen of this family."
 msgstr "Markera rutan för att låta andra skärmar visa en länk till den här familjens skärm."
 
-#: src/web/templates/admin_family_modal.html:399
-#: src/web/templates/admin_screen_modal.html:277
+#: src/web/templates/admin_family_modal.html:404
+#: src/web/templates/admin_screen_modal.html:282
 #, ai_translation
 msgid "Menu link label:"
 msgstr "Menyn länketikett:"
 
-#: src/web/templates/admin_family_modal.html:407
+#: src/web/templates/admin_family_modal.html:412
 #, ai_translation, python-format
 msgid "E.g.: Boards %%f-%%l"
 msgstr "T.ex.: styrelser %%f-%%l"
 
-#: src/web/templates/admin_family_modal.html:409
+#: src/web/templates/admin_family_modal.html:414
 #, ai_translation, python-format
 msgid "E.g.: Players %%f-%%l"
 msgstr "Till exempel: Spelare %%f-%%l"
 
-#: src/web/templates/admin_family_modal.html:420
+#: src/web/templates/admin_family_modal.html:425
 #, ai_translation
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Den här etiketten används för länken till andra skärmar i familjen. Om den lämnas tom, används en förvald etikett."
 
-#: src/web/templates/admin_family_modal.html:434
+#: src/web/templates/admin_family_modal.html:439
 #, ai_translation
 msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr "När det inte definieras på familjenivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmarna i familjen)."
@@ -3472,93 +3484,88 @@ msgstr "Namn på skärmen, visas på händelseskärmar."
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Den första turneringen på skärmen, obligatorisk (det är möjligt att lägga till andra turneringar senare)."
 
-#: src/web/templates/admin_screen_modal.html:169
-#, ai_translation
-msgid "Layout"
-msgstr "Layout (layout)"
-
 #: src/web/templates/admin_screen_modal.html:191
 #, ai_translation
 msgid "The timer displayed on the screen."
 msgstr "Timern som visas på skärmen."
 
-#: src/web/templates/admin_screen_modal.html:228
+#: src/web/templates/admin_screen_modal.html:233
 #, ai_translation
 msgid "E.g.: @boards, fixed-boards, tournament-a-*"
 msgstr "T.ex.: @ boards, fasta boards, turnering-a-*"
 
-#: src/web/templates/admin_screen_modal.html:231
+#: src/web/templates/admin_screen_modal.html:236
 #, ai_translation
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på skärmens meny. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmen."
 
-#: src/web/templates/admin_screen_modal.html:265
+#: src/web/templates/admin_screen_modal.html:270
 #, ai_translation
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr "Markera rutan för att låta andra skärmar visa en länk till den här skärmen."
 
-#: src/web/templates/admin_screen_modal.html:283
+#: src/web/templates/admin_screen_modal.html:288
 #, ai_translation
 msgid "E.g.: Link to my screen"
 msgstr "T.ex.: Länk till min skärm"
 
-#: src/web/templates/admin_screen_modal.html:290
+#: src/web/templates/admin_screen_modal.html:295
 #, ai_translation
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr "Den här etiketten används för länken till andra skärmar till den här skärmen. Om den lämnas tom, används en förvald etikett."
 
-#: src/web/templates/admin_screen_modal.html:305
+#: src/web/templates/admin_screen_modal.html:310
 #, ai_translation
 msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
 msgstr "När det inte definieras på skärmnivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmen)."
 
-#: src/web/templates/admin_screen_modal.html:338
+#: src/web/templates/admin_screen_modal.html:343
 #, ai_translation
 msgid "Maximum number of results displayed:"
 msgstr "Maximalt antal resultat som visas:"
 
-#: src/web/templates/admin_screen_modal.html:347
+#: src/web/templates/admin_screen_modal.html:352
 #, ai_translation
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr "Maximalt antal resultat som visas på skärmen, valfritt (om det lämnas tomt, visas alla resultat)."
 
-#: src/web/templates/admin_screen_modal.html:358
+#: src/web/templates/admin_screen_modal.html:363
 #, ai_translation
 msgid "Maximum age of the results:"
 msgstr "Högsta ålder på resultaten:"
 
-#: src/web/templates/admin_screen_modal.html:364
+#: src/web/templates/admin_screen_modal.html:369
 #, ai_translation, python-format
 msgid "E.g.: %(minutes)d (minutes)"
 msgstr "T.ex.: %(minutes)d (minuter)"
 
-#: src/web/templates/admin_screen_modal.html:367
+#: src/web/templates/admin_screen_modal.html:372
 #, ai_translation, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
 msgstr "Den maximala åldern för resultaten, i minuter (som standard %(minutes)d minuter)."
 
-#: src/web/templates/admin_screen_modal.html:377
+#: src/web/templates/admin_screen_modal.html:382
 #, ai_translation
 msgid "Tournaments displayed:"
 msgstr "Turneringar visade:"
 
-#: src/web/templates/admin_screen_modal.html:395
+#: src/web/templates/admin_screen_modal.html:400
 #, ai_translation
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "När inte turnering väljs visas resultaten av alla turneringar."
 
-#: src/web/templates/admin_screen_modal.html:409
+#: src/web/templates/admin_screen_modal.html:414
 #: src/web/templates/user_screen_card.html:60
 #, ai_translation
 msgid "Image:"
 msgstr "Bild:"
 
-#: src/web/templates/admin_screen_modal.html:415
+#: src/web/templates/admin_screen_modal.html:420
 #, ai_translation
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Till exempel: https://my.club.us/tournament.jpg"
 
-#: src/web/templates/admin_screen_modal.html:418
+#: src/web/templates/admin_screen_modal.html:423
 #, ai_translation
 msgid "The URL of the image to display."
 msgstr "Webbadressen till bilden som ska visas."
@@ -4194,42 +4201,42 @@ msgstr "Välkommen till Papi-webben!"
 msgid "Language"
 msgstr "Språk"
 
-#: src/web/templates/index.html:51
+#: src/web/templates/index.html:52
 #, ai_translation
 msgid "Web access"
 msgstr "Webbåtkomst"
 
-#: src/web/templates/index.html:57
+#: src/web/templates/index.html:58
 #, ai_translation
 msgid "From the Papi-web server"
 msgstr "Från Papi- webbservern"
 
-#: src/web/templates/index.html:65
+#: src/web/templates/index.html:66
 #, ai_translation
 msgid "From the local network (LAN/WAN)"
 msgstr "Från det lokala nätverket (LAN/WAN)"
 
-#: src/web/templates/index.html:83
+#: src/web/templates/index.html:84
 #, ai_translation
 msgid "Click here to access the public screens of the events."
 msgstr "Klicka här för att komma åt evenemangens offentliga skärmar."
 
-#: src/web/templates/index.html:85
+#: src/web/templates/index.html:86
 #, ai_translation
 msgid "Events (public access)"
 msgstr "Evenemang (allmän tillgång)"
 
-#: src/web/templates/index.html:89
+#: src/web/templates/index.html:90
 #, ai_translation
 msgid "The arbiter interface allows the management of the events."
 msgstr "Arbiter-gränssnittet gör det möjligt att hantera händelserna."
 
-#: src/web/templates/index.html:91
+#: src/web/templates/index.html:92
 #, ai_translation
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient."
 
-#: src/web/templates/index.html:104
+#: src/web/templates/index.html:105
 #, ai_translation
 msgid "Arbiter interface (private access)"
 msgstr "Skiljemannagränssnitt (privat åtkomst)"

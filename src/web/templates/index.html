@@ -32,7 +32,7 @@
                                         hx-target="body"
                                         hx-indicator="#please-wait"
                                     {% endif %}
-                                    {{ tooltip_attributes('info', l_info.name_and_warning, 'right') }}
+                                    {{ tooltip_attributes('warning' if l_info.experimental else 'info', l_info.name_and_warning, 'right') }}
                                 >
                                     <img
                                         src="{{l_info.flag_url}}"
@@ -40,6 +40,7 @@
                                         class="locale-flag"
                                     />
                                     {{ l_info.name }}
+                                    {% if l_info.experimental %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
                                 </li>
                             {% endfor %}
                         </ul>

@@ -2112,9 +2112,9 @@ msgstr "El nombre del evento en la contraseña ChessEvent."
 
 #: src/web/templates/admin_chessevent_modal.html:166
 #: src/web/templates/admin_event_modal.html:561
-#: src/web/templates/admin_family_modal.html:475
+#: src/web/templates/admin_family_modal.html:480
 #: src/web/templates/admin_rotator_modal.html:221
-#: src/web/templates/admin_screen_modal.html:487
+#: src/web/templates/admin_screen_modal.html:492
 #: src/web/templates/admin_timer_modal.html:82
 #: src/web/templates/admin_tournament_modal.html:431
 #, ai_translation
@@ -2123,9 +2123,9 @@ msgstr "Crear"
 
 #: src/web/templates/admin_chessevent_modal.html:168
 #: src/web/templates/admin_event_modal.html:563
-#: src/web/templates/admin_family_modal.html:477
+#: src/web/templates/admin_family_modal.html:482
 #: src/web/templates/admin_rotator_modal.html:223
-#: src/web/templates/admin_screen_modal.html:489
+#: src/web/templates/admin_screen_modal.html:494
 #: src/web/templates/admin_screen_sets_modal_set_div.html:65
 #: src/web/templates/admin_timer_modal.html:84
 #: src/web/templates/admin_tournament_modal.html:433
@@ -2136,9 +2136,9 @@ msgstr "Actualizar"
 #: src/web/templates/admin_chessevent_modal.html:170
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
-#: src/web/templates/admin_family_modal.html:479
+#: src/web/templates/admin_family_modal.html:484
 #: src/web/templates/admin_rotator_modal.html:225
-#: src/web/templates/admin_screen_modal.html:491
+#: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
 #: src/web/templates/admin_tournament_modal.html:435
 #, ai_translation
@@ -2147,9 +2147,9 @@ msgstr "Eliminar"
 
 #: src/web/templates/admin_chessevent_modal.html:186
 #: src/web/templates/admin_event_modal.html:584
-#: src/web/templates/admin_family_modal.html:495
+#: src/web/templates/admin_family_modal.html:500
 #: src/web/templates/admin_rotator_modal.html:240
-#: src/web/templates/admin_screen_modal.html:507
+#: src/web/templates/admin_screen_modal.html:512
 #: src/web/templates/admin_screen_sets_modal.html:66
 #: src/web/templates/admin_screen_sets_modal_set_div.html:75
 #: src/web/templates/admin_timer_modal.html:102
@@ -2266,7 +2266,7 @@ msgstr "Color #%(num)d:"
 #: src/web/templates/admin_edit_timer_colors.html:17
 #: src/web/templates/admin_event_modal.html:352
 #: src/web/templates/admin_event_modal.html:501
-#: src/web/templates/admin_screen_modal.html:440
+#: src/web/templates/admin_screen_modal.html:445
 #: src/web/templates/admin_screen_modal_message.html:12
 #: src/web/templates/user_screen_card.html:46
 #, ai_translation
@@ -2598,7 +2598,7 @@ msgstr "Una URL, o la ruta al archivo de reglas en el servidor, en formato PDF (
 
 #: src/web/templates/admin_event_modal.html:279
 #: src/web/templates/admin_rotator_modal.html:199
-#: src/web/templates/admin_screen_modal.html:302
+#: src/web/templates/admin_screen_modal.html:307
 #, ai_translation
 msgid "Display"
 msgstr "Visor"
@@ -2620,14 +2620,14 @@ msgstr "La URL o la ruta de la imagen a mostrar (por defecto el logotipo Papi-we
 
 #: src/web/templates/admin_event_modal.html:347
 #: src/web/templates/admin_event_modal.html:455
-#: src/web/templates/admin_screen_modal.html:434
+#: src/web/templates/admin_screen_modal.html:439
 #: src/web/templates/user_screen_card.html:68
 #, ai_translation
 msgid "Background color:"
 msgstr "Color del fondo:"
 
 #: src/web/templates/admin_event_modal.html:384
-#: src/web/templates/admin_screen_modal.html:459
+#: src/web/templates/admin_screen_modal.html:464
 #, ai_translation
 msgid "The background color is used when the image dost fill the whole screen."
 msgstr "El color de fondo se utiliza cuando la imagen dost llena toda la pantalla."
@@ -2950,7 +2950,7 @@ msgstr "Primer jugador:"
 #: src/web/templates/admin_family_modal.html:185
 #: src/web/templates/admin_family_modal.html:330
 #: src/web/templates/admin_screen_modal.html:208
-#: src/web/templates/admin_screen_modal.html:344
+#: src/web/templates/admin_screen_modal.html:349
 #: src/web/templates/admin_screen_sets_modal_set_div.html:102
 #: src/web/templates/admin_screen_sets_modal_set_div.html:132
 #: src/web/templates/admin_tournament_modal.html:167
@@ -3030,6 +3030,12 @@ msgstr "El número de placas por pantalla, opcional (el número de pantallas se 
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "El número de reproductores por pantalla, opcional (el número de pantallas se adapta al número de reproductores)."
 
+#: src/web/templates/admin_family_modal.html:295
+#: src/web/templates/admin_screen_modal.html:169
+#, ai_translation
+msgid "Layout"
+msgstr "Distribución"
+
 #: src/web/templates/admin_family_modal.html:300
 #: src/web/templates/admin_screen_modal.html:174
 #: src/web/templates/user_screen_card.html:31
@@ -3050,59 +3056,65 @@ msgstr "El número de columnas utilizadas para mostrar los datos."
 
 #: src/web/templates/admin_family_modal.html:344
 #: src/web/templates/admin_screen_modal.html:222
+#, ai_translation, fuzzy
+msgid "Menus"
+msgstr "Menú:"
+
+#: src/web/templates/admin_family_modal.html:349
+#: src/web/templates/admin_screen_modal.html:227
 #, ai_translation
 msgid "Links displayed on the screen menu:"
 msgstr "Enlaces mostrados en el menú de la pantalla:"
 
-#: src/web/templates/admin_family_modal.html:350
+#: src/web/templates/admin_family_modal.html:355
 #, ai_translation
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Por ejemplo: @boards, @family, other-screen"
 
-#: src/web/templates/admin_family_modal.html:353
+#: src/web/templates/admin_family_modal.html:358
 #, ai_translation
 msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
 msgstr "Este campo le permite especificar las pantallas cuyos enlaces se mostrarán en el menú de las pantallas de la familia. Los identificadores de pantalla deben ser separados por comas, las palabras clave @family (todas las pantallas de la familia), @boards (todas las pantallas de tableros), @input (todas las pantallas de entrada), @players (todas las pantallas de reproductores) así como el comodín * puede ser utilizado. Si este campo se deja vacío, no se mostrará ningún menú en las pantallas."
 
-#: src/web/templates/admin_family_modal.html:367
-#: src/web/templates/admin_screen_modal.html:245
+#: src/web/templates/admin_family_modal.html:372
+#: src/web/templates/admin_screen_modal.html:250
 #, ai_translation
 msgid "Links to this screen:"
 msgstr "Enlaces a esta pantalla:"
 
-#: src/web/templates/admin_family_modal.html:375
-#: src/web/templates/admin_screen_modal.html:253
+#: src/web/templates/admin_family_modal.html:380
+#: src/web/templates/admin_screen_modal.html:258
 #, ai_translation
 msgid "Allow"
 msgstr "Permitir"
 
-#: src/web/templates/admin_family_modal.html:387
+#: src/web/templates/admin_family_modal.html:392
 #, ai_translation
 msgid "Check the box to allow other screens to display a link to the screen of this family."
 msgstr "Marque la casilla para permitir que otras pantallas muestren un enlace a la pantalla de esta familia."
 
-#: src/web/templates/admin_family_modal.html:399
-#: src/web/templates/admin_screen_modal.html:277
+#: src/web/templates/admin_family_modal.html:404
+#: src/web/templates/admin_screen_modal.html:282
 #, ai_translation
 msgid "Menu link label:"
 msgstr "Etiqueta del enlace del menú:"
 
-#: src/web/templates/admin_family_modal.html:407
+#: src/web/templates/admin_family_modal.html:412
 #, ai_translation, python-format
 msgid "E.g.: Boards %%f-%%l"
 msgstr "Por ejemplo: Tableros"
 
-#: src/web/templates/admin_family_modal.html:409
+#: src/web/templates/admin_family_modal.html:414
 #, ai_translation, python-format
 msgid "E.g.: Players %%f-%%l"
 msgstr "Por ejemplo: Jugadores"
 
-#: src/web/templates/admin_family_modal.html:420
+#: src/web/templates/admin_family_modal.html:425
 #, ai_translation
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Esta etiqueta se utilizará para el enlace a otras pantallas a las pantallas de la familia. Si se deja vacía, se utilizará una etiqueta predeterminada."
 
-#: src/web/templates/admin_family_modal.html:434
+#: src/web/templates/admin_family_modal.html:439
 #, ai_translation
 msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr "Cuando no se define a nivel familiar, se utiliza el mensaje de alerta definido a nivel de rotador o evento (si no se establece ningún mensaje de alerta, no se muestra el banner de desplazamiento en la parte inferior de las pantallas de la familia)."
@@ -3472,93 +3484,88 @@ msgstr "El nombre de la pantalla, que se muestra en las pantallas de eventos."
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "El primer torneo de la pantalla, obligatorio (es posible añadir otros torneos más tarde)."
 
-#: src/web/templates/admin_screen_modal.html:169
-#, ai_translation
-msgid "Layout"
-msgstr "Distribución"
-
 #: src/web/templates/admin_screen_modal.html:191
 #, ai_translation
 msgid "The timer displayed on the screen."
 msgstr "El temporizador mostrado en la pantalla."
 
-#: src/web/templates/admin_screen_modal.html:228
+#: src/web/templates/admin_screen_modal.html:233
 #, ai_translation
 msgid "E.g.: @boards, fixed-boards, tournament-a-*"
 msgstr "Por ejemplo: @boards, tableros fijos, torneo-a-*"
 
-#: src/web/templates/admin_screen_modal.html:231
+#: src/web/templates/admin_screen_modal.html:236
 #, ai_translation
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr "Este campo le permite especificar las pantallas cuyos enlaces se mostrarán en el menú de la pantalla. Los identificadores de pantalla deben estar separados por comas, se pueden usar las palabras clave @boards (todas las pantallas), @input (todas las pantallas de entrada), @players (todas las pantallas de reproductores) así como el comodín *. Si este campo queda vacío, no se mostrará ningún menú en la pantalla."
 
-#: src/web/templates/admin_screen_modal.html:265
+#: src/web/templates/admin_screen_modal.html:270
 #, ai_translation
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr "Marque la casilla para permitir que otras pantallas muestren un enlace a esta pantalla."
 
-#: src/web/templates/admin_screen_modal.html:283
+#: src/web/templates/admin_screen_modal.html:288
 #, ai_translation
 msgid "E.g.: Link to my screen"
 msgstr "Por ejemplo: Enlace a mi pantalla"
 
-#: src/web/templates/admin_screen_modal.html:290
+#: src/web/templates/admin_screen_modal.html:295
 #, ai_translation
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr "Esta etiqueta se utilizará para el enlace a otras pantallas a esta pantalla. Si se deja vacía, se utilizará una etiqueta predeterminada."
 
-#: src/web/templates/admin_screen_modal.html:305
+#: src/web/templates/admin_screen_modal.html:310
 #, ai_translation
 msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
 msgstr "Cuando no se define a nivel de pantalla, se utiliza el mensaje de alerta definido a nivel de rotador o evento (si no se establece ningún mensaje de alerta, no se muestra el banner de desplazamiento en la parte inferior de la pantalla)."
 
-#: src/web/templates/admin_screen_modal.html:338
+#: src/web/templates/admin_screen_modal.html:343
 #, ai_translation
 msgid "Maximum number of results displayed:"
 msgstr "Número máximo de resultados mostrados:"
 
-#: src/web/templates/admin_screen_modal.html:347
+#: src/web/templates/admin_screen_modal.html:352
 #, ai_translation
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr "El número máximo de resultados mostrados en la pantalla, opcional (si se deja vacío, se muestran todos los resultados)."
 
-#: src/web/templates/admin_screen_modal.html:358
+#: src/web/templates/admin_screen_modal.html:363
 #, ai_translation
 msgid "Maximum age of the results:"
 msgstr "Edad máxima de los resultados:"
 
-#: src/web/templates/admin_screen_modal.html:364
+#: src/web/templates/admin_screen_modal.html:369
 #, ai_translation, python-format
 msgid "E.g.: %(minutes)d (minutes)"
 msgstr "Por ejemplo: %(minutes)d (minutos)"
 
-#: src/web/templates/admin_screen_modal.html:367
+#: src/web/templates/admin_screen_modal.html:372
 #, ai_translation, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
 msgstr "La edad máxima de los resultados, en minutos (por defecto %(minutes)d minutos)."
 
-#: src/web/templates/admin_screen_modal.html:377
+#: src/web/templates/admin_screen_modal.html:382
 #, ai_translation
 msgid "Tournaments displayed:"
 msgstr "Torneos mostrados:"
 
-#: src/web/templates/admin_screen_modal.html:395
+#: src/web/templates/admin_screen_modal.html:400
 #, ai_translation
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Cuando no se selecciona el torneo, se muestran los resultados de todos los torneos."
 
-#: src/web/templates/admin_screen_modal.html:409
+#: src/web/templates/admin_screen_modal.html:414
 #: src/web/templates/user_screen_card.html:60
 #, ai_translation
 msgid "Image:"
 msgstr "Imagen:"
 
-#: src/web/templates/admin_screen_modal.html:415
+#: src/web/templates/admin_screen_modal.html:420
 #, ai_translation
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Por ejemplo: https://my.club.us/tournament.jpg"
 
-#: src/web/templates/admin_screen_modal.html:418
+#: src/web/templates/admin_screen_modal.html:423
 #, ai_translation
 msgid "The URL of the image to display."
 msgstr "La URL de la imagen a mostrar."
@@ -4194,42 +4201,42 @@ msgstr "¡Bienvenidos a Papi-web!"
 msgid "Language"
 msgstr "Idioma"
 
-#: src/web/templates/index.html:51
+#: src/web/templates/index.html:52
 #, ai_translation
 msgid "Web access"
 msgstr "Acceso a la Web"
 
-#: src/web/templates/index.html:57
+#: src/web/templates/index.html:58
 #, ai_translation
 msgid "From the Papi-web server"
 msgstr "Desde el servidor Papi-web"
 
-#: src/web/templates/index.html:65
+#: src/web/templates/index.html:66
 #, ai_translation
 msgid "From the local network (LAN/WAN)"
 msgstr "Desde la red local (LAN/WAN)"
 
-#: src/web/templates/index.html:83
+#: src/web/templates/index.html:84
 #, ai_translation
 msgid "Click here to access the public screens of the events."
 msgstr "Haga clic aquí para acceder a las pantallas públicas de los eventos."
 
-#: src/web/templates/index.html:85
+#: src/web/templates/index.html:86
 #, ai_translation
 msgid "Events (public access)"
 msgstr "Eventos (acceso público)"
 
-#: src/web/templates/index.html:89
+#: src/web/templates/index.html:90
 #, ai_translation
 msgid "The arbiter interface allows the management of the events."
 msgstr "La interfaz del árbitro permite la gestión de los eventos."
 
-#: src/web/templates/index.html:91
+#: src/web/templates/index.html:92
 #, ai_translation
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "El acceso a la interfaz del árbitro no está permitido desde este cliente."
 
-#: src/web/templates/index.html:104
+#: src/web/templates/index.html:105
 #, ai_translation
 msgid "Arbiter interface (private access)"
 msgstr "Interfaz Arbiter (acceso privado)"
