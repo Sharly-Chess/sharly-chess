@@ -3098,7 +3098,7 @@ msgstr "Ajouter un écran d'affichage des derniers résultats."
 
 #: src/web/templates/admin_screens.html:37
 msgid "Add a screen to display an image."
-msgstr "Ajouter un écran d'affichage d'une image'."
+msgstr "Ajouter un écran d'affichage d'une image."
 
 #: src/web/templates/admin_screens.html:56
 msgid "Show/hide the screens created from screen families."
