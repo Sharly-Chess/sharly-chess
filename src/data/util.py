@@ -173,6 +173,7 @@ class TournamentType(IntEnum):
                 raise ValueError(f'Unknown tie break: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case TournamentType.UNKNOWN:
                 return 'Inconnu'
@@ -242,6 +243,7 @@ class TournamentRating(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case TournamentRating.STANDARD:
                 return 'Classement standard'
@@ -302,6 +304,7 @@ class TournamentPairing(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case TournamentPairing.UNKNOWN:
                 return 'Inconnu'
@@ -393,6 +396,7 @@ class TournamentTieBreak(IntEnum):
                 raise ValueError(f'Unknown tie break: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case TournamentTieBreak.NONE:
                 return 'Aucun'
@@ -450,6 +454,7 @@ class PlayerGender(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case PlayerGender.NONE:
                 return 'Aucun'
@@ -496,6 +501,7 @@ class PlayerFFELicense(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case PlayerFFELicense.NONE:
                 return 'Aucune'
@@ -579,6 +585,7 @@ class PlayerCategory(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case PlayerCategory.NONE:
                 return ''
@@ -641,6 +648,7 @@ class PlayerRatingType(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case PlayerRatingType.NONE:
                 return ''
@@ -707,6 +715,7 @@ class PlayerTitle(IntEnum):
                 raise ValueError(f'Unknown title: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         return self.to_papi_value
 
 
@@ -753,6 +762,7 @@ class ScreenType(StrEnum):
     Image = auto()
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case ScreenType.Boards:
                 return "Échiquiers"
