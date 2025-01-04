@@ -13,10 +13,10 @@
 
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
-|Κενά υποχρεωτικά μηνύματα|0/16|
-|Κενά μηνύματα|2/871|
-|Message flagged [fuzzy]|12/871|
-|Message flagged [ai_translation]|869/871|
+|Κενά υποχρεωτικά μηνύματα|0/24|
+|Κενά μηνύματα|2/883|
+|Message flagged [ai_translation]|881/883|
+|Message flagged [fuzzy]|16/883|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
@@ -27,26 +27,9 @@
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:372|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Σημειωθέντα μηνύματα (881)
+## Σημειωθέντα μηνύματα (897)
 
-### Μήνυμα που σημαδεύτηκε [fuzzy] (12)
-
-|Μήνυμα id|Μετάφραση|Τοποθεσίες|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:33|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
-|Create a screen family|Διαγράψτε την οικογένεια οθόνης.|src/web/templates/admin_families.html:29|
-|Menus|Μενού:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|Create a screen|Δημιουργία ενός γεγονότος|src/web/templates/admin_screens.html:29|
-|Add a screen to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_screens.html:33|
-|Add a screen to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_screens.html:34|
-|Add a screen to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_screens.html:35|
-|Add a screen to display the last results.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:36|
-|Add a screen to display an image.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:37|
-
-### Μήνυμα που σημαδεύτηκε [ai_translation] (869)
+### Μήνυμα που σημαδεύτηκε [ai_translation] (881)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -216,10 +199,10 @@
 |players from #{first} to end, on {parts} screens|παίκτες από #{first} για να τελειώσει, στις οθόνες {parts}|src/data/family.py:326|
 |players from start to #{last}, on {parts} screens|παίκτες από την αρχή έως #{last}, στις οθόνες {parts}|src/data/family.py:328|
 |players from #{first} to #{last}, on {parts} screens|παίκτες από #{first} έως #{last}, στις οθόνες {parts}|src/data/family.py:330|
-|Unpaired \*\*\* FEMALE \*\*\*|Μη ζευγάρι|src/data/player.py:92|
-|Unpaired \*\*\* MALE \*\*\*|Μη ζευγάρι|src/data/player.py:92|
-|Exempt \*\*\* FEMALE \*\*\*|Απομάκρυνση|src/data/player.py:96|
-|Exempt \*\*\* MALE \*\*\*|Απομάκρυνση|src/data/player.py:96|
+|Unpaired \*\*\* FEMALE \*\*\*|Μη ζευγάρι|src/data/player.py:95|
+|Unpaired \*\*\* MALE \*\*\*|Μη ζευγάρι|src/data/player.py:95|
+|Exempt \*\*\* FEMALE \*\*\*|Απομάκρυνση|src/data/player.py:99|
+|Exempt \*\*\* MALE \*\*\*|Απομάκρυνση|src/data/player.py:99|
 |Last results|Τελευταία αποτελέσματα|src/data/screen.py:97<br>src/data/screen.py:178<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:359<br>src/web/templates/admin_screens.html:36<br>src/web/templates/admin_screens.html:117|
 |Image|Εικόνα|src/data/screen.py:99<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:361<br>src/web/templates/admin_screens.html:37<br>src/web/templates/admin_screens.html:122|
 |Boards %f-%l|Δ.Σ. %f-%l|src/data/screen.py:125<br>src/data/screen_set.py:124|
@@ -310,17 +293,18 @@
 |ChessEvent connection [{chessevent_uniq_id}] has been updated.|Η σύνδεση με το σκάκι [{chessevent_uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/chessevent_admin_controller.py:238|
 |ChessEvent connection [{chessevent_uniq_id}] has been deleted.|Η σύνδεση σκακιού [{chessevent_uniq_id}] έχει διαγραφεί.|src/web/controllers/admin/chessevent_admin_controller.py:244|
 |Tournaments ({num})|Τουρνουά ({num})|src/web/controllers/admin/event_admin_controller.py:114|
-|Screens ({num})|Οθόνες ({num})|src/web/controllers/admin/event_admin_controller.py:118|
-|Families ({num})|Οικογένειες ({num})|src/web/controllers/admin/event_admin_controller.py:122|
-|Rotators ({num})|Περιστροφείς ({num})|src/web/controllers/admin/event_admin_controller.py:126<br>src/web/controllers/user/event_user_controller.py:125|
-|Timers ({num})|Χρονοδιακόπτες ({num})|src/web/controllers/admin/event_admin_controller.py:130|
-|ChessEvent ({num})|Σκακιστικό ({num})|src/web/controllers/admin/event_admin_controller.py:134|
-|Messages ({num})|Μηνύματα ({num})|src/web/controllers/admin/event_admin_controller.py:138|
-|Renaming the database failed: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/web/controllers/admin/event_admin_controller.py:403|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Το γεγονός [{old_uniq_id}] έχει μετονομαστεί ([{new_uniq_id}]) και έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:410|
-|Event [{uniq_id}] has been updated.|Το γεγονός [{uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:413|
-|Event [{uniq_id}] has been created.|Το γεγονός [{uniq_id}] δημιουργήθηκε.|src/web/controllers/admin/event_admin_controller.py:421<br>src/web/controllers/admin/index_admin_controller.py:676|
-|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Το γεγονός [{uniq_id}] έχει διαγραφεί, η βάση δεδομένων έχει αρχειοθετηθεί ({arch}).|src/web/controllers/admin/event_admin_controller.py:431|
+|Players ({num})|Χρονοδιακόπτες ({num})|src/web/controllers/admin/event_admin_controller.py:118|
+|Screens ({num})|Οθόνες ({num})|src/web/controllers/admin/event_admin_controller.py:122|
+|Families ({num})|Οικογένειες ({num})|src/web/controllers/admin/event_admin_controller.py:126|
+|Rotators ({num})|Περιστροφείς ({num})|src/web/controllers/admin/event_admin_controller.py:130<br>src/web/controllers/user/event_user_controller.py:125|
+|Timers ({num})|Χρονοδιακόπτες ({num})|src/web/controllers/admin/event_admin_controller.py:134|
+|ChessEvent ({num})|Σκακιστικό ({num})|src/web/controllers/admin/event_admin_controller.py:138|
+|Messages ({num})|Μηνύματα ({num})|src/web/controllers/admin/event_admin_controller.py:142|
+|Renaming the database failed: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/web/controllers/admin/event_admin_controller.py:407|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Το γεγονός [{old_uniq_id}] έχει μετονομαστεί ([{new_uniq_id}]) και έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:414|
+|Event [{uniq_id}] has been updated.|Το γεγονός [{uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:417|
+|Event [{uniq_id}] has been created.|Το γεγονός [{uniq_id}] δημιουργήθηκε.|src/web/controllers/admin/event_admin_controller.py:425<br>src/web/controllers/admin/index_admin_controller.py:676|
+|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Το γεγονός [{uniq_id}] έχει διαγραφεί, η βάση δεδομένων έχει αρχειοθετηθεί ({arch}).|src/web/controllers/admin/event_admin_controller.py:435|
 |Please enter the family ID.|Παρακαλώ εισάγετε την ταυτότητα της οικογένειας.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|Ο χαρακτήρας [{char}] δεν επιτρέπεται.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:233<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:75|
 |Family [{uniq_id}] already exists.|Η οικογένεια [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
@@ -329,16 +313,16 @@
 |A positive integer is expected.|Αναμένεται ένας θετικός ακέραιος αριθμός.|src/web/controllers/admin/family_admin_controller.py:135<br>src/web/controllers/admin/family_admin_controller.py:140<br>src/web/controllers/admin/family_admin_controller.py:150<br>src/web/controllers/admin/family_admin_controller.py:155<br>src/web/controllers/admin/family_admin_controller.py:160<br>src/web/controllers/admin/family_admin_controller.py:179<br>src/web/controllers/admin/family_admin_controller.py:184<br>src/web/controllers/admin/rotator_admin_controller.py:94<br>src/web/controllers/admin/screen_admin_controller.py:143<br>src/web/controllers/admin/screen_admin_controller.py:154<br>src/web/controllers/admin/screen_admin_controller.py:167<br>src/web/controllers/admin/screen_admin_controller.py:172<br>src/web/controllers/admin/screen_admin_controller.py:261<br>src/web/controllers/admin/screen_admin_controller.py:266<br>src/web/controllers/admin/screen_admin_controller.py:271|
 |Timer [{timer_id}] not found.|Ο χρονοδιακόπτης [{timer_id}] δεν βρέθηκε.|src/web/controllers/admin/family_admin_controller.py:148<br>src/web/controllers/admin/screen_admin_controller.py:152|
 |Specifying the number of parts and the number of items per part is not possible.|Ο προσδιορισμός του αριθμού των μερών και του αριθμού των στοιχείων ανά μέρος δεν είναι δυνατός.|src/web/controllers/admin/family_admin_controller.py:186|
-|Results entry|Είσοδος των αποτελεσμάτων|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:34<br>src/web/templates/admin_screens.html:33<br>src/web/templates/admin_screens.html:102|
+|Results entry|Είσοδος των αποτελεσμάτων|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:33<br>src/web/templates/admin_screens.html:33<br>src/web/templates/admin_screens.html:102|
 |pairings by board|Συναρμολογήσεις με το διοικητικό συμβούλιο|src/web/controllers/admin/family_admin_controller.py:272<br>src/web/controllers/admin/screen_admin_controller.py:355<br>src/web/templates/admin_rotator_modal.html:121|
-|Pairings by player|Ζευγάρωμα από τον παίκτη|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:36<br>src/web/templates/admin_screens.html:35<br>src/web/templates/admin_screens.html:112|
+|Pairings by player|Ζευγάρωμα από τον παίκτη|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:35<br>src/web/templates/admin_screens.html:35<br>src/web/templates/admin_screens.html:112|
 |No recording|Χωρίς εγγραφή|src/web/controllers/admin/index_admin_controller.py:77<br>src/web/templates/admin_event_config.html:108|
 |**Μοναδικός:** {num} illegal move max<br/>**Πληθυντικός:** {num} illegal moves max|**Μοναδικός:** {num} παράνομη κίνηση max<br/>**Πληθυντικός:** {num} παράνομες κινήσεις max|src/web/controllers/admin/index_admin_controller.py:79|
 |By default - {option}|Από προεπιλογή - {option}|src/web/controllers/admin/index_admin_controller.py:82<br>src/web/controllers/admin/index_admin_controller.py:128<br>src/web/controllers/admin/index_admin_controller.py:139|
 |Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|Χρώμα #1 χρησιμοποιείται μέχρι {delay_1} λεπτά πριν από την έναρξη των γύρων (Delay #1), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #2 ({delay_2} λεπτά πριν από την έναρξη των γύρων).|src/web/controllers/admin/index_admin_controller.py:88|
 |Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Χρώμα #2 χρησιμοποιείται {delay_2} λεπτά πριν από την έναρξη των γύρων (delay #2), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #3 (στην αρχή των γύρων).|src/web/controllers/admin/index_admin_controller.py:91|
 |Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|Χρώμα #3 χρησιμοποιείται από την αρχή των γύρων και για {delay_3} λεπτά μετά (delay #3).|src/web/controllers/admin/index_admin_controller.py:94|
-|Pairings by board|Ζευγαρώματα με βάση το πλοίο|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:35<br>src/web/templates/admin_screens.html:34<br>src/web/templates/admin_screens.html:107|
+|Pairings by board|Ζευγαρώματα με βάση το πλοίο|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:34<br>src/web/templates/admin_screens.html:34<br>src/web/templates/admin_screens.html:107|
 |Use no timer|Μη χρησιμοποιείτε χρονοδιακόπτη|src/web/controllers/admin/index_admin_controller.py:115|
 |No timer defined|Δεν ορίζεται χρονοδιακόπτης|src/web/controllers/admin/index_admin_controller.py:115|
 |Timer {timer_uniq_id}|Χρονοδιακόπτης {timer_uniq_id}|src/web/controllers/admin/index_admin_controller.py:118|
@@ -452,7 +436,7 @@
 |Update|Ενημέρωση|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
 |Delete|Διαγραφή|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
 |Cancel|Ακύρωση|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
-|Refresh this page.|Ανανέωση αυτής της σελίδας.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:85<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
+|Refresh this page.|Ανανέωση αυτής της σελίδας.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_players.html:6<br>src/web/templates/admin_screens.html:85<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Προσθέστε μια σύνδεση σκακιού στο γεγονός.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Δημιουργία σύνδεσης σκακιού|src/web/templates/admin_chessevents.html:30|
 |No ChessEvent connections.|Καμία σύνδεση με το Σκάκι.|src/web/templates/admin_chessevents.html:45<br>src/web/templates/admin_tournament_modal.html:261|
@@ -543,12 +527,12 @@
 |Screen families|Οικογένειες οθόνης|src/web/templates/admin_families.html:6|
 |You must create a tournament before creating a screen family.|Πρέπει να δημιουργήσετε ένα τουρνουά πριν από τη δημιουργία μιας οικογένειας οθόνη.|src/web/templates/admin_families.html:15|
 |Create a screen family|Διαγράψτε την οικογένεια οθόνης.|src/web/templates/admin_families.html:29|
-|Add a family of screens to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_families.html:34|
-|Add a family of screens to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_families.html:35|
-|Add a family of screens to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_families.html:36|
-|Enable/disable the details of the screen families on the cards below.|Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των οικογενειών οθόνης στις παρακάτω κάρτες.|src/web/templates/admin_families.html:55|
-|Details|Λεπτομέρειες|src/web/templates/admin_families.html:65<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:82|
-|No screen families.|Δεν υπάρχουν οικογένειες για την οθόνη.|src/web/templates/admin_families.html:95<br>src/web/templates/admin_rotator_modal.html:190|
+|Add a family of screens to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_families.html:33|
+|Add a family of screens to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_families.html:34|
+|Add a family of screens to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_families.html:35|
+|Enable/disable the details of the screen families on the cards below.|Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των οικογενειών οθόνης στις παρακάτω κάρτες.|src/web/templates/admin_families.html:54|
+|Details|Λεπτομέρειες|src/web/templates/admin_families.html:64<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:82|
+|No screen families.|Δεν υπάρχουν οικογένειες για την οθόνη.|src/web/templates/admin_families.html:94<br>src/web/templates/admin_rotator_modal.html:190|
 |Type: %(family_type)s|Τύπος: %(family_type)s|src/web/templates/admin_family_card.html:16|
 |Tournament: %(tournament_name)s|Τουρνουά: %(tournament_name)s|src/web/templates/admin_family_card.html:19<br>src/web/templates/admin_screen_sets_modal_set_div.html:182|
 |Selection: %(selection)s|Επιλογή: %(selection)s|src/web/templates/admin_family_card.html:22<br>src/web/templates/admin_screen_sets_modal_set_div.html:191|
@@ -627,7 +611,18 @@
 |Message|Μήνυμα|src/web/templates/admin_messages.html:5|
 |No messages.|Χωρίς μηνύματα.|src/web/templates/admin_messages.html:44|
 |Pairings|Ζευγάρωμα|src/web/templates/admin_pairings.html:1|
-|Players|Παίκτες|src/web/templates/admin_players.html:1<br>src/web/templates/admin_screen_card.html:183|
+|Players|Παίκτες|src/web/templates/admin_players.html:3<br>src/web/templates/admin_screen_card.html:183|
+|Add a player to the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_players.html:17|
+|Create a player|Δημιουργία χρονοδιακόπτη|src/web/templates/admin_players.html:26|
+|Name \*\*\* NAME COLUMN TITLE FOR PLAYERS|Όνομα|src/web/templates/admin_players.html:36|
+|Elo \*\*\* ELO COLUMN TITLE FOR PLAYERS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:37|
+|YOB \*\*\* YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS|YOBCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:38|
+|CI \*\*\* CHECK-IN COLUMN TITLE FOR PLAYERS|CI|src/web/templates/admin_players.html:39|
+|Cat \*\*\* CATEGORY COLUMN TITLE FOR PLAYERS|Γάτα|src/web/templates/admin_players.html:40|
+|Owed \*\*\* OWED COLUMN TITLE FOR PLAYERS|ΆουτςCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:41|
+|Paid \*\*\* PAID COLUMN TITLE FOR PLAYERS|Πληρωμή|src/web/templates/admin_players.html:42|
+|Comment \*\*\* COMMENT COLUMN TITLE FOR PLAYERS|Σχόλιο|src/web/templates/admin_players.html:43|
+|No players.|Παίκτες|src/web/templates/admin_players.html:66|
 |Rotation delay: %(seconds)d sec.|Καθυστέρηση περιστροφής: %(seconds)d sec.|src/web/templates/admin_rotator_card.html:15<br>src/web/templates/user_rotator_card.html:18|
 |No screen neither family to rotate.|Δεν έχει οθόνη ούτε οικογένεια να περιστραφεί.|src/web/templates/admin_rotator_card.html:43<br>src/web/templates/user_rotator_card.html:22|
 |Screens:|Οθόνες:|src/web/templates/admin_rotator_card.html:49<br>src/web/templates/admin_rotator_modal.html:128<br>src/web/templates/user_rotator_card.html:28|
@@ -905,18 +900,39 @@
 |Unpaired players: hidden|Μη ζευγάρι παίκτες: κρυφό|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Μέγιστος αριθμός αποτελεσμάτων: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Μέγιστος αριθμός αποτελεσμάτων: απεριόριστος|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Επιστρέφω στην περίληψη τεκμηρίωσης|utils/i18n/i18n_update.py:146|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Αγγλική μετάφραση|utils/i18n/i18n_update.py:147|
-|View file {file}|Δείτε το αρχείο {file}|utils/i18n/i18n_update.py:150|
-|Summary|Περίληψη|utils/i18n/i18n_update.py:152|
-|Empty mandatory messages|Κενά υποχρεωτικά μηνύματα|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:166|
-|Empty messages|Κενά μηνύματα|utils/i18n/i18n_update.py:159<br>utils/i18n/i18n_update.py:181|
-|Message flagged [{flag}]|Μήνυμα που σημαδεύτηκε [{flag}]|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:204|
-|Message ID|Μήνυμα id|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
-|Locations|Τοποθεσίες|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
-|Singular:|Μοναδικός:|utils/i18n/i18n_update.py:175<br>utils/i18n/i18n_update.py:193<br>utils/i18n/i18n_update.py:214<br>utils/i18n/i18n_update.py:217|
-|Plural:|Πληθυντικός:|utils/i18n/i18n_update.py:176<br>utils/i18n/i18n_update.py:194<br>utils/i18n/i18n_update.py:215<br>utils/i18n/i18n_update.py:218|
-|Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:184|
-|Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:200|
-|Translation|Μετάφραση|utils/i18n/i18n_update.py:206|
+|Return to documentation summary|Επιστρέφω στην περίληψη τεκμηρίωσης|utils/i18n/i18n_update.py:148|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Αγγλική μετάφραση|utils/i18n/i18n_update.py:149|
+|View file {file}|Δείτε το αρχείο {file}|utils/i18n/i18n_update.py:152|
+|Summary|Περίληψη|utils/i18n/i18n_update.py:154|
+|Empty mandatory messages|Κενά υποχρεωτικά μηνύματα|utils/i18n/i18n_update.py:158<br>utils/i18n/i18n_update.py:168|
+|Empty messages|Κενά μηνύματα|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:183|
+|Message flagged [{flag}]|Μήνυμα που σημαδεύτηκε [{flag}]|utils/i18n/i18n_update.py:164<br>utils/i18n/i18n_update.py:206|
+|Message ID|Μήνυμα id|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:208|
+|Locations|Τοποθεσίες|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:208|
+|Singular:|Μοναδικός:|utils/i18n/i18n_update.py:177<br>utils/i18n/i18n_update.py:195<br>utils/i18n/i18n_update.py:216<br>utils/i18n/i18n_update.py:219|
+|Plural:|Πληθυντικός:|utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:196<br>utils/i18n/i18n_update.py:217<br>utils/i18n/i18n_update.py:220|
+|Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:186|
+|Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:202|
+|Translation|Μετάφραση|utils/i18n/i18n_update.py:208|
+
+### Μήνυμα που σημαδεύτηκε [fuzzy] (16)
+
+|Μήνυμα id|Μετάφραση|Τοποθεσίες|
+|--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
+|Players ({num})|Χρονοδιακόπτες ({num})|src/web/controllers/admin/event_admin_controller.py:118|
+|Create a screen family|Διαγράψτε την οικογένεια οθόνης.|src/web/templates/admin_families.html:29|
+|Menus|Μενού:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Add a player to the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_players.html:17|
+|Create a player|Δημιουργία χρονοδιακόπτη|src/web/templates/admin_players.html:26|
+|No players.|Παίκτες|src/web/templates/admin_players.html:66|
+|Create a screen|Δημιουργία ενός γεγονότος|src/web/templates/admin_screens.html:29|
+|Add a screen to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_screens.html:33|
+|Add a screen to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_screens.html:34|
+|Add a screen to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_screens.html:35|
+|Add a screen to display the last results.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:36|
+|Add a screen to display an image.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:37|
 

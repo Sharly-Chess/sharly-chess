@@ -1,5 +1,7 @@
 import sys
+import time
 from collections import OrderedDict
+from datetime import datetime
 from pathlib import Path
 
 from babel.messages import Catalog, Message
@@ -285,6 +287,8 @@ class I18nUpdater:
             if locale_info.id not in trusted_locales and locale_info.empty_messages:
                 untrusted_locales_with_missing_translations.append(locale_info.id)
         self.print_summary()
+        print_interactive_info('Writing MD files...')
+        self.write_markdown()
         print_interactive_input(f'Some translations are missing for the following untrusted locales: {", ".join(untrusted_locales_with_missing_translations)}')
         if (input_interactive('Do you want to add the missing translations (y/N)? ').upper() or 'N') == 'Y':
             for locale in untrusted_locales_with_missing_translations:
@@ -295,9 +299,9 @@ class I18nUpdater:
             print_interactive_info('Compiling PO files...')
             for locale in untrusted_locales_with_missing_translations:
                 self.locale_infos[locale].compile()
-        print_interactive_info('Writing MD files...')
-        self.write_markdown()
-        self.print_summary()
+            self.print_summary()
+            print_interactive_info('Writing MD files...')
+            self.write_markdown()
 
     def extract(self, ):
         """ The configuration file used to extract stings from the source files. """
@@ -372,7 +376,8 @@ class I18nUpdater:
                     translator_strings.append(translator['name'])
             line += f'| {"<br/>".join(translator_strings)} |\n'
             lines.append(line)
-        lines.append('\n')
+        lines.append(
+            f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n')
         with open(self.doc_file, 'w', encoding='utf-8') as f:
             for line in lines_before_comment + lines + lines_after_comment:
                 f.write(line)

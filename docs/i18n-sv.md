@@ -13,35 +13,18 @@
 
 | locale=`sv` | Svenska <img src="../src/web/static/images/locales/sv.svg" style="height: 1em;"/> |
 |--|:--:|
-|Töm obligatoriska meddelanden|0/16|
-|Tomma meddelanden|0/871|
-|Message flagged [fuzzy]|12/871|
-|Message flagged [ai_translation]|871/871|
+|Töm obligatoriska meddelanden|0/24|
+|Tomma meddelanden|0/883|
+|Message flagged [ai_translation]|883/883|
+|Message flagged [fuzzy]|16/883|
 
 ## Töm obligatoriska meddelanden (-)
 
 ## Tomma meddelanden (-)
 
-## Flaggade meddelanden (883)
+## Flaggade meddelanden (899)
 
-### Meddelande flaggat [fuzzy] (12)
-
-|Meddelande- id|Översättning|Platser|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Detta program bör inte startas direkt, använd scripts server.bat, ffe.bat och chessevent.bat.|src/papi_web.py:33|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent anslutning inte inställd för turnering [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi fil inte definierad för turnering [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] has started.|Turneringen inleds [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
-|Create a screen family|Ta bort skärmfamiljen.|src/web/templates/admin_families.html:29|
-|Menus|Menyn:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|Create a screen|Skapa en händelse|src/web/templates/admin_screens.html:29|
-|Add a screen to enter the results.|Lägg till en familj av skärmar för att ange resultaten.|src/web/templates/admin_screens.html:33|
-|Add a screen to display the pairings by board.|Lägg till en familj av skärmar för att visa parningar per bord.|src/web/templates/admin_screens.html:34|
-|Add a screen to display the pairings by alphabetical order.|Lägg till en grupp skärmar för att visa parningar i alfabetisk ordning.|src/web/templates/admin_screens.html:35|
-|Add a screen to display the last results.|Lägg till en skärm i händelsen.|src/web/templates/admin_screens.html:36|
-|Add a screen to display an image.|Lägg till en skärm i händelsen.|src/web/templates/admin_screens.html:37|
-
-### Meddelande flaggat [ai_translation] (871)
+### Meddelande flaggat [ai_translation] (883)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -211,10 +194,10 @@
 |players from #{first} to end, on {parts} screens|spelare från #{first} till slutet, på {parts} skärmar|src/data/family.py:326|
 |players from start to #{last}, on {parts} screens|spelare från start till #{last}, på {parts} skärmar|src/data/family.py:328|
 |players from #{first} to #{last}, on {parts} screens|spelare från #{first} till #{last}, på {parts} skärmar|src/data/family.py:330|
-|Unpaired \*\*\* FEMALE \*\*\*|Ouppklarade|src/data/player.py:92|
-|Unpaired \*\*\* MALE \*\*\*|Ouppklarade|src/data/player.py:92|
-|Exempt \*\*\* FEMALE \*\*\*|Undantag|src/data/player.py:96|
-|Exempt \*\*\* MALE \*\*\*|Undantag|src/data/player.py:96|
+|Unpaired \*\*\* FEMALE \*\*\*|Ouppklarade|src/data/player.py:95|
+|Unpaired \*\*\* MALE \*\*\*|Ouppklarade|src/data/player.py:95|
+|Exempt \*\*\* FEMALE \*\*\*|Undantag|src/data/player.py:99|
+|Exempt \*\*\* MALE \*\*\*|Undantag|src/data/player.py:99|
 |Last results|Senaste resultat|src/data/screen.py:97<br>src/data/screen.py:178<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:359<br>src/web/templates/admin_screens.html:36<br>src/web/templates/admin_screens.html:117|
 |Image|Bild|src/data/screen.py:99<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:361<br>src/web/templates/admin_screens.html:37<br>src/web/templates/admin_screens.html:122|
 |Boards %f-%l|Styrelser %f-%l|src/data/screen.py:125<br>src/data/screen_set.py:124|
@@ -305,17 +288,18 @@
 |ChessEvent connection [{chessevent_uniq_id}] has been updated.|ChessEvent-anslutningen [{chessevent_uniq_id}] har uppdaterats.|src/web/controllers/admin/chessevent_admin_controller.py:238|
 |ChessEvent connection [{chessevent_uniq_id}] has been deleted.|ChessEvent anslutning [{chessevent_uniq_id}] har tagits bort.|src/web/controllers/admin/chessevent_admin_controller.py:244|
 |Tournaments ({num})|Turneringar ({num})|src/web/controllers/admin/event_admin_controller.py:114|
-|Screens ({num})|Skärmar ({num})|src/web/controllers/admin/event_admin_controller.py:118|
-|Families ({num})|Familjer ({num})|src/web/controllers/admin/event_admin_controller.py:122|
-|Rotators ({num})|Rotatorer ({num})|src/web/controllers/admin/event_admin_controller.py:126<br>src/web/controllers/user/event_user_controller.py:125|
-|Timers ({num})|Timers ({num})|src/web/controllers/admin/event_admin_controller.py:130|
-|ChessEvent ({num})|ChessEvent ({num})|src/web/controllers/admin/event_admin_controller.py:134|
-|Messages ({num})|Meddelanden ({num})|src/web/controllers/admin/event_admin_controller.py:138|
-|Renaming the database failed: {ex}.|Byte av databas misslyckades: {ex}.|src/web/controllers/admin/event_admin_controller.py:403|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Händelse [{old_uniq_id}] har bytt namn ([{new_uniq_id}]) och uppdaterats.|src/web/controllers/admin/event_admin_controller.py:410|
-|Event [{uniq_id}] has been updated.|Händelse [{uniq_id}] har uppdaterats.|src/web/controllers/admin/event_admin_controller.py:413|
-|Event [{uniq_id}] has been created.|Händelse [{uniq_id}] har skapats.|src/web/controllers/admin/event_admin_controller.py:421<br>src/web/controllers/admin/index_admin_controller.py:676|
-|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch}).|src/web/controllers/admin/event_admin_controller.py:431|
+|Players ({num})|Timers ({num})|src/web/controllers/admin/event_admin_controller.py:118|
+|Screens ({num})|Skärmar ({num})|src/web/controllers/admin/event_admin_controller.py:122|
+|Families ({num})|Familjer ({num})|src/web/controllers/admin/event_admin_controller.py:126|
+|Rotators ({num})|Rotatorer ({num})|src/web/controllers/admin/event_admin_controller.py:130<br>src/web/controllers/user/event_user_controller.py:125|
+|Timers ({num})|Timers ({num})|src/web/controllers/admin/event_admin_controller.py:134|
+|ChessEvent ({num})|ChessEvent ({num})|src/web/controllers/admin/event_admin_controller.py:138|
+|Messages ({num})|Meddelanden ({num})|src/web/controllers/admin/event_admin_controller.py:142|
+|Renaming the database failed: {ex}.|Byte av databas misslyckades: {ex}.|src/web/controllers/admin/event_admin_controller.py:407|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Händelse [{old_uniq_id}] har bytt namn ([{new_uniq_id}]) och uppdaterats.|src/web/controllers/admin/event_admin_controller.py:414|
+|Event [{uniq_id}] has been updated.|Händelse [{uniq_id}] har uppdaterats.|src/web/controllers/admin/event_admin_controller.py:417|
+|Event [{uniq_id}] has been created.|Händelse [{uniq_id}] har skapats.|src/web/controllers/admin/event_admin_controller.py:425<br>src/web/controllers/admin/index_admin_controller.py:676|
+|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch}).|src/web/controllers/admin/event_admin_controller.py:435|
 |Please enter the family ID.|Vänligen ange familjens ID.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|Tecken [{char}] är inte tillåtet.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:233<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:75|
 |Family [{uniq_id}] already exists.|Familjen [{uniq_id}] finns redan.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
@@ -324,16 +308,16 @@
 |A positive integer is expected.|Ett positivt heltal förväntas.|src/web/controllers/admin/family_admin_controller.py:135<br>src/web/controllers/admin/family_admin_controller.py:140<br>src/web/controllers/admin/family_admin_controller.py:150<br>src/web/controllers/admin/family_admin_controller.py:155<br>src/web/controllers/admin/family_admin_controller.py:160<br>src/web/controllers/admin/family_admin_controller.py:179<br>src/web/controllers/admin/family_admin_controller.py:184<br>src/web/controllers/admin/rotator_admin_controller.py:94<br>src/web/controllers/admin/screen_admin_controller.py:143<br>src/web/controllers/admin/screen_admin_controller.py:154<br>src/web/controllers/admin/screen_admin_controller.py:167<br>src/web/controllers/admin/screen_admin_controller.py:172<br>src/web/controllers/admin/screen_admin_controller.py:261<br>src/web/controllers/admin/screen_admin_controller.py:266<br>src/web/controllers/admin/screen_admin_controller.py:271|
 |Timer [{timer_id}] not found.|Timer [{timer_id}] hittades inte.|src/web/controllers/admin/family_admin_controller.py:148<br>src/web/controllers/admin/screen_admin_controller.py:152|
 |Specifying the number of parts and the number of items per part is not possible.|Det är inte möjligt att ange antalet delar och antalet objekt per del.|src/web/controllers/admin/family_admin_controller.py:186|
-|Results entry|Inlämning av resultat|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:34<br>src/web/templates/admin_screens.html:33<br>src/web/templates/admin_screens.html:102|
+|Results entry|Inlämning av resultat|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:33<br>src/web/templates/admin_screens.html:33<br>src/web/templates/admin_screens.html:102|
 |pairings by board|Parningar per plan|src/web/controllers/admin/family_admin_controller.py:272<br>src/web/controllers/admin/screen_admin_controller.py:355<br>src/web/templates/admin_rotator_modal.html:121|
-|Pairings by player|Parningar av spelare|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:36<br>src/web/templates/admin_screens.html:35<br>src/web/templates/admin_screens.html:112|
+|Pairings by player|Parningar av spelare|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:35<br>src/web/templates/admin_screens.html:35<br>src/web/templates/admin_screens.html:112|
 |No recording|Ingen inspelning|src/web/controllers/admin/index_admin_controller.py:77<br>src/web/templates/admin_event_config.html:108|
 |**Singular:** {num} illegal move max<br/>**- Vad är det för fel på dig?** {num} illegal moves max|**Singular:** {num} olagligt drag max<br/>**- Vad är det för fel på dig?** {num} olagliga förflyttningar max|src/web/controllers/admin/index_admin_controller.py:79|
 |By default - {option}|Som standard - {option}|src/web/controllers/admin/index_admin_controller.py:82<br>src/web/controllers/admin/index_admin_controller.py:128<br>src/web/controllers/admin/index_admin_controller.py:139|
 |Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|Färg #1 används tills {delay_1} minuter innan rundorna börjar (fördröjning #1), färgen ändras sedan gradvis till färg #2 ({delay_2} minuter innan rundorna börjar).|src/web/controllers/admin/index_admin_controller.py:88|
 |Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Färg #2 används {delay_2} minuter innan rundorna börjar (fördröj #2), färgen ändras sedan gradvis till färg #3 (i början av rundorna).|src/web/controllers/admin/index_admin_controller.py:91|
 |Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|Färg #3 används från början av rundorna och för {delay_3} minuter efter (fördröj #3).|src/web/controllers/admin/index_admin_controller.py:94|
-|Pairings by board|Parningar ombord|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:35<br>src/web/templates/admin_screens.html:34<br>src/web/templates/admin_screens.html:107|
+|Pairings by board|Parningar ombord|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:34<br>src/web/templates/admin_screens.html:34<br>src/web/templates/admin_screens.html:107|
 |Use no timer|Använd ingen timer|src/web/controllers/admin/index_admin_controller.py:115|
 |No timer defined|Ingen timer definierad|src/web/controllers/admin/index_admin_controller.py:115|
 |Timer {timer_uniq_id}|Tidpunkt {timer_uniq_id}|src/web/controllers/admin/index_admin_controller.py:118|
@@ -447,7 +431,7 @@
 |Update|Uppdatera|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
 |Delete|Ta bort|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
 |Cancel|Avbryt|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
-|Refresh this page.|Uppdatera den här sidan.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:85<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
+|Refresh this page.|Uppdatera den här sidan.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_players.html:6<br>src/web/templates/admin_screens.html:85<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Lägg till en ChessEvent-anslutning till evenemanget.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Skapa en schackevent-anslutning|src/web/templates/admin_chessevents.html:30|
 |No ChessEvent connections.|Inga ChessEvent-förbindelser.|src/web/templates/admin_chessevents.html:45<br>src/web/templates/admin_tournament_modal.html:261|
@@ -538,12 +522,12 @@
 |Screen families|Skärmfamiljer|src/web/templates/admin_families.html:6|
 |You must create a tournament before creating a screen family.|Du måste skapa en turnering innan du skapar en skärmfamilj.|src/web/templates/admin_families.html:15|
 |Create a screen family|Ta bort skärmfamiljen.|src/web/templates/admin_families.html:29|
-|Add a family of screens to enter the results.|Lägg till en familj av skärmar för att ange resultaten.|src/web/templates/admin_families.html:34|
-|Add a family of screens to display the pairings by board.|Lägg till en familj av skärmar för att visa parningar per bord.|src/web/templates/admin_families.html:35|
-|Add a family of screens to display the pairings by alphabetical order.|Lägg till en grupp skärmar för att visa parningar i alfabetisk ordning.|src/web/templates/admin_families.html:36|
-|Enable/disable the details of the screen families on the cards below.|Aktivera/inaktivera detaljerna för skärmfamiljerna på korten nedan.|src/web/templates/admin_families.html:55|
-|Details|Detaljer|src/web/templates/admin_families.html:65<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:82|
-|No screen families.|Inga skärmfamiljer.|src/web/templates/admin_families.html:95<br>src/web/templates/admin_rotator_modal.html:190|
+|Add a family of screens to enter the results.|Lägg till en familj av skärmar för att ange resultaten.|src/web/templates/admin_families.html:33|
+|Add a family of screens to display the pairings by board.|Lägg till en familj av skärmar för att visa parningar per bord.|src/web/templates/admin_families.html:34|
+|Add a family of screens to display the pairings by alphabetical order.|Lägg till en grupp skärmar för att visa parningar i alfabetisk ordning.|src/web/templates/admin_families.html:35|
+|Enable/disable the details of the screen families on the cards below.|Aktivera/inaktivera detaljerna för skärmfamiljerna på korten nedan.|src/web/templates/admin_families.html:54|
+|Details|Detaljer|src/web/templates/admin_families.html:64<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:82|
+|No screen families.|Inga skärmfamiljer.|src/web/templates/admin_families.html:94<br>src/web/templates/admin_rotator_modal.html:190|
 |Type: %(family_type)s|Typ: %(family_type)s|src/web/templates/admin_family_card.html:16|
 |Tournament: %(tournament_name)s|Turnering: %(tournament_name)s|src/web/templates/admin_family_card.html:19<br>src/web/templates/admin_screen_sets_modal_set_div.html:182|
 |Selection: %(selection)s|Urval: %(selection)s|src/web/templates/admin_family_card.html:22<br>src/web/templates/admin_screen_sets_modal_set_div.html:191|
@@ -622,7 +606,18 @@
 |Message|Meddelande|src/web/templates/admin_messages.html:5|
 |No messages.|Inga meddelanden.|src/web/templates/admin_messages.html:44|
 |Pairings|Paraplyer|src/web/templates/admin_pairings.html:1|
-|Players|Spelare|src/web/templates/admin_players.html:1<br>src/web/templates/admin_screen_card.html:183|
+|Players|Spelare|src/web/templates/admin_players.html:3<br>src/web/templates/admin_screen_card.html:183|
+|Add a player to the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:17|
+|Create a player|Skapa en timer|src/web/templates/admin_players.html:26|
+|Name \*\*\* NAME COLUMN TITLE FOR PLAYERS|Beteckning|src/web/templates/admin_players.html:36|
+|Elo \*\*\* ELO COLUMN TITLE FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:37|
+|YOB \*\*\* YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS|HUVUDBYGGNAD|src/web/templates/admin_players.html:38|
+|CI \*\*\* CHECK-IN COLUMN TITLE FOR PLAYERS|CI Ordförande|src/web/templates/admin_players.html:39|
+|Cat \*\*\* CATEGORY COLUMN TITLE FOR PLAYERS|Katt|src/web/templates/admin_players.html:40|
+|Owed \*\*\* OWED COLUMN TITLE FOR PLAYERS|På grund av detta|src/web/templates/admin_players.html:41|
+|Paid \*\*\* PAID COLUMN TITLE FOR PLAYERS|Betald|src/web/templates/admin_players.html:42|
+|Comment \*\*\* COMMENT COLUMN TITLE FOR PLAYERS|Anmärkningar|src/web/templates/admin_players.html:43|
+|No players.|Spelare|src/web/templates/admin_players.html:66|
 |Rotation delay: %(seconds)d sec.|Rotationsfördröjning: %(seconds)d sek.|src/web/templates/admin_rotator_card.html:15<br>src/web/templates/user_rotator_card.html:18|
 |No screen neither family to rotate.|Ingen skärm varken familj att rotera.|src/web/templates/admin_rotator_card.html:43<br>src/web/templates/user_rotator_card.html:22|
 |Screens:|Skärmar:|src/web/templates/admin_rotator_card.html:49<br>src/web/templates/admin_rotator_modal.html:128<br>src/web/templates/user_rotator_card.html:28|
@@ -902,18 +897,39 @@
 |Unpaired players: hidden|Oparerade spelare: gömda|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Maximalt antal resultat: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Maximalt antal resultat: obegränsad|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Återgå till sammanfattningen av dokumentationen|utils/i18n/i18n_update.py:146|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Engelsk översättning|utils/i18n/i18n_update.py:147|
-|View file {file}|Visa fil {file}|utils/i18n/i18n_update.py:150|
-|Summary|Sammanfattning|utils/i18n/i18n_update.py:152|
-|Empty mandatory messages|Töm obligatoriska meddelanden|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:166|
-|Empty messages|Tomma meddelanden|utils/i18n/i18n_update.py:159<br>utils/i18n/i18n_update.py:181|
-|Message flagged [{flag}]|Meddelande flaggat [{flag}]|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:204|
-|Message ID|Meddelande- id|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
-|Locations|Platser|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
-|Singular:|Singular:|utils/i18n/i18n_update.py:175<br>utils/i18n/i18n_update.py:193<br>utils/i18n/i18n_update.py:214<br>utils/i18n/i18n_update.py:217|
-|Plural:|- Vad är det för fel på dig?|utils/i18n/i18n_update.py:176<br>utils/i18n/i18n_update.py:194<br>utils/i18n/i18n_update.py:215<br>utils/i18n/i18n_update.py:218|
-|Empty messages are not shown for the default language.|Tomma brev visas inte för standardspråket.|utils/i18n/i18n_update.py:184|
-|Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:200|
-|Translation|Översättning|utils/i18n/i18n_update.py:206|
+|Return to documentation summary|Återgå till sammanfattningen av dokumentationen|utils/i18n/i18n_update.py:148|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Engelsk översättning|utils/i18n/i18n_update.py:149|
+|View file {file}|Visa fil {file}|utils/i18n/i18n_update.py:152|
+|Summary|Sammanfattning|utils/i18n/i18n_update.py:154|
+|Empty mandatory messages|Töm obligatoriska meddelanden|utils/i18n/i18n_update.py:158<br>utils/i18n/i18n_update.py:168|
+|Empty messages|Tomma meddelanden|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:183|
+|Message flagged [{flag}]|Meddelande flaggat [{flag}]|utils/i18n/i18n_update.py:164<br>utils/i18n/i18n_update.py:206|
+|Message ID|Meddelande- id|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:208|
+|Locations|Platser|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:208|
+|Singular:|Singular:|utils/i18n/i18n_update.py:177<br>utils/i18n/i18n_update.py:195<br>utils/i18n/i18n_update.py:216<br>utils/i18n/i18n_update.py:219|
+|Plural:|- Vad är det för fel på dig?|utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:196<br>utils/i18n/i18n_update.py:217<br>utils/i18n/i18n_update.py:220|
+|Empty messages are not shown for the default language.|Tomma brev visas inte för standardspråket.|utils/i18n/i18n_update.py:186|
+|Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:202|
+|Translation|Översättning|utils/i18n/i18n_update.py:208|
+
+### Meddelande flaggat [fuzzy] (16)
+
+|Meddelande- id|Översättning|Platser|
+|--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Detta program bör inte startas direkt, använd scripts server.bat, ffe.bat och chessevent.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent anslutning inte inställd för turnering [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi fil inte definierad för turnering [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Turneringen inleds [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
+|Players ({num})|Timers ({num})|src/web/controllers/admin/event_admin_controller.py:118|
+|Create a screen family|Ta bort skärmfamiljen.|src/web/templates/admin_families.html:29|
+|Menus|Menyn:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Add a player to the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:17|
+|Create a player|Skapa en timer|src/web/templates/admin_players.html:26|
+|No players.|Spelare|src/web/templates/admin_players.html:66|
+|Create a screen|Skapa en händelse|src/web/templates/admin_screens.html:29|
+|Add a screen to enter the results.|Lägg till en familj av skärmar för att ange resultaten.|src/web/templates/admin_screens.html:33|
+|Add a screen to display the pairings by board.|Lägg till en familj av skärmar för att visa parningar per bord.|src/web/templates/admin_screens.html:34|
+|Add a screen to display the pairings by alphabetical order.|Lägg till en grupp skärmar för att visa parningar i alfabetisk ordning.|src/web/templates/admin_screens.html:35|
+|Add a screen to display the last results.|Lägg till en skärm i händelsen.|src/web/templates/admin_screens.html:36|
+|Add a screen to display an image.|Lägg till en skärm i händelsen.|src/web/templates/admin_screens.html:37|
 

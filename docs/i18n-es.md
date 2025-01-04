@@ -13,35 +13,18 @@
 
 | locale=`es` | Español <img src="../src/web/static/images/locales/es.svg" style="height: 1em;"/> |
 |--|:--:|
-|Mensajes obligatorios vacíos|0/16|
-|Mensajes vacíos|0/871|
-|Message flagged [fuzzy]|12/871|
-|Message flagged [ai_translation]|870/871|
+|Mensajes obligatorios vacíos|0/24|
+|Mensajes vacíos|0/883|
+|Message flagged [ai_translation]|882/883|
+|Message flagged [fuzzy]|16/883|
 
 ## Mensajes obligatorios vacíos (-)
 
 ## Mensajes vacíos (-)
 
-## Mensajes marcados (882)
+## Mensajes marcados (898)
 
-### Mensaje marcado [fuzzy] (12)
-
-|id de mensaje|Traducción|Ubicaciones|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Este programa no debe ser lanzado directamente, utilizar scripts server.bat, ffe.bat y chessevent.bat.|src/papi_web.py:33|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Conexión ChessEvent no establecida para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Archivo Papi no definido para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] has started.|El torneo [{tournament_uniq_id}] ha comenzado.|src/chessevent/action_selector.py:50|
-|Create a screen family|Borrar la familia de pantalla.|src/web/templates/admin_families.html:29|
-|Menus|Menú:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|Create a screen|Crear un evento|src/web/templates/admin_screens.html:29|
-|Add a screen to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_screens.html:33|
-|Add a screen to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_screens.html:34|
-|Add a screen to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_screens.html:35|
-|Add a screen to display the last results.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:36|
-|Add a screen to display an image.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:37|
-
-### Mensaje marcado [ai_translation] (870)
+### Mensaje marcado [ai_translation] (882)
 
 |id de mensaje|Traducción|Ubicaciones|
 |--|--|--|
@@ -211,10 +194,10 @@
 |players from #{first} to end, on {parts} screens|reproductores desde #{first} hasta el final, en pantallas {parts}|src/data/family.py:326|
 |players from start to #{last}, on {parts} screens|reproductores de inicio a #{last}, en pantallas {parts}|src/data/family.py:328|
 |players from #{first} to #{last}, on {parts} screens|reproductores de #{first} a #{last}, en pantallas {parts}|src/data/family.py:330|
-|Unpaired \*\*\* FEMALE \*\*\*|Sin emparejar|src/data/player.py:92|
-|Unpaired \*\*\* MALE \*\*\*|Sin emparejar|src/data/player.py:92|
-|Exempt \*\*\* FEMALE \*\*\*|Exento|src/data/player.py:96|
-|Exempt \*\*\* MALE \*\*\*|Exento|src/data/player.py:96|
+|Unpaired \*\*\* FEMALE \*\*\*|Sin emparejar|src/data/player.py:95|
+|Unpaired \*\*\* MALE \*\*\*|Sin emparejar|src/data/player.py:95|
+|Exempt \*\*\* FEMALE \*\*\*|Exento|src/data/player.py:99|
+|Exempt \*\*\* MALE \*\*\*|Exento|src/data/player.py:99|
 |Last results|Últimos resultados|src/data/screen.py:97<br>src/data/screen.py:178<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:359<br>src/web/templates/admin_screens.html:36<br>src/web/templates/admin_screens.html:117|
 |Image|Imagen|src/data/screen.py:99<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:361<br>src/web/templates/admin_screens.html:37<br>src/web/templates/admin_screens.html:122|
 |Boards %f-%l|Tablas %f-%l|src/data/screen.py:125<br>src/data/screen_set.py:124|
@@ -305,17 +288,18 @@
 |ChessEvent connection [{chessevent_uniq_id}] has been updated.|Conexión ChessEvent [{chessevent_uniq_id}] ha sido actualizado.|src/web/controllers/admin/chessevent_admin_controller.py:238|
 |ChessEvent connection [{chessevent_uniq_id}] has been deleted.|Conexión ChessEvent [{chessevent_uniq_id}] ha sido eliminado.|src/web/controllers/admin/chessevent_admin_controller.py:244|
 |Tournaments ({num})|Torneos ({num})|src/web/controllers/admin/event_admin_controller.py:114|
-|Screens ({num})|Pantallas ({num})|src/web/controllers/admin/event_admin_controller.py:118|
-|Families ({num})|Familias ({num})|src/web/controllers/admin/event_admin_controller.py:122|
-|Rotators ({num})|Rotadores ({num})|src/web/controllers/admin/event_admin_controller.py:126<br>src/web/controllers/user/event_user_controller.py:125|
-|Timers ({num})|Cronómetros ({num})|src/web/controllers/admin/event_admin_controller.py:130|
-|ChessEvent ({num})|ChessEvent ({num})|src/web/controllers/admin/event_admin_controller.py:134|
-|Messages ({num})|Mensajes ({num})|src/web/controllers/admin/event_admin_controller.py:138|
-|Renaming the database failed: {ex}.|Falló el cambio de nombre de la base de datos: {ex}.|src/web/controllers/admin/event_admin_controller.py:403|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Evento [{old_uniq_id}] ha sido renombrado ([{new_uniq_id}]) y actualizado.|src/web/controllers/admin/event_admin_controller.py:410|
-|Event [{uniq_id}] has been updated.|El evento [{uniq_id}] ha sido actualizado.|src/web/controllers/admin/event_admin_controller.py:413|
-|Event [{uniq_id}] has been created.|Evento [{uniq_id}] ha sido creado.|src/web/controllers/admin/event_admin_controller.py:421<br>src/web/controllers/admin/index_admin_controller.py:676|
-|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evento [{uniq_id}] ha sido eliminado, la base de datos ha sido archivada ({arch}).|src/web/controllers/admin/event_admin_controller.py:431|
+|Players ({num})|Cronómetros ({num})|src/web/controllers/admin/event_admin_controller.py:118|
+|Screens ({num})|Pantallas ({num})|src/web/controllers/admin/event_admin_controller.py:122|
+|Families ({num})|Familias ({num})|src/web/controllers/admin/event_admin_controller.py:126|
+|Rotators ({num})|Rotadores ({num})|src/web/controllers/admin/event_admin_controller.py:130<br>src/web/controllers/user/event_user_controller.py:125|
+|Timers ({num})|Cronómetros ({num})|src/web/controllers/admin/event_admin_controller.py:134|
+|ChessEvent ({num})|ChessEvent ({num})|src/web/controllers/admin/event_admin_controller.py:138|
+|Messages ({num})|Mensajes ({num})|src/web/controllers/admin/event_admin_controller.py:142|
+|Renaming the database failed: {ex}.|Falló el cambio de nombre de la base de datos: {ex}.|src/web/controllers/admin/event_admin_controller.py:407|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Evento [{old_uniq_id}] ha sido renombrado ([{new_uniq_id}]) y actualizado.|src/web/controllers/admin/event_admin_controller.py:414|
+|Event [{uniq_id}] has been updated.|El evento [{uniq_id}] ha sido actualizado.|src/web/controllers/admin/event_admin_controller.py:417|
+|Event [{uniq_id}] has been created.|Evento [{uniq_id}] ha sido creado.|src/web/controllers/admin/event_admin_controller.py:425<br>src/web/controllers/admin/index_admin_controller.py:676|
+|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evento [{uniq_id}] ha sido eliminado, la base de datos ha sido archivada ({arch}).|src/web/controllers/admin/event_admin_controller.py:435|
 |Please enter the family ID.|Por favor, introduzca la identificación de la familia.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|El carácter [{char}] no está permitido.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:233<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:75|
 |Family [{uniq_id}] already exists.|La familia [{uniq_id}] ya existe.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
@@ -324,16 +308,16 @@
 |A positive integer is expected.|Se espera un número entero positivo.|src/web/controllers/admin/family_admin_controller.py:135<br>src/web/controllers/admin/family_admin_controller.py:140<br>src/web/controllers/admin/family_admin_controller.py:150<br>src/web/controllers/admin/family_admin_controller.py:155<br>src/web/controllers/admin/family_admin_controller.py:160<br>src/web/controllers/admin/family_admin_controller.py:179<br>src/web/controllers/admin/family_admin_controller.py:184<br>src/web/controllers/admin/rotator_admin_controller.py:94<br>src/web/controllers/admin/screen_admin_controller.py:143<br>src/web/controllers/admin/screen_admin_controller.py:154<br>src/web/controllers/admin/screen_admin_controller.py:167<br>src/web/controllers/admin/screen_admin_controller.py:172<br>src/web/controllers/admin/screen_admin_controller.py:261<br>src/web/controllers/admin/screen_admin_controller.py:266<br>src/web/controllers/admin/screen_admin_controller.py:271|
 |Timer [{timer_id}] not found.|Temporizador [{timer_id}] no encontrado.|src/web/controllers/admin/family_admin_controller.py:148<br>src/web/controllers/admin/screen_admin_controller.py:152|
 |Specifying the number of parts and the number of items per part is not possible.|No es posible especificar el número de piezas y el número de elementos por pieza.|src/web/controllers/admin/family_admin_controller.py:186|
-|Results entry|Entrada de los resultados|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:34<br>src/web/templates/admin_screens.html:33<br>src/web/templates/admin_screens.html:102|
+|Results entry|Entrada de los resultados|src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:353<br>src/web/controllers/admin/tournament_admin_controller.py:329<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:33<br>src/web/templates/admin_screens.html:33<br>src/web/templates/admin_screens.html:102|
 |pairings by board|emparejamientos a bordo|src/web/controllers/admin/family_admin_controller.py:272<br>src/web/controllers/admin/screen_admin_controller.py:355<br>src/web/templates/admin_rotator_modal.html:121|
-|Pairings by player|Maridajes por jugador|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:36<br>src/web/templates/admin_screens.html:35<br>src/web/templates/admin_screens.html:112|
+|Pairings by player|Maridajes por jugador|src/web/controllers/admin/family_admin_controller.py:274<br>src/web/controllers/admin/index_admin_controller.py:105<br>src/web/controllers/admin/screen_admin_controller.py:357<br>src/web/controllers/admin/tournament_admin_controller.py:331<br>src/web/templates/admin_families.html:35<br>src/web/templates/admin_screens.html:35<br>src/web/templates/admin_screens.html:112|
 |No recording|Sin grabación|src/web/controllers/admin/index_admin_controller.py:77<br>src/web/templates/admin_event_config.html:108|
 |**Singular:** {num} illegal move max<br/>**Plural:** {num} illegal moves max|**Singular:** {num} movimiento ilegal max<br/>**Plural:** {num} movimientos ilegales max|src/web/controllers/admin/index_admin_controller.py:79|
 |By default - {option}|Por defecto - {option}|src/web/controllers/admin/index_admin_controller.py:82<br>src/web/controllers/admin/index_admin_controller.py:128<br>src/web/controllers/admin/index_admin_controller.py:139|
 |Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|El colour #1 se utiliza hasta que {delay_1} minutos antes del inicio de las rondas (retraso #1), el color cambia gradualmente hasta el colour #2 ({delay_2} minutos antes del inicio de las rondas).|src/web/controllers/admin/index_admin_controller.py:88|
 |Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Colour #2 se utiliza {delay_2} minutos antes del inicio de las rondas (retraso #2), el color cambia gradualmente hasta el colour #3 (al comienzo de las rondas).|src/web/controllers/admin/index_admin_controller.py:91|
 |Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|El colour #3 se utiliza desde el inicio de las rondas y para {delay_3} minutos después (retraso #3).|src/web/controllers/admin/index_admin_controller.py:94|
-|Pairings by board|Maridajes a bordo|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:35<br>src/web/templates/admin_screens.html:34<br>src/web/templates/admin_screens.html:107|
+|Pairings by board|Maridajes a bordo|src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:330<br>src/web/templates/admin_families.html:34<br>src/web/templates/admin_screens.html:34<br>src/web/templates/admin_screens.html:107|
 |Use no timer|Usar sin temporizador|src/web/controllers/admin/index_admin_controller.py:115|
 |No timer defined|No se ha definido ningún temporizador|src/web/controllers/admin/index_admin_controller.py:115|
 |Timer {timer_uniq_id}|Cronómetro {timer_uniq_id}|src/web/controllers/admin/index_admin_controller.py:118|
@@ -447,7 +431,7 @@
 |Update|Actualizar|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
 |Delete|Eliminar|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
 |Cancel|Cancelar|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
-|Refresh this page.|Actualizar esta página.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_screens.html:85<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
+|Refresh this page.|Actualizar esta página.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_players.html:6<br>src/web/templates/admin_screens.html:85<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Añade una conexión ChessEvent al evento.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Crear una conexión ChessEvent|src/web/templates/admin_chessevents.html:30|
 |No ChessEvent connections.|Sin conexiones ChessEvent.|src/web/templates/admin_chessevents.html:45<br>src/web/templates/admin_tournament_modal.html:261|
@@ -538,12 +522,12 @@
 |Screen families|Familias de cribado|src/web/templates/admin_families.html:6|
 |You must create a tournament before creating a screen family.|Debe crear un torneo antes de crear una familia de pantalla.|src/web/templates/admin_families.html:15|
 |Create a screen family|Borrar la familia de pantalla.|src/web/templates/admin_families.html:29|
-|Add a family of screens to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_families.html:34|
-|Add a family of screens to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_families.html:35|
-|Add a family of screens to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_families.html:36|
-|Enable/disable the details of the screen families on the cards below.|Activar/desactivar los detalles de las familias de pantalla en las tarjetas de abajo.|src/web/templates/admin_families.html:55|
-|Details|Detalles|src/web/templates/admin_families.html:65<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:82|
-|No screen families.|No hay familias de pantalla.|src/web/templates/admin_families.html:95<br>src/web/templates/admin_rotator_modal.html:190|
+|Add a family of screens to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_families.html:33|
+|Add a family of screens to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_families.html:34|
+|Add a family of screens to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_families.html:35|
+|Enable/disable the details of the screen families on the cards below.|Activar/desactivar los detalles de las familias de pantalla en las tarjetas de abajo.|src/web/templates/admin_families.html:54|
+|Details|Detalles|src/web/templates/admin_families.html:64<br>src/web/templates/admin_rotators.html:23<br>src/web/templates/admin_screens.html:82|
+|No screen families.|No hay familias de pantalla.|src/web/templates/admin_families.html:94<br>src/web/templates/admin_rotator_modal.html:190|
 |Type: %(family_type)s|Tipo: %(family_type)s|src/web/templates/admin_family_card.html:16|
 |Tournament: %(tournament_name)s|Torneo: %(tournament_name)s|src/web/templates/admin_family_card.html:19<br>src/web/templates/admin_screen_sets_modal_set_div.html:182|
 |Selection: %(selection)s|Selección: %(selection)s|src/web/templates/admin_family_card.html:22<br>src/web/templates/admin_screen_sets_modal_set_div.html:191|
@@ -622,7 +606,18 @@
 |Message|Mensaje|src/web/templates/admin_messages.html:5|
 |No messages.|Sin mensajes.|src/web/templates/admin_messages.html:44|
 |Pairings|Maridajes|src/web/templates/admin_pairings.html:1|
-|Players|Jugadores|src/web/templates/admin_players.html:1<br>src/web/templates/admin_screen_card.html:183|
+|Players|Jugadores|src/web/templates/admin_players.html:3<br>src/web/templates/admin_screen_card.html:183|
+|Add a player to the event.|Añade un temporizador al evento.|src/web/templates/admin_players.html:17|
+|Create a player|Crear un temporizador|src/web/templates/admin_players.html:26|
+|Name \*\*\* NAME COLUMN TITLE FOR PLAYERS|Nombre|src/web/templates/admin_players.html:36|
+|Elo \*\*\* ELO COLUMN TITLE FOR PLAYERS|Elo|src/web/templates/admin_players.html:37|
+|YOB \*\*\* YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS|YOB|src/web/templates/admin_players.html:38|
+|CI \*\*\* CHECK-IN COLUMN TITLE FOR PLAYERS|CI|src/web/templates/admin_players.html:39|
+|Cat \*\*\* CATEGORY COLUMN TITLE FOR PLAYERS|Gato|src/web/templates/admin_players.html:40|
+|Owed \*\*\* OWED COLUMN TITLE FOR PLAYERS|Deuda|src/web/templates/admin_players.html:41|
+|Paid \*\*\* PAID COLUMN TITLE FOR PLAYERS|Pagada|src/web/templates/admin_players.html:42|
+|Comment \*\*\* COMMENT COLUMN TITLE FOR PLAYERS|Comentario|src/web/templates/admin_players.html:43|
+|No players.|Jugadores|src/web/templates/admin_players.html:66|
 |Rotation delay: %(seconds)d sec.|Retraso en la rotación: %(seconds)d seg.|src/web/templates/admin_rotator_card.html:15<br>src/web/templates/user_rotator_card.html:18|
 |No screen neither family to rotate.|No hay pantalla ni familia para rotar.|src/web/templates/admin_rotator_card.html:43<br>src/web/templates/user_rotator_card.html:22|
 |Screens:|Pantallas:|src/web/templates/admin_rotator_card.html:49<br>src/web/templates/admin_rotator_modal.html:128<br>src/web/templates/user_rotator_card.html:28|
@@ -901,18 +896,39 @@
 |Unpaired players: hidden|Jugadores sin emparejar: ocultos|src/web/templates/user_screen_card.html:44|
 |Maximum number of results: %(num)d|Número máximo de resultados: %(num)d|src/web/templates/user_screen_card.html:52|
 |Maximum number of results: unlimited|Número máximo de resultados: ilimitado|src/web/templates/user_screen_card.html:54|
-|Return to documentation summary|Volver al resumen de la documentación|utils/i18n/i18n_update.py:146|
-|English translation \*\*\* TRANSLATE ! \*\*\*|Traducción al inglés|utils/i18n/i18n_update.py:147|
-|View file {file}|Ver archivo {file}|utils/i18n/i18n_update.py:150|
-|Summary|Resumen|utils/i18n/i18n_update.py:152|
-|Empty mandatory messages|Mensajes obligatorios vacíos|utils/i18n/i18n_update.py:156<br>utils/i18n/i18n_update.py:166|
-|Empty messages|Mensajes vacíos|utils/i18n/i18n_update.py:159<br>utils/i18n/i18n_update.py:181|
-|Message flagged [{flag}]|Mensaje marcado [{flag}]|utils/i18n/i18n_update.py:162<br>utils/i18n/i18n_update.py:204|
-|Message ID|id de mensaje|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
-|Locations|Ubicaciones|utils/i18n/i18n_update.py:168<br>utils/i18n/i18n_update.py:186<br>utils/i18n/i18n_update.py:206|
-|Singular:|Singular:|utils/i18n/i18n_update.py:175<br>utils/i18n/i18n_update.py:193<br>utils/i18n/i18n_update.py:214<br>utils/i18n/i18n_update.py:217|
-|Plural:|Plural:|utils/i18n/i18n_update.py:176<br>utils/i18n/i18n_update.py:194<br>utils/i18n/i18n_update.py:215<br>utils/i18n/i18n_update.py:218|
-|Empty messages are not shown for the default language.|Los mensajes vacíos no se muestran para el idioma predeterminado.|utils/i18n/i18n_update.py:184|
-|Flagged messages|Mensajes marcados|utils/i18n/i18n_update.py:200|
-|Translation|Traducción|utils/i18n/i18n_update.py:206|
+|Return to documentation summary|Volver al resumen de la documentación|utils/i18n/i18n_update.py:148|
+|English translation \*\*\* TRANSLATE ! \*\*\*|Traducción al inglés|utils/i18n/i18n_update.py:149|
+|View file {file}|Ver archivo {file}|utils/i18n/i18n_update.py:152|
+|Summary|Resumen|utils/i18n/i18n_update.py:154|
+|Empty mandatory messages|Mensajes obligatorios vacíos|utils/i18n/i18n_update.py:158<br>utils/i18n/i18n_update.py:168|
+|Empty messages|Mensajes vacíos|utils/i18n/i18n_update.py:161<br>utils/i18n/i18n_update.py:183|
+|Message flagged [{flag}]|Mensaje marcado [{flag}]|utils/i18n/i18n_update.py:164<br>utils/i18n/i18n_update.py:206|
+|Message ID|id de mensaje|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:208|
+|Locations|Ubicaciones|utils/i18n/i18n_update.py:170<br>utils/i18n/i18n_update.py:188<br>utils/i18n/i18n_update.py:208|
+|Singular:|Singular:|utils/i18n/i18n_update.py:177<br>utils/i18n/i18n_update.py:195<br>utils/i18n/i18n_update.py:216<br>utils/i18n/i18n_update.py:219|
+|Plural:|Plural:|utils/i18n/i18n_update.py:178<br>utils/i18n/i18n_update.py:196<br>utils/i18n/i18n_update.py:217<br>utils/i18n/i18n_update.py:220|
+|Empty messages are not shown for the default language.|Los mensajes vacíos no se muestran para el idioma predeterminado.|utils/i18n/i18n_update.py:186|
+|Flagged messages|Mensajes marcados|utils/i18n/i18n_update.py:202|
+|Translation|Traducción|utils/i18n/i18n_update.py:208|
+
+### Mensaje marcado [fuzzy] (16)
+
+|id de mensaje|Traducción|Ubicaciones|
+|--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Este programa no debe ser lanzado directamente, utilizar scripts server.bat, ffe.bat y chessevent.bat.|src/papi_web.py:33|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Conexión ChessEvent no establecida para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Archivo Papi no definido para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|El torneo [{tournament_uniq_id}] ha comenzado.|src/chessevent/action_selector.py:50|
+|Players ({num})|Cronómetros ({num})|src/web/controllers/admin/event_admin_controller.py:118|
+|Create a screen family|Borrar la familia de pantalla.|src/web/templates/admin_families.html:29|
+|Menus|Menú:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Add a player to the event.|Añade un temporizador al evento.|src/web/templates/admin_players.html:17|
+|Create a player|Crear un temporizador|src/web/templates/admin_players.html:26|
+|No players.|Jugadores|src/web/templates/admin_players.html:66|
+|Create a screen|Crear un evento|src/web/templates/admin_screens.html:29|
+|Add a screen to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_screens.html:33|
+|Add a screen to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_screens.html:34|
+|Add a screen to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_screens.html:35|
+|Add a screen to display the last results.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:36|
+|Add a screen to display an image.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:37|
 

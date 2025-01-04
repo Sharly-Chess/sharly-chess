@@ -846,22 +846,22 @@ msgstr "spelers van begin tot #{last}, op {parts} schermen"
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr "spelers van #{first} tot #{last}, op {parts} schermen"
 
-#: src/data/player.py:92
+#: src/data/player.py:95
 #, ai_translation
 msgid "Unpaired *** FEMALE ***"
 msgstr "Ongepaard"
 
-#: src/data/player.py:92
+#: src/data/player.py:95
 #, ai_translation
 msgid "Unpaired *** MALE ***"
 msgstr "Ongepaard"
 
-#: src/data/player.py:96
+#: src/data/player.py:99
 #, ai_translation
 msgid "Exempt *** FEMALE ***"
 msgstr "Vrijgesteld"
 
-#: src/data/player.py:96
+#: src/data/player.py:99
 #, ai_translation
 msgid "Exempt *** MALE ***"
 msgstr "Vrijgesteld"
@@ -1334,58 +1334,63 @@ msgid "Tournaments ({num})"
 msgstr "Toernooien ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py:118
+#, ai_translation, fuzzy
+msgid "Players ({num})"
+msgstr "Timers ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py:122
 #, ai_translation
 msgid "Screens ({num})"
 msgstr "Schermen ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:122
+#: src/web/controllers/admin/event_admin_controller.py:126
 #, ai_translation
 msgid "Families ({num})"
 msgstr "Gezinnen ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:126
+#: src/web/controllers/admin/event_admin_controller.py:130
 #: src/web/controllers/user/event_user_controller.py:125
 #, ai_translation
 msgid "Rotators ({num})"
 msgstr "Roators ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:130
+#: src/web/controllers/admin/event_admin_controller.py:134
 #, ai_translation
 msgid "Timers ({num})"
 msgstr "Timers ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:134
+#: src/web/controllers/admin/event_admin_controller.py:138
 #, ai_translation
 msgid "ChessEvent ({num})"
 msgstr "Schaken ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:138
+#: src/web/controllers/admin/event_admin_controller.py:142
 #, ai_translation
 msgid "Messages ({num})"
 msgstr "Berichten ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:403
+#: src/web/controllers/admin/event_admin_controller.py:407
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Hernoemen van de database is mislukt: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:410
+#: src/web/controllers/admin/event_admin_controller.py:414
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "Event [{old_uniq_id}] is hernoemd ([{new_uniq_id}]) en bijgewerkt."
 
-#: src/web/controllers/admin/event_admin_controller.py:413
+#: src/web/controllers/admin/event_admin_controller.py:417
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "Event [{uniq_id}] is bijgewerkt."
 
-#: src/web/controllers/admin/event_admin_controller.py:421
+#: src/web/controllers/admin/event_admin_controller.py:425
 #: src/web/controllers/admin/index_admin_controller.py:676
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Event [{uniq_id}] is aangemaakt."
 
-#: src/web/controllers/admin/event_admin_controller.py:431
+#: src/web/controllers/admin/event_admin_controller.py:435
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Event [{uniq_id}] is verwijderd, de database is gearchiveerd ({arch})."
@@ -1457,7 +1462,7 @@ msgstr "Het opgeven van het aantal onderdelen en het aantal items per onderdeel 
 #: src/web/controllers/admin/screen_admin_controller.py:353
 #: src/web/controllers/admin/tournament_admin_controller.py:329
 #: src/web/templates/admin_event_modal.html:190
-#: src/web/templates/admin_families.html:34
+#: src/web/templates/admin_families.html:33
 #: src/web/templates/admin_screens.html:33
 #: src/web/templates/admin_screens.html:102
 #, ai_translation
@@ -1475,7 +1480,7 @@ msgstr "paringen per bord"
 #: src/web/controllers/admin/index_admin_controller.py:105
 #: src/web/controllers/admin/screen_admin_controller.py:357
 #: src/web/controllers/admin/tournament_admin_controller.py:331
-#: src/web/templates/admin_families.html:36
+#: src/web/templates/admin_families.html:35
 #: src/web/templates/admin_screens.html:35
 #: src/web/templates/admin_screens.html:112
 #, ai_translation
@@ -1519,7 +1524,7 @@ msgstr "Kleur #3 wordt gebruikt vanaf het begin van de rondes en voor {delay_3} 
 
 #: src/web/controllers/admin/index_admin_controller.py:104
 #: src/web/controllers/admin/tournament_admin_controller.py:330
-#: src/web/templates/admin_families.html:35
+#: src/web/templates/admin_families.html:34
 #: src/web/templates/admin_screens.html:34
 #: src/web/templates/admin_screens.html:107
 #, ai_translation
@@ -2169,7 +2174,7 @@ msgid "Cancel"
 msgstr "Annuleren"
 
 #: src/web/templates/admin_chessevents.html:10
-#: src/web/templates/admin_events.html:9
+#: src/web/templates/admin_events.html:9 src/web/templates/admin_players.html:6
 #: src/web/templates/admin_screens.html:85
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
@@ -2688,34 +2693,34 @@ msgstr "Je moet een toernooi maken voordat je een schermfamilie aanmaakt."
 msgid "Create a screen family"
 msgstr "Verwijder de schermfamilie."
 
-#: src/web/templates/admin_families.html:34
+#: src/web/templates/admin_families.html:33
 #, ai_translation
 msgid "Add a family of screens to enter the results."
 msgstr "Voeg een familie van schermen toe om de resultaten in te voeren."
 
-#: src/web/templates/admin_families.html:35
+#: src/web/templates/admin_families.html:34
 #, ai_translation
 msgid "Add a family of screens to display the pairings by board."
 msgstr "Voeg een familie van schermen toe om de paringen per bord weer te geven."
 
-#: src/web/templates/admin_families.html:36
+#: src/web/templates/admin_families.html:35
 #, ai_translation
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Voeg een groep schermen toe om de paren op alfabetische volgorde weer te geven."
 
-#: src/web/templates/admin_families.html:55
+#: src/web/templates/admin_families.html:54
 #, ai_translation
 msgid "Enable/disable the details of the screen families on the cards below."
 msgstr "Schakel de details van de schermfamilies op de onderstaande kaarten in/uit."
 
-#: src/web/templates/admin_families.html:65
+#: src/web/templates/admin_families.html:64
 #: src/web/templates/admin_rotators.html:23
 #: src/web/templates/admin_screens.html:82
 #, ai_translation
 msgid "Details"
 msgstr "Details"
 
-#: src/web/templates/admin_families.html:95
+#: src/web/templates/admin_families.html:94
 #: src/web/templates/admin_rotator_modal.html:190
 #, ai_translation
 msgid "No screen families."
@@ -3159,10 +3164,65 @@ msgstr "Geen berichten."
 msgid "Pairings"
 msgstr "met een gewicht van niet meer dan 150 g/m2"
 
-#: src/web/templates/admin_players.html:1
+#: src/web/templates/admin_players.html:3
 #: src/web/templates/admin_screen_card.html:183
 #, ai_translation
 msgid "Players"
+msgstr "Spelers"
+
+#: src/web/templates/admin_players.html:17
+#, ai_translation, fuzzy
+msgid "Add a player to the event."
+msgstr "Voeg een timer toe aan het evenement."
+
+#: src/web/templates/admin_players.html:26
+#, ai_translation, fuzzy
+msgid "Create a player"
+msgstr "Een timer aanmaken"
+
+#: src/web/templates/admin_players.html:36
+#, ai_translation
+msgid "Name *** NAME COLUMN TITLE FOR PLAYERS"
+msgstr "Naam"
+
+#: src/web/templates/admin_players.html:37
+#, ai_translation
+msgid "Elo *** ELO COLUMN TITLE FOR PLAYERS"
+msgstr "Elo"
+
+#: src/web/templates/admin_players.html:38
+#, ai_translation
+msgid "YOB *** YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS"
+msgstr "YOB"
+
+#: src/web/templates/admin_players.html:39
+#, ai_translation
+msgid "CI *** CHECK-IN COLUMN TITLE FOR PLAYERS"
+msgstr "CI"
+
+#: src/web/templates/admin_players.html:40
+#, ai_translation
+msgid "Cat *** CATEGORY COLUMN TITLE FOR PLAYERS"
+msgstr "Kat"
+
+#: src/web/templates/admin_players.html:41
+#, ai_translation
+msgid "Owed *** OWED COLUMN TITLE FOR PLAYERS"
+msgstr "Auwedunit synonyms for matching user input"
+
+#: src/web/templates/admin_players.html:42
+#, ai_translation
+msgid "Paid *** PAID COLUMN TITLE FOR PLAYERS"
+msgstr "Betaald"
+
+#: src/web/templates/admin_players.html:43
+#, ai_translation
+msgid "Comment *** COMMENT COLUMN TITLE FOR PLAYERS"
+msgstr "Opmerking"
+
+#: src/web/templates/admin_players.html:66
+#, ai_translation, fuzzy
+msgid "No players."
 msgstr "Spelers"
 
 #: src/web/templates/admin_rotator_card.html:15
@@ -4588,76 +4648,76 @@ msgstr "Maximum aantal resultaten: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Maximum aantal resultaten: onbeperkt"
 
-#: utils/i18n/i18n_update.py:146
+#: utils/i18n/i18n_update.py:148
 #, ai_translation
 msgid "Return to documentation summary"
 msgstr "Terug naar documentatiesamenvatting"
 
-#: utils/i18n/i18n_update.py:147
+#: utils/i18n/i18n_update.py:149
 #, ai_translation
 msgid "English translation *** TRANSLATE ! ***"
 msgstr "Engelse vertaling"
 
-#: utils/i18n/i18n_update.py:150
+#: utils/i18n/i18n_update.py:152
 #, ai_translation
 msgid "View file {file}"
 msgstr "Bestand {file} tonen"
 
-#: utils/i18n/i18n_update.py:152
+#: utils/i18n/i18n_update.py:154
 #, ai_translation
 msgid "Summary"
 msgstr "Samenvatting"
 
-#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:166
+#: utils/i18n/i18n_update.py:158 utils/i18n/i18n_update.py:168
 #, ai_translation
 msgid "Empty mandatory messages"
 msgstr "Lege verplichte berichten"
 
-#: utils/i18n/i18n_update.py:159 utils/i18n/i18n_update.py:181
+#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:183
 #, ai_translation
 msgid "Empty messages"
 msgstr "Lege berichten"
 
-#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:164 utils/i18n/i18n_update.py:206
 #, ai_translation
 msgid "Message flagged [{flag}]"
 msgstr "Bericht gemarkeerd [{flag}]"
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:206
+#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
+#: utils/i18n/i18n_update.py:208
 #, ai_translation
 msgid "Message ID"
 msgstr "Bericht-id"
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:206
+#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
+#: utils/i18n/i18n_update.py:208
 #, ai_translation
 msgid "Locations"
 msgstr "Locaties"
 
-#: utils/i18n/i18n_update.py:175 utils/i18n/i18n_update.py:193
-#: utils/i18n/i18n_update.py:214 utils/i18n/i18n_update.py:217
+#: utils/i18n/i18n_update.py:177 utils/i18n/i18n_update.py:195
+#: utils/i18n/i18n_update.py:216 utils/i18n/i18n_update.py:219
 #, ai_translation
 msgid "Singular:"
 msgstr "Enkelvoud:"
 
-#: utils/i18n/i18n_update.py:176 utils/i18n/i18n_update.py:194
-#: utils/i18n/i18n_update.py:215 utils/i18n/i18n_update.py:218
+#: utils/i18n/i18n_update.py:178 utils/i18n/i18n_update.py:196
+#: utils/i18n/i18n_update.py:217 utils/i18n/i18n_update.py:220
 #, ai_translation
 msgid "Plural:"
 msgstr "Meervoud:"
 
-#: utils/i18n/i18n_update.py:184
+#: utils/i18n/i18n_update.py:186
 #, ai_translation
 msgid "Empty messages are not shown for the default language."
 msgstr "Lege berichten worden niet getoond voor de standaardtaal."
 
-#: utils/i18n/i18n_update.py:200
+#: utils/i18n/i18n_update.py:202
 #, ai_translation
 msgid "Flagged messages"
 msgstr "Gemarkeerde berichten"
 
-#: utils/i18n/i18n_update.py:206
+#: utils/i18n/i18n_update.py:208
 #, ai_translation
 msgid "Translation"
 msgstr "Vertaling"
@@ -4667,4 +4727,31 @@ msgstr "Vertaling"
 
 #~ msgid "Papi file not set for tournament [{tournament_uniq_id}]."
 #~ msgstr "Papi bestand niet ingesteld voor toernooi [{tournament_uniq_id}]."
+
+#~ msgid "Rank"
+#~ msgstr ""
+
+#~ msgid "Name"
+#~ msgstr "Naam:"
+
+#~ msgid "Elo"
+#~ msgstr ""
+
+#~ msgid "YOB"
+#~ msgstr ""
+
+#~ msgid "CI"
+#~ msgstr ""
+
+#~ msgid "Cat"
+#~ msgstr "Aanmaken"
+
+#~ msgid "Owed"
+#~ msgstr ""
+
+#~ msgid "Paid"
+#~ msgstr ""
+
+#~ msgid "Comment"
+#~ msgstr ""
 

@@ -681,19 +681,19 @@ msgstr ""
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
-#: src/data/player.py:92
+#: src/data/player.py:95
 msgid "Unpaired *** FEMALE ***"
 msgstr ""
 
-#: src/data/player.py:92
+#: src/data/player.py:95
 msgid "Unpaired *** MALE ***"
 msgstr ""
 
-#: src/data/player.py:96
+#: src/data/player.py:99
 msgid "Exempt *** FEMALE ***"
 msgstr ""
 
-#: src/data/player.py:96
+#: src/data/player.py:99
 msgid "Exempt *** MALE ***"
 msgstr ""
 
@@ -1078,48 +1078,52 @@ msgid "Tournaments ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py:118
-msgid "Screens ({num})"
+msgid "Players ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py:122
-msgid "Families ({num})"
+msgid "Screens ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py:126
+msgid "Families ({num})"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py:130
 #: src/web/controllers/user/event_user_controller.py:125
 msgid "Rotators ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:130
+#: src/web/controllers/admin/event_admin_controller.py:134
 msgid "Timers ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:134
+#: src/web/controllers/admin/event_admin_controller.py:138
 msgid "ChessEvent ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:138
+#: src/web/controllers/admin/event_admin_controller.py:142
 msgid "Messages ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:403
+#: src/web/controllers/admin/event_admin_controller.py:407
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:410
+#: src/web/controllers/admin/event_admin_controller.py:414
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:413
+#: src/web/controllers/admin/event_admin_controller.py:417
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:421
+#: src/web/controllers/admin/event_admin_controller.py:425
 #: src/web/controllers/admin/index_admin_controller.py:676
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:431
+#: src/web/controllers/admin/event_admin_controller.py:435
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
@@ -1182,7 +1186,7 @@ msgstr ""
 #: src/web/controllers/admin/screen_admin_controller.py:353
 #: src/web/controllers/admin/tournament_admin_controller.py:329
 #: src/web/templates/admin_event_modal.html:190
-#: src/web/templates/admin_families.html:34
+#: src/web/templates/admin_families.html:33
 #: src/web/templates/admin_screens.html:33
 #: src/web/templates/admin_screens.html:102
 msgid "Results entry"
@@ -1198,7 +1202,7 @@ msgstr ""
 #: src/web/controllers/admin/index_admin_controller.py:105
 #: src/web/controllers/admin/screen_admin_controller.py:357
 #: src/web/controllers/admin/tournament_admin_controller.py:331
-#: src/web/templates/admin_families.html:36
+#: src/web/templates/admin_families.html:35
 #: src/web/templates/admin_screens.html:35
 #: src/web/templates/admin_screens.html:112
 msgid "Pairings by player"
@@ -1235,7 +1239,7 @@ msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:104
 #: src/web/controllers/admin/tournament_admin_controller.py:330
-#: src/web/templates/admin_families.html:35
+#: src/web/templates/admin_families.html:34
 #: src/web/templates/admin_screens.html:34
 #: src/web/templates/admin_screens.html:107
 msgid "Pairings by board"
@@ -1777,7 +1781,7 @@ msgid "Cancel"
 msgstr ""
 
 #: src/web/templates/admin_chessevents.html:10
-#: src/web/templates/admin_events.html:9
+#: src/web/templates/admin_events.html:9 src/web/templates/admin_players.html:6
 #: src/web/templates/admin_screens.html:85
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
@@ -2224,29 +2228,29 @@ msgstr ""
 msgid "Create a screen family"
 msgstr ""
 
-#: src/web/templates/admin_families.html:34
+#: src/web/templates/admin_families.html:33
 msgid "Add a family of screens to enter the results."
 msgstr ""
 
-#: src/web/templates/admin_families.html:35
+#: src/web/templates/admin_families.html:34
 msgid "Add a family of screens to display the pairings by board."
 msgstr ""
 
-#: src/web/templates/admin_families.html:36
+#: src/web/templates/admin_families.html:35
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr ""
 
-#: src/web/templates/admin_families.html:55
+#: src/web/templates/admin_families.html:54
 msgid "Enable/disable the details of the screen families on the cards below."
 msgstr ""
 
-#: src/web/templates/admin_families.html:65
+#: src/web/templates/admin_families.html:64
 #: src/web/templates/admin_rotators.html:23
 #: src/web/templates/admin_screens.html:82
 msgid "Details"
 msgstr ""
 
-#: src/web/templates/admin_families.html:95
+#: src/web/templates/admin_families.html:94
 #: src/web/templates/admin_rotator_modal.html:190
 msgid "No screen families."
 msgstr ""
@@ -2627,9 +2631,53 @@ msgstr ""
 msgid "Pairings"
 msgstr ""
 
-#: src/web/templates/admin_players.html:1
+#: src/web/templates/admin_players.html:3
 #: src/web/templates/admin_screen_card.html:183
 msgid "Players"
+msgstr ""
+
+#: src/web/templates/admin_players.html:17
+msgid "Add a player to the event."
+msgstr ""
+
+#: src/web/templates/admin_players.html:26
+msgid "Create a player"
+msgstr ""
+
+#: src/web/templates/admin_players.html:36
+msgid "Name *** NAME COLUMN TITLE FOR PLAYERS"
+msgstr ""
+
+#: src/web/templates/admin_players.html:37
+msgid "Elo *** ELO COLUMN TITLE FOR PLAYERS"
+msgstr ""
+
+#: src/web/templates/admin_players.html:38
+msgid "YOB *** YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS"
+msgstr ""
+
+#: src/web/templates/admin_players.html:39
+msgid "CI *** CHECK-IN COLUMN TITLE FOR PLAYERS"
+msgstr ""
+
+#: src/web/templates/admin_players.html:40
+msgid "Cat *** CATEGORY COLUMN TITLE FOR PLAYERS"
+msgstr ""
+
+#: src/web/templates/admin_players.html:41
+msgid "Owed *** OWED COLUMN TITLE FOR PLAYERS"
+msgstr ""
+
+#: src/web/templates/admin_players.html:42
+msgid "Paid *** PAID COLUMN TITLE FOR PLAYERS"
+msgstr ""
+
+#: src/web/templates/admin_players.html:43
+msgid "Comment *** COMMENT COLUMN TITLE FOR PLAYERS"
+msgstr ""
+
+#: src/web/templates/admin_players.html:66
+msgid "No players."
 msgstr ""
 
 #: src/web/templates/admin_rotator_card.html:15
@@ -3822,63 +3870,63 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:146
+#: utils/i18n/i18n_update.py:148
 msgid "Return to documentation summary"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:147
+#: utils/i18n/i18n_update.py:149
 msgid "English translation *** TRANSLATE ! ***"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:150
+#: utils/i18n/i18n_update.py:152
 msgid "View file {file}"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:152
+#: utils/i18n/i18n_update.py:154
 msgid "Summary"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:156 utils/i18n/i18n_update.py:166
+#: utils/i18n/i18n_update.py:158 utils/i18n/i18n_update.py:168
 msgid "Empty mandatory messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:159 utils/i18n/i18n_update.py:181
+#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:183
 msgid "Empty messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:162 utils/i18n/i18n_update.py:204
+#: utils/i18n/i18n_update.py:164 utils/i18n/i18n_update.py:206
 msgid "Message flagged [{flag}]"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:206
+#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
+#: utils/i18n/i18n_update.py:208
 msgid "Message ID"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:168 utils/i18n/i18n_update.py:186
-#: utils/i18n/i18n_update.py:206
+#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
+#: utils/i18n/i18n_update.py:208
 msgid "Locations"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:175 utils/i18n/i18n_update.py:193
-#: utils/i18n/i18n_update.py:214 utils/i18n/i18n_update.py:217
+#: utils/i18n/i18n_update.py:177 utils/i18n/i18n_update.py:195
+#: utils/i18n/i18n_update.py:216 utils/i18n/i18n_update.py:219
 msgid "Singular:"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:176 utils/i18n/i18n_update.py:194
-#: utils/i18n/i18n_update.py:215 utils/i18n/i18n_update.py:218
+#: utils/i18n/i18n_update.py:178 utils/i18n/i18n_update.py:196
+#: utils/i18n/i18n_update.py:217 utils/i18n/i18n_update.py:220
 msgid "Plural:"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:184
+#: utils/i18n/i18n_update.py:186
 msgid "Empty messages are not shown for the default language."
 msgstr ""
 
-#: utils/i18n/i18n_update.py:200
+#: utils/i18n/i18n_update.py:202
 msgid "Flagged messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:206
+#: utils/i18n/i18n_update.py:208
 msgid "Translation"
 msgstr ""
 
