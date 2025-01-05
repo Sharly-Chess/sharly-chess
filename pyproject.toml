@@ -36,14 +36,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-  # Initial version SP
-  "ruff", "pipdeptree",
-  # Needed to run models to generate translations for new locales (PA 20250103)
-  "transformers", "torch", "sentencepiece", "sacremoses",
-  # Needed to validate the dependencies of the project (work in progress, nothing works yet)
-  "validate-pyproject", "toml", "packaging",
-  # Needed to export to EXE
-  "PyInstaller",
+lint = ["ruff", "validate-pyproject", "pipdeptree"]
+
+translate = [
+  "torch", "sentencepiece", "sacremoses"
 ]
 
+export = ["PyInstaller"]
