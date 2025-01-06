@@ -26,7 +26,7 @@ class AccessDatabase:
     def __enter__(self) -> Self:
         needed_driver: str = access_driver()
         if needed_driver not in pyodbc.drivers():
-            logger.error('ODBC installed drivers are:')
+            logger.error('Installed ODBC drivers are:')
             for driver in odbc_drivers():
                 logger.error(' - %s', driver)
             logger.error('Driver needed : %s', needed_driver)
