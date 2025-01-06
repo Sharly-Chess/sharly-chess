@@ -85,6 +85,7 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 | LECORNU Laurent     | AFE1  | BRE   | 29  | Échiquier Gouesnousien                        |
 | LEFEBVRE Philippe   | AFO1  | BRE   | 29  | Échiquier Gouesnousien                        |
 | LOUDIER Sarah       | AFC   | BRE   | 22  | Tregor Échecs                                 |
+| MORATA Jules        |       | OCC   | 22  | L'Attaque d'Euphron - Pibrac Echecs           |
 | PERCHE Ludovic      | AFO2  | NAQ   | 16  | Échiquier Couronnais                          |
 | PERNOT Damien       | AFO1  | BRE   | 35  | Betton Échecs Club                            |
 | PLAT Sammy          | AFE1  | BRE   | 35  | Rennes Paul Bert                              |
