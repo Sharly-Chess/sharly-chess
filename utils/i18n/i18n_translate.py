@@ -8,8 +8,7 @@ from transformers import AutoTokenizer, MarianMTModel, MarianTokenizer
 from huggingface_hub import hf_hub_url
 
 from common.i18n import default_locale
-from common.logger import print_interactive_info, print_interactive_error, print_interactive_success, \
-    print_interactive_warning
+from common.logger import print_interactive_info, print_interactive_error, print_interactive_success
 
 HF_HUB_DISABLE_SYMLINKS_WARNING = 1
 
@@ -148,12 +147,8 @@ class I18nTranslator:
         # Extract the tokens of the translated string.
         _, tokens_after_translation = self.extract_tokens(translated_string_with_tokens)
         # Check that the tokens are the same.
-        if tokens == tokens_after_translation:
+        if sorted(tokens) == sorted(tokens_after_translation):
             print_interactive_info(f'{percent}% {string} >>> {translated_string_with_tokens}')
-        elif sorted(tokens) == sorted(tokens_after_translation):
-            # The order of the tokens have changed.
-            print_interactive_warning(f'{percent}% The order of the tokens has changed (the translation is kept anyway):')
-            print_interactive_warning(f'{percent}% {string} >>> {translated_string_with_tokens}')
         else:
             # Tokens have changed, delete the translation.
             print_interactive_error(f'{percent}% The tokens have changed (the translation is deleted):')
