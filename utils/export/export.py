@@ -225,7 +225,7 @@ def update_readme():
             print_interactive_error(f'Could not edit [{readme}] (comment [{comment}] not found).')
             return
     lines: list[str] = [
-        f'- ** [Télécharger la dernière version stable ({papi_web_config.version})](https://github.com/papi-web-org/papi-web/releases/download/{papi_web_config.version}/papi-web-{papi_web_config.version}.zip) **\n'
+        f'- **[Télécharger la dernière version stable ({papi_web_config.version})](https://github.com/papi-web-org/papi-web/releases/download/{papi_web_config.version}/papi-web-{papi_web_config.version}.zip)**\n'
     ]
     with open(readme, 'w', encoding='utf-8') as f:
         for line in lines_before_comment + lines + lines_after_comment:
