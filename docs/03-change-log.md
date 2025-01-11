@@ -2,8 +2,9 @@
 
 # Papi-web - ChangeLog
 
-## Version 2.4.19 - 5 janvier 2025
+## Version 2.4.19 - 12 janvier 2025
 - Passage en multilingue anglais et français
+- Ajout de l'onglet Joueur·euses
 
 ## Version 2.4.18 - 23 décembre 2024
 - Ajout de la possibilité d'ajouter des écrans par défaut à la création d'un tournoi
