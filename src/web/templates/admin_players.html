@@ -158,26 +158,17 @@
                                             <i class="bi-pencil-fill"></i> {{ _('Edit') }}
                                         </li>
                                         #}
-                                        <li
-                                            class="dropdown-item btn py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
-                                            {% if player.has_real_pairings %}
-                                                {{ tooltip_attributes(
-                                                    'info',
-                                                    _(
-                                                        'Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].',
-                                                        last_name=player.last_name, first_name=player.first_name, tournament_uniq_id=player.tournament.uniq_id
-                                                    ),
-                                                    'left'
-                                                ) }}
-                                            {% else %}
-                                                hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
-                                            {% endif %}
-                                        >
-                                            <i class="bi-trash-fill"></i> {{ _('Delete') }}
-                                        </li>
+                                        {% if not player.has_real_pairings %}
+                                            <li
+                                                class="dropdown-item py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
+                                                    hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                    {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
+                                            >
+                                                <i class="bi-trash-fill"></i> {{ _('Delete') }}
+                                            </li>
+                                        {% endif %}
                                     </ul>
                                 </span>
                             </th>
