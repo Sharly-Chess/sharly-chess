@@ -340,7 +340,7 @@ class TournamentAdminController(AbstractEventAdminController):
                                 id=None,
                                 uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
                                     f'{stored_tournament.uniq_id}-{type}'),
-                                type='input',
+                                type=type,
                                 public=True,
                                 name=name,
                                 columns=1,
