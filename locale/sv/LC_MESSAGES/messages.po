@@ -1263,7 +1263,7 @@ msgstr "Initiera en session till [{url}]..."
 #: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html:21
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:21
-#: src/web/templates/admin_players/admin_players_filter_columns.html:24
+#: src/web/templates/admin_players/admin_players_filter_columns.html:20
 #: src/web/templates/admin_players/admin_players_filter_federations.html:21
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22
 #: src/web/templates/admin_players/admin_players_filter_genders.html:22
@@ -1485,28 +1485,28 @@ msgstr "ChessEvent ({num})"
 msgid "Messages ({num})"
 msgstr "Meddelanden ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:583
+#: src/web/controllers/admin/event_admin_controller.py:592
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Byte av databas misslyckades: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:590
+#: src/web/controllers/admin/event_admin_controller.py:599
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "Händelse [{old_uniq_id}] har bytt namn ([{new_uniq_id}]) och uppdaterats."
 
-#: src/web/controllers/admin/event_admin_controller.py:593
+#: src/web/controllers/admin/event_admin_controller.py:602
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "Händelse [{uniq_id}] har uppdaterats."
 
-#: src/web/controllers/admin/event_admin_controller.py:601
+#: src/web/controllers/admin/event_admin_controller.py:610
 #: src/web/controllers/admin/index_admin_controller.py:676
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Händelse [{uniq_id}] har skapats."
 
-#: src/web/controllers/admin/event_admin_controller.py:611
+#: src/web/controllers/admin/event_admin_controller.py:620
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch})."
@@ -1843,7 +1843,7 @@ msgstr "Inställning av papi-webben"
 # återhämtningsturnering [{tournament_uniq_id}]...]
 #: src/web/controllers/admin/player_admin_controller.py:436
 #: src/web/controllers/admin/player_admin_controller.py:494
-#: src/web/templates/admin_players.html:136
+#: src/web/templates/admin_players.html:166
 #, ai_translation, error, fuzzy
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}]."
@@ -2335,7 +2335,7 @@ msgstr "Uppdatera"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:149
+#: src/web/templates/admin_players.html:179
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -3380,47 +3380,57 @@ msgstr "Beteckning"
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo Ordförande"
 
-#: src/web/templates/admin_players.html:60
+#: src/web/templates/admin_players.html:63
 #, ai_translation, fuzzy
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr "Elo Ordförande"
 
-#: src/web/templates/admin_players.html:75
+#: src/web/templates/admin_players.html:80
 #, ai_translation
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "HUVUDBYGGNAD"
 
-#: src/web/templates/admin_players.html:86
+#: src/web/templates/admin_players.html:89
+#, ai_translation
+msgid "The mail addresses."
+msgstr "Postadresserna."
+
+#: src/web/templates/admin_players.html:94
+#, ai_translation
+msgid "The phone numbers."
+msgstr "Telefonnumren."
+
+#: src/web/templates/admin_players.html:105
 #, ai_translation, fuzzy
 msgid "Fide *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Betald"
 
-#: src/web/templates/admin_players.html:89
+#: src/web/templates/admin_players.html:110
 #, ai_translation, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "Elo Ordförande"
 
-#: src/web/templates/admin_players.html:96
+#: src/web/templates/admin_players.html:121
 #, ai_translation
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "På grund av detta"
 
-#: src/web/templates/admin_players.html:97
+#: src/web/templates/admin_players.html:122
 #, ai_translation
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Betald"
 
-#: src/web/templates/admin_players.html:146
+#: src/web/templates/admin_players.html:176
 #, ai_translation, fuzzy
 msgid "Remove the player from the event."
 msgstr "Lägg till en timer till evenemanget."
 
-#: src/web/templates/admin_players.html:158
+#: src/web/templates/admin_players.html:221
 #, ai_translation, fuzzy, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "%(mail)s (klicka för att kopiera till klippbordet)."
 
-#: src/web/templates/admin_players.html:160
+#: src/web/templates/admin_players.html:223
 #, ai_translation, fuzzy
 msgid "No mail defined."
 msgstr "Ingen timer definierad"
@@ -3453,24 +3463,24 @@ msgstr "Ingen timer definierad"
 # ]
 # m
 # ö
-#: src/web/templates/admin_players.html:167
+#: src/web/templates/admin_players.html:234
 #, ai_translation, error, fuzzy, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "%(phone)s (klicka för att kopiera till klippbordet)."
 
-#: src/web/templates/admin_players.html:169
+#: src/web/templates/admin_players.html:236
 #, ai_translation, fuzzy
 msgid "No phone defined."
 msgstr "Ingen timer definierad"
 
 # Error: tokens differ between [Fide ID: %(fide_id)s (click to copy to the
 # clipboard).] and [%(mail)s (klicka för att kopiera till klippbordet).]
-#: src/web/templates/admin_players.html:208
+#: src/web/templates/admin_players.html:255
 #, ai_translation, fuzzy, python-format
 msgid "Fide ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr "Fide ID: %(fide_id)s (klicka för att kopiera till klippbordet)."
 
-#: src/web/templates/admin_players.html:211
+#: src/web/templates/admin_players.html:258
 #, ai_translation, fuzzy
 msgid "No Fide ID."
 msgstr "Ingen timer definierad"
@@ -3506,22 +3516,22 @@ msgstr "Ingen timer definierad"
 # Error: tokens differ between [FFE licence: %(ffe_licence_number)s (click to
 # copy to the clipboard).] and [%(phone)s (klicka för att kopiera till
 # klippbordet).]
-#: src/web/templates/admin_players.html:222
+#: src/web/templates/admin_players.html:271
 #, ai_translation, error, fuzzy, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet)."
 
-#: src/web/templates/admin_players.html:226 src/web/templates/macros.j2:146
+#: src/web/templates/admin_players.html:275 src/web/templates/macros.j2:146
 #, ai_translation, fuzzy, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Okänd typ av FFE-licens [%(ffe_licence)s]"
 
-#: src/web/templates/admin_players.html:249
+#: src/web/templates/admin_players.html:304
 #, ai_translation, fuzzy
 msgid "Change the player's tournament."
 msgstr "-Klara turneringen."
 
-#: src/web/templates/admin_players.html:281
+#: src/web/templates/admin_players.html:346
 #, ai_translation, fuzzy
 msgid "No players."
 msgstr "Spelare"
@@ -4995,81 +5005,86 @@ msgid "Filter the clubs."
 msgstr "Filtrera klubbarna."
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html:6
+#, ai_translation
 msgid "Choose the columns displayed."
-msgstr ""
+msgstr "Välj kolumnerna som visas."
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:41
+#: src/web/templates/admin_players/admin_players_filter_columns.html:37
 #, ai_translation, fuzzy
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
 msgstr "Betald"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:43
+#: src/web/templates/admin_players/admin_players_filter_columns.html:39
 #, ai_translation, fuzzy
 msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
 msgstr "Betald"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:45
+#: src/web/templates/admin_players/admin_players_filter_columns.html:41
 #, ai_translation, fuzzy
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
 msgstr "Beteckning"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:47
+#: src/web/templates/admin_players/admin_players_filter_columns.html:43
+#, ai_translation
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
-msgstr ""
+msgstr "Betyg"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:49
+#: src/web/templates/admin_players/admin_players_filter_columns.html:45
 #, ai_translation, fuzzy
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Betald"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:51
+#: src/web/templates/admin_players/admin_players_filter_columns.html:47
+#, ai_translation
 msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-msgstr ""
+msgstr "Förbundet"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:53
+#: src/web/templates/admin_players/admin_players_filter_columns.html:49
 #, ai_translation, fuzzy
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
 msgstr "Elo Ordförande"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:55
+#: src/web/templates/admin_players/admin_players_filter_columns.html:51
 #, ai_translation, fuzzy
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "HUVUDBYGGNAD"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:57
+#: src/web/templates/admin_players/admin_players_filter_columns.html:53
+#, ai_translation
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
-msgstr ""
+msgstr "Kön"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:63
+#: src/web/templates/admin_players/admin_players_filter_columns.html:59
 #, ai_translation, fuzzy
 msgid "Fide *** FIDE FOR PLAYERS COLUMNS"
 msgstr "Betald"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:69
+#: src/web/templates/admin_players/admin_players_filter_columns.html:65
 #, ai_translation, fuzzy
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "Elo Ordförande"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:71
+#: src/web/templates/admin_players/admin_players_filter_columns.html:67
+#, ai_translation
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
-msgstr ""
+msgstr "Incheckning"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:73
+#: src/web/templates/admin_players/admin_players_filter_columns.html:69
 #, ai_translation, fuzzy
 msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
 msgstr "På grund av detta"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:75
+#: src/web/templates/admin_players/admin_players_filter_columns.html:71
 #, ai_translation, fuzzy
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Beteckning"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:77
+#: src/web/templates/admin_players/admin_players_filter_columns.html:73
 #, ai_translation, fuzzy
 msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
 msgstr "Anmärkningar"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:79
+#: src/web/templates/admin_players/admin_players_filter_columns.html:75
 #, ai_translation, fuzzy
 msgid "History *** HISTORY FOR PLAYERS COLUMNS"
 msgstr "Elo Ordförande"
