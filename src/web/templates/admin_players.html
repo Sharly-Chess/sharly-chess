@@ -294,19 +294,21 @@
                                             </button>
                                             <ul class="dropdown-menu locale p-0" {{ tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }} >
                                                 {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
-                                                    {% set show=tournament.file_exists and player.tournament_id != tournament.id %}
-                                                    <li
-                                                        class="dropdown-item btn {% if not show %}disabled{% endif %} text-center py-0"
-                                                        {% if show %}
-                                                            hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
-                                                            hx-target="body"
-                                                            hx-indicator="#please-wait"
-                                                        {% else %}
-                                                            disabled
-                                                        {% endif %}
-                                                    >
-                                                        {{ tournament.uniq_id }}
-                                                    </li>
+                                                    {% if tournament.file_exists %}
+                                                        {% set enable=player.tournament_id != tournament.id %}
+                                                        <li
+                                                            class="dropdown-item btn {% if not enable %}disabled{% endif %} text-center py-0"
+                                                            {% if enable %}
+                                                                hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
+                                                                hx-target="body"
+                                                                hx-indicator="#please-wait"
+                                                            {% else %}
+                                                                disabled
+                                                            {% endif %}
+                                                        >
+                                                            {{ tournament.uniq_id }}
+                                                        </li>
+                                                    {% endif %}
                                                 {% endfor %}
                                             </ul>
                                         </span>
