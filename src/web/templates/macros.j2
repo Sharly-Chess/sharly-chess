@@ -163,7 +163,7 @@
             {% set _text='' %}
             {% set _class='text-secondary' %}
         {% elif pairing.playing %}
-            {% set _text='.' %}
+            {% set _text='&nbsp;' %}
             {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
         {% elif pairing.exempt %}
             {% set _text='x' %}
@@ -200,7 +200,7 @@
                 {% endif %}
                 style="display: inline-block; width: 1em"
         >
-            {{ _text }}
+            {{ _text|safe }}
         </span>
     {% endfor %}
     <!-- end player_history() -->
