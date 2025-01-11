@@ -9,13 +9,13 @@ from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
 from data.player import Player
-from data.tournament import Tournament
 from data.util import ScreenType
 from database.store import StoredScreenSet
 
 if TYPE_CHECKING:
     from data.event import Event
     from data.screen import Screen
+    from data.tournament import Tournament
 
 logger: Logger = get_logger()
 
@@ -103,7 +103,7 @@ class ScreenSet:
         return self.stored_screen_set.tournament_id if self.stored_screen_set else self.family.tournament_id
 
     @property
-    def tournament(self) -> Tournament:
+    def tournament(self) -> 'Tournament':
         return self.event.tournaments_by_id[self.tournament_id]
 
     @property

@@ -1,0 +1,51 @@
+{% if admin_players_check_ins|length > 1 %}
+    <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+        <span class="dropdown-center" >
+            <button
+                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+            ><i
+                    class="bi-funnel {% if admin_players_filter_check_ins|length not in [0,2] %}text-primary{% endif %}"
+                    {{ tooltip_attributes('info', _('Filter the check-in status.'), 'top') }}
+            ></i></button>
+            <ul class="dropdown-menu check-in p-0">
+                {% with name='admin_players_filter_check_ins' %}
+                    <input type="hidden" name="{{ name }}" value="-1" checked />
+                    <li class="dropdown-item text-nowrap">
+                        <input
+                            type="checkbox"
+                            {% if admin_players_filter_check_ins|length == admin_players_check_ins|length %}checked{% endif %}
+                            onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                        />
+                        <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                            <i class="bi-check-lg"></i>
+                            {{ _('OK') }}
+                        </button>
+                    </li>
+                    <li class="dropdown-divider m-0"></li>
+                    {% for check_in, check_in_data in {
+                        0: {
+                            'class': 'bi-circle text-secondary',
+                        },
+                        1: {
+                            'class': 'bi-check-circle-fill text-success',
+                        },
+                    }.items() %}
+                        <li class="dropdown-item text-nowrap">
+                            <input
+                                type="checkbox"
+                                id="{{ name }}-{{ loop.index }}"
+                                name="{{ name }}"
+                                value="{{ check_in }}"
+                                {% if check_in in admin_players_filter_check_ins %}checked{% endif %}
+                                class="{{ name }}"
+                            />
+                            <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
+                                <i class="{{ check_in_data['class'] }}"></i>
+                            </label>
+                        </li>
+                    {% endfor %}
+                {% endwith %}
+            </ul>
+        </span>
+    </form>
+{% endif %}

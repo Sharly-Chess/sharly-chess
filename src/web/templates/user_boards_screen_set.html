@@ -102,7 +102,7 @@
                                                     hx-indicator="#please-wait"
                                                 {% endif %}
                                             >
-                                                {% if bp.id != 1 %}
+                                                {% if bp.ref_id != 1 %}
                                                     [{{ bp.points_str }}]
                                                 {% endif %}
                                             </td>
@@ -116,7 +116,7 @@
                                                 hx-indicator="#please-wait"
                                             {% endif %}
                                         >
-                                            {% if bp.id != 1 %}
+                                            {% if bp.ref_id != 1 %}
                                                 {{ bp.vpoints_str }}
                                             {% endif %}
                                         </td>

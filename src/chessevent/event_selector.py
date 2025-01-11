@@ -26,7 +26,7 @@ class EventSelector(metaclass=Singleton):
             print_interactive_error(_('No events found.'))
             return False
         event_num: int | None = None
-        quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT ***')
+        quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
         if len(events) == 1:
             event_num = 1
             if input_interactive(_('One event found, press Enter (Q to quit): ')) == quit_answer:

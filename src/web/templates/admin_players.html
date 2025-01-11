@@ -1,2 +1,287 @@
-<h1>{{ admin_event.name }} - {{ _('Players') }}</h1>
-<div>Not implemented yet</div>
+{% from 'macros.j2' import admin_players_sort_link, ffe_licence, player_history, gender_icon %}
+
+<div class="row mb-2">
+    <div class="col-auto fs-3 fw-bold">
+        {{ admin_event.name }} - {{ _('Players') }}
+    </div>
+    <div class="col text-end">
+        <span {{ tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
+            <button
+                    class="btn btn-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+            >
+                <i class="bi-arrow-clockwise"></i>
+            </button>
+        </span>
+        <!--span {{ tooltip_attributes('info', _('Add a player to the event.'), 'top') }}>
+            <button
+                    class="btn btn-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+            >
+                <i class="bi-plus-square-fill"></i>
+                {{ _('Create a player') }}
+            </button>
+        </span-->
+    </div>
+</div>
+
+<section class="pt-1 pb-1 shadow-sm">
+    <table class="table table-striped table-sm table-hover border-black w-100 bg-light mx-auto justify-content-center">
+        <thead class="table-dark position-sticky top-0 z-2">
+            {% with url=url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') %}
+                <tr>
+                    <th scope="col" class="text-nowrap text-start w-1" colspan="3">
+                        <i
+                                class="bi-x-circle btn btn-dark p-0 m-0"
+                                hx-get="{{ url }}"
+                                hx-vals='{"admin_players_clear_filters": "1"}'
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                {{ tooltip_attributes('info', _('Clear all the filters.'), 'top') }}
+                        ></i> {{ admin_players|length }}/{{admin_event.players_number}}
+                    </th>
+                    <th scope="col" class="text-nowrap">
+                        {{ _('Name *** NAME COLUMN TITLE FOR PLAYERS') }}
+                        {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'alpha', admin_players_sort) }}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center">
+                        {{ _('Elo *** ELO COLUMN TITLE FOR PLAYERS') }}
+                        {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'rating_desc', admin_players_sort) }}
+                        {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'rating_asc', admin_players_sort) }}
+                    </th>
+                    <th scope="col" class="text-nowrap text-start" colspan="3">
+                        {{ _('Origin *** ORIGIN COLUMN TITLE FOR PLAYERS') }}
+                        {% if admin_players_federations|length > 1 %}
+                            {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'origin', admin_players_sort) }}
+                        {% endif %}
+                        {% if admin_players_federations|length > 1 %}
+                            {% include 'admin_players/admin_players_filter_federations.html' %}
+                        {% endif %}
+                        {% if admin_players_leagues|length > 1 %}
+                            {% include 'admin_players/admin_players_filter_leagues.html' %}
+                        {% endif %}
+                        {% if admin_players_clubs|length > 1 %}
+                            {% include 'admin_players/admin_players_filter_clubs.html' %}
+                        {% endif %}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center">
+                        {{ _('YOB *** YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS') }}
+                        {% if admin_players_yobs|length > 1 %}
+                            {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'yob_desc', admin_players_sort) }}
+                            {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'yob_asc', admin_players_sort) }}
+                        {% endif %}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center">
+                        <i class="bi-person-standing-dress"></i><i class="bi-person-standing"></i>
+                        {% include 'admin_players/admin_players_filter_genders.html' %}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center w-1">
+                        {{ _('Fide *** FIDE COLUMN TITLE FOR PLAYERS') }}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center w-1">
+                        {{ _('FFE *** FFE COLUMN TITLE FOR PLAYERS') }}
+                        {% include 'admin_players/admin_players_filter_ffe_licences.html' %}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center">
+                        <i class="bi-circle"></i><i class="bi-check-circle"></i>
+                        {% include 'admin_players/admin_players_filter_check_ins.html' %}
+                    </th>
+                    <th scope="col" class="text-nowrap text-end">{{ _('Owed *** OWED COLUMN TITLE FOR PLAYERS') }}</th>
+                    <th scope="col" class="text-nowrap text-end">{{ _('Paid *** PAID COLUMN TITLE FOR PLAYERS') }}</th>
+                    {% if admin_event.tournaments_by_id|length > 1 %}
+                        <th scope="col" class="text-nowrap text-center">
+                            {% include 'admin_players/admin_players_filter_tournaments.html' %}
+                        </th>
+                    {% endif %}
+                    <th scope="col" class="text-nowrap">{{ _('Comment *** COMMENT COLUMN TITLE FOR PLAYERS') }}</th>
+                    <th scope="col" class="text-nowrap">{{ _('History *** HISTORY COLUMN TITLE FOR PLAYERS') }}</th>
+                </tr>
+            {% endwith %}
+        </thead>
+        <tbody>
+            {% if admin_players %}
+                {% for player in admin_players %}
+                    <tr>
+                        <th scope="row" class="text-nowrap text-end w-1">
+                            {{ loop.index }}
+                        </th>
+                        <th scope="row" class="text-nowrap w-1">
+                            <span class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                                    <i class="bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu p-0" >
+                                    {#
+                                    <li
+                                        class="dropdown-item btn py-0 px-1"
+                                        hx-post="{{ url_for('admin-player-update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        {{ tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
+                                    >
+                                        <i class="bi-pencil-fill"></i> {{ _('Edit') }}
+                                    </li>
+                                    #}
+                                    <li
+                                        class="dropdown-item btn py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
+                                        {% if player.has_real_pairings %}
+                                            {{ tooltip_attributes(
+                                                'info',
+                                                _(
+                                                    'Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].',
+                                                    last_name=player.last_name, first_name=player.first_name, tournament_uniq_id=player.tournament.uniq_id
+                                                ),
+                                                'left'
+                                            ) }}
+                                        {% else %}
+                                            hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
+                                        {% endif %}
+                                    >
+                                        <i class="bi-trash-fill"></i> {{ _('Delete') }}
+                                    </li>
+                                </ul>
+                            </span>
+                        </th>
+                        <td class="text-nowrap">
+                            <i
+                                    class="{% if player.mail %}bi-envelope-check text-body cursor-pointer{% else %}bi-envelope text-secondary{% endif %}"
+                                    {% if player.mail %}
+                                        {{ tooltip_attributes('info', _('Mail: %(mail)s (click to copy to the clipboard).', mail=player.mail), 'right') }}
+                                    {% else %}
+                                        {{ tooltip_attributes('warning', _('No mail defined.'), 'right') }}
+                                    {% endif %}
+                                    onclick="navigator.clipboard.writeText('{{ player.mail }}')"
+                            ></i>
+                            <i
+                                    class="bi-telephone {% if player.phone %}text-body cursor-pointer{% else %}text-secondary{% endif %}"
+                                    {% if player.phone %}
+                                        {{ tooltip_attributes('info', _('Phone: %(phone)s (click to copy to the clipboard).', phone=player.phone), 'right') }}
+                                    {% else %}
+                                        {{ tooltip_attributes('warning', _('No phone defined.'), 'right') }}
+                                    {% endif %}
+                                    onclick="navigator.clipboard.writeText('{{ player.phone }}')"
+                            ></i>
+                        </td>
+                        <td class="text-nowrap">
+                            {{ player.last_name }} {{ player.first_name }}
+                        </td>
+                        <td class="text-nowrap text-center">
+                            {{ player.rating }}{{ player.rating_type }}
+                        </td>
+                        <td class="text-nowrap text-start w-1">
+                            <span class="">
+                                <img
+                                        class="player-federation-flag ms-1 ps-1 pe-1"
+                                        src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
+                                        {{ tooltip_attributes('info', player.federation, 'left') }}
+                                />
+                            </span>
+                        </td>
+                        <td class="text-nowrap text-start w-1">
+                            {{ player.league }}
+                        </td>
+                        <td class="text-nowrap text-start w-1" style="max-width: 15em; overflow: hidden">
+                            {{ player.club }}
+                        </td>
+                        <td class="text-nowrap text-center">
+                            {{ player.year_of_birth }}
+                        </td>
+                        <td class="text-nowrap text-center">
+                            {{ gender_icon(player.gender) }}
+                            {{ player.gender.short_name }}
+                        </td>
+                        <td class="text-nowrap text-center w-1">
+                            <img
+                                    src="{{ url_for('static', file_path='/images/fide.svg') }}"
+                                    style="height: 1.2em"
+                                    class="p-0 {% if player.fide_id %}cursor-pointer{% else %}fide-id-none{% endif %}"
+                                    {% if player.fide_id %}
+                                        {{ tooltip_attributes('info', _('Fide ID: %(fide_id)s (click to copy to the clipboard).', fide_id=player.fide_id), 'left') }}
+                                        onclick="navigator.clipboard.writeText('{{ player.fide_id }}')"
+                                    {% else %}
+                                        {{ tooltip_attributes('warning', _('No Fide ID.'), 'left') }}
+                                    {% endif %}
+                            />
+                        </td>
+                        <td class="text-nowrap text-center w-1">
+                            <span
+                                    {% if player.ffe_licence.value == 0 %}
+                                        {{ tooltip_attributes('error', player.ffe_licence.name, 'right') }}
+                                    {% elif player.ffe_licence.value == 1 %}
+                                        {{ tooltip_attributes('warning', player.ffe_licence.name, 'right') }}
+                                    {% elif player.ffe_licence.value in [2, 3] %}
+                                        {{ tooltip_attributes('info', _('FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).', ffe_licence_number=player.ffe_licence_number), 'right') }}
+                                        class="cursor-pointer"
+                                        onclick="navigator.clipboard.writeText('{{ player.ffe_licence_number }}')"
+                                    {% else %}
+                                        {{ tooltip_attributes('error', _('Unknown FFE Licence type [%(ffe_licence)s].', ffe_licence=player.ffe_licence), 'right') }}
+                                    {% endif %}
+                            >
+                                {{ ffe_licence(player.ffe_licence) }}
+                            </span>
+                        </td>
+                        <td class="text-nowrap text-center">
+                            <i class="{% if player.check_in %}bi-check-circle-fill text-success{% else %}bi-circle text-secondary{% endif %}"></i>
+                        </td>
+                        <td class="text-nowrap text-end">
+                            {{ player.owed }}
+                        </td>
+                        <td class="text-nowrap text-end">
+                            {{ player.paid }}
+                        </td>
+                        <td class="text-nowrap text-center">
+                            {% if player.has_real_pairings %}
+                                {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
+                            {% else %}
+                                <span class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                                        {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
+                                    </button>
+                                    <ul class="dropdown-menu locale p-0" {{ tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }} >
+                                        {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
+                                            {% set show=tournament.file_exists and player.tournament_id != tournament.id %}
+                                            <li
+                                                class="dropdown-item btn {% if not show %}disabled{% endif %} text-center py-0"
+                                                {% if show %}
+                                                    hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                {% else %}
+                                                    disabled
+                                                {% endif %}
+                                            >
+                                                {{ tournament.uniq_id }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-nowrap">
+                            {{ player.comment }}
+                        </td>
+                        <td class="text-nowrap">
+                            {{ player_history(player) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    {% set columns = 17 + (1 if admin_event.tournaments_by_id|length > 1 else 0) %}
+                    <td colspan="{{ columns }}">
+                        {{ _('No players.') }}
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</section>

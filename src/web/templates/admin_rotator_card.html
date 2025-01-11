@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block card_text %}
-    {% if show_details_on_rotator_list %}
+    {% if admin_rotators_show_details %}
         <div>
             {{ _('Rotation delay: %(seconds)d sec.', seconds=rotator.delay) }}
             {%if rotator.stored_rotator.delay is none %}
@@ -43,7 +43,7 @@
             {{ _('No screen neither family to rotate.') }}
         {% else %}
             {% if rotator.screens %}
-                {% if show_details_on_rotator_list %}
+                {% if admin_rotators_show_details %}
                     <hr/>
                 {% endif %}
                 {{ _('Screens:') }}
@@ -54,7 +54,7 @@
                 {% endfor %}
             {% endif %}
             {% if rotator.families %}
-                {% if rotator.screens or show_details_on_rotator_list %}
+                {% if rotator.screens or admin_rotators_show_details %}
                     <hr/>
                 {% endif %}
                 {{ _('Screen families:') }}

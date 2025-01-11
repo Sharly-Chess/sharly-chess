@@ -55,9 +55,24 @@ body {
 .index-locale-flag {
     height: 1em;
 }
-.dropdown-menu.locale {
+.dropdown-menu.locale, .dropdown-menu.columns {
     min-width: 0;
 }
 .dropdown-menu.locale .locale-flag {
+    height: 1em;
+}
+.player-ffe-lic {
+    color: #ffffff;
+}
+.player-ffe-lic.ffe-lic-A {
+    background-color: #001da3;
+}
+.player-ffe-lic.ffe-lic-B {
+    background-color: #6480ff;
+}
+.player-ffe-lic.ffe-lic-N {
+    background-color: #767676;
+}
+.player-federation-flag {
     height: 1em;
 }

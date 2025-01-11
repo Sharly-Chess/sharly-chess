@@ -42,8 +42,8 @@ class Engine:
         # Engines inheriting from this class should not do anything if property updated is true.
         self.updated: bool = False
         if new_stable_version:
-            yes_answer: str = _('Y *** THE LETTER TO ANSWER YES ***')
-            no_answer: str = _('N *** THE LETTER TO ANSWER NO ***')
+            yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
+            no_answer: str = _('N *** THE LETTER TO ANSWER NO')
             while True:
                 choice: str = input_interactive(
                     _('Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? ').format(
@@ -103,8 +103,8 @@ class Engine:
                 previous_versions.sort()
                 version_num: int | None = None
                 if len(previous_databases) == 1:
-                    yes_answer: str = _('Y *** THE LETTER TO ANSWER YES ***')
-                    no_answer: str = _('N *** THE LETTER TO ANSWER NO ***')
+                    yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
+                    no_answer: str = _('N *** THE LETTER TO ANSWER NO')
                     while True:
                         choice :str = input_interactive(
                             _('Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?').format(
@@ -120,8 +120,9 @@ class Engine:
                     version_range = range(1, len(previous_versions) + 1)
                     for num in version_range:
                         version: Version = previous_versions[num - 1]
-                        print_interactive_input(f'  - [{num}] {version} ({", ".join([file.stem for file in previous_databases[version]])})')
-                    quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT ***')
+                        print_interactive_input(
+                            f'  - [{num}] {version} ({", ".join([file.stem for file in previous_databases[version]])})')
+                    quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
                     print_interactive_input(_('  - [{q_uc}] Do not recover').format(q_uc=quit_answer))
                     while True:
                         choice: str = input_interactive(
@@ -143,8 +144,8 @@ class Engine:
                     recovered_version = previous_versions[version_num - 1]
                     self._recover_previous_version(recovered_version, previous_databases[recovered_version])
             if not recovered_version:
-                yes_answer: str = _('Y *** THE LETTER TO ANSWER YES ***')
-                no_answer: str = _('N *** THE LETTER TO ANSWER NO ***')
+                yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
+                no_answer: str = _('N *** THE LETTER TO ANSWER NO')
                 while True:
                     choice: str = input_interactive(
                         _('Do you want to install example event databases [{y_uc}/{n_lc}]?').format(
@@ -190,7 +191,8 @@ class Engine:
         if custom_dir.is_dir():
             for item in custom_dir.glob('**/*'):
                 if item.is_file():
-                    embedded_item: Path = Path(str(item).replace(str(custom_dir), str(PapiWebConfig.embedded_custom_path)))
+                    embedded_item: Path = Path(str(item).replace(
+                        str(custom_dir), str(PapiWebConfig.embedded_custom_path)))
                     if not embedded_item.exists() or not filecmp.cmp(item, embedded_item):
                         target_item: Path = Path(str(item).replace(str(custom_dir), str(PapiWebConfig.custom_path)))
                         target_item.parent.mkdir(parents=True, exist_ok=True)
@@ -207,8 +209,8 @@ class Engine:
                     num=len(custom_files), dir=PapiWebConfig.custom_path))
             for custom_file in custom_files:
                 logger.info(f'- {str(custom_file).replace(str(custom_dir), "")}')
-            yes_answer: str = _('Y *** THE LETTER TO ANSWER YES ***')
-            no_answer: str = _('N *** THE LETTER TO ANSWER NO ***')
+            yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
+            no_answer: str = _('N *** THE LETTER TO ANSWER NO')
             while True:
                 choice: str = input_interactive(
                     _('Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?').format(
@@ -350,7 +352,8 @@ class Engine:
         if re.match(r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', str(PapiWebConfig.version)):
             # 'normal' versions X.Y.Z
             if last_stable_version > PapiWebConfig.version:
-                print_interactive_warning(_('A more recent version is available ([{version}]).').format(version=last_stable_version))
+                print_interactive_warning(
+                    _('A more recent version is available ([{version}]).').format(version=last_stable_version))
                 return last_stable_version
             print_interactive_warning(
                 _('You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)').format(

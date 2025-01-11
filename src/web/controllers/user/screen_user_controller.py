@@ -184,8 +184,8 @@ class AbstractScreenUserController(AbstractUserController):
             template_name="user_screen.html",
             context=web_context.template_context | {
                 'last_result_updated': SessionHandler.get_session_last_result_updated(web_context.request),
-                'last_illegal_move_updated': SessionHandler.get_session_last_illegal_move_updated(web_context.request),
-                'last_check_in_updated': SessionHandler.get_session_last_check_in_updated(web_context.request),
+                'last_illegal_move_updated': SessionHandler.get_session_user_last_illegal_move_updated(web_context.request),
+                'last_check_in_updated': SessionHandler.get_session_user_last_check_in_updated(web_context.request),
                 'messages': Message.messages(web_context.request),
             },
         )

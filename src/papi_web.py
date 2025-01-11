@@ -1,14 +1,13 @@
 import argparse
+import os
 import sys
 from logging import Logger
-import os
 
 from chessevent.chessevent_engine import ChessEventEngine
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.logger import get_logger
 from ffe.ffe_engine import FFEEngine
 from web.server_engine import ServerEngine
-from common.logger import get_logger, print_interactive_info
 
 try:
     logger: Logger = get_logger()

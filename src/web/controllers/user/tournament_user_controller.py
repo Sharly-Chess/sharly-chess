@@ -13,6 +13,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
 from data.loader import EventLoader
@@ -53,11 +54,11 @@ class TournamentUserWebContext(ScreenUserWebContext):
         if tournament_started is not None:
             if tournament_started:
                 if not self.tournament.current_round:
-                    self._redirect_error(f'Tournament [{self.tournament.uniq_id}] is not started yet.')
+                    self._redirect_error(_('Tournament [{tournament_uniq_id}] is not started yet.').format(tournament_uniq_id=self.tournament.uniq_id))
                     return
             else:
                 if self.tournament.current_round:
-                    self._redirect_error(f'Tournament [{self.tournament.uniq_id}] is started.')
+                    self._redirect_error(_('Tournament [{tournament_uniq_id}] is started.').format(tournament_uniq_id=self.tournament.uniq_id))
                     return
 
     @property
@@ -171,7 +172,7 @@ class CheckInUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         web_context.tournament.check_in_player(web_context.player, not web_context.player.check_in)
-        SessionHandler.set_session_last_check_in_updated(request, web_context.tournament.id, web_context.player.id)
+        SessionHandler.set_session_user_last_check_in_updated(request, web_context.tournament.id, web_context.player.id)
         EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
         web_context: BasicScreenOrFamilyUserWebContext = BasicScreenOrFamilyUserWebContext(
             request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id)
@@ -196,7 +197,7 @@ class IllegalMoveUserController(AbstractInputUserController):
             return web_context.error
         if add:
             web_context.tournament.store_illegal_move(web_context.player)
-            SessionHandler.set_session_last_illegal_move_updated(
+            SessionHandler.set_session_user_last_illegal_move_updated(
                 request, web_context.tournament.id, web_context.player.id)
         else:
             if not web_context.tournament.delete_illegal_move(web_context.player):
@@ -204,7 +205,7 @@ class IllegalMoveUserController(AbstractInputUserController):
                     request,
                     f'Player [{web_context.player.id}] has no illegal move recorded.')
             else:
-                SessionHandler.set_session_last_illegal_move_updated(
+                SessionHandler.set_session_user_last_illegal_move_updated(
                     request, web_context.tournament.id, web_context.player.id)
         EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
         web_context: BasicScreenOrFamilyUserWebContext = BasicScreenOrFamilyUserWebContext(
@@ -287,8 +288,7 @@ class ResultUserController(AbstractInputUserController):
             return AbstractController.redirect_error(request, f'Invalid round number [{round}].')
         if result is None:
             if not web_context.admin_auth:
-                return AbstractController.redirect_error(
-                    request, f'Result deletion is not allowed.')
+                return AbstractController.redirect_error(request, f'Result deletion is not allowed.')
             with suppress(ValueError):
                 web_context.tournament.delete_result(web_context.board)
         else:

@@ -5,6 +5,7 @@ from typing import Sequence
 from jinja2 import Environment
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.datastructures import CacheControlHeader
 from litestar.middleware.session.client_side import CookieBackendConfig
 from litestar.static_files import create_static_files_router
 from litestar.template import TemplateConfig
@@ -16,6 +17,7 @@ from web.controllers.admin.chessevent_admin_controller import ChessEventAdminCon
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
 from web.controllers.admin.index_admin_controller import IndexAdminController
+from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.rotator_admin_controller import RotatorAdminController
 from web.controllers.admin.screen_admin_controller import ScreenAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
@@ -39,6 +41,9 @@ static_files_router: Router = create_static_files_router(
     path='/static',
     directories=static_files_folders,
     name='static',
+    # TODO using cache_control did not cache, make it work!
+    # https://github.com/litestar-org/litestar/issues/3129
+    cache_control=CacheControlHeader(max_age=3600),
 )
 
 
@@ -60,6 +65,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     TimerAdminController,
     FamilyAdminController,
     RotatorAdminController,
+    PlayerAdminController,
     static_files_router,
 ]
 

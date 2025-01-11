@@ -6,10 +6,10 @@
             <th scope="col" class="text-nowrap text-end">
                 {% for logging_level_id, logging_level in logging_levels.items() %}
                     <button
-                            class="btn text-nowrap {% if logging_level_id == min_logging_level %}pe-none fw-bold{% endif %} {% if logging_level_id >= min_logging_level %}{{ logging_level.class }}{% else %}text-white border border-white{% endif %} px-1 py-0"
-                            {% if logging_level_id != min_logging_level %}
+                            class="btn text-nowrap {% if logging_level_id == admin_messages_min_logging_level %}pe-none fw-bold{% endif %} {% if logging_level_id >= admin_messages_min_logging_level %}{{ logging_level.class }}{% else %}text-white border border-white{% endif %} px-1 py-0"
+                            {% if logging_level_id != admin_messages_min_logging_level %}
                                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='messages') }}"
-                                hx-vals='{"min_logging_level": "{{ logging_level_id }}"}'
+                                hx-vals='{"admin_messages_min_logging_level": "{{ logging_level_id }}"}'
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                             {% endif %}
@@ -24,7 +24,7 @@
     <tbody>
         {% if admin_event.messages %}
             {% for message in admin_event.messages %}
-                {% if message.level >= min_logging_level %}
+                {% if message.level >= admin_messages_min_logging_level %}
                     <tr>
                         <th scope="row" class="text-nowrap {{ logging_levels[message.level].class }}">
                             <i class="{{ logging_levels[message.level].icon_class }}"></i>

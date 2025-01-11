@@ -7,8 +7,35 @@
 {% endblock %}
 
 {% block cards_container_right_buttons %}
+    {% with id='admin-families-show-details', name='admin_families_show_details', show=admin_families_show_details %}
+        <div
+                class="form-check form-switch d-inline-block pe-3 mt-2"
+                {{ tooltip_attributes('info', _('Enable/disable the details of the screen families on the cards below.'), 'top') }}
+        >
+            <input
+                    hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
+                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="form-check-input"
+                    type="checkbox"
+                    id="{{ id }}"
+                    {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
+        </div>
+    {% endwith %}
+    <span class="pe-3" {{ tooltip_attributes('info', 'Refresh this page.', 'top') }}>
+        <button
+                class="btn btn-primary text-nowrap"
+                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+        >
+            <i class="bi-arrow-clockwise"></i>
+        </button>
+    </span>
     <span
-            class="dropdown pe-3"
+            class="dropdown-end pe-0"
             {% if not admin_event.tournaments_by_id %}
                 {{ tooltip_attributes(
                     'info',
@@ -47,33 +74,6 @@
                 </li>
             {% endfor %}
         </ul>
-    </span>
-    {% with id='show-details-on-family-list', name='show_details_on_family_list' %}
-        <div
-                class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ tooltip_attributes('info', _('Enable/disable the details of the screen families on the cards below.'), 'top') }}
-        >
-            <input
-                    hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
-                    hx-vals='{"{{ name }}": "{% if show_details_on_family_list %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show_details_on_family_list %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-        </div>
-    {% endwith %}
-    <span {{ tooltip_attributes('info', 'Refresh this page.', 'top') }}>
-        <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
-        >
-            <i class="bi-arrow-clockwise"></i>
-        </button>
     </span>
 {% endblock %}
 

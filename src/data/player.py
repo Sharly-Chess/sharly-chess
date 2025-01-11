@@ -1,49 +1,217 @@
-from functools import total_ordering
+import base64
+from dataclasses import dataclass
+from functools import total_ordering, cached_property
 from logging import Logger
-from dataclasses import dataclass, field
 from contextlib import suppress
+from typing import TYPE_CHECKING, Self
+
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 from common.i18n import _
 from data.pairing import Pairing
 from common.logger import get_logger
-from data.util import PlayerGender, PlayerTitle, Color
+from data.util import PlayerGender, PlayerTitle, Color, PlayerFFELicence
 
 logger: Logger = get_logger()
 
+@dataclass(frozen=True)
+@total_ordering
+class FederationTuple:
+    federation: str = ''
 
-@dataclass
+    @classmethod
+    def string_tuple_to_query_param(cls, strings: tuple[str, ...]) -> str:
+        return '-' + '-'.join([
+            base64.b64encode(string.encode('utf-8')).decode('utf-8')
+            for string in strings
+        ])
+
+    @classmethod
+    def query_param_to_string_tuple(cls, query_param: str) -> tuple[str, ...]:
+        return tuple(
+            base64.b64decode(string).decode('utf-8')
+            for string in query_param[1:].split('-')
+        )
+
+    @cached_property
+    def to_query_param(self) -> str:
+        return self.string_tuple_to_query_param((self.federation, ))
+
+    @classmethod
+    def from_query_param(cls, query_param: str) -> Self:
+        t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
+        return FederationTuple(t[0])
+
+    def __le__(self, other: Self):
+        # p1 <= p2 calls p1.__le__(p2)
+        assert isinstance(other, self.__class__), f'Can not compare [{type(other)}] and [{self.__class__}]'
+        return self.federation <= other.federation
+
+    def __eq__(self, other: Self):
+        # p1 == p2 calls p1.__eq__(p2)
+        assert isinstance(other, self.__class__), f'Can not compare [{type(other)}] and [{self.__class__}]'
+        return self.federation == other.federation
+
+    def __str__(self) -> str:
+        return self.federation
+
+
+@dataclass(frozen=True)
+@total_ordering
+class LeagueTuple(FederationTuple):
+    league: str = ''
+
+    @cached_property
+    def to_query_param(self) -> str:
+        return self.string_tuple_to_query_param((self.federation, self.league))
+
+    @classmethod
+    def from_query_param(cls, query_param: str) -> Self:
+        t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
+        return LeagueTuple(t[0], t[1])
+
+    def __le__(self, other: Self):
+        # p1 <= p2 calls p1.__le__(p2)
+        assert isinstance(other, self.__class__), f'Can not compare [{type(other)}] and [{self.__class__}]'
+        return (self.federation, self.league) <= (other.federation, other.league)
+
+    def __eq__(self, other: Self):
+        # p1 == p2 calls p1.__eq__(p2)
+        assert isinstance(other, self.__class__), f'Can not compare [{type(other)}] and [{self.__class__}]'
+        return self.federation == other.federation and self.league == other.league
+
+    def __str__(self) -> str:
+        return f'{self.federation}-{self.league}'
+
+
+@dataclass(frozen=True)
+@total_ordering
+class ClubTuple(LeagueTuple):
+    club: str = ''
+
+    @cached_property
+    def to_query_param(self) -> str:
+        return self.string_tuple_to_query_param((self.federation, self.league, self.club))
+
+    @classmethod
+    def from_query_param(cls, query_param: str) -> Self:
+        t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
+        return ClubTuple(t[0], t[1], t[2])
+
+    def __le__(self, other: Self):
+        # p1 <= p2 calls p1.__le__(p2)
+        assert isinstance(other, self.__class__), f'Can not compare [{type(other)}] and [{self.__class__}]'
+        return (self.federation, self.league, self.club) <= (other.federation, other.league, other.club)
+
+    def __eq__(self, other: Self):
+        # p1 == p2 calls p1.__eq__(p2)
+        assert isinstance(other, self.__class__), f'Can not compare [{type(other)}] and [{self.__class__}]'
+        return self.federation == other.federation and self.league == other.league and self.club == other.club
+
+    def __str__(self) -> str:
+        return f'{self.federation}-{self.league}-{self.club}'
+
+
 @total_ordering
 class Player:
     """A data class representing a player in a tournament."""
-    ref_id: int
-    last_name: str
-    first_name: str
-    gender: PlayerGender
-    title: PlayerTitle
-    rating: int
-    rating_type: str
-    licence_type: str
-    federation: str
-    fixed: int
-    check_in: bool
-    pairings: dict[int, Pairing]
-    points: float | None = field(default=None, init=False)
-    vpoints: float | None = field(default=None, init=False)
-    board_id: int | None = field(default=None, init=False)
-    board_number: int | None = field(default=None, init=False)
-    color: Color | None = field(default=None, init=False)
-    illegal_moves: int = 0
-    time_control_initial_time: int | None = field(default=None, init=False)
-    time_control_increment: int | None = field(default=None, init=False)
-    time_control_modified: bool | None = field(default=None, init=False)
+    def __init__(
+            self,
+            id: int,
+            last_name: str,
+            first_name: str,
+            year_of_birth: int | None,
+            gender: PlayerGender,
+            mail: str,
+            phone: str,
+            comment: str,
+            owed: float,
+            paid: float,
+            title: PlayerTitle,
+            rating: int,
+            rating_type: str,
+            fide_id: int | None,
+            ffe_id: int,
+            ffe_licence: PlayerFFELicence,
+            ffe_licence_number: str | None,
+            federation: str,
+            league: str,
+            club: str,
+            fixed: int,
+            check_in: bool,
+            pairings: dict[int, Pairing],
+    ):
+        self.id: int = id
+        self.last_name: str = last_name
+        self.first_name: str = first_name
+        self.year_of_birth: int | None = year_of_birth
+        self.gender: PlayerGender = gender
+        self.mail: str = mail
+        self.phone: str = phone
+        self.comment: str = comment
+        self.owed: float = owed
+        self.paid: float = paid
+        self.title: PlayerTitle = title
+        self.rating: int = rating
+        self.rating_type: str = rating_type
+        self.fide_id: int | None = fide_id
+        self.ffe_id: int = ffe_id
+        self.ffe_licence: PlayerFFELicence = ffe_licence
+        self.ffe_licence_number: str | None = ffe_licence_number
+        self.federation: str = federation
+        self.league: str = league
+        self.club: str = club
+        self.fixed: int = fixed
+        self.check_in: bool = check_in
+        self.pairings: dict[int, Pairing] = pairings
+        self.points: float | None = None
+        self.vpoints: float | None = None
+        self.board_id: int | None = None
+        self.board_number: int | None = None
+        self.color: Color | None = None
+        self.illegal_moves: int = 0
+        self.time_control_initial_time: int | None = None
+        self.time_control_increment: int | None = None
+        self.time_control_modified: bool | None = None
+        self.tournament: Tournament | None = None
+
+    @staticmethod
+    def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
+        return tournament_id * 10000 + ref_id
+
+    @staticmethod
+    def player_papi_id_from_papi_web_id(player_id: int) -> int:
+        return player_id % 10000
+
+    @staticmethod
+    def player_tournament_id_from_papi_web_id(player_id: int) -> int:
+        return player_id // 10000
 
     @property
-    def id(self) -> int:
-        return self.ref_id
+    def ref_id(self) -> int:
+        """ Returns the Unique ID of the player in the Papi file (needed while using the Papi storage)."""
+        return self.player_papi_id_from_papi_web_id(self.id)
+
+    @property
+    def tournament_id(self) -> int:
+        return self.player_tournament_id_from_papi_web_id(self.id)
 
     @property
     def title_str(self) -> str:
         return str(self.title)
+
+    @cached_property
+    def club_tuple(self) -> ClubTuple:
+        return ClubTuple(self.federation, self.league, self.club)
+
+    @cached_property
+    def league_tuple(self) -> LeagueTuple:
+        return LeagueTuple(self.federation, self.league)
+
+    @cached_property
+    def federation_tuple(self) -> FederationTuple:
+        return FederationTuple(self.federation)
 
     def compute_points(self, max_round: int):
         """Computes and stores the points of the player,
@@ -89,16 +257,25 @@ class Player:
 
     @property
     def not_paired_str(self) -> str:
-        return _('Unpaired *** FEMALE ***') if self.gender == PlayerGender.FEMALE else _('Unpaired *** MALE ***')
+        return _('Unpaired *** FEMALE') if self.gender == PlayerGender.FEMALE else _('Unpaired *** MALE')
 
     @property
     def exempt_str(self) -> str:
-        return _('Exempt *** FEMALE ***') if self.gender == PlayerGender.FEMALE else _('Exempt *** MALE ***')
+        return _('Exempt *** FEMALE') if self.gender == PlayerGender.FEMALE else _('Exempt *** MALE')
 
     def set_board(self, board_id: int, board_number: int, color: Color):
         self.board_id = board_id
         self.board_number = board_number
         self.color = color
+
+    @property
+    def has_real_pairings(self) -> bool:
+        """ Returns True if the player has already been paired with an opponent
+        (i.e. can not be deleted from the tournament anymore)."""
+        for pairing in self.pairings.values():
+            if pairing.opponent_papi_id and pairing.opponent_papi_id > 1:
+                return True
+        return False
 
     @property
     def color_str(self) -> str:
@@ -151,7 +328,7 @@ class Player:
         )
 
     def __repr__(self):
-        if self.id == 1:
-            return f'{self.__class__.__name__}(EXEMPT)'
+        if self.ref_id == 1:
+            return f'{self.__class__.__name__}(#{self.id} EXEMPT)'
         return (f'{self.__class__.__name__}'
-                f'({self.title_str}{self.last_name} {self.first_name} {self.rating} [{self.vpoints}])')
+                f'(#{self.id} {self.title_str}{self.last_name} {self.first_name} {self.rating} [{self.vpoints}])')

@@ -1,4 +1,4 @@
-#: src/papi_web.py:33
+#: src/papi_web.py:32
 #, ai_translation, fuzzy
 msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 msgstr "Dit programma mag niet direct worden gestart, gebruik scripts server.bat, ffe.bat en chessevent.bat."
@@ -35,20 +35,20 @@ msgstr "Toernooien: {tournament_names}"
 
 #: src/chessevent/action_selector.py:70
 #, ai_translation
-msgid "C *** THE LETTER TO ANSWER CREATE ***"
+msgid "C *** THE LETTER TO ANSWER CREATE"
 msgstr "C"
 
 #: src/chessevent/action_selector.py:71 src/ffe/action_selector.py:95
 #, ai_translation
-msgid "U *** THE LETTER TO ANSWER UPLOAD ***"
+msgid "U *** THE LETTER TO ANSWER UPLOAD"
 msgstr "U"
 
 #: src/chessevent/action_selector.py:72 src/chessevent/action_selector.py:92
 #: src/chessevent/action_selector.py:113 src/chessevent/event_selector.py:29
-#: src/common/engine.py:124 src/ffe/action_selector.py:96
+#: src/common/engine.py:125 src/ffe/action_selector.py:96
 #: src/ffe/event_selector.py:25
 #, ai_translation
-msgid "Q *** THE LETTER TO ANSWER QUIT ***"
+msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
 #: src/chessevent/action_selector.py:75
@@ -81,12 +81,12 @@ msgstr "Actie: {action}"
 
 #: src/chessevent/action_selector.py:90
 #, ai_translation
-msgid "1 *** THE LETTER TO ANSWER ONCE ***"
+msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
 
 #: src/chessevent/action_selector.py:91
 #, ai_translation
-msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY ***"
+msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
 #: src/chessevent/action_selector.py:95
@@ -114,29 +114,29 @@ msgstr "Kies de Papi-versie:"
 msgid "Papi version: {version}"
 msgstr "Papi-versie: {version}"
 
-#: src/chessevent/action_selector.py:141 src/ffe/action_selector.py:116
+#: src/chessevent/action_selector.py:142 src/ffe/action_selector.py:116
 #: src/ffe/action_selector.py:125 src/ffe/action_selector.py:133
 #: src/ffe/action_selector.py:142 src/ffe/action_selector.py:162
 #, ai_translation
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Deze actie kan worden gedaan op de toernooien van dit evenement."
 
-#: src/chessevent/action_selector.py:165
+#: src/chessevent/action_selector.py:166
 #, ai_translation
 msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
 msgstr "Gegevens voor toernooi [{tournament_uniq_id}] konden niet gedecodeerd worden (codering: [{encoding}]), opgeslagen in bestand [{file}] (foutregel [{line}], kolom [{column}], positie [{position}])."
 
-#: src/chessevent/action_selector.py:170
+#: src/chessevent/action_selector.py:173
 #, ai_translation
 msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
 msgstr "Gegevens voor toernooi [{tournament_name}] op ChessEvent zijn ongewijzigd."
 
-#: src/chessevent/action_selector.py:180
+#: src/chessevent/action_selector.py:184
 #, ai_translation
 msgid "Papi file [{file}] has been created (players: {num})."
 msgstr "Papi-bestand [{file}] is gemaakt (spelers: {num})."
 
-#: src/chessevent/action_selector.py:185
+#: src/chessevent/action_selector.py:190
 #, ai_translation
 msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr "FFE-id en wachtwoord zijn niet correct ingesteld voor toernooi [{tournament_name}], gegevens kunnen niet worden verzonden naar de FFE website."
@@ -176,26 +176,26 @@ msgstr "Gebeurtenis [{event_id}] niet gevonden (code: [{code}]): [{error}]."
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr "Onbekende responscode: [{code}] ([{chessevent_string}])."
 
-#: src/chessevent/chessevent_session.py:85 src/common/engine.py:281
-#: src/common/engine.py:410 src/common/engine.py:456 src/ffe/ffe_session.py:99
+#: src/chessevent/chessevent_session.py:85 src/common/engine.py:283
+#: src/common/engine.py:413 src/common/engine.py:459 src/ffe/ffe_session.py:99
 #, ai_translation
 msgid "Failed to read [{url}] (connection error): [{ex}]."
 msgstr "Lezen van [{url}] (connectiefout): [{ex}]."
 
-#: src/chessevent/chessevent_session.py:88 src/common/engine.py:283
-#: src/common/engine.py:413 src/common/engine.py:459 src/ffe/ffe_session.py:101
+#: src/chessevent/chessevent_session.py:88 src/common/engine.py:285
+#: src/common/engine.py:416 src/common/engine.py:462 src/ffe/ffe_session.py:101
 #, ai_translation
 msgid "Failed to read [{url}] (timeout): [{ex}]."
 msgstr "Lezen van [{url}] (timeout): [{ex}]."
 
-#: src/chessevent/chessevent_session.py:91 src/common/engine.py:285
-#: src/common/engine.py:416 src/common/engine.py:462 src/ffe/ffe_session.py:103
+#: src/chessevent/chessevent_session.py:91 src/common/engine.py:287
+#: src/common/engine.py:419 src/common/engine.py:465 src/ffe/ffe_session.py:103
 #, ai_translation
 msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
 msgstr "Lezen van [{url}] (foutcode [{errno}]): [{strerror}]."
 
-#: src/chessevent/chessevent_session.py:95 src/common/engine.py:288
-#: src/common/engine.py:420 src/common/engine.py:466 src/ffe/ffe_session.py:106
+#: src/chessevent/chessevent_session.py:95 src/common/engine.py:290
+#: src/common/engine.py:423 src/common/engine.py:469 src/ffe/ffe_session.py:106
 #, ai_translation
 msgid "Failed to read [{url}]: [{ex}]."
 msgstr "Kon niet lezen [{url}]: [{ex}]."
@@ -261,16 +261,16 @@ msgstr "Fout: [{ex}]."
 msgid "Checking Papi-web version..."
 msgstr "Papi-web-versie wordt gecontroleerd..."
 
-#: src/common/engine.py:45 src/common/engine.py:106 src/common/engine.py:146
-#: src/common/engine.py:210
+#: src/common/engine.py:45 src/common/engine.py:106 src/common/engine.py:147
+#: src/common/engine.py:212
 #, ai_translation
-msgid "Y *** THE LETTER TO ANSWER YES ***"
+msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
 
-#: src/common/engine.py:46 src/common/engine.py:107 src/common/engine.py:147
-#: src/common/engine.py:211
+#: src/common/engine.py:46 src/common/engine.py:107 src/common/engine.py:148
+#: src/common/engine.py:213
 #, ai_translation
-msgid "N *** THE LETTER TO ANSWER NO ***"
+msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
 #: src/common/engine.py:49
@@ -313,178 +313,197 @@ msgstr "Wilt u de configuratie van versie [{version}] [{y_uc}/{n_lc}] herstellen
 msgid "Please choose the version to recover:"
 msgstr "Kies de versie om te herstellen:"
 
-#: src/common/engine.py:125
+#: src/common/engine.py:126
 #, ai_translation
 msgid "  - [{q_uc}] Do not recover"
 msgstr "- [{q_uc}] Niet herstellen"
 
-#: src/common/engine.py:128
+#: src/common/engine.py:129
 #, ai_translation
 msgid "Please enter the number of the version to recover [{default}]: "
 msgstr "Enter het nummer van de versie te herstellen [{default}]:"
 
-#: src/common/engine.py:150
+#: src/common/engine.py:151
 #, ai_translation
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr "Wilt u bijvoorbeeld event databases installeren [{y_uc}/{n_lc}]?"
 
-#: src/common/engine.py:166
+#: src/common/engine.py:167
 #, ai_translation
 msgid "Recovering events from version {version}..."
 msgstr "Gebeurtenissen herstellen van versie {version}..."
 
-#: src/common/engine.py:171
+#: src/common/engine.py:172
 #, ai_translation
 msgid "Recovering event [{event_uniq_id}]..."
 msgstr "Herstellen van gebeurtenis [{event_uniq_id}]..."
 
-#: src/common/engine.py:182
-#, ai_translation
+# E
+# r
+# o
+# :
+# t
+# k
+# e
+# n
+# s
+# d
+# i
+# f
+# b
+# w
+# [
+# v
+# {
+# _
+# u
+# q
+# }
+# ]
+# c
+# g
+# a
+# m
+# .
+# G
+#: src/common/engine.py:183
+#, ai_translation, error
 msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
-msgstr "Gebeurtenis [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]..."
+msgstr "Event [{event_uniq_id}]: herstellend toernooi [{tournament_uniq_id}]..."
 
-#: src/common/engine.py:187
+#: src/common/engine.py:188
 #, ai_translation
 msgid "Recovering custom files..."
 msgstr "Aangepaste bestanden worden hersteld..."
 
-#: src/common/engine.py:200
+#: src/common/engine.py:202
 #, ai_translation
 msgid "Events recovered: {num} (from directory [{dir}])."
 msgstr "Gebeurtenissen hersteld: {num} (van directory [{dir}])."
 
-#: src/common/engine.py:202
+#: src/common/engine.py:204
 #, ai_translation
 msgid "Tournaments recovered: {num} (from directory [{dir}])."
 msgstr "Toernooien hersteld: {num} (van directory [{dir}])."
 
-#: src/common/engine.py:206
+#: src/common/engine.py:208
 #, ai_translation
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr "Aangepaste bestanden hersteld: {num} (van directory [{dir}])."
 
-#: src/common/engine.py:214
+#: src/common/engine.py:216
 #, ai_translation
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr "Wilt u deze aangepaste bestanden naar de Papi-webontwikkelaars sturen om toekomstige versies te verbeteren [{y_uc}/{n_lc}]?"
 
-#: src/common/engine.py:304
+#: src/common/engine.py:306
 #, ai_translation
 msgid "Sending the files to a server..."
 msgstr "De bestanden naar een server sturen..."
 
-#: src/common/engine.py:310
+#: src/common/engine.py:312
 #, ai_translation
 msgid "Files have been sent to bin {bin_name}."
 msgstr "Bestanden zijn verzonden naar bin {bin_name}."
 
-#: src/common/engine.py:311
+#: src/common/engine.py:313
 #, ai_translation
 msgid "- View the files on filebin.net: {bin_url}"
 msgstr "- Bekijk de bestanden op filebin.net: {bin_url}"
 
-#: src/common/engine.py:312
+#: src/common/engine.py:314
 #, ai_translation
 msgid "- Download the files (ZIP archive): {bin_zip_url}"
 msgstr "- Download de bestanden (ZIP archief): {bin_zip_url}"
 
-#: src/common/engine.py:314
+#: src/common/engine.py:316
 #, ai_translation
 msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr "[Papi-web {version}] Verzoek om integratie van aangepaste bestanden"
 
-#: src/common/engine.py:331
+#: src/common/engine.py:333
 #, ai_translation
 msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr "Een venster opent om een e-mail te sturen naar het Papi-webproject; Als het venster niet geopend wordt, klik dan op onderstaande link of stuur handmatig een e-mail naar {email}."
 
-#: src/common/engine.py:343
+#: src/common/engine.py:345
 #, ai_translation
 msgid "Checking the version failed."
 msgstr "Controleren van de versie is mislukt."
 
-#: src/common/engine.py:346
+#: src/common/engine.py:348
 #, ai_translation
 msgid "Your Papi-web version is up to date."
 msgstr "Je Papi-web versie is up-to-date."
 
-#: src/common/engine.py:353
+#: src/common/engine.py:356
 #, ai_translation
 msgid "A more recent version is available ([{version}])."
 msgstr "Een recentere versie is beschikbaar ([{version}])."
 
-#: src/common/engine.py:356
+#: src/common/engine.py:359
 #, ai_translation
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
 msgstr "U gebruikt een versie nieuwer dan de nieuwste stabiele versie beschikbaar ([{version}]), bent u een ontwikkelaar? ;-)"
 
-#: src/common/engine.py:364
+#: src/common/engine.py:367
 #, ai_translation
 msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
 msgstr "Een stabiele en meer recente versie is beschikbaar ([{new_version}]) maar het upgraden van instabiele versies (zoals die welke u momenteel gebruikt: [{old_version}] moet handmatig gebeuren (upgrade vanaf de laatste stabiele versie die op uw server is geïnstalleerd)."
 
-#: src/common/engine.py:368
+#: src/common/engine.py:371
 #, ai_translation
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr "U gebruikt niet instabiele versie recenter dan de laatste stabiele versie beschikbaar ({version})."
 
-#: src/common/engine.py:380
+#: src/common/engine.py:383
 #, ai_translation
 msgid "Looking for a more recent version on GitHub ([{url}])..."
 msgstr "Op zoek naar een recentere versie op GitHub ([{url}])..."
 
-#: src/common/engine.py:384 src/common/engine.py:440
+#: src/common/engine.py:387 src/common/engine.py:443
 #, ai_translation
 msgid "No response from GitHub."
 msgstr "Geen reactie van GitHub."
 
-#: src/common/engine.py:391
+#: src/common/engine.py:394
 #, ai_translation
 msgid "Invalid response from GitHub: {ex}."
 msgstr "Ongeldig antwoord van GitHub: {ex}."
 
-#: src/common/engine.py:403
+#: src/common/engine.py:406
 #, ai_translation
 msgid "No stable version found."
 msgstr "Geen stabiele versie gevonden."
 
-#: src/common/engine.py:431
+#: src/common/engine.py:434
 #, ai_translation
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr "Versie [{version}] is reeds geïnstalleerd in de directory [{dir}], verwijder deze map handmatig voordat u deze installeert."
 
-#: src/common/engine.py:436
+#: src/common/engine.py:439
 #, ai_translation
 msgid "Downloading version {version} from GitHub ([{url}])..."
 msgstr "Downloaden van versie {version} van GitHub ([{url}])..."
 
-#: src/common/engine.py:444
+#: src/common/engine.py:447
 #, ai_translation
 msgid "Downloading failed with code [{code}]."
 msgstr "Downloaden mislukt met code [{code}]."
 
-#: src/common/engine.py:448
+#: src/common/engine.py:451
 #, ai_translation
 msgid "File downloaded: [{zip_file}]."
 msgstr "Bestand gedownload: [{zip_file}]."
 
-#: src/common/engine.py:451
+#: src/common/engine.py:454
 #, ai_translation
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "Nieuwe versie [{version}] is geïnstalleerd in [{dir}]."
 
-#: src/common/i18n.py:88
-#, ai_translation
-msgid "Locale set to [{locale}]."
-msgstr "Lokaal ingesteld op [{locale}]."
-
-#: src/common/i18n.py:91
-#, ai_translation
-msgid "Unknown locale [{locale}]."
-msgstr "Onbekende locale [{locale}]."
-
 #: src/common/papi_web_config.py:78 src/common/papi_web_config.py:154
 #: src/common/papi_web_config.py:184 src/common/papi_web_config.py:196
+#: src/common/papi_web_config.py:211
 #, ai_translation
 msgid "Option not set, by default [{default}]."
 msgstr "Optie niet ingesteld, standaard [{default}]."
@@ -530,11 +549,6 @@ msgstr "Ongeldige hostconfiguratie [{host}], standaard [{default}]."
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ongeldige poort [{port}], standaard [{default}]."
-
-#: src/common/papi_web_config.py:211
-#, ai_translation
-msgid "Option not set, by default [{ffe_upload_delay}]."
-msgstr "Optie niet ingesteld, standaard [{ffe_upload_delay}]."
 
 #: src/common/papi_web_config.py:218
 #, ai_translation
@@ -586,117 +600,117 @@ msgstr "Kon niet schrijven naar {ini_file}: {ex}."
 msgid "Papi-web project"
 msgstr "Papi-webproject"
 
-#: src/data/event.py:54
+#: src/data/event.py:55
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr "Toernooi [{tournament_uniq_id}]: {text}"
 
-#: src/data/event.py:56
+#: src/data/event.py:58
 #, ai_translation
 msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
 msgstr "ChessEvent-verbinding [{chessevent_uniq_id}]: {text}"
 
-#: src/data/event.py:58
+#: src/data/event.py:61
 #, ai_translation
 msgid "Family [{family_uniq_id}]: {text}"
 msgstr "Familie [{family_uniq_id}]: {text}"
 
-#: src/data/event.py:60
+#: src/data/event.py:64
 #, ai_translation
 msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
 msgstr "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
 
-#: src/data/event.py:62
+#: src/data/event.py:67
 #, ai_translation
 msgid "Timer [{timer_uniq_id}]: {text}"
 msgstr "Timer [{timer_uniq_id}]: {text}"
 
-#: src/data/event.py:64
+#: src/data/event.py:70
 #, ai_translation
 msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
 msgstr "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
 
-#: src/data/event.py:66
+#: src/data/event.py:73
 #, ai_translation
 msgid "Screen [{screen_uniq_id}]: {text}"
 msgstr "Scherm [{screen_uniq_id}]: {text}"
 
-#: src/data/event.py:68
+#: src/data/event.py:75
 #, ai_translation
 msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr "Rotator [{rotator_uniq_id}]: {text}"
 
-#: src/data/event.py:84
+#: src/data/event.py:91
 #, ai_translation
 msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
 msgstr "Fouten zijn gevonden op het evenement; ChessEvent verbindingen, timers, toernooien, schermen, families en rotators worden niet geladen."
 
-#: src/data/event.py:132
+#: src/data/event.py:139
 #, ai_translation
 msgid "No name set, by default [{name}]"
 msgstr "Geen naam ingesteld, standaard [{name}]"
 
-#: src/data/event.py:177
+#: src/data/event.py:232
 #, ai_translation
 msgid "No directory set for Papi files, by default [{path}]."
 msgstr "Geen map ingesteld voor Papi-bestanden, standaard [{path}]."
 
-#: src/data/event.py:181 src/data/tournament.py:41
+#: src/data/event.py:236 src/data/tournament.py:42
 #, ai_translation
 msgid "Directory [{path}] not found."
 msgstr "Map [{path}] niet gevonden."
 
-#: src/data/event.py:183 src/data/tournament.py:43
+#: src/data/event.py:238 src/data/tournament.py:44
 #, ai_translation
 msgid "[{path}] is not a directory."
 msgstr "[{path}] is geen directory."
 
-#: src/data/event.py:192
+#: src/data/event.py:247
 #, ai_translation
 msgid "No background image set, by default [{background_image}]"
 msgstr "Geen achtergrondafbeelding ingesteld, standaard [{background_image}]"
 
-#: src/data/event.py:206
+#: src/data/event.py:261
 #, ai_translation
 msgid "No background colour set, by default [{background_color}]"
 msgstr "Geen achtergrondkleur ingesteld, standaard [{background_color}]"
 
-#: src/data/event.py:216
+#: src/data/event.py:271
 #, ai_translation
 msgid "No password set for the results entry"
 msgstr "Geen wachtwoord ingesteld voor het invoeren van resultaten"
 
-#: src/data/event.py:223
+#: src/data/event.py:278
 #, ai_translation
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
 msgstr "Maximum aantal illegale bewegingen niet ingesteld, standaard [{record_illegal_moves}]"
 
-#: src/data/event.py:358
+#: src/data/event.py:413
 #, ai_translation
 msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
 msgstr "Fouten zijn gevonden op ChessEvent verbindingen; timers, toernooien, schermen, families en rotators zullen niet worden geladen."
 
-#: src/data/event.py:382
+#: src/data/event.py:438
 #, ai_translation
 msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
 msgstr "Fouten zijn gevonden op timers; toernooien, schermen, families en rotators worden niet geladen."
 
-#: src/data/event.py:406
+#: src/data/event.py:463
 #, ai_translation
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr "Fouten zijn gevonden op toernooien; schermen, families en rotators worden niet geladen."
 
-#: src/data/event.py:436
+#: src/data/event.py:493
 #, ai_translation
 msgid "Errors have been found on screens; families and rotators will not be loaded."
 msgstr "Er zijn fouten gevonden op schermen; families en rotators worden niet geladen."
 
-#: src/data/event.py:465
+#: src/data/event.py:522
 #, ai_translation
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr "Er zijn fouten gevonden bij families; rotators worden niet geladen."
 
-#: src/data/event.py:508
+#: src/data/event.py:565
 #, ai_translation
 msgid "Errors have been found on rotators."
 msgstr "Er zijn fouten gevonden op rotators."
@@ -716,169 +730,169 @@ msgstr "Toernooi [{tournament_uniq_id}] kan niet worden gelezen, familie genegee
 msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
 msgstr "Toernooi [{tournament_uniq_id}] heeft alleen [{boards_number}] boards (< [{first}]), familie genegeerd."
 
-#: src/data/family.py:200
+#: src/data/family.py:198
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored."
 msgstr "Toernooi [{tournament_uniq_id}] heeft alleen [{players_number}] spelers (< [{first}]), familie genegeerd."
 
-#: src/data/family.py:218
+#: src/data/family.py:214
 #, ai_translation
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
 msgstr "Niets te tonen voor toernooi [{tournament_uniq_id}], familie genegeerd."
 
-#: src/data/family.py:279 src/data/screen_set.py:287
+#: src/data/family.py:274 src/data/screen_set.py:287
 #, ai_translation
 msgid "all the boards"
 msgstr "alle boards"
 
-#: src/data/family.py:281 src/data/screen_set.py:289
+#: src/data/family.py:276 src/data/screen_set.py:289
 #, ai_translation
 msgid "boards from #{first} to end"
 msgstr "boards van #{first} to end"
 
-#: src/data/family.py:283 src/data/screen_set.py:293
+#: src/data/family.py:278 src/data/screen_set.py:293
 #, ai_translation
 msgid "boards from start to #{last}"
 msgstr "boards van begin naar #{last}"
 
-#: src/data/family.py:285 src/data/screen_set.py:291
+#: src/data/family.py:280 src/data/screen_set.py:291
 #, ai_translation
 msgid "boards from #{first} to #{last}"
 msgstr "boards van #{first} naar #{last}"
 
-#: src/data/family.py:287
+#: src/data/family.py:282
 #, ai_translation
 msgid "screens of {number} boards"
 msgstr "schermen van {number} boards"
 
-#: src/data/family.py:289
+#: src/data/family.py:284
 #, ai_translation
 msgid "screens of {number} boards from #{first} to end"
 msgstr "screens van {number} boards van #{first} to end"
 
-#: src/data/family.py:291
+#: src/data/family.py:286
 #, ai_translation
 msgid "screens of {number} boards from start to #{last}"
 msgstr "schermen van {number} boards van begin tot #{last}"
 
-#: src/data/family.py:293
+#: src/data/family.py:288
 #, ai_translation
 msgid "screens of {number} boards from #{first} to #{last}"
 msgstr "screens van {number} boards van #{first} tot #{last}"
 
-#: src/data/family.py:295
+#: src/data/family.py:291
 #, ai_translation
 msgid "boards on {parts} screens"
 msgstr "boards op {parts} schermen"
 
-#: src/data/family.py:297
+#: src/data/family.py:293
 #, ai_translation
 msgid "boards from #{first} to end, on {parts} screens"
 msgstr "boards van #{first} to end, op {parts} screens"
 
-#: src/data/family.py:299
+#: src/data/family.py:295
 #, ai_translation
 msgid "boards from start to #{last}, on {parts} screens"
 msgstr "boards van begin tot #{last}, op {parts} screens"
 
-#: src/data/family.py:301
+#: src/data/family.py:297
 #, ai_translation
 msgid "boards from #{first} to #{last}, on {parts} screens"
 msgstr "boards van #{first} naar #{last}, op {parts}-schermen"
 
-#: src/data/family.py:308 src/data/screen_set.py:300
+#: src/data/family.py:305 src/data/screen_set.py:300
 #, ai_translation
 msgid "all the players"
 msgstr "alle spelers"
 
-#: src/data/family.py:310 src/data/screen_set.py:302
+#: src/data/family.py:307 src/data/screen_set.py:302
 #, ai_translation
 msgid "players from #{first} to end"
 msgstr "spelers van #{first} tot einde"
 
-#: src/data/family.py:312 src/data/screen_set.py:306
+#: src/data/family.py:309 src/data/screen_set.py:306
 #, ai_translation
 msgid "players from start to #{last}"
 msgstr "spelers van begin tot #{last}"
 
-#: src/data/family.py:314 src/data/screen_set.py:304
+#: src/data/family.py:311 src/data/screen_set.py:304
 #, ai_translation
 msgid "players from #{first} to #{last}"
 msgstr "spelers van #{first} tot #{last}"
 
-#: src/data/family.py:316
+#: src/data/family.py:313
 #, ai_translation
 msgid "screens of {number} players"
 msgstr "schermen van {number} spelers"
 
-#: src/data/family.py:318
+#: src/data/family.py:315
 #, ai_translation
 msgid "screens of {number} players from #{first} to end"
 msgstr "schermen van {number} spelers van #{first} om te eindigen"
 
-#: src/data/family.py:320
+#: src/data/family.py:317
 #, ai_translation
 msgid "screens of {number} players from start to #{last}"
 msgstr "schermen van {number} spelers van begin tot #{last}"
 
-#: src/data/family.py:322
+#: src/data/family.py:319
 #, ai_translation
 msgid "screens of {number} players from #{first} to #{last}"
 msgstr "screens van {number} spelers van #{first} tot #{last}"
 
-#: src/data/family.py:324
+#: src/data/family.py:322
 #, ai_translation
 msgid "players on {parts} screens"
 msgstr "spelers op {parts} schermen"
 
-#: src/data/family.py:326
+#: src/data/family.py:324
 #, ai_translation
 msgid "players from #{first} to end, on {parts} screens"
 msgstr "spelers van #{first} tot en met, op {parts} schermen"
 
-#: src/data/family.py:328
+#: src/data/family.py:326
 #, ai_translation
 msgid "players from start to #{last}, on {parts} screens"
 msgstr "spelers van begin tot #{last}, op {parts} schermen"
 
-#: src/data/family.py:330
+#: src/data/family.py:328
 #, ai_translation
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr "spelers van #{first} tot #{last}, op {parts} schermen"
 
-#: src/data/player.py:95
+#: src/data/player.py:260
 #, ai_translation
-msgid "Unpaired *** FEMALE ***"
+msgid "Unpaired *** FEMALE"
 msgstr "Ongepaard"
 
-#: src/data/player.py:95
+#: src/data/player.py:260
 #, ai_translation
-msgid "Unpaired *** MALE ***"
+msgid "Unpaired *** MALE"
 msgstr "Ongepaard"
 
-#: src/data/player.py:99
+#: src/data/player.py:264
 #, ai_translation
-msgid "Exempt *** FEMALE ***"
+msgid "Exempt *** FEMALE"
 msgstr "Vrijgesteld"
 
-#: src/data/player.py:99
+#: src/data/player.py:264
 #, ai_translation
-msgid "Exempt *** MALE ***"
+msgid "Exempt *** MALE"
 msgstr "Vrijgesteld"
 
-#: src/data/screen.py:97 src/data/screen.py:178
+#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:802
 #: src/web/controllers/admin/index_admin_controller.py:108
-#: src/web/controllers/admin/screen_admin_controller.py:359
-#: src/web/templates/admin_screens.html:36
+#: src/web/controllers/admin/screen_admin_controller.py:360
+#: src/web/templates/admin_screens.html:79
 #: src/web/templates/admin_screens.html:117
 #, ai_translation
 msgid "Last results"
 msgstr "Laatste resultaten"
 
-#: src/data/screen.py:99
+#: src/data/screen.py:99 src/data/util.py:804
 #: src/web/controllers/admin/index_admin_controller.py:109
-#: src/web/controllers/admin/screen_admin_controller.py:361
-#: src/web/templates/admin_screens.html:37
+#: src/web/controllers/admin/screen_admin_controller.py:362
+#: src/web/templates/admin_screens.html:80
 #: src/web/templates/admin_screens.html:122
 #, ai_translation
 msgid "Image"
@@ -941,14 +955,14 @@ msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] 
 msgstr "Maximum aantal resultaten ingesteld op [{results_limit}] te passen op [{columns}] kolommen."
 
 #: src/data/screen_set.py:60
-#: src/web/controllers/admin/screen_admin_controller.py:286
+#: src/web/controllers/admin/screen_admin_controller.py:287
 #, ai_translation
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr "Ongeldig boardnummer [{fixed_board_str}]."
 
 #: src/data/screen_set.py:78
 #: src/web/controllers/admin/family_admin_controller.py:162
-#: src/web/controllers/admin/screen_admin_controller.py:273
+#: src/web/controllers/admin/screen_admin_controller.py:274
 #, ai_translation
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr "De nummers {first} en {last} zijn niet compatibel ({first} > {last})."
@@ -1004,30 +1018,125 @@ msgstr "Ongeldige datum en tijd [{datetime_str}]."
 msgid "No valid hour defined."
 msgstr "Geen geldig uur gedefinieerd."
 
-#: src/data/tournament.py:39
+#: src/data/tournament.py:40
 #, ai_translation
 msgid "No directory set for the Papi file, by default [{path}]."
 msgstr "Geen map ingesteld voor het Papi-bestand, standaard [{path}]."
 
-#: src/data/tournament.py:46
+#: src/data/tournament.py:47
 #, ai_translation
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "De naam van het Papi-bestand is standaard niet ingesteld [{filename}]"
 
-#: src/data/tournament.py:50
+#: src/data/tournament.py:51
 #, ai_translation
 msgid "Qualification number and FFE password not set, operations on the FFE website will not be available."
 msgstr "Kwalificatienummer en FFE-wachtwoord niet ingesteld, bewerkingen op de FFE-website zullen niet beschikbaar zijn."
 
-#: src/data/tournament.py:53
+#: src/data/tournament.py:54
 #, ai_translation
 msgid "ChessEvent connection not defined."
 msgstr "ChessEvent-verbinding niet gedefinieerd."
 
-#: src/data/tournament.py:55
+#: src/data/tournament.py:56
 #, ai_translation
 msgid "ChessEvent tournament name not set."
 msgstr "ChessEvent toernooinaam is niet ingesteld."
+
+#: src/data/util.py:248
+#, ai_translation
+msgid "Standard rating"
+msgstr "Standaardclassificatie"
+
+#: src/data/util.py:250
+#, ai_translation
+msgid "Rapid rating"
+msgstr "Snelle rating"
+
+#: src/data/util.py:252
+#, ai_translation
+msgid "Blitz rating"
+msgstr "Blitz rating"
+
+#: src/data/util.py:463
+#, ai_translation
+msgid "- *** NAME FOR GENDER NONE"
+msgstr "-"
+
+#: src/data/util.py:465
+#, ai_translation
+msgid "Female *** NAME FOR GENDER FEMALE"
+msgstr "Vrouwen"
+
+#: src/data/util.py:467
+#, ai_translation
+msgid "Male *** NAME FOR GENDER MALE"
+msgstr "Mannelijk"
+
+#: src/data/util.py:475
+#: src/web/templates/admin_players/admin_players_filter_genders.html:28
+#, ai_translation
+msgid "- *** SHORT NAME FOR GENDER NONE"
+msgstr "-"
+
+#: src/data/util.py:477
+#: src/web/templates/admin_players/admin_players_filter_genders.html:32
+#, ai_translation
+msgid "F *** SHORT NAME FOR GENDER FEMALE"
+msgstr "F"
+
+#: src/data/util.py:479
+#: src/web/templates/admin_players/admin_players_filter_genders.html:36
+#, ai_translation
+msgid "M *** SHORT NAME FOR GENDER MALE"
+msgstr "G"
+
+#: src/data/util.py:522
+#, ai_translation, fuzzy
+msgid "No FFE Licence"
+msgstr "Geen FFE-licentie"
+
+#: src/data/util.py:524
+#, ai_translation
+msgid "Expired FFE licence"
+msgstr "Verlopen FFE-licentie"
+
+#: src/data/util.py:526
+#, ai_translation
+msgid "FFE licence B (leisure)"
+msgstr "FFE-licentie B (vrijheid)"
+
+#: src/data/util.py:528
+#, ai_translation
+msgid "FFE licence A (competition)"
+msgstr "FFE-licentie A (mededinging)"
+
+#: src/data/util.py:796 src/web/controllers/admin/index_admin_controller.py:104
+#: src/web/controllers/admin/tournament_admin_controller.py:336
+#: src/web/templates/admin_families.html:61
+#: src/web/templates/admin_screens.html:77
+#: src/web/templates/admin_screens.html:107
+#, ai_translation
+msgid "Pairings by board"
+msgstr "Paar per bord"
+
+#: src/data/util.py:798
+#: src/web/controllers/admin/family_admin_controller.py:270
+#: src/web/controllers/admin/index_admin_controller.py:103
+#: src/web/controllers/admin/screen_admin_controller.py:354
+#: src/web/controllers/admin/tournament_admin_controller.py:335
+#: src/web/templates/admin_event_modal.html:190
+#: src/web/templates/admin_families.html:60
+#: src/web/templates/admin_screens.html:76
+#: src/web/templates/admin_screens.html:102
+#, ai_translation
+msgid "Results entry"
+msgstr "Inschrijving van de resultaten"
+
+#: src/data/util.py:800
+#, ai_translation, fuzzy
+msgid "Parings by player"
+msgstr "parings per speler"
 
 #: src/ffe/action_selector.py:30 src/ffe/action_selector.py:43
 #: src/ffe/action_selector.py:63
@@ -1072,22 +1181,22 @@ msgstr "Toernooien: {tournament_ffe_ids}"
 
 #: src/ffe/action_selector.py:91
 #, ai_translation
-msgid "T *** THE LETTER TO ANSWER TEST ***"
+msgid "T *** THE LETTER TO ANSWER TEST"
 msgstr "T"
 
 #: src/ffe/action_selector.py:92
 #, ai_translation
-msgid "V *** THE LETTER TO ANSWER VISIBLE ***"
+msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
 
 #: src/ffe/action_selector.py:93
 #, ai_translation
-msgid "F *** THE LETTER TO ANSWER FEES ***"
+msgid "F *** THE LETTER TO ANSWER FEES"
 msgstr "F"
 
 #: src/ffe/action_selector.py:94
 #, ai_translation
-msgid "R *** THE LETTER TO ANSWER RULES ***"
+msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
 
 #: src/ffe/action_selector.py:98
@@ -1153,6 +1262,13 @@ msgid "Initializing a session to [{url}]..."
 msgstr "Initialiseren van een sessie naar [{url}]..."
 
 #: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:21
+#: src/web/templates/admin_players/admin_players_filter_clubs.html:21
+#: src/web/templates/admin_players/admin_players_filter_federations.html:21
+#: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22
+#: src/web/templates/admin_players/admin_players_filter_genders.html:22
+#: src/web/templates/admin_players/admin_players_filter_leagues.html:21
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html:23
 #, ai_translation
 msgid "OK"
 msgstr "Oké."
@@ -1328,69 +1444,69 @@ msgstr "ChessEvent connection [{chessevent_uniq_id}] is bijgewerkt."
 msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
 msgstr "ChessEvent-verbinding [{chessevent_uniq_id}] is verwijderd."
 
-#: src/web/controllers/admin/event_admin_controller.py:114
+#: src/web/controllers/admin/event_admin_controller.py:117
 #, ai_translation
 msgid "Tournaments ({num})"
 msgstr "Toernooien ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:118
+#: src/web/controllers/admin/event_admin_controller.py:121
 #, ai_translation, fuzzy
 msgid "Players ({num})"
 msgstr "Timers ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:122
+#: src/web/controllers/admin/event_admin_controller.py:125
 #, ai_translation
 msgid "Screens ({num})"
 msgstr "Schermen ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:126
+#: src/web/controllers/admin/event_admin_controller.py:129
 #, ai_translation
 msgid "Families ({num})"
 msgstr "Gezinnen ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:130
+#: src/web/controllers/admin/event_admin_controller.py:133
 #: src/web/controllers/user/event_user_controller.py:125
 #, ai_translation
 msgid "Rotators ({num})"
 msgstr "Roators ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:134
+#: src/web/controllers/admin/event_admin_controller.py:137
 #, ai_translation
 msgid "Timers ({num})"
 msgstr "Timers ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:138
+#: src/web/controllers/admin/event_admin_controller.py:141
 #, ai_translation
 msgid "ChessEvent ({num})"
 msgstr "Schaken ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:142
+#: src/web/controllers/admin/event_admin_controller.py:145
 #, ai_translation
 msgid "Messages ({num})"
 msgstr "Berichten ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:407
+#: src/web/controllers/admin/event_admin_controller.py:580
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Hernoemen van de database is mislukt: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:414
+#: src/web/controllers/admin/event_admin_controller.py:587
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "Event [{old_uniq_id}] is hernoemd ([{new_uniq_id}]) en bijgewerkt."
 
-#: src/web/controllers/admin/event_admin_controller.py:417
+#: src/web/controllers/admin/event_admin_controller.py:590
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "Event [{uniq_id}] is bijgewerkt."
 
-#: src/web/controllers/admin/event_admin_controller.py:425
+#: src/web/controllers/admin/event_admin_controller.py:598
 #: src/web/controllers/admin/index_admin_controller.py:676
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Event [{uniq_id}] is aangemaakt."
 
-#: src/web/controllers/admin/event_admin_controller.py:435
+#: src/web/controllers/admin/event_admin_controller.py:608
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Event [{uniq_id}] is verwijderd, de database is gearchiveerd ({arch})."
@@ -1416,13 +1532,13 @@ msgstr "Familie [{uniq_id}] bestaat al."
 
 #: src/web/controllers/admin/family_admin_controller.py:130
 #: src/web/controllers/admin/screen_admin_controller.py:90
-#: src/web/controllers/admin/screen_admin_controller.py:257
+#: src/web/controllers/admin/screen_admin_controller.py:258
 #, ai_translation
 msgid "Please choose the tournament."
 msgstr "Kies alstublieft het toernooi."
 
 #: src/web/controllers/admin/family_admin_controller.py:132
-#: src/web/controllers/admin/screen_admin_controller.py:259
+#: src/web/controllers/admin/screen_admin_controller.py:260
 #, ai_translation
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Toernooi [{tournament_id}] niet gevonden."
@@ -1439,9 +1555,9 @@ msgstr "Toernooi [{tournament_id}] niet gevonden."
 #: src/web/controllers/admin/screen_admin_controller.py:154
 #: src/web/controllers/admin/screen_admin_controller.py:167
 #: src/web/controllers/admin/screen_admin_controller.py:172
-#: src/web/controllers/admin/screen_admin_controller.py:261
-#: src/web/controllers/admin/screen_admin_controller.py:266
-#: src/web/controllers/admin/screen_admin_controller.py:271
+#: src/web/controllers/admin/screen_admin_controller.py:262
+#: src/web/controllers/admin/screen_admin_controller.py:267
+#: src/web/controllers/admin/screen_admin_controller.py:272
 #, ai_translation
 msgid "A positive integer is expected."
 msgstr "Een positief geheel getal wordt verwacht."
@@ -1457,20 +1573,8 @@ msgstr "Timer [{timer_id}] niet gevonden."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Het opgeven van het aantal onderdelen en het aantal items per onderdeel is niet mogelijk."
 
-#: src/web/controllers/admin/family_admin_controller.py:270
-#: src/web/controllers/admin/index_admin_controller.py:103
-#: src/web/controllers/admin/screen_admin_controller.py:353
-#: src/web/controllers/admin/tournament_admin_controller.py:329
-#: src/web/templates/admin_event_modal.html:190
-#: src/web/templates/admin_families.html:33
-#: src/web/templates/admin_screens.html:33
-#: src/web/templates/admin_screens.html:102
-#, ai_translation
-msgid "Results entry"
-msgstr "Inschrijving van de resultaten"
-
 #: src/web/controllers/admin/family_admin_controller.py:272
-#: src/web/controllers/admin/screen_admin_controller.py:355
+#: src/web/controllers/admin/screen_admin_controller.py:356
 #: src/web/templates/admin_rotator_modal.html:121
 #, ai_translation
 msgid "pairings by board"
@@ -1478,10 +1582,10 @@ msgstr "paringen per bord"
 
 #: src/web/controllers/admin/family_admin_controller.py:274
 #: src/web/controllers/admin/index_admin_controller.py:105
-#: src/web/controllers/admin/screen_admin_controller.py:357
-#: src/web/controllers/admin/tournament_admin_controller.py:331
-#: src/web/templates/admin_families.html:35
-#: src/web/templates/admin_screens.html:35
+#: src/web/controllers/admin/screen_admin_controller.py:358
+#: src/web/controllers/admin/tournament_admin_controller.py:337
+#: src/web/templates/admin_families.html:62
+#: src/web/templates/admin_screens.html:78
 #: src/web/templates/admin_screens.html:112
 #, ai_translation
 msgid "Pairings by player"
@@ -1522,15 +1626,6 @@ msgstr "Kleur #2 wordt gebruikt {delay_2} minuten voor het begin van de rondes (
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "Kleur #3 wordt gebruikt vanaf het begin van de rondes en voor {delay_3} minuten na (vertraging #3)."
 
-#: src/web/controllers/admin/index_admin_controller.py:104
-#: src/web/controllers/admin/tournament_admin_controller.py:330
-#: src/web/templates/admin_families.html:34
-#: src/web/templates/admin_screens.html:34
-#: src/web/templates/admin_screens.html:107
-#, ai_translation
-msgid "Pairings by board"
-msgstr "Paar per bord"
-
 #: src/web/controllers/admin/index_admin_controller.py:115
 #, ai_translation
 msgid "Use no timer"
@@ -1568,14 +1663,14 @@ msgstr "Toon alle spelers, gekoppeld en ongepaard"
 
 #: src/web/controllers/admin/index_admin_controller.py:179
 #: src/web/controllers/admin/index_admin_controller.py:289
-#: src/web/controllers/admin/screen_admin_controller.py:189
+#: src/web/controllers/admin/screen_admin_controller.py:190
 #, ai_translation
 msgid "URL [{url}] responded code [{code}]."
 msgstr "URL [{url}] beantwoordde code [{code}]."
 
 #: src/web/controllers/admin/index_admin_controller.py:182
 #: src/web/controllers/admin/index_admin_controller.py:293
-#: src/web/controllers/admin/screen_admin_controller.py:193
+#: src/web/controllers/admin/screen_admin_controller.py:194
 #, ai_translation
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr "URL [{url}] reageerde niet (fout: [{error}])."
@@ -1716,6 +1811,80 @@ msgstr "Geen gearchiveerde evenementen."
 msgid "Papi-web configuration"
 msgstr "Papi-webconfiguratie"
 
+# E
+# r
+# o
+# :
+# t
+# k
+# e
+# n
+# s
+# d
+# i
+# f
+# b
+# w
+# [
+# v
+# {
+# _
+# u
+# q
+# }
+# ]
+# c
+# g
+# a
+# m
+# .
+# G
+# Error: tokens differ between [Player [{last_name} {first_name}] has pairings
+# in tournament [{tournament_uniq_id}].] and [Event [{event_uniq_id}]:
+# herstellend toernooi [{tournament_uniq_id}]...]
+#: src/web/controllers/admin/player_admin_controller.py:436
+#: src/web/controllers/admin/player_admin_controller.py:494
+#: src/web/templates/admin_players.html:147
+#, ai_translation, error, fuzzy
+msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
+msgstr "Speler [{last_name} {first_name}] heeft paren in toernooi [{tournament_uniq_id}]."
+
+# Error: tokens differ between [Papi file [{tournament_file}] not found.] and
+# [Toernooi [{tournament_id}] niet gevonden.]
+#: src/web/controllers/admin/player_admin_controller.py:444
+#, ai_translation, fuzzy
+msgid "Papi file [{tournament_file}] not found."
+msgstr "Papi-bestand [{tournament_file}] niet gevonden."
+
+# Error: tokens differ between [FFE licence [{ffe_licence_number}] already
+# present in tournament [{tournament_uniq_id}].] and [Regelsbestand [{file}]
+# niet gevonden voor toernooi [{tournament_uniq_id}].]
+#: src/web/controllers/admin/player_admin_controller.py:448
+#, ai_translation, fuzzy
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr "FFE licentie [{ffe_licence_number}] al aanwezig in toernooi [{tournament_uniq_id}]."
+
+# Error: tokens differ between [Fide ID [{fide_id}] already present in
+# tournament [{tournament_uniq_id}].] and [Regelsbestand [{file}] niet
+# gevonden voor toernooi [{tournament_uniq_id}].]
+#: src/web/controllers/admin/player_admin_controller.py:453
+#, ai_translation, fuzzy
+msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
+msgstr "Fide ID [{fide_id}] al aanwezig in toernooi [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py:466
+#, ai_translation
+msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgstr "Speler [{last_name} {first_name}] is verplaatst van toernooi [{src_tournament_uniq_id}] naar toernooi [{dst_tournament_uniq_id}]."
+
+# Error: tokens differ between [Player [{last_name} {first_name}] has been
+# removed from tournament [{tournament_uniq_id}].] and [Papi-bestand niet
+# gedefinieerd voor toernooi [{tournament_uniq_id}].]
+#: src/web/controllers/admin/player_admin_controller.py:501
+#, ai_translation, fuzzy
+msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
+msgstr "Speler [{last_name} {first_name}] is uit het toernooi verwijderd [{tournament_uniq_id}]."
+
 #: src/web/controllers/admin/rotator_admin_controller.py:74
 #, ai_translation
 msgid "Please enter the rotator ID."
@@ -1763,26 +1932,31 @@ msgstr "Voer de afbeeldingsURL in."
 msgid "Invalid URL [{background_image}]."
 msgstr "Ongeldige URL [{background_image}]."
 
-#: src/web/controllers/admin/screen_admin_controller.py:349
+#: src/web/controllers/admin/screen_admin_controller.py:350
 #, ai_translation
 msgid "{screen_type}-screen"
 msgstr "{screen_type}-scherm"
 
-#: src/web/controllers/admin/screen_admin_controller.py:562
-#: src/web/controllers/admin/screen_admin_controller.py:571
+#: src/web/controllers/admin/screen_admin_controller.py:563
+#: src/web/controllers/admin/screen_admin_controller.py:572
 #, ai_translation
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "Scherm [{screen_uniq_id}] is aangemaakt."
 
-#: src/web/controllers/admin/screen_admin_controller.py:577
+#: src/web/controllers/admin/screen_admin_controller.py:578
 #, ai_translation
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr "Scherm [{screen_uniq_id}] is bijgewerkt."
 
-#: src/web/controllers/admin/screen_admin_controller.py:583
+#: src/web/controllers/admin/screen_admin_controller.py:584
 #, ai_translation
 msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr "Scherm [{screen_uniq_id}] is verwijderd."
+
+#: src/web/controllers/admin/screen_admin_controller.py:692
+#, ai_translation
+msgid "The last set of a screen can not be deleted."
+msgstr "De laatste set van een scherm kan niet worden verwijderd."
 
 #: src/web/controllers/admin/timer_admin_controller.py:83
 #, ai_translation
@@ -1893,32 +2067,32 @@ msgstr "De FFE-id is een positief geheel getal."
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Het wachtwoord van het toernooi op de FSFE website is gemaakt van 10 hoofdletters."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:190
+#: src/web/controllers/admin/tournament_admin_controller.py:192
 #, ai_translation
 msgid "tournament"
 msgstr "toernooi"
 
-#: src/web/controllers/admin/tournament_admin_controller.py:191
+#: src/web/controllers/admin/tournament_admin_controller.py:193
 #, ai_translation
 msgid "New tournament"
 msgstr "Nieuw toernooi"
 
-#: src/web/controllers/admin/tournament_admin_controller.py:360
+#: src/web/controllers/admin/tournament_admin_controller.py:366
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Toernooi [{tournament_uniq_id}] is gemaakt en standaard schermen zijn toegevoegd."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:365
+#: src/web/controllers/admin/tournament_admin_controller.py:371
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created."
 msgstr "Toernooi [{tournament_uniq_id}] is gemaakt."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:374
+#: src/web/controllers/admin/tournament_admin_controller.py:380
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been updated."
 msgstr "Toernooi [{tournament_uniq_id}] is bijgewerkt."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:383
+#: src/web/controllers/admin/tournament_admin_controller.py:389
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr "Toernooi [{tournament_uniq_id}] is geschrapt."
@@ -1969,6 +2143,16 @@ msgstr "Authenticatie succesvol!"
 msgid "Please enter the password."
 msgstr "Voer het wachtwoord in."
 
+#: src/web/controllers/user/tournament_user_controller.py:57
+#, ai_translation, fuzzy
+msgid "Tournament [{tournament_uniq_id}] is not started yet."
+msgstr "Toernooi [{tournament_uniq_id}] wordt gestart."
+
+#: src/web/controllers/user/tournament_user_controller.py:61
+#, ai_translation, fuzzy
+msgid "Tournament [{tournament_uniq_id}] is started."
+msgstr "Toernooi [{tournament_uniq_id}] wordt gestart."
+
 #: src/web/templates/admin_archives.html:11
 #, ai_translation
 msgid "Archived event"
@@ -2008,6 +2192,8 @@ msgstr "Bewerk de eigenschappen van de ChessEvent-verbinding."
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
+#: src/web/templates/admin_players.html:131
+#: src/web/templates/admin_players.html:140
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -2152,6 +2338,7 @@ msgstr "Bijwerken"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
+#: src/web/templates/admin_players.html:160
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -2174,8 +2361,8 @@ msgid "Cancel"
 msgstr "Annuleren"
 
 #: src/web/templates/admin_chessevents.html:10
-#: src/web/templates/admin_events.html:9 src/web/templates/admin_players.html:6
-#: src/web/templates/admin_screens.html:85
+#: src/web/templates/admin_events.html:9 src/web/templates/admin_players.html:8
+#: src/web/templates/admin_screens.html:42
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
 #, ai_translation
@@ -2683,42 +2870,42 @@ msgstr "Indien gedefinieerd wordt het waarschuwingsbericht weergegeven in een sc
 msgid "Screen families"
 msgstr "Schermfamilies"
 
-#: src/web/templates/admin_families.html:15
-#, ai_translation
-msgid "You must create a tournament before creating a screen family."
-msgstr "Je moet een toernooi maken voordat je een schermfamilie aanmaakt."
-
-#: src/web/templates/admin_families.html:29
-#, ai_translation, fuzzy
-msgid "Create a screen family"
-msgstr "Verwijder de schermfamilie."
-
-#: src/web/templates/admin_families.html:33
-#, ai_translation
-msgid "Add a family of screens to enter the results."
-msgstr "Voeg een familie van schermen toe om de resultaten in te voeren."
-
-#: src/web/templates/admin_families.html:34
-#, ai_translation
-msgid "Add a family of screens to display the pairings by board."
-msgstr "Voeg een familie van schermen toe om de paringen per bord weer te geven."
-
-#: src/web/templates/admin_families.html:35
-#, ai_translation
-msgid "Add a family of screens to display the pairings by alphabetical order."
-msgstr "Voeg een groep schermen toe om de paren op alfabetische volgorde weer te geven."
-
-#: src/web/templates/admin_families.html:54
+#: src/web/templates/admin_families.html:13
 #, ai_translation
 msgid "Enable/disable the details of the screen families on the cards below."
 msgstr "Schakel de details van de schermfamilies op de onderstaande kaarten in/uit."
 
-#: src/web/templates/admin_families.html:64
+#: src/web/templates/admin_families.html:23
 #: src/web/templates/admin_rotators.html:23
-#: src/web/templates/admin_screens.html:82
+#: src/web/templates/admin_screens.html:39
 #, ai_translation
 msgid "Details"
 msgstr "Details"
+
+#: src/web/templates/admin_families.html:42
+#, ai_translation
+msgid "You must create a tournament before creating a screen family."
+msgstr "Je moet een toernooi maken voordat je een schermfamilie aanmaakt."
+
+#: src/web/templates/admin_families.html:56
+#, ai_translation, fuzzy
+msgid "Create a screen family"
+msgstr "Verwijder de schermfamilie."
+
+#: src/web/templates/admin_families.html:60
+#, ai_translation
+msgid "Add a family of screens to enter the results."
+msgstr "Voeg een familie van schermen toe om de resultaten in te voeren."
+
+#: src/web/templates/admin_families.html:61
+#, ai_translation
+msgid "Add a family of screens to display the pairings by board."
+msgstr "Voeg een familie van schermen toe om de paringen per bord weer te geven."
+
+#: src/web/templates/admin_families.html:62
+#, ai_translation
+msgid "Add a family of screens to display the pairings by alphabetical order."
+msgstr "Voeg een groep schermen toe om de paren op alfabetische volgorde weer te geven."
 
 #: src/web/templates/admin_families.html:94
 #: src/web/templates/admin_rotator_modal.html:190
@@ -3164,63 +3351,195 @@ msgstr "Geen berichten."
 msgid "Pairings"
 msgstr "met een gewicht van niet meer dan 150 g/m2"
 
-#: src/web/templates/admin_players.html:3
+#: src/web/templates/admin_players.html:5
 #: src/web/templates/admin_screen_card.html:183
 #, ai_translation
 msgid "Players"
 msgstr "Spelers"
 
-#: src/web/templates/admin_players.html:17
+#: src/web/templates/admin_players.html:19
 #, ai_translation, fuzzy
 msgid "Add a player to the event."
 msgstr "Voeg een timer toe aan het evenement."
 
-#: src/web/templates/admin_players.html:26
+#: src/web/templates/admin_players.html:28
 #, ai_translation, fuzzy
 msgid "Create a player"
 msgstr "Een timer aanmaken"
 
-#: src/web/templates/admin_players.html:36
+#: src/web/templates/admin_players.html:46
+#, ai_translation, fuzzy
+msgid "Clear all the filters."
+msgstr "alle spelers"
+
+#: src/web/templates/admin_players.html:50
 #, ai_translation
 msgid "Name *** NAME COLUMN TITLE FOR PLAYERS"
 msgstr "Naam"
 
-#: src/web/templates/admin_players.html:37
+#: src/web/templates/admin_players.html:54
 #, ai_translation
 msgid "Elo *** ELO COLUMN TITLE FOR PLAYERS"
 msgstr "Elo"
 
-#: src/web/templates/admin_players.html:38
+#: src/web/templates/admin_players.html:59
+#, ai_translation, fuzzy
+msgid "Origin *** ORIGIN COLUMN TITLE FOR PLAYERS"
+msgstr "Elo"
+
+#: src/web/templates/admin_players.html:74
 #, ai_translation
 msgid "YOB *** YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS"
 msgstr "YOB"
 
-#: src/web/templates/admin_players.html:39
-#, ai_translation
-msgid "CI *** CHECK-IN COLUMN TITLE FOR PLAYERS"
-msgstr "CI"
+#: src/web/templates/admin_players.html:85
+#, ai_translation, fuzzy
+msgid "Fide *** FIDE COLUMN TITLE FOR PLAYERS"
+msgstr "Betaald"
 
-#: src/web/templates/admin_players.html:40
-#, ai_translation
-msgid "Cat *** CATEGORY COLUMN TITLE FOR PLAYERS"
-msgstr "Kat"
+#: src/web/templates/admin_players.html:88
+#, ai_translation, fuzzy
+msgid "FFE *** FFE COLUMN TITLE FOR PLAYERS"
+msgstr "Elo"
 
-#: src/web/templates/admin_players.html:41
+#: src/web/templates/admin_players.html:95
 #, ai_translation
 msgid "Owed *** OWED COLUMN TITLE FOR PLAYERS"
 msgstr "Auwedunit synonyms for matching user input"
 
-#: src/web/templates/admin_players.html:42
+#: src/web/templates/admin_players.html:96
 #, ai_translation
 msgid "Paid *** PAID COLUMN TITLE FOR PLAYERS"
 msgstr "Betaald"
 
-#: src/web/templates/admin_players.html:43
+#: src/web/templates/admin_players.html:102
 #, ai_translation
 msgid "Comment *** COMMENT COLUMN TITLE FOR PLAYERS"
 msgstr "Opmerking"
 
-#: src/web/templates/admin_players.html:66
+#: src/web/templates/admin_players.html:103
+#, ai_translation, fuzzy
+msgid "History *** HISTORY COLUMN TITLE FOR PLAYERS"
+msgstr "Elo"
+
+#: src/web/templates/admin_players.html:129
+#: src/web/templates/admin_players.html:138
+#, ai_translation, fuzzy
+msgid "Edit the player's properties."
+msgstr "Bewerk de eigenschappen van de timer."
+
+#: src/web/templates/admin_players.html:157
+#, ai_translation, fuzzy
+msgid "Remove the player from the event."
+msgstr "Voeg een timer toe aan het evenement."
+
+#: src/web/templates/admin_players.html:169
+#, ai_translation, fuzzy, python-format
+msgid "Mail: %(mail)s (click to copy to the clipboard)."
+msgstr "%(mail)s (klik om naar het klembord te kopiëren)."
+
+#: src/web/templates/admin_players.html:171
+#, ai_translation, fuzzy
+msgid "No mail defined."
+msgstr "Geen timer gedefinieerd"
+
+# E
+# r
+# o
+# :
+# t
+# k
+# e
+# n
+# s
+# d
+# i
+# f
+# b
+# w
+# [
+# %
+# (
+# p
+# h
+# )
+# c
+# l
+# y
+# a
+# .
+# ]
+# m
+# ë
+#: src/web/templates/admin_players.html:178
+#, ai_translation, error, fuzzy, python-format
+msgid "Phone: %(phone)s (click to copy to the clipboard)."
+msgstr "%(phone)s (klik om naar het klembord te kopiëren)."
+
+#: src/web/templates/admin_players.html:180
+#, ai_translation, fuzzy
+msgid "No phone defined."
+msgstr "Geen timer gedefinieerd"
+
+# Error: tokens differ between [Fide ID: %(fide_id)s (click to copy to the
+# clipboard).] and [%(mail)s (klik om naar het klembord te kopiëren).]
+#: src/web/templates/admin_players.html:219
+#, ai_translation, fuzzy, python-format
+msgid "Fide ID: %(fide_id)s (click to copy to the clipboard)."
+msgstr "Fide ID: %(fide_id)s (klik om te kopiëren naar het klembord)."
+
+#: src/web/templates/admin_players.html:222
+#, ai_translation, fuzzy
+msgid "No Fide ID."
+msgstr "Geen timer gedefinieerd"
+
+# E
+# r
+# o
+# :
+# t
+# k
+# e
+# n
+# s
+# d
+# i
+# f
+# b
+# w
+# [
+# %
+# (
+# p
+# h
+# )
+# c
+# l
+# y
+# a
+# .
+# ]
+# m
+# ë
+# Error: tokens differ between [FFE licence: %(ffe_licence_number)s (click to
+# copy to the clipboard).] and [%(phone)s (klik om naar het klembord te
+# kopiëren).]
+#: src/web/templates/admin_players.html:233
+#, ai_translation, error, fuzzy, python-format
+msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+msgstr "FFE licentie: %(ffe_licence_number)s (klik om te kopiëren naar het klembord)."
+
+#: src/web/templates/admin_players.html:237 src/web/templates/macros.j2:146
+#, ai_translation, fuzzy, python-format
+msgid "Unknown FFE Licence type [%(ffe_licence)s]."
+msgstr "Onbekend FFE-licentietype [%(ffe_licence)s]"
+
+#: src/web/templates/admin_players.html:260
+#, ai_translation, fuzzy
+msgid "Change the player's tournament."
+msgstr "Kloon het toernooi."
+
+#: src/web/templates/admin_players.html:292
 #, ai_translation, fuzzy
 msgid "No players."
 msgstr "Spelers"
@@ -3745,55 +4064,55 @@ msgstr "Naam: standaard"
 msgid "Screens"
 msgstr "Schermen"
 
-#: src/web/templates/admin_screens.html:15
-#, ai_translation
-msgid "You must create a tournament before creating screens."
-msgstr "Je moet een toernooi maken voordat je schermen maakt."
-
-#: src/web/templates/admin_screens.html:29
-#, ai_translation, fuzzy
-msgid "Create a screen"
-msgstr "Een agendanotitie aanmaken"
-
-#: src/web/templates/admin_screens.html:33
-#, ai_translation, fuzzy
-msgid "Add a screen to enter the results."
-msgstr "Voeg een familie van schermen toe om de resultaten in te voeren."
-
-#: src/web/templates/admin_screens.html:34
-#, ai_translation, fuzzy
-msgid "Add a screen to display the pairings by board."
-msgstr "Voeg een familie van schermen toe om de paringen per bord weer te geven."
-
-#: src/web/templates/admin_screens.html:35
-#, ai_translation, fuzzy
-msgid "Add a screen to display the pairings by alphabetical order."
-msgstr "Voeg een groep schermen toe om de paren op alfabetische volgorde weer te geven."
-
-#: src/web/templates/admin_screens.html:36
-#, ai_translation, fuzzy
-msgid "Add a screen to display the last results."
-msgstr "Voeg een scherm toe aan het evenement."
-
-#: src/web/templates/admin_screens.html:37
-#, ai_translation, fuzzy
-msgid "Add a screen to display an image."
-msgstr "Voeg een scherm toe aan het evenement."
-
-#: src/web/templates/admin_screens.html:56
+#: src/web/templates/admin_screens.html:13
 #, ai_translation
 msgid "Show/hide the screens created from screen families."
 msgstr "Toon/verberg de schermen die zijn gemaakt uit schermfamilies."
 
-#: src/web/templates/admin_screens.html:66
+#: src/web/templates/admin_screens.html:23
 #, ai_translation
 msgid "Families"
 msgstr "Gezinnen"
 
-#: src/web/templates/admin_screens.html:72
+#: src/web/templates/admin_screens.html:29
 #, ai_translation
 msgid "Enable/disable the details of the screens on the cards below."
 msgstr "Schakel de details van de schermen op de onderstaande kaarten in/uit."
+
+#: src/web/templates/admin_screens.html:58
+#, ai_translation
+msgid "You must create a tournament before creating screens."
+msgstr "Je moet een toernooi maken voordat je schermen maakt."
+
+#: src/web/templates/admin_screens.html:72
+#, ai_translation, fuzzy
+msgid "Create a screen"
+msgstr "Een agendanotitie aanmaken"
+
+#: src/web/templates/admin_screens.html:76
+#, ai_translation, fuzzy
+msgid "Add a screen to enter the results."
+msgstr "Voeg een familie van schermen toe om de resultaten in te voeren."
+
+#: src/web/templates/admin_screens.html:77
+#, ai_translation, fuzzy
+msgid "Add a screen to display the pairings by board."
+msgstr "Voeg een familie van schermen toe om de paringen per bord weer te geven."
+
+#: src/web/templates/admin_screens.html:78
+#, ai_translation, fuzzy
+msgid "Add a screen to display the pairings by alphabetical order."
+msgstr "Voeg een groep schermen toe om de paren op alfabetische volgorde weer te geven."
+
+#: src/web/templates/admin_screens.html:79
+#, ai_translation, fuzzy
+msgid "Add a screen to display the last results."
+msgstr "Voeg een scherm toe aan het evenement."
+
+#: src/web/templates/admin_screens.html:80
+#, ai_translation, fuzzy
+msgid "Add a screen to display an image."
+msgstr "Voeg een scherm toe aan het evenement."
 
 #: src/web/templates/admin_screens.html:103
 #, ai_translation
@@ -4381,55 +4700,90 @@ msgstr "Deze schermfamilie is privé (niet zichtbaar door de gebruikers)."
 msgid "This rotator is private (not visible by the users)."
 msgstr "Deze rotator is privé (niet zichtbaar door de gebruikers)."
 
-#: src/web/templates/macros.j2:73
+#: src/web/templates/macros.j2:78
 #, ai_translation
 msgid "The tournament is not started yet."
 msgstr "Het toernooi is nog niet begonnen."
 
-#: src/web/templates/macros.j2:76
+#: src/web/templates/macros.j2:81
 #, ai_translation, python-format
 msgid "Round %(round)d is running."
 msgstr "Ronde %(round)d draait."
 
-#: src/web/templates/macros.j2:79
+#: src/web/templates/macros.j2:84
 #, ai_translation, python-format
 msgid "Round #%(round)d is finished."
 msgstr "Ronde #%(round)d is voltooid."
 
-#: src/web/templates/macros.j2:82
+#: src/web/templates/macros.j2:87
 #, ai_translation
 msgid "The tournament is finished."
 msgstr "Het toernooi is afgelopen."
 
-#: src/web/templates/macros.j2:96
+#: src/web/templates/macros.j2:102
 #, ai_translation
 msgid "Boards screens show pairings by board number."
 msgstr "Schermen tonen paren per bordnummer."
 
-#: src/web/templates/macros.j2:99
+#: src/web/templates/macros.j2:105
 #, ai_translation
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr "Invoerschermen tonen paren per bordnummer en laten mensen toe om resultaten in te voeren."
 
-#: src/web/templates/macros.j2:102
+#: src/web/templates/macros.j2:108
 #, ai_translation
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Spelers schermen tonen paren op alfabetische volgorde."
 
-#: src/web/templates/macros.j2:105
+#: src/web/templates/macros.j2:111
 #, ai_translation
 msgid "Results screens show the last results (most recent first)."
 msgstr "Resultatenschermen tonen de laatste resultaten (meest recente eerste)."
 
-#: src/web/templates/macros.j2:108
+#: src/web/templates/macros.j2:114
 #, ai_translation
 msgid "Image screens show an image (local or remote)."
 msgstr "Afbeeldingsschermen tonen een afbeelding (lokaal of op afstand)."
 
-#: src/web/templates/macros.j2:125
+#: src/web/templates/macros.j2:132
 #, ai_translation
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator draait automatisch tussen meerdere schermen."
+
+#: src/web/templates/macros.j2:212
+#, ai_translation, fuzzy
+msgid "Sort the players by name."
+msgstr "Kloon het toernooi."
+
+#: src/web/templates/macros.j2:214
+#, ai_translation
+msgid "Sort the players by rating (most rated first)."
+msgstr "Sorteer de spelers op rating (meest gewaardeerd als eerste)."
+
+#: src/web/templates/macros.j2:216
+#, ai_translation
+msgid "Sort the players by rating (less rated first)."
+msgstr "Sorteer de spelers op rating (minder gewaardeerd als eerste)."
+
+#: src/web/templates/macros.j2:218
+#, ai_translation, fuzzy
+msgid "Sort the players by origin (federation, league, club)."
+msgstr "De spelersschermen tonen/verbergen."
+
+#: src/web/templates/macros.j2:220
+#, ai_translation
+msgid "Sort the players by year of birth (oldest first)."
+msgstr "Sorteer de spelers op het geboortejaar (oudste eerst)."
+
+#: src/web/templates/macros.j2:222
+#, ai_translation
+msgid "Sort the players by year of birth (youngest first)."
+msgstr "Sorteer de spelers op het geboortejaar (jongste eerst)."
+
+#: src/web/templates/macros.j2:224
+#, ai_translation, fuzzy
+msgid "Sort the players by tournament."
+msgstr "Kloon het toernooi."
 
 #: src/web/templates/user_boards_screen_board_row_player_cell.html:15
 #, ai_translation
@@ -4648,76 +5002,116 @@ msgstr "Maximum aantal resultaten: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Maximum aantal resultaten: onbeperkt"
 
-#: utils/i18n/i18n_update.py:148
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:8
+#, ai_translation, fuzzy
+msgid "Filter the check-in status."
+msgstr "Verwijder de timer."
+
+#: src/web/templates/admin_players/admin_players_filter_clubs.html:7
+#, ai_translation
+msgid "Filter the clubs."
+msgstr "Filter de clubs."
+
+#: src/web/templates/admin_players/admin_players_filter_federations.html:7
+#, ai_translation, fuzzy
+msgid "Filter the federations."
+msgstr "Verwijder de rotator."
+
+#: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:8
+#, ai_translation
+msgid "Filter the licences."
+msgstr "Filter de licenties."
+
+#: src/web/templates/admin_players/admin_players_filter_genders.html:8
+#, ai_translation, fuzzy
+msgid "Filter the genders."
+msgstr "Verwijder de timer."
+
+#: src/web/templates/admin_players/admin_players_filter_leagues.html:7
+#, ai_translation
+msgid "Filter the leagues."
+msgstr "Filter de competities."
+
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html:2
+#, ai_translation, fuzzy
+msgid "Tournament *** TOURNAMENT COLUMN TITLE FOR PLAYERS"
+msgstr "Naam"
+
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html:9
+#, ai_translation, fuzzy
+msgid "Filter the tournaments."
+msgstr "Verwijder het toernooi."
+
+#: utils/i18n/i18n_update.py:208
 #, ai_translation
 msgid "Return to documentation summary"
 msgstr "Terug naar documentatiesamenvatting"
 
-#: utils/i18n/i18n_update.py:149
+#: utils/i18n/i18n_update.py:209
 #, ai_translation
-msgid "English translation *** TRANSLATE ! ***"
+msgid "English translation *** TRANSLATE !"
 msgstr "Engelse vertaling"
 
-#: utils/i18n/i18n_update.py:152
+#: utils/i18n/i18n_update.py:212
 #, ai_translation
 msgid "View file {file}"
 msgstr "Bestand {file} tonen"
 
-#: utils/i18n/i18n_update.py:154
+#: utils/i18n/i18n_update.py:214
 #, ai_translation
 msgid "Summary"
 msgstr "Samenvatting"
 
-#: utils/i18n/i18n_update.py:158 utils/i18n/i18n_update.py:168
+#: utils/i18n/i18n_update.py:218 utils/i18n/i18n_update.py:228
 #, ai_translation
 msgid "Empty mandatory messages"
 msgstr "Lege verplichte berichten"
 
-#: utils/i18n/i18n_update.py:161 utils/i18n/i18n_update.py:183
+#: utils/i18n/i18n_update.py:221 utils/i18n/i18n_update.py:243
 #, ai_translation
 msgid "Empty messages"
 msgstr "Lege berichten"
 
-#: utils/i18n/i18n_update.py:164 utils/i18n/i18n_update.py:206
+#: utils/i18n/i18n_update.py:224 utils/i18n/i18n_update.py:266
 #, ai_translation
 msgid "Message flagged [{flag}]"
 msgstr "Bericht gemarkeerd [{flag}]"
 
-#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
-#: utils/i18n/i18n_update.py:208
+#: utils/i18n/i18n_update.py:230 utils/i18n/i18n_update.py:248
+#: utils/i18n/i18n_update.py:268
 #, ai_translation
 msgid "Message ID"
 msgstr "Bericht-id"
 
-#: utils/i18n/i18n_update.py:170 utils/i18n/i18n_update.py:188
-#: utils/i18n/i18n_update.py:208
+#: utils/i18n/i18n_update.py:230 utils/i18n/i18n_update.py:248
+#: utils/i18n/i18n_update.py:268
 #, ai_translation
 msgid "Locations"
 msgstr "Locaties"
 
-#: utils/i18n/i18n_update.py:177 utils/i18n/i18n_update.py:195
-#: utils/i18n/i18n_update.py:216 utils/i18n/i18n_update.py:219
+#: utils/i18n/i18n_update.py:237 utils/i18n/i18n_update.py:255
+#: utils/i18n/i18n_update.py:276 utils/i18n/i18n_update.py:279
 #, ai_translation
 msgid "Singular:"
 msgstr "Enkelvoud:"
 
-#: utils/i18n/i18n_update.py:178 utils/i18n/i18n_update.py:196
-#: utils/i18n/i18n_update.py:217 utils/i18n/i18n_update.py:220
+#: utils/i18n/i18n_update.py:238 utils/i18n/i18n_update.py:256
+#: utils/i18n/i18n_update.py:277 utils/i18n/i18n_update.py:280
 #, ai_translation
 msgid "Plural:"
 msgstr "Meervoud:"
 
-#: utils/i18n/i18n_update.py:186
+#: utils/i18n/i18n_update.py:246
 #, ai_translation
 msgid "Empty messages are not shown for the default language."
 msgstr "Lege berichten worden niet getoond voor de standaardtaal."
 
-#: utils/i18n/i18n_update.py:202
+#: utils/i18n/i18n_update.py:262
 #, ai_translation
 msgid "Flagged messages"
 msgstr "Gemarkeerde berichten"
 
-#: utils/i18n/i18n_update.py:208
+#: utils/i18n/i18n_update.py:268
 #, ai_translation
 msgid "Translation"
 msgstr "Vertaling"
@@ -4753,5 +5147,123 @@ msgstr "Vertaling"
 #~ msgstr ""
 
 #~ msgid "Comment"
+#~ msgstr ""
+
+#~ msgid "Cat *** CATEGORY COLUMN TITLE FOR PLAYERS"
+#~ msgstr "Kat"
+
+#~ msgid "ID *** ID COLUMN TITLE FOR PLAYERS"
+#~ msgstr "Betaald"
+
+#~ msgid "Option not set, by default [{ffe_upload_delay}]."
+#~ msgstr "Optie niet ingesteld, standaard [{ffe_upload_delay}]."
+
+#~ msgid "Locale set to [{locale}]."
+#~ msgstr "Lokaal ingesteld op [{locale}]."
+
+#~ msgid "Unknown locale [{locale}]."
+#~ msgstr "Onbekende locale [{locale}]."
+
+#~ msgid "Apply"
+#~ msgstr ""
+
+#~ msgid "Federation *** FEDERATION COLUMN TITLE FOR PLAYERS"
+#~ msgstr "Auwedunit synonyms for matching user input"
+
+#~ msgid "Gender *** GENDER COLUMN TITLE FOR PLAYERS"
+#~ msgstr "Auwedunit synonyms for matching user input"
+
+#~ msgid "- *** NAME FOR FFE LICENCE NONE"
+#~ msgstr "Geen FFE-licentie"
+
+#~ msgid "- *** SHORT NAME FOR FFE LICENCE NONE"
+#~ msgstr ""
+
+#~ msgid "N *** SHORT NAME FOR FFE LICENCE N"
+#~ msgstr ""
+
+#~ msgid "A *** SHORT NAME FOR FFE LICENCE A"
+#~ msgstr ""
+
+#~ msgid "B *** SHORT NAME FOR FFE LICENCE B"
+#~ msgstr ""
+
+#~ msgid "No FFE Licence"
+#~ msgstr "Geen FFE-licentie"
+
+#~ msgid "Expired FFE Licence"
+#~ msgstr "Geen FFE-licentie"
+
+#~ msgid "FFE Licence A (competition)"
+#~ msgstr "FFE Licentie A (wedstrijd)"
+
+#~ msgid "FFE Licence B (leisure)"
+#~ msgstr "FFE Licentie B (reis)"
+
+#~ msgid "A *** NAME FOR FFE LICENCE A"
+#~ msgstr "Geen FFE-licentie"
+
+#~ msgid "B *** NAME FOR FFE LICENCE B"
+#~ msgstr "Geen FFE-licentie"
+
+#~ msgid "FFE licence A (compétition)"
+#~ msgstr ""
+
+#~ msgid "Check-in *** CHECK-IN COLUMN TITLE FOR PLAYERS"
+#~ msgstr "CI"
+
+#~ msgid "# *** NUMBER COLUMN TITLE FOR PLAYERS"
+#~ msgstr "Naam"
+
+#~ msgid "Licence *** LICENCE COLUMN TITLE FOR PLAYERS"
+#~ msgstr "CI"
+
+#~ msgid "FFE *** FFE COLUMN TITLE FOR PLAYERS"
+#~ msgstr "Elo"
+
+# Error: tokens differ between [Players (%(num)d/%(total)d)] and [Timers
+# ({num})]
+#~ msgid "Players (%(num)d/%(total)d)"
+#~ msgstr ""
+
+#~ msgid "Fide"
+#~ msgstr ""
+
+# Error: tokens differ between [%(fide_id)s (click to copy to the clipboard).]
+# and [%(mail)s (klik om naar het klembord te kopiëren).]
+#~ msgid "%(fide_id)s (click to copy to the clipboard)."
+#~ msgstr ""
+
+# E
+# r
+# o
+# :
+# t
+# k
+# e
+# n
+# s
+# d
+# i
+# f
+# b
+# w
+# [
+# %
+# (
+# p
+# h
+# )
+# c
+# l
+# y
+# a
+# .
+# ]
+# m
+# ë
+# Error: tokens differ between [%(ffe_licence_number)s (click to copy to the
+# clipboard).] and [%(phone)s (klik om naar het klembord te kopiëren).]
+#~ msgid "%(ffe_licence_number)s (click to copy to the clipboard)."
 #~ msgstr ""
 

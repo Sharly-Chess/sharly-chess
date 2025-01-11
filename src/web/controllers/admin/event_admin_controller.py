@@ -16,6 +16,8 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
+from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
+from data.util import PlayerGender, PlayerFFELicence
 from database.sqlite import EventDatabase
 from database.store import StoredEvent
 from web.controllers.admin.index_admin_controller import AdminWebContext, AbstractIndexAdminController
@@ -77,6 +79,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
             cls,
             web_context: EventAdminWebContext,
     ) -> dict[str, Any]:
+        admin_event: Event = web_context.admin_event
         logging_levels: dict[int, dict[str, str]] = {
             logging.DEBUG: {
                 'name': 'DEBUG',
@@ -106,67 +109,211 @@ class AbstractEventAdminController(AbstractIndexAdminController):
         }
         nav_tabs: dict[str, dict[str, str]] = {
             'config': {
-                'title': web_context.admin_event.uniq_id,
+                'title': admin_event.uniq_id,
                 'template': 'admin_event_config.html',
                 'icon_class': 'bi-gear-fill',
             },
             'tournaments': {
-                'title': _('Tournaments ({num})').format(num=len(web_context.admin_event.tournaments_by_id) or '-'),
+                'title': _('Tournaments ({num})').format(num=len(admin_event.tournaments_by_id) or '-'),
                 'template': 'admin_tournaments.html',
             },
+            'players': {
+                'title': _('Players ({num})').format(num=admin_event.players_number or '-'),
+                'template': 'admin_players.html',
+            },
             'screens': {
-                'title': _('Screens ({num})').format(num=len(web_context.admin_event.basic_screens_by_id) or '-'),
+                'title': _('Screens ({num})').format(num=len(admin_event.basic_screens_by_id) or '-'),
                 'template': 'admin_screens.html',
             },
             'families': {
-                'title': _('Families ({num})').format(num=len(web_context.admin_event.families_by_id) or '-'),
+                'title': _('Families ({num})').format(num=len(admin_event.families_by_id) or '-'),
                 'template': 'admin_families.html',
             },
             'rotators': {
-                'title': _('Rotators ({num})').format(num=len(web_context.admin_event.rotators_by_id) or '-'),
+                'title': _('Rotators ({num})').format(num=len(admin_event.rotators_by_id) or '-'),
                 'template': 'admin_rotators.html',
             },
             'timers': {
-                'title': _('Timers ({num})').format(num=len(web_context.admin_event.timers_by_id) or '-'),
+                'title': _('Timers ({num})').format(num=len(admin_event.timers_by_id) or '-'),
                 'template': 'admin_timers.html',
             },
             'chessevents': {
-                'title': _('ChessEvent ({num})').format(num=len(web_context.admin_event.chessevents_by_id) or '-'),
+                'title': _('ChessEvent ({num})').format(num=len(admin_event.chessevents_by_id) or '-'),
                 'template': 'admin_chessevents.html',
             },
             'messages': {
-                'title': _('Messages ({num})').format(num=len(web_context.admin_event.messages) or '-'),
+                'title': _('Messages ({num})').format(num=len(admin_event.messages) or '-'),
                 'template': 'admin_messages.html',
             },
         }
         if not web_context.admin_event_tab:
             web_context.admin_event_tab = list(nav_tabs.keys())[0]
-        if web_context.admin_event.criticals:
+        if admin_event.criticals:
             nav_tabs['messages']['class'] = logging_levels[logging.CRITICAL]['class']
             nav_tabs['messages']['icon_class'] = logging_levels[logging.CRITICAL]['icon_class']
-        elif web_context.admin_event.errors:
+        elif admin_event.errors:
             nav_tabs['messages']['class'] = logging_levels[logging.ERROR]['class']
             nav_tabs['messages']['icon_class'] = logging_levels[logging.ERROR]['icon_class']
-        elif web_context.admin_event.warnings:
+        elif admin_event.warnings:
             nav_tabs['messages']['class'] = logging_levels[logging.WARNING]['class']
             nav_tabs['messages']['icon_class'] = logging_levels[logging.WARNING]['icon_class']
-        return web_context.template_context | {
+        template_context: dict[str, Any] = web_context.template_context | {
             'messages': Message.messages(web_context.request),
             'logging_levels': logging_levels,
             'nav_tabs': nav_tabs,
             'admin_columns': SessionHandler.get_session_admin_columns(web_context.request),
-            'show_family_screens_on_screen_list': SessionHandler.get_session_show_family_screens_on_screen_list(
-                web_context.request),
-            'show_details_on_screen_list': SessionHandler.get_session_show_details_on_screen_list(
-                web_context.request),
-            'show_details_on_family_list': SessionHandler.get_session_show_details_on_family_list(
-                web_context.request),
-            'show_details_on_rotator_list': SessionHandler.get_session_show_details_on_rotator_list(
-                web_context.request),
-            'screen_types_on_screen_list': SessionHandler.get_session_screen_types_on_screen_list(
-                web_context.request),
-            'min_logging_level': SessionHandler.get_session_min_logging_level(web_context.request),
         }
+        match web_context.admin_event_tab:
+            case 'config':
+                pass
+            case 'tournaments':
+                pass
+            case 'players':
+                # The federations that will be shown on the federation select list
+                players_federations: list[FederationTuple] = sorted({
+                    player.federation_tuple for player in web_context.admin_event.players_by_id.values()})
+                # The federations that will be selected on the federation select list and used to filter the players
+                filter_federations: list[FederationTuple] = [
+                    f for f in SessionHandler.get_session_admin_players_filter_federations(web_context.request)
+                    if f in players_federations
+                ]
+                # The leagues that will be shown on the league select list
+                players_leagues: list[LeagueTuple] = sorted({
+                    player.league_tuple for player in web_context.admin_event.players_by_id.values()
+                    if not filter_federations or player.federation_tuple in filter_federations
+                })
+                # The leagues that will be selected on the league select list and used to filter the players
+                filter_leagues: list[LeagueTuple] = [
+                    l for l in SessionHandler.get_session_admin_players_filter_leagues(web_context.request)
+                    if l in players_leagues
+                ]
+                # The clubs that will be shown on the club select list
+                players_clubs: list[ClubTuple] = sorted({
+                    player.club_tuple for player in web_context.admin_event.players_by_id.values()
+                    if not filter_leagues or player.league_tuple in filter_leagues
+                })
+                # The clubs that will be selected on the club select list and used to filter the players
+                filter_clubs: list[ClubTuple] = [
+                    c for c in SessionHandler.get_session_admin_players_filter_clubs(web_context.request)
+                    if c in players_clubs
+                ]
+                # The genders that will be shown on the gender select list
+                players_genders: list[PlayerGender] = sorted(
+                    {player.gender for player in web_context.admin_event.players_by_id.values()})
+                # The genders that will be selected on the gender select list and used to filter the players
+                filter_genders: list[PlayerGender] = SessionHandler.get_session_admin_players_filter_genders(
+                    web_context.request)
+                # The years or birth that will be shown on the year of birth select list
+                players_yobs: list[str] = sorted(
+                    {player.year_of_birth for player in web_context.admin_event.players_by_id.values()})
+                # The licences that will be shown on the licence select list
+                players_licences: list[PlayerFFELicence] = sorted(
+                    {player.ffe_licence for player in admin_event.players_by_id.values()})
+                # The licences that will be selected on the licence select list and used to filter the players
+                filter_licences: list[PlayerFFELicence] = SessionHandler.get_session_admin_players_filter_licences(
+                    web_context.request)
+                # The check-in statuses that will be selected on the check-in status select list and used to filter the players
+                players_check_ins: list[bool] = sorted(
+                    {player.check_in for player in web_context.admin_event.players_by_id.values()})
+                # The check-in statuses that will be selected on the check-in status select list and used to filter the players
+                filter_check_ins: list[bool] = SessionHandler.get_session_admin_players_filter_check_ins(
+                    web_context.request)
+                # The tournaments that will be selected on the tournament select list and used to filter the players
+                filter_tournaments: list[int] = SessionHandler.get_session_admin_players_filter_tournaments(
+                    web_context.request)
+                match SessionHandler.get_session_admin_players_sort(web_context.request):
+                    case 'alpha':
+                        sort_key = lambda player: (player.last_name, player.first_name)
+                    case 'rating_desc':
+                        sort_key = lambda player: (-player.rating, player.last_name, player.first_name)
+                    case 'rating_asc':
+                        sort_key = lambda player: (player.rating, player.last_name, player.first_name)
+                    case 'yob_desc':
+                        sort_key = lambda player: (-player.year_of_birth, player.last_name, player.first_name)
+                    case 'yob_asc':
+                        sort_key = lambda player: (player.year_of_birth, player.last_name, player.first_name)
+                    case 'origin':
+                        sort_key = lambda player: (
+                        player.federation, player.league, player.club, player.last_name, player.first_name)
+                    case 'tournament':
+                        sort_key = lambda player: (
+                            web_context.admin_event.tournaments_by_id[player.tournament_id].uniq_id, -player.rating,
+                            player.last_name, player.first_name
+                        )
+                    case _:
+                        raise ValueError(f'sort={SessionHandler.get_session_admin_players_sort(web_context.request)}')
+                #0 real players only
+                #1 all or no genders selected, or player matches
+                #2 all or no licences selected, or player matches
+                #3 all or no check_ins selected, or player matches
+                #4 less than two tournaments, all or no tournaments selected, or player matches
+                #5 less than two federations, all or no federations selected, or player matches
+                #6 less than two leagues, all or no leagues selected, or player matches
+                #7 less than two clubs, all or no clubs selected, or player matches
+                players: list[Player] = sorted([
+                    player for player in web_context.admin_event.players_by_id.values()
+                    if (player.ref_id > 1 and len(filter_genders) in [0, 3] or player.gender.value in filter_genders) \
+                       and (len(filter_licences) in [0, len(players_licences)] or player.ffe_licence in filter_licences) \
+                       and (len(filter_check_ins) in [0, 2] or player.check_in in filter_check_ins) \
+                       and (len(filter_tournaments) in [0, len(web_context.admin_event.tournaments_by_id)] or player.tournament_id in filter_tournaments) \
+                       and (len(filter_federations) in [0, len(players_federations)] or player.federation_tuple in filter_federations) \
+                       and (len(filter_leagues) in [0, len(players_leagues)] or player.league_tuple in filter_leagues) \
+                       and (len(filter_clubs) in [0, len(players_clubs)] or player.club_tuple in filter_clubs)
+                    ], key=sort_key)
+                template_context |= {
+                    'admin_players': players,
+                    'admin_players_sort': SessionHandler.get_session_admin_players_sort(web_context.request),
+                    'admin_players_federations': players_federations,
+                    'admin_players_leagues': players_leagues,
+                    'admin_players_clubs': players_clubs,
+                    'admin_players_yobs': players_yobs,
+                    'admin_players_genders': players_genders,
+                    'admin_players_licences': players_licences,
+                    'admin_players_check_ins': players_check_ins,
+                    'admin_players_filter_federations': SessionHandler.get_session_admin_players_filter_federations(
+                        web_context.request),
+                    'admin_players_filter_leagues': SessionHandler.get_session_admin_players_filter_leagues(
+                        web_context.request),
+                    'admin_players_filter_clubs': SessionHandler.get_session_admin_players_filter_clubs(
+                        web_context.request),
+                    'admin_players_filter_genders': SessionHandler.get_session_admin_players_filter_genders(
+                        web_context.request),
+                    'admin_players_filter_licences': SessionHandler.get_session_admin_players_filter_licences(
+                        web_context.request),
+                    'admin_players_filter_check_ins': SessionHandler.get_session_admin_players_filter_check_ins(
+                        web_context.request),
+                    'admin_players_filter_tournaments': SessionHandler.get_session_admin_players_filter_tournaments(
+                        web_context.request),
+                }
+            case 'screens':
+                template_context |= {
+                    'admin_screens_show_family_screens': SessionHandler.get_session_admin_screens_show_family_screens(
+                        web_context.request),
+                    'admin_screens_show_details': SessionHandler.get_session_admin_screens_show_details(
+                        web_context.request),
+                    'admin_screens_screen_types': SessionHandler.get_session_admin_screens_screen_types(
+                        web_context.request),
+                }
+            case 'families':
+                template_context |= {
+                    'admin_families_show_details': SessionHandler.get_session_admin_families_show_details(
+                        web_context.request),
+                }
+            case 'rotators':
+                template_context |= {
+                    'admin_rotators_show_details': SessionHandler.get_session_admin_rotators_show_details(
+                        web_context.request),
+                }
+            case 'chessevent':
+                pass
+            case 'messages':
+                template_context |= {
+                    'admin_messages_min_logging_level': SessionHandler.get_session_admin_messages_min_logging_level(
+                        web_context.request),
+                }
+            case _:
+                raise ValueError(f'admin_event_tab={web_context.admin_event_tab}')
+        return template_context
 
     @classmethod
     def _admin_event_render(
@@ -181,7 +328,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
 class EventAdminController(AbstractEventAdminController):
 
     @classmethod
-    def _admin_event_config_render(
+    def _admin_event_tab_render(
             cls,
             request: HTMXRequest,
             event_uniq_id: str,
@@ -228,16 +375,6 @@ class EventAdminController(AbstractEventAdminController):
             admin_event_tab: str | None = None,
             admin_columns: int | None = None,
             locale: str | None = None,
-            show_family_screens_on_screen_list: bool | None = None,
-            show_details_on_screen_list: bool | None = None,
-            show_details_on_family_list: bool | None = None,
-            show_details_on_rotator_list: bool | None = None,
-            show_boards_screens_on_screen_list: bool | None = None,
-            show_input_screens_on_screen_list: bool | None = None,
-            show_players_screens_on_screen_list: bool | None = None,
-            show_results_screens_on_screen_list: bool | None = None,
-            show_image_screens_on_screen_list: bool | None = None,
-            min_logging_level: int | None = None,
             modal: str | None = None,
             action: str | None = None,
             data: dict[str, str] | None = None,
@@ -245,36 +382,7 @@ class EventAdminController(AbstractEventAdminController):
     ) -> Template | ClientRedirect:
         self.set_locale(request, locale)
         self.set_admin_columns(request, admin_columns)
-        if show_family_screens_on_screen_list is not None:
-            SessionHandler.set_session_show_family_screens_on_screen_list(request, show_family_screens_on_screen_list)
-        if show_details_on_screen_list is not None:
-            SessionHandler.set_session_show_details_on_screen_list(request, show_details_on_screen_list)
-        if show_details_on_family_list is not None:
-            SessionHandler.set_session_show_details_on_family_list(request, show_details_on_family_list)
-        if show_details_on_rotator_list is not None:
-            SessionHandler.set_session_show_details_on_rotator_list(request, show_details_on_rotator_list)
-        screen_types: list[str] = SessionHandler.get_session_screen_types_on_screen_list(request)
-        for screen_type, param in {
-            'boards': show_boards_screens_on_screen_list,
-            'input': show_input_screens_on_screen_list,
-            'players': show_players_screens_on_screen_list,
-            'results': show_results_screens_on_screen_list,
-            'image': show_image_screens_on_screen_list,
-        }.items():
-            if param is not None:
-                if param:
-                    screen_types.append(screen_type)
-                else:
-                    screen_types.remove(screen_type)
-                SessionHandler.set_session_screen_types_on_screen_list(request, screen_types)
-                continue
-        if min_logging_level is not None:
-            try:
-                SessionHandler.set_session_min_logging_level(request, min_logging_level)
-            except ValueError:
-                return AbstractController.redirect_error(
-                    request, f'Invalid log level [{min_logging_level}].')
-        return self._admin_event_config_render(
+        return self._admin_event_tab_render(
             request, admin_event_tab=admin_event_tab, event_uniq_id=event_uniq_id, modal=modal, action=action,
             data=data, errors=errors)
 
@@ -288,16 +396,6 @@ class EventAdminController(AbstractEventAdminController):
             event_uniq_id: str,
             admin_columns: int | None,
             locale: str | None,
-            show_family_screens_on_screen_list: bool | None,
-            show_details_on_screen_list: bool | None,
-            show_details_on_family_list: bool | None,
-            show_details_on_rotator_list: bool | None,
-            show_boards_screens_on_screen_list: bool | None,
-            show_input_screens_on_screen_list: bool | None,
-            show_players_screens_on_screen_list: bool | None,
-            show_results_screens_on_screen_list: bool | None,
-            show_image_screens_on_screen_list: bool | None,
-            min_logging_level: int | None,
     ) -> Template | ClientRedirect:
         return self._admin_event(
             request,
@@ -305,16 +403,6 @@ class EventAdminController(AbstractEventAdminController):
             admin_event_tab=None,
             admin_columns=admin_columns,
             locale=locale,
-            show_family_screens_on_screen_list=show_family_screens_on_screen_list,
-            show_details_on_screen_list=show_details_on_screen_list,
-            show_details_on_family_list=show_details_on_family_list,
-            show_details_on_rotator_list=show_details_on_rotator_list,
-            show_boards_screens_on_screen_list=show_boards_screens_on_screen_list,
-            show_input_screens_on_screen_list=show_input_screens_on_screen_list,
-            show_players_screens_on_screen_list=show_players_screens_on_screen_list,
-            show_results_screens_on_screen_list=show_results_screens_on_screen_list,
-            show_image_screens_on_screen_list=show_image_screens_on_screen_list,
-            min_logging_level=min_logging_level,
         )
 
     @get(
@@ -328,33 +416,122 @@ class EventAdminController(AbstractEventAdminController):
             admin_event_tab: str,
             admin_columns: int | None,
             locale: str | None,
-            show_family_screens_on_screen_list: bool | None,
-            show_details_on_screen_list: bool | None,
-            show_details_on_family_list: bool | None,
-            show_details_on_rotator_list: bool | None,
-            show_boards_screens_on_screen_list: bool | None,
-            show_input_screens_on_screen_list: bool | None,
-            show_players_screens_on_screen_list: bool | None,
-            show_results_screens_on_screen_list: bool | None,
-            show_image_screens_on_screen_list: bool | None,
-            min_logging_level: int | None,
+            admin_screens_show_family_screens: bool | None,
+            admin_screens_show_details: bool | None,
+            admin_families_show_details: bool | None,
+            admin_rotators_show_details: bool | None,
+            admin_screens_show_boards: bool | None,
+            admin_screens_show_input: bool | None,
+            admin_screens_show_players: bool | None,
+            admin_screens_show_results: bool | None,
+            admin_screens_show_image: bool | None,
+            admin_messages_min_logging_level: int | None,
+            admin_players_sort: str | None = None,
+            admin_players_filter_federations: list[str] | None = None,
+            admin_players_filter_leagues: list[str] | None = None,
+            admin_players_filter_clubs: list[str] | None = None,
+            admin_players_filter_genders: list[int] | None = None,
+            admin_players_filter_licences: list[int] | None = None,
+            admin_players_filter_check_ins: list[int] | None = None,
+            admin_players_filter_tournaments: list[int] | None = None,
+            admin_players_clear_filters: int | None = None,
     ) -> Template | ClientRedirect:
+        match admin_event_tab:
+            case 'config':
+                pass
+            case 'tournaments':
+                pass
+            case 'players':
+                if admin_players_sort is not None:
+                    SessionHandler.set_session_admin_players_sort(request, admin_players_sort)
+                elif admin_players_filter_federations is not None:
+                    SessionHandler.set_session_admin_players_filter_federations(request, [
+                        FederationTuple.from_query_param(query_param) for query_param in admin_players_filter_federations
+                        if query_param  # '' must be ignored
+                    ])
+                elif admin_players_filter_leagues is not None:
+                    SessionHandler.set_session_admin_players_filter_leagues(request, [
+                        LeagueTuple.from_query_param(query_param) for query_param in admin_players_filter_leagues
+                        if query_param  # '' must be ignored
+                    ])
+                elif admin_players_filter_clubs is not None:
+                    SessionHandler.set_session_admin_players_filter_clubs(request, [
+                        ClubTuple.from_query_param(query_param) for query_param in admin_players_filter_clubs
+                        if query_param  # '' must be ignored
+                    ])
+                elif admin_players_filter_genders is not None:
+                    SessionHandler.set_session_admin_players_filter_genders(request, [
+                        PlayerGender(query_param) for query_param in admin_players_filter_genders
+                        if query_param >= 0  # -1 must be ignored
+                    ])
+                elif admin_players_filter_licences is not None:
+                    SessionHandler.set_session_admin_players_filter_licences(request, [
+                        PlayerFFELicence(query_param) for query_param in admin_players_filter_licences
+                        if query_param >= 0  # -1 must be ignored
+                    ])
+                elif admin_players_filter_check_ins is not None:
+                    SessionHandler.set_session_admin_players_filter_check_ins(request, [
+                        bool(query_param) for query_param in admin_players_filter_check_ins
+                        if query_param >= 0  # -1 must be ignored
+                    ])
+                elif admin_players_filter_tournaments is not None:
+                    SessionHandler.set_session_admin_players_filter_tournaments(request, [
+                        query_param for query_param in admin_players_filter_tournaments
+                        if query_param > 0  # 0 must be ignored
+                    ])
+                elif admin_players_clear_filters:
+                    SessionHandler.set_session_admin_players_filter_federations(request, [])
+                    SessionHandler.set_session_admin_players_filter_leagues(request, [])
+                    SessionHandler.set_session_admin_players_filter_clubs(request, [])
+                    SessionHandler.set_session_admin_players_filter_genders(request, [])
+                    SessionHandler.set_session_admin_players_filter_licences(request, [])
+                    SessionHandler.set_session_admin_players_filter_check_ins(request, [])
+                    SessionHandler.set_session_admin_players_filter_tournaments(request, [])
+            case 'screens':
+                if admin_screens_show_family_screens is not None:
+                    SessionHandler.set_session_admin_screens_show_family_screens(
+                        request, admin_screens_show_family_screens)
+                if admin_screens_show_details is not None:
+                    SessionHandler.set_session_admin_screens_show_details(request, admin_screens_show_details)
+                screen_types: list[str] = SessionHandler.get_session_admin_screens_screen_types(request)
+                for screen_type, param in {
+                    'boards': admin_screens_show_boards,
+                    'input': admin_screens_show_input,
+                    'players': admin_screens_show_players,
+                    'results': admin_screens_show_results,
+                    'image': admin_screens_show_image,
+                }.items():
+                    if param is not None:
+                        if param:
+                            screen_types.append(screen_type)
+                        else:
+                            screen_types.remove(screen_type)
+                        SessionHandler.set_session_admin_screens_screen_types(request, screen_types)
+                        continue
+            case 'families':
+                if admin_families_show_details is not None:
+                    SessionHandler.set_session_admin_families_show_details(request, admin_families_show_details)
+            case 'rotators':
+                if admin_rotators_show_details is not None:
+                    SessionHandler.set_session_admin_rotators_show_details(request, admin_rotators_show_details)
+            case 'chessevent':
+                pass
+            case 'messages':
+                if admin_messages_min_logging_level is not None:
+                    try:
+                        SessionHandler.set_session_admin_messages_min_logging_level(
+                            request, admin_messages_min_logging_level)
+                    except ValueError:
+                        return AbstractController.redirect_error(
+                            request, f'Invalid log level [{admin_messages_min_logging_level}].')
+            case _:
+                raise ValueError(f'admin_event_tab={admin_event_tab}')
         return self._admin_event(
             request,
             event_uniq_id=event_uniq_id,
             admin_event_tab=admin_event_tab,
             admin_columns=admin_columns,
             locale=locale,
-            show_family_screens_on_screen_list=show_family_screens_on_screen_list,
-            show_details_on_screen_list=show_details_on_screen_list,
-            show_details_on_family_list=show_details_on_family_list,
-            show_details_on_rotator_list=show_details_on_rotator_list,
-            show_boards_screens_on_screen_list=show_boards_screens_on_screen_list,
-            show_input_screens_on_screen_list=show_input_screens_on_screen_list,
-            show_players_screens_on_screen_list=show_players_screens_on_screen_list,
-            show_results_screens_on_screen_list=show_results_screens_on_screen_list,
-            show_image_screens_on_screen_list=show_image_screens_on_screen_list,
-            min_logging_level=min_logging_level,
         )
 
     @get(
@@ -386,7 +563,7 @@ class EventAdminController(AbstractEventAdminController):
         stored_event: StoredEvent = self._admin_validate_event_update_data(
             action, request, web_context.admin_event, data)
         if stored_event.errors:
-            return self._admin_event_config_render(
+            return self._admin_event_tab_render(
                 request, event_uniq_id=event_uniq_id, modal='event', action=action, data=data,
                 errors=stored_event.errors)
         uniq_id: str = stored_event.uniq_id
@@ -412,7 +589,7 @@ class EventAdminController(AbstractEventAdminController):
                 else:
                     Message.success(request, _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id))
                 event_loader.clear_cache(uniq_id)
-                return self._admin_event_config_render(request, event_uniq_id=uniq_id)
+                return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
             case 'clone':
                 EventDatabase(uniq_id).create()
                 with EventDatabase(uniq_id, write=True) as event_database:
@@ -420,12 +597,12 @@ class EventAdminController(AbstractEventAdminController):
                     event_database.commit()
                 Message.success(request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id))
                 event_loader.clear_cache(uniq_id)
-                return self._admin_event_config_render(request, event_uniq_id=uniq_id)
+                return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
             case 'delete':
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
                 except PermissionError as ex:
-                    return AbstractController.redirect_error(request, 'Archiving the database failed: {ex}')
+                    return AbstractController.redirect_error(request, f'Archiving the database failed: {ex}')
                 event_loader.clear_cache(web_context.admin_event.uniq_id)
                 Message.success(
                     request, _('Event [{uniq_id}] has been deleted, the database has been archived ({arch}).').format(

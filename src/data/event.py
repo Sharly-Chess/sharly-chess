@@ -1,7 +1,7 @@
 import logging
 import re
 import time
-from collections import defaultdict
+from collections import defaultdict, Counter
 from dataclasses import dataclass
 from functools import total_ordering, cached_property
 from logging import Logger
@@ -18,12 +18,13 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.chessevent import ChessEvent
 from data.family import Family
+from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
 from data.rotator import Rotator
 from data.screen import Screen
 from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
-from data.util import ScreenType
+from data.util import ScreenType, PlayerFFELicence, PlayerGender
 from database.store import StoredEvent
 
 logger: Logger = get_logger()
@@ -51,17 +52,23 @@ class EventMessage:
     @property
     def formatted_text(self) -> str:
         if self.tournament:
-            return _('Tournament [{tournament_uniq_id}]: {text}').format(tournament_uniq_id=self.tournament.uniq_id, text=self.text)
+            return _('Tournament [{tournament_uniq_id}]: {text}').format(
+                tournament_uniq_id=self.tournament.uniq_id, text=self.text)
         if self.chessevent:
-            return _('ChessEvent connection [{chessevent_uniq_id}]: {text}').format(chessevent_uniq_id=self.chessevent.uniq_id, text=self.text)
+            return _('ChessEvent connection [{chessevent_uniq_id}]: {text}').format(
+                chessevent_uniq_id=self.chessevent.uniq_id, text=self.text)
         elif self.family:
-            return _('Family [{family_uniq_id}]: {text}').format(family_uniq_id=self.family.uniq_id, text=self.text)
+            return _('Family [{family_uniq_id}]: {text}').format(
+                family_uniq_id=self.family.uniq_id, text=self.text)
         elif self.timer_hour:
-            return _('Timer [{timer_uniq_id}], hour [{hour_order}]: {text}').format(timer_uniq_id=self.timer_hour.timer.uniq_id, hour_order=self.timer_hour.order, text=self.text)
+            return _('Timer [{timer_uniq_id}], hour [{hour_order}]: {text}').format(
+                timer_uniq_id=self.timer_hour.timer.uniq_id, hour_order=self.timer_hour.order, text=self.text)
         elif self.timer:
-            return _('Timer [{timer_uniq_id}]: {text}').format(timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text)
+            return _('Timer [{timer_uniq_id}]: {text}').format(
+                timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text)
         elif self.screen_set:
-            return _('Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}').format(screen_uniq_id=self.screen.uniq_id, screen_set_order=self.screen_set.order, text=self.text)
+            return _('Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}').format(
+                screen_uniq_id=self.screen.uniq_id, screen_set_order=self.screen_set.order, text=self.text)
         elif self.screen:
             return _('Screen [{screen_uniq_id}]: {text}').format(screen_uniq_id=self.screen.uniq_id, text=self.text)
         elif self.rotator:
@@ -166,9 +173,57 @@ class Event:
     def formatted_stop_time(self) -> str:
         return format_timestamp_time(self.stop)
 
-    @property
+    @cached_property
     def players_number(self) -> int:
-        return sum((len(tournament.players_by_name_with_unpaired) for tournament in self.tournaments_by_id.values()))
+        return sum(len(tournament.players_by_name_with_unpaired) for tournament in self.tournaments_by_id.values())
+
+    @cached_property
+    def players_by_id(self) -> dict[int, Player]:
+        return {
+            player_id: player
+            for tournament_players_id in [tournament.players_by_id for tournament in self.tournaments_by_id.values()]
+            for player_id, player in tournament_players_id.items()
+        }
+
+    @cached_property
+    def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
+        counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
+        for tournament in self.tournaments_by_id.values():
+            for ffe_licence in tournament.ffe_licence_counts:
+                counter[ffe_licence] += tournament.ffe_licence_counts[ffe_licence]
+        return counter
+
+    @cached_property
+    def gender_counts(self) -> Counter[PlayerGender]:
+        counter: Counter[PlayerGender] = Counter[PlayerGender]()
+        for tournament in self.tournaments_by_id.values():
+            for gender in tournament.gender_counts:
+                counter[gender] += tournament.gender_counts[gender]
+        return counter
+
+    @cached_property
+    def federation_counts(self) -> Counter[FederationTuple]:
+        counter: Counter[FederationTuple] = Counter[FederationTuple]()
+        for tournament in self.tournaments_by_id.values():
+            for federation_tuple in tournament.federation_counts:
+                counter[federation_tuple] += tournament.federation_counts[federation_tuple]
+        return counter
+
+    @cached_property
+    def league_counts(self) -> Counter[LeagueTuple]:
+        counter: Counter[LeagueTuple] = Counter[LeagueTuple]()
+        for tournament in self.tournaments_by_id.values():
+            for league_tuple in tournament.league_counts:
+                counter[league_tuple] += tournament.league_counts[league_tuple]
+        return counter
+
+    @cached_property
+    def club_counts(self) -> Counter[ClubTuple]:
+        counter: Counter[ClubTuple] = Counter[ClubTuple]()
+        for tournament in self.tournaments_by_id.values():
+            for club_tuple in tournament.club_counts:
+                counter[club_tuple] += tournament.club_counts[club_tuple]
+        return counter
 
     @cached_property
     def path(self) -> Path:
@@ -379,7 +434,8 @@ class Event:
             for stored_timer in self.stored_event.stored_timers
         }
         if self.errors:
-            self.add_warning(_('Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.'))
+            self.add_warning(
+                _('Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.'))
         return timers_by_id
 
     @cached_property
@@ -403,7 +459,8 @@ class Event:
             for stored_tournament in self.stored_event.stored_tournaments
         }
         if self.errors:
-            self.add_warning(_('Errors have been found on tournaments; screens, families and rotators will not be loaded.'))
+            self.add_warning(
+                _('Errors have been found on tournaments; screens, families and rotators will not be loaded.'))
         return tournaments_by_id
 
     @cached_property

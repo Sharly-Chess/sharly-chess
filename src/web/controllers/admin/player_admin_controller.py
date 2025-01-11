@@ -1,8 +1,7 @@
-import re
 from logging import Logger
 from typing import Annotated, Any
 
-from litestar import post, get, delete, patch
+from litestar import get, patch, delete
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -12,30 +11,33 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from common.logger import get_logger
-from data.event import Event
 from data.loader import EventLoader
+from data.player import Player
 from data.tournament import Tournament
-from database.sqlite import EventDatabase
-from database.store import StoredTournament, StoredScreen
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
-from web.controllers.index_controller import WebContext
 from web.messages import Message
 
 logger: Logger = get_logger()
 
 
-class TournamentAdminWebContext(EventAdminWebContext):
+class PlayerAdminWebContext(EventAdminWebContext):
     def __init__(
             self, request: HTMXRequest,
             event_uniq_id: str,
-            admin_event_tab: str | None,
+            player_id: int | None,
             tournament_id: int | None,
             data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
     ):
-        super().__init__(request, event_uniq_id=event_uniq_id, admin_event_tab=admin_event_tab, data=data)
-        self.admin_tournament: Tournament | None = None
+        super().__init__(request, event_uniq_id=event_uniq_id, admin_event_tab='players', data=data)
+        self.admin_player: Player | None = None
         if self.error:
             return
+        if player_id:
+            try:
+                self.admin_player = self.admin_event.players_by_id[player_id]
+            except KeyError:
+                self._redirect_error(f'Player [{player_id}] not found.')
+                return
         if tournament_id:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[tournament_id]
@@ -46,12 +48,13 @@ class TournamentAdminWebContext(EventAdminWebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'admin_tournament': self.admin_tournament,
+            'admin_player': self.admin_player,
         }
 
 
-class TournamentAdminController(AbstractEventAdminController):
+class PlayerAdminController(AbstractEventAdminController):
 
+    """
     @classmethod
     def _admin_validate_tournament_update_data(
             cls,
@@ -148,7 +151,9 @@ class TournamentAdminController(AbstractEventAdminController):
             rules=rules,
             errors=errors,
         )
+    """
 
+    """
     @staticmethod
     def _get_chessevent_options(admin_event: Event) -> dict[str, str]:
         options: dict[str, str] = {
@@ -158,43 +163,44 @@ class TournamentAdminController(AbstractEventAdminController):
             options[str(chessevent.id)] = (f' {chessevent.uniq_id} ({chessevent.user_id}'
                                            f'/{chessevent.shadowed_password}/{chessevent.event_id})')
         return options
+    """
 
     @classmethod
-    def _admin_event_tournaments_render(
+    def _admin_event_players_render(
             cls,
             request: HTMXRequest,
             event_uniq_id: str,
             modal: str | None = None,
             action: str | None = None,
-            tournament_id: int | None = None,
+            player_id: int | None = None,
             data: dict[str, str] | None = None,
             errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request, event_uniq_id=event_uniq_id, admin_event_tab='tournaments', tournament_id=tournament_id, data=data)
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=None, data=data)
         if web_context.error:
             return web_context.error
-        admin_event: Event = web_context.admin_event
-        admin_tournament: Tournament = web_context.admin_tournament
         template_context: dict[str, Any] = cls._get_admin_event_render_context(web_context)
         match modal:
             case None:
                 pass
-            case 'tournament':
+                """
+            case 'player':
                 if data is None:
                     uniq_id: str | None = None
                     name: str | None = None
                     match action:
                         case 'update':
-                            uniq_id = admin_tournament.stored_tournament.uniq_id
-                            name = admin_tournament.stored_tournament.name
+                            uniq_id = web_context.admin_tournament.stored_tournament.uniq_id
+                            name = web_context.admin_tournament.stored_tournament.name
                         case 'create':
-                            uniq_id = admin_event.get_unused_tournament_uniq_id(_('tournament'))
-                            name = admin_event.get_unused_tournament_name(_('New tournament'))
+                            uniq_id = web_context.admin_event.get_unused_tournament_uniq_id(_('tournament'))
+                            name = web_context.admin_event.get_unused_tournament_name(_('New tournament'))
                         case 'clone':
-                            uniq_id = admin_event.get_unused_tournament_uniq_id(
-                                admin_tournament.stored_tournament.uniq_id)
-                            name = admin_event.get_unused_tournament_name(admin_tournament.stored_tournament.name)
+                            uniq_id = web_context.admin_event.get_unused_tournament_uniq_id(
+                                web_context.admin_tournament.stored_tournament.uniq_id)
+                            name = web_context.admin_event.get_unused_tournament_name(
+                                web_context.admin_tournament.stored_tournament.name)
                         case 'delete':
                             pass
                         case _:
@@ -215,18 +221,15 @@ class TournamentAdminController(AbstractEventAdminController):
                     match action:
                         case 'update' | 'clone':
                             path = web_context.admin_tournament.stored_tournament.path
-                            time_control_initial_time = admin_tournament.stored_tournament.time_control_initial_time
-                            time_control_increment = admin_tournament.stored_tournament.time_control_increment
-                            time_control_handicap_penalty_value = \
-                                admin_tournament.stored_tournament.time_control_handicap_penalty_value
-                            time_control_handicap_penalty_step = \
-                                admin_tournament.stored_tournament.time_control_handicap_penalty_step
-                            time_control_handicap_min_time = \
-                                admin_tournament.stored_tournament.time_control_handicap_min_time
-                            chessevent_id = admin_tournament.stored_tournament.chessevent_id
-                            chessevent_tournament_name = admin_tournament.stored_tournament.chessevent_tournament_name
-                            record_illegal_moves = admin_tournament.stored_tournament.record_illegal_moves
-                            rules = admin_tournament.stored_tournament.rules
+                            time_control_initial_time = web_context.admin_tournament.stored_tournament.time_control_initial_time
+                            time_control_increment = web_context.admin_tournament.stored_tournament.time_control_increment
+                            time_control_handicap_penalty_value = web_context.admin_tournament.stored_tournament.time_control_handicap_penalty_value
+                            time_control_handicap_penalty_step = web_context.admin_tournament.stored_tournament.time_control_handicap_penalty_step
+                            time_control_handicap_min_time = web_context.admin_tournament.stored_tournament.time_control_handicap_min_time
+                            chessevent_id = web_context.admin_tournament.stored_tournament.chessevent_id
+                            chessevent_tournament_name = web_context.admin_tournament.stored_tournament.chessevent_tournament_name
+                            record_illegal_moves = web_context.admin_tournament.stored_tournament.record_illegal_moves
+                            rules = web_context.admin_tournament.stored_tournament.rules
                         case 'create' | 'delete':
                             pass
                         case _:
@@ -247,10 +250,8 @@ class TournamentAdminController(AbstractEventAdminController):
                         'filename': WebContext.value_to_form_data(filename),
                         'time_control_initial_time': WebContext.value_to_form_data(time_control_initial_time),
                         'time_control_increment': WebContext.value_to_form_data(time_control_increment),
-                        'time_control_handicap_penalty_value': WebContext.value_to_form_data(
-                            time_control_handicap_penalty_value),
-                        'time_control_handicap_penalty_step': WebContext.value_to_form_data(
-                            time_control_handicap_penalty_step),
+                        'time_control_handicap_penalty_value': WebContext.value_to_form_data(time_control_handicap_penalty_value),
+                        'time_control_handicap_penalty_step': WebContext.value_to_form_data(time_control_handicap_penalty_step),
                         'time_control_handicap_min_time': WebContext.value_to_form_data(time_control_handicap_min_time),
                         'chessevent_id': WebContext.value_to_form_data(chessevent_id),
                         'chessevent_tournament_name': WebContext.value_to_form_data(chessevent_tournament_name),
@@ -265,30 +266,32 @@ class TournamentAdminController(AbstractEventAdminController):
                 if errors is None:
                     errors = {}
                 template_context |= {
-                    'chessevent_options': cls._get_chessevent_options(admin_event),
+                    'chessevent_options': cls._get_chessevent_options(web_context.admin_event),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
-                        admin_event.record_illegal_moves),
+                        web_context.admin_event.record_illegal_moves),
                     'modal': modal,
                     'action': action,
                     'data': data,
                     'errors': errors,
                 }
+            """
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/tournament-modal/create/{event_uniq_id:str}',
-        name='admin-tournament-create-modal',
+        path='/admin/player-modal/create/{event_uniq_id:str}',
+        name='admin-player-create-modal',
         cache=1,
     )
-    async def htmx_admin_tournament_create_modal(
+    async def htmx_admin_player_create_modal(
             self, request: HTMXRequest,
             event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event_tournaments_render(
-            request, event_uniq_id=event_uniq_id, modal='tournament', action='create', tournament_id=None)
+        return self._admin_event_players_render(
+            request, event_uniq_id=event_uniq_id, modal='player', action='create', player_id=None)
 
+    """
     @get(
         path='/admin/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-modal',
@@ -302,23 +305,24 @@ class TournamentAdminController(AbstractEventAdminController):
     ) -> Template | ClientRedirect:
         return self._admin_event_tournaments_render(
             request, event_uniq_id=event_uniq_id, modal='tournament', action=action, tournament_id=tournament_id)
+    """
 
-    def _admin_tournament_update(
+    def _admin_player_update(
             self, request: HTMXRequest,
             data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
             action: str,
             event_uniq_id: str,
-            tournament_id: int | None,
+            player_id: int | None,
     ) -> Template | ClientRedirect:
         match action:
             case 'update' | 'delete' | 'clone' | 'create':
-                web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-                    request, event_uniq_id=event_uniq_id, admin_event_tab='tournaments', tournament_id=tournament_id,
-                    data=data)
+                web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+                    request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=None, data=data)
             case _:
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
+        """
         stored_tournament: StoredTournament = self._admin_validate_tournament_update_data(
             action, web_context, data)
         if stored_tournament.errors:
@@ -392,7 +396,10 @@ class TournamentAdminController(AbstractEventAdminController):
                     return self._admin_event_tournaments_render(request, event_uniq_id=event_uniq_id)
                 case _:
                     raise ValueError(f'action=[{action}]')
+        """
+        return web_context.error
 
+    """
     @post(
         path='/admin/tournament-create/{event_uniq_id:str}',
         name='admin-tournament-create'
@@ -404,30 +411,96 @@ class TournamentAdminController(AbstractEventAdminController):
     ) -> Template | ClientRedirect:
         return self._admin_tournament_update(
             request, event_uniq_id=event_uniq_id, action='create', tournament_id=None, data=data)
+    """
 
     @patch(
-        path='/admin/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-update'
+        path='/admin/player-move/{event_uniq_id:str}/{player_id:int}/{tournament_id:int}',
+        name='admin-player-move'
     )
-    async def htmx_admin_tournament_update(
+    async def htmx_admin_player_move(
             self, request: HTMXRequest,
             data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
             event_uniq_id: str,
+            player_id: int,
             tournament_id: int,
     ) -> Template | ClientRedirect:
-        return self._admin_tournament_update(
-            request, event_uniq_id=event_uniq_id, action='update', tournament_id=tournament_id, data=data)
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=tournament_id, data=data)
+        if web_context.error:
+            return web_context.error
+        admin_player: Player = web_context.admin_player
+        src_tournament: Tournament = admin_player.tournament
+        if admin_player.has_real_pairings:
+            Message.error(
+                request,
+                _('Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].').format(
+                    last_name=admin_player.last_name, first_name=admin_player.first_name,
+                    tournament_uniq_id=src_tournament))
+        else:
+            dst_tournament: Tournament = web_context.admin_tournament
+            if not dst_tournament.file_exists:
+                Message.error(
+                    request,
+                    _('Papi file [{tournament_file}] not found.').format(tournament_file=dst_tournament.file))
+            elif admin_player.ffe_licence_number in dst_tournament.players_by_ffe_licence_number:
+                Message.error(
+                    request,
+                    _('FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].').format(
+                        ffe_licence_number=admin_player.ffe_licence_number, tournament_uniq_id=dst_tournament.uniq_id))
+            elif admin_player.fide_id in dst_tournament.players_by_fide_id:
+                Message.error(
+                    request,
+                    _('Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].').format(
+                        fide_id=admin_player.fide_id, tournament_uniq_id=dst_tournament.uniq_id))
+            elif admin_player.ffe_id in dst_tournament.players_by_ffe_id:
+                # This string is not translated because the error should never happen
+                Message.error(
+                    request,
+                    f'FFE ID [{admin_player.ffe_id}] already present in tournament [{dst_tournament.uniq_id}].')
+            else:
+                player_dict: dict[str, str | int | float | None] = src_tournament.delete_player(
+                    admin_player.ref_id, return_deleted_data=True)
+                dst_tournament.add_player_from_dict(player_dict)
+                Message.success(
+                    request,
+                    _('Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}].').format(
+                        last_name=admin_player.last_name, first_name=admin_player.first_name,
+                        src_tournament_uniq_id=src_tournament.uniq_id,
+                        dst_tournament_uniq_id=dst_tournament.uniq_id))
+                event_loader: EventLoader = EventLoader.get(request=request)
+                event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
 
     @delete(
-        path='/admin/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-delete',
+        path='/admin/player-delete/{event_uniq_id:str}/{player_id:int}',
+        name='admin-player-delete',
         status_code=HTTP_200_OK,
     )
-    async def htmx_admin_tournament_delete(
+    async def htmx_admin_player_delete(
             self, request: HTMXRequest,
             data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
             event_uniq_id: str,
-            tournament_id: int,
+            player_id: int,
     ) -> Template | ClientRedirect:
-        return self._admin_tournament_update(
-            request, event_uniq_id=event_uniq_id, action='delete', tournament_id=tournament_id, data=data)
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=None, data=data)
+        if web_context.error:
+            return web_context.error
+        admin_player: Player = web_context.admin_player
+        src_tournament: Tournament = admin_player.tournament
+        if admin_player.has_real_pairings:
+            Message.error(
+                request,
+                _('Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].').format(
+                    last_name=admin_player.last_name, first_name=admin_player.first_name,
+                    tournament_uniq_id=src_tournament))
+        else:
+            src_tournament.delete_player(admin_player.ref_id, return_deleted_data=False)
+            Message.success(
+                request,
+                _('Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].').format(
+                    last_name=admin_player.last_name, first_name=admin_player.first_name,
+                    tournament_uniq_id=admin_player.tournament.uniq_id))
+            event_loader: EventLoader = EventLoader.get(request=request)
+            event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)

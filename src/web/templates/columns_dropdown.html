@@ -1,4 +1,4 @@
-{% from 'macros.j2' import tooltip_attributes, tooltip_script, background_script %}
+{% from 'macros.j2' import tooltip_attributes %}
 
 <span
         class="dropdown ms-auto"
@@ -9,7 +9,7 @@
         <i class="bi-layout-three-columns"></i>
     </button>
     <ul
-            class="dropdown-menu locale"
+            class="dropdown-menu column"
             {{ tooltip_attributes('info', _('Change the number of columns.'), 'left') }}
     >
         {% for c in papi_web_config.allowed_columns %}

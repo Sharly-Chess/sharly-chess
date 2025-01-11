@@ -88,12 +88,12 @@ class ActionSelector(metaclass=Singleton):
         choice: str | None = None
         print_interactive_info(_('Tournaments: {tournament_ffe_ids}').format(
             tournament_ffe_ids=', '.join((str(tournament.ffe_id) for tournament in tournaments))))
-        test_answer: str = _('T *** THE LETTER TO ANSWER TEST ***')
-        visible_answer: str = _('V *** THE LETTER TO ANSWER VISIBLE ***')
-        fees_answer: str = _('F *** THE LETTER TO ANSWER FEES ***')
-        rules_answer: str = _('R *** THE LETTER TO ANSWER RULES ***')
-        upload_answer: str = _('U *** THE LETTER TO ANSWER UPLOAD ***')
-        quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT ***')
+        test_answer: str = _('T *** THE LETTER TO ANSWER TEST')
+        visible_answer: str = _('V *** THE LETTER TO ANSWER VISIBLE')
+        fees_answer: str = _('F *** THE LETTER TO ANSWER FEES')
+        rules_answer: str = _('R *** THE LETTER TO ANSWER RULES')
+        upload_answer: str = _('U *** THE LETTER TO ANSWER UPLOAD')
+        quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
         actions: dict[str, str] = {
             test_answer: _('Test the tournament passwords on the FFE website'),
             visible_answer: _('Make the tournaments visible on the FFE website'),

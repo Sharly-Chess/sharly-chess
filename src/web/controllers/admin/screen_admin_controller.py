@@ -181,7 +181,8 @@ class ScreenAdminController(AbstractEventAdminController):
                         if not background_image:
                             errors[field] = _('Please enter the image URL.')
                         elif not validators.url(background_image):
-                            errors[field] = _('Invalid URL [{background_image}].').format(background_image=background_image)
+                            errors[field] = _(
+                                'Invalid URL [{background_image}].').format(background_image=background_image)
                         else:
                             try:
                                 response = requests.get(background_image)
@@ -688,7 +689,7 @@ class ScreenAdminController(AbstractEventAdminController):
             case 'delete':
                 if len(web_context.admin_screen.screen_sets_sorted_by_order) <= 1:
                     return AbstractController.redirect_error(
-                        request, 'Le dernier ensemble d\'un écran ne peut être supprimé.')
+                        request, _('The last set of a screen can not be deleted.'))
             case 'update' | 'clone' | 'add' | 'reorder':
                 pass
             case _:

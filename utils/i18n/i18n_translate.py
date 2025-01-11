@@ -30,7 +30,6 @@ class I18nTranslator:
         self.catalog: Catalog | None = None
         self.model: MarianMTModel | None = None
         self.tokenizer: MarianTokenizer | None = None
-        self.token_replacement: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         self.flag: str = 'ai_translation'
 
     def load_catalog(self) -> bool:
@@ -116,7 +115,6 @@ class I18nTranslator:
             elif match := re.search(r'%\([^)]*\)[ds]', string):  # Looking for %(name)s or %(name)d
                 token = match.group()
             if token:
-                # string = string.replace(token, f'{self.token_replacement}_{len(tokens)}', 1)
                 string = string.replace(token, f'←{len(tokens)}→', 1)
                 tokens.append(token)
             else:

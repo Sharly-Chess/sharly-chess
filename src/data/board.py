@@ -41,10 +41,10 @@ class Board:
             return self.board_id < other.board_id
         assert self.black_player is not None, "The black player is not defined."
         assert other.black_player is not None, "The black player is not defined."
-        if self.black_player.id == 1:
+        if self.black_player.ref_id == 1:
             # The pairing allocated bye board is last
             return True
-        elif other.black_player.id == 1:
+        elif other.black_player.ref_id == 1:
             # The pairing allocated bye is last
             return False
         # Here we have no board id, so we need to compare
@@ -90,7 +90,7 @@ class Board:
         assert self.black_player is not None, "The black player is not defined."
         assert other.black_player is not None, "The black player is not defined."
         # There is only one pairing allocated bye
-        if self.black_player.id == 1 or self.white_player.id == 1:
+        if self.black_player.ref_id == 1 or self.white_player.ref_id == 1:
             return False
         self_player_1: Player
         self_player_2: Player

@@ -3,3 +3,20 @@
 # EVENT
 ###########################################################
 */
+.dropdown-item:hover {
+    background-color: #ffff7f;
+}
+
+.dropdown-menu.gender,
+.dropdown-menu.licence,
+.dropdown-menu.check-in,
+.dropdown-menu.tournament,
+.dropdown-menu.federation,
+.dropdown-menu.league,
+.dropdown-menu.club {
+    min-width: 0;
+}
+
+.fide-id-none {
+    opacity: 0.3;
+}

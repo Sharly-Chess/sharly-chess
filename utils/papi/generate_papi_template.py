@@ -1,4 +1,3 @@
-# TODO move this to /utils
 """This module is a utility script to create papi templates.
 This script re-creates the /src/database/papi_template.py file on invocation including
 imports.

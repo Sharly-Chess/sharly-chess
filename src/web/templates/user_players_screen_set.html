@@ -15,23 +15,23 @@
                     <table class="table table-striped table-sm bg-light">
                         <thead class="table-dark">
                             <tr>
-                                <th scope="col" class="player w-50 text-nowrap text-center">{% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}</th>
-                                <th scope="col" class="pairing text-nowrap text-center">{{ _('Board & color') }}'</th>
-                                <th scope="col" class="opponent w-50 text-nowrap text-center">{% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}</th>
+                                <th scope="col" class="player w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}</th>
+                                <th scope="col" class="pairing text-nowrap text-start">{{ _('Board & color') }}</th>
+                                <th scope="col" class="opponent w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}</th>
                             </tr>
                         </thead>
                         <tbody>
                         {% for player in players %}
                             {% if tournament.current_round %}
                                 {% with pairing=player.pairings[tournament.current_round] %}
-                                {% with opponent_id=pairing.opponent_id %}
-                                    <tr class="player-row {% if not opponent_id or opponent_id == 1 %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
-                                        <td  class="player bg-transparent text-nowrap {% if opponent_id and opponent_id != 1 %}{% if player.color == 'W' %}white{%else %}black{%endif %}{%endif %}">
+                                {% with opponent_id=pairing.opponent_id, opponent_papi_id=pairing.opponent_papi_id %}
+                                    <tr class="player-row {% if not opponent_papi_id or opponent_papi_id == 1 %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
+                                        <td  class="player bg-transparent text-nowrap {% if opponent_papi_id and opponent_papi_id != 1 %}{% if player.color == 'W' %}white{%else %}black{%endif %}{%endif %}">
                                             {% if player.title_str %}{{ player.title_str }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }} [{{ player.vpoints_str }}]
                                         </td>
-                                        {% if not opponent_id %}
+                                        {% if not opponent_papi_id %}
                                             <td colspan="2" class="bg-transparent text-nowrap">{{ player.not_paired_str }}</td>
-                                        {% elif opponent_id == 1 %}
+                                        {% elif opponent_papi_id == 1 %}
                                             <td colspan="2" class="bg-transparent text-nowrap">{{ player.exempt_str }}</td>
                                         {% else %}
                                             {% with opponent=tournament.players_by_id[opponent_id] %}

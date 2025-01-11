@@ -1,18 +1,18 @@
-from datetime import datetime, timedelta
-from pathlib import Path
-from logging import Logger
-from itertools import product
-from typing import NamedTuple
+import re
 from contextlib import suppress
+from datetime import datetime, timedelta
+from itertools import product
+from logging import Logger
+from pathlib import Path
+from typing import NamedTuple, Pattern
 
+from common.logger import get_logger
 from data.chessevent_player import ChessEventPlayer
 from data.chessevent_tournament import ChessEventTournament
-from database.access import AccessDatabase
 from data.pairing import Pairing
 from data.player import Player
-from common.logger import get_logger
-
-from data.util import Result, TournamentPairing, PlayerGender, PlayerTitle, Color, TournamentRating
+from data.util import Result, TournamentPairing, PlayerGender, PlayerTitle, Color, TournamentRating, PlayerFFELicence
+from database.access import AccessDatabase
 
 logger: Logger = get_logger()
 
@@ -32,6 +32,7 @@ class PapiDatabase(AccessDatabase):
 
     def __init__(self, file: Path, write: bool = False):
         super().__init__(file, write)
+        self.date_of_birth_pattern: Pattern = re.compile(r'^\d{1,2}/\d{1,2}/(\d{1,4})$')
 
     def commit(self):
         self._commit()
@@ -51,18 +52,56 @@ class PapiDatabase(AccessDatabase):
         rating_limit2: int = int(self._read_var('EloBase2'))
         return TournamentInfo(rounds, pairing, rating, rating_limit1, rating_limit2)
 
-    def read_players(self, tournament_rating: TournamentRating, rounds: int) -> dict[int, Player]:
-        """Reads the database and fetches the Player identification, pairings
-        and results."""
+    def read_player_dict(
+            self, player_papi_id: int
+    ) -> dict[str, str | int | float | None]:
+        """Reads the database and return the information of the player with the given Papi ID. """
+        self._execute(f'SELECT * FROM joueur WHERE Ref = ?', (player_papi_id, ))
+        return self._fetchone()
+
+    def delete_player(
+            self, player_papi_id: int,
+            return_deleted_data: bool = False,
+    ) -> dict[str, str | int | float | None] | None:
+        """Reads the database and fetches the information of the player with the given Papi ID,
+        returns Papi ID of the deleted player if needed. """
+        data: dict[str, str | int | float | None] | None = None
+        if return_deleted_data:
+            data = self.read_player_dict(player_papi_id)
+        self._execute(f'DELETE FROM joueur WHERE Ref = ?', (player_papi_id, ))
+        return data
+
+    @property
+    def next_player_papi_id(self) -> int:
+        """Returns the next Papi ID to use when adding a player to the database. """
+        self._execute(f'SELECT Max(Ref) AS max FROM joueur')
+        return self._fetchone()['max'] + 1
+
+    def write_player_dict(
+            self,
+            data: dict[str, str | int | float | None],
+    ) -> int:
+        """Writes the information of a Papi player extracted from another database to this database,
+        returns the papi_id. """
+        field_names: list[str] = list(data.keys())
+        params: tuple = tuple([data[field] for field in field_names])
+        fields = ', '.join(f'`{f}`' for f in field_names)
+        values = ', '.join(['?'] * len(field_names))
+        self._execute(f'INSERT INTO `joueur`({fields}) VALUES ({values})', tuple(params))
+        return data['Ref']
+
+    def read_players(self, tournament_id: int, tournament_rating: TournamentRating, rounds: int) -> dict[int, Player]:
+        """Reads the database and fetches the Player identification, pairings and results.
+        The tournament_id is used to make the players' id unique for an event. """
         players: dict[int, Player] = {}
         player_fields: list[str] = [
-            'Ref', 'Nom', 'Prenom', 'Sexe', 'FideTitre', 'Fixe',
-            'Elo', 'Rapide', 'Blitz', 'Fide', 'RapideFide', 'BlitzFide',
-            'Pointe', 'AffType', 'Federation',
+            'Ref', 'RefFFE', 'Nom', 'Prenom', 'NeLe', 'Sexe', 'EMail', 'Tel', 'Commentaire', 'InscriptionDu', 'InscriptionRegle',
+            'FideTitre', 'Fixe', 'Elo', 'Rapide', 'Blitz', 'Fide', 'RapideFide', 'BlitzFide',
+            'Pointe', 'AffType', 'NrFFE', 'Federation', 'Ligue', 'Club', 'FideCode',
         ]
         for rd, suffix in product(range(1, rounds + 1), ['Cl', 'Adv', 'Res']):
             player_fields.append(f'Rd{rd:0>2}{suffix}')
-        query: str = f'SELECT {", ".join(player_fields)} FROM joueur ORDER BY Ref'
+        query: str = f'SELECT {", ".join(player_fields)} FROM joueur WHERE Ref <> 1 ORDER BY Ref'
         self._execute(query)
         for row in self._fetchall():
             pairings: dict[int, Pairing] = {}
@@ -71,31 +110,54 @@ class PapiDatabase(AccessDatabase):
                 color: str = row[f'{round_str}Cl']
                 with suppress(ValueError):
                     color = Color.from_papi_value(color)
+                opponent_papi_id: int | None = row[f'{round_str}Adv']
                 pairings[round_] = Pairing(
-                    color, row[f'{round_str}Adv'],
+                    color,
+                    Player.player_papi_web_id_from_papi_id(tournament_id, opponent_papi_id)
+                    if opponent_papi_id else None,
+                    opponent_papi_id,
                     Result.from_papi_value(row[f'{round_str}Res']))
-            players[row['Ref']] = Player(
-                row['Ref'], row['Nom'] or '', row['Prenom'] or '',
-                PlayerGender.from_papi_value(row['Sexe']),
-                PlayerTitle.from_papi_value(row['FideTitre']),
-                row[tournament_rating.papi_value_field],
-                row[tournament_rating.papi_type_field],
-                row['AffType'],
-                row['Federation'],
-                row['Fixe'],
-                row['Pointe'],
+            player_papi_web_id: int = Player.player_papi_web_id_from_papi_id(tournament_id, row['Ref'])
+            year_of_birth: int | None = None
+            if row['NeLe']:
+                year_of_birth = row['NeLe'].year
+            fide_id: int | None = None
+            if row['FideCode']:
+                fide_id = int(str(row['FideCode']).strip())
+            players[player_papi_web_id] = Player(
+                player_papi_web_id,
+                row['Nom'] or '', row['Prenom'] or '',
+                year_of_birth,
+                PlayerGender.from_papi_value(row['Sexe'] or ''),
+                row['EMail'] or '',
+                row['Tel'] or '',
+                row['Commentaire'] or '',
+                float(row['InscriptionDu']) or 0.0,
+                float(row['InscriptionRegle']) or 0.0,
+                PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+                row[tournament_rating.papi_value_field] or 0,
+                row[tournament_rating.papi_type_field] or 0,
+                fide_id,
+                row['RefFFE'] or '',
+                PlayerFFELicence.from_papi_value(row['AffType'] or ''),
+                row['NrFFE'] or '',
+                row['Federation'] or '',
+                row['Ligue'] or '',
+                row['Club'] or '',
+                row['Fixe'] or 0,
+                row['Pointe'] or False,
                 pairings)
         return players
 
-    def add_board_result(self, player_id: int, round_: int, result: Result):
+    def add_board_result(self, player_papi_id: int, round_: int, result: Result):
         """Writes the given result to the database."""
         query: str = f'UPDATE `joueur` SET `Rd{round_:0>2}Res` = ? WHERE `Ref` = ?'
-        self._execute(query, (result.value, player_id, ))
+        self._execute(query, (result.value, Player.player_papi_id_from_papi_web_id(player_papi_id),))
 
-    def remove_board_result(self, player_id: int, round_: int):
+    def remove_board_result(self, player_papi_id: int, round_: int):
         """Writes the empty result for the given player in the database."""
         query: str = f'UPDATE `joueur` SET `Rd{round_:0>2}Res` = 0 WHERE `Ref` = ?'
-        self._execute(query, (player_id, ))
+        self._execute(query, (Player.player_papi_id_from_papi_web_id(player_papi_id),))
 
     @staticmethod
     def _timestamp_to_papi_date(ts: float) -> str:
@@ -115,7 +177,7 @@ class PapiDatabase(AccessDatabase):
         default_rounds: int = 7
         if not chessevent_tournament.rounds:
             logger.warning(
-                'Le nombre de rondes n\'a pas été indiqué sur Chess Event, défini par défaut à %s.',
+                'Number of rounds not set in ChessEvent, %d set by default.',
                 default_rounds)
             chessevent_tournament.rounds = default_rounds
         data: dict[str, str | int] = {
@@ -144,13 +206,13 @@ class PapiDatabase(AccessDatabase):
             query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
             self._execute(query, (value, name, ))
 
-    def add_chessevent_player(self, player_id: int, player: ChessEventPlayer, check_in_started: bool):
+    def add_chessevent_player(self, player_papi_id: int, player: ChessEventPlayer, check_in_started: bool):
         """Creates a player in the database from the given ChessEvent player.
         If the player is not checked in when `check_in_started` is True,
         removes the player from play for subsequent rounds which are not
         specifically unplayed rounds."""
         data: dict[str, str | int | float | None] = {
-            'Ref': player_id,
+            'Ref': player_papi_id,
             'RefFFE': player.ffe_id,
             'NrFFE': player.ffe_license_number if player.ffe_license_number else None,
             'Nom': player.last_name,
@@ -184,7 +246,7 @@ class PapiDatabase(AccessDatabase):
         for round_ in range(1, 25):
             data[f'Rd{round_:0>2}Adv'] = None
             if round_ not in player.skipped_rounds:
-                data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                 if player.check_in or not check_in_started:
                     data[f'Rd{round_:0>2}Cl'] = 'R'
                 else:
@@ -193,7 +255,7 @@ class PapiDatabase(AccessDatabase):
                 data[f'Rd{round_:0>2}Cl'] = 'F'
                 match player.skipped_rounds[round_]:
                     case 0.0:
-                        data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                        data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                     case 0.5:
                         data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
                     case _:
@@ -213,18 +275,19 @@ class PapiDatabase(AccessDatabase):
         query: str = 'SELECT COUNT(`Ref`) FROM `joueur` WHERE `Rd01Adv` IS NOT NULL'
         self._execute(query)
         if self._fetchval() == 0:
-            logger.info('Suppression des forfaits...')
+            logger.info('Deleting forfeits...')
             data: dict[str, str | int | None] = {}
             for round_ in range(1, 25):
                 data[f'Rd{round_:0>2}Adv'] = None
-                data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                 data[f'Rd{round_:0>2}Cl'] = 'R'
             actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
             query: str = f'UPDATE `joueur` SET {actions} WHERE Ref > 1'
             params = tuple(data.values())
             self._execute(query, params)
+            logger.info('Done.')
         else:
-            logger.info('Aucun forfait à supprimer.')
+            logger.info('No forfeits to delete.')
 
     def get_checked_in_players_number(self) -> int:
         """Return the number players already checked in."""
@@ -232,26 +295,26 @@ class PapiDatabase(AccessDatabase):
         self._execute(query)
         return self._fetchval()
 
-    def _check_in_player(self, player_id: int, tournament_skipped_rounds_dict: dict[int, dict[int, float]]):
-        logger.debug('Checking in player %d', player_id)
+    def _check_in_player(self, player_papi_id: int, tournament_skipped_rounds_dict: dict[int, dict[int, float]]):
+        logger.debug('Checking in player %d', player_papi_id)
         checked_in_players_number: int = self.get_checked_in_players_number()
         player_skipped_rounds: dict[int, float]
         if not checked_in_players_number:
-            logger.debug('set all players forfeit for all rounds (except player %d)', player_id)
+            logger.debug('Setting all players forfeit for all rounds (except player [%d])', player_papi_id)
             data: dict[str, str | int | float | None] = {
             }
             for round_ in range(1, 25):
                 data[f'Rd{round_:0>2}Adv'] = None
-                data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                 data[f'Rd{round_:0>2}Cl'] = 'F'
             actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
             query: str = f'UPDATE `joueur` SET {actions} WHERE Ref NOT IN (1, ?)'
-            params = tuple(list(data.values()) + [player_id, ])
+            params = tuple(list(data.values()) + [player_papi_id, ])
             self._execute(query, params)
             # set byes (no need for forfeits, already set)
-            player_skipped_rounds: dict[int, float] = tournament_skipped_rounds_dict.get(player_id, {})
+            player_skipped_rounds: dict[int, float] = tournament_skipped_rounds_dict.get(player_papi_id, {})
             for other_player_id in tournament_skipped_rounds_dict:
-                if other_player_id != player_id:
+                if other_player_id != player_papi_id:
                     data: dict[str, str | int | float | None] = {
                     }
                     for round_, result in tournament_skipped_rounds_dict[other_player_id].items():
@@ -264,53 +327,53 @@ class PapiDatabase(AccessDatabase):
                                 case _:
                                     raise ValueError
                     if data:
-                        logger.debug('set byes for player %d: %s', other_player_id, data)
+                        logger.debug('Setting byes for player [%d]: %s', other_player_id, data)
                         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
                         query: str = f'UPDATE `joueur` SET {actions} WHERE Ref = ?'
                         params = tuple(list(data.values()) + [other_player_id, ])
                         self._execute(query, params)
                     else:
-                        logger.debug('no byes for player %d', other_player_id)
+                        logger.debug('No byes for player %d', other_player_id)
                 else:
                     logger.debug('do skipped round for player %d', other_player_id)
         else:
-            player_skipped_rounds = tournament_skipped_rounds_dict.get(player_id, {})
+            player_skipped_rounds = tournament_skipped_rounds_dict.get(player_papi_id, {})
         # Set the player checked in and unpaired for all rounds
-        logger.debug('byes and forfeits for player %d: %s', player_id, player_skipped_rounds)
-        logger.debug('Set player %d checked in and unpaired for all rounds', player_id)
+        logger.debug('Byes and forfeits for player [%d]: %s', player_papi_id, player_skipped_rounds)
+        logger.debug('Setting player [%d] checked in and unpaired for all rounds...', player_papi_id)
         data: dict[str, str | int | float | None] = {
             'Pointe': True,
         }
         for round_ in range(1, 25):
             data[f'Rd{round_:0>2}Adv'] = None
             if round_ not in player_skipped_rounds:
-                data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                 data[f'Rd{round_:0>2}Cl'] = 'R'
             else:
                 data[f'Rd{round_:0>2}Cl'] = 'F'
                 match player_skipped_rounds[round_]:
                     case 0.0:
-                        data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                        data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                     case 0.5:
                         data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
                     case _:
                         raise ValueError
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
         query: str = f'UPDATE `joueur` SET {actions} WHERE Ref = ?'
-        params = tuple(list(data.values()) + [player_id, ])
+        params = tuple(list(data.values()) + [player_papi_id, ])
         self._execute(query, params)
 
-    def _check_out_player(self, player_id: int, tournament_skipped_rounds_dict: dict[int, dict[int, float]]):
-        logger.debug('Checking out player %s', player_id)
+    def _check_out_player(self, player_papi_id: int, tournament_skipped_rounds_dict: dict[int, dict[int, float]]):
+        logger.debug('Checking out player [%d]...', player_papi_id)
         checked_in_players_number: int = self.get_checked_in_players_number()
         if checked_in_players_number == 1:
-            logger.debug('set all players unpaired for all rounds')
+            logger.debug('Setting all players unpaired for all rounds...')
             data: dict[str, str | int | float | None] = {
                 'Pointe': False,
             }
             for round_ in range(1, 25):
                 data[f'Rd{round_:0>2}Adv'] = None
-                data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                 data[f'Rd{round_:0>2}Cl'] = 'R'
             actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
             query: str = f'UPDATE `joueur` SET {actions} WHERE Ref > 1'
@@ -318,6 +381,7 @@ class PapiDatabase(AccessDatabase):
             self._execute(query, params)
             # set byes and forfeits
             for other_player_id, player_skipped_rounds in tournament_skipped_rounds_dict.items():
+                other_player_papi_id: int = Player.player_papi_id_from_papi_web_id(other_player_id)
                 data: dict[str, str | int | float | None] = {
                 }
                 for round_, score in player_skipped_rounds.items():
@@ -325,7 +389,7 @@ class PapiDatabase(AccessDatabase):
                         data[f'Rd{round_:0>2}Cl'] = 'F'
                         match score:
                             case 0.0:
-                                data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                                 pass
                             case 0.5:
                                 data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
@@ -334,11 +398,11 @@ class PapiDatabase(AccessDatabase):
                 if data:
                     actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
                     query: str = f'UPDATE `joueur` SET {actions} WHERE Ref = ?'
-                    params = tuple(list(data.values()) + [other_player_id, ])
+                    params = tuple(list(data.values()) + [other_player_papi_id, ])
                     self._execute(query, params)
         else:
-            logger.debug('Set the player checked out and forfeit for all rounds')
-            player_skipped_rounds: dict[int, float] = tournament_skipped_rounds_dict.get(player_id, {})
+            logger.debug('Setting player [%d] checked out and forfeit for all rounds...', player_papi_id)
+            player_skipped_rounds: dict[int, float] = tournament_skipped_rounds_dict.get(player_papi_id, {})
             data: dict[str, str | int | float | None] = {
                 'Pointe': False,
             }
@@ -346,24 +410,26 @@ class PapiDatabase(AccessDatabase):
                 data[f'Rd{round_:0>2}Adv'] = None
                 data[f'Rd{round_:0>2}Cl'] = 'F'
                 if round_ not in player_skipped_rounds:
-                    data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                    data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                 else:
                     match player_skipped_rounds[round_]:
                         case 0.0:
-                            data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
+                            data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                         case 0.5:
                             data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
                         case _:
                             raise ValueError
             actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
             query: str = f'UPDATE `joueur` SET {actions} WHERE Ref = ?'
-            params = tuple(list(data.values()) + [player_id, ])
+            params = tuple(list(data.values()) + [player_papi_id, ])
             self._execute(query, params)
+        logger.debug('Done.')
 
     def check_in_player(self, player_id: int, check_in: bool, skipped_rounds_dict: dict[int, dict[int, float]]):
-        """Toggles the check in status of the player, depending o, `check_in`.
+        """Toggles the check in status of the player, depending on `check_in`.
         Takes into account the given `skipped_rounds_dict`."""
+        player_papi_id: int = Player.player_papi_id_from_papi_web_id(player_id)
         if check_in:
-            self._check_in_player(player_id, skipped_rounds_dict)
+            self._check_in_player(player_papi_id, skipped_rounds_dict)
         else:
-            self._check_out_player(player_id, skipped_rounds_dict)
+            self._check_out_player(player_papi_id, skipped_rounds_dict)

@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block card_text %}
-    {% if show_details_on_screen_list %}
+    {% if admins_screens_show_details %}
         {% if screen.type in ['input', 'boards', 'players', 'results'] %}
             <div>
                 {{ screen_type_icon(screen.type, true) }}

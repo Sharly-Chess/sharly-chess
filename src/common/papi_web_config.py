@@ -123,12 +123,12 @@ class PapiWebConfig(metaclass=Singleton):
             try:
                 self.tmp_dir.mkdir(parents=True, exist_ok=True)
             except PermissionError as pe:
-                logger.critical(f'Impossible de créer le répertoire {self.tmp_dir.absolute()} :-(')
+                logger.critical(f'Could not create directory [{self.tmp_dir.absolute()}]: {pe}')
                 raise pe
             try:
                 PapiWebConfig.event_path.mkdir(parents=True, exist_ok=True)
             except PermissionError as pe:
-                logger.critical(f'Impossible de créer le répertoire {PapiWebConfig.event_path.absolute()} :-(')
+                logger.critical(f'Could not create directory [{self.tmp_dir.absolute()}]: {pe}')
                 raise pe
             logger.debug('ODBC drivers found:')
             for driver in pyodbc.drivers():
@@ -208,7 +208,7 @@ class PapiWebConfig(metaclass=Singleton):
                 key = 'upload_delay'
                 if key not in options:
                     self.reader.add_warning(
-                        _('Option not set, by default [{ffe_upload_delay}].').format(
+                        _('Option not set, by default [{default}].').format(
                             ffe_upload_delay=self._default_ffe_upload_delay),
                         section_key, key)
                 else:

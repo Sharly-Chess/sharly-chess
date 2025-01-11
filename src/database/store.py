@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from common.papi_web_config import PapiWebConfig
 
 """
-All the classes of this module are basic data classed stored into event databases.
+All the classes of this module are basic data classes stored into event databases.
 """
 
 

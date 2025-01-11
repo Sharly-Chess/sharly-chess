@@ -1,0 +1,58 @@
+{% if admin_players_licences|length > 1 %}
+    <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+        <span class="dropdown-center" >
+            <button
+                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+            ><i
+                    class="bi-funnel {% if admin_players_filter_genders %}text-primary{% endif %}"
+                    {{ tooltip_attributes('info', _('Filter the genders.'), 'top') }}
+            ></i></button>
+            <ul class="dropdown-menu gender p-0">
+                {% with name='admin_players_filter_genders' %}
+                    {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
+                    <input type="hidden" name="{{ name }}" value="-1" checked />
+                    <li class="dropdown-item text-nowrap">
+                        <input
+                            type="checkbox"
+                            {% if admin_players_filter_genders|length == admin_players_genders|length %}checked{% endif %}
+                            onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                        />
+                        <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                            <i class="bi-check-lg"></i>
+                            {{ _('OK') }}
+                        </button>
+                    </li>
+                    <li class="dropdown-divider m-0"></li>
+                    {% for gender, gender_data in {
+                        0: {
+                            'text': _('- *** SHORT NAME FOR GENDER NONE'),
+                            'icon': '',
+                        },
+                        1: {
+                            'text': _('F *** SHORT NAME FOR GENDER FEMALE'),
+                            'icon': 'bi-person-standing',
+                        },
+                        2: {
+                            'text': _('M *** SHORT NAME FOR GENDER MALE'),
+                            'icon': 'bi-person-standing-dress',
+                        },
+                    }.items() %}
+                        <li class="dropdown-item text-nowrap">
+                            <input
+                                type="checkbox"
+                                id="{{ name }}-{{ loop.index }}"
+                                name="{{ name }}"
+                                value="{{ gender }}"
+                                {% if gender in admin_players_filter_genders %}checked{% endif %}
+                                class="{{ name }}"
+                            />
+                            <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
+                                {% if gender_data['icon'] %}<i class="{{ gender_data['icon'] }}"></i> {% endif %}{{ gender_data['text'] }} ({{ admin_event.gender_counts[gender] }})
+                            </label>
+                        </li>
+                    {% endfor %}
+                {% endwith %}
+            </ul>
+        </span>
+    </form>
+{% endif %}

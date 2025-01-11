@@ -9,18 +9,19 @@ from typing import TYPE_CHECKING
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
+from data.pairing import Pairing
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.screen import Screen
-    from data.family import Family
 
 from common.logger import get_logger
 from data.board import Board
 from data.chessevent import ChessEvent
 from data.chessevent_tournament import ChessEventTournament
-from data.player import Player
-from data.util import Color, NeedsUpload, TournamentRating
+from data.family import Family
+from data.player import Player, FederationTuple, LeagueTuple, ClubTuple
+from data.screen import Screen
+from data.util import Color, NeedsUpload, TournamentRating, PlayerFFELicence, PlayerGender
 from data.util import TournamentPairing, Result
 from database.papi import PapiDatabase
 from database.sqlite import EventDatabase
@@ -64,7 +65,6 @@ class Tournament:
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
         self._papi_read = False
-        self._players_by_name: list[Player] | None = None
 
     @property
     def id(self) -> int:
@@ -236,20 +236,69 @@ class Tournament:
         return self._players_by_id
 
     @cached_property
+    def players_by_ffe_licence_number(self) -> dict[str, Player]:
+        return {
+            player.ffe_licence_number: player for player in self.players_by_id.values() if player.ffe_licence_number
+        }
+
+    @cached_property
+    def players_by_ffe_id(self) -> dict[int, Player]:
+        return {player.ffe_id: player for player in self.players_by_id.values() if player.ffe_id}
+
+    @cached_property
+    def players_by_fide_id(self) -> dict[int, Player]:
+        return {player.fide_id: player for player in self.players_by_id.values() if player.fide_id}
+
+    @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
-        if self._players_by_name is None:
-            self._players_by_name = sorted(
-                list(self.players_by_id.values())[1:], key=lambda player: (player.last_name, player.first_name))
-        return self._players_by_name
+        return sorted(list(self.players_by_id.values()), key=lambda player: (player.last_name, player.first_name))
 
     @cached_property
     def players_by_name_without_unpaired(self) -> list[Player]:
-        if self._players_by_name is None:
-            self._players_by_name = sorted([
-                player for player in list(self.players_by_id.values())[1:]
+        return sorted([
+                player for player in list(self.players_by_id.values())
                 if not self.current_round or player.board_id
             ], key=lambda p: (p.last_name, p.first_name))
-        return self._players_by_name
+
+    @cached_property
+    def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
+        """ Returns the number of players by FFE licence. """
+        counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
+        for player in self.players_by_id.values():
+            counter[player.ffe_licence] += 1
+        return counter
+
+    @cached_property
+    def gender_counts(self) -> Counter[PlayerGender]:
+        """ Returns the number of players by gender. """
+        counter: Counter[PlayerGender] = Counter[PlayerGender]()
+        for player in self.players_by_id.values():
+            counter[player.gender] += 1
+        return counter
+
+    @cached_property
+    def federation_counts(self) -> Counter[FederationTuple]:
+        """ Returns the number of players by federation. """
+        counter: Counter[FederationTuple] = Counter[FederationTuple]()
+        for player in self.players_by_id.values():
+            counter[player.federation_tuple] += 1
+        return counter
+
+    @cached_property
+    def league_counts(self) -> Counter[LeagueTuple]:
+        """ Returns the number of players by league. """
+        counter: Counter[LeagueTuple] = Counter[LeagueTuple]()
+        for player in self.players_by_id.values():
+            counter[player.league_tuple] += 1
+        return counter
+
+    @cached_property
+    def club_counts(self) -> Counter[ClubTuple]:
+        """ Returns the number of players by club. """
+        counter: Counter[ClubTuple] = Counter[ClubTuple]()
+        for player in self.players_by_id.values():
+            counter[player.club_tuple] += 1
+        return counter
 
     @property
     def current_round(self) -> int | None:
@@ -282,11 +331,11 @@ class Tournament:
         return self._unpaired_players
 
     @cached_property
-    def dependent_families(self) -> list['Family']:
+    def dependent_families(self) -> list[Family]:
         return [family for family in self.event.families_by_id.values() if family.tournament.id == self.id]
 
     @cached_property
-    def dependent_screens(self) -> list['Screen']:
+    def dependent_screens(self) -> list[Screen]:
         dependent_screens = []
         for screen in self.event.basic_screens_by_id.values():
             for screen_set in screen.screen_sets_sorted_by_order:
@@ -320,7 +369,9 @@ class Tournament:
                     self._rating_limit1,
                     self._rating_limit2
                 ) = papi_database.read_info()
-                self._players_by_id = papi_database.read_players(self._rating, self._rounds)
+                self._players_by_id = papi_database.read_players(self.id, self._rating, self._rounds)
+            for player in self._players_by_id.values():
+                player.tournament = self
         else:
             self._rounds = 0
             self._players_by_id = {}
@@ -329,7 +380,6 @@ class Tournament:
             self._rating_limit2 = None
             self._boards = []
             self._unpaired_players = []
-            self._players_by_name = []
         self._papi_read = True
         self._calculate_current_round()
         self._set_players_illegal_moves()  # load illegal moves for the current round
@@ -348,14 +398,12 @@ class Tournament:
                 'results_missing': False,
             }
             for player in self._players_by_id.values():
-                if player.id != 1:
-                    color, opponent_id, result = player.pairings[round_]
-                    if color in ['W', 'B', ]:
+                if player.ref_id != 1:
+                    pairing: Pairing = player.pairings[round_]
+                    if pairing.color in ['W', 'B', ]:
                         round_infos[round_]['pairings_found'] = True
                         paired_rounds.append(round_)
-                    # NOTE(Amaras) Why is it called RESULT_NOT_PAIRED if it also
-                    # represents a missing result?
-                    if result == Result.NOT_PAIRED and opponent_id is not None:
+                    if pairing.result == Result.NO_RESULT and pairing.opponent_id is not None:
                         round_infos[round_]['results_missing'] = True
                     if round_infos[round_]['pairings_found'] and round_infos[round_]['results_missing']:
                         break
@@ -371,7 +419,7 @@ class Tournament:
 
     def _calculate_points(self):
         for player in self._players_by_id.values():
-            if player.id == 1:
+            if player.ref_id == 1:
                 continue
             # real points
             player.compute_points(self._current_round)
@@ -393,7 +441,7 @@ class Tournament:
                 elif self._current_round == 2 and player.rating < self.rating_limit1:
                     vpoints = 0.5
             elif self._pairing == TournamentPairing.SAD:
-                # Before the second to last round, we we remove the virtual
+                # Before the second to last round, we remove the virtual
                 # points, and use a simple Swiss Dutch system.
                 if self._current_round <= self._rounds - 2:
                     # Each 1.5 points earned, virtual points go up by 0.5
@@ -419,7 +467,7 @@ class Tournament:
                         vpoints = min(2.0, 1.0 + potential_vpoints)
                     else:
                         # Group C players start with 0 points
-                        # Players cannor have more than 2 points
+                        # Players cannot have more than 2 points
                         vpoints = min(2.0, potential_vpoints)
                     if 2 * player.points >= self._rounds:
                         # If a player gets at least half the possible score,
@@ -540,7 +588,7 @@ class Tournament:
         """Stores the given result for the given `board` in the current round.
         Stores the `white_result` directly, and uses the opposite result
         as the black's result.
-        Assumes that no asymetric result was entered."""
+        Assumes that no asymmetric result was entered."""
         black_result = white_result.opposite_result
         with PapiDatabase(self.file, write=True) as papi_database:
             papi_database.add_board_result(board.white_player.id, self._current_round, white_result)
@@ -577,17 +625,17 @@ class Tournament:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
                 event_database.delete_tournament_stored_skipped_rounds(self.id)
                 papi_database.write_chessevent_info(chessevent_tournament)
-                player_id: int = 1
+                player_papi_id: int = 1
                 for chessevent_player in chessevent_tournament.players:
-                    player_id += 1
+                    player_papi_id += 1
                     event_database.add_player_stored_skipped_rounds(
-                        self.id, player_id, chessevent_player.skipped_rounds)
+                        self.id, player_papi_id, chessevent_player.skipped_rounds)
                     papi_database.add_chessevent_player(
-                        player_id, chessevent_player, chessevent_tournament.check_in_started)
+                        player_papi_id, chessevent_player, chessevent_tournament.check_in_started)
                 event_database.set_tournament_last_chessevent_download_md5(self.id, chessevent_download_md5)
                 event_database.commit()
                 papi_database.commit()
-        return player_id - 1
+        return player_papi_id - 1
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`.
@@ -598,3 +646,38 @@ class Tournament:
                 event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
                 event_database.commit()
                 papi_database.commit()
+
+    def read_player_dict(
+            self,
+            player_papi_id: int,
+    ) -> dict[str, str | int | float | None]:
+        """Reads a player from the Papi database and returns it as a dict
+        (used to move players from one tournament to another one)."""
+        with PapiDatabase(self.file, write=True) as papi_database:
+            return papi_database.read_player_dict(player_papi_id)
+
+    def add_player_from_dict(
+            self,
+            data: dict[str, str | int | float | None],
+    ) -> int:
+        """Takes the information of a player extracted from another Papi database, changes the Papi ID
+         and stores in the event database for this tournament. Returns the Papi ID set."""
+        with PapiDatabase(self.file, write=True) as papi_database:
+            player_papi_id: int = papi_database.next_player_papi_id
+            data['Ref'] = player_papi_id
+            papi_database.write_player_dict(data)
+            papi_database.commit()
+        return player_papi_id
+
+    def delete_player(
+            self,
+            player_papi_id: int,
+            return_deleted_data: bool = False
+    ) -> dict[str, str | int | float | None] | None:
+        """Removes a player from the tournament, returns the deleted data as a dict if needed
+        (used to move players from one tournament to another one)."""
+        with PapiDatabase(self.file, write=True) as papi_database:
+            data: dict[str, str | int | float | None] | None = papi_database.delete_player(
+                player_papi_id, return_deleted_data)
+            papi_database.commit()
+            return data
