@@ -474,3 +474,19 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ The ChessEvent download URL. """
     chessevent_download_url: str = 'https://chessevent.echecs-bretagne.fr/download'
+
+    """ The default filter for the players columns. """
+    default_players_filter_columns: list['str'] = [
+        'federation',
+        'league',
+        'club',
+        'yob',
+        'mail',
+        'phone',
+        'gender',
+        'fide',
+        'ffe',
+        'check_in',
+        'tournament',
+        'history',
+    ]

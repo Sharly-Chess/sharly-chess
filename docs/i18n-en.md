@@ -13,8 +13,8 @@
 
 | locale=`en` | English <img src="../src/web/static/images/locales/en.svg" style="height: 1em;"/> |
 |--|:--:|
-|Empty mandatory messages|0/33|
-|Empty messages|899/932|
+|Empty mandatory messages|0/47|
+|Empty messages|899/946|
 
 ## Empty mandatory messages (-)
 

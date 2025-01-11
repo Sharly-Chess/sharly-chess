@@ -1,0 +1,85 @@
+<form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+    <span class="dropdown-center" >
+        <button class="btn btn-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+        ><i
+                class="bi-layout-three-columns"
+                {{ tooltip_attributes('info', _('Choose the columns displayed.'), 'top') }}
+        ></i></button>
+        <ul class="dropdown-menu federation p-0">
+            {% with name='admin_players_filter_columns' %}
+                {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
+                <input type="hidden" name="{{ name }}" value="" />
+                <li class="dropdown-item text-nowrap">
+                    <input
+                        type="checkbox"
+                        {% if admin_players_filter_columns|length == admin_players_columns|length - 2 %}checked{% endif %}
+                        onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                    />
+                    <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                        <i class="bi-check-lg"></i>
+                        {{ _('OK') }}
+                    </button>
+                </li>
+                <li class="dropdown-divider m-0"></li>
+                {% for column in admin_players_columns %}
+                    <li class="dropdown-item text-nowrap">
+                        <input
+                            type="checkbox"
+                            id="{{ name }}-{{ loop.index }}"
+                            name="{% if column not in ['name', 'rating', ] %}{{ name }}{% endif %}"
+                            value="{{ column }}"
+                            {% if column in ['name', 'rating', ] or column in admin_players_filter_columns %}checked{% endif %}
+                            {% if column in ['name', 'rating', ] %}disabled{% endif %}
+                            class="{% if column not in ['name', 'rating', ] %}{{ name }}{% endif %} {{ name}}_{{ column }}"
+                        />
+                        <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
+                            {% if column == 'mail' %}
+                                <i class="bi-envelope-check"></i> {{ _('Mail *** MAIL FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'phone' %}
+                                <i class="bi-telephone"></i> {{ _('Phone *** PHONE FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'name' %}
+                                <i class="bi-sort-alpha-down"></i> {{ _('Name *** NAME FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'rating' %}
+                                <i class="bi-sort-numeric-down"></i> {{ _('Rating *** RATING FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'federation' %}
+                                <i class="bi-house"></i> {{ _('Federation *** FEDERATION FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'league' %}
+                                <i class="bi-house"></i> {{ _('League *** LEAGUE FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'club' %}
+                                <i class="bi-house"></i> {{ _('Club *** CLUB FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'yob' %}
+                                <i class="bi-calendar"></i> {{ _('Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'gender' %}
+                                <i class="bi-person-standing-dress"></i><i class="bi-person-standing"></i> {{ _('Gender *** GENDER FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'fide' %}
+                                <img
+                                        src="{{ url_for('static', file_path='/images/federations/fide.svg') }}"
+                                        style="height: 1.2em"
+                                        class="p-0"
+                                /> {{ _('Fide *** FIDE FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'ffe' %}
+                                <img
+                                        src="{{ url_for('static', file_path='/images/federations/ffe.png') }}"
+                                        style="height: 1.2em"
+                                        class="p-0"
+                                /> {{ _('FFE *** FFE FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'check_in' %}
+                                <i class="bi-check-circle"></i> {{ _('Check-in *** CHECK-IN FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'owed_paid' %}
+                                <i class="bi-currency-exchange"></i> {{ _('Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'tournament' %}
+                                <i class="bi-people"></i> {{ _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'comment' %}
+                                <i class="bi-chat"></i> {{ _('Comment *** COMMENT FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'history' %}
+                                <i class="bi-0-square"></i><i class="bi-1-square-fill"></i> {{ _('History *** HISTORY FOR PLAYERS COLUMNS') }}
+                            {% else %}
+                                ???
+                            {% endif %}
+                        </label>
+                    </li>
+                {% endfor %}
+            {% endwith %}
+        </ul>
+    </span>
+</form>

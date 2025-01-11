@@ -1263,6 +1263,7 @@ msgstr "Inizializzazione di una sessione a [{url}]..."
 #: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html:21
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:21
+#: src/web/templates/admin_players/admin_players_filter_columns.html:24
 #: src/web/templates/admin_players/admin_players_filter_federations.html:21
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22
 #: src/web/templates/admin_players/admin_players_filter_genders.html:22
@@ -1484,28 +1485,28 @@ msgstr "Evento di scacchi ({num})"
 msgid "Messages ({num})"
 msgstr "Messaggi ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:580
+#: src/web/controllers/admin/event_admin_controller.py:583
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Rinomina del database non riuscita: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:587
+#: src/web/controllers/admin/event_admin_controller.py:590
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "L'evento [{old_uniq_id}] è stato rinominato ([{new_uniq_id}]) e aggiornato."
 
-#: src/web/controllers/admin/event_admin_controller.py:590
+#: src/web/controllers/admin/event_admin_controller.py:593
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "Evento [{uniq_id}] è stato aggiornato."
 
-#: src/web/controllers/admin/event_admin_controller.py:598
+#: src/web/controllers/admin/event_admin_controller.py:601
 #: src/web/controllers/admin/index_admin_controller.py:676
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Evento [{uniq_id}] è stato creato."
 
-#: src/web/controllers/admin/event_admin_controller.py:608
+#: src/web/controllers/admin/event_admin_controller.py:611
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Evento [{uniq_id}] è stato eliminato, il database è stato archiviato ({arch})."
@@ -1842,7 +1843,7 @@ msgstr "Configurazione papi-web"
 # di recupero [{tournament_uniq_id}]...]
 #: src/web/controllers/admin/player_admin_controller.py:436
 #: src/web/controllers/admin/player_admin_controller.py:494
-#: src/web/templates/admin_players.html:147
+#: src/web/templates/admin_players.html:136
 #, ai_translation, error, fuzzy
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Giocatore [{last_name} {first_name}] ha accoppiamenti nel torneo [{tournament_uniq_id}]."
@@ -2190,8 +2191,6 @@ msgstr "Modifica le proprietà della connessione ChessEvent."
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:131
-#: src/web/templates/admin_players.html:140
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -2336,7 +2335,7 @@ msgstr "Aggiorna"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:160
+#: src/web/templates/admin_players.html:149
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -2359,7 +2358,8 @@ msgid "Cancel"
 msgstr "Annulla"
 
 #: src/web/templates/admin_chessevents.html:10
-#: src/web/templates/admin_events.html:9 src/web/templates/admin_players.html:8
+#: src/web/templates/admin_events.html:9
+#: src/web/templates/admin_players.html:10
 #: src/web/templates/admin_screens.html:42
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
@@ -3377,94 +3377,78 @@ msgstr "Niente messaggi."
 msgid "Pairings"
 msgstr "Abbinamenti"
 
-#: src/web/templates/admin_players.html:5
+#: src/web/templates/admin_players.html:6
 #: src/web/templates/admin_screen_card.html:183
 #, ai_translation
 msgid "Players"
 msgstr "Giocatori"
 
-#: src/web/templates/admin_players.html:19
+#: src/web/templates/admin_players.html:21
 #, ai_translation, fuzzy
 msgid "Add a player to the event."
 msgstr "Aggiungi un timer all'evento."
 
-#: src/web/templates/admin_players.html:28
+#: src/web/templates/admin_players.html:30
 #, ai_translation, fuzzy
 msgid "Create a player"
 msgstr "Crea un timer"
 
-#: src/web/templates/admin_players.html:46
+#: src/web/templates/admin_players.html:47
 #, ai_translation, fuzzy
 msgid "Clear all the filters."
 msgstr "tutti i giocatori"
 
-#: src/web/templates/admin_players.html:50
+#: src/web/templates/admin_players.html:51
 #, ai_translation
-msgid "Name *** NAME COLUMN TITLE FOR PLAYERS"
+msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Nome"
 
-#: src/web/templates/admin_players.html:54
+#: src/web/templates/admin_players.html:55
 #, ai_translation
-msgid "Elo *** ELO COLUMN TITLE FOR PLAYERS"
+msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "EloCity name (optional, probably does not need a translation)"
 
-#: src/web/templates/admin_players.html:59
+#: src/web/templates/admin_players.html:60
 #, ai_translation, fuzzy
-msgid "Origin *** ORIGIN COLUMN TITLE FOR PLAYERS"
+msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr "EloCity name (optional, probably does not need a translation)"
 
-#: src/web/templates/admin_players.html:74
+#: src/web/templates/admin_players.html:75
 #, ai_translation
-msgid "YOB *** YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS"
+msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
-#: src/web/templates/admin_players.html:85
+#: src/web/templates/admin_players.html:86
 #, ai_translation, fuzzy
-msgid "Fide *** FIDE COLUMN TITLE FOR PLAYERS"
+msgid "Fide *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Pagato"
 
-#: src/web/templates/admin_players.html:88
+#: src/web/templates/admin_players.html:89
 #, ai_translation, fuzzy
-msgid "FFE *** FFE COLUMN TITLE FOR PLAYERS"
+msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "EloCity name (optional, probably does not need a translation)"
-
-#: src/web/templates/admin_players.html:95
-#, ai_translation
-msgid "Owed *** OWED COLUMN TITLE FOR PLAYERS"
-msgstr "Ahia"
 
 #: src/web/templates/admin_players.html:96
 #, ai_translation
-msgid "Paid *** PAID COLUMN TITLE FOR PLAYERS"
+msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
+msgstr "Ahia"
+
+#: src/web/templates/admin_players.html:97
+#, ai_translation
+msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Pagato"
 
-#: src/web/templates/admin_players.html:102
-#, ai_translation
-msgid "Comment *** COMMENT COLUMN TITLE FOR PLAYERS"
-msgstr "Commento"
-
-#: src/web/templates/admin_players.html:103
-#, ai_translation, fuzzy
-msgid "History *** HISTORY COLUMN TITLE FOR PLAYERS"
-msgstr "EloCity name (optional, probably does not need a translation)"
-
-#: src/web/templates/admin_players.html:129
-#: src/web/templates/admin_players.html:138
-#, ai_translation, fuzzy
-msgid "Edit the player's properties."
-msgstr "Modifica le proprietà del timer."
-
-#: src/web/templates/admin_players.html:157
+#: src/web/templates/admin_players.html:146
 #, ai_translation, fuzzy
 msgid "Remove the player from the event."
 msgstr "Aggiungi un timer all'evento."
 
-#: src/web/templates/admin_players.html:169
+#: src/web/templates/admin_players.html:158
 #, ai_translation, fuzzy, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "%(mail)s (clicca per copiare negli appunti)."
 
-#: src/web/templates/admin_players.html:171
+#: src/web/templates/admin_players.html:160
 #, ai_translation, fuzzy
 msgid "No mail defined."
 msgstr "Nessun timer definito"
@@ -3498,24 +3482,24 @@ msgstr "Nessun timer definito"
 # m
 # g
 # u
-#: src/web/templates/admin_players.html:178
+#: src/web/templates/admin_players.html:167
 #, ai_translation, error, fuzzy, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "%(phone)s (clicca per copiare negli appunti)."
 
-#: src/web/templates/admin_players.html:180
+#: src/web/templates/admin_players.html:169
 #, ai_translation, fuzzy
 msgid "No phone defined."
 msgstr "Nessun timer definito"
 
 # Error: tokens differ between [Fide ID: %(fide_id)s (click to copy to the
 # clipboard).] and [%(mail)s (clicca per copiare negli appunti).]
-#: src/web/templates/admin_players.html:219
+#: src/web/templates/admin_players.html:208
 #, ai_translation, fuzzy, python-format
 msgid "Fide ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr "ID Fide: %(fide_id)s (clicca per copiare negli appunti)."
 
-#: src/web/templates/admin_players.html:222
+#: src/web/templates/admin_players.html:211
 #, ai_translation, fuzzy
 msgid "No Fide ID."
 msgstr "Nessun timer definito"
@@ -3551,22 +3535,22 @@ msgstr "Nessun timer definito"
 # u
 # Error: tokens differ between [FFE licence: %(ffe_licence_number)s (click to
 # copy to the clipboard).] and [%(phone)s (clicca per copiare negli appunti).]
-#: src/web/templates/admin_players.html:233
+#: src/web/templates/admin_players.html:222
 #, ai_translation, error, fuzzy, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "Licenza FFE: %(ffe_licence_number)s (clicca per copiare negli appunti)."
 
-#: src/web/templates/admin_players.html:237 src/web/templates/macros.j2:146
+#: src/web/templates/admin_players.html:226 src/web/templates/macros.j2:146
 #, ai_translation, fuzzy, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Tipo di licenza FFE sconosciuto [%(ffe_licence)s]"
 
-#: src/web/templates/admin_players.html:260
+#: src/web/templates/admin_players.html:249
 #, ai_translation, fuzzy
 msgid "Change the player's tournament."
 msgstr "Clonate il torneo."
 
-#: src/web/templates/admin_players.html:292
+#: src/web/templates/admin_players.html:281
 #, ai_translation, fuzzy
 msgid "No players."
 msgstr "Giocatori"
@@ -5039,6 +5023,86 @@ msgstr "Cancella il timer."
 msgid "Filter the clubs."
 msgstr "Filtra le mazze."
 
+#: src/web/templates/admin_players/admin_players_filter_columns.html:6
+msgid "Choose the columns displayed."
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:41
+#, ai_translation, fuzzy
+msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
+msgstr "Pagato"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:43
+#, ai_translation, fuzzy
+msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
+msgstr "Pagato"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:45
+#, ai_translation, fuzzy
+msgid "Name *** NAME FOR PLAYERS COLUMNS"
+msgstr "Nome"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:47
+msgid "Rating *** RATING FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:49
+#, ai_translation, fuzzy
+msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
+msgstr "Pagato"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:51
+msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:53
+#, ai_translation, fuzzy
+msgid "Club *** CLUB FOR PLAYERS COLUMNS"
+msgstr "EloCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:55
+#, ai_translation, fuzzy
+msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
+msgstr "YOB"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:57
+msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:63
+#, ai_translation, fuzzy
+msgid "Fide *** FIDE FOR PLAYERS COLUMNS"
+msgstr "Pagato"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:69
+#, ai_translation, fuzzy
+msgid "FFE *** FFE FOR PLAYERS COLUMNS"
+msgstr "EloCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:71
+msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:73
+#, ai_translation, fuzzy
+msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
+msgstr "Ahia"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:75
+#, ai_translation, fuzzy
+msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
+msgstr "Nome"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:77
+#, ai_translation, fuzzy
+msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
+msgstr "Commento"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:79
+#, ai_translation, fuzzy
+msgid "History *** HISTORY FOR PLAYERS COLUMNS"
+msgstr "EloCity name (optional, probably does not need a translation)"
+
 #: src/web/templates/admin_players/admin_players_filter_federations.html:7
 #, ai_translation, fuzzy
 msgid "Filter the federations."
@@ -5061,7 +5125,7 @@ msgstr "Filtra le leghe."
 
 #: src/web/templates/admin_players/admin_players_filter_tournaments.html:2
 #, ai_translation, fuzzy
-msgid "Tournament *** TOURNAMENT COLUMN TITLE FOR PLAYERS"
+msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
 msgstr "Nome"
 
 #: src/web/templates/admin_players/admin_players_filter_tournaments.html:9
@@ -5176,10 +5240,10 @@ msgstr "Traduzione"
 #~ msgid "Comment"
 #~ msgstr ""
 
-#~ msgid "Cat *** CATEGORY COLUMN TITLE FOR PLAYERS"
+#~ msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Gatto"
 
-#~ msgid "ID *** ID COLUMN TITLE FOR PLAYERS"
+#~ msgid "ID *** ID COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Pagato"
 
 #~ msgid "Option not set, by default [{ffe_upload_delay}]."
@@ -5194,10 +5258,10 @@ msgstr "Traduzione"
 #~ msgid "Apply"
 #~ msgstr ""
 
-#~ msgid "Federation *** FEDERATION COLUMN TITLE FOR PLAYERS"
+#~ msgid "Federation *** FEDERATION COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Ahia"
 
-#~ msgid "Gender *** GENDER COLUMN TITLE FOR PLAYERS"
+#~ msgid "Gender *** GENDER COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Ahia"
 
 #~ msgid "- *** NAME FOR FFE LICENCE NONE"
@@ -5236,16 +5300,16 @@ msgstr "Traduzione"
 #~ msgid "FFE licence A (compétition)"
 #~ msgstr ""
 
-#~ msgid "Check-in *** CHECK-IN COLUMN TITLE FOR PLAYERS"
+#~ msgid "Check-in *** CHECK-IN COLUMN HEADER FOR PLAYERS"
 #~ msgstr "CI"
 
-#~ msgid "# *** NUMBER COLUMN TITLE FOR PLAYERS"
+#~ msgid "# *** NUMBER COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Nome"
 
-#~ msgid "Licence *** LICENCE COLUMN TITLE FOR PLAYERS"
+#~ msgid "Licence *** LICENCE COLUMN HEADER FOR PLAYERS"
 #~ msgstr "CI"
 
-#~ msgid "FFE *** FFE COLUMN TITLE FOR PLAYERS"
+#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 #~ msgstr "EloCity name (optional, probably does not need a translation)"
 
 # Error: tokens differ between [Players (%(num)d/%(total)d)] and [Timer
@@ -5294,4 +5358,7 @@ msgstr "Traduzione"
 # clipboard).] and [%(phone)s (clicca per copiare negli appunti).]
 #~ msgid "%(ffe_licence_number)s (click to copy to the clipboard)."
 #~ msgstr ""
+
+#~ msgid "Edit the player's properties."
+#~ msgstr "Modifica le proprietà del timer."
 

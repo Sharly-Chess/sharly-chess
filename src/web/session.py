@@ -177,13 +177,23 @@ class SessionHandler:
     def get_session_admin_players_sort(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.ADMIN_PLAYERS_SORT_KEY, 'alpha')
 
+    ADMIN_PLAYERS_FILTER_COLUMNS_KEY: str = 'admin_players_filter_columns'
+
+    @classmethod
+    def set_session_admin_players_filter_columns(
+            cls, request: HTMXRequest, columns: list[str]):
+        request.session[cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY]: list[str] = columns
+
+    @classmethod
+    def get_session_admin_players_filter_columns(cls, request: HTMXRequest) -> list[str]:
+        return request.session.get(cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY, PapiWebConfig.default_players_filter_columns)
+
     ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY: str = 'admin_players_filter_federations'
 
     @classmethod
     def set_session_admin_players_filter_federations(
             cls, request: HTMXRequest, federation_tuples: list[FederationTuple]):
-        print(f'set_session_admin_players_filter_federations(ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, {[str(v) for v in federation_tuples]})')
-        request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY]: list[str] = federation_tuples
+        request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY]: list[FederationTuple] = federation_tuples
 
     @classmethod
     def get_session_admin_players_filter_federations(cls, request: HTMXRequest) -> list[FederationTuple]:
@@ -198,8 +208,7 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_players_filter_leagues(cls, request: HTMXRequest, league_tuples: list[LeagueTuple]):
-        print(f'set_session_admin_players_filter_leagues(ADMIN_PLAYERS_FILTER_LEAGUES_KEY, {[str(v) for v in league_tuples]})')
-        request.session[cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY]: list[str] = league_tuples
+        request.session[cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY]: list[LeagueTuple] = league_tuples
 
     @classmethod
     def get_session_admin_players_filter_leagues(cls, request: HTMXRequest) -> list[LeagueTuple]:
@@ -214,8 +223,7 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_players_filter_clubs(cls, request: HTMXRequest, club_tuples: list[ClubTuple]):
-        print(f'set_session_admin_players_filter_clubs(ADMIN_PLAYERS_FILTER_CLUBS_KEY, {[str(v) for v in club_tuples]})')
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY]: list[str] = club_tuples
+        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY]: list[ClubTuple] = club_tuples
 
     @classmethod
     def get_session_admin_players_filter_clubs(cls, request: HTMXRequest) -> list[ClubTuple]:

@@ -1003,6 +1003,7 @@ msgstr ""
 #: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html:21
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:21
+#: src/web/templates/admin_players/admin_players_filter_columns.html:24
 #: src/web/templates/admin_players/admin_players_filter_federations.html:21
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22
 #: src/web/templates/admin_players/admin_players_filter_genders.html:22
@@ -1181,24 +1182,24 @@ msgstr ""
 msgid "Messages ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:580
+#: src/web/controllers/admin/event_admin_controller.py:583
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:587
+#: src/web/controllers/admin/event_admin_controller.py:590
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:590
+#: src/web/controllers/admin/event_admin_controller.py:593
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:598
+#: src/web/controllers/admin/event_admin_controller.py:601
 #: src/web/controllers/admin/index_admin_controller.py:676
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:608
+#: src/web/controllers/admin/event_admin_controller.py:611
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
@@ -1455,7 +1456,7 @@ msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py:436
 #: src/web/controllers/admin/player_admin_controller.py:494
-#: src/web/templates/admin_players.html:147
+#: src/web/templates/admin_players.html:136
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -1730,8 +1731,6 @@ msgstr ""
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:131
-#: src/web/templates/admin_players.html:140
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -1857,7 +1856,7 @@ msgstr ""
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:160
+#: src/web/templates/admin_players.html:149
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -1878,7 +1877,8 @@ msgid "Cancel"
 msgstr ""
 
 #: src/web/templates/admin_chessevents.html:10
-#: src/web/templates/admin_events.html:9 src/web/templates/admin_players.html:8
+#: src/web/templates/admin_events.html:9
+#: src/web/templates/admin_players.html:10
 #: src/web/templates/admin_screens.html:42
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
@@ -2728,114 +2728,101 @@ msgstr ""
 msgid "Pairings"
 msgstr ""
 
-#: src/web/templates/admin_players.html:5
+#: src/web/templates/admin_players.html:6
 #: src/web/templates/admin_screen_card.html:183
 msgid "Players"
 msgstr ""
 
-#: src/web/templates/admin_players.html:19
+#: src/web/templates/admin_players.html:21
 msgid "Add a player to the event."
 msgstr ""
 
-#: src/web/templates/admin_players.html:28
+#: src/web/templates/admin_players.html:30
 msgid "Create a player"
 msgstr ""
 
-#: src/web/templates/admin_players.html:46
+#: src/web/templates/admin_players.html:47
 msgid "Clear all the filters."
 msgstr ""
 
-#: src/web/templates/admin_players.html:50
-msgid "Name *** NAME COLUMN TITLE FOR PLAYERS"
+#: src/web/templates/admin_players.html:51
+msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:54
-msgid "Elo *** ELO COLUMN TITLE FOR PLAYERS"
+#: src/web/templates/admin_players.html:55
+msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:59
-msgid "Origin *** ORIGIN COLUMN TITLE FOR PLAYERS"
+#: src/web/templates/admin_players.html:60
+msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:74
-msgid "YOB *** YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS"
+#: src/web/templates/admin_players.html:75
+msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:85
-msgid "Fide *** FIDE COLUMN TITLE FOR PLAYERS"
+#: src/web/templates/admin_players.html:86
+msgid "Fide *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:88
-msgid "FFE *** FFE COLUMN TITLE FOR PLAYERS"
-msgstr ""
-
-#: src/web/templates/admin_players.html:95
-msgid "Owed *** OWED COLUMN TITLE FOR PLAYERS"
+#: src/web/templates/admin_players.html:89
+msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
 #: src/web/templates/admin_players.html:96
-msgid "Paid *** PAID COLUMN TITLE FOR PLAYERS"
+msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:102
-msgid "Comment *** COMMENT COLUMN TITLE FOR PLAYERS"
+#: src/web/templates/admin_players.html:97
+msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:103
-msgid "History *** HISTORY COLUMN TITLE FOR PLAYERS"
-msgstr ""
-
-#: src/web/templates/admin_players.html:129
-#: src/web/templates/admin_players.html:138
-msgid "Edit the player's properties."
-msgstr ""
-
-#: src/web/templates/admin_players.html:157
+#: src/web/templates/admin_players.html:146
 msgid "Remove the player from the event."
 msgstr ""
 
-#: src/web/templates/admin_players.html:169
+#: src/web/templates/admin_players.html:158
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:171
+#: src/web/templates/admin_players.html:160
 msgid "No mail defined."
 msgstr ""
 
-#: src/web/templates/admin_players.html:178
+#: src/web/templates/admin_players.html:167
 #, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:180
+#: src/web/templates/admin_players.html:169
 msgid "No phone defined."
 msgstr ""
 
-#: src/web/templates/admin_players.html:219
+#: src/web/templates/admin_players.html:208
 #, python-format
 msgid "Fide ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:222
+#: src/web/templates/admin_players.html:211
 msgid "No Fide ID."
 msgstr ""
 
-#: src/web/templates/admin_players.html:233
+#: src/web/templates/admin_players.html:222
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:237 src/web/templates/macros.j2:146
+#: src/web/templates/admin_players.html:226 src/web/templates/macros.j2:146
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
-#: src/web/templates/admin_players.html:260
+#: src/web/templates/admin_players.html:249
 msgid "Change the player's tournament."
 msgstr ""
 
-#: src/web/templates/admin_players.html:292
+#: src/web/templates/admin_players.html:281
 msgid "No players."
 msgstr ""
 
@@ -4065,6 +4052,74 @@ msgstr ""
 msgid "Filter the clubs."
 msgstr ""
 
+#: src/web/templates/admin_players/admin_players_filter_columns.html:6
+msgid "Choose the columns displayed."
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:41
+msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:43
+msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:45
+msgid "Name *** NAME FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:47
+msgid "Rating *** RATING FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:49
+msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:51
+msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:53
+msgid "Club *** CLUB FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:55
+msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:57
+msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:63
+msgid "Fide *** FIDE FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:69
+msgid "FFE *** FFE FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:71
+msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:73
+msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:75
+msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:77
+msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:79
+msgid "History *** HISTORY FOR PLAYERS COLUMNS"
+msgstr ""
+
 #: src/web/templates/admin_players/admin_players_filter_federations.html:7
 msgid "Filter the federations."
 msgstr ""
@@ -4082,7 +4137,7 @@ msgid "Filter the leagues."
 msgstr ""
 
 #: src/web/templates/admin_players/admin_players_filter_tournaments.html:2
-msgid "Tournament *** TOURNAMENT COLUMN TITLE FOR PLAYERS"
+msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
 #: src/web/templates/admin_players/admin_players_filter_tournaments.html:9

@@ -13,18 +13,28 @@
 
 | locale=`sv` | Svenska <img src="../src/web/static/images/locales/sv.svg" style="height: 1em;"/> |
 |--|:--:|
-|Töm obligatoriska meddelanden|0/33|
-|Tomma meddelanden|0/932|
-|Message flagged [ai_translation]|932/932|
-|Message flagged [fuzzy]|49/932|
+|Töm obligatoriska meddelanden|4/47|
+|Tomma meddelanden|1/946|
+|Message flagged [ai_translation]|941/946|
+|Message flagged [fuzzy]|59/946|
 
-## Töm obligatoriska meddelanden (-)
+## Töm obligatoriska meddelanden (4)
 
-## Tomma meddelanden (-)
+|Meddelande- id|Platser|
+|--|--|
+|Rating \*\*\* RATING FOR PLAYERS COLUMNS|src/web/templates/admin_players/admin_players_filter_columns.html:47|
+|League \*\*\* LEAGUE FOR PLAYERS COLUMNS|src/web/templates/admin_players/admin_players_filter_columns.html:51|
+|Gender \*\*\* GENDER FOR PLAYERS COLUMNS|src/web/templates/admin_players/admin_players_filter_columns.html:57|
+|Check-in \*\*\* CHECK-IN FOR PLAYERS COLUMNS|src/web/templates/admin_players/admin_players_filter_columns.html:71|
+## Tomma meddelanden (1)
 
-## Flaggade meddelanden (981)
+|Meddelande- id|Platser|
+|--|--|
+|Choose the columns displayed.|src/web/templates/admin_players/admin_players_filter_columns.html:6|
 
-### Meddelande flaggat [ai_translation] (932)
+## Flaggade meddelanden (1000)
+
+### Meddelande flaggat [ai_translation] (941)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -265,7 +275,7 @@
 |End of upload (Ctrl-C)|Slut på uppladdning (Ctrl-C)|src/ffe/action_selector.py:188|
 |Content of URL [{url}] is not valid (input[id=[{id]] not found).|Innehållet i webbadressen [{url}] är inte giltigt (input[id=[{id]] hittades inte).|src/ffe/ffe_session.py:142|
 |Initializing a session to [{url}]...|Initiera en session till [{url}]...|src/ffe/ffe_session.py:156|
-|OK|Okej.|src/ffe/ffe_session.py:164<br>src/ffe/ffe_session.py:205<br>src/web/templates/admin_players/admin_players_filter_check_ins.html:21<br>src/web/templates/admin_players/admin_players_filter_clubs.html:21<br>src/web/templates/admin_players/admin_players_filter_federations.html:21<br>src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22<br>src/web/templates/admin_players/admin_players_filter_genders.html:22<br>src/web/templates/admin_players/admin_players_filter_leagues.html:21<br>src/web/templates/admin_players/admin_players_filter_tournaments.html:23|
+|OK|Okej.|src/ffe/ffe_session.py:164<br>src/ffe/ffe_session.py:205<br>src/web/templates/admin_players/admin_players_filter_check_ins.html:21<br>src/web/templates/admin_players/admin_players_filter_clubs.html:21<br>src/web/templates/admin_players/admin_players_filter_columns.html:24<br>src/web/templates/admin_players/admin_players_filter_federations.html:21<br>src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22<br>src/web/templates/admin_players/admin_players_filter_genders.html:22<br>src/web/templates/admin_players/admin_players_filter_leagues.html:21<br>src/web/templates/admin_players/admin_players_filter_tournaments.html:23|
 |Authenticating...|Behörighetskontroll...|src/ffe/ffe_session.py:170|
 |Authentication failed.|Behörighetskontroll misslyckades.|src/ffe/ffe_session.py:200|
 |Tournament [{ffe_id}]:|Turnering [{ffe_id}]:|src/ffe/ffe_session.py:210|
@@ -308,11 +318,11 @@
 |Timers ({num})|Timers ({num})|src/web/controllers/admin/event_admin_controller.py:137|
 |ChessEvent ({num})|ChessEvent ({num})|src/web/controllers/admin/event_admin_controller.py:141|
 |Messages ({num})|Meddelanden ({num})|src/web/controllers/admin/event_admin_controller.py:145|
-|Renaming the database failed: {ex}.|Byte av databas misslyckades: {ex}.|src/web/controllers/admin/event_admin_controller.py:580|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Händelse [{old_uniq_id}] har bytt namn ([{new_uniq_id}]) och uppdaterats.|src/web/controllers/admin/event_admin_controller.py:587|
-|Event [{uniq_id}] has been updated.|Händelse [{uniq_id}] har uppdaterats.|src/web/controllers/admin/event_admin_controller.py:590|
-|Event [{uniq_id}] has been created.|Händelse [{uniq_id}] har skapats.|src/web/controllers/admin/event_admin_controller.py:598<br>src/web/controllers/admin/index_admin_controller.py:676|
-|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch}).|src/web/controllers/admin/event_admin_controller.py:608|
+|Renaming the database failed: {ex}.|Byte av databas misslyckades: {ex}.|src/web/controllers/admin/event_admin_controller.py:583|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Händelse [{old_uniq_id}] har bytt namn ([{new_uniq_id}]) och uppdaterats.|src/web/controllers/admin/event_admin_controller.py:590|
+|Event [{uniq_id}] has been updated.|Händelse [{uniq_id}] har uppdaterats.|src/web/controllers/admin/event_admin_controller.py:593|
+|Event [{uniq_id}] has been created.|Händelse [{uniq_id}] har skapats.|src/web/controllers/admin/event_admin_controller.py:601<br>src/web/controllers/admin/index_admin_controller.py:676|
+|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch}).|src/web/controllers/admin/event_admin_controller.py:611|
 |Please enter the family ID.|Vänligen ange familjens ID.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|Tecken [{char}] är inte tillåtet.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:233<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:75|
 |Family [{uniq_id}] already exists.|Familjen [{uniq_id}] finns redan.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
@@ -362,7 +372,7 @@
 |Archived events ({num})|Arkiverade evenemang ({num})|src/web/controllers/admin/index_admin_controller.py:550|
 |No archived events.|Inga arkiverade händelser.|src/web/controllers/admin/index_admin_controller.py:554|
 |Papi-web configuration|Inställning av papi-webben|src/web/controllers/admin/index_admin_controller.py:558<br>src/web/templates/admin_config.html:4|
-|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:436<br>src/web/controllers/admin/player_admin_controller.py:494<br>src/web/templates/admin_players.html:147|
+|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:436<br>src/web/controllers/admin/player_admin_controller.py:494<br>src/web/templates/admin_players.html:136|
 |Papi file [{tournament_file}] not found.|Papi-filen [{tournament_file}] hittades inte.|src/web/controllers/admin/player_admin_controller.py:444|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:448|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] redan närvarande i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:453|
@@ -427,7 +437,7 @@
 |ChessEvent password: %(chessevent_password)s|ChessEvent lösenord: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:17|
 |ChessEvent event: %(chessevent_event)s|ChessEvenemang: %(chessevent_event)s|src/web/templates/admin_chessevent_card.html:20|
 |Edit the properties of the ChessEvent connection.|Redigera egenskaperna hos ChessEvent-anslutningen.|src/web/templates/admin_chessevent_card.html:25|
-|Edit|Redigera|src/web/templates/admin_chessevent_card.html:33<br>src/web/templates/admin_event_config.html:15<br>src/web/templates/admin_family_card.html:125<br>src/web/templates/admin_players.html:131<br>src/web/templates/admin_players.html:140<br>src/web/templates/admin_rotator_card.html:92<br>src/web/templates/admin_screen_card.html:160<br>src/web/templates/admin_timer_card.html:43<br>src/web/templates/admin_tournament_card.html:136|
+|Edit|Redigera|src/web/templates/admin_chessevent_card.html:33<br>src/web/templates/admin_event_config.html:15<br>src/web/templates/admin_family_card.html:125<br>src/web/templates/admin_rotator_card.html:92<br>src/web/templates/admin_screen_card.html:160<br>src/web/templates/admin_timer_card.html:43<br>src/web/templates/admin_tournament_card.html:136|
 |Clone the ChessEvent connection.|Clone the ChessEvent-anslutningen.|src/web/templates/admin_chessevent_card.html:39|
 |Delete the ChessEvent connection.|Ta bort ChessEvent-anslutningen.|src/web/templates/admin_chessevent_card.html:48|
 |ChessEvent connection creation|ChessEvent-anslutningsskapande|src/web/templates/admin_chessevent_modal.html:18|
@@ -449,9 +459,9 @@
 |The name of the event on the ChessEvent password.|Namnet på händelsen på lösenordet ChessEvent.|src/web/templates/admin_chessevent_modal.html:143|
 |Create|Skapa|src/web/templates/admin_chessevent_modal.html:166<br>src/web/templates/admin_event_modal.html:561<br>src/web/templates/admin_family_modal.html:480<br>src/web/templates/admin_rotator_modal.html:221<br>src/web/templates/admin_screen_modal.html:492<br>src/web/templates/admin_timer_modal.html:82<br>src/web/templates/admin_tournament_modal.html:431|
 |Update|Uppdatera|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
-|Delete|Ta bort|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_players.html:160<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
+|Delete|Ta bort|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_players.html:149<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
 |Cancel|Avbryt|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
-|Refresh this page.|Uppdatera den här sidan.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_players.html:8<br>src/web/templates/admin_screens.html:42<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
+|Refresh this page.|Uppdatera den här sidan.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_players.html:10<br>src/web/templates/admin_screens.html:42<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Lägg till en ChessEvent-anslutning till evenemanget.|src/web/templates/admin_chessevents.html:21|
 |Create a ChessEvent connection|Skapa en schackevent-anslutning|src/web/templates/admin_chessevents.html:30|
 |No ChessEvent connections.|Inga ChessEvent-förbindelser.|src/web/templates/admin_chessevents.html:45<br>src/web/templates/admin_tournament_modal.html:261|
@@ -626,32 +636,29 @@
 |Message|Meddelande|src/web/templates/admin_messages.html:5|
 |No messages.|Inga meddelanden.|src/web/templates/admin_messages.html:44|
 |Pairings|Paraplyer|src/web/templates/admin_pairings.html:1|
-|Players|Spelare|src/web/templates/admin_players.html:5<br>src/web/templates/admin_screen_card.html:183|
-|Add a player to the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:19|
-|Create a player|Skapa en timer|src/web/templates/admin_players.html:28|
-|Clear all the filters.|alla spelare|src/web/templates/admin_players.html:46|
-|Name \*\*\* NAME COLUMN TITLE FOR PLAYERS|Beteckning|src/web/templates/admin_players.html:50|
-|Elo \*\*\* ELO COLUMN TITLE FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:54|
-|Origin \*\*\* ORIGIN COLUMN TITLE FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:59|
-|YOB \*\*\* YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS|HUVUDBYGGNAD|src/web/templates/admin_players.html:74|
-|Fide \*\*\* FIDE COLUMN TITLE FOR PLAYERS|Betald|src/web/templates/admin_players.html:85|
-|FFE \*\*\* FFE COLUMN TITLE FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:88|
-|Owed \*\*\* OWED COLUMN TITLE FOR PLAYERS|På grund av detta|src/web/templates/admin_players.html:95|
-|Paid \*\*\* PAID COLUMN TITLE FOR PLAYERS|Betald|src/web/templates/admin_players.html:96|
-|Comment \*\*\* COMMENT COLUMN TITLE FOR PLAYERS|Anmärkningar|src/web/templates/admin_players.html:102|
-|History \*\*\* HISTORY COLUMN TITLE FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:103|
-|Edit the player's properties.|Redigera timerns egenskaper.|src/web/templates/admin_players.html:129<br>src/web/templates/admin_players.html:138|
-|Remove the player from the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:157|
-|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:169|
-|No mail defined.|Ingen timer definierad|src/web/templates/admin_players.html:171|
-|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:178|
-|No phone defined.|Ingen timer definierad|src/web/templates/admin_players.html:180|
-|Fide ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:219|
-|No Fide ID.|Ingen timer definierad|src/web/templates/admin_players.html:222|
-|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:233|
-|Unknown FFE Licence type [%(ffe_licence)s].|Okänd typ av FFE-licens [%(ffe_licence)s]|src/web/templates/admin_players.html:237<br>src/web/templates/macros.j2:146|
-|Change the player's tournament.|-Klara turneringen.|src/web/templates/admin_players.html:260|
-|No players.|Spelare|src/web/templates/admin_players.html:292|
+|Players|Spelare|src/web/templates/admin_players.html:6<br>src/web/templates/admin_screen_card.html:183|
+|Add a player to the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:21|
+|Create a player|Skapa en timer|src/web/templates/admin_players.html:30|
+|Clear all the filters.|alla spelare|src/web/templates/admin_players.html:47|
+|Name \*\*\* NAME COLUMN HEADER FOR PLAYERS|Beteckning|src/web/templates/admin_players.html:51|
+|Elo \*\*\* ELO COLUMN HEADER FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:55|
+|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:60|
+|YOB \*\*\* YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS|HUVUDBYGGNAD|src/web/templates/admin_players.html:75|
+|Fide \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Betald|src/web/templates/admin_players.html:86|
+|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:89|
+|Owed \*\*\* OWED COLUMN HEADER FOR PLAYERS|På grund av detta|src/web/templates/admin_players.html:96|
+|Paid \*\*\* PAID COLUMN HEADER FOR PLAYERS|Betald|src/web/templates/admin_players.html:97|
+|Remove the player from the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:146|
+|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:158|
+|No mail defined.|Ingen timer definierad|src/web/templates/admin_players.html:160|
+|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:167|
+|No phone defined.|Ingen timer definierad|src/web/templates/admin_players.html:169|
+|Fide ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:208|
+|No Fide ID.|Ingen timer definierad|src/web/templates/admin_players.html:211|
+|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:222|
+|Unknown FFE Licence type [%(ffe_licence)s].|Okänd typ av FFE-licens [%(ffe_licence)s]|src/web/templates/admin_players.html:226<br>src/web/templates/macros.j2:146|
+|Change the player's tournament.|-Klara turneringen.|src/web/templates/admin_players.html:249|
+|No players.|Spelare|src/web/templates/admin_players.html:281|
 |Rotation delay: %(seconds)d sec.|Rotationsfördröjning: %(seconds)d sek.|src/web/templates/admin_rotator_card.html:15<br>src/web/templates/user_rotator_card.html:18|
 |No screen neither family to rotate.|Ingen skärm varken familj att rotera.|src/web/templates/admin_rotator_card.html:43<br>src/web/templates/user_rotator_card.html:22|
 |Screens:|Skärmar:|src/web/templates/admin_rotator_card.html:49<br>src/web/templates/admin_rotator_modal.html:128<br>src/web/templates/user_rotator_card.html:28|
@@ -940,11 +947,23 @@
 |Maximum number of results: unlimited|Maximalt antal resultat: obegränsad|src/web/templates/user_screen_card.html:54|
 |Filter the check-in status.|Ta bort timern.|src/web/templates/admin_players/admin_players_filter_check_ins.html:8|
 |Filter the clubs.|Filtrera klubbarna.|src/web/templates/admin_players/admin_players_filter_clubs.html:7|
+|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:41|
+|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:43|
+|Name \*\*\* NAME FOR PLAYERS COLUMNS|Beteckning|src/web/templates/admin_players/admin_players_filter_columns.html:45|
+|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:49|
+|Club \*\*\* CLUB FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:53|
+|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|HUVUDBYGGNAD|src/web/templates/admin_players/admin_players_filter_columns.html:55|
+|Fide \*\*\* FIDE FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:63|
+|FFE \*\*\* FFE FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:69|
+|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|På grund av detta|src/web/templates/admin_players/admin_players_filter_columns.html:73|
+|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Beteckning|src/web/templates/admin_players/admin_players_filter_columns.html:75|
+|Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Anmärkningar|src/web/templates/admin_players/admin_players_filter_columns.html:77|
+|History \*\*\* HISTORY FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:79|
 |Filter the federations.|Ta bort rotatorn.|src/web/templates/admin_players/admin_players_filter_federations.html:7|
 |Filter the licences.|Filtrera licenserna.|src/web/templates/admin_players/admin_players_filter_ffe_licences.html:8|
 |Filter the genders.|Ta bort timern.|src/web/templates/admin_players/admin_players_filter_genders.html:8|
 |Filter the leagues.|Filtrera ligorna.|src/web/templates/admin_players/admin_players_filter_leagues.html:7|
-|Tournament \*\*\* TOURNAMENT COLUMN TITLE FOR PLAYERS|Beteckning|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
+|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Beteckning|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
 |Filter the tournaments.|Ta bort turneringen.|src/web/templates/admin_players/admin_players_filter_tournaments.html:9|
 |Return to documentation summary|Återgå till sammanfattningen av dokumentationen|utils/i18n/i18n_update.py:208|
 |English translation \*\*\* TRANSLATE !|Engelsk översättning|utils/i18n/i18n_update.py:209|
@@ -961,7 +980,7 @@
 |Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:262|
 |Translation|Översättning|utils/i18n/i18n_update.py:268|
 
-### Meddelande flaggat [fuzzy] (49)
+### Meddelande flaggat [fuzzy] (59)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -972,7 +991,7 @@
 |No FFE Licence|Ingen FFE-licens|src/data/util.py:522|
 |Parings by player|parningar av spelare|src/data/util.py:800|
 |Players ({num})|Timers ({num})|src/web/controllers/admin/event_admin_controller.py:121|
-|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:436<br>src/web/controllers/admin/player_admin_controller.py:494<br>src/web/templates/admin_players.html:147|
+|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:436<br>src/web/controllers/admin/player_admin_controller.py:494<br>src/web/templates/admin_players.html:136|
 |Papi file [{tournament_file}] not found.|Papi-filen [{tournament_file}] hittades inte.|src/web/controllers/admin/player_admin_controller.py:444|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:448|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] redan närvarande i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:453|
@@ -981,25 +1000,23 @@
 |Tournament [{tournament_uniq_id}] is started.|Turneringen inleds [{tournament_uniq_id}].|src/web/controllers/user/tournament_user_controller.py:61|
 |Create a screen family|Ta bort skärmfamiljen.|src/web/templates/admin_families.html:56|
 |Menus|Menyn:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|Add a player to the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:19|
-|Create a player|Skapa en timer|src/web/templates/admin_players.html:28|
-|Clear all the filters.|alla spelare|src/web/templates/admin_players.html:46|
-|Origin \*\*\* ORIGIN COLUMN TITLE FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:59|
-|Fide \*\*\* FIDE COLUMN TITLE FOR PLAYERS|Betald|src/web/templates/admin_players.html:85|
-|FFE \*\*\* FFE COLUMN TITLE FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:88|
-|History \*\*\* HISTORY COLUMN TITLE FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:103|
-|Edit the player's properties.|Redigera timerns egenskaper.|src/web/templates/admin_players.html:129<br>src/web/templates/admin_players.html:138|
-|Remove the player from the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:157|
-|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:169|
-|No mail defined.|Ingen timer definierad|src/web/templates/admin_players.html:171|
-|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:178|
-|No phone defined.|Ingen timer definierad|src/web/templates/admin_players.html:180|
-|Fide ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:219|
-|No Fide ID.|Ingen timer definierad|src/web/templates/admin_players.html:222|
-|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:233|
-|Unknown FFE Licence type [%(ffe_licence)s].|Okänd typ av FFE-licens [%(ffe_licence)s]|src/web/templates/admin_players.html:237<br>src/web/templates/macros.j2:146|
-|Change the player's tournament.|-Klara turneringen.|src/web/templates/admin_players.html:260|
-|No players.|Spelare|src/web/templates/admin_players.html:292|
+|Add a player to the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:21|
+|Create a player|Skapa en timer|src/web/templates/admin_players.html:30|
+|Clear all the filters.|alla spelare|src/web/templates/admin_players.html:47|
+|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:60|
+|Fide \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Betald|src/web/templates/admin_players.html:86|
+|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:89|
+|Remove the player from the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:146|
+|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:158|
+|No mail defined.|Ingen timer definierad|src/web/templates/admin_players.html:160|
+|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:167|
+|No phone defined.|Ingen timer definierad|src/web/templates/admin_players.html:169|
+|Fide ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:208|
+|No Fide ID.|Ingen timer definierad|src/web/templates/admin_players.html:211|
+|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet).|src/web/templates/admin_players.html:222|
+|Unknown FFE Licence type [%(ffe_licence)s].|Okänd typ av FFE-licens [%(ffe_licence)s]|src/web/templates/admin_players.html:226<br>src/web/templates/macros.j2:146|
+|Change the player's tournament.|-Klara turneringen.|src/web/templates/admin_players.html:249|
+|No players.|Spelare|src/web/templates/admin_players.html:281|
 |Create a screen|Skapa en händelse|src/web/templates/admin_screens.html:72|
 |Add a screen to enter the results.|Lägg till en familj av skärmar för att ange resultaten.|src/web/templates/admin_screens.html:76|
 |Add a screen to display the pairings by board.|Lägg till en familj av skärmar för att visa parningar per bord.|src/web/templates/admin_screens.html:77|
@@ -1010,8 +1027,20 @@
 |Sort the players by origin (federation, league, club).|Visa/göm spelskärmarna.|src/web/templates/macros.j2:218|
 |Sort the players by tournament.|-Klara turneringen.|src/web/templates/macros.j2:224|
 |Filter the check-in status.|Ta bort timern.|src/web/templates/admin_players/admin_players_filter_check_ins.html:8|
+|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:41|
+|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:43|
+|Name \*\*\* NAME FOR PLAYERS COLUMNS|Beteckning|src/web/templates/admin_players/admin_players_filter_columns.html:45|
+|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:49|
+|Club \*\*\* CLUB FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:53|
+|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|HUVUDBYGGNAD|src/web/templates/admin_players/admin_players_filter_columns.html:55|
+|Fide \*\*\* FIDE FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:63|
+|FFE \*\*\* FFE FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:69|
+|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|På grund av detta|src/web/templates/admin_players/admin_players_filter_columns.html:73|
+|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Beteckning|src/web/templates/admin_players/admin_players_filter_columns.html:75|
+|Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Anmärkningar|src/web/templates/admin_players/admin_players_filter_columns.html:77|
+|History \*\*\* HISTORY FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:79|
 |Filter the federations.|Ta bort rotatorn.|src/web/templates/admin_players/admin_players_filter_federations.html:7|
 |Filter the genders.|Ta bort timern.|src/web/templates/admin_players/admin_players_filter_genders.html:8|
-|Tournament \*\*\* TOURNAMENT COLUMN TITLE FOR PLAYERS|Beteckning|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
+|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Beteckning|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
 |Filter the tournaments.|Ta bort turneringen.|src/web/templates/admin_players/admin_players_filter_tournaments.html:9|
 

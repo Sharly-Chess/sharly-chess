@@ -1264,6 +1264,7 @@ msgstr "Initialiseren van een sessie naar [{url}]..."
 #: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html:21
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:21
+#: src/web/templates/admin_players/admin_players_filter_columns.html:24
 #: src/web/templates/admin_players/admin_players_filter_federations.html:21
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22
 #: src/web/templates/admin_players/admin_players_filter_genders.html:22
@@ -1485,28 +1486,28 @@ msgstr "Schaken ({num})"
 msgid "Messages ({num})"
 msgstr "Berichten ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:580
+#: src/web/controllers/admin/event_admin_controller.py:583
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Hernoemen van de database is mislukt: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:587
+#: src/web/controllers/admin/event_admin_controller.py:590
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "Event [{old_uniq_id}] is hernoemd ([{new_uniq_id}]) en bijgewerkt."
 
-#: src/web/controllers/admin/event_admin_controller.py:590
+#: src/web/controllers/admin/event_admin_controller.py:593
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "Event [{uniq_id}] is bijgewerkt."
 
-#: src/web/controllers/admin/event_admin_controller.py:598
+#: src/web/controllers/admin/event_admin_controller.py:601
 #: src/web/controllers/admin/index_admin_controller.py:676
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Event [{uniq_id}] is aangemaakt."
 
-#: src/web/controllers/admin/event_admin_controller.py:608
+#: src/web/controllers/admin/event_admin_controller.py:611
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Event [{uniq_id}] is verwijderd, de database is gearchiveerd ({arch})."
@@ -1844,7 +1845,7 @@ msgstr "Papi-webconfiguratie"
 # herstellend toernooi [{tournament_uniq_id}]...]
 #: src/web/controllers/admin/player_admin_controller.py:436
 #: src/web/controllers/admin/player_admin_controller.py:494
-#: src/web/templates/admin_players.html:147
+#: src/web/templates/admin_players.html:136
 #, ai_translation, error, fuzzy
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Speler [{last_name} {first_name}] heeft paren in toernooi [{tournament_uniq_id}]."
@@ -2192,8 +2193,6 @@ msgstr "Bewerk de eigenschappen van de ChessEvent-verbinding."
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:131
-#: src/web/templates/admin_players.html:140
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -2338,7 +2337,7 @@ msgstr "Bijwerken"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:160
+#: src/web/templates/admin_players.html:149
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -2361,7 +2360,8 @@ msgid "Cancel"
 msgstr "Annuleren"
 
 #: src/web/templates/admin_chessevents.html:10
-#: src/web/templates/admin_events.html:9 src/web/templates/admin_players.html:8
+#: src/web/templates/admin_events.html:9
+#: src/web/templates/admin_players.html:10
 #: src/web/templates/admin_screens.html:42
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
@@ -3351,94 +3351,78 @@ msgstr "Geen berichten."
 msgid "Pairings"
 msgstr "met een gewicht van niet meer dan 150 g/m2"
 
-#: src/web/templates/admin_players.html:5
+#: src/web/templates/admin_players.html:6
 #: src/web/templates/admin_screen_card.html:183
 #, ai_translation
 msgid "Players"
 msgstr "Spelers"
 
-#: src/web/templates/admin_players.html:19
+#: src/web/templates/admin_players.html:21
 #, ai_translation, fuzzy
 msgid "Add a player to the event."
 msgstr "Voeg een timer toe aan het evenement."
 
-#: src/web/templates/admin_players.html:28
+#: src/web/templates/admin_players.html:30
 #, ai_translation, fuzzy
 msgid "Create a player"
 msgstr "Een timer aanmaken"
 
-#: src/web/templates/admin_players.html:46
+#: src/web/templates/admin_players.html:47
 #, ai_translation, fuzzy
 msgid "Clear all the filters."
 msgstr "alle spelers"
 
-#: src/web/templates/admin_players.html:50
+#: src/web/templates/admin_players.html:51
 #, ai_translation
-msgid "Name *** NAME COLUMN TITLE FOR PLAYERS"
+msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Naam"
 
-#: src/web/templates/admin_players.html:54
+#: src/web/templates/admin_players.html:55
 #, ai_translation
-msgid "Elo *** ELO COLUMN TITLE FOR PLAYERS"
+msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-#: src/web/templates/admin_players.html:59
+#: src/web/templates/admin_players.html:60
 #, ai_translation, fuzzy
-msgid "Origin *** ORIGIN COLUMN TITLE FOR PLAYERS"
+msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-#: src/web/templates/admin_players.html:74
+#: src/web/templates/admin_players.html:75
 #, ai_translation
-msgid "YOB *** YEAR-OF-BIRTH COLUMN TITLE FOR PLAYERS"
+msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
-#: src/web/templates/admin_players.html:85
+#: src/web/templates/admin_players.html:86
 #, ai_translation, fuzzy
-msgid "Fide *** FIDE COLUMN TITLE FOR PLAYERS"
+msgid "Fide *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Betaald"
 
-#: src/web/templates/admin_players.html:88
+#: src/web/templates/admin_players.html:89
 #, ai_translation, fuzzy
-msgid "FFE *** FFE COLUMN TITLE FOR PLAYERS"
+msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
-
-#: src/web/templates/admin_players.html:95
-#, ai_translation
-msgid "Owed *** OWED COLUMN TITLE FOR PLAYERS"
-msgstr "Auwedunit synonyms for matching user input"
 
 #: src/web/templates/admin_players.html:96
 #, ai_translation
-msgid "Paid *** PAID COLUMN TITLE FOR PLAYERS"
+msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
+msgstr "Auwedunit synonyms for matching user input"
+
+#: src/web/templates/admin_players.html:97
+#, ai_translation
+msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Betaald"
 
-#: src/web/templates/admin_players.html:102
-#, ai_translation
-msgid "Comment *** COMMENT COLUMN TITLE FOR PLAYERS"
-msgstr "Opmerking"
-
-#: src/web/templates/admin_players.html:103
-#, ai_translation, fuzzy
-msgid "History *** HISTORY COLUMN TITLE FOR PLAYERS"
-msgstr "Elo"
-
-#: src/web/templates/admin_players.html:129
-#: src/web/templates/admin_players.html:138
-#, ai_translation, fuzzy
-msgid "Edit the player's properties."
-msgstr "Bewerk de eigenschappen van de timer."
-
-#: src/web/templates/admin_players.html:157
+#: src/web/templates/admin_players.html:146
 #, ai_translation, fuzzy
 msgid "Remove the player from the event."
 msgstr "Voeg een timer toe aan het evenement."
 
-#: src/web/templates/admin_players.html:169
+#: src/web/templates/admin_players.html:158
 #, ai_translation, fuzzy, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "%(mail)s (klik om naar het klembord te kopiëren)."
 
-#: src/web/templates/admin_players.html:171
+#: src/web/templates/admin_players.html:160
 #, ai_translation, fuzzy
 msgid "No mail defined."
 msgstr "Geen timer gedefinieerd"
@@ -3471,24 +3455,24 @@ msgstr "Geen timer gedefinieerd"
 # ]
 # m
 # ë
-#: src/web/templates/admin_players.html:178
+#: src/web/templates/admin_players.html:167
 #, ai_translation, error, fuzzy, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "%(phone)s (klik om naar het klembord te kopiëren)."
 
-#: src/web/templates/admin_players.html:180
+#: src/web/templates/admin_players.html:169
 #, ai_translation, fuzzy
 msgid "No phone defined."
 msgstr "Geen timer gedefinieerd"
 
 # Error: tokens differ between [Fide ID: %(fide_id)s (click to copy to the
 # clipboard).] and [%(mail)s (klik om naar het klembord te kopiëren).]
-#: src/web/templates/admin_players.html:219
+#: src/web/templates/admin_players.html:208
 #, ai_translation, fuzzy, python-format
 msgid "Fide ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr "Fide ID: %(fide_id)s (klik om te kopiëren naar het klembord)."
 
-#: src/web/templates/admin_players.html:222
+#: src/web/templates/admin_players.html:211
 #, ai_translation, fuzzy
 msgid "No Fide ID."
 msgstr "Geen timer gedefinieerd"
@@ -3524,22 +3508,22 @@ msgstr "Geen timer gedefinieerd"
 # Error: tokens differ between [FFE licence: %(ffe_licence_number)s (click to
 # copy to the clipboard).] and [%(phone)s (klik om naar het klembord te
 # kopiëren).]
-#: src/web/templates/admin_players.html:233
+#: src/web/templates/admin_players.html:222
 #, ai_translation, error, fuzzy, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "FFE licentie: %(ffe_licence_number)s (klik om te kopiëren naar het klembord)."
 
-#: src/web/templates/admin_players.html:237 src/web/templates/macros.j2:146
+#: src/web/templates/admin_players.html:226 src/web/templates/macros.j2:146
 #, ai_translation, fuzzy, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Onbekend FFE-licentietype [%(ffe_licence)s]"
 
-#: src/web/templates/admin_players.html:260
+#: src/web/templates/admin_players.html:249
 #, ai_translation, fuzzy
 msgid "Change the player's tournament."
 msgstr "Kloon het toernooi."
 
-#: src/web/templates/admin_players.html:292
+#: src/web/templates/admin_players.html:281
 #, ai_translation, fuzzy
 msgid "No players."
 msgstr "Spelers"
@@ -5012,6 +4996,86 @@ msgstr "Verwijder de timer."
 msgid "Filter the clubs."
 msgstr "Filter de clubs."
 
+#: src/web/templates/admin_players/admin_players_filter_columns.html:6
+msgid "Choose the columns displayed."
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:41
+#, ai_translation, fuzzy
+msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
+msgstr "Betaald"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:43
+#, ai_translation, fuzzy
+msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
+msgstr "Betaald"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:45
+#, ai_translation, fuzzy
+msgid "Name *** NAME FOR PLAYERS COLUMNS"
+msgstr "Naam"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:47
+msgid "Rating *** RATING FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:49
+#, ai_translation, fuzzy
+msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
+msgstr "Betaald"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:51
+msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:53
+#, ai_translation, fuzzy
+msgid "Club *** CLUB FOR PLAYERS COLUMNS"
+msgstr "Elo"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:55
+#, ai_translation, fuzzy
+msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
+msgstr "YOB"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:57
+msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:63
+#, ai_translation, fuzzy
+msgid "Fide *** FIDE FOR PLAYERS COLUMNS"
+msgstr "Betaald"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:69
+#, ai_translation, fuzzy
+msgid "FFE *** FFE FOR PLAYERS COLUMNS"
+msgstr "Elo"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:71
+msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:73
+#, ai_translation, fuzzy
+msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
+msgstr "Auwedunit synonyms for matching user input"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:75
+#, ai_translation, fuzzy
+msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
+msgstr "Naam"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:77
+#, ai_translation, fuzzy
+msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
+msgstr "Opmerking"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:79
+#, ai_translation, fuzzy
+msgid "History *** HISTORY FOR PLAYERS COLUMNS"
+msgstr "Elo"
+
 #: src/web/templates/admin_players/admin_players_filter_federations.html:7
 #, ai_translation, fuzzy
 msgid "Filter the federations."
@@ -5034,7 +5098,7 @@ msgstr "Filter de competities."
 
 #: src/web/templates/admin_players/admin_players_filter_tournaments.html:2
 #, ai_translation, fuzzy
-msgid "Tournament *** TOURNAMENT COLUMN TITLE FOR PLAYERS"
+msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
 msgstr "Naam"
 
 #: src/web/templates/admin_players/admin_players_filter_tournaments.html:9
@@ -5149,10 +5213,10 @@ msgstr "Vertaling"
 #~ msgid "Comment"
 #~ msgstr ""
 
-#~ msgid "Cat *** CATEGORY COLUMN TITLE FOR PLAYERS"
+#~ msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Kat"
 
-#~ msgid "ID *** ID COLUMN TITLE FOR PLAYERS"
+#~ msgid "ID *** ID COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Betaald"
 
 #~ msgid "Option not set, by default [{ffe_upload_delay}]."
@@ -5167,10 +5231,10 @@ msgstr "Vertaling"
 #~ msgid "Apply"
 #~ msgstr ""
 
-#~ msgid "Federation *** FEDERATION COLUMN TITLE FOR PLAYERS"
+#~ msgid "Federation *** FEDERATION COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Auwedunit synonyms for matching user input"
 
-#~ msgid "Gender *** GENDER COLUMN TITLE FOR PLAYERS"
+#~ msgid "Gender *** GENDER COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Auwedunit synonyms for matching user input"
 
 #~ msgid "- *** NAME FOR FFE LICENCE NONE"
@@ -5209,16 +5273,16 @@ msgstr "Vertaling"
 #~ msgid "FFE licence A (compétition)"
 #~ msgstr ""
 
-#~ msgid "Check-in *** CHECK-IN COLUMN TITLE FOR PLAYERS"
+#~ msgid "Check-in *** CHECK-IN COLUMN HEADER FOR PLAYERS"
 #~ msgstr "CI"
 
-#~ msgid "# *** NUMBER COLUMN TITLE FOR PLAYERS"
+#~ msgid "# *** NUMBER COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Naam"
 
-#~ msgid "Licence *** LICENCE COLUMN TITLE FOR PLAYERS"
+#~ msgid "Licence *** LICENCE COLUMN HEADER FOR PLAYERS"
 #~ msgstr "CI"
 
-#~ msgid "FFE *** FFE COLUMN TITLE FOR PLAYERS"
+#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 #~ msgstr "Elo"
 
 # Error: tokens differ between [Players (%(num)d/%(total)d)] and [Timers
@@ -5266,4 +5330,7 @@ msgstr "Vertaling"
 # clipboard).] and [%(phone)s (klik om naar het klembord te kopiëren).]
 #~ msgid "%(ffe_licence_number)s (click to copy to the clipboard)."
 #~ msgstr ""
+
+#~ msgid "Edit the player's properties."
+#~ msgstr "Bewerk de eigenschappen van de timer."
 

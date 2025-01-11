@@ -262,6 +262,10 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     ], key=sort_key)
                 template_context |= {
                     'admin_players': players,
+                    'admin_players_columns': [
+                        'name', 'rating', 'federation', 'league', 'club', 'yob', 'mail', 'phone', 'gender',
+                        'fide', 'ffe', 'check_in', 'owed_paid', 'tournament', 'comment', 'history',
+                    ],
                     'admin_players_sort': SessionHandler.get_session_admin_players_sort(web_context.request),
                     'admin_players_federations': players_federations,
                     'admin_players_leagues': players_leagues,
@@ -270,6 +274,8 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     'admin_players_genders': players_genders,
                     'admin_players_licences': players_licences,
                     'admin_players_check_ins': players_check_ins,
+                    'admin_players_filter_columns': SessionHandler.get_session_admin_players_filter_columns(
+                        web_context.request),
                     'admin_players_filter_federations': SessionHandler.get_session_admin_players_filter_federations(
                         web_context.request),
                     'admin_players_filter_leagues': SessionHandler.get_session_admin_players_filter_leagues(
@@ -427,6 +433,7 @@ class EventAdminController(AbstractEventAdminController):
             admin_screens_show_image: bool | None,
             admin_messages_min_logging_level: int | None,
             admin_players_sort: str | None = None,
+            admin_players_filter_columns: list[str] | None = None,
             admin_players_filter_federations: list[str] | None = None,
             admin_players_filter_leagues: list[str] | None = None,
             admin_players_filter_clubs: list[str] | None = None,
@@ -444,9 +451,14 @@ class EventAdminController(AbstractEventAdminController):
             case 'players':
                 if admin_players_sort is not None:
                     SessionHandler.set_session_admin_players_sort(request, admin_players_sort)
+                elif admin_players_filter_columns is not None:
+                    SessionHandler.set_session_admin_players_filter_columns(request, [
+                        column for column in admin_players_filter_columns if column  # '' must be ignored
+                    ])
                 elif admin_players_filter_federations is not None:
                     SessionHandler.set_session_admin_players_filter_federations(request, [
-                        FederationTuple.from_query_param(query_param) for query_param in admin_players_filter_federations
+                        FederationTuple.from_query_param(query_param) for query_param in
+                        admin_players_filter_federations
                         if query_param  # '' must be ignored
                     ])
                 elif admin_players_filter_leagues is not None:
