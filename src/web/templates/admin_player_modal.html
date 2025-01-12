@@ -1,0 +1,151 @@
+<div class="modal-dialog modal-dialog-centered admin-player-edit-modal d-block w-80 mw-100">
+    <form
+            {% if action == 'create' %}
+                hx-post="{{ url_for('admin-player-create', event_uniq_id=admin_event.uniq_id) }}"
+            {% elif action == 'update' %}
+                hx-patch="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+            {% else %}
+                hx-get="{{ url_for('unknown-action-' ~ action) }}"
+            {% endif %}
+            hx-target="body"
+            hx-indicator="#please-wait">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    {% if action == 'create' %}
+                        {{ _('Player creation') }}
+                    {% elif action == 'update' %}
+                        {{ _('Edition of player [%(last_name)s %(first_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
+                    {% else %}
+                        ?
+                    {% endif %}
+                </h2>
+            </div>
+            <div class="modal-body">
+                <h3>
+                    {{ _('Identity') }}
+                </h3>
+                <div class="row">
+                    <div class="col-3">
+                        {% with id='last-name', name='last_name' %}
+                            <label for="{{ id }}" class="form-label">{{ _('Last name:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="text" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    placeholder="{{ _('E.g.: Dupont') }}"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s last name.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-3">
+                        {% with id='first-name', name='first_name' %}
+                            <label for="{{ id }}" class="form-label">{{ _('First name:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="text" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    placeholder="{{ _('E.g.: Pierre') }}"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s first name.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-3">
+                        {% with id='date-of-birth', name='date_of_birth' %}
+                            <label for="{{ id }}" class="form-label">{{ _('Date of birth:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="date" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    placeholder="{{ _('E.g.: Pierre') }}"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s birth date.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='gender', name='gender' %}
+                            <label for="{{ id }}" class="form-label">{{ _('Gender:') }}</label>
+                            <select
+                                    name="{{ name }}"
+                                    id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error" >
+                                {% for value, text in gender_options.items() %}
+                                    <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s gender.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-block">
+                <div class="row">
+                    <div class="col col-6 text-start">
+                        <button
+                                type="submit"
+                                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                                data-bs-dismiss="modal"
+                        >
+                            <i class="bi-floppy-fill"></i>
+                            {% if action == 'create' %}
+                                {{ _('Create') }}
+                            {% elif action == 'update' %}
+                                {{ _('Update') }}
+                            {% else %}
+                                ?
+                            {% endif %}
+                        </button>
+                    </div>
+                    <div class="col col-6 text-end">
+                        <button
+                                class="btn btn-secondary text-nowrap"
+                                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
+                                preload
+                                hx-target="body"
+                                hx-trigger="click, keyup[key=='Escape'] from:body"
+                                hx-indicator="#please-wait"
+                        >
+                            <i class="bi-x-circle-fill"></i>
+                            {{ _('Cancel') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
+</script>

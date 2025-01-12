@@ -1,5 +1,6 @@
 import base64
 from dataclasses import dataclass
+from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
 from contextlib import suppress
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
 from common.i18n import _
 from data.pairing import Pairing
 from common.logger import get_logger
-from data.util import PlayerGender, PlayerTitle, Color, PlayerFFELicence
+from data.util import PlayerGender, PlayerTitle, Color, PlayerFFELicence, TournamentRating
 
 logger: Logger = get_logger()
 
@@ -121,7 +122,7 @@ class Player:
             id: int,
             last_name: str,
             first_name: str,
-            year_of_birth: int | None,
+            date_of_birth: date | None,
             gender: PlayerGender,
             mail: str,
             phone: str,
@@ -130,7 +131,7 @@ class Player:
             paid: float,
             title: PlayerTitle,
             rating: int,
-            rating_type: str,
+            rating_type: TournamentRating,
             fide_id: int | None,
             ffe_id: int,
             ffe_licence: PlayerFFELicence,
@@ -141,11 +142,13 @@ class Player:
             fixed: int,
             check_in: bool,
             pairings: dict[int, Pairing],
+            tournament: 'Tournament | None' = None,
+            errors: dict[str, str] | None = None,
     ):
         self.id: int = id
         self.last_name: str = last_name
         self.first_name: str = first_name
-        self.year_of_birth: int | None = year_of_birth
+        self.date_of_birth: date | None = date_of_birth
         self.gender: PlayerGender = gender
         self.mail: str = mail
         self.phone: str = phone
@@ -154,7 +157,7 @@ class Player:
         self.paid: float = paid
         self.title: PlayerTitle = title
         self.rating: int = rating
-        self.rating_type: str = rating_type
+        self.rating_type: TournamentRating = rating_type
         self.fide_id: int | None = fide_id
         self.ffe_id: int = ffe_id
         self.ffe_licence: PlayerFFELicence = ffe_licence
@@ -174,7 +177,8 @@ class Player:
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
-        self.tournament: Tournament | None = None
+        self.tournament: Tournament | None = tournament
+        self.errors: dict[str, str] = errors or {}
 
     @staticmethod
     def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
@@ -196,6 +200,10 @@ class Player:
     @property
     def tournament_id(self) -> int:
         return self.player_tournament_id_from_papi_web_id(self.id)
+
+    @property
+    def year_of_birth(self) -> int:
+        return self.date_of_birth.year if self.date_of_birth else 0
 
     @property
     def title_str(self) -> str:

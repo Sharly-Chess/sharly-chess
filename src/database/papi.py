@@ -1,6 +1,6 @@
 import re
 from contextlib import suppress
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from itertools import product
 from logging import Logger
 from pathlib import Path
@@ -90,6 +90,26 @@ class PapiDatabase(AccessDatabase):
         self._execute(f'INSERT INTO `joueur`({fields}) VALUES ({values})', tuple(params))
         return data['Ref']
 
+    def update_player(self, player: Player):
+        """Updates the event database with the information in the provided player."""
+        fields: list[str] = [
+            'Nom',
+            'Prenom',
+            'NeLe',
+            'Sexe',
+        ]
+        params: tuple = (
+            player.last_name,
+            player.first_name,
+            self._date_to_papi_date(player.date_of_birth),
+            player.gender.to_papi_value,
+            player.ref_id,
+        )
+        field_sets = (f"`{f}` = ?" for f in fields)
+        self._execute(
+            f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
+            params)
+
     def read_players(self, tournament_id: int, tournament_rating: TournamentRating, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.
         The tournament_id is used to make the players' id unique for an event. """
@@ -118,46 +138,45 @@ class PapiDatabase(AccessDatabase):
                     opponent_papi_id,
                     Result.from_papi_value(row[f'{round_str}Res']))
             player_papi_web_id: int = Player.player_papi_web_id_from_papi_id(tournament_id, row['Ref'])
-            year_of_birth: int | None = None
-            if row['NeLe']:
-                year_of_birth = row['NeLe'].year
             fide_id: int | None = None
             if row['FideCode']:
                 fide_id = int(str(row['FideCode']).strip())
             players[player_papi_web_id] = Player(
-                player_papi_web_id,
-                row['Nom'] or '', row['Prenom'] or '',
-                year_of_birth,
-                PlayerGender.from_papi_value(row['Sexe'] or ''),
-                row['EMail'] or '',
-                row['Tel'] or '',
-                row['Commentaire'] or '',
-                float(row['InscriptionDu']) or 0.0,
-                float(row['InscriptionRegle']) or 0.0,
-                PlayerTitle.from_papi_value(row['FideTitre'] or ''),
-                row[tournament_rating.papi_value_field] or 0,
-                row[tournament_rating.papi_type_field] or 0,
-                fide_id,
-                row['RefFFE'] or '',
-                PlayerFFELicence.from_papi_value(row['AffType'] or ''),
-                row['NrFFE'] or '',
-                row['Federation'] or '',
-                row['Ligue'] or '',
-                row['Club'] or '',
-                row['Fixe'] or 0,
-                row['Pointe'] or False,
-                pairings)
+                id=player_papi_web_id,
+                last_name=row['Nom'] or '',
+                first_name=row['Prenom'] or '',
+                date_of_birth=row['NeLe'].date() if row['NeLe'] else None,
+                gender=PlayerGender.from_papi_value(row['Sexe'] or ''),
+                mail=row['EMail'] or '',
+                phone=row['Tel'] or '',
+                comment=row['Commentaire'] or '',
+                owed=float(row['InscriptionDu']) or 0.0,
+                paid=float(row['InscriptionRegle']) or 0.0,
+                title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+                rating=row[tournament_rating.papi_value_field] or 0,
+                rating_type=row[tournament_rating.papi_type_field] or 0,
+                fide_id=fide_id,
+                ffe_id=row['RefFFE'] or '',
+                ffe_licence=PlayerFFELicence.from_papi_value(row['AffType'] or ''),
+                ffe_licence_number=row['NrFFE'] or '',
+                federation=row['Federation'] or '',
+                league=row['Ligue'] or '',
+                club=row['Club'] or '',
+                fixed=row['Fixe'] or 0,
+                check_in=row['Pointe'] or False,
+                pairings=pairings,
+            )
         return players
 
     def add_board_result(self, player_papi_id: int, round_: int, result: Result):
         """Writes the given result to the database."""
         query: str = f'UPDATE `joueur` SET `Rd{round_:0>2}Res` = ? WHERE `Ref` = ?'
-        self._execute(query, (result.value, Player.player_papi_id_from_papi_web_id(player_papi_id),))
+        self._execute(query, (result.value, player_papi_id,))
 
     def remove_board_result(self, player_papi_id: int, round_: int):
         """Writes the empty result for the given player in the database."""
         query: str = f'UPDATE `joueur` SET `Rd{round_:0>2}Res` = 0 WHERE `Ref` = ?'
-        self._execute(query, (Player.player_papi_id_from_papi_web_id(player_papi_id),))
+        self._execute(query, (player_papi_id,))
 
     @staticmethod
     def _timestamp_to_papi_date(ts: float) -> str:
@@ -167,6 +186,10 @@ class PapiDatabase(AccessDatabase):
         else:
             dt = datetime(1970, 1, 1) + timedelta(seconds=ts)
         return dt.strftime('%d/%m/%Y')
+
+    @staticmethod
+    def _date_to_papi_date(d: date | None) -> str | None:
+        return datetime(d.year, d.month, d.day).strftime('%d/%m/%Y') if d else None
 
     def __write_var(self, name: str, value):
         query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'

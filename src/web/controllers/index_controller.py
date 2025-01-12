@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
 from typing import Annotated, Any
@@ -154,6 +154,17 @@ class WebContext:
             return empty_value
         return check_rgb_str(data[field])
 
+    @staticmethod
+    def form_data_to_date(data: dict[str, str], field: str, empty_value: RGB | None = None) -> date | None:
+        if data is None:
+            return empty_value
+        data[field] = data.get(field, '')
+        if data[field] is not None:
+            data[field] = data[field].strip().lower()
+        if not data[field]:
+            return empty_value
+        return datetime.strptime(data[field], '%Y-%m-%d').date()
+
     def _form_data_to_rgb(self, field: str, empty_value: RGB | None = None) -> str | None:
         return self.form_data_to_rgb(self.data, field, empty_value)
 
@@ -172,10 +183,20 @@ class WebContext:
         raise ValueError
 
     @staticmethod
-    def value_to_datetime_form_data(value: float | None) -> str | None:
+    def value_to_datetime_form_data(value: float | datetime | None) -> str | None:
         if value is None:
             return ''
-        return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%dT%H:%M')
+        if isinstance(value, float):
+            return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%dT%H:%M')
+        if isinstance(value, datetime):
+            return datetime.strftime(value, '%Y-%m-%dT%H:%M')
+        raise ValueError
+
+    @staticmethod
+    def value_to_date_form_data(value: date | None) -> str | None:
+        if value is None:
+            return ''
+        return datetime.strftime(value, '%Y-%m-%d')
 
     def _redirect_error(self, errors: str | list[str]):
         self.error = AbstractController.redirect_error(self.request, errors)

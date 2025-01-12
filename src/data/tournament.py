@@ -591,8 +591,8 @@ class Tournament:
         Assumes that no asymmetric result was entered."""
         black_result = white_result.opposite_result
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.add_board_result(board.white_player.id, self._current_round, white_result)
-            papi_database.add_board_result(board.black_player.id, self._current_round, black_result)
+            papi_database.add_board_result(board.white_player.ref_id, self._current_round, white_result)
+            papi_database.add_board_result(board.black_player.ref_id, self._current_round, black_result)
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.add_stored_result(self.id, self.current_round, board, white_result)
@@ -606,8 +606,8 @@ class Tournament:
     def delete_result(self, board: Board):
         """Deletes the result for the given `board` in the current round."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.remove_board_result(board.white_player.id, self._current_round)
-            papi_database.remove_board_result(board.black_player.id, self._current_round)
+            papi_database.remove_board_result(board.white_player.ref_id, self._current_round)
+            papi_database.remove_board_result(board.black_player.ref_id, self._current_round)
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.delete_stored_result(self.id, self.current_round, board.id)
@@ -681,3 +681,12 @@ class Tournament:
                 player_papi_id, return_deleted_data)
             papi_database.commit()
             return data
+
+    def update_player(
+            self,
+            player: Player,
+    ):
+        """Updates a player."""
+        with PapiDatabase(self.file, write=True) as papi_database:
+            papi_database.update_player(player)
+            papi_database.commit()
