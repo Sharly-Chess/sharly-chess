@@ -216,7 +216,7 @@ class Tournament:
         return self._pairing
 
     @property
-    def rating(self) -> int:
+    def rating(self) -> TournamentRating:
         self.read_papi()
         return self._rating
 
