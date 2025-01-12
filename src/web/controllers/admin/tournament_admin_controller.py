@@ -152,7 +152,7 @@ class TournamentAdminController(AbstractEventAdminController):
     @staticmethod
     def _get_chessevent_options(admin_event: Event) -> dict[str, str]:
         options: dict[str, str] = {
-            '': 'Pas de connexion à ChessEvent',
+            '': _('No ChessEvent connection'),
         }
         for chessevent in admin_event.chessevents_by_id.values():
             options[str(chessevent.id)] = (f' {chessevent.uniq_id} ({chessevent.user_id}'
