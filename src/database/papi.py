@@ -11,7 +11,8 @@ from data.chessevent_player import ChessEventPlayer
 from data.chessevent_tournament import ChessEventTournament
 from data.pairing import Pairing
 from data.player import Player
-from data.util import Result, TournamentPairing, PlayerGender, PlayerTitle, Color, TournamentRating, PlayerFFELicence
+from data.util import Result, TournamentPairing, PlayerGender, PlayerTitle, Color, TournamentRating, PlayerFFELicence, \
+    PlayerRatingType
 from database.access import AccessDatabase
 
 logger: Logger = get_logger()
@@ -92,31 +93,45 @@ class PapiDatabase(AccessDatabase):
 
     def update_player(self, player: Player):
         """Updates the event database with the information in the provided player."""
-        fields: list[str] = [
+        fields: list[str] = ([
             'Nom',
             'Prenom',
             'NeLe',
             'Sexe',
-        ]
-        params: tuple = (
+            'FideTitre',
+        ] + [
+           tr.papi_value_field for tr in TournamentRating
+        ] + [
+            tr.papi_type_field for tr in TournamentRating
+        ])
+        params = [
             player.last_name,
             player.first_name,
             self._date_to_papi_date(player.date_of_birth),
             player.gender.to_papi_value,
+            player.title.to_papi_value,
+        ] + [
+            player.ratings[tr] for tr in TournamentRating
+        ] + [
+            player.rating_types[tr].to_papi_value for tr in TournamentRating
+        ] + [
             player.ref_id,
-        )
+        ]
         field_sets = (f"`{f}` = ?" for f in fields)
-        self._execute(
-            f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
-            params)
+        self._execute(f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?', tuple(params))
 
     def read_players(self, tournament_id: int, tournament_rating: TournamentRating, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.
         The tournament_id is used to make the players' id unique for an event. """
         players: dict[int, Player] = {}
         player_fields: list[str] = [
-            'Ref', 'RefFFE', 'Nom', 'Prenom', 'NeLe', 'Sexe', 'EMail', 'Tel', 'Commentaire', 'InscriptionDu', 'InscriptionRegle',
-            'FideTitre', 'Fixe', 'Elo', 'Rapide', 'Blitz', 'Fide', 'RapideFide', 'BlitzFide',
+            'Ref', 'RefFFE', 'Nom', 'Prenom', 'NeLe', 'Sexe', 'EMail', 'Tel', 'Commentaire', 'InscriptionDu',
+            'InscriptionRegle', 'FideTitre', 'Fixe',
+        ] + [
+            tr.papi_value_field for tr in TournamentRating
+        ] + [
+            tr.papi_type_field for tr in TournamentRating
+        ] + [
             'Pointe', 'AffType', 'NrFFE', 'Federation', 'Ligue', 'Club', 'FideCode',
         ]
         for rd, suffix in product(range(1, rounds + 1), ['Cl', 'Adv', 'Res']):
@@ -153,8 +168,13 @@ class PapiDatabase(AccessDatabase):
                 owed=float(row['InscriptionDu']) or 0.0,
                 paid=float(row['InscriptionRegle']) or 0.0,
                 title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
-                rating=row[tournament_rating.papi_value_field] or 0,
-                rating_type=row[tournament_rating.papi_type_field] or 0,
+                ratings={
+                    tr: row[tr.papi_value_field] or 0 for tr in TournamentRating
+                },
+                rating_types={
+                    tr: PlayerRatingType.from_papi_value(row[tr.papi_type_field])
+                    for tr in TournamentRating
+                },
                 fide_id=fide_id,
                 ffe_id=row['RefFFE'] or '',
                 ffe_licence=PlayerFFELicence.from_papi_value(row['AffType'] or ''),

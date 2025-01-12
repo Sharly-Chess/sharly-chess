@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-centered admin-tournament-edit-modal d-block w-80 mw-100">
+<div class="modal-dialog modal-dialog-centered admin-tournament-edit-modal d-block w-90 mw-100">
     <form
             {% if action in ['create', 'clone', ] %}
                 hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
@@ -161,7 +161,7 @@
                                 <label for="{{ id }}" class="form-label">{{ _('FFE qualification number (optional):') }}</label>
                                 <input
                                         name="{{ name }}"
-                                        type="int" id="{{ id }}"
+                                        type="number" id="{{ id }}"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
                                         placeholder="{{ _('E.g.: %(num)d', num=68991) }}"

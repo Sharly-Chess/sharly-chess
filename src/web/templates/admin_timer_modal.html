@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-centered admin-timer-edit-modal d-block w-80 mw-100">
+<div class="modal-dialog modal-dialog-centered admin-timer-edit-modal d-block w-90 mw-100">
     <form
             {% if action == 'create' %}
                 hx-post="{{ url_for('admin-timer-' ~ action, event_uniq_id=admin_event.uniq_id) }}"

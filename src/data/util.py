@@ -187,7 +187,6 @@ class TournamentType(IntEnum):
 
 class TournamentRating(IntEnum):
     """A wrapper around the tournament rating used stored in the papi db."""
-    UNKNOWN = 0
     STANDARD = 1
     RAPID = 2
     BLITZ = 3
@@ -219,8 +218,6 @@ class TournamentRating(IntEnum):
     @property
     def papi_value_field(self) -> str:
         match self:
-            case TournamentRating.UNKNOWN:
-                return 'Inconnu'
             case TournamentRating.STANDARD:
                 return 'Elo'
             case TournamentRating.RAPID:
@@ -643,7 +640,6 @@ class PlayerCategory(IntEnum):
 
 
 class PlayerRatingType(IntEnum):
-    NONE = 0
     ESTIMATED = 1
     NATIONAL = 2
     FIDE = 3
@@ -651,8 +647,6 @@ class PlayerRatingType(IntEnum):
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
         match value:
-            case '':
-                return cls.NONE
             case 'E':
                 return cls.ESTIMATED
             case 'N':
@@ -665,8 +659,6 @@ class PlayerRatingType(IntEnum):
     @property
     def to_papi_value(self) -> str:
         match self:
-            case PlayerRatingType.NONE:
-                return ''
             case PlayerRatingType.ESTIMATED:
                 return 'E'
             case PlayerRatingType.NATIONAL:
@@ -676,32 +668,45 @@ class PlayerRatingType(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
-    def __str__(self) -> str:
-        # TODO Translate this (if used)!
+    @property
+    def name(self) -> str:
         match self:
-            case PlayerRatingType.NONE:
-                return ''
             case PlayerRatingType.ESTIMATED:
-                return 'E'
+                return _('Estimated *** NAME FOR RATING TYPE ESTIMATED')
             case PlayerRatingType.NATIONAL:
-                return 'N'
+                return _('National *** NAME FOR RATING TYPE NATIONAL')
             case PlayerRatingType.FIDE:
-                return 'F'
+                return _('FIDE *** NAME FOR RATING TYPE FIDE')
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case PlayerRatingType.ESTIMATED:
+                return _('E *** SHORT NAME FOR RATING TYPE ESTIMATED')
+            case PlayerRatingType.NATIONAL:
+                return _('N *** SHORT NAME FOR RATING TYPE NATIONAL')
+            case PlayerRatingType.FIDE:
+                return _('F *** SHORT NAME FOR RATING TYPE FIDE')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    def __str__(self) -> str:
+        return self.short_name
 
 
 class PlayerTitle(IntEnum):
     """The possible FIDE titles: GM, WGM, IM, WIM, FM, WFM.
     Also includes the "no title" case, but does not include CM nor WCM.
     This is for Papi-compatibility reasons."""
-    GRANDMASTER = 6
-    WOMAN_GRANDMASTER = 5
-    INTERNATIONAL_MASTER = 4
-    WOMAN_INTERNATIONAL_MASTER = 3
-    FIDE_MASTER = 2
-    WOMAN_FIDE_MASTER = 1
     NONE = 0
+    WOMAN_FIDE_MASTER = 1
+    FIDE_MASTER = 2
+    WOMAN_INTERNATIONAL_MASTER = 3
+    INTERNATIONAL_MASTER = 4
+    WOMAN_GRANDMASTER = 5
+    GRANDMASTER = 6
 
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
@@ -743,9 +748,48 @@ class PlayerTitle(IntEnum):
             case _:
                 raise ValueError(f'Unknown title: {self}')
 
+    @property
+    def name(self) -> str:
+        match self:
+            case PlayerTitle.NONE:
+                return '-'
+            case PlayerTitle.WOMAN_FIDE_MASTER:
+                return _('Woman Fide Master')
+            case PlayerTitle.FIDE_MASTER:
+                return _('Fide Master')
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
+                return _('Woman International Master')
+            case PlayerTitle.INTERNATIONAL_MASTER:
+                return _('International Master')
+            case PlayerTitle.WOMAN_GRANDMASTER:
+                return _('Woman Grand Master')
+            case PlayerTitle.GRANDMASTER:
+                return _('Grand Master')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case PlayerTitle.NONE:
+                return ''
+            case PlayerTitle.WOMAN_FIDE_MASTER:
+                return _('WFM *** SHORT NAME FOR Woman Fide Master')
+            case PlayerTitle.FIDE_MASTER:
+                return _('FM *** SHORT NAME FOR Fide Master')
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
+                return _('WIM *** SHORT NAME FOR Woman International Master')
+            case PlayerTitle.INTERNATIONAL_MASTER:
+                return _('IM *** SHORT NAME FOR International Master')
+            case PlayerTitle.WOMAN_GRANDMASTER:
+                return _('WGM *** SHORT NAME FOR Woman Grand Master')
+            case PlayerTitle.GRANDMASTER:
+                return _('GM *** SHORT NAME FOR Grand Master')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
     def __str__(self) -> str:
-        # TODO Translate this (if used)!
-        return self.to_papi_value
+        return self.short_name
 
 
 class Color(StrEnum):

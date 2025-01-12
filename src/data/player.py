@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 from common.i18n import _
 from data.pairing import Pairing
 from common.logger import get_logger
-from data.util import PlayerGender, PlayerTitle, Color, PlayerFFELicence, TournamentRating
+from data.util import PlayerGender, PlayerTitle, Color, PlayerFFELicence, TournamentRating, PlayerRatingType
 
 logger: Logger = get_logger()
 
@@ -130,8 +130,8 @@ class Player:
             owed: float,
             paid: float,
             title: PlayerTitle,
-            rating: int,
-            rating_type: TournamentRating,
+            ratings: dict[TournamentRating, int],
+            rating_types: dict[TournamentRating, PlayerRatingType],
             fide_id: int | None,
             ffe_id: int,
             ffe_licence: PlayerFFELicence,
@@ -156,8 +156,8 @@ class Player:
         self.owed: float = owed
         self.paid: float = paid
         self.title: PlayerTitle = title
-        self.rating: int = rating
-        self.rating_type: TournamentRating = rating_type
+        self.ratings: dict[TournamentRating, int] = ratings
+        self.rating_types: dict[TournamentRating, PlayerRatingType] = rating_types
         self.fide_id: int | None = fide_id
         self.ffe_id: int = ffe_id
         self.ffe_licence: PlayerFFELicence = ffe_licence
@@ -206,8 +206,12 @@ class Player:
         return self.date_of_birth.year if self.date_of_birth else 0
 
     @property
-    def title_str(self) -> str:
-        return str(self.title)
+    def rating(self) -> int:
+        return self.ratings[self.tournament.rating]
+
+    @property
+    def rating_type(self) -> PlayerRatingType:
+        return self.rating_types[self.tournament.rating]
 
     @cached_property
     def club_tuple(self) -> ClubTuple:
@@ -339,4 +343,4 @@ class Player:
         if self.ref_id == 1:
             return f'{self.__class__.__name__}(#{self.id} EXEMPT)'
         return (f'{self.__class__.__name__}'
-                f'(#{self.id} {self.title_str}{self.last_name} {self.first_name} {self.rating} [{self.vpoints}])')
+                f'(#{self.id} {self.title.short_name}{self.last_name} {self.first_name} {self.rating} [{self.vpoints}])')

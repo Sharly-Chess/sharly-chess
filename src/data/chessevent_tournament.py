@@ -25,7 +25,7 @@ class ChessEventTournament:
         self.start: float = 0.0
         self.end: float = 0.0
         self.tie_breaks: list[TournamentTieBreak] = [TournamentTieBreak.NONE, ] * 3
-        self.rating: TournamentRating = TournamentRating.UNKNOWN
+        self.rating: TournamentRating = TournamentRating.STANDARD
         self.ffe_id: int = 0
         self.players: list[ChessEventPlayer] = []
         self.error = True

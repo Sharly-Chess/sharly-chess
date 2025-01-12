@@ -17,11 +17,11 @@ class ChessEventPlayer:
         self.birth: float = 0.0
         self.category: PlayerCategory = PlayerCategory.NONE
         self.standard_rating: int = 0
-        self.standard_rating_type: PlayerRatingType = PlayerRatingType.NONE
+        self.standard_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
         self.rapid_rating: int = 0
-        self.rapide_rating_type: PlayerRatingType = PlayerRatingType.NONE
+        self.rapide_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
         self.blitz_rating: int = 0
-        self.blitz_rating_type: PlayerRatingType = PlayerRatingType.NONE
+        self.blitz_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
         self.title: PlayerTitle = PlayerTitle.NONE
         self.ffe_id: int = 0
         self.ffe_license: PlayerFFELicence = PlayerFFELicence.NONE
@@ -97,7 +97,7 @@ class ChessEventPlayer:
         return '\n'.join(
             [
                 f'  - Name: {self.last_name} {self.first_name}',
-                f'  - Title / FFE ID / Fide ID: {self.title} / {self.ffe_id} / {self.fide_id}',
+                f'  - Title / FFE ID / FIDE ID: {self.title} / {self.ffe_id} / {self.fide_id}',
                 f'  - FFE Licence / Licence number / Category / Gender: '
                 f'{self.ffe_license} / {self.ffe_license_number} / {self.category} / {self.gender}',
                 f'  - Birth date: {self.birth}',

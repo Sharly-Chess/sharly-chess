@@ -48,6 +48,9 @@
                         ></i> {{ admin_players|length }}/{{admin_event.players_number}}
                     </th>
                     <th scope="col" class="text-nowrap">
+                        {# Players' title #}
+                    </th>
+                    <th scope="col" class="text-nowrap">
                         {{ _('Name *** NAME COLUMN HEADER FOR PLAYERS') }}
                         {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'alpha', admin_players_sort) }}
                     </th>
@@ -102,7 +105,7 @@
                     {% endif %}
                     {% if 'fide' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center w-1">
-                            {{ _('Fide *** FIDE COLUMN HEADER FOR PLAYERS') }}
+                            {{ _('FIDE *** FIDE COLUMN HEADER FOR PLAYERS') }}
                         </th>
                     {% endif %}
                     {% if 'ffe' in admin_players_filter_columns %}
@@ -170,6 +173,9 @@
                                     </ul>
                                 </span>
                             </th>
+                            <td class="text-end">
+                                {{ player.title.short_name }}
+                            </td>
                             <td class="text-nowrap">
                                 {{ player.last_name }} {{ player.first_name }}
                             </td>
@@ -241,10 +247,10 @@
                                             style="height: 1.2em"
                                             class="p-0 {% if player.fide_id %}cursor-pointer{% else %}fide-id-none{% endif %}"
                                             {% if player.fide_id %}
-                                                {{ tooltip_attributes('info', _('Fide ID: %(fide_id)s (click to copy to the clipboard).', fide_id=player.fide_id), 'left') }}
+                                                {{ tooltip_attributes('info', _('FIDE ID: %(fide_id)s (click to copy to the clipboard).', fide_id=player.fide_id), 'left') }}
                                                 onclick="navigator.clipboard.writeText('{{ player.fide_id }}')"
                                             {% else %}
-                                                {{ tooltip_attributes('warning', _('No Fide ID.'), 'left') }}
+                                                {{ tooltip_attributes('warning', _('No FIDE ID.'), 'left') }}
                                             {% endif %}
                                     />
                                 </td>
@@ -328,7 +334,7 @@
                 {% else %}
                     <tr>
                         {% set columns =
-                            2
+                            3
                             + admin_players_filter_columns|length
                             + (1 if ('tournament' in admin_players_filter_columns or admin_event.tournaments_by_id|length > 1) else 0)
                             + (1 if ('owed_paid' in admin_players_filter_columns) else 0)

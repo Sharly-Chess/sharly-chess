@@ -1,3 +1,4 @@
+import string
 from datetime import date
 from logging import Logger
 from typing import Annotated, Any
@@ -15,7 +16,7 @@ from common.logger import get_logger
 from data.loader import EventLoader
 from data.player import Player
 from data.tournament import Tournament
-from data.util import PlayerGender
+from data.util import PlayerGender, TournamentRating, PlayerRatingType, PlayerTitle
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
 from web.controllers.index_controller import WebContext
 from web.messages import Message
@@ -71,10 +72,14 @@ class PlayerAdminController(AbstractEventAdminController):
         last_name: str = WebContext.form_data_to_str(data, field)
         if not last_name:
             errors[field] = _('Please enter the last name.')
+        else:
+            last_name = last_name.upper()
         field: str = 'first_name'
         first_name: str = WebContext.form_data_to_str(data, field)
         if not first_name:
             errors[field] = _('Please enter the first name.')
+        else:
+            first_name = string.capwords(first_name)
         field: str = 'date_of_birth'
         date_of_birth: date | None = WebContext.form_data_to_date(data, field)
         if not date_of_birth:
@@ -84,7 +89,26 @@ class PlayerAdminController(AbstractEventAdminController):
         try:
             gender = PlayerGender(WebContext.form_data_to_int(data, field))
         except ValueError:
-            errors[field] = _('Invalid gender value [{value}].').format(value=data['field'])
+            # should never happen, not translated.
+            errors[field] = f'Invalid gender value [{data[field]}].'
+            data[field] = ''
+        field: str = 'rating'
+        ratings: dict[TournamentRating, int] = {
+            tr: WebContext.form_data_to_int(data, f'{field}_{tr.value}')
+            for tr in TournamentRating
+        }
+        field: str = 'rating_type'
+        rating_types: dict[TournamentRating, PlayerRatingType] = {
+            tr: PlayerRatingType(WebContext.form_data_to_int(data, f'{field}_{tr.value}'))
+            for tr in TournamentRating
+        }
+        field: str = 'title'
+        title: PlayerTitle | None = PlayerTitle.NONE
+        try:
+            title = PlayerTitle(WebContext.form_data_to_int(data, field))
+        except ValueError:
+            # should never happen, not translated.
+            errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
         return Player(
             id=web_context.admin_player.id,
@@ -97,9 +121,9 @@ class PlayerAdminController(AbstractEventAdminController):
             comment=web_context.admin_player.comment,
             owed=web_context.admin_player.owed,
             paid=web_context.admin_player.paid,
-            title=web_context.admin_player.title,
-            rating=web_context.admin_player.rating,
-            rating_type=web_context.admin_player.rating_type,
+            title=title,
+            ratings=ratings,
+            rating_types=rating_types,
             fide_id=web_context.admin_player.ffe_id,
             ffe_id=web_context.admin_player.ffe_id,
             ffe_licence=web_context.admin_player.ffe_licence,
@@ -142,13 +166,23 @@ class PlayerAdminController(AbstractEventAdminController):
                     first_name: str | None = None
                     last_name: str | None = None
                     date_of_birth: float | None = None
-                    gender: PlayerGender | None = None
+                    gender: PlayerGender = PlayerGender.NONE
+                    ratings: dict[TournamentRating, int] = {
+                        tr: 0 for tr in TournamentRating
+                    }
+                    rating_types: dict[TournamentRating, PlayerRatingType] = {
+                        tr: PlayerRatingType.ESTIMATED for tr in TournamentRating
+                    }
+                    title: PlayerTitle = PlayerTitle.NONE
                     match action:
                         case 'update':
                             first_name = web_context.admin_player.first_name
                             last_name = web_context.admin_player.last_name
                             gender = web_context.admin_player.gender
                             date_of_birth = web_context.admin_player.date_of_birth
+                            ratings = web_context.admin_player.ratings
+                            rating_types = web_context.admin_player.rating_types
+                            title = web_context.admin_player.title
                         case 'create':
                             pass
                         case _:
@@ -158,6 +192,13 @@ class PlayerAdminController(AbstractEventAdminController):
                         'first_name': WebContext.value_to_form_data(first_name),
                         'gender': WebContext.value_to_form_data(gender.value),
                         'date_of_birth': WebContext.value_to_date_form_data(date_of_birth),
+                        'title': WebContext.value_to_form_data(title.value),
+                    } | {
+                        f'rating_{tr.value}': WebContext.value_to_form_data(ratings[tr])
+                        for tr in TournamentRating
+                    } | {
+                        f'rating_type_{tr.value}': WebContext.value_to_form_data(rating_types[tr].value)
+                        for tr in TournamentRating
                     }
                     player: Player = cls._admin_validate_player_update_data(action, web_context, data)
                     errors = player.errors
@@ -165,6 +206,22 @@ class PlayerAdminController(AbstractEventAdminController):
                     errors = {}
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
+                    'tournament_ratings_strings': {
+                        TournamentRating.STANDARD: {
+                            'label': _('Standard:'),
+                            'help': _('The rating used when the time control is at least 60 minutes.'),
+                        },
+                        TournamentRating.RAPID: {
+                            'label': _('Rapid:'),
+                            'help': _('The rating used when the time control is more than 10 minutes and less than 60 minutes.'),
+                        },
+                        TournamentRating.BLITZ: {
+                            'label': _('Blitz:'),
+                            'help': _('The rating used when the time control is at most 10 minutes.'),
+                        },
+                    },
+                    'rating_type_options': {str(tr.value): tr.name for tr in PlayerRatingType},
+                    'title_options': {str(t.value): t.name for t in PlayerTitle},
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -208,7 +265,7 @@ class PlayerAdminController(AbstractEventAdminController):
             player_id: int | None,
     ) -> Template | ClientRedirect:
         match action:
-            case 'update' | 'delete' | 'clone' | 'create':
+            case 'update' | 'create':
                 web_context: PlayerAdminWebContext = PlayerAdminWebContext(
                     request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=None, data=data)
             case _:

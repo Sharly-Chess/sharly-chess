@@ -27,7 +27,7 @@
                                 {% with opponent_id=pairing.opponent_id, opponent_papi_id=pairing.opponent_papi_id %}
                                     <tr class="player-row {% if not opponent_papi_id or opponent_papi_id == 1 %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
                                         <td  class="player bg-transparent text-nowrap {% if opponent_papi_id and opponent_papi_id != 1 %}{% if player.color == 'W' %}white{%else %}black{%endif %}{%endif %}">
-                                            {% if player.title_str %}{{ player.title_str }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }} [{{ player.vpoints_str }}]
+                                            {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }} [{{ player.vpoints_str }}]
                                         </td>
                                         {% if not opponent_papi_id %}
                                             <td colspan="2" class="bg-transparent text-nowrap">{{ player.not_paired_str }}</td>
@@ -36,7 +36,7 @@
                                         {% else %}
                                             {% with opponent=tournament.players_by_id[opponent_id] %}
                                                 <td class="pairing bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('Board #%(board_number)d with %(color)s', board_number=player.board_number, color=player.color_str) }}</td>
-                                                <td class="opponent bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('vs') }} {% if opponent.title_str %}{{ opponent.title_str }}&nbsp;{% endif %}{{ opponent.last_name }} {{ opponent.first_name }} {{ opponent.rating }}{{ opponent.rating_type }} [{{ opponent.vpoints_str }}]</td>
+                                                <td class="opponent bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.last_name }} {{ opponent.first_name }} {{ opponent.rating }}{{ opponent.rating_type }} [{{ opponent.vpoints_str }}]</td>
                                             {% endwith %}
                                         {% endif %}
                                     </tr>
@@ -52,7 +52,7 @@
                                                 bi-square player-check-in
                                             {% endif %}
                                             player-{{ tournament.id }}-{{ player.id }}"></i>
-                                        {% if player.title_str %}{{ player.title_str }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}
+                                        {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}
                                     </td>
                                     <td colspan="2" class="bg-transparent"><span class="fst-italic">{{ player.not_paired_str }}</span></td>
                                 </tr>
