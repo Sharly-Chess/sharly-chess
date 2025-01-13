@@ -3788,7 +3788,7 @@ msgstr "Nom du fichier Papi (sans l'extension) :"
 
 #: src/web/templates/admin_tournament_modal.html:145
 msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
-msgstr "Le nom ddu fichier papi, sans l'extension Papi (par défaut le numéro d'homologation FFE, puis l'identifiant de l'évènement)."
+msgstr "Le nom du fichier papi, sans l'extension Papi (par défaut le numéro d'homologation FFE, puis l'identifiant de l'évènement)."
 
 #: src/web/templates/admin_tournament_modal.html:156
 msgid "Connections (FFE and ChessEvent)"
