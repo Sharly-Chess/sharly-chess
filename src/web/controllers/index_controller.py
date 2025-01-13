@@ -1,9 +1,11 @@
+import re
 import time
 from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
 from typing import Annotated, Any
 
+import phonenumbers
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
 from litestar import get
 from litestar.config.response_cache import CACHE_FOREVER
@@ -13,9 +15,10 @@ from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Redirect, Template
+from phonenumbers.phonenumberutil import NumberParseException
 
 from common import RGB, check_rgb_str
-from common.i18n import set_locale, locale_localized_name, locale_flag_url, trusted_locales, _
+from common.i18n import set_locale, locale_localized_name, locale_flag_url, trusted_locales, _, get_locale
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from web.messages import Message
@@ -118,7 +121,7 @@ class WebContext:
             return empty_value
         data[field] = data.get(field, '')
         if data[field] is not None:
-            data[field] = data[field].strip()
+            data[field] = data[field].strip().replace(',', '.')
         if not data[field]:
             return empty_value
         float_val = float(data[field])
@@ -154,6 +157,9 @@ class WebContext:
             return empty_value
         return check_rgb_str(data[field])
 
+    def _form_data_to_rgb(self, field: str, empty_value: RGB | None = None) -> str | None:
+        return self.form_data_to_rgb(self.data, field, empty_value)
+
     @staticmethod
     def form_data_to_date(data: dict[str, str], field: str, empty_value: RGB | None = None) -> date | None:
         if data is None:
@@ -165,11 +171,54 @@ class WebContext:
             return empty_value
         return datetime.strptime(data[field], '%Y-%m-%d').date()
 
-    def _form_data_to_rgb(self, field: str, empty_value: RGB | None = None) -> str | None:
-        return self.form_data_to_rgb(self.data, field, empty_value)
+    @classmethod
+    def form_data_to_mail(cls, data: dict[str, str], field: str) -> str | None:
+        if data is None:
+            return None
+        data[field] = data.get(field, '')
+        if data[field] is not None:
+            data[field] = data[field].strip().lower()
+        if not data[field]:
+            return None
+        if re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$', data[field]):
+            return data[field]
+        raise ValueError
+
+    @classmethod
+    def form_data_to_phone(cls, data: dict[str, str], field: str) -> str | None:
+        if data is None:
+            return None
+        data[field] = data.get(field, '')
+        if data[field] is not None:
+            data[field] = data[field].lower().replace(' ', '')
+        if not data[field]:
+            return None
+        try:
+            phonenumbers.parse(data[field])
+            return data[field]
+        except NumberParseException:
+            try:
+                # uppercase the locale to validate the phone number from the corresponding zone
+                phonenumbers.parse(data[field], get_locale().upper())
+                return data[field]
+            except NumberParseException:
+                raise ValueError
+
+    @classmethod
+    def form_data_to_ffe_licence_number(cls, data: dict[str, str], field: str) -> str | None:
+        if data is None:
+            return None
+        data[field] = data.get(field, '')
+        if data[field] is not None:
+            data[field] = data[field].strip().upper()
+        if not data[field]:
+            return None
+        if re.match(r'^[A-Za-z][0-9]{5}$', data[field]):
+            return data[field]
+        raise ValueError
 
     @staticmethod
-    def value_to_form_data(value: str | int | bool | Path | None) -> str | None:
+    def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
         if value is None:
             return ''
         if isinstance(value, str):
@@ -178,6 +227,8 @@ class WebContext:
             return 'on' if value else 'off'
         if isinstance(value, int):
             return str(value)
+        if isinstance(value, float):
+            return f'{value:.2f}'
         if isinstance(value, Path):
             return str(value)
         raise ValueError

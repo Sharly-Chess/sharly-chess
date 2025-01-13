@@ -1,3 +1,4 @@
+import re
 import string
 from datetime import date
 from logging import Logger
@@ -17,7 +18,7 @@ from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
 from data.player import Player
 from data.tournament import Tournament
-from data.util import PlayerGender, TournamentRating, PlayerRatingType, PlayerTitle
+from data.util import PlayerGender, TournamentRating, PlayerRatingType, PlayerTitle, PlayerFFELicence
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
 from web.controllers.index_controller import WebContext
 from web.messages import Message
@@ -113,33 +114,87 @@ class PlayerAdminController(AbstractEventAdminController):
             data[field] = ''
         field: str = 'federation'
         federation: str | None = WebContext.form_data_to_str(data, field)
-        if not federation in PapiWebConfig.federation_names:
+        if not federation in PapiWebConfig.federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
+        field: str = 'league'
+        league: str | None = WebContext.form_data_to_str(data, field)
+        if league and not league in PapiWebConfig.ffe_leagues:
+            # should never happen, not translated.
+            errors[field] = f'Invalid league value [{data[field]}].'
+            data[field] = ''
+        field: str = 'club'
+        club: str | None = WebContext.form_data_to_str(data, field)
         field: str = 'fide_id'
-        fide_id: int | None = WebContext.form_data_to_int(data, field, minimum=1)
+        fide_id: int | None = None
+        try:
+            fide_id = WebContext.form_data_to_int(data, field, minimum=1)
+        except ValueError:
+            errors[field] = _('Invalid FIDE ID [{fide_id}].').format(fide_id=data[field])
+        field: str = 'ffe_id'
+        ffe_id: int | None = None
+        try:
+            ffe_id = WebContext.form_data_to_int(data, field, minimum=1)
+        except ValueError:
+            errors[field] = _('Invalid FFE ID [{ffe_id}].').format(fide_id=data[field])
+        field: str = 'ffe_licence'
+        ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
+        try:
+            ffe_licence = PlayerFFELicence(WebContext.form_data_to_int(data, field))
+        except ValueError:
+            errors[field] = f'Invalid FFE licence [{data[field]}].'
+        field: str = 'ffe_licence_number'
+        ffe_licence_number: str | None = WebContext.form_data_to_str(data, field)
+        if not re.match(r'^[A-Z]\d{5}$', ffe_licence_number):
+            errors[field] = f'Invalid FFE licence [{data[field]}].'
+        field: str = 'mail'
+        mail: str | None = None
+        try:
+            mail = WebContext.form_data_to_mail(data, field)
+        except ValueError:
+            errors[field] = _('Invalid mail [{mail}].').format(mail=data[field])
+        field: str = 'phone'
+        phone: str | None = None
+        try:
+            phone = WebContext.form_data_to_phone(data, field)
+        except ValueError:
+            errors[field] = _('Invalid phone number [{phone}].').format(phone=data[field])
+        field: str = 'owed'
+        owed: float | None = 0.0
+        try:
+            owed = WebContext.form_data_to_float(data, field)
+        except ValueError:
+            errors[field] = f'Invalid amount [{data[field]}].'
+        field: str = 'paid'
+        paid: float | None = 0.0
+        try:
+            paid = WebContext.form_data_to_float(data, field)
+        except ValueError:
+            errors[field] = f'Invalid amount [{data[field]}].'
+        field: str = 'comment'
+        comment: str | None = WebContext.form_data_to_mail(data, field)
         return Player(
             id=web_context.admin_player.id,
             first_name=first_name,
             last_name=last_name,
             date_of_birth=date_of_birth,
             gender=gender,
-            mail=web_context.admin_player.mail,
-            phone=web_context.admin_player.phone,
-            comment=web_context.admin_player.comment,
-            owed=web_context.admin_player.owed,
-            paid=web_context.admin_player.paid,
+            mail=mail,
+            phone=phone,
+            comment=comment,
+            owed=owed,
+            paid=paid,
             title=title,
             ratings=ratings,
             rating_types=rating_types,
             fide_id=fide_id,
-            ffe_id=web_context.admin_player.ffe_id,
-            ffe_licence=web_context.admin_player.ffe_licence,
-            ffe_licence_number=web_context.admin_player.ffe_licence_number,
+            ffe_id=ffe_id,
+            ffe_licence=ffe_licence,
+            ffe_licence_number=ffe_licence_number,
             federation=federation,
-            league=web_context.admin_player.league,
-            club=web_context.admin_player.club,
+            league=league,
+            club=club,
             fixed=web_context.admin_player.fixed,
             check_in=web_context.admin_player.check_in,
             pairings=web_context.admin_player.pairings,
@@ -185,6 +240,16 @@ class PlayerAdminController(AbstractEventAdminController):
                     title: PlayerTitle = PlayerTitle.NONE
                     federation: str | None = None
                     fide_id: int | None = None
+                    league: str | None = None
+                    club: str | None = None
+                    ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
+                    ffe_licence_number: str | None = None
+                    ffe_id: int | None = None
+                    mail: str | None = None
+                    phone: str | None = None
+                    comment: str | None = None
+                    owed: float = 0.0
+                    paid: float = 0.0
                     match action:
                         case 'update':
                             first_name = web_context.admin_player.first_name
@@ -193,9 +258,19 @@ class PlayerAdminController(AbstractEventAdminController):
                             date_of_birth = web_context.admin_player.date_of_birth
                             ratings = web_context.admin_player.ratings
                             rating_types = web_context.admin_player.rating_types
+                            fide_id = web_context.admin_player.fide_id
                             title = web_context.admin_player.title
                             federation = web_context.admin_player.federation
-                            fide_id = web_context.admin_player.fide_id
+                            league = web_context.admin_player.league
+                            club = web_context.admin_player.club
+                            ffe_licence = web_context.admin_player.ffe_licence
+                            ffe_licence_number = web_context.admin_player.ffe_licence_number
+                            ffe_id = web_context.admin_player.ffe_id
+                            mail = web_context.admin_player.mail
+                            phone = web_context.admin_player.phone
+                            comment = web_context.admin_player.comment
+                            owed = web_context.admin_player.owed
+                            paid = web_context.admin_player.paid
                         case 'create':
                             pass
                         case _:
@@ -208,6 +283,16 @@ class PlayerAdminController(AbstractEventAdminController):
                         'title': WebContext.value_to_form_data(title.value),
                         'federation': WebContext.value_to_form_data(federation),
                         'fide_id': WebContext.value_to_form_data(fide_id),
+                        'league': WebContext.value_to_form_data(league),
+                        'club': WebContext.value_to_form_data(club),
+                        'ffe_licence': WebContext.value_to_form_data(ffe_licence),
+                        'ffe_licence_number': WebContext.value_to_form_data(ffe_licence_number),
+                        'ffe_id': WebContext.value_to_form_data(ffe_id),
+                        'mail': WebContext.value_to_form_data(mail),
+                        'phone': WebContext.value_to_form_data(phone),
+                        'comment': WebContext.value_to_form_data(comment),
+                        'owed': WebContext.value_to_form_data(owed),
+                        'paid': WebContext.value_to_form_data(paid),
                     } | {
                         f'rating_{tr.value}': WebContext.value_to_form_data(ratings[tr])
                         for tr in TournamentRating
@@ -236,7 +321,8 @@ class PlayerAdminController(AbstractEventAdminController):
                         },
                     },
                     'rating_type_options': {str(tr.value): tr.name for tr in PlayerRatingType},
-                    'title_options': {str(t.value): t.name for t in PlayerTitle},
+                    'title_options': {str(t.value): f'{t.short_name} - {t.name}' if t.short_name else f'{t.name}' for t in PlayerTitle},
+                    'licence_options': {str(l.value): l.name for l in PlayerFFELicence},
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -289,13 +375,11 @@ class PlayerAdminController(AbstractEventAdminController):
             return web_context.error
         player: Player = self._admin_validate_player_update_data(action, web_context, data)
         if player.errors:
-            Message.error(request, list(player.errors.values()))
             return self._admin_event_players_render(
                 request, event_uniq_id=event_uniq_id, modal='player', action=action, player_id=player_id,
                 data=data, errors=player.errors)
         tournament: Tournament = player.tournament
         tournament.update_player(player)
-        Message.success(request, 'OK')
         event_loader: EventLoader = EventLoader.get(request=request)
         event_loader.clear_cache(event_uniq_id)
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)

@@ -859,22 +859,22 @@ msgstr "spelare från start till #{last}, på {parts} skärmar"
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr "spelare från #{first} till #{last}, på {parts} skärmar"
 
-#: src/data/player.py:276
+#: src/data/player.py:272
 #, ai_translation
 msgid "Unpaired *** FEMALE"
 msgstr "Ouppklarade"
 
-#: src/data/player.py:276
+#: src/data/player.py:272
 #, ai_translation
 msgid "Unpaired *** MALE"
 msgstr "Ouppklarade"
 
-#: src/data/player.py:280
+#: src/data/player.py:276
 #, ai_translation
 msgid "Exempt *** FEMALE"
 msgstr "Undantag"
 
-#: src/data/player.py:280
+#: src/data/player.py:276
 #, ai_translation
 msgid "Exempt *** MALE"
 msgstr "Undantag"
@@ -1116,8 +1116,9 @@ msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Män"
 
 #: src/data/util.py:677
+#, ai_translation
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
-msgstr ""
+msgstr "Nationellt"
 
 #: src/data/util.py:679
 #, ai_translation, fuzzy
@@ -1139,29 +1140,40 @@ msgstr "- Vad är det?"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
 
+#: src/data/util.py:755
+#, ai_translation, fuzzy
+msgid "No title"
+msgstr "Inga timers."
+
 #: src/data/util.py:757
+#, ai_translation
 msgid "Woman Fide Master"
-msgstr ""
+msgstr "Kvinnlig mästare"
 
 #: src/data/util.py:759
+#, ai_translation
 msgid "Fide Master"
-msgstr ""
+msgstr "Fide Master Ordförande"
 
 #: src/data/util.py:761
+#, ai_translation
 msgid "Woman International Master"
-msgstr ""
+msgstr "Kvinna internationell mästare"
 
 #: src/data/util.py:763
+#, ai_translation
 msgid "International Master"
-msgstr ""
+msgstr "Internationell mästare"
 
 #: src/data/util.py:765
+#, ai_translation
 msgid "Woman Grand Master"
-msgstr ""
+msgstr "Kvinna stormästare"
 
 #: src/data/util.py:767
+#, ai_translation
 msgid "Grand Master"
-msgstr ""
+msgstr "Stormästare"
 
 #: src/data/util.py:777
 #, ai_translation, fuzzy
@@ -1481,7 +1493,7 @@ msgstr "LAN/WAN URL: {lan_url}"
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
 
-#: src/web/controllers/index_controller.py:234
+#: src/web/controllers/index_controller.py:281
 #, ai_translation
 msgid "USE AT YOUR OWN RISKS"
 msgstr "ANVÄNDNING VID DINA EGNA RISKER"
@@ -1894,45 +1906,78 @@ msgstr "Inga arkiverade händelser."
 msgid "Papi-web configuration"
 msgstr "Inställning av papi-webben"
 
-#: src/web/controllers/admin/player_admin_controller.py:74
+#: src/web/controllers/admin/player_admin_controller.py:76
 #, ai_translation, fuzzy
 msgid "Please enter the last name."
 msgstr "Vänligen ange tiden."
 
-#: src/web/controllers/admin/player_admin_controller.py:80
+#: src/web/controllers/admin/player_admin_controller.py:82
 #, ai_translation, fuzzy
 msgid "Please enter the first name."
 msgstr "Vänligen ange tiden."
 
-#: src/web/controllers/admin/player_admin_controller.py:86
+#: src/web/controllers/admin/player_admin_controller.py:88
 #, ai_translation, fuzzy
 msgid "Please enter the date of birth."
 msgstr "Ange evenemangets slutdatum."
 
-#: src/web/controllers/admin/player_admin_controller.py:211
+# Error: tokens differ between [Invalid FIDE ID [{fide_id}].] and [Ogiltig tid
+# [{time_str}].]
+#: src/web/controllers/admin/player_admin_controller.py:134
+#, ai_translation, fuzzy
+msgid "Invalid FIDE ID [{fide_id}]."
+msgstr "Ogiltigt FIDE-ID [{fide_id}]."
+
+# Error: tokens differ between [Invalid FFE ID [{ffe_id}].] and [Ogiltiga
+# avgifter länkar text [{text}].]
+#: src/web/controllers/admin/player_admin_controller.py:140
+#, ai_translation, fuzzy
+msgid "Invalid FFE ID [{ffe_id}]."
+msgstr "Ogiltigt FFE-ID [{ffe_id}]."
+
+# Error: tokens differ between [Invalid mail [{mail}].] and [Ogiltigt värde
+# [{value}].]
+#: src/web/controllers/admin/player_admin_controller.py:156
+#, ai_translation, fuzzy
+msgid "Invalid mail [{mail}]."
+msgstr "Ogiltigt brev [{mail}]."
+
+# Error: tokens differ between [Invalid phone number [{phone}].] and [Ogiltigt
+# styrelsenummer [{fixed_board_str}].]
+#: src/web/controllers/admin/player_admin_controller.py:162
+#, ai_translation, fuzzy
+msgid "Invalid phone number [{phone}]."
+msgstr "Ogiltigt telefonnummer [{phone}]."
+
+#: src/web/controllers/admin/player_admin_controller.py:311
 #, ai_translation, fuzzy
 msgid "Standard:"
 msgstr "Börja:"
 
-#: src/web/controllers/admin/player_admin_controller.py:212
+#: src/web/controllers/admin/player_admin_controller.py:312
+#, ai_translation
 msgid "The rating used when the time control is at least 60 minutes."
-msgstr ""
+msgstr "Det betyg som används när tidsstyrningen är minst 60 minuter."
 
-#: src/web/controllers/admin/player_admin_controller.py:215
+#: src/web/controllers/admin/player_admin_controller.py:315
+#, ai_translation
 msgid "Rapid:"
-msgstr ""
+msgstr "Snabbt:"
 
-#: src/web/controllers/admin/player_admin_controller.py:216
+#: src/web/controllers/admin/player_admin_controller.py:316
+#, ai_translation
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
-msgstr ""
+msgstr "Den klassificering som används när tidsstyrningen är mer än 10 minuter och mindre än 60 minuter."
 
-#: src/web/controllers/admin/player_admin_controller.py:219
+#: src/web/controllers/admin/player_admin_controller.py:319
+#, ai_translation
 msgid "Blitz:"
-msgstr ""
+msgstr "- Vad är det som händer?"
 
-#: src/web/controllers/admin/player_admin_controller.py:220
+#: src/web/controllers/admin/player_admin_controller.py:320
+#, ai_translation
 msgid "The rating used when the time control is at most 10 minutes."
-msgstr ""
+msgstr "Det betyg som används när tidsstyrningen är högst 10 minuter."
 
 # E
 # r
@@ -1964,15 +2009,15 @@ msgstr ""
 # Error: tokens differ between [Player [{last_name} {first_name}] has pairings
 # in tournament [{tournament_uniq_id}].] and [Evenemang [{event_uniq_id}]:
 # återhämtningsturnering [{tournament_uniq_id}]...]
-#: src/web/controllers/admin/player_admin_controller.py:322
-#: src/web/controllers/admin/player_admin_controller.py:393
+#: src/web/controllers/admin/player_admin_controller.py:421
+#: src/web/controllers/admin/player_admin_controller.py:492
 #, ai_translation, error, fuzzy
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}]."
 
 # Error: tokens differ between [Papi file [{tournament_file}] not found.] and
 # [Turneringen [{tournament_id}] hittades inte.]
-#: src/web/controllers/admin/player_admin_controller.py:330
+#: src/web/controllers/admin/player_admin_controller.py:429
 #, ai_translation, fuzzy
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Papi-filen [{tournament_file}] hittades inte."
@@ -1980,7 +2025,7 @@ msgstr "Papi-filen [{tournament_file}] hittades inte."
 # Error: tokens differ between [FFE licence [{ffe_licence_number}] already
 # present in tournament [{tournament_uniq_id}].] and [Regler fil [{file}]
 # hittades inte för turnering [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py:334
+#: src/web/controllers/admin/player_admin_controller.py:433
 #, ai_translation, fuzzy
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr "FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}]."
@@ -1988,12 +2033,12 @@ msgstr "FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tourna
 # Error: tokens differ between [Fide ID [{fide_id}] already present in
 # tournament [{tournament_uniq_id}].] and [Regler fil [{file}] hittades inte
 # för turnering [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py:339
+#: src/web/controllers/admin/player_admin_controller.py:438
 #, ai_translation, fuzzy
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
 msgstr "Fide ID [{fide_id}] redan närvarande i turneringen [{tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:352
+#: src/web/controllers/admin/player_admin_controller.py:451
 #, ai_translation
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Spelaren [{last_name} {first_name}] har flyttats från turneringen [{src_tournament_uniq_id}] till turneringen [{dst_tournament_uniq_id}]."
@@ -2001,7 +2046,7 @@ msgstr "Spelaren [{last_name} {first_name}] har flyttats från turneringen [{src
 # Error: tokens differ between [Player [{last_name} {first_name}] has been
 # removed from tournament [{tournament_uniq_id}].] and [Papi fil inte
 # definierad för turnering [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py:400
+#: src/web/controllers/admin/player_admin_controller.py:499
 #, ai_translation, fuzzy
 msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
 msgstr "Spelaren [{last_name} {first_name}] har tagits bort från turneringen [{tournament_uniq_id}]."
@@ -2318,7 +2363,7 @@ msgstr "Redigera egenskaperna hos ChessEvent-anslutningen."
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:157
+#: src/web/templates/admin_players.html:160
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -2399,6 +2444,7 @@ msgid "Chessevent ID:"
 msgstr "Chessevent ID:"
 
 #: src/web/templates/admin_chessevent_modal.html:82
+#: src/web/templates/admin_player_modal.html:302
 #: src/web/templates/admin_screen_sets_modal_set_div.html:157
 #: src/web/templates/admin_tournament_modal.html:188
 #, ai_translation, python-format
@@ -2439,7 +2485,7 @@ msgstr "Namnet på händelsen på lösenordet ChessEvent."
 #: src/web/templates/admin_chessevent_modal.html:166
 #: src/web/templates/admin_event_modal.html:561
 #: src/web/templates/admin_family_modal.html:480
-#: src/web/templates/admin_player_modal.html:186
+#: src/web/templates/admin_player_modal.html:447
 #: src/web/templates/admin_rotator_modal.html:221
 #: src/web/templates/admin_screen_modal.html:492
 #: src/web/templates/admin_timer_modal.html:82
@@ -2451,7 +2497,7 @@ msgstr "Skapa"
 #: src/web/templates/admin_chessevent_modal.html:168
 #: src/web/templates/admin_event_modal.html:563
 #: src/web/templates/admin_family_modal.html:482
-#: src/web/templates/admin_player_modal.html:188
+#: src/web/templates/admin_player_modal.html:449
 #: src/web/templates/admin_rotator_modal.html:223
 #: src/web/templates/admin_screen_modal.html:494
 #: src/web/templates/admin_screen_sets_modal_set_div.html:65
@@ -2465,7 +2511,7 @@ msgstr "Uppdatera"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:167
+#: src/web/templates/admin_players.html:170
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -2477,7 +2523,7 @@ msgstr "Ta bort"
 #: src/web/templates/admin_chessevent_modal.html:186
 #: src/web/templates/admin_event_modal.html:584
 #: src/web/templates/admin_family_modal.html:500
-#: src/web/templates/admin_player_modal.html:204
+#: src/web/templates/admin_player_modal.html:465
 #: src/web/templates/admin_rotator_modal.html:240
 #: src/web/templates/admin_screen_modal.html:512
 #: src/web/templates/admin_screen_sets_modal.html:66
@@ -3486,13 +3532,14 @@ msgid "Player creation"
 msgstr "Bildskärmsskapelse för spelare"
 
 #: src/web/templates/admin_player_modal.html:18
-#, python-format
+#, ai_translation, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
-msgstr ""
+msgstr "Upplaga av spelare [%(last_name)s %(first_name)s]"
 
 #: src/web/templates/admin_player_modal.html:26
+#, ai_translation
 msgid "Identity"
-msgstr ""
+msgstr "Identitet"
 
 #: src/web/templates/admin_player_modal.html:31
 #, ai_translation, fuzzy
@@ -3525,8 +3572,9 @@ msgid "The player's first name."
 msgstr "-Klara turneringen."
 
 #: src/web/templates/admin_player_modal.html:71
+#, ai_translation
 msgid "Date of birth:"
-msgstr ""
+msgstr "Födelsedatum:"
 
 #: src/web/templates/admin_player_modal.html:79
 #, ai_translation, fuzzy
@@ -3544,17 +3592,154 @@ msgid "The player's gender."
 msgstr "-Klara turneringen."
 
 #: src/web/templates/admin_player_modal.html:112
-msgid "FIDE ratings and title"
-msgstr ""
+#, ai_translation
+msgid "FIDE ratings, title and fédération"
+msgstr "FIDE-betyg, titel och fédération"
 
 #: src/web/templates/admin_player_modal.html:153
+#, ai_translation
 msgid "FIDE Title:"
-msgstr ""
+msgstr "FIDE-titel:"
 
 #: src/web/templates/admin_player_modal.html:165
 #, ai_translation, fuzzy
 msgid "The player's FIDE title."
 msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:176
+#, ai_translation, fuzzy
+msgid "Federation:"
+msgstr "Skapande av händelse"
+
+#: src/web/templates/admin_player_modal.html:193
+#, ai_translation, fuzzy
+msgid "The player's federation."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:204
+#, ai_translation, fuzzy
+msgid "FIDE ID:"
+msgstr "Ingen timer definierad"
+
+#: src/web/templates/admin_player_modal.html:214
+#, ai_translation, fuzzy
+msgid "The player's FIDE ID (do not change)."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:225
+#, ai_translation, fuzzy
+msgid "French Chess Federation"
+msgstr "Ta bort rotatorn."
+
+#: src/web/templates/admin_player_modal.html:230
+#, ai_translation, fuzzy
+msgid "League:"
+msgstr "Språk"
+
+#: src/web/templates/admin_player_modal.html:242
+#, ai_translation, fuzzy
+msgid "The player's league."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:253
+#, ai_translation, fuzzy
+msgid "Club:"
+msgstr "Kolumner:"
+
+#: src/web/templates/admin_player_modal.html:259
+#, ai_translation
+msgid "E.g.: My favourite club!"
+msgstr "T.ex. min favoritklubb!"
+
+#: src/web/templates/admin_player_modal.html:262
+#, ai_translation, fuzzy
+msgid "The player's club."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:273
+#, ai_translation, fuzzy
+msgid "Licence:"
+msgstr "Ingen FFE-licens"
+
+#: src/web/templates/admin_player_modal.html:285
+#, ai_translation, fuzzy
+msgid "The player's licence."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:296
+#, ai_translation, fuzzy
+msgid "Licence number:"
+msgstr "Telefonnumren."
+
+#: src/web/templates/admin_player_modal.html:305
+#, ai_translation, fuzzy
+msgid "The player's licence number."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:316
+#, ai_translation, fuzzy
+msgid "FFE Uniq ID:"
+msgstr "Unikt id"
+
+#: src/web/templates/admin_player_modal.html:326
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "Spelarens Uniq ID för den franska federationen (ändra inte)."
+
+#: src/web/templates/admin_player_modal.html:337
+#, ai_translation, fuzzy
+msgid "Contact and registration"
+msgstr "Rotatorskapelse"
+
+#: src/web/templates/admin_player_modal.html:342
+#, ai_translation, fuzzy
+msgid "Email:"
+msgstr "Detaljer"
+
+#: src/web/templates/admin_player_modal.html:350
+#, ai_translation, fuzzy
+msgid "The player's email."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:361
+#, ai_translation, fuzzy
+msgid "Phone number:"
+msgstr "Telefonnumren."
+
+#: src/web/templates/admin_player_modal.html:369
+#, ai_translation, fuzzy
+msgid "The player's phone number."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:380
+#, ai_translation, fuzzy
+msgid "Comment:"
+msgstr "Turnering:"
+
+#: src/web/templates/admin_player_modal.html:388
+#, ai_translation
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
+
+#: src/web/templates/admin_player_modal.html:399
+#, ai_translation, fuzzy
+msgid "Owed:"
+msgstr "Slut:"
+
+#: src/web/templates/admin_player_modal.html:407
+#, ai_translation, fuzzy
+msgid "The price the player pays to register."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html:418
+#, ai_translation
+msgid "Paid:"
+msgstr "Betalat:"
+
+#: src/web/templates/admin_player_modal.html:426
+#, ai_translation
+msgid "The price the player already paid."
+msgstr "Priset spelaren redan betalat."
 
 #: src/web/templates/admin_players.html:6
 #: src/web/templates/admin_screen_card.html:183
@@ -3577,72 +3762,72 @@ msgstr "Skapa en timer"
 msgid "Clear all the filters."
 msgstr "alla spelare"
 
-#: src/web/templates/admin_players.html:51
+#: src/web/templates/admin_players.html:54
 #, ai_translation
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Beteckning"
 
-#: src/web/templates/admin_players.html:55
+#: src/web/templates/admin_players.html:58
 #, ai_translation
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo Ordförande"
 
-#: src/web/templates/admin_players.html:63
+#: src/web/templates/admin_players.html:66
 #, ai_translation, fuzzy
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr "Elo Ordförande"
 
-#: src/web/templates/admin_players.html:80
+#: src/web/templates/admin_players.html:83
 #, ai_translation
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "HUVUDBYGGNAD"
 
-#: src/web/templates/admin_players.html:89
+#: src/web/templates/admin_players.html:92
 #, ai_translation
 msgid "The mail addresses."
 msgstr "Postadresserna."
 
-#: src/web/templates/admin_players.html:94
+#: src/web/templates/admin_players.html:97
 #, ai_translation
 msgid "The phone numbers."
 msgstr "Telefonnumren."
 
-#: src/web/templates/admin_players.html:105
+#: src/web/templates/admin_players.html:108
 #, ai_translation, fuzzy
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Betald"
 
-#: src/web/templates/admin_players.html:110
+#: src/web/templates/admin_players.html:113
 #, ai_translation, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "Elo Ordförande"
 
-#: src/web/templates/admin_players.html:121
+#: src/web/templates/admin_players.html:124
 #, ai_translation
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "På grund av detta"
 
-#: src/web/templates/admin_players.html:122
+#: src/web/templates/admin_players.html:125
 #, ai_translation
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Betald"
 
-#: src/web/templates/admin_players.html:155
+#: src/web/templates/admin_players.html:158
 #, ai_translation, fuzzy
 msgid "Edit the player's properties."
 msgstr "Redigera timerns egenskaper."
 
-#: src/web/templates/admin_players.html:165
+#: src/web/templates/admin_players.html:168
 #, ai_translation, fuzzy
 msgid "Remove the player from the event."
 msgstr "Lägg till en timer till evenemanget."
 
-#: src/web/templates/admin_players.html:210
+#: src/web/templates/admin_players.html:216
 #, ai_translation, fuzzy, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "%(mail)s (klicka för att kopiera till klippbordet)."
 
-#: src/web/templates/admin_players.html:212
+#: src/web/templates/admin_players.html:218
 #, ai_translation, fuzzy
 msgid "No mail defined."
 msgstr "Ingen timer definierad"
@@ -3675,24 +3860,24 @@ msgstr "Ingen timer definierad"
 # ]
 # m
 # ö
-#: src/web/templates/admin_players.html:223
+#: src/web/templates/admin_players.html:229
 #, ai_translation, error, fuzzy, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "%(phone)s (klicka för att kopiera till klippbordet)."
 
-#: src/web/templates/admin_players.html:225
+#: src/web/templates/admin_players.html:231
 #, ai_translation, fuzzy
 msgid "No phone defined."
 msgstr "Ingen timer definierad"
 
 # Error: tokens differ between [Fide ID: %(fide_id)s (click to copy to the
 # clipboard).] and [%(mail)s (klicka för att kopiera till klippbordet).]
-#: src/web/templates/admin_players.html:244
+#: src/web/templates/admin_players.html:250
 #, ai_translation, fuzzy, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr "Fide ID: %(fide_id)s (klicka för att kopiera till klippbordet)."
 
-#: src/web/templates/admin_players.html:247
+#: src/web/templates/admin_players.html:253
 #, ai_translation, fuzzy
 msgid "No FIDE ID."
 msgstr "Ingen timer definierad"
@@ -3728,22 +3913,22 @@ msgstr "Ingen timer definierad"
 # Error: tokens differ between [FFE licence: %(ffe_licence_number)s (click to
 # copy to the clipboard).] and [%(phone)s (klicka för att kopiera till
 # klippbordet).]
-#: src/web/templates/admin_players.html:260
+#: src/web/templates/admin_players.html:266
 #, ai_translation, error, fuzzy, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet)."
 
-#: src/web/templates/admin_players.html:264 src/web/templates/macros.j2:146
+#: src/web/templates/admin_players.html:270
 #, ai_translation, fuzzy, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Okänd typ av FFE-licens [%(ffe_licence)s]"
 
-#: src/web/templates/admin_players.html:293
+#: src/web/templates/admin_players.html:299
 #, ai_translation, fuzzy
 msgid "Change the player's tournament."
 msgstr "-Klara turneringen."
 
-#: src/web/templates/admin_players.html:337
+#: src/web/templates/admin_players.html:343
 #, ai_translation, fuzzy
 msgid "No players."
 msgstr "Spelare"
@@ -4954,37 +5139,37 @@ msgstr "Bildskärmar visar en bild (lokal eller fjärr)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator roterar automatiskt mellan flera skärmar."
 
-#: src/web/templates/macros.j2:212
+#: src/web/templates/macros.j2:200
 #, ai_translation, fuzzy
 msgid "Sort the players by name."
 msgstr "-Klara turneringen."
 
-#: src/web/templates/macros.j2:214
+#: src/web/templates/macros.j2:202
 #, ai_translation
 msgid "Sort the players by rating (most rated first)."
 msgstr "Sortera spelarna efter betyg (mest betyg först)."
 
-#: src/web/templates/macros.j2:216
+#: src/web/templates/macros.j2:204
 #, ai_translation
 msgid "Sort the players by rating (less rated first)."
 msgstr "Sortera spelarna efter betyg (mindre betyg först)."
 
-#: src/web/templates/macros.j2:218
+#: src/web/templates/macros.j2:206
 #, ai_translation, fuzzy
 msgid "Sort the players by origin (federation, league, club)."
 msgstr "Visa/göm spelskärmarna."
 
-#: src/web/templates/macros.j2:220
+#: src/web/templates/macros.j2:208
 #, ai_translation
 msgid "Sort the players by year of birth (oldest first)."
 msgstr "Sortera spelarna efter födelseår (äldsta först)."
 
-#: src/web/templates/macros.j2:222
+#: src/web/templates/macros.j2:210
 #, ai_translation
 msgid "Sort the players by year of birth (youngest first)."
 msgstr "Sortera spelarna efter födelseår (ungast först)."
 
-#: src/web/templates/macros.j2:224
+#: src/web/templates/macros.j2:212
 #, ai_translation, fuzzy
 msgid "Sort the players by tournament."
 msgstr "-Klara turneringen."
@@ -8147,5 +8332,14 @@ msgstr "Översättning"
 #~ msgstr "T.ex. timer"
 
 #~ msgid "Ratings and title"
+#~ msgstr ""
+
+#~ msgid "FIDE ratings and title"
+#~ msgstr ""
+
+#~ msgid "Fédération Française des Échecs"
+#~ msgstr ""
+
+#~ msgid "The player's Uniq ID for the French federation (ne pas modifier)."
 #~ msgstr ""
 

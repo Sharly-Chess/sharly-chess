@@ -132,7 +132,7 @@
                                         class="form-control d-inline w-49 {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                 >
                                     {% for value, text in rating_type_options.items() %}
-                                        <option value="{{ value }}" {% if value == data[name2] %}selected{%endif %}>
+                                        <option value="{{ value }}" {% if value == data[name2] %}selected{%endif %} {% if not value %}class="fst-italic"{% endif %}>
                                             {{ text }}
                                         </option>
                                     {% endfor %}
@@ -179,7 +179,7 @@
                                     class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                     data-dynamic-select
                             >
-                                {% for federation_id, federation_name in papi_web_config.federation_names.items() %}
+                                {% for federation_id, federation_name in papi_web_config.federations.items() %}
                                     <option
                                             value="{{ federation_id }}"
                                             {% if federation_id == data[name] %}selected{%endif %}
@@ -207,9 +207,11 @@
                                     type="number" id="{{ id }}"
                                     class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                     aria-describedby="{{ id }}-help {{ id }}-error"
-                                    value="{{ data[name] }}" />
+                                    value="{{ data[name] }}"
+                                    disabled
+                            />
                             <div id="{{ id }}-help" class="form-text">
-                                {{ _('The player\'s FIDE ID.') }}
+                                {{ _('The player\'s FIDE ID (do not change).') }}
                             </div>
                             {% if name in errors %}
                                 <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -219,6 +221,218 @@
                         {% endwith %}
                     </div>
                 <div>
+                <h3>
+                    {{ _('French Chess Federation') }}
+                </h3>
+                <div class="row">
+                    <div class="col-2">
+                        {% with id='league', name='league' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('League:') }}</label>
+                            <select
+                                    name="{{ name }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                            >
+                                {% for value, text in papi_web_config.ffe_leagues.items() %}
+                                    <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
+                                        {% if value %}{{ value }} - {{ text }}{%endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s league.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-4">
+                        {% with id='club', name='club' %}
+                            <label for="{{ id }}" class="form-label">{{ _('Club:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="text" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    placeholder="{{ _('E.g.: My favourite club!') }}"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s club.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='ffe-licence', name='ffe_licence' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('Licence:') }}</label>
+                            <select
+                                    name="{{ name }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                            >
+                                {% for value, text in licence_options.items() %}
+                                    <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
+                                        {{ text }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s licence.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='ffe-licence-number', name='ffe_licence_number' %}
+                            <label for="{{ id }}" class="form-label">{{ _('Licence number:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="text" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    placeholder="{{ _('E.g.: %(string)s', string='R08943') }}"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s licence number.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='ffe-id', name='ffe_id' %}
+                            <label for="{{ id }}" class="form-label">{{ _('FFE Uniq ID:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="number" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}"
+                                    disabled
+                            />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s Uniq ID for the French federation (do not change).') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                <div>
+                <h3>
+                    {{ _('Contact and registration') }}
+                </h3>
+                <div class="row">
+                    <div class="col-3">
+                        {% with id='mail', name='mail' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('Email:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="text" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s email.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='phone', name='phone' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('Phone number:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="text" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s phone number.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-3">
+                        {% with id='comment', name='comment' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('Comment:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="tel" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('Any comment on the player (comments are visible only by the arbiters).') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='owed', name='owed' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('Owed:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="number" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The price the player pays to register.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='paid', name='paid' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('Paid:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="number" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The price the player already paid.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
             </div>
             <div class="modal-footer d-block">
                 <div class="row">
@@ -226,7 +440,7 @@
                         <button
                                 type="submit"
                                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-                                data-bs-dismiss="modal"
+                                xdata-bs-dismiss="modal"
                         >
                             <i class="bi-floppy-fill"></i>
                             {% if action == 'create' %}

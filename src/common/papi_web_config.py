@@ -492,7 +492,7 @@ class PapiWebConfig(metaclass=Singleton):
     ]
 
     """ The federation names. """
-    federation_names: dict[str, str] = {
+    federations: dict[str, str] = {
         'AFG': 'Afghanistan',
         'ALB': 'Albania',
         'ALG': 'Algeria',
@@ -700,4 +700,28 @@ class PapiWebConfig(metaclass=Singleton):
         'YEM': 'Yemen',
         'ZAM': 'Zambia',
         'ZIM': 'Zimbabwe',
+    }
+
+    """ The federation names. """
+    ffe_leagues: dict[str, str] = {
+        '': '',
+        'ARA': 'Auvergne-Rhône-Alpes',
+        'BFC': 'Bourgogne-Franche-Comté',
+        'BRE': 'Bretagne',
+        'CRS': 'Corse',
+        'CVL': 'Centre-Val de Loire',
+        'EST': 'Grand-Est',
+        'GUA': 'Guadeloupe',
+        'GUY': 'Guyane',
+        'HDF': 'Hauts-de-France',
+        'IDF': 'Île-de-France',
+        'MAR': 'Martinique',
+        'NAQ': 'Nouvelle-Aquitaine',
+        'NCA': 'Nouvelle-Calédonie',
+        'NOR': 'Normandie',
+        'OCC': 'Occitanie',
+        'PAC': 'Provence-Alpes-Côte d\'azur',
+        'PDL': 'Pays de la Loire',
+        'POL': 'Saint-Pierre-et-Miquelon',
+        'REU': 'Réunion',
     }

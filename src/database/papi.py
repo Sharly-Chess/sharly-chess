@@ -94,27 +94,47 @@ class PapiDatabase(AccessDatabase):
     def update_player(self, player: Player):
         """Updates the event database with the information in the provided player."""
         fields: list[str] = ([
+            'RefFFE',
             'Nom',
             'Prenom',
             'NeLe',
             'Sexe',
             'FideTitre',
-            'Federation',
             'FideCode',
+            'Federation',
+            'Ligue',
+            'Club',
+            'AffType',
+            'NrFFE',
+            'EMail',
+            'Tel',
+            'Commentaire',
+            'InscriptionDu',
+            'InscriptionRegle',
         ] + [
            tr.papi_value_field for tr in TournamentRating
         ] + [
             tr.papi_type_field for tr in TournamentRating
         ])
         params = [
+            player.ffe_id,
             player.last_name,
             player.first_name,
             self._date_to_papi_date(player.date_of_birth),
             player.gender.to_papi_value,
             player.title.to_papi_value,
-            player.federation,
             player.fide_id,
-                 ] + [
+            player.federation,
+            player.league,
+            player.club,
+            player.ffe_licence.to_papi_value,
+            player.ffe_licence_number,
+            player.mail,
+            player.phone,
+            player.comment,
+            player.owed,
+            player.paid,
+        ] + [
             player.ratings[tr] for tr in TournamentRating
         ] + [
             player.rating_types[tr].to_papi_value for tr in TournamentRating

@@ -92,7 +92,7 @@ else:
 _thread_local_data = threading.local()
 
 
-def _get_locale() -> str:
+def get_locale() -> str:
     try:
         return _thread_local_data.locale
     except AttributeError:
@@ -121,7 +121,7 @@ def locale_localized_name(locale: str):
 def gettext(message: str, locale: str | None = None):
     """ Overrides the gettext.gettext() function to use the locale of the current thread. """
     if locales:
-        return _all_translations[locale or _get_locale()].gettext(message)
+        return _all_translations[locale or get_locale()].gettext(message)
     else:
         return gettext.gettext(message)
 
@@ -134,6 +134,6 @@ def _(message: str, locale: str | None = None):
 def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
     """ Overrides the gettext.ngettext() function to use the locale of the current thread. """
     if locales:
-        return _all_translations[locale or _get_locale()].ngettext(singular, plural, n)
+        return _all_translations[locale or get_locale()].ngettext(singular, plural, n)
     else:
         return gettext.ngettext(singular, plural, n)

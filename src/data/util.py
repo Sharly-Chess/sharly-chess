@@ -752,7 +752,7 @@ class PlayerTitle(IntEnum):
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
-                return '-'
+                return _('No title')
             case PlayerTitle.WOMAN_FIDE_MASTER:
                 return _('Woman Fide Master')
             case PlayerTitle.FIDE_MASTER:

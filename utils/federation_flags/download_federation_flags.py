@@ -85,12 +85,12 @@ def run():
         return
     federation_ids: set[str] = read_federations(local_txt_file)
     undeclared_federation_ids: set[str] = {
-        federation_id for federation_id in federation_ids if federation_id not in PapiWebConfig.federation_names
+        federation_id for federation_id in federation_ids if federation_id not in PapiWebConfig.federations
     }
     if undeclared_federation_ids:
         print(f'The following federations should be declared in PapiWebConfig:\n{", ".join(undeclared_federation_ids)}.')
     useless_federation_ids: set[str] = {
-        federation_id for federation_id in PapiWebConfig.federation_names if federation_id not in federation_ids
+        federation_id for federation_id in PapiWebConfig.federations if federation_id not in federation_ids
     }
     if useless_federation_ids:
         print(f'The following federations are declared in PapiWebConfig but have no players:\n{", ".join(useless_federation_ids)}.')

@@ -670,19 +670,19 @@ msgstr "joueur·euses du début au n°{last}, sur {parts} écrans"
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr "joueur·euses du n°{first} au n°{last}, sur {parts} écrans"
 
-#: src/data/player.py:276
+#: src/data/player.py:272
 msgid "Unpaired *** FEMALE"
 msgstr "Non appariée"
 
-#: src/data/player.py:276
+#: src/data/player.py:272
 msgid "Unpaired *** MALE"
 msgstr "Non apparié"
 
-#: src/data/player.py:280
+#: src/data/player.py:276
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
 
-#: src/data/player.py:280
+#: src/data/player.py:276
 msgid "Exempt *** MALE"
 msgstr "Exempt"
 
@@ -752,7 +752,7 @@ msgstr "Nombre maximum de résultats passé à [{results_limit}] pour tenir sur 
 #: src/data/screen_set.py:60
 #: src/web/controllers/admin/screen_admin_controller.py:287
 msgid "Invalid board number [{fixed_board_str}]."
-msgstr "Numéro d'échiquier invalide [{fixed_board_str}]."
+msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 
 #: src/data/screen_set.py:78
 #: src/web/controllers/admin/family_admin_controller.py:162
@@ -900,6 +900,10 @@ msgstr "N"
 #: src/data/util.py:691
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
+
+#: src/data/util.py:755
+msgid "No title"
+msgstr "Aucun titre."
 
 #: src/data/util.py:757
 msgid "Woman Fide Master"
@@ -1184,7 +1188,7 @@ msgstr "URL LAN/WAN : {lan_url}"
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Le port [{port}] est déjà utilisé, impossible de démarrer le serveur web."
 
-#: src/web/controllers/index_controller.py:234
+#: src/web/controllers/index_controller.py:281
 msgid "USE AT YOUR OWN RISKS"
 msgstr "UTILISEZ À VOS PROPRES RISQUES"
 
@@ -1526,64 +1530,80 @@ msgstr "Aucun évènement archivé."
 msgid "Papi-web configuration"
 msgstr "Configuration Papi-web"
 
-#: src/web/controllers/admin/player_admin_controller.py:74
+#: src/web/controllers/admin/player_admin_controller.py:76
 msgid "Please enter the last name."
 msgstr "Veuillez entrer le nom de famille."
 
-#: src/web/controllers/admin/player_admin_controller.py:80
+#: src/web/controllers/admin/player_admin_controller.py:82
 msgid "Please enter the first name."
 msgstr "Veuillez entrer le prénom."
 
-#: src/web/controllers/admin/player_admin_controller.py:86
+#: src/web/controllers/admin/player_admin_controller.py:88
 msgid "Please enter the date of birth."
 msgstr "Veuillez entrer la date de naissance."
 
-#: src/web/controllers/admin/player_admin_controller.py:211
+#: src/web/controllers/admin/player_admin_controller.py:134
+msgid "Invalid FIDE ID [{fide_id}]."
+msgstr "Identifiant FIDE [{fide_id}] non valide."
+
+#: src/web/controllers/admin/player_admin_controller.py:140
+msgid "Invalid FFE ID [{ffe_id}]."
+msgstr "Identifiant FFE [{ffe_id}] non valide."
+
+#: src/web/controllers/admin/player_admin_controller.py:156
+msgid "Invalid mail [{mail}]."
+msgstr "Mél [{mail}] non valide."
+
+#: src/web/controllers/admin/player_admin_controller.py:162
+msgid "Invalid phone number [{phone}]."
+msgstr "Numéro de téléphone [{phone}] non valide."
+
+#: src/web/controllers/admin/player_admin_controller.py:311
 msgid "Standard:"
 msgstr "Standard :"
 
-#: src/web/controllers/admin/player_admin_controller.py:212
+#: src/web/controllers/admin/player_admin_controller.py:312
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est d'au moins 60 minutes."
 
-#: src/web/controllers/admin/player_admin_controller.py:215
+#: src/web/controllers/admin/player_admin_controller.py:315
 msgid "Rapid:"
 msgstr "Rapide :"
 
-#: src/web/controllers/admin/player_admin_controller.py:216
+#: src/web/controllers/admin/player_admin_controller.py:316
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes et inférieure à 60 minutes."
 
-#: src/web/controllers/admin/player_admin_controller.py:219
+#: src/web/controllers/admin/player_admin_controller.py:319
 msgid "Blitz:"
 msgstr "Blitz :"
 
-#: src/web/controllers/admin/player_admin_controller.py:220
+#: src/web/controllers/admin/player_admin_controller.py:320
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr "Le classement utilisé lorsque la cadence est inférieure à 10 minutes."
 
-#: src/web/controllers/admin/player_admin_controller.py:322
-#: src/web/controllers/admin/player_admin_controller.py:393
+#: src/web/controllers/admin/player_admin_controller.py:421
+#: src/web/controllers/admin/player_admin_controller.py:492
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a déjà été apparié·e dans le tournoi [{tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:330
+#: src/web/controllers/admin/player_admin_controller.py:429
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Fichier Papi [{tournament_file}] introuvable."
 
-#: src/web/controllers/admin/player_admin_controller.py:334
+#: src/web/controllers/admin/player_admin_controller.py:433
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:339
+#: src/web/controllers/admin/player_admin_controller.py:438
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
 msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:352
+#: src/web/controllers/admin/player_admin_controller.py:451
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:400
+#: src/web/controllers/admin/player_admin_controller.py:499
 msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a été supprimé·e du tournoi [{tournament_uniq_id}]."
 
@@ -1623,7 +1643,7 @@ msgstr "Veuillez entrer l'URL de l'image."
 
 #: src/web/controllers/admin/screen_admin_controller.py:184
 msgid "Invalid URL [{background_image}]."
-msgstr "URL invalide [{background_image}]."
+msgstr "URL [{background_image}] non valide."
 
 #: src/web/controllers/admin/screen_admin_controller.py:350
 msgid "{screen_type}-screen"
@@ -1842,7 +1862,7 @@ msgstr "Éditer les propriétés de la connexion à ChessEvent."
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:157
+#: src/web/templates/admin_players.html:160
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -1912,6 +1932,7 @@ msgid "Chessevent ID:"
 msgstr "Identifiant ChessEvent :"
 
 #: src/web/templates/admin_chessevent_modal.html:82
+#: src/web/templates/admin_player_modal.html:302
 #: src/web/templates/admin_screen_sets_modal_set_div.html:157
 #: src/web/templates/admin_tournament_modal.html:188
 #, python-format
@@ -1946,7 +1967,7 @@ msgstr "Le nom de l'évènement sur la plateforme ChessEvent."
 #: src/web/templates/admin_chessevent_modal.html:166
 #: src/web/templates/admin_event_modal.html:561
 #: src/web/templates/admin_family_modal.html:480
-#: src/web/templates/admin_player_modal.html:186
+#: src/web/templates/admin_player_modal.html:447
 #: src/web/templates/admin_rotator_modal.html:221
 #: src/web/templates/admin_screen_modal.html:492
 #: src/web/templates/admin_timer_modal.html:82
@@ -1957,7 +1978,7 @@ msgstr "Créer"
 #: src/web/templates/admin_chessevent_modal.html:168
 #: src/web/templates/admin_event_modal.html:563
 #: src/web/templates/admin_family_modal.html:482
-#: src/web/templates/admin_player_modal.html:188
+#: src/web/templates/admin_player_modal.html:449
 #: src/web/templates/admin_rotator_modal.html:223
 #: src/web/templates/admin_screen_modal.html:494
 #: src/web/templates/admin_screen_sets_modal_set_div.html:65
@@ -1970,7 +1991,7 @@ msgstr "Modifier"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:167
+#: src/web/templates/admin_players.html:170
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -1981,7 +2002,7 @@ msgstr "Supprimer"
 #: src/web/templates/admin_chessevent_modal.html:186
 #: src/web/templates/admin_event_modal.html:584
 #: src/web/templates/admin_family_modal.html:500
-#: src/web/templates/admin_player_modal.html:204
+#: src/web/templates/admin_player_modal.html:465
 #: src/web/templates/admin_rotator_modal.html:240
 #: src/web/templates/admin_screen_modal.html:512
 #: src/web/templates/admin_screen_sets_modal.html:66
@@ -2908,6 +2929,114 @@ msgstr "Titre FIDE :"
 msgid "The player's FIDE title."
 msgstr "Le titre FIDE du·de la joueur·euse."
 
+#: src/web/templates/admin_player_modal.html:176
+msgid "Federation:"
+msgstr "Fédération :"
+
+#: src/web/templates/admin_player_modal.html:193
+msgid "The player's federation."
+msgstr "La fédération du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html:204
+msgid "FIDE ID:"
+msgstr "Identifiant FIDE :"
+
+#: src/web/templates/admin_player_modal.html:214
+msgid "The player's FIDE ID (do not change)."
+msgstr "L'identifiant FIDE du·de la joueur·euse (ne pas modifier)."
+
+#: src/web/templates/admin_player_modal.html:225
+msgid "French Chess Federation"
+msgstr "Fédération Française des Échecs"
+
+#: src/web/templates/admin_player_modal.html:230
+msgid "League:"
+msgstr "Ligue :"
+
+#: src/web/templates/admin_player_modal.html:242
+msgid "The player's league."
+msgstr "La ligue du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html:253
+msgid "Club:"
+msgstr "Club :"
+
+#: src/web/templates/admin_player_modal.html:259
+msgid "E.g.: My favourite club!"
+msgstr "Exemple : Mon club favori !"
+
+#: src/web/templates/admin_player_modal.html:262
+msgid "The player's club."
+msgstr "Le club du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html:273
+msgid "Licence:"
+msgstr "Licence :"
+
+#: src/web/templates/admin_player_modal.html:285
+msgid "The player's licence."
+msgstr "La licence du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html:296
+msgid "Licence number:"
+msgstr "Numéro de licence :"
+
+#: src/web/templates/admin_player_modal.html:305
+msgid "The player's licence number."
+msgstr "Le numéro de licence du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html:316
+msgid "FFE Uniq ID:"
+msgstr "Identifiant unique FFE :"
+
+#: src/web/templates/admin_player_modal.html:326
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "L'identifiant unique pour la fédération française (ne pas modifier)."
+
+#: src/web/templates/admin_player_modal.html:337
+msgid "Contact and registration"
+msgstr "Contact et inscription"
+
+#: src/web/templates/admin_player_modal.html:342
+msgid "Email:"
+msgstr "Mél :"
+
+#: src/web/templates/admin_player_modal.html:350
+msgid "The player's email."
+msgstr "Le mél du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html:361
+msgid "Phone number:"
+msgstr "Numéro de téléphone :"
+
+#: src/web/templates/admin_player_modal.html:369
+msgid "The player's phone number."
+msgstr "Le numéro de téléphone du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html:380
+msgid "Comment:"
+msgstr "Commentaire :"
+
+#: src/web/templates/admin_player_modal.html:388
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
+
+#: src/web/templates/admin_player_modal.html:399
+msgid "Owed:"
+msgstr "Dû :"
+
+#: src/web/templates/admin_player_modal.html:407
+msgid "The price the player pays to register."
+msgstr "Le montant de l'inscription du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html:418
+msgid "Paid:"
+msgstr "Payé :"
+
+#: src/web/templates/admin_player_modal.html:426
+msgid "The price the player already paid."
+msgstr "Le montant déjà payé."
+
 #: src/web/templates/admin_players.html:6
 #: src/web/templates/admin_screen_card.html:183
 msgid "Players"
@@ -2925,96 +3054,96 @@ msgstr "Créer un·e joueur·euse"
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
-#: src/web/templates/admin_players.html:51
+#: src/web/templates/admin_players.html:54
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Nom"
 
-#: src/web/templates/admin_players.html:55
+#: src/web/templates/admin_players.html:58
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-#: src/web/templates/admin_players.html:63
+#: src/web/templates/admin_players.html:66
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr "Origine"
 
-#: src/web/templates/admin_players.html:80
+#: src/web/templates/admin_players.html:83
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "An."
 
-#: src/web/templates/admin_players.html:89
+#: src/web/templates/admin_players.html:92
 msgid "The mail addresses."
 msgstr "Les adresses mél."
 
-#: src/web/templates/admin_players.html:94
+#: src/web/templates/admin_players.html:97
 msgid "The phone numbers."
 msgstr "Les numéros de téléphone."
 
-#: src/web/templates/admin_players.html:105
+#: src/web/templates/admin_players.html:108
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Fide"
 
-#: src/web/templates/admin_players.html:110
+#: src/web/templates/admin_players.html:113
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
 
-#: src/web/templates/admin_players.html:121
+#: src/web/templates/admin_players.html:124
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "Du"
 
-#: src/web/templates/admin_players.html:122
+#: src/web/templates/admin_players.html:125
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Payé"
 
-#: src/web/templates/admin_players.html:155
+#: src/web/templates/admin_players.html:158
 msgid "Edit the player's properties."
 msgstr "Éditer les propriétés du·de la joueur·euse."
 
-#: src/web/templates/admin_players.html:165
+#: src/web/templates/admin_players.html:168
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
-#: src/web/templates/admin_players.html:210
+#: src/web/templates/admin_players.html:216
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 
-#: src/web/templates/admin_players.html:212
+#: src/web/templates/admin_players.html:218
 msgid "No mail defined."
 msgstr "Mél non défini."
 
-#: src/web/templates/admin_players.html:223
+#: src/web/templates/admin_players.html:229
 #, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
-#: src/web/templates/admin_players.html:225
+#: src/web/templates/admin_players.html:231
 msgid "No phone defined."
 msgstr "Téléphone non défini."
 
-#: src/web/templates/admin_players.html:244
+#: src/web/templates/admin_players.html:250
 #, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr "Identifiant FIDE : %(fide_id)s (cliquer pour copier dans le presse-papier)."
 
-#: src/web/templates/admin_players.html:247
+#: src/web/templates/admin_players.html:253
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE défini."
 
-#: src/web/templates/admin_players.html:260
+#: src/web/templates/admin_players.html:266
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
 
-#: src/web/templates/admin_players.html:264 src/web/templates/macros.j2:146
+#: src/web/templates/admin_players.html:270
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 
-#: src/web/templates/admin_players.html:293
+#: src/web/templates/admin_players.html:299
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
-#: src/web/templates/admin_players.html:337
+#: src/web/templates/admin_players.html:343
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
@@ -4026,31 +4155,31 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusieurs écrans."
 
-#: src/web/templates/macros.j2:212
+#: src/web/templates/macros.j2:200
 msgid "Sort the players by name."
 msgstr "Trier les joueur·euses par tournoi."
 
-#: src/web/templates/macros.j2:214
+#: src/web/templates/macros.j2:202
 msgid "Sort the players by rating (most rated first)."
 msgstr "Trier les joueur·euses par classement (mieux classé·es en premier)."
 
-#: src/web/templates/macros.j2:216
+#: src/web/templates/macros.j2:204
 msgid "Sort the players by rating (less rated first)."
 msgstr "Trier les joueur·euses par classement (moins bien classé·es en premier)."
 
-#: src/web/templates/macros.j2:218
+#: src/web/templates/macros.j2:206
 msgid "Sort the players by origin (federation, league, club)."
 msgstr "Trier les joueur·euses par origine (fédération, ligue, club)."
 
-#: src/web/templates/macros.j2:220
+#: src/web/templates/macros.j2:208
 msgid "Sort the players by year of birth (oldest first)."
 msgstr "Trier les joueur·euses par année de naissance (plus âgé·es en premier)."
 
-#: src/web/templates/macros.j2:222
+#: src/web/templates/macros.j2:210
 msgid "Sort the players by year of birth (youngest first)."
 msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en premier)."
 
-#: src/web/templates/macros.j2:224
+#: src/web/templates/macros.j2:212
 msgid "Sort the players by tournament."
 msgstr "Trier les joueur·euses par tournoi."
 
