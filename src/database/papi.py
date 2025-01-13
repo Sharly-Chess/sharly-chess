@@ -99,6 +99,8 @@ class PapiDatabase(AccessDatabase):
             'NeLe',
             'Sexe',
             'FideTitre',
+            'Federation',
+            'FideCode',
         ] + [
            tr.papi_value_field for tr in TournamentRating
         ] + [
@@ -110,7 +112,9 @@ class PapiDatabase(AccessDatabase):
             self._date_to_papi_date(player.date_of_birth),
             player.gender.to_papi_value,
             player.title.to_papi_value,
-        ] + [
+            player.federation,
+            player.fide_id,
+                 ] + [
             player.ratings[tr] for tr in TournamentRating
         ] + [
             player.rating_types[tr].to_papi_value for tr in TournamentRating

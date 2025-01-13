@@ -13,6 +13,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from common.logger import get_logger
+from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
 from data.player import Player
 from data.tournament import Tournament
@@ -110,6 +111,14 @@ class PlayerAdminController(AbstractEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
+        field: str = 'federation'
+        federation: str | None = WebContext.form_data_to_str(data, field)
+        if not federation in PapiWebConfig.federation_names:
+            # should never happen, not translated.
+            errors[field] = f'Invalid federation value [{data[field]}].'
+            data[field] = ''
+        field: str = 'fide_id'
+        fide_id: int | None = WebContext.form_data_to_int(data, field, minimum=1)
         return Player(
             id=web_context.admin_player.id,
             first_name=first_name,
@@ -124,11 +133,11 @@ class PlayerAdminController(AbstractEventAdminController):
             title=title,
             ratings=ratings,
             rating_types=rating_types,
-            fide_id=web_context.admin_player.ffe_id,
+            fide_id=fide_id,
             ffe_id=web_context.admin_player.ffe_id,
             ffe_licence=web_context.admin_player.ffe_licence,
             ffe_licence_number=web_context.admin_player.ffe_licence_number,
-            federation=web_context.admin_player.federation,
+            federation=federation,
             league=web_context.admin_player.league,
             club=web_context.admin_player.club,
             fixed=web_context.admin_player.fixed,
@@ -174,6 +183,8 @@ class PlayerAdminController(AbstractEventAdminController):
                         tr: PlayerRatingType.ESTIMATED for tr in TournamentRating
                     }
                     title: PlayerTitle = PlayerTitle.NONE
+                    federation: str | None = None
+                    fide_id: int | None = None
                     match action:
                         case 'update':
                             first_name = web_context.admin_player.first_name
@@ -183,6 +194,8 @@ class PlayerAdminController(AbstractEventAdminController):
                             ratings = web_context.admin_player.ratings
                             rating_types = web_context.admin_player.rating_types
                             title = web_context.admin_player.title
+                            federation = web_context.admin_player.federation
+                            fide_id = web_context.admin_player.fide_id
                         case 'create':
                             pass
                         case _:
@@ -193,6 +206,8 @@ class PlayerAdminController(AbstractEventAdminController):
                         'gender': WebContext.value_to_form_data(gender.value),
                         'date_of_birth': WebContext.value_to_date_form_data(date_of_birth),
                         'title': WebContext.value_to_form_data(title.value),
+                        'federation': WebContext.value_to_form_data(federation),
+                        'fide_id': WebContext.value_to_form_data(fide_id),
                     } | {
                         f'rating_{tr.value}': WebContext.value_to_form_data(ratings[tr])
                         for tr in TournamentRating

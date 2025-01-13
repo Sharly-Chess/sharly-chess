@@ -109,11 +109,11 @@
                     </div>
                 </div>
                 <h3>
-                    {{ _('FIDE ratings and title') }}
+                    {{ _('FIDE ratings, title and fédération') }}
                 </h3>
                 <div class="row">
                     {% for tournament_rating, tournament_rating_strings in tournament_ratings_strings.items() %}
-                        <div class="col-3">
+                        <div class="col-2">
                             {%
                                 with
                                     id='rating-' ~ tournament_rating.value,
@@ -148,7 +148,7 @@
                             {% endwith %}
                         </div>
                     {% endfor %}
-                    <div class="col-3">
+                    <div class="col-2">
                         {% with id='title', name='title' %}
                             <label for="{{ id }}" class="form-label d-block">{{ _('FIDE Title:') }}</label>
                             <select
@@ -163,6 +163,53 @@
                             </select>
                             <div id="{{ id }}-help" class="form-text">
                                 {{ _('The player\'s FIDE title.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='federation', name='federation' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('Federation:') }}</label>
+                            <select
+                                    name="{{ name }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    data-dynamic-select
+                            >
+                                {% for federation_id, federation_name in papi_web_config.federation_names.items() %}
+                                    <option
+                                            value="{{ federation_id }}"
+                                            {% if federation_id == data[name] %}selected{%endif %}
+                                            data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
+                                    >
+                                        {{ federation_id }} - {{ federation_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s federation.') }}
+                            </div>
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='fide-id', name='fide_id' %}
+                            <label for="{{ id }}" class="form-label">{{ _('FIDE ID:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="number" id="{{ id }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}" />
+                            <div id="{{ id }}-help" class="form-text">
+                                {{ _('The player\'s FIDE ID.') }}
                             </div>
                             {% if name in errors %}
                                 <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -211,4 +258,5 @@
 </div>
 <script>
     (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
+    document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
 </script>

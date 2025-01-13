@@ -2897,8 +2897,8 @@ msgid "The player's gender."
 msgstr "Le genre du·de la joueur·euse."
 
 #: src/web/templates/admin_player_modal.html:112
-msgid "FIDE ratings and title"
-msgstr "Classements et titre FIDE"
+msgid "FIDE ratings, title and fédération"
+msgstr "Classements, titre et fédération FIDE"
 
 #: src/web/templates/admin_player_modal.html:153
 msgid "FIDE Title:"
