@@ -136,22 +136,10 @@
     <!-- end rotator_icon() -->
 {% endmacro %}
 
-{% macro ffe_licence(ffe_licence, tooltip_placement) %}
+{% macro ffe_licence(ffe_licence, class) %}
     <!-- ffe_licence() -->
-    {% if tooltip_placement %}
-        {% if ffe_licence.value in [0, 1, 2, 3] %}
-            {% set _tooltip_text=ffe_licence.name %}
-            {% set _tooltip_level='warning' %}
-        {% else %}
-            {% set _tooltip_text=_('Unknown FFE Licence type [%(ffe_licence)s].', ffe_licence=ffe_licence) %}
-            {% set _tooltip_level='error' %}
-        {% endif %}
-    {% endif %}
     <span
-            class="player-ffe-lic ffe-lic-{{ ffe_licence.short_name }} ps-1 pe-1"
-            {% if tooltip_placement %}
-                {{ tooltip_attributes(_tooltip_level, _tooltip_text, tooltip_placement) }}
-            {% endif %}
+            class="player-ffe-lic ffe-lic-{{ ffe_licence.short_name }} ps-1 pe-1 {{ class }}"
     >{{ ffe_licence.short_name }}</span>
     <!-- end ffe_licence() -->
 {% endmacro %}
