@@ -41,34 +41,34 @@ def __flush_logger():
         logger.handlers[0].flush()
 
 
-def print_interactive_info(string: str):
+def print_interactive_info(string: str, end='\n'):
     """Prints the message to stdout with color."""
     __flush_logger()
-    print(Fore.LIGHTWHITE_EX + Style.BRIGHT + string + Style.RESET_ALL)
+    print(Fore.LIGHTWHITE_EX + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
-def print_interactive_success(string: str):
+def print_interactive_success(string: str, end='\n'):
     """Prints the message to stdout with color."""
     __flush_logger()
-    print(Fore.GREEN + Style.BRIGHT + string + Style.RESET_ALL)
+    print(Fore.GREEN + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
-def print_interactive_warning(string: str):
+def print_interactive_warning(string: str, end='\n'):
     """Prints the message to stdout with color."""
     __flush_logger()
-    print(Fore.YELLOW + Style.BRIGHT + string + Style.RESET_ALL)
+    print(Fore.YELLOW + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
-def print_interactive_error(string: str):
+def print_interactive_error(string: str, end='\n'):
     """Prints the message to stdout with color."""
     __flush_logger()
-    print(Fore.RED + Style.BRIGHT + string + Style.RESET_ALL)
+    print(Fore.RED + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
-def print_interactive_input(string: str):
+def print_interactive_input(string: str, end='\n'):
     """Prints the message to stdout with color."""
     __flush_logger()
-    print(Fore.CYAN + Style.BRIGHT + string + Style.RESET_ALL)
+    print(Fore.CYAN + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
 def input_interactive(string: str) -> str:
