@@ -71,9 +71,13 @@ class PapiDatabase(AccessDatabase):
                 color: str = row[f'{round_str}Cl']
                 with suppress(ValueError):
                     color = Color.from_papi_value(color)
+                opponent_id = row[f'{round_str}Adv']
                 pairings[round_] = Pairing(
-                    color, row[f'{round_str}Adv'],
-                    Result.from_papi_value(row[f'{round_str}Res']))
+                    color, opponent_id,
+                    Result.from_papi_value(
+                        row[f'{round_str}Res'],
+                        opponent_id is None,
+                        opponent_id == 1))
             players[row['Ref']] = Player(
                 row['Ref'], row['Nom'] or '', row['Prenom'] or '',
                 PlayerGender.from_papi_value(row['Sexe']),
@@ -195,7 +199,7 @@ class PapiDatabase(AccessDatabase):
                     case 0.0:
                         data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
                     case 0.5:
-                        data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                        data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                     case _:
                         raise ValueError
         query: str = f'INSERT INTO `joueur`({", ".join(data.keys())}) VALUES ({", ".join(["?"] * len(data))})'
@@ -260,7 +264,7 @@ class PapiDatabase(AccessDatabase):
                                 case 0.0:
                                     pass
                                 case 0.5:
-                                    data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                                    data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                                 case _:
                                     raise ValueError
                     if data:
@@ -292,7 +296,7 @@ class PapiDatabase(AccessDatabase):
                     case 0.0:
                         data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
                     case 0.5:
-                        data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                        data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                     case _:
                         raise ValueError
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
@@ -328,7 +332,7 @@ class PapiDatabase(AccessDatabase):
                                 data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
                                 pass
                             case 0.5:
-                                data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                                data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                             case _:
                                 raise ValueError
                 if data:
@@ -352,7 +356,7 @@ class PapiDatabase(AccessDatabase):
                         case 0.0:
                             data[f'Rd{round_:0>2}Res'] = Result.NOT_PAIRED.to_papi_value
                         case 0.5:
-                            data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                            data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                         case _:
                             raise ValueError
             actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
