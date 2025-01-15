@@ -192,7 +192,7 @@ class Tournament:
 
     @property
     def handicap(self) -> bool:
-        return self.time_control_handicap_penalty_value is not None
+        return bool(self.time_control_handicap_penalty_value)
 
     @property
     def skipped_rounds_as_dict(self) -> dict[int, dict[int, float]]:
