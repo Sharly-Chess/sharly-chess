@@ -665,6 +665,11 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             player_papi_id: int = papi_database.next_player_papi_id
             data['Ref'] = player_papi_id
+            for round_ in range(1, 25):
+                # remove all the pairings (including non-played games)
+                data[f'Rd{round_:0>2}Adv'] = None
+                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
+                data[f'Rd{round_:0>2}Cl'] = 'R' if round_ <= self.current_round else 'F'
             papi_database.write_player_dict(data)
             papi_database.commit()
         return player_papi_id
