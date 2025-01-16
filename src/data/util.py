@@ -25,30 +25,47 @@ except AttributeError:
             yield batch
 
 
-class Result(IntEnum):
-    """An enum representing the results in the database.
-    Should be subclassed if the point value is not the default"""
+class PapiResult(IntEnum):
+    """An enum representing the results in the Papi database"""
     NOT_PAIRED = 0
     LOSS = 1
-    DRAW_OR_HPB = 2  # HPB = Halp Point Bye
+    DRAW_OR_HPB = 2  # HPB = Half Point Bye
     GAIN = 3
     FORFEIT_LOSS = 4
     DOUBLE_FORFEIT = 5
     PAB_OR_FORFEIT_GAIN_OR_FPB = 6  # PAB = Pairing-Allocated-Bye, FPB = Full Point Bye
 
+
+class Result(IntEnum):
+    """An enum representing the results of a game.
+    Should be subclassed if the point value is not the default"""
+    NOT_PAIRED = 0
+    LOSS = 1
+    DRAW = 2
+    GAIN = 3
+    FORFEIT_LOSS = 4
+    DOUBLE_FORFEIT = 5
+    FORFEIT_GAIN = 6
+    HALF_POINT_BYE = 7
+    PAIRING_ALLOCATED_BYE = 8
+    FULL_POINT_BYE = 9
+    UNRATED_LOSS = 10
+    UNRATED_DRAW = 11
+    UNRATED_GAIN = 12
+
     def __str__(self) -> str:
         match self:
-            case Result.GAIN:
+            case Result.GAIN | Result.UNRATED_GAIN:
                 return '1-0'
-            case Result.LOSS:
+            case Result.LOSS | Result.UNRATED_LOSS:
                 return '0-1'
-            case Result.DRAW_OR_HPB:
+            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return '1/2'
             case Result.NOT_PAIRED:
                 return ''
             case Result.FORFEIT_LOSS:
                 return 'F-1'
-            case Result.PAB_OR_FORFEIT_GAIN_OR_FPB:
+            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 return '1-F'
             case Result.DOUBLE_FORFEIT:
                 return 'F-F'
@@ -56,30 +73,58 @@ class Result(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @classmethod
-    def from_papi_value(cls, value: int) -> Self:
+    def from_papi_value(
+            cls,
+            value: int,
+            is_point_bye: bool = False,
+            is_pairing_bye: bool = False,
+            is_unrated: bool = False) -> Self:
         """Create a `Result` instance from the stored value in the
         Papi database."""
         match value:
-            case 0:
+            case PapiResult.NOT_PAIRED.value:
                 return cls.NOT_PAIRED
-            case 1:
-                return cls.LOSS
-            case 2:
-                return cls.DRAW_OR_HPB
-            case 3:
-                return cls.GAIN
-            case 6:
-                return cls.PAB_OR_FORFEIT_GAIN_OR_FPB
-            case 4:
+            case PapiResult.LOSS.value:
+                return cls.UNRATED_LOSS if is_unrated else cls.LOSS
+            case PapiResult.DRAW_OR_HPB.value:
+                return cls.UNRATED_DRAW if is_unrated else cls.HALF_POINT_BYE if is_point_bye else cls.DRAW
+            case PapiResult.GAIN.value:
+                return cls.UNRATED_GAIN if is_unrated else cls.GAIN
+            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value:
+                return (
+                    cls.FULL_POINT_BYE if is_point_bye
+                    else cls.PAIRING_ALLOCATED_BYE if is_pairing_bye
+                    else cls.FORFEIT_GAIN)
+            case PapiResult.FORFEIT_LOSS.value:
                 return cls.FORFEIT_LOSS
-            case 5:
+            case PapiResult.DOUBLE_FORFEIT.value:
                 return cls.DOUBLE_FORFEIT
             case _:
                 raise ValueError(f'Unknown value: {value}')
 
     @property
+    def to_papi_result(self) -> PapiResult:
+        match self:
+            case Result.GAIN | Result.UNRATED_GAIN:
+                return PapiResult.GAIN
+            case Result.LOSS | Result.UNRATED_LOSS:
+                return PapiResult.LOSS
+            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
+                return PapiResult.DRAW_OR_HPB
+            case Result.NOT_PAIRED:
+                return PapiResult.NOT_PAIRED
+            case Result.FORFEIT_LOSS:
+                return PapiResult.FORFEIT_LOSS
+            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+                return PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB
+            case Result.DOUBLE_FORFEIT:
+                return PapiResult.DOUBLE_FORFEIT
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
     def to_papi_value(self) -> int:
-        return self.value
+        return self.to_papi_result.value
 
     @property
     def point_value(self) -> float:
@@ -89,11 +134,11 @@ class Result(IntEnum):
         Assumes a 0-0.5-1 scoring system.
         """
         match self:
-            case Result.NOT_PAIRED | Result.LOSS | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+            case Result.NOT_PAIRED | Result.LOSS | Result.UNRATED_LOSS | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
                 return 0.0
-            case Result.DRAW_OR_HPB:
+            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return 0.5
-            case Result.GAIN | Result.PAB_OR_FORFEIT_GAIN_OR_FPB:
+            case Result.GAIN | Result.UNRATED_GAIN | Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 return 1.0
 
     @property
@@ -107,7 +152,7 @@ class Result(IntEnum):
         >>> Result.LOSS.opposite_result == Result.GAIN
         True
 
-        >>> Result.DRAW_OR_HPB.opposite_result == Result.DRAW_OR_HPB
+        >>> Result.DRAW.opposite_result == Result.DRAW
         True
 
         >>> Result.NOT_PAIRED.opposite_result == Result.NOT_PAIRED
@@ -121,16 +166,24 @@ class Result(IntEnum):
                 return Result.GAIN
             case Result.GAIN:
                 return Result.LOSS
-            case Result.DRAW_OR_HPB:
-                return Result.DRAW_OR_HPB
-            case Result.PAB_OR_FORFEIT_GAIN_OR_FPB:
+            case Result.DRAW:
+                return Result.DRAW
+            case Result.UNRATED_LOSS:
+                return Result.UNRATED_GAIN
+            case Result.UNRATED_GAIN:
+                return Result.UNRATED_LOSS
+            case Result.UNRATED_DRAW:
+                return Result.UNRATED_DRAW
+            case Result.FORFEIT_GAIN:
                 return Result.FORFEIT_LOSS
             case Result.FORFEIT_LOSS:
-                return Result.PAB_OR_FORFEIT_GAIN_OR_FPB
+                return Result.FORFEIT_GAIN
             case Result.DOUBLE_FORFEIT:
                 return Result.DOUBLE_FORFEIT
             case Result.NOT_PAIRED:
                 return Result.NOT_PAIRED
+            case Result.HALF_POINT_BYE | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+                raise ValueError(f"Result '{self}' is not reversible")
             case _:
                 raise ValueError(f"Unknown value: {self}")
 
@@ -138,12 +191,12 @@ class Result(IntEnum):
     def user_imputable_results(cls) -> tuple[Self, ...]:
         """Imputable results are the ones that a player can
         input by themselves, namely a win, a draw, or a loss or forfeits."""
-        return cls.GAIN, cls.DRAW_OR_HPB, cls.LOSS
+        return cls.GAIN, cls.DRAW, cls.LOSS
 
     @classmethod
     def admin_imputable_results(cls) -> tuple[Self, ...]:
         """Admin imputable results are the ones that only arbiters can input."""
-        return cls.user_imputable_results() + (cls.PAB_OR_FORFEIT_GAIN_OR_FPB, cls.FORFEIT_LOSS, cls.DOUBLE_FORFEIT)
+        return cls.user_imputable_results() + (cls.FORFEIT_GAIN, cls.FORFEIT_LOSS, cls.DOUBLE_FORFEIT)
 
 
 class TournamentType(IntEnum):
