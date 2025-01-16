@@ -147,7 +147,10 @@
 {% macro player_history(player) %}
     <!-- player_history() -->
     {% for pairing in player.pairings.values() %}
-        {% if pairing.not_paired %}
+        {% if pairing.forfeit %}
+            {% set _text='f' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.not_paired %}
             {% set _text='' %}
             {% set _class='text-secondary' %}
         {% elif pairing.playing %}

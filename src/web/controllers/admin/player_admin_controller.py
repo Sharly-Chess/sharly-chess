@@ -36,6 +36,7 @@ class PlayerAdminWebContext(EventAdminWebContext):
     ):
         super().__init__(request, event_uniq_id=event_uniq_id, admin_event_tab='players', data=data)
         self.admin_player: Player | None = None
+        self.admin_tournament: Tournament | None = None
         if self.error:
             return
         if player_id:
@@ -55,6 +56,7 @@ class PlayerAdminWebContext(EventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_player': self.admin_player,
+            'admin_tournament': self.admin_tournament,
         }
 
 
@@ -214,11 +216,12 @@ class PlayerAdminController(AbstractEventAdminController):
             modal: str | None = None,
             action: str | None = None,
             player_id: int | None = None,
+            tournament_id: int | None = None,
             data: dict[str, str] | None = None,
             errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
-            request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=None, data=data)
+            request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=tournament_id, data=data)
         if web_context.error:
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(web_context)
@@ -328,6 +331,11 @@ class PlayerAdminController(AbstractEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
+            case 'close_check_in':
+                template_context |= {
+                    'modal': modal,
+                }
+                pass
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
@@ -502,3 +510,133 @@ class PlayerAdminController(AbstractEventAdminController):
             event_loader: EventLoader = EventLoader.get(request=request)
             event_loader.clear_cache(event_uniq_id)
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+
+    @patch(
+        path='/admin/tournament-open-check-in/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-open-check-in',
+    )
+    async def htmx_admin_tournament_open_check_in(
+            self, request: HTMXRequest,
+            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+            event_uniq_id: str,
+            tournament_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, event_uniq_id=event_uniq_id, player_id=None, tournament_id=tournament_id, data=data)
+        if web_context.error:
+            return web_context.error
+        admin_tournament: Tournament = web_context.admin_tournament
+        admin_tournament.open_check_in()
+        Message.success(
+            request,
+            _('Check-in is open for tournament [{tournament_uniq_id}].').format(
+                tournament_uniq_id=admin_tournament.uniq_id))
+        event_loader: EventLoader = EventLoader.get(request=request)
+        event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+
+    @get(
+        path='/admin/tournament-close-check-in-modal/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-close-check-in-modal',
+        cache=1,
+    )
+    async def htmx_tournament_close_check_in_modal(
+            self, request: HTMXRequest,
+            event_uniq_id: str,
+            tournament_id: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_players_render(
+            request, event_uniq_id=event_uniq_id, modal='close_check_in', action=None, player_id=None,
+            tournament_id=tournament_id)
+
+    def _admin_tournament_close_check_in(
+            self, request: HTMXRequest,
+            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+            event_uniq_id: str,
+            tournament_id: int,
+            forfeit_all_rounds: bool,
+    ) -> Template | ClientRedirect:
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, event_uniq_id=event_uniq_id, player_id=None, tournament_id=tournament_id, data=data)
+        if web_context.error:
+            return web_context.error
+        admin_tournament: Tournament = web_context.admin_tournament
+        admin_tournament.close_check_in(forfeit_all_rounds)
+        Message.success(
+            request,
+            _('Check-in is closed for tournament [{tournament_uniq_id}].').format(
+                tournament_uniq_id=admin_tournament.uniq_id))
+        event_loader: EventLoader = EventLoader.get(request=request)
+        event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+
+    @patch(
+        path='/admin/tournament-close-check-in-forfeit-next-round/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-close-check-in-forfeit-next-round',
+    )
+    async def htmx_admin_tournament_close_check_in_forfeit_next_round(
+            self, request: HTMXRequest,
+            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+            event_uniq_id: str,
+            tournament_id: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_tournament_close_check_in(
+            request=request, data=data, event_uniq_id=event_uniq_id, tournament_id=tournament_id,
+            forfeit_all_rounds=False)
+
+    @patch(
+        path='/admin/tournament-close-check-in-forfeit-last-rounds/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-close-check-in-forfeit-last-rounds',
+    )
+    async def htmx_admin_close_tournament_check_in_forfeit_all_rounds(
+            self, request: HTMXRequest,
+            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+            event_uniq_id: str,
+            tournament_id: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_tournament_close_check_in(
+            request=request, data=data, event_uniq_id=event_uniq_id, tournament_id=tournament_id,
+            forfeit_all_rounds=True)
+
+    def _admin_player_check_in_out(
+            self, request: HTMXRequest,
+            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+            event_uniq_id: str,
+            player_id: int,
+            check_in: bool,
+    ) -> Template | ClientRedirect:
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=None, data=data)
+        if web_context.error:
+            return web_context.error
+        admin_player: Player = web_context.admin_player
+        admin_player.tournament.check_in_player(admin_player, check_in)
+        event_loader: EventLoader = EventLoader.get(request=request)
+        event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+
+    @patch(
+        path='/admin/player-check-in/{event_uniq_id:str}/{player_id:int}',
+        name='admin-player-check-in',
+    )
+    async def htmx_admin_player_check_in(
+            self, request: HTMXRequest,
+            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+            event_uniq_id: str,
+            player_id: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_player_check_in_out(
+            request=request, data=data, event_uniq_id=event_uniq_id, player_id=player_id, check_in=True)
+
+    @patch(
+        path='/admin/player-check-out/{event_uniq_id:str}/{player_id:int}',
+        name='admin-player-check-out',
+    )
+    async def htmx_admin_player_check_out(
+            self, request: HTMXRequest,
+            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+            event_uniq_id: str,
+            player_id: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_player_check_in_out(
+            request=request, data=data, event_uniq_id=event_uniq_id, player_id=player_id, check_in=False)

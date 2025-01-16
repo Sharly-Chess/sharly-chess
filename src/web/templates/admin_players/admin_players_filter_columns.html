@@ -4,12 +4,12 @@
         ><i
                 class="bi-layout-three-columns"
                 {{ tooltip_attributes('info', _('Choose the columns displayed.'), 'top') }}
-        ></i></button>
-        <ul class="dropdown-menu federation p-0">
+        ></i> {{ _('Columns') }}</button>
+        <ul class="dropdown-menu players-filter-columns p-0">
             {% with name='admin_players_filter_columns' %}
                 {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
                 <input type="hidden" name="{{ name }}" value="" />
-                <li class="dropdown-item text-nowrap">
+                <li class="dropdown-item title text-nowrap">
                     <input
                         type="checkbox"
                         {% if admin_players_filter_columns|length == admin_players_columns|length - 2 %}checked{% endif %}

@@ -155,6 +155,46 @@ class Tournament:
         return self.event.rules
 
     @property
+    def check_in_open(self) -> bool:
+        return self.stored_tournament.check_in_open
+
+    @cached_property
+    def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
+        if self.finished or self.playing or not self.check_in_open:
+            return {
+                None: self.players_by_id.values(),
+                True: [],
+                False: [],
+            }
+        else:
+            result: dict[bool | None, list[Player]] = {
+                None: [],
+                True: [],
+                False: [],
+            }
+            for player in self.players_by_id.values():
+                if not player.can_check_in_out:
+                    result[None].append(player)
+                else:
+                    result[player.check_in].append(player)
+            return result
+
+    @cached_property
+    def check_in_counts(self) -> Counter[bool | None]:
+        counter: Counter[bool | None] = Counter[bool | None]()
+        if self.finished or self.playing or not self.check_in_open:
+            counter[None] = len(self.players_by_id)
+            counter[True] = 0
+            counter[False] = 0
+        else:
+            for player in self.players_by_id.values():
+                if not player.can_check_in_out:
+                    counter[None] += 1
+                else:
+                    counter[player.check_in] += 1
+        return counter
+
+    @property
     def last_update(self) -> float:
         return self.stored_tournament.last_update
 
@@ -669,7 +709,7 @@ class Tournament:
                 # remove all the pairings (including non-played games)
                 data[f'Rd{round_:0>2}Adv'] = None
                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                data[f'Rd{round_:0>2}Cl'] = 'R' if round_ <= self.current_round else 'F'
+                data[f'Rd{round_:0>2}Cl'] = 'R' if round_ < self.current_round else 'F'
             papi_database.write_player_dict(data)
             papi_database.commit()
         return player_papi_id
@@ -694,4 +734,32 @@ class Tournament:
         """Updates a player."""
         with PapiDatabase(self.file, write=True) as papi_database:
             papi_database.update_player(player)
+            papi_database.commit()
+
+    def open_check_in(self):
+        """ Opens the check-in for the tournament and sets all the present players
+        as not checked-in for the next round. """
+        assert not self.finished, f'Tournament [{self.uniq_id}] is finished.'
+        assert not self.playing, f'Games are played for tournament [{self.uniq_id}].'
+        assert not self.check_in_open, f'Check-in already open for tournament [{self.uniq_id}].'
+        with EventDatabase(self.event.uniq_id, write=True) as event_database:
+            event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
+            event_database.set_tournament_check_in(self.id, True)
+            event_database.commit()
+        round: int =self.current_round + 1
+        with PapiDatabase(self.file, write=True) as papi_database:
+            papi_database.open_check_in(round)
+            papi_database.commit()
+
+    def close_check_in(self, forfeit_last_rounds: bool):
+        """ Closes the check-in for the tournament and sets all the players not checked-in as forfeit
+        for the next round (if forfeit_last_rounds, for the rest of the tournament). """
+        assert self.check_in_open, f'Check-in already closed for tournament [{self.uniq_id}].'
+        with EventDatabase(self.event.uniq_id, write=True) as event_database:
+            event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
+            event_database.set_tournament_check_in(self.id, False)
+            event_database.commit()
+        round: int =self.current_round + 1
+        with PapiDatabase(self.file, write=True) as papi_database:
+            papi_database.close_check_in(round, (self.rounds + 1) if forfeit_last_rounds else None)
             papi_database.commit()

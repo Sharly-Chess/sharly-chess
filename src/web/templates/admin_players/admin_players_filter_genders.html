@@ -7,11 +7,11 @@
                     class="bi-funnel {% if admin_players_filter_genders %}text-primary{% endif %}"
                     {{ tooltip_attributes('info', _('Filter the genders.'), 'top') }}
             ></i></button>
-            <ul class="dropdown-menu gender p-0">
+            <ul class="dropdown-menu players-filter-gender p-0">
                 {% with name='admin_players_filter_genders' %}
                     {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
                     <input type="hidden" name="{{ name }}" value="-1" checked />
-                    <li class="dropdown-item text-nowrap">
+                    <li class="dropdown-item title text-nowrap">
                         <input
                             type="checkbox"
                             {% if admin_players_filter_genders|length == admin_players_genders|length %}checked{% endif %}

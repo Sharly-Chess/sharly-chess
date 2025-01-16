@@ -213,10 +213,9 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 filter_licences: list[PlayerFFELicence] = SessionHandler.get_session_admin_players_filter_licences(
                     web_context.request)
                 # The check-in statuses that will be selected on the check-in status select list and used to filter the players
-                players_check_ins: list[bool] = sorted(
-                    {player.check_in for player in web_context.admin_event.players_by_id.values()})
+                players_check_ins: list[bool | None] = [None, True, False]
                 # The check-in statuses that will be selected on the check-in status select list and used to filter the players
-                filter_check_ins: list[bool] = SessionHandler.get_session_admin_players_filter_check_ins(
+                filter_check_ins: list[bool | None] = SessionHandler.get_session_admin_players_filter_check_ins(
                     web_context.request)
                 # The tournaments that will be selected on the tournament select list and used to filter the players
                 filter_tournaments: list[int] = SessionHandler.get_session_admin_players_filter_tournaments(
@@ -254,7 +253,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     player for player in web_context.admin_event.players_by_id.values()
                     if (player.ref_id > 1 and len(filter_genders) in [0, 3] or player.gender.value in filter_genders) \
                        and (len(filter_licences) in [0, len(players_licences)] or player.ffe_licence in filter_licences) \
-                       and (len(filter_check_ins) in [0, 2] or player.check_in in filter_check_ins) \
+                       and (len(filter_check_ins) in [0, 3] or (player.can_check_in_out and player.check_in in filter_check_ins) or (not player.can_check_in_out and None in filter_check_ins)) \
                        and (len(filter_tournaments) in [0, len(web_context.admin_event.tournaments_by_id)] or player.tournament_id in filter_tournaments) \
                        and (len(filter_federations) in [0, len(players_federations)] or player.federation_tuple in filter_federations) \
                        and (len(filter_leagues) in [0, len(players_leagues)] or player.league_tuple in filter_leagues) \
@@ -263,8 +262,8 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 template_context |= {
                     'admin_players': players,
                     'admin_players_columns': [
-                        'name', 'rating', 'federation', 'league', 'club', 'yob', 'mail', 'phone', 'gender',
-                        'fide', 'ffe', 'check_in', 'owed_paid', 'tournament', 'comment', 'history',
+                        'check_in', 'name', 'rating', 'federation', 'league', 'club', 'yob', 'mail', 'phone', 'gender',
+                        'fide', 'ffe', 'owed_paid', 'tournament', 'comment', 'history',
                     ],
                     'admin_players_sort': SessionHandler.get_session_admin_players_sort(web_context.request),
                     'admin_players_federations': players_federations,
@@ -310,7 +309,9 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     'admin_rotators_show_details': SessionHandler.get_session_admin_rotators_show_details(
                         web_context.request),
                 }
-            case 'chessevent':
+            case 'timers':
+                pass
+            case 'chessevents':
                 pass
             case 'messages':
                 template_context |= {
@@ -483,7 +484,7 @@ class EventAdminController(AbstractEventAdminController):
                     ])
                 elif admin_players_filter_check_ins is not None:
                     SessionHandler.set_session_admin_players_filter_check_ins(request, [
-                        bool(query_param) for query_param in admin_players_filter_check_ins
+                        {0: None, 1: False, 2:True, }.get(query_param, None) for query_param in admin_players_filter_check_ins
                         if query_param >= 0  # -1 must be ignored
                     ])
                 elif admin_players_filter_tournaments is not None:
@@ -526,7 +527,7 @@ class EventAdminController(AbstractEventAdminController):
             case 'rotators':
                 if admin_rotators_show_details is not None:
                     SessionHandler.set_session_admin_rotators_show_details(request, admin_rotators_show_details)
-            case 'chessevent':
+            case 'chessevents':
                 pass
             case 'messages':
                 if admin_messages_min_logging_level is not None:

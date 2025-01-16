@@ -267,11 +267,11 @@ class SessionHandler:
     ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'
 
     @classmethod
-    def set_session_admin_players_filter_check_ins(cls, request: HTMXRequest, check_ins: list[bool]):
+    def set_session_admin_players_filter_check_ins(cls, request: HTMXRequest, check_ins: list[bool | None]):
         request.session[cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY]: list[bool] = check_ins
 
     @classmethod
-    def get_session_admin_players_filter_check_ins(cls, request: HTMXRequest) -> list[bool]:
+    def get_session_admin_players_filter_check_ins(cls, request: HTMXRequest) -> list[bool | None]:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY, [])
 
     ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY: str = 'admin_players_filter_tournaments'

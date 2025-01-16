@@ -747,6 +747,12 @@ class EventDatabase(SQLiteDatabase):
             self.set_version(target_version)
             self.commit()
             logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+        target_version = Version('2.4.20')
+        if self.version.public in ['2.4.19', ]:
+            self._execute('ALTER TABLE `tournament` ADD `check_in_open` INTEGER NOT NULL DEFAULT 0')
+            self.set_version(target_version)
+            self.commit()
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         if self.version == target_version:
             logger.info(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
             return
@@ -1161,8 +1167,8 @@ class EventDatabase(SQLiteDatabase):
     ---------------------------------------------------------------------------------
     """
 
-    @staticmethod
-    def _row_to_stored_tournament(row: dict[str, Any]) -> StoredTournament:
+    @classmethod
+    def _row_to_stored_tournament(cls, row: dict[str, Any]) -> StoredTournament:
         return StoredTournament(
             id=row['id'],
             uniq_id=row['uniq_id'],
@@ -1180,6 +1186,7 @@ class EventDatabase(SQLiteDatabase):
             chessevent_tournament_name=row['chessevent_tournament_name'],
             record_illegal_moves=row['record_illegal_moves'],
             rules=row['rules'],
+            check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             last_update=row['last_update'],
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
@@ -1212,6 +1219,7 @@ class EventDatabase(SQLiteDatabase):
     def _write_stored_tournament(
             self, stored_tournament: StoredTournament,
     ) -> StoredTournament:
+        # check_in_open is not updated here but in set_tournament_check_in()
         fields: list[str] = [
             'uniq_id', 'name', 'path', 'filename', 'ffe_id', 'ffe_password',
             'time_control_initial_time', 'time_control_increment', 'time_control_handicap_penalty_step',
@@ -1301,6 +1309,12 @@ class EventDatabase(SQLiteDatabase):
             'UPDATE `tournament` SET `last_result_update` = ? WHERE `id` = ?',
             (time.time(), tournament_id, ),
         )
+
+    def set_tournament_check_in(self, tournament_id: int, o: bool):
+        """ Opens (o is True) or closes (o is False) the check_in for the tournament. """
+        self._execute(
+            'UPDATE `tournament` SET `check_in_open` = ?, `last_ffe_upload` = ? WHERE `id` = ?',
+            (1 if o else 0, time.time(), tournament_id, ))
 
     """
     ---------------------------------------------------------------------------------

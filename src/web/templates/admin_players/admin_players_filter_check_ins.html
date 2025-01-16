@@ -7,10 +7,11 @@
                     class="bi-funnel {% if admin_players_filter_check_ins|length not in [0,2] %}text-primary{% endif %}"
                     {{ tooltip_attributes('info', _('Filter the check-in status.'), 'top') }}
             ></i></button>
-            <ul class="dropdown-menu check-in p-0">
+            <ul class="dropdown-menu players-filter-check-in p-0">
                 {% with name='admin_players_filter_check_ins' %}
+                {# this input is always checked with value -1 (ignored) to be sure to get a list parameter. #}
                     <input type="hidden" name="{{ name }}" value="-1" checked />
-                    <li class="dropdown-item text-nowrap">
+                    <li class="dropdown-item title text-nowrap">
                         <input
                             type="checkbox"
                             {% if admin_players_filter_check_ins|length == admin_players_check_ins|length %}checked{% endif %}
@@ -24,10 +25,19 @@
                     <li class="dropdown-divider m-0"></li>
                     {% for check_in, check_in_data in {
                         0: {
-                            'class': 'bi-circle text-secondary',
+                            'class': 'bi-ban text-secondary',
+                            'text': _('Absent'),
+                            'number': admin_event.check_in_counts[none],
                         },
                         1: {
+                            'class': 'bi-circle-fill text-warning',
+                            'text': _('Not checked-in yet'),
+                            'number': admin_event.check_in_counts[false],
+                        },
+                        2: {
                             'class': 'bi-check-circle-fill text-success',
+                            'text': _('Checked-in'),
+                            'number': admin_event.check_in_counts[true],
                         },
                     }.items() %}
                         <li class="dropdown-item text-nowrap">
@@ -36,11 +46,11 @@
                                 id="{{ name }}-{{ loop.index }}"
                                 name="{{ name }}"
                                 value="{{ check_in }}"
-                                {% if check_in in admin_players_filter_check_ins %}checked{% endif %}
+                                {% if (check_in == 0 and none in admin_players_filter_check_ins) or (check_in in admin_players_filter_check_ins) %}checked{% endif %}
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                <i class="{{ check_in_data['class'] }}"></i>
+                                <i class="{{ check_in_data['class'] }}"></i> {{ check_in_data['text'] }} ({{ check_in_data['number'] }})
                             </label>
                         </li>
                     {% endfor %}

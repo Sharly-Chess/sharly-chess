@@ -8,11 +8,11 @@
                 class="bi-funnel {% if admin_players_filter_tournaments|length not in [0, (admin_event.players_tournaments|length)] %}text-primary{% endif %}"
                 {{ tooltip_attributes('info', _('Filter the tournaments.'), 'top') }}
         ></i></button>
-        <ul class="dropdown-menu tournament p-0">
+        <ul class="dropdown-menu players-filter-tournament p-0">
             {% with name='admin_players_filter_tournaments' %}
                 {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
                 <input type="hidden" name="{{ name }}" value="0" checked />
-                <li class="dropdown-item text-nowrap">
+                <li class="dropdown-item title text-nowrap">
                     <input
                         type="checkbox"
                         {% if admin_players_filter_tournaments|length == admin_event.tournaments_by_id|length %}checked{% endif %}

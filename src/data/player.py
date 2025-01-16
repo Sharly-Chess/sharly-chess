@@ -1,9 +1,9 @@
 import base64
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
-from contextlib import suppress
 from typing import TYPE_CHECKING, Self
 
 if TYPE_CHECKING:
@@ -280,7 +280,7 @@ class Player:
         self.board_number = board_number
         self.color = color
 
-    @property
+    @cached_property
     def has_real_pairings(self) -> bool:
         """ Returns True if the player has already been paired with an opponent
         (i.e. can not be deleted from the tournament anymore)."""
@@ -288,6 +288,18 @@ class Player:
             if pairing.opponent_papi_id and pairing.opponent_papi_id > 1:
                 return True
         return False
+
+    @cached_property
+    def can_check_in_out(self) -> bool:
+        """ Returns True if the player can check-in/out, i.e. it is not forfeit for the next round. """
+        if self.tournament.finished:
+            return False
+        if self.tournament.playing:
+            return False
+        if not self.tournament.check_in_open:
+            return False
+        pairing: Pairing = self.pairings[self.tournament.current_round + 1]
+        return not pairing.forfeit and not pairing.half_point_bye and not pairing.full_point_bye
 
     @property
     def color_str(self) -> str:

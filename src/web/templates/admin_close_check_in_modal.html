@@ -1,0 +1,87 @@
+<div class="modal-dialog modal-dialog-centered admin-close-check-in-modal d-block w-90 mw-100">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Close check-in for tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                    {% if admin_tournament.players_by_check_in_status[false] %}
+                        <p>{{ _('The following players did not check-in, choose what to do:') }}</p>
+                        <ul>
+                            {% for player in admin_tournament.players_by_check_in_status[false] %}
+                                <li>{{ player.last_name }} {{ player.first_name }}</li>
+                            {% endfor %}
+                        </ul>
+                        <p>{{ _('Choose what to do after closing the check-in:') }}</p>
+                        <ul>
+                            <li>
+                                {{ _('Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed).') }}
+                            </li>
+                            <li>
+                                {{ _('Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds).') }}
+                            </li>
+                        </ul>
+                    {% else %}
+                        <p>{{ _('All the players intended to play the coming round did check-in.') }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer d-block">
+            <div class="row">
+                <div class="col col-6 text-start">
+                    {% if admin_tournament.players_by_check_in_status[false] %}
+                        <button
+                                class="text-nowrap white btn btn-primary"
+                                aria-describedby="{{ id }}-help"
+                                hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-last-rounds', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                        >
+                            {{ _('Mark as forfeit for the rest of the tournament') }}
+                        </button>
+                        <button
+                                class="text-nowrap white btn btn-primary"
+                                aria-describedby="{{ id }}-help"
+                                hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                        >
+                            {{ _('Mark as forfeit for the coming round') }}
+                        </button>
+                    {% else %}
+                        <button
+                                class="text-nowrap white btn btn-primary"
+                                aria-describedby="{{ id }}-help"
+                                hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                        >
+                            {{ _('Close the check-in') }}
+                        </button>
+                    {% endif %}
+                </div>
+                <div class="col col-6 text-end">
+                    <button
+                            class="btn btn-secondary text-nowrap"
+                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
+                            preload
+                            hx-target="body"
+                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                            hx-indicator="#please-wait"
+                    >
+                        <i class="bi-x-circle-fill"></i>
+                        {{ _('Cancel') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
+    document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
+</script>

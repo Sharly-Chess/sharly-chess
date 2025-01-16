@@ -61,7 +61,8 @@ body {
 .index-locale-flag {
     height: 1em;
 }
-.dropdown-menu.locale, .dropdown-menu.columns {
+.dropdown-menu.locale,
+.dropdown-menu.columns-number {
     min-width: 0;
 }
 .dropdown-menu.locale .locale-flag {

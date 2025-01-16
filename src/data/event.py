@@ -226,6 +226,14 @@ class Event:
         return counter
 
     @cached_property
+    def check_in_counts(self) -> Counter[bool | None]:
+        counter: Counter[bool | None] = Counter[bool | None]()
+        for tournament in self.tournaments_by_id.values():
+            for check_in in tournament.players_by_check_in_status:
+                counter[check_in] += tournament.check_in_counts[check_in]
+        return counter
+
+    @cached_property
     def path(self) -> Path:
         path: Path = PapiWebConfig.default_papi_path
         if not self.stored_event.path:

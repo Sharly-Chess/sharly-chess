@@ -6,6 +6,7 @@
             {{ admin_event.name }} - {{ _('Players') }}
         </div>
         <div class="col text-end">
+            {% include 'admin_players/admin_players_check_in_tournaments.html' %}
             {% include 'admin_players/admin_players_filter_columns.html' %}
             <span {{ tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
                 <button
@@ -47,6 +48,12 @@
                                 {{ tooltip_attributes('info', _('Clear all the filters.'), 'top') }}
                         ></i> {{ admin_players|length }}/{{admin_event.players_number}}
                     </th>
+                    {% if 'check_in' in admin_players_filter_columns %}
+                        <th scope="col" class="text-nowrap text-center">
+                            <i class="bi-circle"></i><i class="bi-check-circle"></i>
+                            {% include 'admin_players/admin_players_filter_check_ins.html' %}
+                        </th>
+                    {% endif %}
                     <th scope="col" class="text-nowrap">
                         {# Players' title #}
                     </th>
@@ -114,12 +121,6 @@
                             {% include 'admin_players/admin_players_filter_ffe_licences.html' %}
                         </th>
                     {% endif %}
-                    {% if 'check_in' in admin_players_filter_columns %}
-                        <th scope="col" class="text-nowrap text-center">
-                            <i class="bi-circle"></i><i class="bi-check-circle"></i>
-                            {% include 'admin_players/admin_players_filter_check_ins.html' %}
-                        </th>
-                    {% endif %}
                     {% if 'owed_paid' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-end">{{ _('Owed *** OWED COLUMN HEADER FOR PLAYERS') }}</th>
                         <th scope="col" class="text-nowrap text-end">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</th>
@@ -149,7 +150,7 @@
                                     <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
                                         <i class="bi-three-dots"></i>
                                     </button>
-                                    <ul class="dropdown-menu p-0" >
+                                    <ul class="dropdown-menu players-player-actions p-0" >
                                         <li
                                             class="dropdown-item btn py-0 px-1"
                                             hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
@@ -173,6 +174,37 @@
                                     </ul>
                                 </span>
                             </th>
+                            {% if 'check_in' in admin_players_filter_columns %}
+                                <td class="text-nowrap text-center">
+                                    <i
+                                        {% if player.tournament.finished %}
+                                            class="bi-ban text-secondary"
+                                            {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                                        {% elif player.tournament.playing %}
+                                            class="bi-ban text-secondary"
+                                            {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is playing.', tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                                        {% elif not player.tournament.check_in_open %}
+                                            class="bi-ban text-secondary"
+                                            {{ tooltip_attributes('warning', _('Check-in is closed for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                                        {% elif not player.can_check_in_out %}
+                                            class="bi-ban text-secondary"
+                                            {{ tooltip_attributes('warning', _('Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].', last_name=player.last_name, first_name=player.first_name, tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                                        {% elif player.check_in %}
+                                            class="bi-check-circle-fill text-success cursor-pointer"
+                                            {{ tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                                            hx-patch="{{ url_for('admin-player-check-out', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                        {% else %}
+                                            class="bi-circle-fill text-warning cursor-pointer"
+                                            {{ tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
+                                            hx-patch="{{ url_for('admin-player-check-in', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                        {% endif %}
+                                    "></i>
+                                </td>
+                            {% endif %}
                             <td class="text-end">
                                 {{ player.title.short_name }}
                             </td>
@@ -274,11 +306,6 @@
                                     </span>
                                 </td>
                             {% endif %}
-                            {% if 'check_in' in admin_players_filter_columns %}
-                                <td class="text-nowrap text-center">
-                                    <i class="{% if player.check_in %}bi-check-circle-fill text-success{% else %}bi-circle text-secondary{% endif %}"></i>
-                                </td>
-                            {% endif %}
                             {% if 'owed_paid' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-end">
                                     {{ player.owed }}
@@ -296,7 +323,7 @@
                                             <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
                                                 {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
                                             </button>
-                                            <ul class="dropdown-menu locale p-0" {{ tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }} >
+                                            <ul class="dropdown-menu players-set-player-tournament p-0" {{ tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }} >
                                                 {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
                                                     {% if tournament.file_exists %}
                                                         {% set enable=player.tournament_id != tournament.id %}

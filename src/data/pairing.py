@@ -16,8 +16,12 @@ class Pairing:
     result: Result | None = None
 
     @property
+    def forfeit(self) -> bool:
+        return (self.result == Result.NO_RESULT) and (self.color == 'F')
+
+    @property
     def not_paired(self) -> bool:
-        return (self.result == Result.NO_RESULT) and (self.opponent_id is None)
+        return (self.result == Result.NO_RESULT) and (self.color == 'R') and (self.opponent_id is None)
 
     @property
     def playing(self) -> bool:

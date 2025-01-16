@@ -63,6 +63,7 @@ class TournamentAdminController(AbstractEventAdminController):
         if data is None:
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
+        check_in_open: bool = False
         if action == 'delete':
             if not uniq_id:
                 errors['uniq_id'] = _('Please enter the tournament ID.')
@@ -82,6 +83,7 @@ class TournamentAdminController(AbstractEventAdminController):
                         if uniq_id != web_context.admin_tournament.uniq_id \
                                 and uniq_id in web_context.admin_event.tournaments_by_uniq_id:
                             errors['uniq_id'] = _('Tournament [{uniq_id}] already exists.').format(uniq_id=uniq_id)
+                        check_in_open = web_context.admin_tournament.check_in_open
                     case _:
                         raise ValueError(f'action=[{action}]')
         name: str | None = None
@@ -146,6 +148,7 @@ class TournamentAdminController(AbstractEventAdminController):
             chessevent_tournament_name=chessevent_tournament_name,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
+            check_in_open=check_in_open,
             errors=errors,
         )
 

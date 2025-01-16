@@ -67,6 +67,7 @@ class StoredTournament:
     chessevent_tournament_name: str | None
     record_illegal_moves: int | None
     rules: str | None
+    check_in_open: bool = field(default=False)
     last_update: float = field(default=0.0)
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)

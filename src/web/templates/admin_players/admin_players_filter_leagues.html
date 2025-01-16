@@ -6,11 +6,11 @@
                 class="bi-funnel {% if admin_players_filter_leagues|length not in [0, (admin_players_leagues|length)] %}text-primary{% endif %}"
                 {{ tooltip_attributes('info', _('Filter the leagues.'), 'top') }}
         ></i></button>
-        <ul class="dropdown-menu league p-0">
+        <ul class="dropdown-menu players-filter-league p-0">
             {% with name='admin_players_filter_leagues' %}
                 {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
                 <input type="hidden" name="{{ name }}" value="" />
-                <li class="dropdown-item text-nowrap">
+                <li class="dropdown-item title text-nowrap">
                     <input
                         type="checkbox"
                         {% if admin_players_filter_leagues|length == admin_players_leagues|length %}checked{% endif %}
