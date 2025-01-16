@@ -191,13 +191,13 @@
                                             {{ tooltip_attributes('warning', _('Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].', last_name=player.last_name, first_name=player.first_name, tournament_uniq_id=player.tournament.uniq_id), 'right') }}
                                         {% elif player.check_in %}
                                             class="bi-check-circle-fill text-success cursor-pointer"
-                                            {{ tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                                            {{ tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
                                             hx-patch="{{ url_for('admin-player-check-out', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                             hx-target="body"
                                             hx-indicator="#please-wait"
                                         {% else %}
                                             class="bi-circle-fill text-warning cursor-pointer"
-                                            {{ tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
+                                            {{ tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
                                             hx-patch="{{ url_for('admin-player-check-in', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                             hx-target="body"
                                             hx-indicator="#please-wait"
