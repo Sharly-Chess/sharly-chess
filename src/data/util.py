@@ -205,6 +205,40 @@ class Result(IntEnum):
             case _:
                 raise ValueError(f"Unknown value: {self}")
 
+    @property
+    def to_trf(self) -> str:
+        match self:
+            case Result.LOSS:
+                return '0'
+            case Result.DRAW:
+                return '='
+            case Result.GAIN:
+                return '1'
+            case Result.UNRATED_LOSS:
+                return 'L'
+            case Result.UNRATED_DRAW:
+                return 'D'
+            case Result.UNRATED_GAIN:
+                return 'W'
+            case Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+                return '-'
+            case Result.FORFEIT_GAIN:
+                return '+'
+            case Result.HALF_POINT_BYE:
+                return 'H'
+            case Result.FULL_POINT_BYE:
+                return 'F'
+            case Result.PAIRING_ALLOCATED_BYE:
+                return 'U'
+            case Result.NOT_PAIRED:
+                return ' '
+            case _:
+                raise ValueError(f"Unknown value: {self}")
+
+    @property
+    def is_bye(self) -> bool:
+        return self in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE)
+
     @classmethod
     def user_imputable_results(cls) -> tuple[Self, ...]:
         """Imputable results are the ones that a player can
@@ -521,6 +555,18 @@ class PlayerGender(IntEnum):
                 return 'F'
             case PlayerGender.MALE:
                 return 'M'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def to_trf(self) -> str:
+        match self:
+            case PlayerGender.NONE:
+                return ''
+            case PlayerGender.FEMALE:
+                return 'f'
+            case PlayerGender.MALE:
+                return 'm'
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -879,6 +925,26 @@ class PlayerTitle(IntEnum):
                 raise ValueError(f'Unknown title: {self}')
 
     @property
+    def to_trf(self) -> str:
+        match self:
+            case PlayerTitle.NONE:
+                return ''
+            case PlayerTitle.WOMAN_FIDE_MASTER:
+                return 'WFM'
+            case PlayerTitle.FIDE_MASTER:
+                return 'FM'
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
+                return 'WIM'
+            case PlayerTitle.INTERNATIONAL_MASTER:
+                return 'IM'
+            case PlayerTitle.WOMAN_GRANDMASTER:
+                return 'WGM'
+            case PlayerTitle.GRANDMASTER:
+                return 'GM'
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
@@ -944,6 +1010,16 @@ class BoardColor(StrEnum):
                 return 'B'
             case BoardColor.BLACK:
                 return 'N'
+            case _:
+                raise ValueError(f'Unknown value:  {self}')
+
+    @property
+    def to_trf(self) -> str:
+        match self:
+            case Color.WHITE:
+                return 'w'
+            case Color.BLACK:
+                return 'b'
             case _:
                 raise ValueError(f'Unknown value:  {self}')
 

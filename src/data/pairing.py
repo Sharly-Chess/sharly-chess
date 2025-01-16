@@ -1,4 +1,5 @@
 from logging import Logger
+from trf.Player import Game as TrfGame
 from common.logger import get_logger
 from dataclasses import dataclass
 
@@ -62,5 +63,14 @@ class Pairing:
     def forfeit_gain(self) -> bool:
         return self.result == Result.FORFEIT_GAIN
 
+    def to_trf(self, round_number: int) -> TrfGame:
+        return TrfGame(
+            ' ' if self.opponent_id == 1 else self.opponent_id,
+            self.color.to_trf if self.color and not self.result.is_bye else ' ',
+            self.result.to_trf,
+            round_number)
+
     def __repr__(self):
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result})'
+
+

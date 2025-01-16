@@ -4,6 +4,7 @@ from functools import cached_property
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
+from trf import Tournament as TrfTournament
 from typing import TYPE_CHECKING
 
 from common import format_timestamp_date_time
@@ -62,6 +63,10 @@ class Tournament:
         self._playing: bool = False
         self._rating_limit1: int = 0
         self._rating_limit2: int = 0
+        self._location: str = ''
+        self._start_date: str = ''
+        self._end_date: str = ''
+        self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
         self._papi_read = False
@@ -260,6 +265,26 @@ class Tournament:
         return self._rating_limit2
 
     @property
+    def location(self) -> str:
+        self.read_papi()
+        return self._location
+
+    @property
+    def start_date(self) -> str:
+        self.read_papi()
+        return self._start_date
+
+    @property
+    def end_date(self) -> str:
+        self.read_papi()
+        return self._end_date
+
+    @property
+    def arbiter(self) -> str:
+        self.read_papi()
+        return self._arbiter
+
+    @property
     def players_by_id(self) -> dict[int, Player]:
         self.read_papi()
         return self._players_by_id
@@ -384,6 +409,21 @@ class Tournament:
             case _:
                 return False
 
+    @property
+    def to_trf(self) -> TrfTournament:
+        return TrfTournament(
+            self.name,
+            self.location,
+            '',
+            self.start_date,
+            self.end_date,
+            len(self.players_by_id),
+            0, 0, '',
+            self.arbiter,
+            '', '', [],
+            [player.to_trf for id, player in self.players_by_id.items() if id != 1],
+        )
+
     def read_papi(self):
         """Fetch tournament information from the Papi database, as well
         as the player information."""
@@ -396,7 +436,11 @@ class Tournament:
                     self._pairing,
                     self._rating,
                     self._rating_limit1,
-                    self._rating_limit2
+                    self._rating_limit2,
+                    self._location,
+                    self._start_date,
+                    self._end_date,
+                    self._arbiter,
                 ) = papi_database.read_info()
                 self._players_by_id = papi_database.read_players(self.id, self._rounds)
             for player in self._players_by_id.values():
@@ -407,6 +451,10 @@ class Tournament:
             self._current_round = 0
             self._rating_limit1 = None
             self._rating_limit2 = None
+            self._location = ''
+            self._start_date = ''
+            self._end_date = ''
+            self._arbiter = ''
             self._boards = []
             self._unpaired_players = []
         self._papi_read = True

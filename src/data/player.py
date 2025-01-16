@@ -1,10 +1,11 @@
 import base64
 from contextlib import suppress
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
 from typing import TYPE_CHECKING, Self
+from trf import Player as TrfPlayer
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -257,6 +258,23 @@ class Player:
         Otherwise, leave `self.points` as None."""
         with suppress(TypeError):
             self.points += points
+
+    @property
+    def to_trf(self) -> TrfPlayer:
+        self.compute_points(len(self.pairings))
+        return TrfPlayer(
+            self.ref_id,
+            f'{self.last_name}, {self.first_name}',
+            self.gender.to_trf,
+            self.title.to_trf,
+            self.rating,
+            self.federation,
+            self.fide_id,
+            self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else '',
+            self.points,
+            None,
+            [result.to_trf(round_nb) for round_nb, result in self.pairings.items()]
+        )
 
     @property
     def points_str(self) -> str:

@@ -136,6 +136,17 @@
             {{ _('Edit') }}
         </button>
     </span>
+    <span {{ tooltip_attributes('info', 'Exporter le tournoi au format TRF.', 'top') }}>
+        <form
+                method="get"
+                class="d-inline"
+                action="{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+        >
+            <button type="submit" class="btn btn-sm btn-primary p-1 text-nowrap">
+                <i class="bi-download"></i> Télécharger
+            </button>
+        </form>
+    </span>
 {% endblock %}
 
 {% block card_buttons_right %}
