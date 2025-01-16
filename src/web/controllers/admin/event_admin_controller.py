@@ -606,7 +606,7 @@ class EventAdminController(AbstractEventAdminController):
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
             case 'clone':
-                EventDatabase(uniq_id).create()
+                EventDatabase(web_context.admin_event.uniq_id).clone(new_uniq_id=uniq_id)
                 with EventDatabase(uniq_id, write=True) as event_database:
                     event_database.update_stored_event(stored_event)
                     event_database.commit()
