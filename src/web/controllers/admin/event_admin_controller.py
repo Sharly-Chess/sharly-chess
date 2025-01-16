@@ -529,6 +529,8 @@ class EventAdminController(AbstractEventAdminController):
                     SessionHandler.set_session_admin_rotators_show_details(request, admin_rotators_show_details)
             case 'chessevents':
                 pass
+            case 'timers':
+                pass
             case 'messages':
                 if admin_messages_min_logging_level is not None:
                     try:
