@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="col-12">
                     {% if admin_tournament.players_by_check_in_status[false] %}
-                        <p>{{ _('The following players did not check-in, choose what to do:') }}</p>
+                        <p>{{ _('The following players did not check-in:') }}</p>
                         <ul>
                             {% for player in admin_tournament.players_by_check_in_status[false] %}
                                 <li>{{ player.last_name }} {{ player.first_name }}</li>

@@ -14,7 +14,7 @@
 | locale=`fr` | Français <img src="../src/web/static/images/locales/fr.svg" style="height: 1em;"/> |
 |--|:--:|
 |Messages obligatoires vides|0/59|
-|Messages vides|0/1025|
+|Messages vides|0/1049|
 
 ## Messages obligatoires vides (-)
 

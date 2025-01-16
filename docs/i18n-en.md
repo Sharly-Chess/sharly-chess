@@ -14,11 +14,11 @@
 | locale=`en` | English <img src="../src/web/static/images/locales/en.svg" style="height: 1em;"/> |
 |--|:--:|
 |Empty mandatory messages|0/59|
-|Empty messages|966/1025|
+|Empty messages|990/1049|
 
 ## Empty mandatory messages (-)
 
-## Empty messages (966)
+## Empty messages (990)
 
 Empty messages are not shown for the default language.
 

@@ -651,67 +651,67 @@ msgstr "Fehler wurden auf dem Event gefunden; ChessEvent-Verbindungen, Timer, Tu
 msgid "No name set, by default [{name}]"
 msgstr "Kein Name festgelegt, standardmäßig [{name}]"
 
-#: src/data/event.py:232
+#: src/data/event.py:240
 #, ai_translation
 msgid "No directory set for Papi files, by default [{path}]."
 msgstr "Kein Verzeichnis für Papi-Dateien, standardmäßig [{path}]."
 
-#: src/data/event.py:236 src/data/tournament.py:42
+#: src/data/event.py:244 src/data/tournament.py:42
 #, ai_translation
 msgid "Directory [{path}] not found."
 msgstr "Verzeichnis [{path}] nicht gefunden."
 
-#: src/data/event.py:238 src/data/tournament.py:44
+#: src/data/event.py:246 src/data/tournament.py:44
 #, ai_translation
 msgid "[{path}] is not a directory."
 msgstr "[{path}] ist kein Verzeichnis."
 
-#: src/data/event.py:247
+#: src/data/event.py:255
 #, ai_translation
 msgid "No background image set, by default [{background_image}]"
 msgstr "Kein Hintergrundbild gesetzt, standardmäßig [{background_image}]"
 
-#: src/data/event.py:261
+#: src/data/event.py:269
 #, ai_translation
 msgid "No background colour set, by default [{background_color}]"
 msgstr "Keine Hintergrundfarbe gesetzt, standardmäßig [{background_color}]"
 
-#: src/data/event.py:271
+#: src/data/event.py:279
 #, ai_translation
 msgid "No password set for the results entry"
 msgstr "Kein Passwort für die Eingabe der Ergebnisse gesetzt"
 
-#: src/data/event.py:278
+#: src/data/event.py:286
 #, ai_translation
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
 msgstr "Maximale Anzahl nicht festgelegter illegaler Bewegungen, standardmäßig [{record_illegal_moves}]"
 
-#: src/data/event.py:413
+#: src/data/event.py:421
 #, ai_translation
 msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
 msgstr "Fehler wurden auf ChessEvent-Verbindungen gefunden; Timer, Turniere, Bildschirme, Familien und Rotatoren werden nicht geladen."
 
-#: src/data/event.py:438
+#: src/data/event.py:446
 #, ai_translation
 msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
 msgstr "Fehler wurden auf Timern gefunden; Turniere, Bildschirme, Familien und Rotatoren werden nicht geladen."
 
-#: src/data/event.py:463
+#: src/data/event.py:471
 #, ai_translation
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr "Fehler wurden auf Turnieren gefunden; Bildschirme, Familien und Rotatoren werden nicht geladen."
 
-#: src/data/event.py:493
+#: src/data/event.py:501
 #, ai_translation
 msgid "Errors have been found on screens; families and rotators will not be loaded."
 msgstr "Fehler wurden auf Bildschirmen gefunden; Familien und Rotatoren werden nicht geladen."
 
-#: src/data/event.py:522
+#: src/data/event.py:530
 #, ai_translation
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr "Fehler wurden auf Familien gefunden; Rotatoren werden nicht geladen."
 
-#: src/data/event.py:565
+#: src/data/event.py:573
 #, ai_translation
 msgid "Errors have been found on rotators."
 msgstr "Fehler wurden auf Rotatoren gefunden."
@@ -1208,7 +1208,7 @@ msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ."
 
 #: src/data/util.py:840 src/web/controllers/admin/index_admin_controller.py:104
-#: src/web/controllers/admin/tournament_admin_controller.py:336
+#: src/web/controllers/admin/tournament_admin_controller.py:339
 #: src/web/templates/admin_families.html:61
 #: src/web/templates/admin_screens.html:77
 #: src/web/templates/admin_screens.html:107
@@ -1220,7 +1220,7 @@ msgstr "Kombinationen nach Bord"
 #: src/web/controllers/admin/family_admin_controller.py:270
 #: src/web/controllers/admin/index_admin_controller.py:103
 #: src/web/controllers/admin/screen_admin_controller.py:354
-#: src/web/controllers/admin/tournament_admin_controller.py:335
+#: src/web/controllers/admin/tournament_admin_controller.py:338
 #: src/web/templates/admin_event_modal.html:190
 #: src/web/templates/admin_families.html:60
 #: src/web/templates/admin_screens.html:76
@@ -1358,7 +1358,7 @@ msgid "Initializing a session to [{url}]..."
 msgstr "Initialisieren einer Sitzung auf [{url}]..."
 
 #: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
-#: src/web/templates/admin_players/admin_players_filter_check_ins.html:21
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:22
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:21
 #: src/web/templates/admin_players/admin_players_filter_columns.html:20
 #: src/web/templates/admin_players/admin_players_filter_federations.html:21
@@ -1495,7 +1495,7 @@ msgstr "LAN/WAN URL: {lan_url}"
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Port [{port}] bereits in Betrieb, kann Papi-Web-Server nicht starten."
 
-#: src/web/controllers/index_controller.py:281
+#: src/web/controllers/index_controller.py:285
 #, ai_translation
 msgid "USE AT YOUR OWN RISKS"
 msgstr "AUSWIRKUNGEN AUF IHRE RISIKEN"
@@ -1582,28 +1582,28 @@ msgstr "Schachveranstaltung ({num})"
 msgid "Messages ({num})"
 msgstr "Nachrichten ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:592
+#: src/web/controllers/admin/event_admin_controller.py:593
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Umbenennen der Datenbank fehlgeschlagen: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:599
+#: src/web/controllers/admin/event_admin_controller.py:600
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "Event [{old_uniq_id}] wurde umbenannt ([{new_uniq_id}]) und aktualisiert."
 
-#: src/web/controllers/admin/event_admin_controller.py:602
+#: src/web/controllers/admin/event_admin_controller.py:603
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "Event [{uniq_id}] wurde aktualisiert."
 
-#: src/web/controllers/admin/event_admin_controller.py:610
+#: src/web/controllers/admin/event_admin_controller.py:611
 #: src/web/controllers/admin/index_admin_controller.py:676
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Event [{uniq_id}] wurde erstellt."
 
-#: src/web/controllers/admin/event_admin_controller.py:620
+#: src/web/controllers/admin/event_admin_controller.py:621
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Event [{uniq_id}] wurde gelöscht, die Datenbank wurde archiviert ({arch})."
@@ -1616,7 +1616,7 @@ msgstr "Bitte geben Sie die Familien-ID ein."
 #: src/web/controllers/admin/family_admin_controller.py:104
 #: src/web/controllers/admin/index_admin_controller.py:233
 #: src/web/controllers/admin/screen_admin_controller.py:123
-#: src/web/controllers/admin/tournament_admin_controller.py:75
+#: src/web/controllers/admin/tournament_admin_controller.py:76
 #, ai_translation
 msgid "Character [{char}] is not allowed."
 msgstr "Zeichen [{char}] ist nicht erlaubt."
@@ -1680,7 +1680,7 @@ msgstr "Paarungen nach Board"
 #: src/web/controllers/admin/family_admin_controller.py:274
 #: src/web/controllers/admin/index_admin_controller.py:105
 #: src/web/controllers/admin/screen_admin_controller.py:358
-#: src/web/controllers/admin/tournament_admin_controller.py:337
+#: src/web/controllers/admin/tournament_admin_controller.py:340
 #: src/web/templates/admin_families.html:62
 #: src/web/templates/admin_screens.html:78
 #: src/web/templates/admin_screens.html:112
@@ -1908,75 +1908,75 @@ msgstr "Keine archivierten Ereignisse."
 msgid "Papi-web configuration"
 msgstr "Konfiguration von Papi-web"
 
-#: src/web/controllers/admin/player_admin_controller.py:76
+#: src/web/controllers/admin/player_admin_controller.py:78
 #, ai_translation, fuzzy
 msgid "Please enter the last name."
 msgstr "Bitte geben Sie die Zeit ein."
 
-#: src/web/controllers/admin/player_admin_controller.py:82
+#: src/web/controllers/admin/player_admin_controller.py:84
 #, ai_translation, fuzzy
 msgid "Please enter the first name."
 msgstr "Bitte geben Sie die Zeit ein."
 
-#: src/web/controllers/admin/player_admin_controller.py:88
+#: src/web/controllers/admin/player_admin_controller.py:90
 #, ai_translation, fuzzy
 msgid "Please enter the date of birth."
 msgstr "Bitte geben Sie das Ende der Veranstaltung ein."
 
 # Error: tokens differ between [Invalid FIDE ID [{fide_id}].] and [Ungültige
 # Zeit [{time_str}].]
-#: src/web/controllers/admin/player_admin_controller.py:134
+#: src/web/controllers/admin/player_admin_controller.py:136
 #, ai_translation, fuzzy
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Ungültige FIDE-ID [{fide_id}]."
 
 # Error: tokens differ between [Invalid FFE ID [{ffe_id}].] and [Ungültige
 # Gebühren Link Text [{text}].]
-#: src/web/controllers/admin/player_admin_controller.py:140
+#: src/web/controllers/admin/player_admin_controller.py:142
 #, ai_translation, fuzzy
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Ungültige FFE-ID [{ffe_id}]."
 
 # Error: tokens differ between [Invalid mail [{mail}].] and [Ungültiger Wert
 # [{value}].]
-#: src/web/controllers/admin/player_admin_controller.py:156
+#: src/web/controllers/admin/player_admin_controller.py:158
 #, ai_translation, fuzzy
 msgid "Invalid mail [{mail}]."
 msgstr "Ungültige Post [{mail}]."
 
 # Error: tokens differ between [Invalid phone number [{phone}].] and
 # [Ungültige Bordnummer [{fixed_board_str}].]
-#: src/web/controllers/admin/player_admin_controller.py:162
+#: src/web/controllers/admin/player_admin_controller.py:164
 #, ai_translation, fuzzy
 msgid "Invalid phone number [{phone}]."
 msgstr "Ungültige Telefonnummer [{phone}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:311
+#: src/web/controllers/admin/player_admin_controller.py:314
 #, ai_translation, fuzzy
 msgid "Standard:"
 msgstr "Beginnen:"
 
-#: src/web/controllers/admin/player_admin_controller.py:312
+#: src/web/controllers/admin/player_admin_controller.py:315
 #, ai_translation
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr "Der Wert, der verwendet wird, wenn die Zeitregelung mindestens 60 Minuten beträgt."
 
-#: src/web/controllers/admin/player_admin_controller.py:315
+#: src/web/controllers/admin/player_admin_controller.py:318
 #, ai_translation
 msgid "Rapid:"
 msgstr "Schnell:"
 
-#: src/web/controllers/admin/player_admin_controller.py:316
+#: src/web/controllers/admin/player_admin_controller.py:319
 #, ai_translation
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
 msgstr "Der Wert, der verwendet wird, wenn die Zeitregelung mehr als 10 Minuten und weniger als 60 Minuten beträgt."
 
-#: src/web/controllers/admin/player_admin_controller.py:319
+#: src/web/controllers/admin/player_admin_controller.py:322
 #, ai_translation
 msgid "Blitz:"
 msgstr "Blitz:"
 
-#: src/web/controllers/admin/player_admin_controller.py:320
+#: src/web/controllers/admin/player_admin_controller.py:323
 #, ai_translation
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr "Der Wert, der verwendet wird, wenn die Zeitregelung höchstens 10 Minuten beträgt."
@@ -2013,15 +2013,15 @@ msgstr "Der Wert, der verwendet wird, wenn die Zeitregelung höchstens 10 Minute
 # Error: tokens differ between [Player [{last_name} {first_name}] has pairings
 # in tournament [{tournament_uniq_id}].] and [Event [{event_uniq_id}]:
 # Erholungsturnier [{tournament_uniq_id}]...]
-#: src/web/controllers/admin/player_admin_controller.py:421
-#: src/web/controllers/admin/player_admin_controller.py:492
+#: src/web/controllers/admin/player_admin_controller.py:429
+#: src/web/controllers/admin/player_admin_controller.py:500
 #, ai_translation, error, fuzzy
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Spieler [{last_name} {first_name}] hat Paarungen im Turnier [{tournament_uniq_id}]."
 
 # Error: tokens differ between [Papi file [{tournament_file}] not found.] and
 # [Turnier [{tournament_id}] nicht gefunden.]
-#: src/web/controllers/admin/player_admin_controller.py:429
+#: src/web/controllers/admin/player_admin_controller.py:437
 #, ai_translation, fuzzy
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Papi-Datei [{tournament_file}] nicht gefunden."
@@ -2029,7 +2029,7 @@ msgstr "Papi-Datei [{tournament_file}] nicht gefunden."
 # Error: tokens differ between [FFE licence [{ffe_licence_number}] already
 # present in tournament [{tournament_uniq_id}].] and [Regeldatei [{file}] für
 # Turniere nicht gefunden [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py:433
+#: src/web/controllers/admin/player_admin_controller.py:441
 #, ai_translation, fuzzy
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr "FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournament_uniq_id}]."
@@ -2037,12 +2037,12 @@ msgstr "FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournam
 # Error: tokens differ between [Fide ID [{fide_id}] already present in
 # tournament [{tournament_uniq_id}].] and [Regeldatei [{file}] für Turniere
 # nicht gefunden [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py:438
+#: src/web/controllers/admin/player_admin_controller.py:446
 #, ai_translation, fuzzy
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
 msgstr "Fide ID [{fide_id}] bereits im Turnier vorhanden [{tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:451
+#: src/web/controllers/admin/player_admin_controller.py:459
 #, ai_translation
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Der Spieler [{last_name} {first_name}] wurde vom Turnier [{src_tournament_uniq_id}] ins Turnier [{dst_tournament_uniq_id}] verlegt."
@@ -2050,10 +2050,20 @@ msgstr "Der Spieler [{last_name} {first_name}] wurde vom Turnier [{src_tournamen
 # Error: tokens differ between [Player [{last_name} {first_name}] has been
 # removed from tournament [{tournament_uniq_id}].] and [Papi-Datei nicht für
 # Turniere definiert [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py:499
+#: src/web/controllers/admin/player_admin_controller.py:507
 #, ai_translation, fuzzy
 msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
 msgstr "Spieler [{last_name} {first_name}] wurde aus dem Turnier entfernt [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py:532
+#, ai_translation, fuzzy
+msgid "Check-in is open for tournament [{tournament_uniq_id}]."
+msgstr "FFE ID nicht für Turnier definiert [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py:567
+#, ai_translation, fuzzy
+msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
+msgstr "FFE ID nicht für Turnier definiert [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/rotator_admin_controller.py:74
 #, ai_translation
@@ -2205,69 +2215,69 @@ msgstr "Der Timer [{timer_uniq_id}] wurde aktualisiert."
 msgid "Timer [{timer_uniq_id}] has been deleted."
 msgstr "Der Timer [{timer_uniq_id}] wurde gelöscht."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:68
-#: src/web/controllers/admin/tournament_admin_controller.py:73
+#: src/web/controllers/admin/tournament_admin_controller.py:69
+#: src/web/controllers/admin/tournament_admin_controller.py:74
 #, ai_translation
 msgid "Please enter the tournament ID."
 msgstr "Bitte geben Sie die Turnier-ID ein."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:70
+#: src/web/controllers/admin/tournament_admin_controller.py:71
 #, ai_translation
 msgid "tournament ID does not match."
 msgstr "Turnier-ID passt nicht."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:80
-#: src/web/controllers/admin/tournament_admin_controller.py:84
+#: src/web/controllers/admin/tournament_admin_controller.py:81
+#: src/web/controllers/admin/tournament_admin_controller.py:85
 #, ai_translation
 msgid "Tournament [{uniq_id}] already exists."
 msgstr "Turnier [{uniq_id}] existiert bereits."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:105
+#: src/web/controllers/admin/tournament_admin_controller.py:107
 #, ai_translation
 msgid "Please enter the tournament name."
 msgstr "Bitte geben Sie den Turniernamen ein."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:111
+#: src/web/controllers/admin/tournament_admin_controller.py:113
 #, ai_translation
 msgid "The FFE ID is a positive integer."
 msgstr "Die FFE-ID ist eine positive Ganzzahl."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:114
+#: src/web/controllers/admin/tournament_admin_controller.py:116
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Das Passwort des Turniers auf der FFE-Website besteht aus 10 Großbuchstaben."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:155
+#: src/web/controllers/admin/tournament_admin_controller.py:158
 #, ai_translation, fuzzy
 msgid "No ChessEvent connection"
 msgstr "Keine ChessEvent-Verbindungen."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:192
+#: src/web/controllers/admin/tournament_admin_controller.py:195
 #, ai_translation
 msgid "tournament"
 msgstr "Turnier"
 
-#: src/web/controllers/admin/tournament_admin_controller.py:193
+#: src/web/controllers/admin/tournament_admin_controller.py:196
 #, ai_translation
 msgid "New tournament"
 msgstr "Neues Turnier"
 
-#: src/web/controllers/admin/tournament_admin_controller.py:366
+#: src/web/controllers/admin/tournament_admin_controller.py:369
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Turnier [{tournament_uniq_id}] wurde erstellt und Standard-Bildschirme wurden hinzugefügt."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:371
+#: src/web/controllers/admin/tournament_admin_controller.py:374
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created."
 msgstr "Turnier [{tournament_uniq_id}] wurde erstellt."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:380
+#: src/web/controllers/admin/tournament_admin_controller.py:383
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been updated."
 msgstr "Turnier [{tournament_uniq_id}] wurde aktualisiert."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:389
+#: src/web/controllers/admin/tournament_admin_controller.py:392
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr "Turnier [{tournament_uniq_id}] wurde gelöscht."
@@ -2339,6 +2349,7 @@ msgid "Deletion date"
 msgstr "Datum der Löschung"
 
 #: src/web/templates/admin_check_in.html:1
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:11
 #: src/web/templates/user_screen.html:249
 #, ai_translation
 msgid "Check-in"
@@ -2367,7 +2378,7 @@ msgstr "Bearbeiten Sie die Eigenschaften der ChessEvent-Verbindung."
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:160
+#: src/web/templates/admin_players.html:161
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -2515,7 +2526,7 @@ msgstr "Aktualisieren"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:170
+#: src/web/templates/admin_players.html:171
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -2525,6 +2536,7 @@ msgid "Delete"
 msgstr "Löschen"
 
 #: src/web/templates/admin_chessevent_modal.html:186
+#: src/web/templates/admin_close_check_in_modal.html:77
 #: src/web/templates/admin_event_modal.html:584
 #: src/web/templates/admin_family_modal.html:500
 #: src/web/templates/admin_player_modal.html:465
@@ -2540,7 +2552,7 @@ msgstr "Abbrechen"
 
 #: src/web/templates/admin_chessevents.html:10
 #: src/web/templates/admin_events.html:9
-#: src/web/templates/admin_players.html:10
+#: src/web/templates/admin_players.html:11
 #: src/web/templates/admin_screens.html:42
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
@@ -2563,6 +2575,51 @@ msgstr "Erstellen einer ChessEvent-Verbindung"
 #, ai_translation
 msgid "No ChessEvent connections."
 msgstr "Keine ChessEvent-Verbindungen."
+
+#: src/web/templates/admin_close_check_in_modal.html:5
+#, ai_translation, fuzzy, python-format
+msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
+msgstr "Löschung des Turniers [%(tournament_uniq_id)s]"
+
+#: src/web/templates/admin_close_check_in_modal.html:12
+#, ai_translation
+msgid "The following players did not check-in:"
+msgstr "Folgende Spieler haben nicht eingecheckt:"
+
+#: src/web/templates/admin_close_check_in_modal.html:18
+#, ai_translation
+msgid "Choose what to do after closing the check-in:"
+msgstr "Wählen Sie, was nach dem Schließen des Check-in zu tun ist:"
+
+#: src/web/templates/admin_close_check_in_modal.html:21
+#, ai_translation
+msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
+msgstr "Markieren Sie die Spieler als verfallen für den Rest des Turniers (kein Check-in erlaubt, bis die Füßchen entfernt werden)."
+
+#: src/web/templates/admin_close_check_in_modal.html:24
+#, ai_translation
+msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
+msgstr "Markieren Sie die Spieler als verfallen für die kommende Runde (Spieler werden in der Lage sein, Check-in für die nächste Runde)."
+
+#: src/web/templates/admin_close_check_in_modal.html:28
+#, ai_translation
+msgid "All the players intended to play the coming round did check-in."
+msgstr "Alle Spieler, die die kommende Runde spielen wollten, haben Check-in gemacht."
+
+#: src/web/templates/admin_close_check_in_modal.html:44
+#, ai_translation, fuzzy
+msgid "Mark as forfeit for the rest of the tournament"
+msgstr "Bearbeiten Sie die Eigenschaften des Turniers."
+
+#: src/web/templates/admin_close_check_in_modal.html:53
+#, ai_translation
+msgid "Mark as forfeit for the coming round"
+msgstr "Als Verlust für die kommende Runde markieren"
+
+#: src/web/templates/admin_close_check_in_modal.html:63
+#, ai_translation, fuzzy
+msgid "Close the check-in"
+msgstr "Löschen Sie den Timer."
 
 #: src/web/templates/admin_config.html:7 src/web/templates/admin_events.html:20
 #, ai_translation
@@ -3751,97 +3808,169 @@ msgstr "Der Preis, den der Spieler bereits bezahlt hat."
 msgid "Players"
 msgstr "Spieler"
 
-#: src/web/templates/admin_players.html:21
+#: src/web/templates/admin_players.html:22
 #, ai_translation, fuzzy
 msgid "Add a player to the event."
 msgstr "Fügen Sie dem Event einen Timer hinzu."
 
-#: src/web/templates/admin_players.html:30
+#: src/web/templates/admin_players.html:31
 #, ai_translation, fuzzy
 msgid "Create a player"
 msgstr "Einen Timer erstellen"
 
-#: src/web/templates/admin_players.html:47
+#: src/web/templates/admin_players.html:48
 #, ai_translation, fuzzy
 msgid "Clear all the filters."
 msgstr "alle Spieler"
 
-#: src/web/templates/admin_players.html:54
+#: src/web/templates/admin_players.html:61
 #, ai_translation
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Bezeichnung"
 
-#: src/web/templates/admin_players.html:58
+#: src/web/templates/admin_players.html:65
 #, ai_translation
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein."
 
-#: src/web/templates/admin_players.html:66
+#: src/web/templates/admin_players.html:73
 #, ai_translation, fuzzy
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr "- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein."
 
-#: src/web/templates/admin_players.html:83
+#: src/web/templates/admin_players.html:90
 #, ai_translation
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
-#: src/web/templates/admin_players.html:92
+#: src/web/templates/admin_players.html:99
 #, ai_translation
 msgid "The mail addresses."
 msgstr "Die Postadressen."
 
-#: src/web/templates/admin_players.html:97
+#: src/web/templates/admin_players.html:104
 #, ai_translation
 msgid "The phone numbers."
 msgstr "Die Telefonnummern."
 
-#: src/web/templates/admin_players.html:108
+#: src/web/templates/admin_players.html:115
 #, ai_translation, fuzzy
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Bezahlt"
 
-#: src/web/templates/admin_players.html:113
+#: src/web/templates/admin_players.html:120
 #, ai_translation, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein."
 
-#: src/web/templates/admin_players.html:124
+#: src/web/templates/admin_players.html:125
 #, ai_translation
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "gezüchtet"
 
-#: src/web/templates/admin_players.html:125
+#: src/web/templates/admin_players.html:126
 #, ai_translation
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Bezahlt"
 
-#: src/web/templates/admin_players.html:158
+#: src/web/templates/admin_players.html:159
 #, ai_translation, fuzzy
 msgid "Edit the player's properties."
 msgstr "Bearbeiten Sie die Eigenschaften des Timers."
 
-#: src/web/templates/admin_players.html:168
+#: src/web/templates/admin_players.html:169
 #, ai_translation, fuzzy
 msgid "Remove the player from the event."
 msgstr "Fügen Sie dem Event einen Timer hinzu."
 
-#: src/web/templates/admin_players.html:216
+# Error: tokens differ between [Tournament [%(tournament_uniq_id)s] is
+# finished.] and [Turnier [{tournament_uniq_id}] wird gestartet.]
+#: src/web/templates/admin_players.html:182
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:18
+#, ai_translation, fuzzy, python-format
+msgid "Tournament [%(tournament_uniq_id)s] is finished."
+msgstr "Turnier [%(tournament_uniq_id)s] ist beendet."
+
+# Error: tokens differ between [Tournament [%(tournament_uniq_id)s] is
+# playing.] and [Turnier [{tournament_uniq_id}] wird gestartet.]
+#: src/web/templates/admin_players.html:185
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:20
+#, ai_translation, fuzzy, python-format
+msgid "Tournament [%(tournament_uniq_id)s] is playing."
+msgstr "Turnier [%(tournament_uniq_id)s] spielt."
+
+#: src/web/templates/admin_players.html:188
+#, ai_translation, fuzzy, python-format
+msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
+msgstr "Löschung des Turniers [%(tournament_uniq_id)s]"
+
+# E
+# r
+# o
+# :
+# t
+# k
+# e
+# n
+# s
+# d
+# i
+# f
+# b
+# w
+# [
+# v
+# {
+# _
+# u
+# q
+# }
+# ]
+# c
+# g
+# a
+# m
+# .
+# V
+# l
+# Error: tokens differ between [Player [{last_name} {first_name}] has pairings
+# in tournament [{tournament_uniq_id}].] and [Event [{event_uniq_id}]:
+# Erholungsturnier [{tournament_uniq_id}]...]
+# Error: tokens differ between [Player [%(last_name)s %(first_name)s] if
+# forfeit for the next round in tournament [%(tournament_uniq_id)s].] and
+# [Spieler [{last_name} {first_name}] hat Paarungen im Turnier
+# [{tournament_uniq_id}].]
+#: src/web/templates/admin_players.html:191
+#, ai_translation, error, fuzzy, python-format
+msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgstr "Spieler [%(last_name)s %(first_name)s] wenn für die nächste Runde im Turnier verfällt [%(tournament_uniq_id)s]."
+
+#: src/web/templates/admin_players.html:194
+#, ai_translation, fuzzy
+msgid "Click to check-in the player."
+msgstr "Einchecken"
+
+#: src/web/templates/admin_players.html:200
+#, ai_translation
+msgid "Click to check-out the player."
+msgstr "Klicken Sie zum Auschecken des Players."
+
+#: src/web/templates/admin_players.html:248
 #, ai_translation, fuzzy, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "%(mail)s (Klicken Sie zum Kopieren in die Zwischenablage)."
 
-#: src/web/templates/admin_players.html:218
+#: src/web/templates/admin_players.html:250
 #, ai_translation, fuzzy
 msgid "No mail defined."
 msgstr "Kein Timer definiert"
 
-#: src/web/templates/admin_players.html:229
+#: src/web/templates/admin_players.html:261
 #, ai_translation, fuzzy, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "%(phone)s (Klicken Sie zum Kopieren in die Zwischenablage)."
 
-#: src/web/templates/admin_players.html:231
+#: src/web/templates/admin_players.html:263
 #, ai_translation, fuzzy
 msgid "No phone defined."
 msgstr "Kein Timer definiert"
@@ -3849,12 +3978,12 @@ msgstr "Kein Timer definiert"
 # Error: tokens differ between [Fide ID: %(fide_id)s (click to copy to the
 # clipboard).] and [%(mail)s (Klicken Sie zum Kopieren in die
 # Zwischenablage).]
-#: src/web/templates/admin_players.html:250
+#: src/web/templates/admin_players.html:282
 #, ai_translation, fuzzy, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr "Fide ID: %(fide_id)s (klicken Sie, um in die Zwischenablage zu kopieren)."
 
-#: src/web/templates/admin_players.html:253
+#: src/web/templates/admin_players.html:285
 #, ai_translation, fuzzy
 msgid "No FIDE ID."
 msgstr "Kein Timer definiert"
@@ -3862,22 +3991,22 @@ msgstr "Kein Timer definiert"
 # Error: tokens differ between [FFE licence: %(ffe_licence_number)s (click to
 # copy to the clipboard).] and [%(phone)s (Klicken Sie zum Kopieren in die
 # Zwischenablage).]
-#: src/web/templates/admin_players.html:266
+#: src/web/templates/admin_players.html:298
 #, ai_translation, fuzzy, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "FFE-Lizenz: %(ffe_licence_number)s (Klicken Sie zum Kopieren in die Zwischenablage)."
 
-#: src/web/templates/admin_players.html:270
+#: src/web/templates/admin_players.html:302
 #, ai_translation, fuzzy, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Unbekannter FFE-Lizenztyp [%(ffe_licence)s]"
 
-#: src/web/templates/admin_players.html:299
+#: src/web/templates/admin_players.html:326
 #, ai_translation, fuzzy
 msgid "Change the player's tournament."
 msgstr "Klonen Sie das Turnier."
 
-#: src/web/templates/admin_players.html:343
+#: src/web/templates/admin_players.html:370
 #, ai_translation, fuzzy
 msgid "No players."
 msgstr "Spieler"
@@ -4943,7 +5072,7 @@ msgstr "Erstellen Sie ein Turnier"
 msgid "No tournaments."
 msgstr "Keine Turniere."
 
-#: src/web/templates/columns_dropdown.html:13
+#: src/web/templates/columns_number_dropdown.html:13
 #, ai_translation
 msgid "Change the number of columns."
 msgstr "Ändern Sie die Anzahl der Spalten."
@@ -5088,37 +5217,37 @@ msgstr "Bildbildschirme zeigen ein Bild (lokal oder entfernt)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator rotiert automatisch zwischen mehreren Bildschirmen."
 
-#: src/web/templates/macros.j2:200
+#: src/web/templates/macros.j2:203
 #, ai_translation, fuzzy
 msgid "Sort the players by name."
 msgstr "Klonen Sie das Turnier."
 
-#: src/web/templates/macros.j2:202
+#: src/web/templates/macros.j2:205
 #, ai_translation
 msgid "Sort the players by rating (most rated first)."
 msgstr "Sortieren Sie die Spieler nach Bewertung (am meisten zuerst bewertet)."
 
-#: src/web/templates/macros.j2:204
+#: src/web/templates/macros.j2:207
 #, ai_translation
 msgid "Sort the players by rating (less rated first)."
 msgstr "Sortieren Sie die Spieler nach Bewertung (weniger bewertet zuerst)."
 
-#: src/web/templates/macros.j2:206
+#: src/web/templates/macros.j2:209
 #, ai_translation, fuzzy
 msgid "Sort the players by origin (federation, league, club)."
 msgstr "Zeigen/verbergen Sie die Bildschirme der Spieler."
 
-#: src/web/templates/macros.j2:208
+#: src/web/templates/macros.j2:211
 #, ai_translation
 msgid "Sort the players by year of birth (oldest first)."
 msgstr "Sortieren Sie die Spieler nach Geburtsjahr (älteste zuerst)."
 
-#: src/web/templates/macros.j2:210
+#: src/web/templates/macros.j2:213
 #, ai_translation
 msgid "Sort the players by year of birth (youngest first)."
 msgstr "Sortieren Sie die Spieler nach Geburtsjahr (jüngste zuerst)."
 
-#: src/web/templates/macros.j2:212
+#: src/web/templates/macros.j2:215
 #, ai_translation, fuzzy
 msgid "Sort the players by tournament."
 msgstr "Klonen Sie das Turnier."
@@ -5364,10 +5493,40 @@ msgstr "Maximale Anzahl der Ergebnisse: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Maximale Anzahl der Ergebnisse: unbegrenzt"
 
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:6
+#, ai_translation
+msgid "Open/close check-in."
+msgstr "Check-in öffnen/schließen."
+
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:22
+#, ai_translation, fuzzy, python-format
+msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
+msgstr "Löschung des Turniers [%(tournament_uniq_id)s]"
+
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:24
+#, ai_translation, fuzzy, python-format
+msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
+msgstr "Ausgabe des Turniers [%(tournament_uniq_id)s]"
+
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html:8
 #, ai_translation, fuzzy
 msgid "Filter the check-in status."
 msgstr "Löschen Sie den Timer."
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:29
+#, ai_translation
+msgid "Absent"
+msgstr "Nicht vorhanden"
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:34
+#, ai_translation, fuzzy
+msgid "Not checked-in yet"
+msgstr "CHECK-IN"
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:39
+#, ai_translation, fuzzy
+msgid "Checked-in"
+msgstr "CHECK-IN"
 
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:7
 #, ai_translation
@@ -5378,6 +5537,11 @@ msgstr "Filtern Sie die Clubs."
 #, ai_translation
 msgid "Choose the columns displayed."
 msgstr "Wählen Sie die angezeigten Spalten aus."
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:7
+#, ai_translation, fuzzy
+msgid "Columns"
+msgstr "Spalten:"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html:37
 #, ai_translation, fuzzy
@@ -5667,5 +5831,8 @@ msgstr "Übersetzung"
 #~ msgstr ""
 
 #~ msgid "The player's Uniq ID for the French federation (ne pas modifier)."
+#~ msgstr ""
+
+#~ msgid "The following players did not check-in, choose what to do:"
 #~ msgstr ""
 

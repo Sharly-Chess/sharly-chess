@@ -501,55 +501,55 @@ msgstr "Des erreurs ont été trouvées sur l'évènement ; les connexions à Ch
 msgid "No name set, by default [{name}]"
 msgstr "Nom non défini, par défaut [{name}]"
 
-#: src/data/event.py:232
+#: src/data/event.py:240
 msgid "No directory set for Papi files, by default [{path}]."
 msgstr "Aucun répertoire défini pour les fichiers Papi, par défaut [{path}]."
 
-#: src/data/event.py:236 src/data/tournament.py:42
+#: src/data/event.py:244 src/data/tournament.py:42
 msgid "Directory [{path}] not found."
 msgstr "Répertoire [{path}] non trouvé."
 
-#: src/data/event.py:238 src/data/tournament.py:44
+#: src/data/event.py:246 src/data/tournament.py:44
 msgid "[{path}] is not a directory."
 msgstr "[{path}] n'est pas un répertoire."
 
-#: src/data/event.py:247
+#: src/data/event.py:255
 msgid "No background image set, by default [{background_image}]"
 msgstr "Image de fond non définie, par défaut [{background_image}]"
 
-#: src/data/event.py:261
+#: src/data/event.py:269
 msgid "No background colour set, by default [{background_color}]"
 msgstr "Couleur de fond non définie, par défaut [{background_color}]"
 
-#: src/data/event.py:271
+#: src/data/event.py:279
 msgid "No password set for the results entry"
 msgstr "Aucun mot de passe pour la saisie des résultats"
 
-#: src/data/event.py:278
+#: src/data/event.py:286
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
 msgstr "Nombre maximum de coups illégaux non défini, par défaut [{record_illegal_moves}]"
 
-#: src/data/event.py:413
+#: src/data/event.py:421
 msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
 msgstr "Des erreurs ont été trouvées sur les connexions à ChessEvent ; les chronomètres, tournois, écrans, familles et écrans rotatifs ne seront pas chargés."
 
-#: src/data/event.py:438
+#: src/data/event.py:446
 msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
 msgstr "Des erreurs ont été trouvées sur les chronomètres ; les tournois, écrans, familles et écrans rotatifs ne seront pas chargés."
 
-#: src/data/event.py:463
+#: src/data/event.py:471
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr "Des erreurs ont été trouvées sur les tournois ; les écrans, familles et écrans rotatifs ne seront pas chargés."
 
-#: src/data/event.py:493
+#: src/data/event.py:501
 msgid "Errors have been found on screens; families and rotators will not be loaded."
 msgstr "Des erreurs ont été trouvées sur les écrans ; les familles et écrans rotatifs ne seront pas chargés."
 
-#: src/data/event.py:522
+#: src/data/event.py:530
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr "Des erreurs ont été trouvées sur les familles ; les écrans rotatifs ne seront pas chargés."
 
-#: src/data/event.py:565
+#: src/data/event.py:573
 msgid "Errors have been found on rotators."
 msgstr "Des erreurs ont été trouvées sur les écrans rotatifs."
 
@@ -954,7 +954,7 @@ msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
 
 #: src/data/util.py:840 src/web/controllers/admin/index_admin_controller.py:104
-#: src/web/controllers/admin/tournament_admin_controller.py:336
+#: src/web/controllers/admin/tournament_admin_controller.py:339
 #: src/web/templates/admin_families.html:61
 #: src/web/templates/admin_screens.html:77
 #: src/web/templates/admin_screens.html:107
@@ -965,7 +965,7 @@ msgstr "Appariements par échiquier"
 #: src/web/controllers/admin/family_admin_controller.py:270
 #: src/web/controllers/admin/index_admin_controller.py:103
 #: src/web/controllers/admin/screen_admin_controller.py:354
-#: src/web/controllers/admin/tournament_admin_controller.py:335
+#: src/web/controllers/admin/tournament_admin_controller.py:338
 #: src/web/templates/admin_event_modal.html:190
 #: src/web/templates/admin_families.html:60
 #: src/web/templates/admin_screens.html:76
@@ -1077,7 +1077,7 @@ msgid "Initializing a session to [{url}]..."
 msgstr "Initialisation d'une session vers [{url}]..."
 
 #: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
-#: src/web/templates/admin_players/admin_players_filter_check_ins.html:21
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:22
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:21
 #: src/web/templates/admin_players/admin_players_filter_columns.html:20
 #: src/web/templates/admin_players/admin_players_filter_federations.html:21
@@ -1188,7 +1188,7 @@ msgstr "URL LAN/WAN : {lan_url}"
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Le port [{port}] est déjà utilisé, impossible de démarrer le serveur web."
 
-#: src/web/controllers/index_controller.py:281
+#: src/web/controllers/index_controller.py:285
 msgid "USE AT YOUR OWN RISKS"
 msgstr "UTILISEZ À VOS PROPRES RISQUES"
 
@@ -1258,24 +1258,24 @@ msgstr "ChessEvent ({num})"
 msgid "Messages ({num})"
 msgstr "Messages ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:592
+#: src/web/controllers/admin/event_admin_controller.py:593
 msgid "Renaming the database failed: {ex}."
 msgstr "Le renommage de la base de données a échoué : {ex}"
 
-#: src/web/controllers/admin/event_admin_controller.py:599
+#: src/web/controllers/admin/event_admin_controller.py:600
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "L'évènement [{old_uniq_id}] a été renommé ([{new_uniq_id}]) et modifié."
 
-#: src/web/controllers/admin/event_admin_controller.py:602
+#: src/web/controllers/admin/event_admin_controller.py:603
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
 
-#: src/web/controllers/admin/event_admin_controller.py:610
+#: src/web/controllers/admin/event_admin_controller.py:611
 #: src/web/controllers/admin/index_admin_controller.py:676
 msgid "Event [{uniq_id}] has been created."
 msgstr "L'évènement [{uniq_id}] a été créé."
 
-#: src/web/controllers/admin/event_admin_controller.py:620
+#: src/web/controllers/admin/event_admin_controller.py:621
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été archivée ({arch})."
 
@@ -1286,7 +1286,7 @@ msgstr "Veuillez entrer l'identifiant du chronomètre."
 #: src/web/controllers/admin/family_admin_controller.py:104
 #: src/web/controllers/admin/index_admin_controller.py:233
 #: src/web/controllers/admin/screen_admin_controller.py:123
-#: src/web/controllers/admin/tournament_admin_controller.py:75
+#: src/web/controllers/admin/tournament_admin_controller.py:76
 msgid "Character [{char}] is not allowed."
 msgstr "La caractère [{char}] n'est pas autorisé."
 
@@ -1342,7 +1342,7 @@ msgstr "appariements par échiquier"
 #: src/web/controllers/admin/family_admin_controller.py:274
 #: src/web/controllers/admin/index_admin_controller.py:105
 #: src/web/controllers/admin/screen_admin_controller.py:358
-#: src/web/controllers/admin/tournament_admin_controller.py:337
+#: src/web/controllers/admin/tournament_admin_controller.py:340
 #: src/web/templates/admin_families.html:62
 #: src/web/templates/admin_screens.html:78
 #: src/web/templates/admin_screens.html:112
@@ -1530,82 +1530,90 @@ msgstr "Aucun évènement archivé."
 msgid "Papi-web configuration"
 msgstr "Configuration Papi-web"
 
-#: src/web/controllers/admin/player_admin_controller.py:76
+#: src/web/controllers/admin/player_admin_controller.py:78
 msgid "Please enter the last name."
 msgstr "Veuillez entrer le nom de famille."
 
-#: src/web/controllers/admin/player_admin_controller.py:82
+#: src/web/controllers/admin/player_admin_controller.py:84
 msgid "Please enter the first name."
 msgstr "Veuillez entrer le prénom."
 
-#: src/web/controllers/admin/player_admin_controller.py:88
+#: src/web/controllers/admin/player_admin_controller.py:90
 msgid "Please enter the date of birth."
 msgstr "Veuillez entrer la date de naissance."
 
-#: src/web/controllers/admin/player_admin_controller.py:134
+#: src/web/controllers/admin/player_admin_controller.py:136
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Identifiant FIDE [{fide_id}] non valide."
 
-#: src/web/controllers/admin/player_admin_controller.py:140
+#: src/web/controllers/admin/player_admin_controller.py:142
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Identifiant FFE [{ffe_id}] non valide."
 
-#: src/web/controllers/admin/player_admin_controller.py:156
+#: src/web/controllers/admin/player_admin_controller.py:158
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
 
-#: src/web/controllers/admin/player_admin_controller.py:162
+#: src/web/controllers/admin/player_admin_controller.py:164
 msgid "Invalid phone number [{phone}]."
 msgstr "Numéro de téléphone [{phone}] non valide."
 
-#: src/web/controllers/admin/player_admin_controller.py:311
+#: src/web/controllers/admin/player_admin_controller.py:314
 msgid "Standard:"
 msgstr "Standard :"
 
-#: src/web/controllers/admin/player_admin_controller.py:312
+#: src/web/controllers/admin/player_admin_controller.py:315
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est d'au moins 60 minutes."
 
-#: src/web/controllers/admin/player_admin_controller.py:315
+#: src/web/controllers/admin/player_admin_controller.py:318
 msgid "Rapid:"
 msgstr "Rapide :"
 
-#: src/web/controllers/admin/player_admin_controller.py:316
+#: src/web/controllers/admin/player_admin_controller.py:319
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes et inférieure à 60 minutes."
 
-#: src/web/controllers/admin/player_admin_controller.py:319
+#: src/web/controllers/admin/player_admin_controller.py:322
 msgid "Blitz:"
 msgstr "Blitz :"
 
-#: src/web/controllers/admin/player_admin_controller.py:320
+#: src/web/controllers/admin/player_admin_controller.py:323
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr "Le classement utilisé lorsque la cadence est inférieure à 10 minutes."
 
-#: src/web/controllers/admin/player_admin_controller.py:421
-#: src/web/controllers/admin/player_admin_controller.py:492
+#: src/web/controllers/admin/player_admin_controller.py:429
+#: src/web/controllers/admin/player_admin_controller.py:500
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a déjà été apparié·e dans le tournoi [{tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:429
+#: src/web/controllers/admin/player_admin_controller.py:437
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Fichier Papi [{tournament_file}] introuvable."
 
-#: src/web/controllers/admin/player_admin_controller.py:433
+#: src/web/controllers/admin/player_admin_controller.py:441
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:438
+#: src/web/controllers/admin/player_admin_controller.py:446
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
 msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:451
+#: src/web/controllers/admin/player_admin_controller.py:459
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
 
-#: src/web/controllers/admin/player_admin_controller.py:499
+#: src/web/controllers/admin/player_admin_controller.py:507
 msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a été supprimé·e du tournoi [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py:532
+msgid "Check-in is open for tournament [{tournament_uniq_id}]."
+msgstr "Le pointage est ouvert pour le tournoi [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py:567
+msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
+msgstr "Le pointage est fermé pour le tournoi [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/rotator_admin_controller.py:74
 msgid "Please enter the rotator ID."
@@ -1728,57 +1736,57 @@ msgstr "Le chronomètre [{timer_uniq_id}] a été modifié."
 msgid "Timer [{timer_uniq_id}] has been deleted."
 msgstr "Le chronomètre [{timer_uniq_id}] a été supprimé."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:68
-#: src/web/controllers/admin/tournament_admin_controller.py:73
+#: src/web/controllers/admin/tournament_admin_controller.py:69
+#: src/web/controllers/admin/tournament_admin_controller.py:74
 msgid "Please enter the tournament ID."
 msgstr "Veuillez entrer l'identifiant du tournoi."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:70
+#: src/web/controllers/admin/tournament_admin_controller.py:71
 msgid "tournament ID does not match."
 msgstr "L'identifiant du tournoi ne correspond pas."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:80
-#: src/web/controllers/admin/tournament_admin_controller.py:84
+#: src/web/controllers/admin/tournament_admin_controller.py:81
+#: src/web/controllers/admin/tournament_admin_controller.py:85
 msgid "Tournament [{uniq_id}] already exists."
 msgstr "Le tournoi [{uniq_id}] existe déjà."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:105
+#: src/web/controllers/admin/tournament_admin_controller.py:107
 msgid "Please enter the tournament name."
 msgstr "Veuillez entrer le nom du tournoi."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:111
+#: src/web/controllers/admin/tournament_admin_controller.py:113
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:114
+#: src/web/controllers/admin/tournament_admin_controller.py:116
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:155
+#: src/web/controllers/admin/tournament_admin_controller.py:158
 msgid "No ChessEvent connection"
 msgstr "Pas de connexion à ChessEvent"
 
-#: src/web/controllers/admin/tournament_admin_controller.py:192
+#: src/web/controllers/admin/tournament_admin_controller.py:195
 msgid "tournament"
 msgstr "tournoi"
 
-#: src/web/controllers/admin/tournament_admin_controller.py:193
+#: src/web/controllers/admin/tournament_admin_controller.py:196
 msgid "New tournament"
 msgstr "Nouveau tournoi"
 
-#: src/web/controllers/admin/tournament_admin_controller.py:366
+#: src/web/controllers/admin/tournament_admin_controller.py:369
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Le tournoi [{tournament_uniq_id}] a été créé et les écrans par défaut ont été ajoutés."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:371
+#: src/web/controllers/admin/tournament_admin_controller.py:374
 msgid "Tournament [{tournament_uniq_id}] has been created."
 msgstr "Le tournoi [{tournament_uniq_id}] a été créé."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:380
+#: src/web/controllers/admin/tournament_admin_controller.py:383
 msgid "Tournament [{tournament_uniq_id}] has been updated."
 msgstr "Le tournoi [{tournament_uniq_id}] a été modifié."
 
-#: src/web/controllers/admin/tournament_admin_controller.py:389
+#: src/web/controllers/admin/tournament_admin_controller.py:392
 msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr "Le tournoi [{tournament_uniq_id}] a été supprimé."
 
@@ -1836,6 +1844,7 @@ msgid "Deletion date"
 msgstr "Date de suppression"
 
 #: src/web/templates/admin_check_in.html:1
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:11
 #: src/web/templates/user_screen.html:249
 msgid "Check-in"
 msgstr "Pointage"
@@ -1862,7 +1871,7 @@ msgstr "Éditer les propriétés de la connexion à ChessEvent."
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:160
+#: src/web/templates/admin_players.html:161
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -1991,7 +2000,7 @@ msgstr "Modifier"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:170
+#: src/web/templates/admin_players.html:171
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -2000,6 +2009,7 @@ msgid "Delete"
 msgstr "Supprimer"
 
 #: src/web/templates/admin_chessevent_modal.html:186
+#: src/web/templates/admin_close_check_in_modal.html:77
 #: src/web/templates/admin_event_modal.html:584
 #: src/web/templates/admin_family_modal.html:500
 #: src/web/templates/admin_player_modal.html:465
@@ -2014,7 +2024,7 @@ msgstr "Annuler"
 
 #: src/web/templates/admin_chessevents.html:10
 #: src/web/templates/admin_events.html:9
-#: src/web/templates/admin_players.html:10
+#: src/web/templates/admin_players.html:11
 #: src/web/templates/admin_screens.html:42
 #: src/web/templates/admin_timers.html:10
 #: src/web/templates/admin_tournaments.html:10
@@ -2033,6 +2043,43 @@ msgstr "Créer une connexion à ChessEvent"
 #: src/web/templates/admin_tournament_modal.html:261
 msgid "No ChessEvent connections."
 msgstr "Pas de connexion à ChessEvent."
+
+#: src/web/templates/admin_close_check_in_modal.html:5
+#, python-format
+msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
+msgstr "Fermer le pointage pour le tournoi [%(tournament_uniq_id)s]"
+
+#: src/web/templates/admin_close_check_in_modal.html:12
+msgid "The following players did not check-in:"
+msgstr "Les joueur·euses suivant·es n'ont pas pointé :"
+
+#: src/web/templates/admin_close_check_in_modal.html:18
+msgid "Choose what to do after closing the check-in:"
+msgstr "Choisissez quoi faire après avoir fermé le pointage :"
+
+#: src/web/templates/admin_close_check_in_modal.html:21
+msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
+msgstr "Marquer les joueur·euses forfait pour le reste du tournoi (pas de pointage autorisé sans suppression des forfaits)."
+
+#: src/web/templates/admin_close_check_in_modal.html:24
+msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
+msgstr "Marquer les joueur·euses forfait pour la ronde à venir (pointage autorisé pour les rondes suivantes)."
+
+#: src/web/templates/admin_close_check_in_modal.html:28
+msgid "All the players intended to play the coming round did check-in."
+msgstr "Tou·tes les joueur·euses supposé·es jouer la ronde ont pointé."
+
+#: src/web/templates/admin_close_check_in_modal.html:44
+msgid "Mark as forfeit for the rest of the tournament"
+msgstr "Marquer forfait pour le reste du tournoi."
+
+#: src/web/templates/admin_close_check_in_modal.html:53
+msgid "Mark as forfeit for the coming round"
+msgstr "Marquer forfait pour la ronde à venir."
+
+#: src/web/templates/admin_close_check_in_modal.html:63
+msgid "Close the check-in"
+msgstr "Fermer le pointage."
 
 #: src/web/templates/admin_config.html:7 src/web/templates/admin_events.html:20
 msgid "Add an event."
@@ -3042,108 +3089,140 @@ msgstr "Le montant déjà payé."
 msgid "Players"
 msgstr "Joueur·euses"
 
-#: src/web/templates/admin_players.html:21
+#: src/web/templates/admin_players.html:22
 msgid "Add a player to the event."
 msgstr "Ajouter un·e joueur·euse à l'évènement."
 
-#: src/web/templates/admin_players.html:30
+#: src/web/templates/admin_players.html:31
 msgid "Create a player"
 msgstr "Créer un·e joueur·euse"
 
-#: src/web/templates/admin_players.html:47
+#: src/web/templates/admin_players.html:48
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
-#: src/web/templates/admin_players.html:54
+#: src/web/templates/admin_players.html:61
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Nom"
 
-#: src/web/templates/admin_players.html:58
+#: src/web/templates/admin_players.html:65
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-#: src/web/templates/admin_players.html:66
+#: src/web/templates/admin_players.html:73
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr "Origine"
 
-#: src/web/templates/admin_players.html:83
+#: src/web/templates/admin_players.html:90
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "An."
 
-#: src/web/templates/admin_players.html:92
+#: src/web/templates/admin_players.html:99
 msgid "The mail addresses."
 msgstr "Les adresses mél."
 
-#: src/web/templates/admin_players.html:97
+#: src/web/templates/admin_players.html:104
 msgid "The phone numbers."
 msgstr "Les numéros de téléphone."
 
-#: src/web/templates/admin_players.html:108
+#: src/web/templates/admin_players.html:115
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Fide"
 
-#: src/web/templates/admin_players.html:113
+#: src/web/templates/admin_players.html:120
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
 
-#: src/web/templates/admin_players.html:124
+#: src/web/templates/admin_players.html:125
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "Du"
 
-#: src/web/templates/admin_players.html:125
+#: src/web/templates/admin_players.html:126
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Payé"
 
-#: src/web/templates/admin_players.html:158
+#: src/web/templates/admin_players.html:159
 msgid "Edit the player's properties."
 msgstr "Éditer les propriétés du·de la joueur·euse."
 
-#: src/web/templates/admin_players.html:168
+#: src/web/templates/admin_players.html:169
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
-#: src/web/templates/admin_players.html:216
+#: src/web/templates/admin_players.html:182
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:18
+#, python-format
+msgid "Tournament [%(tournament_uniq_id)s] is finished."
+msgstr "Le tournoi [%(tournament_uniq_id)s] is terminé."
+
+# Error: tokens differ between [Tournament [%(tournament_uniq_id)s] is
+# playing.] and [Le tournoi [{tournament_uniq_id}] est démarré.]
+#: src/web/templates/admin_players.html:185
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:20
+#, python-format
+msgid "Tournament [%(tournament_uniq_id)s] is playing."
+msgstr "Le tournoi [%(tournament_uniq_id)s] est en cours."
+
+#: src/web/templates/admin_players.html:188
+#, python-format
+msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
+msgstr "Le pointage est fermé pour le tournoi [%(tournament_uniq_id)s]."
+
+#: src/web/templates/admin_players.html:191
+#, python-format
+msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgstr "Le·la joueur·euse [%(last_name)s %(first_name)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
+
+#: src/web/templates/admin_players.html:194
+msgid "Click to check-in the player."
+msgstr "Cliquer ici pour pointer le·la joueur·euse."
+
+#: src/web/templates/admin_players.html:200
+msgid "Click to check-out the player."
+msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
+
+#: src/web/templates/admin_players.html:248
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 
-#: src/web/templates/admin_players.html:218
+#: src/web/templates/admin_players.html:250
 msgid "No mail defined."
 msgstr "Mél non défini."
 
-#: src/web/templates/admin_players.html:229
+#: src/web/templates/admin_players.html:261
 #, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
-#: src/web/templates/admin_players.html:231
+#: src/web/templates/admin_players.html:263
 msgid "No phone defined."
 msgstr "Téléphone non défini."
 
-#: src/web/templates/admin_players.html:250
+#: src/web/templates/admin_players.html:282
 #, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr "Identifiant FIDE : %(fide_id)s (cliquer pour copier dans le presse-papier)."
 
-#: src/web/templates/admin_players.html:253
+#: src/web/templates/admin_players.html:285
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE défini."
 
-#: src/web/templates/admin_players.html:266
+#: src/web/templates/admin_players.html:298
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
 
-#: src/web/templates/admin_players.html:270
+#: src/web/templates/admin_players.html:302
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 
-#: src/web/templates/admin_players.html:299
+#: src/web/templates/admin_players.html:326
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
-#: src/web/templates/admin_players.html:343
+#: src/web/templates/admin_players.html:370
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
@@ -4037,7 +4116,7 @@ msgstr "Créer un tournoi"
 msgid "No tournaments."
 msgstr "Aucun tournoi."
 
-#: src/web/templates/columns_dropdown.html:13
+#: src/web/templates/columns_number_dropdown.html:13
 msgid "Change the number of columns."
 msgstr "Changer le nombre de colonnes."
 
@@ -4155,31 +4234,31 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusieurs écrans."
 
-#: src/web/templates/macros.j2:200
+#: src/web/templates/macros.j2:203
 msgid "Sort the players by name."
 msgstr "Trier les joueur·euses par tournoi."
 
-#: src/web/templates/macros.j2:202
+#: src/web/templates/macros.j2:205
 msgid "Sort the players by rating (most rated first)."
 msgstr "Trier les joueur·euses par classement (mieux classé·es en premier)."
 
-#: src/web/templates/macros.j2:204
+#: src/web/templates/macros.j2:207
 msgid "Sort the players by rating (less rated first)."
 msgstr "Trier les joueur·euses par classement (moins bien classé·es en premier)."
 
-#: src/web/templates/macros.j2:206
+#: src/web/templates/macros.j2:209
 msgid "Sort the players by origin (federation, league, club)."
 msgstr "Trier les joueur·euses par origine (fédération, ligue, club)."
 
-#: src/web/templates/macros.j2:208
+#: src/web/templates/macros.j2:211
 msgid "Sort the players by year of birth (oldest first)."
 msgstr "Trier les joueur·euses par année de naissance (plus âgé·es en premier)."
 
-#: src/web/templates/macros.j2:210
+#: src/web/templates/macros.j2:213
 msgid "Sort the players by year of birth (youngest first)."
 msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en premier)."
 
-#: src/web/templates/macros.j2:212
+#: src/web/templates/macros.j2:215
 msgid "Sort the players by tournament."
 msgstr "Trier les joueur·euses par tournoi."
 
@@ -4365,9 +4444,35 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:6
+msgid "Open/close check-in."
+msgstr "Ouvrir/fermer le pointage."
+
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:22
+#, python-format
+msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
+msgstr "Fermer le pointage pour le tournoi [%(tournament_uniq_id)s]."
+
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:24
+#, python-format
+msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
+msgstr "Ouvrir le pointage pour le tournoi [%(tournament_uniq_id)s]."
+
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html:8
 msgid "Filter the check-in status."
 msgstr "Filtrer le pointage."
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:29
+msgid "Absent"
+msgstr "Absent·e"
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:34
+msgid "Not checked-in yet"
+msgstr "Non point·ée"
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html:39
+msgid "Checked-in"
+msgstr "Pointé·e"
 
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:7
 msgid "Filter the clubs."
@@ -4376,6 +4481,10 @@ msgstr "Filtrer les clubs."
 #: src/web/templates/admin_players/admin_players_filter_columns.html:6
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:7
+msgid "Columns"
+msgstr "Colonnes"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html:37
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
