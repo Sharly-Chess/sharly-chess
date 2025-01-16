@@ -95,9 +95,9 @@ class Result(IntEnum):
                     cls.FULL_POINT_BYE if is_point_bye
                     else cls.PAIRING_ALLOCATED_BYE if is_pairing_bye
                     else cls.FORFEIT_GAIN)
-            case PapiResult.FORFEIT_LOSS:
+            case PapiResult.FORFEIT_LOSS.value:
                 return cls.FORFEIT_LOSS
-            case PapiResult.DOUBLE_FORFEIT:
+            case PapiResult.DOUBLE_FORFEIT.value:
                 return cls.DOUBLE_FORFEIT
             case _:
                 raise ValueError(f'Unknown value: {value}')
