@@ -175,7 +175,10 @@ class PapiDatabase(AccessDatabase):
                     Player.player_papi_web_id_from_papi_id(tournament_id, opponent_papi_id)
                     if opponent_papi_id else None,
                     opponent_papi_id,
-                    Result.from_papi_value(row[f'{round_str}Res']))
+                    Result.from_papi_value(
+                        row[f'{round_str}Res'],
+                        opponent_id is None,
+                        opponent_papi_id == 1))
             player_papi_web_id: int = Player.player_papi_web_id_from_papi_id(tournament_id, row['Ref'])
             fide_id: int | None = None
             if row['FideCode']:
@@ -324,7 +327,7 @@ class PapiDatabase(AccessDatabase):
                     case 0.0:
                         data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                     case 0.5:
-                        data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                        data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                     case _:
                         raise ValueError
         query: str = f'INSERT INTO `joueur`({", ".join(data.keys())}) VALUES ({", ".join(["?"] * len(data))})'
@@ -390,7 +393,7 @@ class PapiDatabase(AccessDatabase):
                                 case 0.0:
                                     pass
                                 case 0.5:
-                                    data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                                    data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                                 case _:
                                     raise ValueError
                     if data:
@@ -422,7 +425,7 @@ class PapiDatabase(AccessDatabase):
                     case 0.0:
                         data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                     case 0.5:
-                        data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                        data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                     case _:
                         raise ValueError
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
@@ -459,7 +462,7 @@ class PapiDatabase(AccessDatabase):
                                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                                 pass
                             case 0.5:
-                                data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                                data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                             case _:
                                 raise ValueError
                 if data:
@@ -483,7 +486,7 @@ class PapiDatabase(AccessDatabase):
                         case 0.0:
                             data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                         case 0.5:
-                            data[f'Rd{round_:0>2}Res'] = Result.DRAW_OR_HPB.to_papi_value
+                            data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                         case _:
                             raise ValueError
             actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
