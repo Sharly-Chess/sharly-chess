@@ -268,7 +268,7 @@ class Family:
 
     @property
     def numbers_str(self):
-        if self.type in [ScreenType.Boards, ScreenType.Input]:
+        if self.type in (ScreenType.Boards, ScreenType.Input):
             match (self.first, self.last, self.number, self.parts):
                 case (None, None, None, None):
                     return _('all the boards')

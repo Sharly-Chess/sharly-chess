@@ -29,7 +29,7 @@ class AccessDatabase:
             logger.error('Installed ODBC drivers are:')
             for driver in odbc_drivers():
                 logger.error(' - %s', driver)
-            logger.error('Driver needed : %s', needed_driver)
+            logger.error('Needed driver: %s', needed_driver)
             install_url: str = 'https://www.microsoft.com/en-us/download/details.aspx?id=54920'
             logger.error('Install the driver (see %s) and restart.', install_url)
             logger.error('Note: 32/64bits compatibility: accessdatabaseengine_X64.exe /passive')

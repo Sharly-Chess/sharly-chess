@@ -426,8 +426,8 @@ class PlayerGender(IntEnum):
     MALE = 2
 
     @classmethod
-    def values(cls) -> list[int]:
-        return [item.value for item in cls]
+    def values(cls) -> tuple[int]:
+        return tuple(item.value for item in cls)
 
     @classmethod
     def from_papi_value(cls, value: str) -> Self:

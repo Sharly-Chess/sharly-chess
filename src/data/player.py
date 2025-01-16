@@ -353,6 +353,6 @@ class Player:
 
     def __repr__(self):
         if self.ref_id == 1:
-            return f'{self.__class__.__name__}(#{self.id} EXEMPT)'
+            return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (f'{self.__class__.__name__}'
                 f'(#{self.id} {self.title.short_name}{self.last_name} {self.first_name} {self.rating} [{self.vpoints}])')

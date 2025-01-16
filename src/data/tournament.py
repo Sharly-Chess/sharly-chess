@@ -440,7 +440,7 @@ class Tournament:
             for player in self._players_by_id.values():
                 if player.ref_id != 1:
                     pairing: Pairing = player.pairings[round_]
-                    if pairing.color in ['W', 'B', ]:
+                    if pairing.color in ('W', 'B', ):
                         round_infos[round_]['pairings_found'] = True
                         paired_rounds.append(round_)
                     if pairing.result == Result.NO_RESULT and pairing.opponent_id is not None:

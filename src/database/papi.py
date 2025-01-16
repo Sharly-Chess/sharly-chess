@@ -427,7 +427,7 @@ class PapiDatabase(AccessDatabase):
                         raise ValueError
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
         query: str = f'UPDATE `joueur` SET {actions} WHERE Ref = ?'
-        params = tuple(list(data.values()) + [player_papi_id, ])
+        params = tuple(data.values()) + (player_papi_id, ))
         self._execute(query, params)
 
     def _check_out_player(self, player_papi_id: int, tournament_skipped_rounds_dict: dict[int, dict[int, float]]):
