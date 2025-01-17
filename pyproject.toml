@@ -25,7 +25,7 @@ dependencies = [
   "Jinja2 ~= 3.1.5",
   "litestar ~= 2.13.0",
   "pefile >= 2024.8.26",
-  "phonenumbers ~8.13.52",
+  "phonenumbers ~= 8.13.52",
   "pyodbc ~= 5.2.0",
   "pywin32-ctypes ~= 0.2.3",
   "requests ~= 2.32.3",
