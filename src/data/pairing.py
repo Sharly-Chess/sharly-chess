@@ -64,13 +64,17 @@ class Pairing:
         return self.result == Result.FORFEIT_GAIN
 
     def to_trf(self, round_number: int) -> TrfGame:
+        from data.player import Player
+
+        opponent_papi_id = (
+            Player.player_papi_id_from_papi_web_id(self.opponent_id)
+            if self.opponent_id else None
+        )
         return TrfGame(
-            ' ' if self.opponent_id == 1 else self.opponent_id,
+            ' ' if opponent_papi_id == 1 else opponent_papi_id,
             self.color.to_trf if self.color and not self.result.is_bye else ' ',
             self.result.to_trf,
             round_number)
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result})'
-
-

@@ -230,7 +230,9 @@ class Result(IntEnum):
                 return 'F'
             case Result.PAIRING_ALLOCATED_BYE:
                 return 'U'
-            case Result.NOT_PAIRED:
+            case Result.ZERO_POINT_BYE:
+                return 'Z'
+            case Result.NO_RESULT:
                 return ' '
             case _:
                 raise ValueError(f"Unknown value: {self}")
@@ -1016,9 +1018,9 @@ class BoardColor(StrEnum):
     @property
     def to_trf(self) -> str:
         match self:
-            case Color.WHITE:
+            case BoardColor.WHITE:
                 return 'w'
-            case Color.BLACK:
+            case BoardColor.BLACK:
                 return 'b'
             case _:
                 raise ValueError(f'Unknown value:  {self}')
