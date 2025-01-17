@@ -1,0 +1,55 @@
+<form class="d-inline-block" hx-post="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+    <span class="dropdown-center" >
+        <button
+                class="btn btn-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+        ><span
+                {{ tooltip_attributes('info', _('Open/close check-in.'), 'top') }}
+            ><i
+                    class="bi-circle"
+            ></i><i
+                    class="bi-check-circle"
+        ></i> {{ _('Check-in') }}</span></button>
+        <ul class="dropdown-menu players-set-tournament-check-ins p-0">
+            {% with id='admin-players-set-tournament-check-ins' %}
+                {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
+                    <li
+                            class="dropdown-item text-nowrap my-0"
+                            {% if tournament.finished %}
+                                {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {% elif tournament.playing %}
+                                {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is playing.', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {% elif tournament.check_in_open %}
+                                {{ tooltip_attributes('info', _('Close check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {% else %}
+                                {{ tooltip_attributes('info', _('Open check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {% endif %}
+                    >
+                        <div class="form-check form-switch d-inline-block my-0 pe-2">
+                            <input
+                                    {% if not tournament.finished and not tournament.playing %}
+                                        {% if tournament.check_in_open %}
+                                            hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                        {% endif %}
+                                            hx-patch="{{ url_for('admin-tournament-open-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                        {% else %}
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                    {% endif %}
+                                    id="{{ id }}-{{ loop.index }}"
+                                    class="form-check-input {% if tournament.finished or tournament.playing %}disabled{% endif %}"
+                                    type="checkbox"
+                                    {% if tournament.finished or tournament.playing %}disabled{% endif %}
+                                    {% if tournament.check_in_open %}checked{% endif %}
+                            />
+                        </div>
+                        <label
+                                for="{{ id }}-{{ loop.index }}" class="form-label my-0"
+                        >
+                            {{ tournament.name }}
+                        </label>
+                    </li>
+                {% endfor %}
+            {% endwith %}
+        </ul>
+    </span>
+</form>

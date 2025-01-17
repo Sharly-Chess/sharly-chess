@@ -1,7 +1,7 @@
 from logging import Logger
 
 from common.logger import get_logger
-from data.util import PlayerGender, PlayerCategory, PlayerRatingType, PlayerTitle, PlayerFFELicense
+from data.util import PlayerGender, PlayerCategory, PlayerRatingType, PlayerTitle, PlayerFFELicence
 
 logger: Logger = get_logger()
 
@@ -17,14 +17,14 @@ class ChessEventPlayer:
         self.birth: float = 0.0
         self.category: PlayerCategory = PlayerCategory.NONE
         self.standard_rating: int = 0
-        self.standard_rating_type: PlayerRatingType = PlayerRatingType.NONE
+        self.standard_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
         self.rapid_rating: int = 0
-        self.rapide_rating_type: PlayerRatingType = PlayerRatingType.NONE
+        self.rapide_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
         self.blitz_rating: int = 0
-        self.blitz_rating_type: PlayerRatingType = PlayerRatingType.NONE
+        self.blitz_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
         self.title: PlayerTitle = PlayerTitle.NONE
         self.ffe_id: int = 0
-        self.ffe_license: PlayerFFELicense = PlayerFFELicense.NONE
+        self.ffe_license: PlayerFFELicence = PlayerFFELicence.NONE
         self.ffe_license_number: str = ''
         self.ffe_league: str = ''
         self.ffe_club_id: int = 0
@@ -50,7 +50,7 @@ class ChessEventPlayer:
                 self.gender = PlayerGender(int(chessevent_player_info[key]))
             self.birth = float(chessevent_player_info[key := 'birth'])
             self.ffe_id = int(chessevent_player_info[key := 'ffe_id'])
-            self.ffe_license = PlayerFFELicense(int(chessevent_player_info[key := 'ffe_license']))
+            self.ffe_license = PlayerFFELicence(int(chessevent_player_info[key := 'ffe_license']))
             self.ffe_license_number = str(chessevent_player_info[key := 'ffe_license_number'])
             self.ffe_league = str(chessevent_player_info[key := 'ffe_league'])
             key = 'ffe_club_id'
@@ -84,31 +84,29 @@ class ChessEventPlayer:
                 else:
                     raise ValueError
         except KeyError:
-            logger.error('Champ %s non trouvé pour le·la joueur·euse [%s %s]',
-                         key, self.last_name, self.first_name)
+            logger.error('Field [%s] not found for player [%s %s]', key, self.last_name, self.first_name)
             return
         except (TypeError, ValueError):
             logger.error(
-                'Valeur du champ %s non valide ([%s]) '
-                'pour le·la joueur·euse [%s %s]',
-                key, chessevent_player_info[key], self.last_name, self.first_name)
+                'Invalid value [%s] for field [%s] for player [%s %s]',
+                chessevent_player_info[key], key, self.last_name, self.first_name)
             return
         self.error = False
 
     def __str__(self) -> str:
         return '\n'.join(
             [
-                f'  - Nom : {self.last_name} {self.first_name}',
-                f'  - Titre / FFE / Fide : {self.title} / {self.ffe_id} / {self.fide_id}',
-                f'  - Licence / Numéro / Catégorie / Genre : '
+                f'  - Name: {self.last_name} {self.first_name}',
+                f'  - Title / FFE ID / FIDE ID: {self.title} / {self.ffe_id} / {self.fide_id}',
+                f'  - FFE Licence / Licence number / Category / Gender: '
                 f'{self.ffe_license} / {self.ffe_license_number} / {self.category} / {self.gender}',
-                f'  - Date de naissance : {self.birth}',
-                f'  - Classements standard / rapide / blitz : {self.standard_rating}{self.standard_rating_type} '
+                f'  - Birth date: {self.birth}',
+                f'  - Standard rating / rapid / blitz: {self.standard_rating}{self.standard_rating_type} '
                 f'/ {self.rapid_rating}{self.rapide_rating_type} / {self.blitz_rating}{self.blitz_rating_type}',
-                f'  - Fédération / Ligue / Club : '
+                f'  - Federation / League / Club: '
                 f'{self.federation} / {self.ffe_league} / {self.ffe_club_id} {self.ffe_club}',
-                f'  - Mél / Tél : {self.email} / {self.phone}',
-                f'  - Dû / Payé / Pointé·e : {self.fee} / {self.paid} / {self.check_in}',
-                f'  - Fixe / Rondes : {self.board} / {self.skipped_rounds}',
+                f'  - Mail / Phone: {self.email} / {self.phone}',
+                f'  - Owed / Paid / Check-in: {self.fee} / {self.paid} / {self.check_in}',
+                f'  - Fixed board / Rounds : {self.board} / {self.skipped_rounds}',
             ]
         )

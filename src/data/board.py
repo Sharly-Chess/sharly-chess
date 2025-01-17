@@ -1,7 +1,6 @@
 from functools import total_ordering
 from logging import Logger
 from dataclasses import dataclass
-import warnings
 
 from common.logger import get_logger
 from data.util import Result
@@ -30,34 +29,9 @@ class Board:
     def id(self, new_id):
         self.board_id = new_id
 
-    def set_id(self, board_id: int):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to id instead')
-        self.board_id = board_id
-
-    def set_number(self, number: int):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to number instead')
-        self.number = number
-
-    def set_white_player(self, player: Player):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to white_player instead')
-        self.white_player = player
-
-    def set_black_player(self, player: Player):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to black_player instead')
-        self.black_player = player
-
     @property
     def result_str(self) -> str:
         return str(self.result) if self.result else ''
-
-    def set_result(self, result: Result):
-        """Deprecated setter, use direct assignment instead."""
-        warnings.warn('Use direct assignment to result instead')
-        self.result = result
 
     def __lt__(self, other):
         # p1 < p2 calls p1.__lt__(p2)
@@ -67,10 +41,10 @@ class Board:
             return self.board_id < other.board_id
         assert self.black_player is not None, "The black player is not defined."
         assert other.black_player is not None, "The black player is not defined."
-        if self.black_player.id == 1:
+        if self.black_player.ref_id == 1:
             # The pairing allocated bye board is last
             return True
-        elif other.black_player.id == 1:
+        elif other.black_player.ref_id == 1:
             # The pairing allocated bye is last
             return False
         # Here we have no board id, so we need to compare
@@ -116,7 +90,7 @@ class Board:
         assert self.black_player is not None, "The black player is not defined."
         assert other.black_player is not None, "The black player is not defined."
         # There is only one pairing allocated bye
-        if self.black_player.id == 1 or self.white_player.id == 1:
+        if self.black_player.ref_id == 1 or self.white_player.ref_id == 1:
             return False
         self_player_1: Player
         self_player_2: Player

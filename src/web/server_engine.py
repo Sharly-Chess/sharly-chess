@@ -10,7 +10,8 @@ from litestar import Litestar
 from litestar.contrib.htmx.request import HTMXRequest
 
 from common.engine import Engine
-from common.logger import get_logger
+from common.i18n import _, set_locale
+from common.logger import get_logger, print_interactive_info, print_interactive_error
 from common.papi_web_config import PapiWebConfig
 from web.settings import route_handlers, template_config, middlewares
 
@@ -18,31 +19,34 @@ logger: Logger = get_logger()
 
 
 def launch_browser(url: str):
-    logger.info(f'Opening the welcome page [{url}] in a browser...')
+    # Set the locale as the function is called in a new thread.
+    set_locale(PapiWebConfig().locale)
+    print_interactive_info(_('Opening the welcome page [{url}] in a browser...').format(url=url))
     while True:
         try:
             requests.get(url)
             break
         except requests.RequestException as e:
-            logger.debug(f'Web server not started yet ({e.__class__.__name__}), waiting...')
+            print_interactive_info(_('Web server not started yet ({ex}), waiting...').format(ex=e.__class__.__name__))
             sleep(1)
     open(url, new=2)
 
 
 class ServerEngine(Engine):
     def __init__(self):
-        logger.info('Starting Papi-web server, please wait...')
         super().__init__()
         if self.updated:
             return
+        print_interactive_info(_('Starting Papi-web server, please wait...'))
         papi_web_config: PapiWebConfig = PapiWebConfig()
-        logger.info(f'log: {papi_web_config.log_level_str}')
-        logger.info(f'port: {papi_web_config.web_port}')
-        logger.info(f'local URL: {papi_web_config.local_url}')
+        print_interactive_info(_('Logging level: {log_level}').format(log_level=papi_web_config.log_level_str))
+        print_interactive_info(_('Port: {port}').format(port=papi_web_config.web_port))
+        print_interactive_info(_('Local URL: {local_url}').format(local_url=papi_web_config.local_url))
         if papi_web_config.lan_url:
-            logger.info(f'LAN/WAN URL: {papi_web_config.lan_url}')
+            print_interactive_info(_('LAN/WAN URL: {lan_url}').format(lan_url=papi_web_config.lan_url))
         if self.__port_in_use(papi_web_config.web_port):
-            logger.error(f'Port [{papi_web_config.web_port}] already in use, can not start Papi-web server')
+            print_interactive_error(
+                _('Port [{port}] already in use, can not start Papi-web server.').format(port=papi_web_config.web_port))
             return
         if papi_web_config.web_launch_browser:
             Thread(target=launch_browser, args=(papi_web_config.local_url, )).start()

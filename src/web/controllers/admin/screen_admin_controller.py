@@ -11,6 +11,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common.i18n import _
 from common.logger import get_logger
 from data.loader import EventLoader
 from data.screen import Screen
@@ -44,16 +45,14 @@ class ScreenAdminWebContext(EventAdminWebContext):
             try:
                 self.admin_screen = self.admin_event.basic_screens_by_id[screen_id]
             except KeyError:
-                self._redirect_error(f'L\'écran [{screen_id}] n\'existe pas')
+                self._redirect_error(f'Screen [{screen_id}] not found.')
                 return
         self.screen_type = screen_type
         if screen_set_id:
             try:
                 self.admin_screen_set = self.admin_screen.screen_sets_by_id[screen_set_id]
             except KeyError:
-                self._redirect_error(
-                    f'L\'ensemble d\'écran [{screen_set_id}] n\'existe pas pour l\'écran '
-                    f'[{self.admin_screen.uniq_id}]')
+                self._redirect_error(f'Screen set [{screen_set_id}] not found for screen [{self.admin_screen.uniq_id}]')
                 return
 
     @property
@@ -88,7 +87,7 @@ class ScreenAdminController(AbstractEventAdminController):
                         field = 'init_set_tournament_id'
                         init_set_tournament_id = WebContext.form_data_to_int(data, field)
                         if init_set_tournament_id not in web_context.admin_event.tournaments_by_id:
-                            errors[field] = 'Veuillez entrer l\'identifiant de l\'écran.'
+                            errors[field] = _('Please choose the tournament.')
                     case 'results' | 'image':
                         pass
                     case _:
@@ -119,18 +118,18 @@ class ScreenAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = 'Veuillez entrer l\'identifiant de l\'écran.'
+                errors[field] = _('Please enter the screen ID.')
             elif ':' in uniq_id:
-                errors[field] = 'Le caractère [:] est interdit.'
+                errors[field] = _('Character [{char}] is not allowed.').format(char=':')
             else:
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.screens_by_uniq_id:
-                            errors[field] = f'L\'écran [{uniq_id}] existe déjà.'
+                            errors[field] = _('Screen [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case 'update':
                         if uniq_id != web_context.admin_screen.uniq_id \
                                 and uniq_id in web_context.admin_event.screens_by_uniq_id:
-                            errors[field] = f'L\'écran [{uniq_id}] existe déjà.'
+                            errors[field] = _('Screen [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
         match action:
@@ -141,7 +140,7 @@ class ScreenAdminController(AbstractEventAdminController):
                 try:
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 if type != ScreenType.Image:
                     menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
                     menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
@@ -150,9 +149,9 @@ class ScreenAdminController(AbstractEventAdminController):
                 try:
                     timer_id = WebContext.form_data_to_int(data, field)
                     if timer_id and timer_id not in web_context.admin_event.timers_by_id:
-                        errors[field] = f'Le chronomètre [{timer_id}] n\'existe pas.'
+                        errors[field] = _('Timer [{timer_id}] not found.').format(timer_id=timer_id)
                 except ValueError:
-                    errors[field] = 'Un entier positif est attendu.'
+                    errors[field] = _('A positive integer is expected.')
                 match type:
                     case ScreenType.Boards:
                         pass
@@ -165,12 +164,12 @@ class ScreenAdminController(AbstractEventAdminController):
                         try:
                             results_limit = WebContext.form_data_to_int(data, field)
                         except ValueError:
-                            errors[field] = 'Un entier positif est attendu.'
+                            errors[field] = _('A positive integer is expected.')
                         field = 'results_max_age'
                         try:
                             results_max_age = WebContext.form_data_to_int(data, field)
                         except ValueError:
-                            errors[field] = 'Un entier positif est attendu.'
+                            errors[field] = _('A positive integer is expected.')
                         results_tournament_ids = []
                         for tournament_id in web_context.admin_event.tournaments_by_id:
                             field = f'results_tournament_{tournament_id}'
@@ -180,17 +179,21 @@ class ScreenAdminController(AbstractEventAdminController):
                         field = 'background_image'
                         background_image = WebContext.form_data_to_str(data, field, '')
                         if not background_image:
-                            errors[field] = 'Veuillez préciser l\'URL de l\'image.'
+                            errors[field] = _('Please enter the image URL.')
                         elif not validators.url(background_image):
-                            errors[field] = f'L\'URL [{background_image}] n\'est pas valide.'
+                            errors[field] = _(
+                                'Invalid URL [{background_image}].').format(background_image=background_image)
                         else:
                             try:
                                 response = requests.get(background_image)
                                 if response.status_code != 200:
-                                    errors[field] = \
-                                        f'L\'URL [{background_image}] est en erreur (code [{response.status_code}]).'
+                                    errors[field] = _(
+                                        'URL [{url}] responded code [{code}].').format(
+                                        url=background_image, code=response.status_code)
                             except requests.ConnectionError as ce:
-                                errors[field] = f'L\'URL [{background_image}] est en erreur ([{ce}]).'
+                                errors[field] = _(
+                                    'URL [{url}] did not respond (error: [{error}]).').format(
+                                    url=background_image, error=str(ce))
                         background_color = cls._admin_validate_background_color_update_data(data, errors)
                     case _:
                         raise ValueError(f'type=[{web_context.admin_screen.type}]')
@@ -252,23 +255,24 @@ class ScreenAdminController(AbstractEventAdminController):
             else:
                 tournament_id = WebContext.form_data_to_int(data, field)
                 if not tournament_id:
-                    errors[field] = 'Veuillez indiquer le tournoi.'
+                    errors[field] = _('Please choose the tournament.')
                 elif tournament_id not in web_context.admin_screen.event.tournaments_by_id:
-                    errors[field] = f'Le tournoi [{tournament_id}] n\'existe pas.'
+                    errors[field] = _('Tournament [{tournament_id}] not found.').format(tournament_id=tournament_id)
         except ValueError:
-            errors[field] = 'Un entier positif est attendu.'
+            errors[field] = _('A positive integer is expected.')
         field: str = 'first'
         try:
             first = WebContext.form_data_to_int(data, field, minimum=1)
         except ValueError:
-            errors[field] = 'Un entier positif est attendu.'
+            errors[field] = _('A positive integer is expected.')
         field: str = 'last'
         try:
             last = WebContext.form_data_to_int(data, field, minimum=1)
         except ValueError:
-            errors[field] = 'Un entier positif est attendu.'
+            errors[field] = _('A positive integer is expected.')
         if first and last and first > last:
-            error: str = f'Les nombres {first} et {last} ne sont pas compatibles ({first} > {last}).'
+            error: str = _('Numbers {first} and {last} are not compatible ({first} > {last}).').format(
+                first=first, last=last)
             errors['first'] = error
             errors['last'] = error
         fixed_boards_str: str | None = None
@@ -280,7 +284,8 @@ class ScreenAdminController(AbstractEventAdminController):
                         try:
                             int(fixed_board_str)
                         except ValueError:
-                            errors['fixed_boards_str'] = f'Le numéro d\'échiquier {fixed_board_str} n\'est pas valide.'
+                            errors['fixed_boards_str'] = _('Invalid board number [{fixed_board_str}].').format(
+                                fixed_board_str=fixed_board_str)
                             break
         return StoredScreenSet(
             id=web_context.admin_screen_set.id,
@@ -341,19 +346,20 @@ class ScreenAdminController(AbstractEventAdminController):
                             uniq_id = web_context.admin_screen.stored_screen.uniq_id
                             name = web_context.admin_screen.stored_screen.name
                         case 'create':
-                            uniq_id = web_context.admin_event.get_unused_screen_uniq_id(f'{screen_type}-screen')
+                            uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
+                                _('{screen_type}-screen').format(screen_type=screen_type))
                             basic_name: str
                             match screen_type:
                                 case 'input':
-                                    basic_name = 'Saisie des résultats'
+                                    basic_name = _('Results entry')
                                 case 'boards':
-                                    basic_name = 'Appariements par échiquier'
+                                    basic_name = _('pairings by board')
                                 case 'players':
-                                    basic_name = 'Appariements par ordre alphabétique'
+                                    basic_name = _('Pairings by player')
                                 case 'results':
-                                    basic_name = 'Derniers résultats'
+                                    basic_name = _('Last results')
                                 case 'image':
-                                    basic_name = 'Image'
+                                    basic_name = _('Image')
                                 case _:
                                     raise ValueError(f'screen_type=[{screen_type}]')
                             match screen_type:
@@ -552,22 +558,30 @@ class ScreenAdminController(AbstractEventAdminController):
                     if stored_screen.type in [ScreenType.Boards, ScreenType.Input, ScreenType.Players]:
                         event_database.add_stored_screen_set(stored_screen.id, init_set_tournament_id)
                     event_database.commit()
-                    Message.success(request, f'L\'écran [{stored_screen.uniq_id}] a été créé.')
+                    Message.success(
+                        request,
+                        _('Screen [{screen_uniq_id}] has been created.').format(screen_uniq_id=stored_screen.uniq_id))
                 case 'clone':
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     if stored_screen.type in [ScreenType.Boards, ScreenType.Input, ScreenType.Players]:
                         for screen_set in web_context.admin_screen.screen_sets_sorted_by_order:
                             event_database.clone_stored_screen_set(screen_set.id, stored_screen.id)
                     event_database.commit()
-                    Message.success(request, f'L\'écran [{stored_screen.uniq_id}] a été créé.')
+                    Message.success(
+                        request,
+                        _('Screen [{screen_uniq_id}] has been created.').format(screen_uniq_id=stored_screen.uniq_id))
                 case 'update':
                     stored_screen = event_database.update_stored_screen(stored_screen)
                     event_database.commit()
-                    Message.success(request, f'L\'écran [{stored_screen.uniq_id}] a été modifié.')
+                    Message.success(
+                        request,
+                        _('Screen [{screen_uniq_id}] has been updated.').format(screen_uniq_id=stored_screen.uniq_id))
                 case 'delete':
                     event_database.delete_stored_screen(web_context.admin_screen.id)
                     event_database.commit()
-                    Message.success(request, f'L\'écran [{web_context.admin_screen.uniq_id}] a été supprimé.')
+                    Message.success(
+                        request,
+                        _('Screen [{screen_uniq_id}] has been deleted.').format(screen_uniq_id=stored_screen.uniq_id))
                 case _:
                     raise ValueError(f'action=[{action}]')
         event_loader.clear_cache(event_uniq_id)
@@ -675,7 +689,7 @@ class ScreenAdminController(AbstractEventAdminController):
             case 'delete':
                 if len(web_context.admin_screen.screen_sets_sorted_by_order) <= 1:
                     return AbstractController.redirect_error(
-                        request, 'Le dernier ensemble d\'un écran ne peut être supprimé.')
+                        request, _('The last set of a screen can not be deleted.'))
             case 'update' | 'clone' | 'add' | 'reorder':
                 pass
             case _:

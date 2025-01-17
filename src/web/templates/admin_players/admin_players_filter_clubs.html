@@ -1,0 +1,49 @@
+<form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+    <span class="dropdown-center" >
+        <button
+                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+        ><i
+                class="bi-funnel {% if admin_players_filter_clubs|length not in [0, (admin_players_clubs|length)] %}text-primary{% endif %}"
+                {{ tooltip_attributes('info', _('Filter the clubs.'), 'top') }}
+        ></i></button>
+        <ul class="dropdown-menu players-filter-club p-0">
+            {% with name='admin_players_filter_clubs' %}
+                {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
+                <input type="hidden" name="{{ name }}" value="" />
+                <li class="dropdown-item title text-nowrap">
+                    <input
+                        type="checkbox"
+                        {% if admin_players_filter_clubs|length == admin_players_clubs|length %}checked{% endif %}
+                        onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                    />
+                    <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                        <i class="bi-check-lg"></i>
+                        {{ _('OK') }}
+                    </button>
+                </li>
+                <li class="dropdown-divider m-0"></li>
+                {% for club_tuple in admin_players_clubs %}
+                    <li class="dropdown-item text-nowrap">
+                        <input
+                            type="checkbox"
+                            id="{{ name }}-{{ loop.index }}"
+                            name="{{ name }}"
+                            value="{{ club_tuple.to_query_param }}"
+                            {% if club_tuple in admin_players_filter_clubs %}checked{% endif %}
+                            class="{{ name }}"
+                        />
+                        <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
+                            <span class="player-federation_flag">
+                                <img
+                                        class="player-federation-flag ms-1 ps-1 pe-1"
+                                        src="{{ url_for('static', file_path='/images/federations/' ~ club_tuple.federation ~ '.svg') }}"
+                                />
+                            </span>
+                            {{ club_tuple.league }} {{ club_tuple.club }} ({{ admin_event.club_counts[club_tuple] }})
+                        </label>
+                    </li>
+                {% endfor %}
+            {% endwith %}
+        </ul>
+    </span>
+</form>

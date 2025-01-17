@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block w-80 mw-100">
+<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block w-90 mw-100">
     <form
             {% if action == 'create' %}
                 hx-post="{{ url_for('admin-tab-' ~ action ~ '-event', admin_tab=admin_tab) }}"
@@ -17,31 +17,31 @@
             <div class="modal-header">
                 <h2 class="modal-title">
                     {% if action in ['create', 'clone', ] %}
-                        Création d'un nouvel évènement
+                        {{ _('Event creation') }}
                     {% elif action == 'update' %}
-                        Modification de l'évènement [{{ admin_event.uniq_id }}]
+                        {{ _('Edition of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
                     {% else %}
-                        Suppression de l'évènement [{{ admin_event.uniq_id }}]
+                        {{ _('Deletion of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
                     {% endif %}
                 </h2>
             </div>
             <div class="modal-body">
                 {% if action == 'delete' %}
                     <h3 class="text-danger">
-                        Attention : la suppression d'un évènement est définitive !
+                        {{ _('Warning: the deletion of an event is permanent!') }}
                     </h3>
                     {% with id='uniq-id', name='uniq_id' %}
                         <div>
-                            <label for="{{ id }}" class="form-label">Entrez l'identifiant de l'évènement pour confirmer sa suppression :</label>
+                            <label for="{{ id }}" class="form-label">{{ _('Enter the event ID to confirm its deletion:') }}</label>
                             <input
                                     name="{{ name }}"
                                     type="text" id="{{ id }}"
                                     class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                     aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="Entrez ici l'identifiant de l'évènement"
+                                    placeholder="{{ _('Enter here the event ID') }}"
                                     value="" />
                             <div id="{{ id }}-help" class="form-text">
-                                La récupération des données supprimées n'est pas possible sur l'interface web (les données sont néanmoins archivées et peuvent être récupérées sur le système de fichiers).
+                                {{ _('Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.') }}
                             </div>
                             {% if name in errors %}
                                 <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -52,12 +52,12 @@
                     {% endwith %}
                 {% else %}
                     <h3>
-                        Propriétés
+                       {{ _('Properties') }}
                     </h3>
                     <div class="row">
                         <div class="col-4">
                             {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">Identifiant (unique) de l'évènement :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -66,7 +66,7 @@
                                         placeholder="Exemple : france-jeunes"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  L'identifiant unique, utilisé pour le stockage des données et les fichiers d'export.
+                                  {{ _('The Unique ID, used for data storage and export.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -77,7 +77,7 @@
                         </div>
                         <div class="col-4">
                             {% with id='name', name='name' %}
-                                <label for="{{ id }}" class="form-label">Nom de l'évènement :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Name:') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -86,7 +86,7 @@
                                         placeholder="Exemple : Championnat de France jeunes"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  Le nom utilisé sur les pages web et dans les rapports.
+                                  {{ _('The name of the event, used for display and reports.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -102,7 +102,7 @@
                                             for="{{ id }}"
                                             class="form-check-label"
                                     >
-                                        Visibilité :
+                                        {{ _('Visibility:') }}
                                     </label>
                                 </div>
                                 <div class="form-check form-switch d-inline-block pe-3">
@@ -113,10 +113,10 @@
                                             type="checkbox"
                                             id="{{ id }}"
                                             {% if data[name] == 'on' %}checked{% endif %} />
-                                    Évènement public
+                                    {{ _('Public event') }}
                                 </div>
                                 <div id="{{ id }}-help" class="form-text">
-                                  Les utilisateur·ices ne peuvent voir que les écrans des évènements publics.
+                                    {{ _('Only arbiters can see private events.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -129,7 +129,7 @@
                     <div class="row">
                         <div class="col-3">
                             {% with id='start', name='start' %}
-                                <label for="{{ id }}" class="form-label">Début :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Start:') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="datetime-local" id="{{ id }}"
@@ -137,7 +137,7 @@
                                         aria-describedby="{{ id }}-help {{ id }}-error"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  La date et l'heure de début de l'évènement.
+                                    {{ _('The start date and time of the event.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -148,7 +148,7 @@
                         </div>
                         <div class="col-3">
                             {% with id='stop', name='stop' %}
-                                <label for="{{ id }}" class="form-label">Fin :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('End:') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="datetime-local" id="{{ id }}"
@@ -156,7 +156,7 @@
                                         aria-describedby="{{ id }}-help {{ id }}-error"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  La date et l'heure de fin de l'évènement.
+                                    {{ _('The end date and time of the event.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -167,7 +167,7 @@
                         </div>
                         <div class="col-6">
                             {% with id='path', name='path' %}
-                                <label for="{{ id }}" class="form-label">Localisation des fichiers Papi :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Default directory of the Papi files:') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -176,7 +176,7 @@
                                         placeholder="Exemple : C:\echecs\ligue\tournois"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  Le répertoire où seront cherchés par défaut les fichiers Papi des tournois de l'évènement (chemin relatif ou absolu, par défaut [{{ papi_web_config.default_papi_path }}]).
+                                  {{ _('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=papi_web_config.default_papi_path) }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -187,26 +187,26 @@
                         </div>
                     </div>
                     <h3>
-                        Saisie des résultats
+                        {{ _('Results entry') }}
                     </h3>
                     <div class="row">
                         <div class="col-6">
                             {% with id='update-password', name='update_password' %}
-                                <label for="{{ id }}" class="form-label">Mot de passe de saisie des résultats :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Password to enter results:') }}</label>
                                 <div class="input-group">
                                     <input
                                             name="{{ name }}"
                                             type="password" id="{{ id }}"
                                             class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                             aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="Exemple : mot_de_passe"
+                                            placeholder="{{ _('E.g.: my_password') }}"
                                             value="{{ data[name] }}" />
                                     <i
                                             id="toggle-password"
                                             class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
                                 </div>
                                 <div id="{{ id }}-help" class="form-text">
-                                  Le mot de passe qui sera demandé sur les écrans de saisie pour entrer les résultats (facultatif).
+                                  {{ _('The password required on input screens to enter results (optional).') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -226,7 +226,7 @@
                         </div>
                         <div class="col-6">
                             {% with id='record-illegal-moves', name='record_illegal_moves' %}
-                                <label for="{{ id }}" class="form-label">Enregistrement des coups illégaux :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Illegal moves recording:') }}</label>
                                 <select
                                         name="{{ name }}"
                                         id="{{ id }}"
@@ -237,9 +237,10 @@
                                     {% endfor %}
                                 </select>
                                 <div id="{{ id }}-help" class="form-text">
-                                  Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde pour un·e joueur·euse
-                                    (de 0 à 3, par défaut {% if papi_web_config.default_record_illegal_moves_enabled %}{{ papi_web_config.default_record_illegal_moves_number }}{% else %}0{% endif %}).
-                                    Cette valeur peut être modifiée pour chaque tournoi.
+                                    {{ _(
+                                        'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.',
+                                        default=papi_web_config.default_record_illegal_moves_number
+                                    ) }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -250,12 +251,12 @@
                         </div>
                     </div>
                     <h3>
-                        Règlement
+                        {{ _('Rules') }}
                     </h3>
                     <div class="row">
                         <div class="col-6">
                             {% with id='rules', name='rules' %}
-                                <label for="{{ id }}" class="form-label">Localisation du règlement :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Rules file location:') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
@@ -264,7 +265,7 @@
                                         placeholder="Exemple : C:\echecs\ligue\reglements\tournoi.pdf"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  Une URL, ou le chemin du règlement sur le serveur, au format PDF (facultatif).
+                                    {{ _('A URL, or the path to the rules file on the server, in PDF format (optional).') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -275,7 +276,7 @@
                         </div>
                     </div>
                     <h3>
-                        Affichage
+                        {{ _('Display') }}
                     </h3>
                     <div class="row">
                         <div class="col-6">
@@ -286,12 +287,12 @@
                                 checkbox_name='background_image_checkbox'
                             %}
                                 <div>
-                                    <label for="{{ id }}" class="form-label">Image de fond :</label>
+                                    <label for="{{ id }}" class="form-label">{{ _('Background image:') }}</label>
                                     <input
                                             name="{{ checkbox_name }}"
                                             type="checkbox" id="{{ checkbox_id }}"
                                             aria-describedby="{{ id }}-help {{ id }}-error"
-                                            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> pas d'image de fond
+                                            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> {{ _('no background image') }}
                                     <script>
                                         $('#{{ checkbox_id }}').click(function() {
                                             if ($(this).is(':checked')) {
@@ -314,7 +315,7 @@
                                             type="text" id="{{ id }}"
                                             class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                             aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="Exemple : https://mon.club.fr/logo.png"
+                                            placeholder="E.g.: https://my.club.us/tournament.jpg"
                                             value="{{ data[name] }}"
                                             style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
                                     />
@@ -323,7 +324,7 @@
                                             class="form-text"
                                             style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
                                     >
-                                      L'URL ou le chemin de l'image à afficher (par défaut le logo de Papi-web).
+                                      {{ _('The URL or the path of the image to display (by default the Papi-web logo).') }}
                                     </div>
                                     {% if name in errors %}
                                         <div
@@ -343,12 +344,12 @@
                                 checkbox_name='background_color_checkbox'
                             %}
                                 <div>
-                                    <label for="{{ id }}" class="form-label">Couleur de fond :</label>
+                                    <label for="{{ id }}" class="form-label">{{ _('Background colour:') }}</label>
                                     <input
                                             name="{{ checkbox_name }}"
                                             type="checkbox" id="{{ checkbox_id }}"
                                             aria-describedby="{{ id }}-help {{ id }}-error"
-                                            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> par défaut
+                                            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> {{ _('by default') }}
                                     <script>
                                         $('#{{ checkbox_id }}').click(function() {
                                             if ($(this).is(':checked')) {
@@ -380,7 +381,7 @@
                                             class="form-text"
                                             style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
                                     >
-                                        La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran.
+                                        {{ _('The background colour is used when the image dost fill the whole screen.') }}
                                     </div>
                                     {% if name in errors %}
                                         <div
@@ -409,7 +410,7 @@
                                     id="background-image-picker-wrapper"
                                     style="display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %}"
                             >
-                                <label class="form-label">Choisissez une image personnalisée :</label>
+                                <label class="form-label">{{ _('Choose a custom image:') }}</label>
                                 <div
                                         id="background-image-picker"
                                 >
@@ -432,7 +433,7 @@
                         </div>
                     </div>
                     <h3>
-                        Chronomètres
+                        {{ _('Timers') }}
                     </h3>
                     {% with default_colors=papi_web_config.default_timer_colors %}
                         {% include 'admin_edit_timer_colors.html' %}
@@ -441,7 +442,7 @@
                         {% include 'admin_edit_timer_delays.html' %}
                     {% endwith %}
                     <h3>
-                        Message d'alerte
+                        {{ _('Alert message') }}
                     </h3>
                     <div class="row">
                         <div class="col-3">
@@ -451,7 +452,7 @@
                                 checkbox_id='message-background-color-checkbox',
                                 checkbox_name='message_background_color_checkbox'
                             %}
-                                <label for="{{ id }}" class="form-label">Couleur du fond :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Background colour:') }}</label>
                                 <input
                                         name="{{ checkbox_name }}"
                                         type="checkbox" id="{{ checkbox_id }}"
@@ -491,12 +492,13 @@
                                 checkbox_id='message-color-checkbox',
                                 checkbox_name='message_color_checkbox'
                             %}
-                                <label for="{{ id }}" class="form-label">Couleur du texte :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Text colour:') }}</label>
                                 <input
                                         name="{{ checkbox_name }}"
                                         type="checkbox" id="{{ checkbox_id }}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        {% if data[checkbox_name] == 'on' %}checked{% endif %} /> par défaut
+                                        {% if data[checkbox_name] == 'on' %}checked{% endif %} />
+                                {{ _('by default') }}
                                 <input
                                         name="{{ name }}"
                                         type="color" id="{{ id }}"
@@ -526,17 +528,16 @@
                         </div>
                         <div class="col-6">
                             {% with id='message-text', name='message_text' %}
-                                <label for="{{ id }}" class="form-label">Texte :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('Text:') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : Merci de ne pas manger dans la salle de jeu !"
+                                        placeholder="{{ _('E.g.: Please keep quiet until the end of the round!') }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                    Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans.
-                                    Ce message peut être surchargé par les écrans rotatifs, les écrans et les familles d'écrans.
+                                    {{ _('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.') }}
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -557,11 +558,13 @@
                         >
                             <i class="bi-floppy-fill"></i>
                             {% if action in ['create', 'clone', ] %}
-                                Créer
+                                {{ _('Create') }}
                             {% elif action == 'update' %}
-                                Modifier
+                                {{ _('Update') }}
+                            {% elif action == 'delete' %}
+                                {{ _('Delete') }}
                             {% else %}
-                                Supprimer
+                                ?
                             {% endif %}
                         </button>
                     </div>
@@ -577,7 +580,8 @@
                                 hx-target="body"
                                 hx-trigger="click, keyup[key=='Escape'] from:body"
                                 hx-indicator="#please-wait">
-                            <i class="bi-x-circle-fill"></i> Annuler
+                            <i class="bi-x-circle-fill"></i>
+                            {{ _('Cancel') }}
                         </button>
                     </div>
                 </div>

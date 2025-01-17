@@ -12,13 +12,14 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common.i18n import _
 from common.logger import get_logger
 from data.loader import EventLoader
 from data.timer import Timer, TimerHour
 from database.sqlite import EventDatabase
 from database.store import StoredTimer, StoredTimerHour
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
-from web.controllers.index_controller import WebContext, AbstractController
+from web.controllers.index_controller import WebContext
 from web.messages import Message
 
 logger: Logger = get_logger()
@@ -42,15 +43,13 @@ class TimerAdminWebContext(EventAdminWebContext):
             try:
                 self.admin_timer = self.admin_event.timers_by_id[timer_id]
             except KeyError:
-                self._redirect_error(f'Le chronomètre [{timer_id}] n\'existe pas')
+                self._redirect_error(f'Timer [{timer_id}] not found.')
                 return
         if timer_hour_id:
             try:
                 self.admin_timer_hour = self.admin_timer.timer_hours_by_id[timer_hour_id]
             except KeyError:
-                self._redirect_error(
-                    f'L\'horaire [{timer_hour_id}] n\'existe pas pour le chronomètre '
-                    f'[{self.admin_timer.uniq_id}]')
+                self._redirect_error(f'Hour [{timer_hour_id}] not found for timer [{self.admin_timer.uniq_id}].')
                 return
 
     @property
@@ -81,17 +80,16 @@ class TimerAdminController(AbstractEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = 'Veuillez entrer l\'identifiant du chronomètre.'
+                errors[field] = _('Please enter the timer ID.')
             else:
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.timers_by_uniq_id:
-                            errors[field] = f'Le chronomètre [{uniq_id}] existe déjà.'
+                            errors[field] = _('Timer [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case 'update':
                         if uniq_id != web_context.admin_timer.uniq_id \
                                 and uniq_id in web_context.admin_event.timers_by_uniq_id:
-                            errors[field] = \
-                                f'Le chronomètre [{uniq_id}] existe déjà.'
+                            errors[field] = _('Timer [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
         match action:
@@ -103,12 +101,14 @@ class TimerAdminController(AbstractEventAdminController):
                         try:
                             colors[i] = WebContext.form_data_to_rgb(data, field)
                         except ValueError:
-                            errors[field] = f'La couleur n\'est pas valide [{data[field]}] (attendu [#RRGGBB]).'
+                            errors[field] = _('Invalid color [{color}] ([#RRGGBB] expected).').format(
+                                color={data[field]})
                     field: str = f'delay_{i}'
                     try:
                         delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
                     except ValueError:
-                        errors[field] = f'Le délai [{data[field]}] n\'est pas valide (attendu un entier positif).'
+                        errors[field] = _('Invalid delay [{delay}] (positive integer expected).').format(
+                            delay=data[field])
             case 'delete':
                 pass
             case _:
@@ -132,20 +132,20 @@ class TimerAdminController(AbstractEventAdminController):
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
         if not uniq_id:
-            errors['uniq_id'] = 'Veuillez entrer l\'identifiant de l\'horaire (ou le numéro de ronde).'
+            errors['uniq_id'] = _('Please enter the round number or the hour ID.')
         time_str: str = WebContext.form_data_to_str(data, 'time_str')
         date_str: str = WebContext.form_data_to_str(data, 'date_str')
         if not time_str:
-            errors['time_str'] = 'Veuillez entrer l\'heure.'
+            errors['time_str'] = _('Please enter the time.')
         else:
             matches = re.match('^(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{1,2})$', time_str)
             if not matches:
-                errors['time_str'] = 'Veuillez entrer une heure valide.'
+                errors['time_str'] = _('Please enter a valid time.')
         if not previous_valid_timer_hour and not date_str:
-            errors['date_str'] = 'Veuillez entrer La date du premier horaire.'
+            errors['date_str'] = _('Please enter the date of the first hour.')
         elif date_str:
             if not re.match('^#?(?P<year>[0-9]{4})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2})$', date_str):
-                errors['date_str'] = 'Veuillez entrer une date valide.'
+                errors['date_str'] = _('Please enter a valid date.')
         if 'time_str' not in errors and 'date_str' not in errors:
             datetime_str: str
             if date_str:
@@ -156,29 +156,30 @@ class TimerAdminController(AbstractEventAdminController):
                 timestamp: int = int(time.mktime(datetime.strptime(
                     datetime_str, '%Y-%m-%d %H:%M').timetuple()))
                 if previous_valid_timer_hour and timestamp <= previous_valid_timer_hour.timestamp:
-                    errors['time_str'] = (f'L\'horaire [{datetime_str}] arrive avant l\'horaire précédent '
-                                          f'[{previous_valid_timer_hour.datetime_str}], horaire non valide')
+                    errors['time_str'] = _(
+                        'Invalid hour [{hour}] (before previous hour [{previous_hour}]).').format(
+                        hour=datetime_str, previous_hour=previous_valid_timer_hour.datetime_str)
                     if date_str:
                         errors['date_str'] = errors['time_str']
             except ValueError:
-                errors['time_str'] = 'Veuillez entrer une date et une heure valides.'
+                errors['time_str'] = _('Please enter valid date and time.')
                 if date_str:
                     errors['date_str'] = errors['time_str']
         if uniq_id != web_context.admin_timer_hour.uniq_id and uniq_id in web_context.admin_timer.timer_hour_uniq_ids:
-            errors['uniq_id'] = f'L\'horaire [{uniq_id}] existe déjà.'
+            errors['uniq_id'] = _('Hour [{uniq_id}] already exists.').format(uniq_id=uniq_id)
         text_before: str = WebContext.form_data_to_str(data, 'text_before')
         text_after: str = WebContext.form_data_to_str(data, 'text_after')
         try:
             round: int = int(uniq_id)
             if round <= 0:
-                errors['uniq_id'] = 'Les numéros de ronde doivent être positifs.'
+                errors['uniq_id'] = _('Round numbers must be positive integers.')
         except (TypeError, ValueError, AssertionError):
             if not text_before:
-                errors['text_before'] = \
-                    'Veuillez entrer le texte avant l\'horaire (obligatoire sauf pour les débuts de ronde).'
+                errors['text_before'] = _(
+                    'Please enter the text to display before the hour (mandatory except for rounds).')
             if not text_after:
-                errors['text_after'] = \
-                    'Veuillez entrer le texte après l\'horaire (obligatoire sauf pour les débuts de ronde).'
+                errors['text_after'] = _(
+                    'Please enter the text to display after the hour (mandatory except for rounds).')
         return StoredTimerHour(
             id=web_context.admin_timer_hour.id,
             order=web_context.admin_timer_hour.order,
@@ -343,14 +344,18 @@ class TimerAdminController(AbstractEventAdminController):
                     stored_timer_hour: StoredTimerHour = event_database.add_stored_timer_hour(
                         stored_timer.id, set_datetime=True)
                     event_database.commit()
-                    Message.success(request, f'Le chronomètre [{stored_timer.uniq_id}] a été créé.')
+                    Message.success(
+                        request,
+                        _('Timer [{timer_uniq_id}] has been created.').format(timer_uniq_id=stored_timer.uniq_id))
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_timers_render(
                         request, event_uniq_id=event_uniq_id, modal='timer_hours', timer_id=stored_timer.id,
                         timer_hour_id=stored_timer_hour.id)
                 case 'update':
                     stored_timer = event_database.update_stored_timer(stored_timer)
-                    Message.success(request, f'Le chronomètre [{stored_timer.uniq_id}] a été modifié.')
+                    Message.success(
+                        request,
+                        _('Timer [{timer_uniq_id}] has been updated.').format(timer_uniq_id=stored_timer.uniq_id))
                     if not web_context.admin_timer.timer_hours_by_id:
                         stored_timer_hour: StoredTimerHour = event_database.add_stored_timer_hour(
                             web_context.admin_timer.id, set_datetime=True)
@@ -371,7 +376,10 @@ class TimerAdminController(AbstractEventAdminController):
                 case 'delete':
                     event_database.delete_stored_timer(web_context.admin_timer.id)
                     event_database.commit()
-                    Message.success(request, f'Le chronomètre [{web_context.admin_timer.uniq_id}] a été supprimé.')
+                    Message.success(
+                        request,
+                        _('Timer [{timer_uniq_id}] has been deleted.').format(
+                            timer_uniq_id=web_context.admin_timer.uniq_id))
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_timers_render(request, event_uniq_id=event_uniq_id)
                 case 'clone':
@@ -379,7 +387,9 @@ class TimerAdminController(AbstractEventAdminController):
                     for timer_hour in web_context.admin_timer.timer_hours_sorted_by_order:
                         event_database.clone_stored_timer_hour(timer_hour.id, stored_timer.id)
                     event_database.commit()
-                    Message.success(request, f'Le chronomètre [{stored_timer.uniq_id}] a été créé.')
+                    Message.success(
+                        request,
+                        _('Timer [{timer_uniq_id}] has been created.').format(timer_uniq_id=stored_timer.uniq_id))
                     event_loader.clear_cache(event_uniq_id)
                     return self._admin_event_timers_render(
                         request, event_uniq_id=event_uniq_id, modal='timer_hours', timer_id=stored_timer.id)
@@ -486,8 +496,7 @@ class TimerAdminController(AbstractEventAdminController):
         match action:
             case 'delete':
                 if len(web_context.admin_timer.timer_hours_by_id) <= 1:
-                    return AbstractController.redirect_error(
-                        request, 'Le dernier horaire d\'un chronomètre ne peut être supprimé.')
+                    return self.redirect_error(request, 'The last hour of timer can not be deleted.')
             case 'update' | 'clone' | 'add' | 'reorder':
                 pass
             case _:

@@ -1,9 +1,11 @@
+import re
 import time
-from datetime import datetime
+from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
 from typing import Annotated, Any
 
+import phonenumbers
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
 from litestar import get
 from litestar.config.response_cache import CACHE_FOREVER
@@ -13,11 +15,14 @@ from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Redirect, Template
+from phonenumbers.phonenumberutil import NumberParseException
 
 from common import RGB, check_rgb_str
+from common.i18n import set_locale, locale_localized_name, locale_flag_url, trusted_locales, _, get_locale
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from web.messages import Message
+from web.session import SessionHandler
 from web.urls import index_url
 
 logger: Logger = get_logger()
@@ -36,6 +41,8 @@ class WebContext:
         self.request: HTMXRequest = request
         self.data: dict[str, str] = data
         self.error: ClientRedirect | None = None
+        # sets the session locale to the thread
+        set_locale(SessionHandler.get_session_locale(request))
 
     @property
     def background_image(self) -> str:
@@ -48,7 +55,7 @@ class WebContext:
     @property
     def background_color(self) -> str:
         """
-        Override this method to make the background color different from the default.
+        Override this method to make the background colour different from the default.
         :return:
         """
         return PapiWebConfig.default_background_color
@@ -57,7 +64,7 @@ class WebContext:
     def background_info(self) -> dict[str, str]:
         """
         The information return by this method is passed to the template engine to make the client call the /background
-        URL if the image and colors are not already loaded on the page.
+        URL if the image and colours are not already loaded on the page.
         This way image URLs are computed only when needed.
         This method should not be overridden (instead override background_image() and background_color()).
         :return: a dict with an image (a relative or absolute URL, or a path of a file located in /custom) and a color.
@@ -114,7 +121,7 @@ class WebContext:
             return empty_value
         data[field] = data.get(field, '')
         if data[field] is not None:
-            data[field] = data[field].strip()
+            data[field] = data[field].strip().replace(',', '.')
         if not data[field]:
             return empty_value
         float_val = float(data[field])
@@ -154,7 +161,64 @@ class WebContext:
         return self.form_data_to_rgb(self.data, field, empty_value)
 
     @staticmethod
-    def value_to_form_data(value: str | int | bool | Path | None) -> str | None:
+    def form_data_to_date(data: dict[str, str], field: str, empty_value: RGB | None = None) -> date | None:
+        if data is None:
+            return empty_value
+        data[field] = data.get(field, '')
+        if data[field] is not None:
+            data[field] = data[field].strip().lower()
+        if not data[field]:
+            return empty_value
+        return datetime.strptime(data[field], '%Y-%m-%d').date()
+
+    @classmethod
+    def form_data_to_mail(cls, data: dict[str, str], field: str) -> str | None:
+        if data is None:
+            return None
+        data[field] = data.get(field, '')
+        if data[field] is not None:
+            data[field] = data[field].strip().lower()
+        if not data[field]:
+            return None
+        if re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$', data[field]):
+            return data[field]
+        raise ValueError
+
+    @classmethod
+    def form_data_to_phone(cls, data: dict[str, str], field: str) -> str | None:
+        if data is None:
+            return None
+        data[field] = data.get(field, '')
+        if data[field] is not None:
+            data[field] = data[field].lower().replace(' ', '')
+        if not data[field]:
+            return None
+        try:
+            phonenumbers.parse(data[field])
+            return data[field]
+        except NumberParseException:
+            try:
+                # uppercase the locale to validate the phone number from the corresponding zone
+                phonenumbers.parse(data[field], get_locale().upper())
+                return data[field]
+            except NumberParseException:
+                raise ValueError
+
+    @classmethod
+    def form_data_to_ffe_licence_number(cls, data: dict[str, str], field: str) -> str | None:
+        if data is None:
+            return None
+        data[field] = data.get(field, '')
+        if data[field] is not None:
+            data[field] = data[field].strip().upper()
+        if not data[field]:
+            return None
+        if re.match(r'^[A-Za-z][0-9]{5}$', data[field]):
+            return data[field]
+        raise ValueError
+
+    @staticmethod
+    def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
         if value is None:
             return ''
         if isinstance(value, str):
@@ -163,15 +227,27 @@ class WebContext:
             return 'on' if value else 'off'
         if isinstance(value, int):
             return str(value)
+        if isinstance(value, float):
+            return f'{value:.2f}'
         if isinstance(value, Path):
             return str(value)
         raise ValueError
 
     @staticmethod
-    def value_to_datetime_form_data(value: float | None) -> str | None:
+    def value_to_datetime_form_data(value: float | datetime | None) -> str | None:
         if value is None:
             return ''
-        return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%dT%H:%M')
+        if isinstance(value, float):
+            return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%dT%H:%M')
+        if isinstance(value, datetime):
+            return datetime.strftime(value, '%Y-%m-%dT%H:%M')
+        raise ValueError
+
+    @staticmethod
+    def value_to_date_form_data(value: date | None) -> str | None:
+        if value is None:
+            return ''
+        return datetime.strftime(value, '%Y-%m-%d')
 
     def _redirect_error(self, errors: str | list[str]):
         self.error = AbstractController.redirect_error(self.request, errors)
@@ -197,13 +273,31 @@ class WebContext:
         Override this method to pass more parameters to the template engine.
         :return: a dict containing named parameters.
         """
+        papi_web_config: PapiWebConfig = PapiWebConfig()
         now: float = time.time()
+        locale_infos: dict[str, Any] = {}
+        for locale in papi_web_config.locales:
+            name: str = f'{locale_localized_name(locale)}'
+            name_and_warning: str
+            if locale in trusted_locales:
+                name_and_warning = name
+            else:
+                warning_str: str = _('USE AT YOUR OWN RISKS', locale=locale)
+                name_and_warning = f'{name} ({warning_str})'
+            locale_infos[locale] = {
+                'name': name,
+                'name_and_warning': name_and_warning,
+                'flag_url': locale_flag_url(locale),
+                'experimental': locale not in trusted_locales,
+            }
         return {
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
-            'papi_web_config': PapiWebConfig(),
+            'papi_web_config': papi_web_config,
             'admin_auth': self.admin_auth,
             'background_info': self.background_info,
+            'locale_infos': locale_infos,
+            'locale': SessionHandler.get_session_locale(self.request),
         }
 
 
@@ -255,6 +349,13 @@ class AbstractController(Controller):
                 f'Invalid [{self.IF_MODIFIED_SINCE_HEADER}] header [{request.headers[self.IF_MODIFIED_SINCE_HEADER]}]')
             return None
 
+    @staticmethod
+    def set_locale(request: HTMXRequest, locale: str | None):
+        if locale:
+            # sets the locale to the current thread and stores it to the session
+            if set_locale(locale):
+                SessionHandler.set_session_locale(request, locale)
+
 
 class IndexController(AbstractController):
 
@@ -263,8 +364,13 @@ class IndexController(AbstractController):
         name='index',
         cache=1,
     )
-    async def index(self, request: HTMXRequest, ) -> Template:
-        web_context: WebContext = WebContext(request, {})
+    async def index(
+            self,
+            request: HTMXRequest,
+            locale: str | None,
+    ) -> Template:
+        self.set_locale(request, locale)
+        web_context: WebContext = WebContext(request)
         return HTMXTemplate(
             template_name="index.html",
             context=web_context.template_context | {

@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-centered admin-timer-edit-modal d-block w-80 mw-100">
+<div class="modal-dialog modal-dialog-centered admin-timer-edit-modal d-block w-90 mw-100">
     <form
             {% if action == 'create' %}
                 hx-post="{{ url_for('admin-timer-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
@@ -17,11 +17,11 @@
             <div class="modal-header">
                 <h2 class="modal-title">
                     {% if action in ['create', 'clone', ] %}
-                        Création d'un chronomètre
+                        _('Timer creation')
                     {% elif action == 'update' %}
-                        Modification du chronomètre [{{ admin_timer.uniq_id }}]
+                        _('Edition of timer [%(timer_uniq_id)s]', timer_uniq_id=admin_timer.uniq_id) }}
                     {% elif action == 'delete' %}
-                        Suppression du chronomètre [{{ admin_timer.uniq_id }}]
+                        _('Deletion of timer [%(timer_uniq_id)s]', timer_uniq_id=admin_timer.uniq_id) }}
                     {% else %}
                         ?
                     {% endif %}
@@ -30,25 +30,25 @@
             <div class="modal-body">
                 {% if action == 'delete' %}
                     <h3 class="text-danger">
-                        Attention : la suppression d'un chronomètre est définitive !
+                        {{ _('Warning: the deletion of a timer is permanent!') }}
                     </h3>
                 {% else %}
                     <h3>
-                        Propriétés
+                        {{ _('Properties') }}
                     </h3>
                     <div class="row">
                         <div class="col">
                             {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">Identifiant (unique) :</label>
+                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="text" id="{{ id }}"
                                         class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : timer"
+                                        placeholder="{{ _('E.g.: timer') }}"
                                         value="{{ data[name] }}" />
                                 <div id="{{ id }}-help" class="form-text">
-                                  L'identifiant unique, utilisé pour référencer le chronomètre.
+                                  _('The Unique ID, used to reference the timer.')
                                 </div>
                                 {% if name in errors %}
                                     <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -59,7 +59,7 @@
                         </div>
                     </div>
                     <h3>
-                        Couleurs et délais
+                        _('Colors and delays')
                     </h3>
                     {% with default_colors=admin_event.timer_colors %}
                         {% include 'admin_edit_timer_colors.html' %}
@@ -79,11 +79,11 @@
                         >
                             <i class="bi-floppy-fill"></i>
                             {% if action in ['create', 'clone', ] %}
-                                Créer
+                                {{ _('Create') }}
                             {% elif action == 'update' %}
-                                Modifier
+                                {{ _('Update') }}
                             {% elif action == 'delete' %}
-                                Supprimer
+                                {{ _('Delete') }}
                             {% else %}
                                 ?
                             {% endif %}
@@ -98,7 +98,8 @@
                                 hx-trigger="click, keyup[key=='Escape'] from:body"
                                 hx-indicator="#please-wait"
                         >
-                            <i class="bi-x-circle-fill"></i> Annuler
+                            <i class="bi-x-circle-fill"></i>
+                                {{ _('Cancel') }}
                         </button>
                     </div>
                 </div>

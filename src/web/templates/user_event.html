@@ -16,6 +16,7 @@
             hx-indicator="#please-wait"
             hx-trigger="click, keyup[key=='Escape'] from:body"
             hx-indicator="#please-wait"
+            {{ tooltip_attributes('info', _('Go back to the events page.'), 'top') }}
     >
         <i class="bi-arrow-left-circle-fill"></i>
     </button>
@@ -96,7 +97,7 @@
                                         {% endfor %}
                                     {% else %}
                                         <div class="col-12 mb-3">
-                                            Aucun écran rotatif.
+                                            {{ _('No rotators.') }}
                                         </div>
                                     {% endif %}
                                 {% else %}
@@ -113,7 +114,7 @@
                                         {% endfor %}
                                     {% else %}
                                         <div class="col-12 mb-3">
-                                            Aucun écran de ce type.
+                                            {{ _('No such screens.') }}
                                         </div>
                                     {% endif %}
                                 {% endif %}

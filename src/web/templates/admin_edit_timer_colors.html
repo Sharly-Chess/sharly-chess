@@ -8,12 +8,13 @@
             checkbox_name='color_'~num~'_checkbox'
         %}
             <div class="col-4">
-                <label for="{{ id }}" class="form-label">Couleur n°{{ num }} :</label>
+                <label for="{{ id }}" class="form-label">{{ _('Colour #%(num)d:', num=num) }}</label>
                 <input
                         name="{{ checkbox_name }}"
                         type="checkbox" id="{{ checkbox_id }}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
-                        {% if data[checkbox_name] == 'on' %}checked{% endif %} /> par défaut
+                        {% if data[checkbox_name] == 'on' %}checked{% endif %} />
+                {{ _('by default') }}
                 <input
                         name="{{ name }}"
                         type="color" id="{{ id }}"

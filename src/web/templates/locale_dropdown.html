@@ -1,0 +1,34 @@
+{% from 'macros.j2' import tooltip_attributes %}
+
+<span class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle ms-1 ps-1 py-0 mt-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi-translate"></i>
+    </button>
+    <ul class="dropdown-menu locale">
+        {% for l, l_info in locale_infos.items() %}
+            <li
+                class="
+                    dropdown-item
+                    text-center
+                    {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
+                    {% if l_info.experimental %}bg-dark-subtle{% endif %}"
+                "
+                {% if l != locale %}
+                    hx-get="{{ url }}"
+                    hx-vals='{"locale": "{{ l }}"}'
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                {% endif %}
+                {{ tooltip_attributes('warning' if l_info.experimental else 'info', l_info.name_and_warning, 'left') }}
+            >
+                <img
+                    src="{{l_info.flag_url}}"
+                    alt="{{l_info.name}}"
+                    class="locale-flag"
+                />
+                {% if l_info.experimental %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</span>

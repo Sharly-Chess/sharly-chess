@@ -11,6 +11,7 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
 from common.exception import PapiWebException
+from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
@@ -38,16 +39,16 @@ class EventUserWebContext(UserWebContext):
         if self.error:
             return
         if not event_uniq_id:
-            self._redirect_error('L\'évènement n\'est pas spécifie')
+            self._redirect_error('Event not set.')
             return
         try:
             self.user_event = EventLoader.get(request=self.request).load_event(event_uniq_id)
             if self.user_event.public or self.admin_auth:
                 self.user_event_tab = user_event_tab
                 return
-            self._redirect_error(f'L\'évènement [{self.user_event.uniq_id}] est privé.')
+            self._redirect_error(f'Access denied for event [{event_uniq_id}].')
         except PapiWebException as pwe:
-            self._redirect_error(f'L\'évènement [{event_uniq_id}] est introuvable : {pwe}')
+            self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}.')
 
     def check_user_tab(self):
         pass
@@ -96,32 +97,32 @@ class EventUserController(AbstractUserController):
             rotators = web_context.user_event.public_rotators_sorted_by_uniq_id
         nav_tabs: dict[str, dict] = {
             'input': {
-                'title': f'Saisie des résultats ({len(input_screens) or "-"})',
+                'title': _('Results entry ({num})').format(num=len(input_screens) or "-"),
                 'screens': input_screens,
                 'disabled': not input_screens,
             },
             'boards': {
-                'title': f'Appariements par échiquier ({len(boards_screens) or "-"})',
+                'title': _('Pairings by board ({num})').format(num=len(boards_screens) or "-"),
                 'screens': boards_screens,
                 'disabled': not boards_screens,
             },
             'players': {
-                'title': f'Appariements par ordre alphabétique ({len(players_screens) or "-"})',
+                'title': _('Pairings by player ({num})').format(num=len(players_screens) or "-"),
                 'screens': players_screens,
                 'disabled': not players_screens,
             },
             'results': {
-                'title': f'Derniers résultats ({len(results_screens) or "-"})',
+                'title': _('Last results ({num})').format(num=len(results_screens) or "-"),
                 'screens': results_screens,
                 'disabled': not results_screens,
             },
             'image': {
-                'title': f'Image ({len(image_screens) or "-"})',
+                'title': _('Image ({num})').format(num=len(image_screens) or "-"),
                 'screens': image_screens,
                 'disabled': not image_screens,
             },
             'rotators': {
-                'title': f'Écrans rotatifs ({len(rotators) or "-"})',
+                'title': _('Rotators ({num})').format(num=len(rotators) or "-"),
                 'rotators': rotators,
                 'disabled': not rotators,
             },
@@ -193,12 +194,12 @@ class EventUserController(AbstractUserController):
             event_uniq_id: str,
             user_event_tab: str | None,
             user_columns: int | None,
+            locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
+        self.set_locale(request, locale)
+        self.set_user_columns(request, user_columns)
         web_context: EventUserWebContext = EventUserWebContext(
-            request,
-            data=None,
-            event_uniq_id=event_uniq_id,
-            user_event_tab=user_event_tab)
+            request, data=None, event_uniq_id=event_uniq_id, user_event_tab=user_event_tab)
         if web_context.error:
             return web_context.error
         if user_columns:
@@ -217,9 +218,10 @@ class EventUserController(AbstractUserController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             user_columns: int | None,
+            locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         return self._user_event(
-            request, event_uniq_id=event_uniq_id, user_event_tab=None, user_columns=user_columns)
+            request, event_uniq_id=event_uniq_id, user_event_tab=None, user_columns=user_columns, locale=locale)
 
     @get(
         path='/user/event/{event_uniq_id:str}/{user_event_tab:str}',
@@ -230,6 +232,8 @@ class EventUserController(AbstractUserController):
             event_uniq_id: str,
             user_event_tab: str,
             user_columns: int | None,
+            locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         return self._user_event(
-            request, event_uniq_id=event_uniq_id, user_event_tab=user_event_tab, user_columns=user_columns)
+            request, event_uniq_id=event_uniq_id, user_event_tab=user_event_tab, user_columns=user_columns,
+            locale=locale)

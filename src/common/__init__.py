@@ -1,19 +1,11 @@
 import re
-import sys
 import time
 from collections import namedtuple
 from datetime import datetime
 from functools import wraps
 from logging import Logger
-from pathlib import Path
 
 from common.logger import get_logger
-
-BASE_DIR: Path
-if getattr(sys, 'frozen', False):
-    BASE_DIR = Path(sys._MEIPASS)
-else:
-    BASE_DIR = Path(__file__).resolve().parents[2]
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from common import format_timestamp_date_time
 from common.background import inline_image_url
+from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.result import Result
@@ -93,9 +94,9 @@ class Screen:
             case ScreenType.Players:
                 return self.screen_sets_sorted_by_order[0].name_for_players
             case ScreenType.Results:
-                return 'Derniers résultats'
+                return _('Last results')
             case ScreenType.Image:
-                return 'Image'
+                return _('Image')
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -117,6 +118,32 @@ class Screen:
     def menu_text(self) -> str | None:
         return self.stored_screen.menu_text if self.stored_screen else self.family.menu_text
 
+    @staticmethod
+    def default_boards_screen_menu_text(single_tournament: bool, first_last: bool) -> str:
+        if single_tournament:
+            if first_last:
+                return _('Boards %f-%l')
+            else:
+                return _('By board')
+        else:
+            if first_last:
+                return _('%t [Boards %f-%l]')
+            else:
+                return _('%t (by board)')
+
+    @staticmethod
+    def default_players_screen_menu_text(single_tournament: bool, first_last: bool) -> str:
+        if single_tournament:
+            if first_last:
+                return '%f-%l'
+            else:
+                return _('By player')
+        else:
+            if first_last:
+                return '%t [%f-%l]'
+            else:
+                return _('%t (by player)')
+
     @property
     def menu_label(self) -> str | None:
         if not self.menu_link:
@@ -128,10 +155,10 @@ class Screen:
                 first_last = screen_set.first is not None or screen_set.last is not None
                 text: str
                 if self.type == ScreenType.Players or not screen_set.tournament.current_round:
-                    text = self.menu_text or PapiWebConfig().default_players_screen_menu_text(
+                    text = self.menu_text or self.default_players_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last)
                 else:
-                    text = self.menu_text or PapiWebConfig().default_boards_screen_menu_text(
+                    text = self.menu_text or self.default_boards_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last)
                 text = text.replace('%t', screen_set.tournament.name)
                 if self.type == ScreenType.Players or not screen_set.tournament.current_round:
@@ -148,7 +175,7 @@ class Screen:
                         text = text.replace('%l', str(screen_set.last_board.id))
                 return text
             case ScreenType.Results:
-                return self.stored_screen.menu_text or PapiWebConfig.default_results_screen_menu_text
+                return self.stored_screen.menu_text or _('Last results')
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -162,8 +189,9 @@ class Screen:
                     part_menu_screens: list[Screen] = self.event.boards_screens_sorted_by_uniq_id \
                         if admin else self.event.public_boards_screens_sorted_by_uniq_id
                     if not part_menu_screens:
-                        logger.warning(
-                            f'Il n\'y a pas d\'écran de type [boards] pour le menu de l\'écran [{self.uniq_id}]')
+                        self.event.add_warning(
+                            _('No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].').format(
+                                screen_type='boards', screen_uniq_id=self.uniq_id))
                     else:
                         menu_screens += part_menu_screens
                     continue
@@ -171,8 +199,9 @@ class Screen:
                     part_menu_screens: list[Screen] = self.event.input_screens_sorted_by_uniq_id \
                         if admin else self.event.public_input_screens_sorted_by_uniq_id
                     if not part_menu_screens:
-                        logger.warning(
-                            f'Il n\'y a pas d\'écran de type [input] pour le menu de l\'écran [{self.uniq_id}]')
+                        self.event.add_warning(
+                            _('No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].').format(
+                                screen_type='input', screen_uniq_id=self.uniq_id))
                     else:
                         menu_screens += part_menu_screens
                     continue
@@ -180,8 +209,9 @@ class Screen:
                     part_menu_screens: list[Screen] = self.event.players_screens_sorted_by_uniq_id \
                         if admin else self.event.public_players_screens_sorted_by_uniq_id
                     if not part_menu_screens:
-                        logger.warning(
-                            f'Il n\'y a pas d\'écran de type [players] pour le menu de l\'écran [{self.uniq_id}]')
+                        self.event.add_warning(
+                            _('No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].').format(
+                                screen_type='players', screen_uniq_id=self.uniq_id))
                     else:
                         menu_screens += part_menu_screens
                     continue
@@ -189,14 +219,16 @@ class Screen:
                     part_menu_screens: list[Screen] = self.event.results_screens_sorted_by_uniq_id \
                         if admin else self.event.public_results_screens_sorted_by_uniq_id
                     if not part_menu_screens:
-                        logger.warning(
-                            f'Il n\'y a pas d\'écran de type [results] pour le menu de l\'écran [{self.uniq_id}]')
+                        self.event.add_warning(
+                            _('No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].').format(
+                                screen_type='results', screen_uniq_id=self.uniq_id))
                     else:
                         menu_screens += part_menu_screens
                     continue
                 if menu_part == '@family':
                     if self.family_id is None:
-                        logger.warning(f'Le motif [{menu_part}] ne peut être utilisé que pour les familles d\'écrans')
+                        self.event.add_warning(
+                            _('Pattern [{pattern}] can be used by screen families.').format(pattern=menu_part))
                     else:
                         menu_screens += self.event.families_by_id[self.family_id].screens_by_uniq_id.values()
                     continue
@@ -204,7 +236,7 @@ class Screen:
                     menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
                         self.event.screens_by_uniq_id.keys(), menu_part)
                     if not menu_part_screen_uniq_ids:
-                        logger.warning(f'Le motif [{menu_part}] ne correspond à aucun écran')
+                        self.event.add_warning(_('Pattern [{pattern}] matches no screen.').format(pattern=menu_part))
                     else:
                         menu_screens += [
                             self.event.screens_by_uniq_id[screen_uniq_id] for screen_uniq_id in menu_part_screen_uniq_ids
@@ -213,7 +245,9 @@ class Screen:
                 if menu_part in self.event.screens_by_uniq_id:
                     menu_screens.append(self.event.screens_by_uniq_id[menu_part])
                 else:
-                    logger.warning(f'L\'écran [{menu_part}] n\'existe pas')
+                    self.event.add_warning(
+                        _('Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}].').format(
+                            pattern=menu_part, screen_uniq_id=self.uniq_id))
         return menu_screens
 
     @cached_property
@@ -289,7 +323,8 @@ class Screen:
                 elif self.stored_screen.results_limit and self.stored_screen.results_limit % self.columns > 0:
                     results_limit: int = self.columns * (self.stored_screen.results_limit // self.columns + 1)
                     self.event.add_info(
-                        f'limite positionnée à [{results_limit}] pour tenir sur {self.columns} colonnes',
+                        _('Maximum number of results set to [{results_limit}] to fit on [{columns}] columns.').format(
+                            results_limit=results_limit, columns=self.columns),
                         screen=self)
                     return results_limit
                 else:

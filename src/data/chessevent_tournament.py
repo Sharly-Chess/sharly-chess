@@ -25,7 +25,7 @@ class ChessEventTournament:
         self.start: float = 0.0
         self.end: float = 0.0
         self.tie_breaks: list[TournamentTieBreak] = [TournamentTieBreak.NONE, ] * 3
-        self.rating: TournamentRating = TournamentRating.UNKNOWN
+        self.rating: TournamentRating = TournamentRating.STANDARD
         self.ffe_id: int = 0
         self.players: list[ChessEventPlayer] = []
         self.error = True
@@ -60,31 +60,31 @@ class ChessEventTournament:
                     return
                 self.players.append(chessevent_player)
         except KeyError:
-            logger.error('Champ %s non trouvé dans la réponse de Chess Event', key)
+            logger.error('Field [%s] missing in the ChessEvent response', key)
             return
         except (TypeError, ValueError):
             logger.error(
-                'Valeur du champ %s non valide ([%s]) '
-                'dans la réponse de Chess Event', key, chessevent_tournament_info[key])
+                'Invalid value [%s] for field [%s] in the ChessEvent response',
+                chessevent_tournament_info[key], key)
             return
         self.error = False
 
     def __str__(self) -> str:
         return '\n'.join(
             [
-                f'  - Nom : {self.name}',
-                f'  - Type : {self.type}',
-                f'  - Nombre de rondes : {self.rounds}',
-                f'  - Appariement : {self.pairing}',
-                f'  - Cadence : {self.time_control}',
-                f'  - Lieu : {self.location}',
-                f'  - Arbitre : {self.arbiter}',
-                f'  - Dates : {self.start} - {self.end}',
+                f'  - Name: {self.name}',
+                f'  - Type: {self.type}',
+                f'  - Number of rounds: {self.rounds}',
+                f'  - Paring: {self.pairing}',
+                f'  - Time control: {self.time_control}',
+                f'  - Location: {self.location}',
+                f'  - Arbiter: {self.arbiter}',
+                f'  - Dates: {self.start} - {self.end}',
             ] + [
-                f'  - Départage n°{tie_break_index} : {self.tie_breaks[tie_break_index]}'
+                f'  - Tie-break #{tie_break_index} : {self.tie_breaks[tie_break_index]}'
                 for tie_break_index in range(1, 4)
             ] + [
-                f'  - Classement utilisé : {self.rating}',
-                f'  - Homologation : {self.ffe_id}',
+                f'  - Rating: {self.rating}',
+                f'  - FFE qualification: {self.ffe_id}',
             ]
         )

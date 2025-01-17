@@ -7,6 +7,8 @@ from configparser import (
 )
 from logging import Logger
 import chardet
+
+from common.i18n import _
 from common.logger import get_logger
 
 logger: Logger = get_logger()
@@ -18,54 +20,51 @@ class ConfigReader(ConfigParser):
 
     def __init__(self, ini_file: Path):
         super().__init__(interpolation=None, empty_lines_in_values=False)
-        self.__ini_file: Path = ini_file
+        self.ini_file: Path = ini_file
         self.__infos: list[str] = []
         self.__warnings: list[str] = []
         self.__errors: list[str] = []
         if not self.ini_file.exists():
-            self.add_error('fichier non trouvé')
+            self.add_error(_('Configuration file [{file}] not found.').format(file=self.ini_file))
             return
         if not self.ini_file.is_file():
-            self.add_error(f'{self.ini_file} n\'est pas un fichier')
+            self.add_error(_('Configuration file [{file}] is not a file.').format(file=self.ini_file))
             return
         try:
             files_read: list[str] = []
             encoding: str = 'utf-8-sig'
             try:
-                logger.debug('lecture de %s en %s...', self.ini_file, encoding)
-                files_read = self.read(self.__ini_file, encoding=encoding)
+                logger.debug('Reading [%s] with encoding [%s]...', self.ini_file, encoding)
+                files_read = self.read(self.ini_file, encoding=encoding)
             except UnicodeDecodeError:
-                logger.debug('la lecture de %s en %s a échoué, recherche de l\'encodage...',
+                logger.debug('Reading [%s] with encoding [%s] failed, looking for the encoding...',
                              self.ini_file, encoding)
                 detected_encoding: str
-                with open(self.__ini_file, "rb") as f:
+                with open(self.ini_file, "rb") as f:
                     detected_encoding: str = chardet.detect(f.read())['encoding']
-                logger.debug('encodage détecté : %s', detected_encoding)
+                logger.debug('Encoding detected: [%s]', detected_encoding)
                 if detected_encoding != 'utf-8':
-                    logger.debug('lecture de %s en %s...', self.ini_file, detected_encoding)
-                    files_read = self.read(self.__ini_file, encoding=detected_encoding)
-            if str(self.__ini_file) not in files_read:
-                self.add_error(f'impossible de lire {self.__ini_file}')
+                    logger.debug('Reading [%s] with encoding [%s]...', self.ini_file, detected_encoding)
+                    files_read = self.read(self.ini_file, encoding=detected_encoding)
+            if str(self.ini_file) not in files_read:
+                self.add_error(_('Could not read file [{file}].').format(file=self.ini_file))
                 return
-        except DuplicateSectionError as dse:
-            self.add_error(f'rubrique dupliquée à la ligne {dse.lineno}', dse.section)
+        except DuplicateSectionError as ex:
+            self.add_error(_('Duplicated section at line [{lineno}].').format(lineno=ex.lineno), ex.section)
             return
-        except DuplicateOptionError as doe:
-            self.add_error(f'option dupliquée à la ligne {doe.lineno}', doe.section, doe.option)
+        except DuplicateOptionError as ex:
+            self.add_error(
+                _('Duplicated option at line [{lineno}].').format(lineno=ex.lineno), ex.section, ex.option)
             return
-        except MissingSectionHeaderError as mshe:
-            self.add_error(f'la première rubrique manque à la ligne {mshe.lineno} : [{bytes(mshe.line, "utf-8")}]')
+        except MissingSectionHeaderError as ex:
             return
-        except ParsingError as pe:
-            self.add_error(f'erreur de parsing: {pe.message}')
+        except ParsingError as ex:
+            self.add_error(_('Parsing error: [{ex}].').format(ex=ex.message))
+            self.add_error(f'erreur de parsing: {ex.message}')
             return
-        except Error as e:
-            self.add_error(f'erreur: {e.message}')
+        except Error as ex:
+            self.add_error(_('Error: [{ex}].').format(ex=ex.message))
             return
-
-    @property
-    def ini_file(self) -> Path:
-        return self.__ini_file
 
     def __format_message(self, text: str, section_key: str | None, key: str | None):
         if section_key is None:
@@ -158,7 +157,7 @@ class ConfigReader(ConfigParser):
         IMPORTANT: This assumes we do not rename the default section"""
         # NOTE(Amaras) this can add values that are in DEFAULTSEC if any.
         # This can also cause a crash if we're trying to delete DEFAULTSEC,
-        # as deleting DEFAUTLSEC causes a ValueError.
+        # as deleting DEFAULTSEC causes a ValueError.
         self[new_section_key] = self[old_section_key]
         del self[old_section_key]
 

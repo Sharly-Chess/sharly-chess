@@ -1,7 +1,7 @@
 import logging
 import re
 import time
-from collections import defaultdict
+from collections import defaultdict, Counter
 from dataclasses import dataclass
 from functools import total_ordering, cached_property
 from logging import Logger
@@ -9,18 +9,22 @@ from operator import attrgetter
 from pathlib import Path
 from typing import Iterable
 
+from unidecode import unidecode
+
 from common import format_timestamp_date_time, format_timestamp_date, format_timestamp_time
 from common.background import inline_image_url
+from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.chessevent import ChessEvent
 from data.family import Family
+from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
 from data.rotator import Rotator
 from data.screen import Screen
 from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
-from data.util import ScreenType
+from data.util import ScreenType, PlayerFFELicence, PlayerGender
 from database.store import StoredEvent
 
 logger: Logger = get_logger()
@@ -48,23 +52,29 @@ class EventMessage:
     @property
     def formatted_text(self) -> str:
         if self.tournament:
-            return f'tournoi [{self.tournament.uniq_id}] : {self.text}'
+            return _('Tournament [{tournament_uniq_id}]: {text}').format(
+                tournament_uniq_id=self.tournament.uniq_id, text=self.text)
         if self.chessevent:
-            return f'connexion à ChessEvent [{self.chessevent.uniq_id}] : {self.text}'
+            return _('ChessEvent connection [{chessevent_uniq_id}]: {text}').format(
+                chessevent_uniq_id=self.chessevent.uniq_id, text=self.text)
         elif self.family:
-            return f'famille [{self.family.uniq_id}] : {self.text}'
+            return _('Family [{family_uniq_id}]: {text}').format(
+                family_uniq_id=self.family.uniq_id, text=self.text)
         elif self.timer_hour:
-            return f'chronomètre [{self.timer_hour.timer.uniq_id}], horaire n°{self.timer_hour.order} : {self.text}'
+            return _('Timer [{timer_uniq_id}], hour [{hour_order}]: {text}').format(
+                timer_uniq_id=self.timer_hour.timer.uniq_id, hour_order=self.timer_hour.order, text=self.text)
         elif self.timer:
-            return f'chronomètre [{self.timer.uniq_id}] : {self.text}'
+            return _('Timer [{timer_uniq_id}]: {text}').format(
+                timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text)
         elif self.screen_set:
-            return f'écran [{self.screen.uniq_id}], horaire n°{self.screen_set.order} : {self.text}'
+            return _('Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}').format(
+                screen_uniq_id=self.screen.uniq_id, screen_set_order=self.screen_set.order, text=self.text)
         elif self.screen:
-            return f'écran [{self.screen.uniq_id}] : {self.text}'
+            return _('Screen [{screen_uniq_id}]: {text}').format(screen_uniq_id=self.screen.uniq_id, text=self.text)
         elif self.rotator:
-            return f'écran rotatif [{self.rotator.uniq_id}] : {self.text}'
+            return _('Rotator [{rotator_uniq_id}]: {text}').format(rotator_uniq_id=self.rotator.uniq_id, text=self.text)
         else:
-            return f'{self.text}'
+            return self.text
 
 
 @total_ordering
@@ -78,8 +88,7 @@ class Event:
         event_last_load_date_by_uniq_id[self.uniq_id] = time.time()
         if self.errors:
             self.add_warning(
-                'Des erreurs ont été trouvées sur l\'évènement, les connexions à ChessEvent, chronomètres, tournois, '
-                'écrans, familles et écrans rotatifs ne seront pas chargés')
+                _('Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded.'))
             return
 
     @property
@@ -92,6 +101,7 @@ class Event:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
         index: int
         uniq_id: str
+        base_uniq_id = unidecode(base_uniq_id)
         if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
             base_uniq_id = matches.group(1)
             index = int(matches.group(2))
@@ -126,7 +136,7 @@ class Event:
     def name(self) -> str:
         name: str = self.uniq_id
         if not self.stored_event.name:
-            self.add_error(f'pas de nom défini, par défaut [{name}]')
+            self.add_error(_('No name set, by default [{name}]').format(name=name))
         else:
             name = self.stored_event.name
         return name
@@ -163,21 +173,77 @@ class Event:
     def formatted_stop_time(self) -> str:
         return format_timestamp_time(self.stop)
 
-    @property
+    @cached_property
     def players_number(self) -> int:
-        return sum((len(tournament.players_by_name_with_unpaired) for tournament in self.tournaments_by_id.values()))
+        return sum(len(tournament.players_by_name_with_unpaired) for tournament in self.tournaments_by_id.values())
+
+    @cached_property
+    def players_by_id(self) -> dict[int, Player]:
+        return {
+            player_id: player
+            for tournament_players_id in [tournament.players_by_id for tournament in self.tournaments_by_id.values()]
+            for player_id, player in tournament_players_id.items()
+        }
+
+    @cached_property
+    def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
+        counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
+        for tournament in self.tournaments_by_id.values():
+            for ffe_licence in tournament.ffe_licence_counts:
+                counter[ffe_licence] += tournament.ffe_licence_counts[ffe_licence]
+        return counter
+
+    @cached_property
+    def gender_counts(self) -> Counter[PlayerGender]:
+        counter: Counter[PlayerGender] = Counter[PlayerGender]()
+        for tournament in self.tournaments_by_id.values():
+            for gender in tournament.gender_counts:
+                counter[gender] += tournament.gender_counts[gender]
+        return counter
+
+    @cached_property
+    def federation_counts(self) -> Counter[FederationTuple]:
+        counter: Counter[FederationTuple] = Counter[FederationTuple]()
+        for tournament in self.tournaments_by_id.values():
+            for federation_tuple in tournament.federation_counts:
+                counter[federation_tuple] += tournament.federation_counts[federation_tuple]
+        return counter
+
+    @cached_property
+    def league_counts(self) -> Counter[LeagueTuple]:
+        counter: Counter[LeagueTuple] = Counter[LeagueTuple]()
+        for tournament in self.tournaments_by_id.values():
+            for league_tuple in tournament.league_counts:
+                counter[league_tuple] += tournament.league_counts[league_tuple]
+        return counter
+
+    @cached_property
+    def club_counts(self) -> Counter[ClubTuple]:
+        counter: Counter[ClubTuple] = Counter[ClubTuple]()
+        for tournament in self.tournaments_by_id.values():
+            for club_tuple in tournament.club_counts:
+                counter[club_tuple] += tournament.club_counts[club_tuple]
+        return counter
+
+    @cached_property
+    def check_in_counts(self) -> Counter[bool | None]:
+        counter: Counter[bool | None] = Counter[bool | None]()
+        for tournament in self.tournaments_by_id.values():
+            for check_in in tournament.players_by_check_in_status:
+                counter[check_in] += tournament.check_in_counts[check_in]
+        return counter
 
     @cached_property
     def path(self) -> Path:
         path: Path = PapiWebConfig.default_papi_path
         if not self.stored_event.path:
-            self.add_debug(f'pas de répertoire défini par défaut pour les fichiers Papi, par défaut [{path}]')
+            self.add_debug(_('No directory set for Papi files, by default [{path}].').format(path=path))
         else:
             path = Path(self.stored_event.path)
         if not path.exists():
-            self.add_warning(f'le répertoire [{path}] n\'existe pas')
+            self.add_warning(_('Directory [{path}] not found.').format(path=path))
         elif not path.is_dir():
-            self.add_warning(f'[{path}] n\'est pas un répertoire')
+            self.add_error(_('[{path}] is not a directory.').format(path=path))
         return path
 
     @cached_property
@@ -186,7 +252,8 @@ class Event:
             return ''
         background_image: str = PapiWebConfig.default_background_image
         if not self.stored_event.background_image:
-            self.add_debug(f'pas d\'image de fond définie, image de fond par défaut : [{background_image}]')
+            self.add_debug(_('No background image set, by default [{background_image}]').format(
+                background_image=background_image))
         else:
             background_image = self.stored_event.background_image
         return background_image
@@ -199,7 +266,8 @@ class Event:
     def background_color(self) -> str:
         background_color: str = PapiWebConfig.default_background_color
         if not self.stored_event.background_color:
-            self.add_debug(f'pas de couleur de fond définie, couleur de fond par défaut : [{background_color}]')
+            self.add_debug(_('No background colour set, by default [{background_color}]').format(
+                background_color=background_color))
         else:
             background_color = self.stored_event.background_color
         return background_color
@@ -208,14 +276,15 @@ class Event:
     def update_password(self) -> str | None:
         update_password: str | None = self.stored_event.update_password
         if not update_password:
-            self.add_debug('pas de mot de passe défini pour les écrans de saisie')
+            self.add_debug(_('No password set for the results entry'))
         return update_password
 
     @cached_property
     def record_illegal_moves(self) -> int:
         record_illegal_moves: int = PapiWebConfig.default_record_illegal_moves_number
         if self.stored_event.record_illegal_moves is None:
-            self.add_debug(f'nombre de coups illégaux non défini, par défaut [{record_illegal_moves}]')
+            self.add_debug(_('Maximum number of illegal moves not set, by default [{record_illegal_moves}]').format(
+                record_illegal_moves=record_illegal_moves))
         else:
             record_illegal_moves = self.stored_event.record_illegal_moves
         return record_illegal_moves
@@ -349,9 +418,7 @@ class Event:
             for stored_chessevent in self.stored_event.stored_chessevents
         }
         if self.errors:
-            self.add_warning(
-                'Des erreurs ont été trouvées sur les connexions à ChessEvent, les chronomètres, tournois, écrans, '
-                'familles et écrans rotatifs ne seront pas chargés')
+            self.add_warning(_('Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded.'))
         return chessevents_by_id
 
     @cached_property
@@ -376,8 +443,7 @@ class Event:
         }
         if self.errors:
             self.add_warning(
-                'Des erreurs ont été trouvées sur les chronomètres, les tournois, écrans, familles et écrans rotatifs '
-                'ne seront pas chargés')
+                _('Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.'))
         return timers_by_id
 
     @cached_property
@@ -402,8 +468,7 @@ class Event:
         }
         if self.errors:
             self.add_warning(
-                'Des erreurs ont été trouvées sur les tournois, écrans, familles et écrans rotatifs ne seront pas '
-                'chargés')
+                _('Errors have been found on tournaments; screens, families and rotators will not be loaded.'))
         return tournaments_by_id
 
     @cached_property
@@ -433,8 +498,7 @@ class Event:
             for stored_screen in self.stored_event.stored_screens
         }
         if self.errors:
-            self.add_warning(
-                'Des erreurs ont été trouvées sur les écrans, les familles et écrans rotatifs ne seront pas chargés')
+            self.add_warning(_('Errors have been found on screens; families and rotators will not be loaded.'))
         return screens_by_id
 
     @cached_property
@@ -463,8 +527,7 @@ class Event:
             for stored_family in self.stored_event.stored_families
         }
         if self.errors:
-            self.add_warning(
-                'Des erreurs ont été trouvées sur les familles les écrans rotatifs ne seront pas chargés')
+            self.add_warning(_('Errors have been found on families; rotators will not be loaded.'))
         return families_by_id
 
     @cached_property
@@ -507,8 +570,7 @@ class Event:
             for stored_rotator in self.stored_event.stored_rotators
         }
         if self.errors:
-            self.add_warning(
-                'Des erreurs ont été trouvées sur les écrans rotatifs')
+            self.add_warning(_('Errors have been found on rotators.'))
         return rotators_by_id
 
     @cached_property

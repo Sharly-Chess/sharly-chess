@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from common.papi_web_config import PapiWebConfig
 
 """
-All the classes of this module are basic data classed stored into event databases.
+All the classes of this module are basic data classes stored into event databases.
 """
 
 
@@ -67,6 +67,7 @@ class StoredTournament:
     chessevent_tournament_name: str | None
     record_illegal_moves: int | None
     rules: str | None
+    check_in_open: bool = field(default=False)
     last_update: float = field(default=0.0)
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)

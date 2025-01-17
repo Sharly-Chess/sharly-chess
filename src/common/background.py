@@ -12,7 +12,6 @@ logger: Logger = get_logger()
 
 def inline_image_url(image: str | None) -> str:
     """
-    Return a true URL or
     :param image: an already true-URL (absolute or relative starting by '/')
     or the path of a custom file (a path relative to /custom is expected)
     :return: a true URL (data-inline if a file path is provided).
@@ -26,7 +25,7 @@ def inline_image_url(image: str | None) -> str:
     if not file.exists():
         file: Path = Path('src') / PapiWebConfig.embedded_custom_path / image
         if not file.exists():
-            logger.warning(f'L\'image [{file}] n\'existe pas.')
+            logger.warning(f'Image [{file}] not found.')
             return PapiWebConfig.error_background_image
     with open(file, 'rb') as f:
         data: bytes = f.read()

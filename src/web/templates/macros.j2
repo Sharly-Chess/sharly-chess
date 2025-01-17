@@ -10,26 +10,26 @@
     <!-- visibility_icon() -->
     {% if public %}
         {% if object_type == 'event' %}
-            {% set _tooltip_text=tooltip_public_text or 'Cet évènement est public (par défaut, les écrans sont visibles des utilisateur·ices).' %}
+            {% set _tooltip_text=tooltip_public_text or _('This event is public (by default, screens are visible by the users).') %}
         {% elif object_type == 'screen' %}
-            {% set _tooltip_text=tooltip_public_text or 'Cet écran est public (visible des utilisateur·ices).' %}
+            {% set _tooltip_text=tooltip_public_text or _('This screen is public (visible by the users).') %}
         {% elif object_type == 'family' %}
-            {% set _tooltip_text=tooltip_public_text or 'Cette famille d\'écrans est publique (visible des utilisateur·ices).' %}
+            {% set _tooltip_text=tooltip_public_text or _('This screen family is public (visible by the users).') %}
         {% elif object_type == 'rotator' %}
-            {% set _tooltip_text=tooltip_public_text or 'Cet écran rotatif est public (visible des utilisateur·ices).' %}
+            {% set _tooltip_text=tooltip_public_text or _('This rotator is public (visible by the users).') %}
         {% else %}
             {% set _tooltip_text=tooltip_public_text or '???' %}
         {% endif %}
         {% set _icon_class='bi-unlock-fill text-success' %}
     {% else %}
         {% if object_type == 'event' %}
-            {% set _tooltip_text=tooltip_private_text or 'Cet évènement est privé (par défaut, les écrans ne sont pas visibles des utilisateur·ices).' %}
+            {% set _tooltip_text=tooltip_private_text or _('This event is private (by default, screens are not visible by the users).') %}
         {% elif object_type == 'screen' %}
-            {% set _tooltip_text=tooltip_private_text or 'Cet écran est privé (non visible des utilisateur·ices).' %}
+            {% set _tooltip_text=tooltip_private_text or _('This screen is private (not visible by the users).') %}
         {% elif object_type == 'family' %}
-            {% set _tooltip_text=tooltip_private_text or 'Cette famille d\'écrans est privée (non visible des utilisateur·ices).' %}
+            {% set _tooltip_text=tooltip_private_text or _('This screen family is private (not visible by the users).') %}
         {% elif object_type == 'rotator' %}
-            {% set _tooltip_text=tooltip_private_text or 'Cet écran rotatif est privé (non visible des utilisateur·ices).' %}
+            {% set _tooltip_text=tooltip_private_text or _('This rotator is private (not visible by the users).') %}
         {% else %}
             {% set _tooltip_text=tooltip_private_text or '???' %}
         {% endif %}
@@ -41,26 +41,31 @@
         >
         <i class="{{ _icon_class }}"></i>
     </span>
+    <!-- end visibility_icon() -->
 {% endmacro %}
 
 {% macro event_visibility_icon(event, class) %}
     <!-- event_visibility_icon() -->
     {{ visibility_icon('event', event.public, '', '', class) }}
+    <!-- end event_visibility_icon() -->
 {% endmacro %}
 
 {% macro screen_visibility_icon(screen, class) %}
     <!-- screen_visibility_icon() -->
     {{ visibility_icon('screen', screen.public, '', '', class) }}
+    <!-- end screen_visibility_icon() -->
 {% endmacro %}
 
 {% macro family_visibility_icon(family, class) %}
     <!-- family_visibility_icon() -->
     {{ visibility_icon('family', family.public, '', '', class) }}
+    <!-- end family_visibility_icon() -->
 {% endmacro %}
 
 {% macro rotator_visibility_icon(rotator, class) %}
     <!-- rotator_visibility_icon() -->
     {{ visibility_icon('rotator', rotator.public, '', '', class) }}
+    <!-- end rotator_visibility_icon() -->
 {% endmacro %}
 
 {% macro tournament_status_icon(tournament, class) %}
@@ -70,16 +75,16 @@
         {% set _tooltip_text='' %}
     {% elif not tournament.started %}
         {% set _icon_class='bi-pause-fill' %}
-        {% set _tooltip_text='Le tournoi n\'est pas commencé.' %}
+        {% set _tooltip_text=_('The tournament is not started yet.') %}
     {% elif tournament.playing %}
         {% set _icon_class='bi-caret-right-square-fill' %}
-        {% set _tooltip_text='La ronde ' ~ tournament.current_round ~ ' est en cours.' %}
+        {% set _tooltip_text=_('Round %(round)d is running.', round=tournament.current_round) %}
     {% elif not tournament.finished %}
         {% set _icon_class='bi-pause-fill' %}
-        {% set _tooltip_text='La ronde ' ~ tournament.current_round ~ ' est terminée.' %}
+        {% set _tooltip_text=_('Round #%(round)d is finished.', round=tournament.current_round) %}
     {% else %}
         {% set _icon_class='bi-check-circle-fill text-success' %}
-        {% set _tooltip_text='Le tournoi est terminé.' %}
+        {% set _tooltip_text=_('The tournament is finished.') %}
     {% endif %}
     <span
             class="fw-bold {{ class }}"
@@ -87,25 +92,26 @@
         >
         <i class="{{ _icon_class }}"></i>
     </span>
+    <!-- end tournament_status_icon() -->
 {% endmacro %}
 
 {% macro screen_type_icon(screen_type, tooltip) %}
     <!-- screen_type_icon() -->
     {% if screen_type == 'boards' %}
         {% set _icon_class='bi-card-list' %}
-        {% set _tooltip_text='Les écrans d\'affichage des échiquiers présentent les appariements des joueur·euses par ordre croissant des échiquiers.' %}
+        {% set _tooltip_text=_('Boards screens show pairings by board number.') %}
     {% elif screen_type == 'input' %}
         {% set _icon_class='bi-pencil-fill' %}
-        {% set _tooltip_text='Les écrans de saisie des résultats présentent les appariements des joueur·euses par ordre croissant des échiquiers et permet l\'entrée des résultats par les joueur·euses ou les arbitres.' %}
+        {% set _tooltip_text=_('Input screens show pairings by board number and allow people to enter results.') %}
     {% elif screen_type == 'players' %}
         {% set _icon_class='bi-people-fill' %}
-        {% set _tooltip_text='Les écrans d\'affichage des joueur·euses présentent les appariements des joueur·euses par ordre alphabétique.' %}
+        {% set _tooltip_text=_('Players screens show pairings by alphabetical order.') %}
     {% elif screen_type == 'results' %}
         {% set _icon_class='bi-trophy-fill' %}
-        {% set _tooltip_text='Les écrans de résultats affichent les derniers résultats saisis par ordre anti-chronologique (le plus récent d\'abord).' %}
+        {% set _tooltip_text=_('Results screens show the last results (most recent first).') %}
     {% elif screen_type == 'image' %}
         {% set _icon_class='bi-image' %}
-        {% set _tooltip_text='Les écrans d\'image affichent une image du serveur.' %}
+        {% set _tooltip_text=_('Image screens show an image (local or remote).') %}
     {% else %}
         {% set _icon_class='bi-question' %}
         {% set _tooltip_text='' %}
@@ -116,16 +122,127 @@
         >
         <i class="{{ _icon_class }}"></i>
     </span>
+    <!-- end screen_type_icon() -->
 {% endmacro %}
 
 {% macro rotator_icon() %}
     <!-- rotator_icon() -->
     <span
             class="fw-bold"
-            {{ tooltip_attributes('info', 'Les écrans rotatifs permettent de faire défiler automatiquement plusieurs écrans.', 'top') }}
+            {{ tooltip_attributes('info', _('Rotator automatically rotate between multiple screens.'), 'top') }}
         >
         <i class="bi-repeat"></i>
     </span>
+    <!-- end rotator_icon() -->
+{% endmacro %}
+
+{% macro ffe_licence(ffe_licence, class) %}
+    <!-- ffe_licence() -->
+    <span
+            class="player-ffe-lic ffe-lic-{{ ffe_licence.short_name }} ps-1 pe-1 {{ class }}"
+    >{{ ffe_licence.short_name }}</span>
+    <!-- end ffe_licence() -->
+{% endmacro %}
+
+{% macro player_history(player) %}
+    <!-- player_history() -->
+    {% for pairing in player.pairings.values() %}
+        {% if pairing.forfeit %}
+            {% set _text='f' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.not_paired %}
+            {% set _text='' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.playing %}
+            {% set _text='&nbsp;' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.exempt %}
+            {% set _text='x' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.loss %}
+            {% set _text='-' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.draw %}
+            {% set _text='=' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.gain %}
+            {% set _text='+' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.half_point_bye %}
+            {% set _text='=' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.full_point_bye %}
+            {% set _text='+' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.forfeit_loss or pairing.double_forfeit %}
+            {% set _text='<' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.forfeit_gain %}
+            {% set _text='>' %}
+            {% set _class='text-secondary' %}
+        {% else %}
+            {% set _text='?' %}
+            {% set _class='bg-danger text-white' %}
+        {% endif %}
+        <span
+                class="player-history text-center p-0 m-0  {{ _class }}"
+                {% if tooltip_placement %}
+                    {{ tooltip_attributes(_tooltip_level, _tooltip_text, tooltip_placement) }}
+                {% endif %}
+                style="display: inline-block; width: 1em"
+        >
+            {{ _text|safe }}
+        </span>
+    {% endfor %}
+    <!-- end player_history() -->
+{% endmacro %}
+
+{% macro admin_players_sort_link(url, icon, sort, admin_players_sort) %}
+    <!-- admin_players_sort_link() -->
+    {% if sort == 'alpha' %}
+        {% set _tooltip_text=_('Sort the players by name.') %}
+    {% elif sort == 'rating_desc' %}
+        {% set _tooltip_text=_('Sort the players by rating (most rated first).') %}
+    {% elif sort == 'rating_asc' %}
+        {% set _tooltip_text=_('Sort the players by rating (less rated first).') %}
+    {% elif sort == 'origin' %}
+        {% set _tooltip_text=_('Sort the players by origin (federation, league, club).') %}
+    {% elif sort == 'yob_desc' %}
+        {% set _tooltip_text=_('Sort the players by year of birth (oldest first).') %}
+    {% elif sort == 'yob_asc' %}
+        {% set _tooltip_text=_('Sort the players by year of birth (youngest first).') %}
+    {% elif sort == 'tournament' %}
+        {% set _tooltip_text=_('Sort the players by tournament.') %}
+    {% else %}
+        {% set _tooltip_text='Unknown sort [%(sort)s]'|format(sort=sort) %}
+    {% endif %}
+    <i
+            class="{{ icon }} {% if admin_players_sort != sort %}cursor-pointer{% else %}text-primary{%endif %}"
+            {% if admin_players_sort != sort %}
+                hx-get="{{ url }}"
+                hx-vals='{"admin_players_sort": "{{ sort }}"}'
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            {% endif %}
+            {{ tooltip_attributes('info', _tooltip_text, 'top') }}
+    ></i>
+    <!-- end admin_players_sort_link() -->
+{% endmacro %}
+
+{% macro gender_icon(gender) %}
+    <!-- gender_icon() -->
+    {% if gender.value == 0 %}
+        {% set _icon_class='-' %}
+    {% elif gender.value == 1 %}
+        {% set _icon_class='bi-person-standing-dress' %}
+    {% elif gender.value == 2 %}
+        {% set _icon_class='bi-person-standing' %}
+    {% else %}
+        {% set _icon_class='bi-question' %}
+    {% endif %}
+    {% if _icon_class %}<i class="{{ _icon_class }}"></i>{% endif %}
+    <!-- end gender_icon() -->
 {% endmacro %}
 
 {% macro tooltip_script() %}

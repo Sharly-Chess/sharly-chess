@@ -1,5 +1,5 @@
 {% with id='input-exit-button', name='input_exit_button' %}
-    <label for="{{ id }}" class="form-label">Affichage d'un bouton de sortie de l'écran :</label>
+    <label for="{{ id }}" class="form-label">{{ _('Display of a screen exit button:') }}</label>
     <select
             name="{{ name }}"
             id="{{ id }}"
@@ -12,7 +12,7 @@
         {% endfor %}
     </select>
     <div id="{{ id }}-help" class="form-text">
-      En cachant le bouton de sortie de l'écran, vous empêchez les utilisateur·ices de sortir accidentellement des écrans de saisie.
+      {{ _('When not displaying the exit button, users can not accidentally exit input screens.') }}
     </div>
     {% if name in errors %}
         <div id="{{ id }}-error" class="form-text invalid-feedback">

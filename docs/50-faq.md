@@ -13,3 +13,7 @@
 ## [Chronomètre](50-faq-timer.md)
 
 - Les clients affichent des horaires différents
+
+## [Interface web](50-faq-web.md)
+
+- Peut-on restreindre l'accès à l'interface d'arbitrage ?

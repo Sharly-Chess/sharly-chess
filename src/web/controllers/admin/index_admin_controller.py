@@ -14,6 +14,7 @@ from litestar.params import Body
 from litestar.response import Template, Redirect
 
 from common import format_timestamp_date
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
@@ -73,69 +74,80 @@ class AbstractAdminController(AbstractController):
     def _get_record_illegal_moves_options(default: int | None, ) -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            '0': 'Aucun enregistrement des coups illégaux',
-            '1': 'Maximum 1 coup illégal',
-            '2': 'Maximum 2 coups illégaux',
-            '3': 'Maximum 3 coups illégaux',
+            '0': _('No recording'),
+        } | {
+            str(i): ngettext('{num} illegal move max', '{num} illegal moves max', i).format(num=i)
+            for i in range (1, 4)
         }
-        options[''] = f'Par défaut ({options[str(default)]})'
+        options[''] = _('By default - {option}').format(option=options[str(default)])
         return options
 
     @staticmethod
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
         return {
-            1: f'La couleur n°1 est utilisée jusqu\'à {delays[1]} minutes avant le début des rondes (délai n°1), '
-               f'la couleur change ensuite progressivement jusqu\'à la couleur n°2 ({delays[2]} minutes avant le '
-               f'début des rondes).',
-            2: f'La couleur n°2 est utilisée {delays[2]} minutes avant le début des rondes (délai n°2), la couleur '
-               f'change ensuite progressivement jusqu\'à la couleur n°3 (au début des rondes).',
-            3: f'La couleur n°3 est utilisée à partir du début des rondes et pendant {delays[3]} minutes (délai n°3).',
+            1: _(
+                'Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).'
+            ).format(delay_1=delays[1], delay_2=delays[2]),
+            2: _(
+                'Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).'
+            ).format(delay_2=delays[2]),
+            3: _(
+                'Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).'
+            ).format(delay_3=delays[3]),
         }
 
     @staticmethod
     def _get_screen_type_options(family_screens_only: bool) -> dict[str, str]:
         options: dict[str, str] = {
             '': '-',
-            'boards': 'Appariements par échiquier',
-            'input': 'Saisie des résultats',
-            'players': 'Appariements par ordre alphabétique',
+            'input': _('Results entry'),
+            'boards': _('Pairings by board'),
+            'players': _('Pairings by player'),
         }
         if not family_screens_only:
-            options['results'] = 'Derniers résultats'
-            options['image'] = 'Image'
+            options['results'] = _('Last results')
+            options['image'] = _('Image')
         return options
 
     @staticmethod
     def _get_timer_options(event: Event) -> dict[str, str]:
         options: dict[str, str] = {
-            '': 'Pas de chronomètre' if event.timers_by_id else 'Aucun chronomètre enregistré',
+            '': _('Use no timer') if event.timers_by_id else _('No timer defined'),
         }
         for timer in event.timers_by_id.values():
-            options[str(timer.id)] = f'Chronomètre [{timer.uniq_id}]'
+            options[str(timer.id)] = _('Timer {timer_uniq_id}').format(timer_uniq_id=timer.uniq_id)
         return options
 
     @staticmethod
     def _get_input_exit_button_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '-',
-            'on': 'Le bouton de sortie d\'écran est affiché',
-            'off': 'Le bouton de sortie d\'écran n\'est pas affiché',
+            'on': _('Display the exit button'),
+            'off': _('Hide the exit button'),
         }
-        options[''] = f'Par défaut ({options["on" if PapiWebConfig.default_input_exit_button else "off"]})'
+        options[''] = _('By default - {option}').format(
+            option=options["on" if PapiWebConfig.default_input_exit_button else "off"])
         return options
 
     @staticmethod
     def _get_players_show_unpaired_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '-',
-            'off': 'Affichage seulement des joueur·euses apparié·es',
-            'on': 'Affichage de tou·tes les joueur·euses, apparié·es ou non',
+            'off': _('Display only paired players'),
+            'on': _('Display all the players, paired and unpaired'),
         }
-        options[''] = f'Par défaut ({options["on" if PapiWebConfig.default_players_show_unpaired else "off"]})'
+        options[''] = _('By default - {option}').format(
+            option=options["on" if PapiWebConfig.default_players_show_unpaired else "off"])
         return options
 
 
 class AbstractIndexAdminController(AbstractAdminController):
+    """ An abstract class inherited by all the admin controllers."""
+
+    @staticmethod
+    def set_admin_columns(request: HTMXRequest, admin_columns: int | None):
+        if admin_columns:
+            SessionHandler.set_session_admin_columns(request, admin_columns)
 
     @staticmethod
     def _admin_validate_record_illegal_moves_update_data(
@@ -149,7 +161,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             assert record_illegal_moves is None or 0 <= record_illegal_moves <= 3
         except (ValueError, AssertionError):
             record_illegal_moves = None
-            errors['record_illegal_moves'] = f'La valeur entrée [{data[field]}] n\'est pas valide.'
+            errors['record_illegal_moves'] = _('Invalid value [{value}].').format(value=data[field])
         return record_illegal_moves
 
     @staticmethod
@@ -164,20 +176,21 @@ class AbstractIndexAdminController(AbstractAdminController):
                 try:
                     response = requests.get(rules)
                     if response.status_code != 200:
-                        errors[field] = \
-                            f'L\'URL [{rules}] est en erreur (code [{response.status_code}]).'
+                        errors[field] = _(
+                            'URL [{url}] responded code [{code}].').format(url=rules, code=response.status_code)
                 except requests.ConnectionError as ce:
-                    errors[field] = f'L\'URL [{rules}] est en erreur ([{ce}]).'
+                    errors[field] = _(
+                        'URL [{url}] did not respond (error: [{error}]).').format(url=rules, error=str(ce))
             else:
                 if rules.find('..') != -1:
-                    errors[field] = f'Le chemin [{rules}] est incorrect.'
+                    errors[field] = _('Incorrect path [{path}].').format(path=rules)
                     data[field] = ''
                 else:
                     file: Path = Path(rules)
                     if not file.exists() or not file.is_file():
-                        errors[field] = f'Le fichier [{rules}] est introuvable.'
+                        errors[field] = _('File [{file}] not found.').format(file=rules)
                     elif file.suffix.lower() != '.pdf':
-                        errors[field] = f'Un fichier PDF est attendu [{file.suffix}].'
+                        errors[field] = _('Wrong file extension [{ext}] ([pdf] expected).').format(ext=file.suffix)
         return rules
 
     @staticmethod
@@ -192,7 +205,8 @@ class AbstractIndexAdminController(AbstractAdminController):
             try:
                 background_color = WebContext.form_data_to_rgb(data, field)
             except ValueError:
-                errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
+                errors[field] = _('Invalid color [{color}] ([#RRGGBB] expected).').format(
+                                color={data[field]})
         return background_color
 
     @classmethod
@@ -209,23 +223,23 @@ class AbstractIndexAdminController(AbstractAdminController):
         uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
         if action == 'delete':
             if not uniq_id:
-                errors['uniq_id'] = 'Veuillez entrer l\'identifiant de l\'évènement.'
+                errors['uniq_id'] = _('Please enter the event ID.')
             elif uniq_id != admin_event.uniq_id:
-                errors['uniq_id'] = 'L\'identifiant entré n\'est pas valide.'
+                errors['uniq_id'] = _('event ID does not match.')
         else:
             if not uniq_id:
-                errors['uniq_id'] = 'Veuillez entrer l\'identifiant de l\'évènement.'
+                errors['uniq_id'] = _('Please enter the event ID.')
             elif uniq_id.find('/') != -1:
-                errors['uniq_id'] = "le caractère « / » n\'est pas autorisé"
+                errors['uniq_id'] = _('Character [{char}] is not allowed.').format(char='/')
             else:
                 event_uniq_ids: list[str] = EventLoader.get(request=request).event_uniq_ids
                 match action:
                     case 'clone' | 'create':
                         if uniq_id in event_uniq_ids:
-                            errors['uniq_id'] = f'L\'évènement [{uniq_id}] existe déjà.'
+                            errors['uniq_id'] = _('Event [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case 'update':
                         if uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids:
-                            errors['uniq_id'] = f'L\'évènement [{uniq_id}] existe déjà.'
+                            errors['uniq_id'] = _('Event [{uniq_id}] already exists.').format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
         name: str | None = None
@@ -248,19 +262,19 @@ class AbstractIndexAdminController(AbstractAdminController):
             case 'clone' | 'update' | 'create':
                 name: str | None = WebContext.form_data_to_str(data, 'name')
                 if not name:
-                    errors['name'] = 'Veuillez entrer le nom de l\'évènement.'
+                    errors['name'] = _('Please enter the name of the event.')
                 start_str: str | None = WebContext.form_data_to_str(data, 'start')
                 if not start_str:
-                    errors['start'] = 'Veuillez entrer la date de début de l\'évènement.'
+                    errors['start'] = _('Please enter the start date of the event.')
                 else:
                     start = time.mktime(datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple())
                 stop_str: str | None = WebContext.form_data_to_str(data, 'stop')
                 if not stop_str:
-                    errors['stop'] = 'Veuillez entrer la date de fin de l\'évènement.'
+                    errors['stop'] = _('Please enter the end date of the event.')
                 else:
                     stop = time.mktime(datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple())
                 if 'start' not in errors and 'stop' not in errors and start > stop:
-                    errors['stop'] = 'Veuillez entrer la date postérieure à la date de début.'
+                    errors['stop'] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
                 path: str | None = WebContext.form_data_to_str(data, 'path')
                 update_password = WebContext.form_data_to_str(data, 'update_password')
@@ -272,20 +286,23 @@ class AbstractIndexAdminController(AbstractAdminController):
                             try:
                                 response = requests.get(background_image)
                                 if response.status_code != 200:
-                                    errors[field] = \
-                                        f'L\'URL [{background_image}] est en erreur (code [{response.status_code}]).'
+                                    errors[field] = _(
+                                        'URL [{url}] responded code [{code}].').format(
+                                        url=background_image, code=response.status_code)
                             except requests.ConnectionError as ce:
-                                errors[field] = f'L\'URL [{background_image}] est en erreur ([{ce}]).'
+                                errors[field] = _(
+                                    'URL [{url}] did not respond (error: [{error}]).').format(
+                                    url=background_image, error=str(ce))
                         elif Path(background_image).exists():
-                            errors[field] = 'Veuillez indiquer une URL ou choisir une image à droite.'
+                            errors[field] = _('Please enter a URL or select an image on the right hand side.')
                         else:
                             background_image = background_image.strip('/')
                             if background_image.find('..') != -1:
-                                errors[field] = f'Le chemin [{background_image}] est incorrect.'
+                                errors[field] = _('Incorrect path [{path}].').format(path=background_image)
                                 data[field] = ''
                             elif not (PapiWebConfig.custom_path / background_image).exists() \
                                     and not (PapiWebConfig.embedded_custom_path / background_image).exists():
-                                errors[field] = f'Le fichier [{background_image}] est introuvable.'
+                                errors[field] = _('File [{file}] not found.').format(file=background_image)
                 background_color = cls._admin_validate_background_color_update_data(data, errors)
                 record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(data, errors)
                 rules = cls._admin_validate_rules_update_data(data, errors)
@@ -295,12 +312,14 @@ class AbstractIndexAdminController(AbstractAdminController):
                         try:
                             timer_colors[i] = WebContext.form_data_to_rgb(data, field)
                         except ValueError:
-                            errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
+                            errors[field] = _('Invalid color [{color}] ([#RRGGBB] expected).').format(
+                                color={data[field]})
                     field: str = f'delay_{i}'
                     try:
                         timer_delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
                     except ValueError:
-                        errors[field] = f'Le délai [{data[field]}] n\'est pas valide (attendu un entier positif).'
+                        errors[field] = _('Invalid delay [{delay}] (positive integer expected).').format(
+                            delay=data[field])
                 field: str = 'message_text'
                 message_text = WebContext.form_data_to_str(data, field)
                 field: str = 'message_color'
@@ -308,13 +327,13 @@ class AbstractIndexAdminController(AbstractAdminController):
                     try:
                         message_color = WebContext.form_data_to_rgb(data, field)
                     except ValueError:
-                        errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
+                        errors[field] = _('Invalid color [{color}] ([#RRGGBB] expected).').format(color={data[field]})
                 field: str = 'message_background_color'
                 if not WebContext.form_data_to_bool(data, field + '_checkbox'):
                     try:
                         message_background_color = WebContext.form_data_to_rgb(data, field)
                     except ValueError:
-                        errors[field] = f'La couleur [{data[field]}] n\'est pas valide (attendu [#RRGGBB]).'
+                        errors[field] = _('Invalid color [{color}] ([#RRGGBB] expected).').format(color={data[field]})
                 pass
             case 'delete':
                 pass
@@ -406,8 +425,8 @@ class AbstractIndexAdminController(AbstractAdminController):
                 name = EventLoader.get(request).get_unused_event_name(admin_event.stored_event.name)
                 uniq_id = EventLoader.get(request).get_unused_event_uniq_id(admin_event.stored_event.uniq_id)
             case 'create':
-                name = EventLoader.get(request).get_unused_event_name('Nouvel évènement')
-                uniq_id = EventLoader.get(request).get_unused_event_uniq_id('event')
+                name = EventLoader.get(request).get_unused_event_name(_('New event'))
+                uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
             case 'delete':
                 pass
             case _:
@@ -495,52 +514,48 @@ class AbstractIndexAdminController(AbstractAdminController):
     @classmethod
     def _admin_render(
             cls,
-            request: HTMXRequest,
-            admin_tab: str | None = None,
+            web_context: AdminWebContext,
             modal: str | None = None,
             data: dict[str, str] | None = None,
             errors:  dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        web_context: AdminWebContext = AdminWebContext(request, data=None, admin_tab=admin_tab)
-        if web_context.error:
-            return web_context.error
-        event_loader: EventLoader = EventLoader.get(request=request)
-        archive_loader: ArchiveLoader = ArchiveLoader.get(request=request)
+        event_loader: EventLoader = EventLoader.get(request=web_context.request)
+        archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
         nav_tabs: dict[str, dict[str, Any]] = {
             'current_events': {
-                'title': f'Évènements en cours ({len(event_loader.current_events) or "-"})',
+                'title': _('Current events ({num})').format(num=len(event_loader.current_events) or '-'),
                 'template': 'admin_events.html',
                 'events': event_loader.current_events,
                 'disabled': not event_loader.current_events,
-                'empty_str': 'Aucun évènement en cours.',
+                'empty_str': _('No current events.'),
                 'icon_class': 'bi-calendar',
             },
             'coming_events': {
-                'title': f'Évènements à venir ({len(event_loader.coming_events) or "-"})',
+                'title': _('Upcoming events ({num})').format(num=len(event_loader.coming_events) or '-'),
                 'template': 'admin_events.html',
                 'events': event_loader.coming_events,
                 'disabled': not event_loader.coming_events,
-                'empty_str': 'Aucun évènement à venir.',
+                'empty_str': _('No upcoming events.'),
                 'icon_class': 'bi-calendar-check',
             },
             'passed_events': {
-                'title': f'Évènements passés ({len(event_loader.passed_events) or "-"})',
+                'title': _('Passed events ({num})').format(num=len(event_loader.passed_events) or '-'),
                 'template': 'admin_events.html',
                 'events': event_loader.passed_events,
                 'disabled': not event_loader.passed_events,
-                'empty_str': 'Aucun évènement passé.',
+                'empty_str': _('No passed events.'),
                 'icon_class': 'bi-calendar-minus',
             },
             'archives': {
-                'title': f'Archives ({len(archive_loader.archives_sorted_by_date) or "-"})',
+                'title': _('Archived events ({num})').format(num=len(archive_loader.archives_sorted_by_date) or '-'),
                 'template': 'admin_archives.html',
                 'archives': archive_loader.archives_sorted_by_date,
                 'disabled': not archive_loader.archives_sorted_by_date,
-                'empty_str': 'Aucun évènement archivé.',
+                'empty_str': _('No archived events.'),
                 'icon_class': 'bi-archive-fill',
             },
             'config': {
-                'title': 'Configuration Papi-web',
+                'title': _('Papi-web configuration'),
                 'template': 'admin_config.html',
                 'icon_class': 'bi-gear-fill',
                 'disabled': False,
@@ -555,17 +570,17 @@ class AbstractIndexAdminController(AbstractAdminController):
         context = web_context.template_context | {
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
-            'messages': Message.messages(request),
+            'messages': Message.messages(web_context.request),
             'nav_tabs': nav_tabs,
-            'admin_columns': SessionHandler.get_session_admin_columns(request),
+            'admin_columns': SessionHandler.get_session_admin_columns(web_context.request),
         }
         match modal:
             case None:
                 pass
             case 'event':
                 if data is None:
-                    data = cls._prepare_event_modal_data('create', request, None)
-                    stored_event: StoredEvent = cls._admin_validate_event_update_data('create', request, None, data)
+                    data = cls._prepare_event_modal_data('create', web_context.request, None)
+                    stored_event: StoredEvent = cls._admin_validate_event_update_data('create', web_context.request, None, data)
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
@@ -593,13 +608,17 @@ class IndexAdminController(AbstractIndexAdminController):
             cls, request: HTMXRequest,
             admin_tab: str | None,
             admin_columns: int | None = None,
+            locale: str | None = None,
             modal: str | None = None,
             data: dict[str, str] | None = None,
             errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        if admin_columns is not None:
-            SessionHandler.set_session_admin_columns(request, admin_columns)
-        return cls._admin_render(request, admin_tab=admin_tab, modal=modal, data=data, errors=errors)
+        cls.set_locale(request, locale)
+        cls.set_admin_columns(request, admin_columns)
+        web_context: AdminWebContext = AdminWebContext(request, data=None, admin_tab=admin_tab)
+        if web_context.error:
+            return web_context.error
+        return cls._admin_render(web_context, modal=modal, data=data, errors=errors)
 
     @get(
         path='/admin',
@@ -609,12 +628,9 @@ class IndexAdminController(AbstractIndexAdminController):
     async def htmx_admin(
             self, request: HTMXRequest,
             admin_columns: int | None,
+            locale: str | None,
     ) -> Template | ClientRedirect:
-        return self._admin(
-            request,
-            admin_tab=None,
-            admin_columns=admin_columns,
-        )
+        return self._admin(request, admin_tab=None, admin_columns=admin_columns, locale=locale, )
 
     @get(
         path='/admin/{admin_tab:str}',
@@ -625,12 +641,9 @@ class IndexAdminController(AbstractIndexAdminController):
             self, request: HTMXRequest,
             admin_tab: str,
             admin_columns: int | None,
+            locale: str | None,
     ) -> Template | ClientRedirect:
-        return self._admin(
-            request,
-            admin_tab=admin_tab,
-            admin_columns=admin_columns,
-        )
+        return self._admin(request, admin_tab=admin_tab, admin_columns=admin_columns, locale=locale, )
 
     @get(
         path='/admin/{admin_tab:str}/event-modal/create',
@@ -641,11 +654,7 @@ class IndexAdminController(AbstractIndexAdminController):
             self, request: HTMXRequest,
             admin_tab: str,
     ) -> Template | ClientRedirect:
-        return self._admin(
-            request,
-            admin_tab=admin_tab,
-            modal='event',
-        )
+        return self._admin(request, admin_tab=admin_tab, modal='event', )
 
     def _admin_event_create(
             self, request: HTMXRequest,
@@ -664,7 +673,7 @@ class IndexAdminController(AbstractIndexAdminController):
         with EventDatabase(uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
             event_database.commit()
-        Message.success(request, f'L\'évènement [{uniq_id}] a été créé.')
+        Message.success(request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id))
         return Redirect(admin_event_url(request, event_uniq_id=uniq_id))
 
     @post(
@@ -676,8 +685,4 @@ class IndexAdminController(AbstractIndexAdminController):
             data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
             admin_tab: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event_create(
-            request,
-            admin_tab=admin_tab,
-            data=data,
-        )
+        return self._admin_event_create(request, admin_tab=admin_tab, data=data, )

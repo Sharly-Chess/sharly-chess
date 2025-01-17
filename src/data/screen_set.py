@@ -5,16 +5,17 @@ from logging import Logger
 from typing import Any, TYPE_CHECKING
 
 from common import format_timestamp_date_time
+from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
 from data.player import Player
-from data.tournament import Tournament
 from data.util import ScreenType
 from database.store import StoredScreenSet
 
 if TYPE_CHECKING:
     from data.event import Event
     from data.screen import Screen
+    from data.tournament import Tournament
 
 logger: Logger = get_logger()
 
@@ -56,7 +57,8 @@ class ScreenSet:
                                 self.fixed_board_numbers.append(int(fixed_board_str))
                             except ValueError:
                                 self.event.add_warning(
-                                    f'le numéro d\'échiquier [{fixed_board_str}] n\'est pas valide.',
+                                    _('Invalid board number [{fixed_board_str}].').format(
+                                        fixed_board_str=fixed_board_str),
                                     screen_set=self)
                 else:
                     self.fixed_board_numbers = [
@@ -73,7 +75,8 @@ class ScreenSet:
                 self.family.calculated_first + self.family_part * self.family.calculated_number - 1)
         if self.first and self.last and self.first > self.last:
             self.event.add_warning(
-                f'Les nombres {self.first} et {self.last} ne sont pas compatibles ({self.first} > {self.last}).',
+                _('Numbers {first} and {last} are not compatible ({first} > {last}).').format(
+                    first=self.first, last=self.last),
                 screen_set=self)
         self.first_item: Any | None = None  # change this to Board | Player | None ?
         self.last_item: Any | None = None  # change this to Board | Player | None ?
@@ -100,7 +103,7 @@ class ScreenSet:
         return self.stored_screen_set.tournament_id if self.stored_screen_set else self.family.tournament_id
 
     @property
-    def tournament(self) -> Tournament:
+    def tournament(self) -> 'Tournament':
         return self.event.tournaments_by_id[self.tournament_id]
 
     @property
@@ -118,7 +121,7 @@ class ScreenSet:
             name: str | None = self.stored_screen_set.name if self.stored_screen_set else self.family.name
             if name is None:
                 if self.first or self.last:
-                    name = 'Ech. %f à %l'
+                    name = _('Boards %f-%l')
                 else:
                     name = '%t'
             name = name.replace('%t', str(self.tournament.name))
@@ -136,7 +139,7 @@ class ScreenSet:
         name: str | None = self.stored_screen_set.name if self.stored_screen_set else self.family.name
         if name is None:
             if self.first or self.last:
-                name = '%f à %l'
+                name = _('%f to %l')
             else:
                 name = '%t'
         name = name.replace('%t', str(self.tournament.name))
@@ -276,22 +279,35 @@ class ScreenSet:
 
     @property
     def numbers_str(self):
-        name: str = 'échiquiers' if self.type in [ScreenType.Boards, ScreenType.Input] else 'joueur·euses'
         if self.fixed_board_numbers:
-            return f'{name} {", ".join(map(str, self.fixed_board_numbers))}'
-        match (self.first, self.last):
-            case (None, None):
-                return 'tous les échiquiers' if self.type in [ScreenType.Boards, ScreenType.Input] \
-                    else 'tou·tes les joueur·euses'
-            case (first, None) if first is not None:
-                return f'{name} à partir du n°{first}'
-            case (first, last) if first is not None and last is not None:
-                return f'{name} du n°{first} au n°{last}'
-            case (None, last) if last is not None:
-                return f"{name} jusqu'au n°{last}"
-            case _:
-                raise ValueError(
-                    f'first={self.first}, last={self.last}')
+            return _('boards {board_numbers}').format(board_numbers=", ".join(map(str, self.fixed_board_numbers)))
+        if self.type in [ScreenType.Boards, ScreenType.Input]:
+            match (self.first, self.last):
+                case (None, None):
+                    return _('all the boards')
+                case (first, None) if first is not None:
+                    return _('boards from #{first} to end').format(first=first)
+                case (first, last) if first is not None and last is not None:
+                    return _('boards from #{first} to #{last}').format(first=first, last=last)
+                case (None, last) if last is not None:
+                    return _('boards from start to #{last}').format(last=last)
+                case _:
+                    raise ValueError(
+                        f'first={self.first}, last={self.last}')
+        else:
+            match (self.first, self.last):
+                case (None, None):
+                    return _('all the players')
+                case (first, None) if first is not None:
+                    return _('players from #{first} to end').format(first=first)
+                case (first, last) if first is not None and last is not None:
+                    return _('players from #{first} to #{last}').format(first=first, last=last)
+                case (None, last) if last is not None:
+                    return _('players from start to #{last}').format(last=last)
+                case _:
+                    raise ValueError(
+                        f'first={self.first}, last={self.last}')
 
     def __str__(self):
-        return f'Tournoi {self.tournament.uniq_id} ({self.numbers_str})'
+        return _('Tournament {tournament_uniq_id} ({numbers_str})').format(
+            tournameuniq_id=self.tournament.uniq_id, numbers_str=self.numbers_str)

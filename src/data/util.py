@@ -6,6 +6,7 @@ from itertools import islice
 from logging import Logger
 from typing import Self
 
+from common.i18n import _
 from common.logger import get_logger
 
 logger: Logger = get_logger()
@@ -37,21 +38,21 @@ class PapiResult(IntEnum):
 
 
 class Result(IntEnum):
-    """An enum representing the results of a game.
-    Should be subclassed if the point value is not the default"""
-    NOT_PAIRED = 0
+    """An enum representing the results in the database. Should be subclassed if the point value is not the default. """
+    NO_RESULT = 0  # NOT PAIRED or NO RESULT YET
     LOSS = 1
     DRAW = 2
     GAIN = 3
     FORFEIT_LOSS = 4
     DOUBLE_FORFEIT = 5
     FORFEIT_GAIN = 6
-    HALF_POINT_BYE = 7
-    PAIRING_ALLOCATED_BYE = 8
-    FULL_POINT_BYE = 9
-    UNRATED_LOSS = 10
-    UNRATED_DRAW = 11
-    UNRATED_GAIN = 12
+    ZERO_POINT_BYE = 7
+    HALF_POINT_BYE = 8
+    PAIRING_ALLOCATED_BYE = 9
+    FULL_POINT_BYE = 10
+    UNRATED_LOSS = 11
+    UNRATED_DRAW = 12
+    UNRATED_GAIN = 13
 
     def __str__(self) -> str:
         match self:
@@ -61,7 +62,7 @@ class Result(IntEnum):
                 return '0-1'
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return '1/2'
-            case Result.NOT_PAIRED:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE:
                 return ''
             case Result.FORFEIT_LOSS:
                 return 'F-1'
@@ -78,23 +79,37 @@ class Result(IntEnum):
             value: int,
             is_point_bye: bool = False,
             is_pairing_bye: bool = False,
+            is_zero_point_bye: bool = False,
             is_unrated: bool = False) -> Self:
         """Create a `Result` instance from the stored value in the
         Papi database."""
         match value:
+            case PapiResult.NOT_PAIRED.value if is_zero_point_bye:
+                return cls.ZERO_POINT_BYE
             case PapiResult.NOT_PAIRED.value:
-                return cls.NOT_PAIRED
+                return cls.NO_RESULT
+            case PapiResult.LOSS.value if is_unrated:
+                return cls.UNRATED_LOSS
             case PapiResult.LOSS.value:
-                return cls.UNRATED_LOSS if is_unrated else cls.LOSS
+                return cls.LOSS
+            case PapiResult.DRAW_OR_HPB.value if is_unrated:
+                return cls.UNRATED_DRAW
+            case PapiResult.DRAW_OR_HPB.value if is_point_bye:
+                return cls.HALF_POINT_BYE
             case PapiResult.DRAW_OR_HPB.value:
-                return cls.UNRATED_DRAW if is_unrated else cls.HALF_POINT_BYE if is_point_bye else cls.DRAW
+                return cls.DRAW
+            case PapiResult.GAIN.value if is_unrated:
+                return cls.UNRATED_GAIN
+            case PapiResult.GAIN.value:
+                return cls.GAIN
             case PapiResult.GAIN.value:
                 return cls.UNRATED_GAIN if is_unrated else cls.GAIN
+            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if is_point_bye:
+                return cls.FULL_POINT_BYE
+            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if is_pairing_bye:
+                return cls.PAIRING_ALLOCATED_BYE
             case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value:
-                return (
-                    cls.FULL_POINT_BYE if is_point_bye
-                    else cls.PAIRING_ALLOCATED_BYE if is_pairing_bye
-                    else cls.FORFEIT_GAIN)
+                return cls.FORFEIT_GAIN
             case PapiResult.FORFEIT_LOSS.value:
                 return cls.FORFEIT_LOSS
             case PapiResult.DOUBLE_FORFEIT.value:
@@ -111,7 +126,7 @@ class Result(IntEnum):
                 return PapiResult.LOSS
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return PapiResult.DRAW_OR_HPB
-            case Result.NOT_PAIRED:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE:
                 return PapiResult.NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS
@@ -134,11 +149,13 @@ class Result(IntEnum):
         Assumes a 0-0.5-1 scoring system.
         """
         match self:
-            case Result.NOT_PAIRED | Result.LOSS | Result.UNRATED_LOSS | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.LOSS \
+                 | Result.UNRATED_LOSS | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
                 return 0.0
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return 0.5
-            case Result.GAIN | Result.UNRATED_GAIN | Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case Result.GAIN | Result.UNRATED_GAIN | Result.FORFEIT_GAIN \
+                 | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 return 1.0
 
     @property
@@ -155,7 +172,7 @@ class Result(IntEnum):
         >>> Result.DRAW.opposite_result == Result.DRAW
         True
 
-        >>> Result.NOT_PAIRED.opposite_result == Result.NOT_PAIRED
+        >>> Result.NO_RESULT.opposite_result == Result.NO_RESULT
         True
 
         >>> Result.DOUBLE_FORFEIT.opposite_result == Result.DOUBLE_FORFEIT
@@ -180,9 +197,10 @@ class Result(IntEnum):
                 return Result.FORFEIT_GAIN
             case Result.DOUBLE_FORFEIT:
                 return Result.DOUBLE_FORFEIT
-            case Result.NOT_PAIRED:
-                return Result.NOT_PAIRED
-            case Result.HALF_POINT_BYE | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case Result.NO_RESULT:
+                return Result.NO_RESULT
+            case Result.ZERO_POINT_BYE | Result.HALF_POINT_BYE \
+                 | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 raise ValueError(f"Result '{self}' is not reversible")
             case _:
                 raise ValueError(f"Unknown value: {self}")
@@ -226,6 +244,7 @@ class TournamentType(IntEnum):
                 raise ValueError(f'Unknown tie break: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case TournamentType.UNKNOWN:
                 return 'Inconnu'
@@ -239,7 +258,6 @@ class TournamentType(IntEnum):
 
 class TournamentRating(IntEnum):
     """A wrapper around the tournament rating used stored in the papi db."""
-    UNKNOWN = 0
     STANDARD = 1
     RAPID = 2
     BLITZ = 3
@@ -271,8 +289,6 @@ class TournamentRating(IntEnum):
     @property
     def papi_value_field(self) -> str:
         match self:
-            case TournamentRating.UNKNOWN:
-                return 'Inconnu'
             case TournamentRating.STANDARD:
                 return 'Elo'
             case TournamentRating.RAPID:
@@ -297,11 +313,11 @@ class TournamentRating(IntEnum):
     def __str__(self) -> str:
         match self:
             case TournamentRating.STANDARD:
-                return 'Classement standard'
+                return _('Standard rating')
             case TournamentRating.RAPID:
-                return 'Classement rapide'
+                return _('Rapid rating')
             case TournamentRating.BLITZ:
-                return 'Classement blitz'
+                return _('Blitz rating')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
 
@@ -355,6 +371,7 @@ class TournamentPairing(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case TournamentPairing.UNKNOWN:
                 return 'Inconnu'
@@ -446,6 +463,7 @@ class TournamentTieBreak(IntEnum):
                 raise ValueError(f'Unknown tie break: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case TournamentTieBreak.NONE:
                 return 'Aucun'
@@ -479,6 +497,10 @@ class PlayerGender(IntEnum):
     MALE = 2
 
     @classmethod
+    def values(cls) -> tuple[int]:
+        return tuple(item.value for item in cls)
+
+    @classmethod
     def from_papi_value(cls, value: str) -> Self:
         match value:
             case '':
@@ -502,23 +524,36 @@ class PlayerGender(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         match self:
             case PlayerGender.NONE:
-                return 'Aucun'
+                return _('- *** NAME FOR GENDER NONE')
             case PlayerGender.FEMALE:
-                return 'Femme'
+                return _('Female *** NAME FOR GENDER FEMALE')
             case PlayerGender.MALE:
-                return 'Homme'
+                return _('Male *** NAME FOR GENDER MALE')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case PlayerGender.NONE:
+                return _('- *** SHORT NAME FOR GENDER NONE')
+            case PlayerGender.FEMALE:
+                return _('F *** SHORT NAME FOR GENDER FEMALE')
+            case PlayerGender.MALE:
+                return _('M *** SHORT NAME FOR GENDER MALE')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
 
-class PlayerFFELicense(IntEnum):
+class PlayerFFELicence(IntEnum):
     NONE = 0
     N = 1
-    B = 2
-    A = 3
+    A = 2
+    B = 3
 
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
@@ -527,37 +562,52 @@ class PlayerFFELicense(IntEnum):
                 return cls.NONE
             case 'N':
                 return cls.N
-            case 'B':
-                return cls.B
             case 'A':
                 return cls.A
+            case 'B':
+                return cls.B
             case _:
                 raise ValueError(f'Unknown value: {value}')
 
     @property
     def to_papi_value(self) -> str:
         match self:
-            case PlayerFFELicense.NONE:
+            case PlayerFFELicence.NONE:
                 return ''
-            case PlayerFFELicense.N:
+            case PlayerFFELicence.N:
                 return 'N'
-            case PlayerFFELicense.B:
-                return 'B'
-            case PlayerFFELicense.A:
+            case PlayerFFELicence.A:
                 return 'A'
+            case PlayerFFELicence.B:
+                return 'B'
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         match self:
-            case PlayerFFELicense.NONE:
-                return 'Aucune'
-            case PlayerFFELicense.N:
-                return 'Licence non renouvelée'
-            case PlayerFFELicense.B:
-                return 'Licence B'
-            case PlayerFFELicense.A:
-                return 'Licence A'
+            case PlayerFFELicence.NONE:
+                return _('No FFE Licence')
+            case PlayerFFELicence.N:
+                return _('Expired FFE licence')
+            case PlayerFFELicence.B:
+                return _('FFE licence B (leisure)')
+            case PlayerFFELicence.A:
+                return _('FFE licence A (competition)')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case PlayerFFELicence.NONE:
+                return '-'
+            case PlayerFFELicence.N:
+                return 'N'
+            case PlayerFFELicence.A:
+                return 'A'
+            case PlayerFFELicence.B:
+                return 'B'
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -632,6 +682,7 @@ class PlayerCategory(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     def __str__(self) -> str:
+        # TODO Translate this (if used)!
         match self:
             case PlayerCategory.NONE:
                 return ''
@@ -660,7 +711,6 @@ class PlayerCategory(IntEnum):
 
 
 class PlayerRatingType(IntEnum):
-    NONE = 0
     ESTIMATED = 1
     NATIONAL = 2
     FIDE = 3
@@ -668,8 +718,6 @@ class PlayerRatingType(IntEnum):
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
         match value:
-            case '':
-                return cls.NONE
             case 'E':
                 return cls.ESTIMATED
             case 'N':
@@ -682,8 +730,6 @@ class PlayerRatingType(IntEnum):
     @property
     def to_papi_value(self) -> str:
         match self:
-            case PlayerRatingType.NONE:
-                return ''
             case PlayerRatingType.ESTIMATED:
                 return 'E'
             case PlayerRatingType.NATIONAL:
@@ -693,31 +739,45 @@ class PlayerRatingType(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         match self:
-            case PlayerRatingType.NONE:
-                return ''
             case PlayerRatingType.ESTIMATED:
-                return 'E'
+                return _('Estimated *** NAME FOR RATING TYPE ESTIMATED')
             case PlayerRatingType.NATIONAL:
-                return 'N'
+                return _('National *** NAME FOR RATING TYPE NATIONAL')
             case PlayerRatingType.FIDE:
-                return 'F'
+                return _('FIDE *** NAME FOR RATING TYPE FIDE')
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case PlayerRatingType.ESTIMATED:
+                return _('E *** SHORT NAME FOR RATING TYPE ESTIMATED')
+            case PlayerRatingType.NATIONAL:
+                return _('N *** SHORT NAME FOR RATING TYPE NATIONAL')
+            case PlayerRatingType.FIDE:
+                return _('F *** SHORT NAME FOR RATING TYPE FIDE')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    def __str__(self) -> str:
+        return self.short_name
 
 
 class PlayerTitle(IntEnum):
     """The possible FIDE titles: GM, WGM, IM, WIM, FM, WFM.
     Also includes the "no title" case, but does not include CM nor WCM.
     This is for Papi-compatibility reasons."""
-    GRANDMASTER = 6
-    WOMAN_GRANDMASTER = 5
-    INTERNATIONAL_MASTER = 4
-    WOMAN_INTERNATIONAL_MASTER = 3
-    FIDE_MASTER = 2
-    WOMAN_FIDE_MASTER = 1
     NONE = 0
+    WOMAN_FIDE_MASTER = 1
+    FIDE_MASTER = 2
+    WOMAN_INTERNATIONAL_MASTER = 3
+    INTERNATIONAL_MASTER = 4
+    WOMAN_GRANDMASTER = 5
+    GRANDMASTER = 6
 
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
@@ -759,11 +819,51 @@ class PlayerTitle(IntEnum):
             case _:
                 raise ValueError(f'Unknown title: {self}')
 
+    @property
+    def name(self) -> str:
+        match self:
+            case PlayerTitle.NONE:
+                return _('No title')
+            case PlayerTitle.WOMAN_FIDE_MASTER:
+                return _('Woman Fide Master')
+            case PlayerTitle.FIDE_MASTER:
+                return _('Fide Master')
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
+                return _('Woman International Master')
+            case PlayerTitle.INTERNATIONAL_MASTER:
+                return _('International Master')
+            case PlayerTitle.WOMAN_GRANDMASTER:
+                return _('Woman Grand Master')
+            case PlayerTitle.GRANDMASTER:
+                return _('Grand Master')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case PlayerTitle.NONE:
+                return ''
+            case PlayerTitle.WOMAN_FIDE_MASTER:
+                return _('WFM *** SHORT NAME FOR Woman Fide Master')
+            case PlayerTitle.FIDE_MASTER:
+                return _('FM *** SHORT NAME FOR Fide Master')
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
+                return _('WIM *** SHORT NAME FOR Woman International Master')
+            case PlayerTitle.INTERNATIONAL_MASTER:
+                return _('IM *** SHORT NAME FOR International Master')
+            case PlayerTitle.WOMAN_GRANDMASTER:
+                return _('WGM *** SHORT NAME FOR Woman Grand Master')
+            case PlayerTitle.GRANDMASTER:
+                return _('GM *** SHORT NAME FOR Grand Master')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
     def __str__(self) -> str:
-        return self.to_papi_value
+        return self.short_name
 
 
-class Color(StrEnum):
+class BoardColor(StrEnum):
     WHITE = 'W'
     BLACK = 'B'
 
@@ -772,28 +872,28 @@ class Color(StrEnum):
         """Decode the database value"""
         match value:
             case 'B':
-                return Color.WHITE
+                return BoardColor.WHITE
             case 'N':
-                return Color.BLACK
+                return BoardColor.BLACK
             case _:
                 raise ValueError(f'Unknown value: {value}')
 
     @property
     def to_papi_value(self) -> str:
         match self:
-            case Color.WHITE:
+            case BoardColor.WHITE:
                 return 'B'
-            case Color.BLACK:
+            case BoardColor.BLACK:
                 return 'N'
             case _:
                 raise ValueError(f'Unknown value:  {self}')
 
     def __str__(self) -> str:
         match self:
-            case Color.WHITE:
-                return 'Blancs'
-            case Color.BLACK:
-                return 'Noirs'
+            case BoardColor.WHITE:
+                return _('White')
+            case BoardColor.BLACK:
+                return _('Black')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -808,15 +908,15 @@ class ScreenType(StrEnum):
     def __str__(self) -> str:
         match self:
             case ScreenType.Boards:
-                return "Échiquiers"
+                return _('Pairings by board')
             case ScreenType.Input:
-                return "Saisie"
+                return _('Results entry')
             case ScreenType.Players:
-                return "Appariements"
+                return _('Parings by player')
             case ScreenType.Results:
-                return "Résultats"
+                return _('Last results')
             case ScreenType.Image:
-                return "Image"
+                return _('Image')
             case _:
                 raise ValueError(f'Invalid screen type: {self}')
 

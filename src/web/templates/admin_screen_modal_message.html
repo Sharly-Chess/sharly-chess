@@ -4,18 +4,18 @@
     checkbox_id='message-text-checkbox',
     checkbox_name='message_text_checkbox'
 %}
-    <label for="{{ id }}" class="form-label">Message d'alerte :</label>
+    <label for="{{ id }}" class="form-label">{{ _('Alert message:') }}</label>
     <input
             name="{{ checkbox_name }}"
             type="checkbox" id="{{ checkbox_id }}"
             aria-describedby="{{ id }}-help {{ id }}-error"
-            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> par défaut
+            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> {{ _('by default') }}
     <input
             name="{{ name }}"
             type="text" id="{{ id }}"
             class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
             aria-describedby="{{ id }}-help {{ id }}-error"
-            placeholder="Exemple : Merci aux joueur·euses de bien vouloir se mettre en place !"
+            placeholder="{{ _('E.g.: Please keep quiet until the end of the round!') }}"
             value="{{ data[name] }}"
             {% if data[checkbox_name] == 'on' %}disabled{% endif %} />
     <div id="{{ id }}-help" class="form-text">

@@ -1,0 +1,30 @@
+{% from 'macros.j2' import tooltip_attributes %}
+
+<span
+        class="dropdown ms-auto"
+>
+    <button
+            class="btn btn-secondary dropdown-toggle ms-1 ps-1 py-0 mt-1" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+    >
+        <i class="bi-layout-three-columns"></i>
+    </button>
+    <ul
+            class="dropdown-menu columns-number"
+            {{ tooltip_attributes('info', _('Change the number of columns.'), 'left') }}
+    >
+        {% for c in papi_web_config.allowed_columns %}
+            <li
+                class="dropdown-item text-center  {% if c == value %}fw-bold{% else %}cursor-pointer{% endif %}"
+                {% if c != value %}
+                    hx-get="{{ url }}"
+                    hx-vals='{"{{ name }}": "{{ c }}"}'
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                {% endif %}
+            >
+                {{ c }}
+            </li>
+        {% endfor %}
+    </ul>
+</span>

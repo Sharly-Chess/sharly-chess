@@ -11,31 +11,32 @@
 
 {% block card_text %}
     <div>
-        Utilisateur : {{ chessevent.user_id }}
+        {{ _('Chessevent ID: %(chessevent_user_id)s', chessevent_user_id=chessevent.user_id) }}
     </div>
     <div>
-        Mot de passe : {{ chessevent.shadowed_password }}
+        {{ _('ChessEvent password: %(chessevent_password)s', chessevent_password=chessevent.shadowed_password) }}
     </div>
     <div>
-        Évènement : {{ chessevent.event_id }}
+        {{ _('ChessEvent event: %(chessevent_event)s', chessevent_event=chessevent.event_id) }}
     </div>
 {% endblock %}
 
 {% block card_buttons_left %}
-    <span {{ tooltip_attributes('info', 'Modifier les propriétés de la connexion à ChessEvent.', 'top') }}>
+    <span {{ tooltip_attributes('info', _('Edit the properties of the ChessEvent connection.'), 'top') }}>
         <button
                 class="btn btn-sm btn-primary p-1"
                 hx-get="{{ url_for('admin-chessevent-modal', action='update', event_uniq_id=admin_event.uniq_id, chessevent_id=chessevent.id) }}"
                 preload
                 hx-target="body"
                 hx-indicator="#please-wait" >
-            <i class="bi-pencil-fill"></i> Éditer
+            <i class="bi-pencil-fill"></i>
+            {{ _('Edit') }}
         </button>
     </span>
 {% endblock %}
 
 {% block card_buttons_right %}
-    <span {{ tooltip_attributes('info', 'Dupliquer la connexion à ChessEvent.', 'top') }}>
+    <span {{ tooltip_attributes('info', _('Clone the ChessEvent connection.'), 'top') }}>
         <button
                 class="btn btn-sm btn-primary p-1"
                 hx-get="{{ url_for('admin-chessevent-modal', action='clone', event_uniq_id=admin_event.uniq_id, chessevent_id=chessevent.id) }}"
@@ -44,7 +45,7 @@
             <i class="bi-copy"></i>
         </button>
     </span>
-    <span {{ tooltip_attributes('info', 'Supprimer la connexion à ChessEvent.', 'top') }}>
+    <span {{ tooltip_attributes('info', _('Delete the ChessEvent connection.'), 'top') }}>
         <button
                 class="btn btn-sm btn-danger p-1"
                 hx-get="{{ url_for('admin-chessevent-modal', action='delete', event_uniq_id=admin_event.uniq_id, chessevent_id=chessevent.id) }}"

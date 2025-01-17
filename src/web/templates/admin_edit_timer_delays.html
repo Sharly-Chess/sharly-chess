@@ -2,7 +2,7 @@
     {% for num in [1, 2, 3] %}
         {% with id='delay-'~num, name='delay_'~num %}
             <div class="col-4">
-                <label for="{{ id }}" class="form-label">Délai n°{{ num }} :</label>
+                <label for="{{ id }}" class="form-label">{{ _('Delay #%(num)d:', num=num) }}</label>
                 <input
                         name="{{ name }}"
                         type="text" id="{{ id }}"

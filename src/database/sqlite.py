@@ -1,4 +1,5 @@
 import json
+import shutil
 import time
 from collections import Counter
 from collections.abc import Iterator
@@ -203,7 +204,7 @@ class EventDatabase(SQLiteDatabase):
         """
         if self.exists():
             raise PapiWebException(
-                f'La base de données ne peut être créée car le fichier [{self.file.resolve()}] existe déjà.')
+                f'The database can not be created because the file [{self.file.resolve()}] already exists.')
         papi_web_config: PapiWebConfig = PapiWebConfig()
         papi_web_config.event_path.mkdir(parents=True, exist_ok=True)
         database: Connection | None = None
@@ -220,7 +221,7 @@ class EventDatabase(SQLiteDatabase):
                     version=f'{papi_web_version.major}.{papi_web_version.minor}.{papi_web_version.micro}',
                     name=self.uniq_id, start=event_start, stop=event_stop, now=time.time()))
             database.commit()
-            logger.info('La base de données [%s] a été créée', self.file)
+            logger.info('Database [%s] has been created.', self.file)
             if populate:
                 with (EventDatabase(self.uniq_id, write=True) as event_database):
                     yml_file = PapiWebConfig.database_yml_path / f'{self.uniq_id}.yml'
@@ -561,9 +562,9 @@ class EventDatabase(SQLiteDatabase):
                                 family_ids=family_ids,
                             ))
                     event_database.commit()
-                logger.info('La base de données [%s] a été peuplée', self.file)
+                logger.info('Database [%s] has been populated.', self.file)
         except OperationalError as e:
-            logger.warning('La création de la base de données %s a échoué : %s', self.file, e.args)
+            logger.warning('Database [%s] creation failed: %s', self.file, e.args)
             raise e
         finally:
             if cursor is not None:
@@ -580,10 +581,10 @@ class EventDatabase(SQLiteDatabase):
         while True:
             try:
                 file.rename(arch)
-                logger.info(f'La base données a été archivée ({arch}).')
+                logger.info(f'Database has been archived (%s).', arch)
                 return arch
             except FileExistsError:
-                logger.warning(f'Impossible de renommer la base données, le fichier [{arch}] existe déjà.')
+                logger.warning(f'Could not rename the database because file [%s] already exists.', arch)
                 index += 1
                 arch = file.parent / f'{file.stem}_{date_str}-{index}.arch'
 
@@ -601,10 +602,17 @@ class EventDatabase(SQLiteDatabase):
             event_database.set_last_update()
             event_database.commit()
 
+    def clone(self, new_uniq_id: str):
+        """Create a copy of the event database file corresponding to an event
+        with name `new_uniq_id`."""
+        shutil.copy(self.file, EventDatabase(new_uniq_id).file)
+        with EventDatabase(new_uniq_id, write=True) as event_database:
+            event_database.set_last_update()
+            event_database.commit()
+
     def __enter__(self) -> Self:
         if not self.exists():
-            raise PapiWebException(
-                f'La base de données ne peut être ouverte car le fichier [{self.file.resolve()}] n\'existe pas.')
+            raise PapiWebException(f'Database could not be opened because file [{self.file.resolve()}] does not exist.')
         super().__enter__()
         papi_web_version: Version = PapiWebConfig.version
         if self.version != Version(f'{papi_web_version.major}.{papi_web_version.minor}.{papi_web_version.micro}'):
@@ -692,20 +700,20 @@ class EventDatabase(SQLiteDatabase):
             self._execute('ALTER TABLE `info` DROP COLUMN `allow_results_deletion_on_input_screens`')
             self.set_version(target_version)
             self.commit()
-            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         target_version = Version('2.4.4')
         if self.version.public in ['2.4.2', '2.4.3', ]:
             self._execute('ALTER TABLE `screen` ADD `input_exit_button` INTEGER')
             self._execute('ALTER TABLE `family` ADD `input_exit_button` INTEGER')
             self.set_version(target_version)
             self.commit()
-            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         target_version = Version('2.4.5')
         if self.version.public in ['2.4.4', ]:
             self._execute('ALTER TABLE `rotator` DROP COLUMN `show_menus`')
             self.set_version(target_version)
             self.commit()
-            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         target_version = Version('2.4.8')
         if self.version.public in ['2.4.5', '2.4.6', '2.4.7', ]:
             self._execute('ALTER TABLE `info` ADD `hide_background_image` INTEGER')
@@ -714,21 +722,21 @@ class EventDatabase(SQLiteDatabase):
                 (1 if PapiWebConfig.default_hide_background_image else 0, ))
             self.set_version(target_version)
             self.commit()
-            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         target_version = Version('2.4.12')
         if self.version.public in ['2.4.8', '2.4.9', '2.4.10', '2.4.11', ]:
             self._execute('ALTER TABLE `info` ADD `rules` TEXT')
             self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
             self.set_version(target_version)
             self.commit()
-            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         target_version = Version('2.4.13')
         if self.version.public in ['2.4.12', ]:
             self._execute('ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT')
             self._execute('UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0')
             self.set_version(target_version)
             self.commit()
-            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         target_version = Version('2.4.16')
         if self.version.public in ['2.4.13', '2.4.14', '2.4.15', ]:
             self._execute('ALTER TABLE `info` ADD `message_text` TEXT')
@@ -742,18 +750,23 @@ class EventDatabase(SQLiteDatabase):
             self._execute('ALTER TABLE `rotator` ADD `message_text` TEXT')
             self.set_version(target_version)
             self.commit()
-            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
-        target_version = Version('2.4.18')
-        if self.version.public in ['2.4.16', '2.4.17', ]:
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+        target_version = Version('2.4.19')
+        if self.version.public in ['2.4.16', '2.4.17', '2.4.18', ]:
             self.set_version(target_version)
             self.commit()
-            logger.debug(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+        target_version = Version('2.4.20')
+        if self.version.public in ['2.4.19', ]:
+            self._execute('ALTER TABLE `tournament` ADD `check_in_open` INTEGER NOT NULL DEFAULT 0')
+            self.set_version(target_version)
+            self.commit()
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         if self.version == target_version:
-            logger.info(f'La base de données {self.file.name} a été mise à jour en version {target_version}.')
+            logger.info(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
             return
         raise PapiWebException(
-            f'La base de données {self.file.name} ({self.version}) ne peut être mise à jour en version '
-            f'{target_version}.')
+            f'Database {self.file.name} ({self.version}) could not be upgraded to version {target_version}.')
 
     def upgrade(self):
         """Upgrades the database version from the stored database version to
@@ -762,9 +775,9 @@ class EventDatabase(SQLiteDatabase):
         papi_web_version: Version = PapiWebConfig.version
         if self.version > papi_web_version:
             raise PapiWebException(
-                f'Votre version de Papi-web ({papi_web_version})  ne peut pas ouvrir la bases de données '
-                f'{self.file.name} en version {self.version}, veuillez mettre à jour votre version de Papi-web')
-        logger.info(f'Mise à jour de la base de données {self.file.name}...')
+                f'Your Papi-web version ({papi_web_version}) can not open database {self.file.name} (version '
+                f'{self.version}), please upgrade.')
+        logger.info(f'Upgrading database {self.file.name}...')
         self._upgrade()
 
     def update_stored_event(
@@ -1163,8 +1176,8 @@ class EventDatabase(SQLiteDatabase):
     ---------------------------------------------------------------------------------
     """
 
-    @staticmethod
-    def _row_to_stored_tournament(row: dict[str, Any]) -> StoredTournament:
+    @classmethod
+    def _row_to_stored_tournament(cls, row: dict[str, Any]) -> StoredTournament:
         return StoredTournament(
             id=row['id'],
             uniq_id=row['uniq_id'],
@@ -1182,6 +1195,7 @@ class EventDatabase(SQLiteDatabase):
             chessevent_tournament_name=row['chessevent_tournament_name'],
             record_illegal_moves=row['record_illegal_moves'],
             rules=row['rules'],
+            check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             last_update=row['last_update'],
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
@@ -1214,6 +1228,7 @@ class EventDatabase(SQLiteDatabase):
     def _write_stored_tournament(
             self, stored_tournament: StoredTournament,
     ) -> StoredTournament:
+        # check_in_open is not updated here but in set_tournament_check_in()
         fields: list[str] = [
             'uniq_id', 'name', 'path', 'filename', 'ffe_id', 'ffe_password',
             'time_control_initial_time', 'time_control_increment', 'time_control_handicap_penalty_step',
@@ -1303,6 +1318,12 @@ class EventDatabase(SQLiteDatabase):
             'UPDATE `tournament` SET `last_result_update` = ? WHERE `id` = ?',
             (time.time(), tournament_id, ),
         )
+
+    def set_tournament_check_in(self, tournament_id: int, o: bool):
+        """ Opens (o is True) or closes (o is False) the check_in for the tournament. """
+        self._execute(
+            'UPDATE `tournament` SET `check_in_open` = ?, `last_ffe_upload` = ? WHERE `id` = ?',
+            (1 if o else 0, time.time(), tournament_id, ))
 
     """
     ---------------------------------------------------------------------------------
@@ -1465,7 +1486,7 @@ class EventDatabase(SQLiteDatabase):
             try:
                 value: UtilResult = UtilResult.from_papi_value(int(row['value']))
             except ValueError:
-                logger.warning('invalid result [%s] found in database', row['value'])
+                logger.warning('Invalid result [%s] found in database.', row['value'])
                 continue
             results.append(DataResult(
                     row['date'],
