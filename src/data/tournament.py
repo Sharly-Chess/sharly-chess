@@ -235,17 +235,6 @@ class Tournament:
         return bool(self.time_control_handicap_penalty_value)
 
     @property
-    def skipped_rounds_as_dict(self) -> dict[int, dict[int, float]]:
-        """A dictionary mapping player ids to a dictionary of rounds to results."""
-        # dict[papi_player_id: int, dict[round: int, score: float]]
-        skipped_rounds_dict: dict[int, dict[int, float]] = {}
-        for skipped_round in self.stored_tournament.stored_skipped_rounds:
-            if skipped_round.papi_player_id not in skipped_rounds_dict:
-                skipped_rounds_dict[skipped_round.papi_player_id] = {}
-            skipped_rounds_dict[skipped_round.papi_player_id][skipped_round.round] = skipped_round.score
-        return skipped_rounds_dict
-
-    @property
     def rounds(self) -> int:
         self.read_papi()
         return self._rounds
@@ -663,26 +652,24 @@ class Tournament:
         tournament is not downloaded unnecessarily."""
         with PapiDatabase(self.file, write=True) as papi_database:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
-                event_database.delete_tournament_stored_skipped_rounds(self.id)
                 papi_database.write_chessevent_info(chessevent_tournament)
                 player_papi_id: int = 1
                 for chessevent_player in chessevent_tournament.players:
                     player_papi_id += 1
-                    event_database.add_player_stored_skipped_rounds(
-                        self.id, player_papi_id, chessevent_player.skipped_rounds)
                     papi_database.add_chessevent_player(
                         player_papi_id, chessevent_player, chessevent_tournament.check_in_started)
+                event_database.set_tournament_check_in(self.id, True)
+                papi_database.open_check_in(1)
                 event_database.set_tournament_last_chessevent_download_md5(self.id, chessevent_download_md5)
                 event_database.commit()
                 papi_database.commit()
         return player_papi_id - 1
 
     def check_in_player(self, player: Player, check_in: bool):
-        """Stores the `check_in` status for the given `player`.
-        If the player has configured skipped rounds, record them as well."""
+        """Stores the `check_in` status for the given `player`."""
         with PapiDatabase(self.file, write=True) as papi_database:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
-                papi_database.check_in_player(player.id, check_in, self.skipped_rounds_as_dict)
+                papi_database.check_in_player(player.id, check_in)
                 event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
                 event_database.commit()
                 papi_database.commit()

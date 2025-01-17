@@ -206,13 +206,3 @@ CREATE TABLE `rotator` (
     PRIMARY KEY(`id` AUTOINCREMENT),
     UNIQUE(`uniq_id`)
 );
-
-CREATE TABLE `skipped_round` (
-    `id` INTEGER NOT NULL,
-    `tournament_id` INTEGER NOT NULL,
-    `round` INTEGER NOT NULL,
-    `papi_player_id` INTEGER NOT NULL,
-    `score` FLOAT NOT NULL,
-    PRIMARY KEY(`id` AUTOINCREMENT),
-    FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE
-);

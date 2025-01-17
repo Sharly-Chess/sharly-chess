@@ -22,7 +22,7 @@ from data.board import Board
 from data.result import Result as DataResult
 from data.util import Result as UtilResult
 from database.store import StoredTournament, StoredEvent, StoredChessEvent, StoredTimer, StoredTimerHour, \
-    StoredFamily, StoredIllegalMove, StoredResult, StoredRotator, StoredScreenSet, StoredScreen, StoredSkippedRound
+    StoredFamily, StoredIllegalMove, StoredResult, StoredRotator, StoredScreenSet, StoredScreen
 
 logger: Logger = get_logger()
 
@@ -762,6 +762,12 @@ class EventDatabase(SQLiteDatabase):
             self.set_version(target_version)
             self.commit()
             logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+        target_version = Version('2.4.21')
+        if self.version.public in ['2.4.20', ]:
+            self._execute('DROP TABLE `skipped_round`')
+            self.set_version(target_version)
+            self.commit()
+            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         if self.version == target_version:
             logger.info(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
             return
@@ -1128,50 +1134,6 @@ class EventDatabase(SQLiteDatabase):
 
     """
     ---------------------------------------------------------------------------------
-    Skipped rounds
-    ---------------------------------------------------------------------------------
-    """
-
-    @staticmethod
-    def _row_to_stored_skipped_round(row: dict[str, Any]) -> StoredSkippedRound:
-        return StoredSkippedRound(
-            id=row['id'],
-            tournament_id=row['tournament_id'],
-            round=row['round'],
-            papi_player_id=row['papi_player_id'],
-            score=row['score'],
-        )
-
-    def load_stored_skipped_rounds(self, tournament_id: int) -> list[StoredSkippedRound]:
-        self._execute(
-            'SELECT * FROM `skipped_round` WHERE `tournament_id` = ? ORDER BY `id`',
-            (tournament_id, ),
-        )
-        return [self._row_to_stored_skipped_round(row) for row in self._fetchall()]
-
-    def delete_tournament_stored_skipped_rounds(self, tournament_id: int):
-        self._execute(
-            'DELETE FROM `skipped_round` WHERE `tournament_id` = ?',
-            (tournament_id, ),
-        )
-
-    def add_player_stored_skipped_rounds(
-            self, tournament_id: int, papi_player_id: int, skipped_rounds: dict[int, float]
-    ):
-        if skipped_rounds:
-            for round, score in skipped_rounds.items():
-                self._execute(
-                    'INSERT INTO `skipped_round`('
-                    '    `tournament_id`, '
-                    '    `papi_player_id`, '
-                    '    `round`, '
-                    '    `score`'
-                    ') VALUES(?, ?, ?, ?)',
-                    (tournament_id, papi_player_id, round, score),
-                )
-
-    """
-    ---------------------------------------------------------------------------------
     StoredTournament
     ---------------------------------------------------------------------------------
     """
@@ -1220,10 +1182,7 @@ class EventDatabase(SQLiteDatabase):
             'SELECT * FROM `tournament` ORDER BY `uniq_id`',
             (),
         )
-        stored_tournaments: list[StoredTournament] = [self._row_to_stored_tournament(row) for row in self._fetchall()]
-        for stored_tournament in stored_tournaments:
-            stored_tournament.stored_skipped_rounds = self.load_stored_skipped_rounds(stored_tournament.id)
-        return stored_tournaments
+        return [self._row_to_stored_tournament(row) for row in self._fetchall()]
 
     def _write_stored_tournament(
             self, stored_tournament: StoredTournament,
@@ -1277,7 +1236,6 @@ class EventDatabase(SQLiteDatabase):
         return self._write_stored_tournament(stored_tournament)
 
     def delete_stored_tournament(self, tournament_id: int):
-        self.delete_tournament_stored_skipped_rounds(tournament_id)
         self._delete_tournament_stored_screens(tournament_id)
         self._delete_tournament_stored_families(tournament_id)
         self._delete_tournament_stored_illegal_moves(tournament_id)

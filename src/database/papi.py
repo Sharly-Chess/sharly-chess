@@ -367,8 +367,7 @@ class PapiDatabase(AccessDatabase):
         return self._fetchval()
 
     def check_in_player(self, player_id: int, check_in: bool):
-        """Toggles the check in status of the player, depending on `check_in`.
-        Takes into account the given `skipped_rounds_dict`."""
+        """Toggles the check in status of the player, depending on `check_in`."""
         player_papi_id: int = Player.player_papi_id_from_papi_web_id(player_id)
         data: dict[str, str | int | float | None] = {
             'Pointe': check_in,

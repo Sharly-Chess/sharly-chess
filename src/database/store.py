@@ -41,15 +41,6 @@ class StoredChessEvent:
 
 
 @dataclass
-class StoredSkippedRound:
-    id: int | None
-    tournament_id: int
-    round: int
-    papi_player_id: int
-    score: float
-
-
-@dataclass
 class StoredTournament:
     id: int | None
     uniq_id: str
@@ -75,7 +66,6 @@ class StoredTournament:
     last_ffe_upload: float = field(default=0.0)
     last_ffe_rules_upload: float = field(default=0.0)
     last_chessevent_download_md5: str | None = field(default=None)
-    stored_skipped_rounds: list[StoredSkippedRound] = field(default_factory=list[StoredSkippedRound])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
