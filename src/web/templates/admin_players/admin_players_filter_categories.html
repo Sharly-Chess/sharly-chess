@@ -1,0 +1,45 @@
+{% if admin_players_categories|length > 1 %}
+    <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+        <span class="dropdown-center" >
+            <button
+                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+            ><i
+                    class="bi-funnel {% if admin_players_filter_categories|length not in [0, (admin_players_categories|length)] %}text-primary{% endif %}"
+                    {{ tooltip_attributes('info', _('Filter the categories.'), 'top') }}
+            ></i></button>
+            <ul class="dropdown-menu players-filter-licence p-0">
+                {% with name='admin_players_filter_categories' %}
+                    {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
+                    <input type="hidden" name="{{ name }}" value="-1" checked />
+                    <li class="dropdown-item title text-nowrap">
+                        <input
+                            type="checkbox"
+                            {% if admin_players_filter_categories|length == admin_players_categories|length %}checked{% endif %}
+                            onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                        />
+                        <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                            <i class="bi-check-lg"></i>
+                            {{ _('OK') }}
+                        </button>
+                    </li>
+                    <li class="dropdown-divider m-0"></li>
+                    {% for category in admin_players_categories %}
+                        <li class="dropdown-item text-nowrap">
+                            <input
+                                type="checkbox"
+                                id="{{ name }}-{{ loop.index }}"
+                                name="{{ name }}"
+                                value="{{ category.value }}"
+                                {% if category in admin_players_filter_categories %}checked{% endif %}
+                                class="{{ name }}"
+                            />
+                            <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
+                                {{ category.short_name }} ({{ category.name }})
+                            </label>
+                        </li>
+                    {% endfor %}
+                {% endwith %}
+            </ul>
+        </span>
+    </form>
+{% endif %}

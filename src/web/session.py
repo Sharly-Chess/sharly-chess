@@ -7,7 +7,7 @@ from common import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.player import FederationTuple, LeagueTuple, ClubTuple
-from data.util import PlayerGender, PlayerFFELicence
+from data.util import PlayerGender, PlayerFFELicence, PlayerCategory
 
 logger: logging.Logger = get_logger()
 
@@ -170,7 +170,10 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_players_sort(cls, request: HTMXRequest, players_sort: str):
-        assert players_sort in ['alpha', 'rating_desc', 'rating_asc', 'yob_desc', 'yob_asc', 'origin', 'tournament', ]
+        assert players_sort in [
+            'alpha', 'rating_desc', 'rating_asc', 'yob_desc', 'yob_asc', 'category_desc', 'category_asc', 'origin',
+            'tournament',
+        ]
         request.session[cls.ADMIN_PLAYERS_SORT_KEY]: str = players_sort
 
     @classmethod
@@ -283,3 +286,18 @@ class SessionHandler:
     @classmethod
     def get_session_admin_players_filter_tournaments(cls, request: HTMXRequest) -> list[int]:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY, [])
+
+    ADMIN_PLAYERS_FILTER_CATEGORIES_KEY: str = 'admin_players_filter_categories'
+
+    @classmethod
+    def set_session_admin_players_filter_categories(cls, request: HTMXRequest, categories: list[PlayerCategory]):
+        request.session[cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY]: list[PlayerCategory] = categories
+
+    @classmethod
+    def get_session_admin_players_filter_categories(cls, request: HTMXRequest) -> list[PlayerCategory]:
+        # type-casting is needed because the value returned by Session.get is serialized
+        # when stored from a previous request (and kept as-is if stored by the current request)
+        return [
+            d if isinstance(d, PlayerCategory) else PlayerCategory(d)
+            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, [])
+        ]

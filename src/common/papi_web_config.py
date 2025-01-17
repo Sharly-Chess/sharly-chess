@@ -481,6 +481,7 @@ class PapiWebConfig(metaclass=Singleton):
         'league',
         'club',
         'yob',
+        'category',
         'mail',
         'phone',
         'gender',

@@ -208,9 +208,13 @@
     {% elif sort == 'origin' %}
         {% set _tooltip_text=_('Sort the players by origin (federation, league, club).') %}
     {% elif sort == 'yob_desc' %}
-        {% set _tooltip_text=_('Sort the players by year of birth (oldest first).') %}
-    {% elif sort == 'yob_asc' %}
         {% set _tooltip_text=_('Sort the players by year of birth (youngest first).') %}
+    {% elif sort == 'yob_asc' %}
+        {% set _tooltip_text=_('Sort the players by year of birth (oldest first).') %}
+    {% elif sort == 'category_desc' %}
+        {% set _tooltip_text=_('Sort the players by category (oldest first).') %}
+    {% elif sort == 'category_asc' %}
+        {% set _tooltip_text=_('Sort the players by category (youngest first).') %}
     {% elif sort == 'tournament' %}
         {% set _tooltip_text=_('Sort the players by tournament.') %}
     {% else %}

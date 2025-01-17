@@ -670,23 +670,23 @@ msgstr ""
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
-#: src/data/player.py:272
+#: src/data/player.py:277
 msgid "Unpaired *** FEMALE"
 msgstr "Unpaired"
 
-#: src/data/player.py:272
+#: src/data/player.py:277
 msgid "Unpaired *** MALE"
 msgstr "Unpaired"
 
-#: src/data/player.py:276
+#: src/data/player.py:281
 msgid "Exempt *** FEMALE"
 msgstr "Exempt"
 
-#: src/data/player.py:276
+#: src/data/player.py:281
 msgid "Exempt *** MALE"
 msgstr "Exempt"
 
-#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:917
+#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:976
 #: src/web/controllers/admin/index_admin_controller.py:108
 #: src/web/controllers/admin/screen_admin_controller.py:360
 #: src/web/templates/admin_screens.html:79
@@ -694,7 +694,7 @@ msgstr "Exempt"
 msgid "Last results"
 msgstr ""
 
-#: src/data/screen.py:99 src/data/util.py:919
+#: src/data/screen.py:99 src/data/util.py:978
 #: src/web/controllers/admin/index_admin_controller.py:109
 #: src/web/controllers/admin/screen_admin_controller.py:362
 #: src/web/templates/admin_screens.html:80
@@ -877,93 +877,177 @@ msgstr ""
 msgid "FFE licence A (competition)"
 msgstr ""
 
-#: src/data/util.py:746
+#: src/data/util.py:690
+msgid "U8"
+msgstr ""
+
+#: src/data/util.py:692
+msgid "U10"
+msgstr ""
+
+#: src/data/util.py:694
+msgid "U12"
+msgstr ""
+
+#: src/data/util.py:696
+msgid "U14"
+msgstr ""
+
+#: src/data/util.py:698
+msgid "U16"
+msgstr ""
+
+#: src/data/util.py:700
+msgid "U18"
+msgstr ""
+
+#: src/data/util.py:702
+msgid "U20"
+msgstr ""
+
+#: src/data/util.py:704
+msgid "20+"
+msgstr ""
+
+#: src/data/util.py:706
+msgid "50+"
+msgstr ""
+
+#: src/data/util.py:708
+msgid "65+"
+msgstr ""
+
+#: src/data/util.py:716
+msgid "No category"
+msgstr ""
+
+#: src/data/util.py:718
+msgid "Under 8"
+msgstr ""
+
+#: src/data/util.py:720
+msgid "Under 10"
+msgstr ""
+
+#: src/data/util.py:722
+msgid "Under 12"
+msgstr ""
+
+#: src/data/util.py:724
+msgid "Under 14"
+msgstr ""
+
+#: src/data/util.py:726
+msgid "Under 16"
+msgstr ""
+
+#: src/data/util.py:728
+msgid "Under 18"
+msgstr ""
+
+#: src/data/util.py:730
+msgid "Under 20"
+msgstr ""
+
+#: src/data/util.py:732
+msgid "Over 20"
+msgstr ""
+
+#: src/data/util.py:734
+msgid "Over 50"
+msgstr ""
+
+#: src/data/util.py:736
+msgid "Over 65"
+msgstr ""
+
+#: src/data/util.py:805
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
-#: src/data/util.py:748
+#: src/data/util.py:807
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
 
-#: src/data/util.py:750
+#: src/data/util.py:809
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-#: src/data/util.py:758
+#: src/data/util.py:817
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
-#: src/data/util.py:760
+#: src/data/util.py:819
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
-#: src/data/util.py:762
+#: src/data/util.py:821
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-#: src/data/util.py:826
+#: src/data/util.py:885
 msgid "No title"
 msgstr ""
 
-#: src/data/util.py:828
+#: src/data/util.py:887
 msgid "Woman Fide Master"
 msgstr ""
 
-#: src/data/util.py:830
+#: src/data/util.py:889
 msgid "Fide Master"
 msgstr ""
 
-#: src/data/util.py:832
+#: src/data/util.py:891
 msgid "Woman International Master"
 msgstr ""
 
-#: src/data/util.py:834
+#: src/data/util.py:893
 msgid "International Master"
 msgstr ""
 
-#: src/data/util.py:836
+#: src/data/util.py:895
 msgid "Woman Grand Master"
 msgstr ""
 
-#: src/data/util.py:838
+#: src/data/util.py:897
 msgid "Grand Master"
 msgstr ""
 
-#: src/data/util.py:848
+#: src/data/util.py:907
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
 msgstr "WFM"
 
-#: src/data/util.py:850
+#: src/data/util.py:909
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
-#: src/data/util.py:852
+#: src/data/util.py:911
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
 
-#: src/data/util.py:854
+#: src/data/util.py:913
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
-#: src/data/util.py:856
+#: src/data/util.py:915
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "WGM"
 
-#: src/data/util.py:858
+#: src/data/util.py:917
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
-#: src/data/util.py:894 src/web/templates/user_boards_screen_set.html:23
+#: src/data/util.py:953 src/web/templates/user_boards_screen_set.html:23
 #: src/web/templates/user_results_screen.html:13
 msgid "White"
 msgstr ""
 
-#: src/data/util.py:896 src/web/templates/user_boards_screen_set.html:25
+#: src/data/util.py:955 src/web/templates/user_boards_screen_set.html:25
 #: src/web/templates/user_results_screen.html:15
 msgid "Black"
 msgstr ""
 
-#: src/data/util.py:911 src/web/controllers/admin/index_admin_controller.py:104
+#: src/data/util.py:970 src/web/controllers/admin/index_admin_controller.py:104
 #: src/web/controllers/admin/tournament_admin_controller.py:339
 #: src/web/templates/admin_families.html:61
 #: src/web/templates/admin_screens.html:77
@@ -971,7 +1055,7 @@ msgstr ""
 msgid "Pairings by board"
 msgstr ""
 
-#: src/data/util.py:913
+#: src/data/util.py:972
 #: src/web/controllers/admin/family_admin_controller.py:270
 #: src/web/controllers/admin/index_admin_controller.py:103
 #: src/web/controllers/admin/screen_admin_controller.py:354
@@ -983,7 +1067,7 @@ msgstr ""
 msgid "Results entry"
 msgstr ""
 
-#: src/data/util.py:915
+#: src/data/util.py:974
 msgid "Parings by player"
 msgstr ""
 
@@ -1091,6 +1175,7 @@ msgstr ""
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:21
 #: src/web/templates/admin_players/admin_players_filter_columns.html:20
 #: src/web/templates/admin_players/admin_players_filter_federations.html:21
+#: src/web/templates/admin_players/admin_players_filter_ffe_categories.html:22
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22
 #: src/web/templates/admin_players/admin_players_filter_genders.html:22
 #: src/web/templates/admin_players/admin_players_filter_leagues.html:21
@@ -1268,24 +1353,24 @@ msgstr ""
 msgid "Messages ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:595
+#: src/web/controllers/admin/event_admin_controller.py:616
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:602
+#: src/web/controllers/admin/event_admin_controller.py:623
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:605
+#: src/web/controllers/admin/event_admin_controller.py:626
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:613
-#: src/web/controllers/admin/index_admin_controller.py:676
+#: src/web/controllers/admin/event_admin_controller.py:634
+#: src/web/controllers/admin/index_admin_controller.py:675
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:623
+#: src/web/controllers/admin/event_admin_controller.py:644
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
@@ -1294,7 +1379,7 @@ msgid "Please enter the family ID."
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py:104
-#: src/web/controllers/admin/index_admin_controller.py:233
+#: src/web/controllers/admin/index_admin_controller.py:232
 #: src/web/controllers/admin/screen_admin_controller.py:123
 #: src/web/controllers/admin/tournament_admin_controller.py:76
 msgid "Character [{char}] is not allowed."
@@ -1417,24 +1502,24 @@ msgid "Display all the players, paired and unpaired"
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:179
-#: src/web/controllers/admin/index_admin_controller.py:289
+#: src/web/controllers/admin/index_admin_controller.py:288
 #: src/web/controllers/admin/screen_admin_controller.py:190
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:182
-#: src/web/controllers/admin/index_admin_controller.py:293
+#: src/web/controllers/admin/index_admin_controller.py:292
 #: src/web/controllers/admin/screen_admin_controller.py:194
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:186
-#: src/web/controllers/admin/index_admin_controller.py:301
+#: src/web/controllers/admin/index_admin_controller.py:300
 msgid "Incorrect path [{path}]."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:191
-#: src/web/controllers/admin/index_admin_controller.py:305
+#: src/web/controllers/admin/index_admin_controller.py:304
 msgid "File [{file}] not found."
 msgstr ""
 
@@ -1443,99 +1528,99 @@ msgid "Wrong file extension [{ext}] ([pdf] expected)."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py:208
-#: src/web/controllers/admin/index_admin_controller.py:315
-#: src/web/controllers/admin/index_admin_controller.py:330
-#: src/web/controllers/admin/index_admin_controller.py:336
+#: src/web/controllers/admin/index_admin_controller.py:314
+#: src/web/controllers/admin/index_admin_controller.py:329
+#: src/web/controllers/admin/index_admin_controller.py:335
 #: src/web/controllers/admin/timer_admin_controller.py:104
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:226
-#: src/web/controllers/admin/index_admin_controller.py:231
+#: src/web/controllers/admin/index_admin_controller.py:225
+#: src/web/controllers/admin/index_admin_controller.py:230
 msgid "Please enter the event ID."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:228
+#: src/web/controllers/admin/index_admin_controller.py:227
 msgid "event ID does not match."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:239
-#: src/web/controllers/admin/index_admin_controller.py:242
+#: src/web/controllers/admin/index_admin_controller.py:238
+#: src/web/controllers/admin/index_admin_controller.py:241
 msgid "Event [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:265
+#: src/web/controllers/admin/index_admin_controller.py:264
 msgid "Please enter the name of the event."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:268
+#: src/web/controllers/admin/index_admin_controller.py:267
 msgid "Please enter the start date of the event."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:273
+#: src/web/controllers/admin/index_admin_controller.py:272
 msgid "Please enter the end date of the event."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:277
+#: src/web/controllers/admin/index_admin_controller.py:276
 msgid "Please enter a date after the start date."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:297
+#: src/web/controllers/admin/index_admin_controller.py:296
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:321
+#: src/web/controllers/admin/index_admin_controller.py:320
 #: src/web/controllers/admin/timer_admin_controller.py:110
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:428
+#: src/web/controllers/admin/index_admin_controller.py:427
 msgid "New event"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:429
+#: src/web/controllers/admin/index_admin_controller.py:428
 msgid "event"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:526
+#: src/web/controllers/admin/index_admin_controller.py:525
 #: src/web/controllers/user/index_user_controller.py:84
 msgid "Current events ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:530
+#: src/web/controllers/admin/index_admin_controller.py:529
 #: src/web/controllers/user/index_user_controller.py:86
 msgid "No current events."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:534
+#: src/web/controllers/admin/index_admin_controller.py:533
 #: src/web/controllers/user/index_user_controller.py:92
 msgid "Upcoming events ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:538
+#: src/web/controllers/admin/index_admin_controller.py:537
 #: src/web/controllers/user/index_user_controller.py:94
 msgid "No upcoming events."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:542
+#: src/web/controllers/admin/index_admin_controller.py:541
 #: src/web/controllers/user/index_user_controller.py:100
 msgid "Passed events ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:546
+#: src/web/controllers/admin/index_admin_controller.py:545
 #: src/web/controllers/user/index_user_controller.py:102
 msgid "No passed events."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:550
+#: src/web/controllers/admin/index_admin_controller.py:549
 msgid "Archived events ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:554
+#: src/web/controllers/admin/index_admin_controller.py:553
 msgid "No archived events."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:558
+#: src/web/controllers/admin/index_admin_controller.py:557
 #: src/web/templates/admin_config.html:4
 msgid "Papi-web configuration"
 msgstr ""
@@ -1544,84 +1629,80 @@ msgstr ""
 msgid "Please enter the last name."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:84
-msgid "Please enter the first name."
-msgstr ""
-
-#: src/web/controllers/admin/player_admin_controller.py:90
+#: src/web/controllers/admin/player_admin_controller.py:88
 msgid "Please enter the date of birth."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:136
+#: src/web/controllers/admin/player_admin_controller.py:134
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:142
+#: src/web/controllers/admin/player_admin_controller.py:140
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:158
+#: src/web/controllers/admin/player_admin_controller.py:156
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:164
+#: src/web/controllers/admin/player_admin_controller.py:162
 msgid "Invalid phone number [{phone}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:314
+#: src/web/controllers/admin/player_admin_controller.py:312
 msgid "Standard:"
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:315
+#: src/web/controllers/admin/player_admin_controller.py:313
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:318
+#: src/web/controllers/admin/player_admin_controller.py:316
 msgid "Rapid:"
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:319
+#: src/web/controllers/admin/player_admin_controller.py:317
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:322
+#: src/web/controllers/admin/player_admin_controller.py:320
 msgid "Blitz:"
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:323
+#: src/web/controllers/admin/player_admin_controller.py:321
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:429
-#: src/web/controllers/admin/player_admin_controller.py:500
+#: src/web/controllers/admin/player_admin_controller.py:413
+#: src/web/controllers/admin/player_admin_controller.py:484
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:437
+#: src/web/controllers/admin/player_admin_controller.py:421
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:441
+#: src/web/controllers/admin/player_admin_controller.py:425
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:446
+#: src/web/controllers/admin/player_admin_controller.py:430
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:459
+#: src/web/controllers/admin/player_admin_controller.py:443
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:507
+#: src/web/controllers/admin/player_admin_controller.py:491
 msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:532
+#: src/web/controllers/admin/player_admin_controller.py:516
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:567
+#: src/web/controllers/admin/player_admin_controller.py:551
 msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -1881,7 +1962,7 @@ msgstr ""
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:161
+#: src/web/templates/admin_players.html:171
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -2010,7 +2091,7 @@ msgstr ""
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:171
+#: src/web/templates/admin_players.html:181
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -3128,109 +3209,113 @@ msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
 #: src/web/templates/admin_players.html:99
+msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
+msgstr "Cat"
+
+#: src/web/templates/admin_players.html:109
 msgid "The mail addresses."
 msgstr ""
 
-#: src/web/templates/admin_players.html:104
+#: src/web/templates/admin_players.html:114
 msgid "The phone numbers."
 msgstr ""
 
-#: src/web/templates/admin_players.html:115
+#: src/web/templates/admin_players.html:125
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Fide"
 
-#: src/web/templates/admin_players.html:120
+#: src/web/templates/admin_players.html:130
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
 
-#: src/web/templates/admin_players.html:125
+#: src/web/templates/admin_players.html:135
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "Owed"
 
-#: src/web/templates/admin_players.html:126
+#: src/web/templates/admin_players.html:136
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
-#: src/web/templates/admin_players.html:159
+#: src/web/templates/admin_players.html:169
 msgid "Edit the player's properties."
 msgstr ""
 
-#: src/web/templates/admin_players.html:169
+#: src/web/templates/admin_players.html:179
 msgid "Remove the player from the event."
 msgstr ""
 
-#: src/web/templates/admin_players.html:182
+#: src/web/templates/admin_players.html:192
 #: src/web/templates/admin_players/admin_players_check_in_tournaments.html:18
 #, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is finished."
 msgstr ""
 
-#: src/web/templates/admin_players.html:185
+#: src/web/templates/admin_players.html:195
 #: src/web/templates/admin_players/admin_players_check_in_tournaments.html:20
 #, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr ""
 
-#: src/web/templates/admin_players.html:188
+#: src/web/templates/admin_players.html:198
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
-#: src/web/templates/admin_players.html:191
+#: src/web/templates/admin_players.html:201
 #, python-format
 msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
-#: src/web/templates/admin_players.html:194
+#: src/web/templates/admin_players.html:204
 msgid "Click to check-out the player."
 msgstr ""
 
-#: src/web/templates/admin_players.html:200
+#: src/web/templates/admin_players.html:210
 msgid "Click to check-in the player."
 msgstr ""
 
-#: src/web/templates/admin_players.html:248
+#: src/web/templates/admin_players.html:263
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:250
+#: src/web/templates/admin_players.html:265
 msgid "No mail defined."
 msgstr ""
 
-#: src/web/templates/admin_players.html:261
+#: src/web/templates/admin_players.html:276
 #, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:263
+#: src/web/templates/admin_players.html:278
 msgid "No phone defined."
 msgstr ""
 
-#: src/web/templates/admin_players.html:282
+#: src/web/templates/admin_players.html:297
 #, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:285
+#: src/web/templates/admin_players.html:300
 msgid "No FIDE ID."
 msgstr ""
 
-#: src/web/templates/admin_players.html:298
+#: src/web/templates/admin_players.html:313
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:302
+#: src/web/templates/admin_players.html:317
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
-#: src/web/templates/admin_players.html:326
+#: src/web/templates/admin_players.html:341
 msgid "Change the player's tournament."
 msgstr ""
 
-#: src/web/templates/admin_players.html:370
+#: src/web/templates/admin_players.html:385
 msgid "No players."
 msgstr ""
 
@@ -4266,6 +4351,14 @@ msgid "Sort the players by year of birth (youngest first)."
 msgstr ""
 
 #: src/web/templates/macros.j2:215
+msgid "Sort the players by category (oldest first)."
+msgstr ""
+
+#: src/web/templates/macros.j2:217
+msgid "Sort the players by category (youngest first)."
+msgstr ""
+
+#: src/web/templates/macros.j2:219
 msgid "Sort the players by tournament."
 msgstr ""
 
@@ -4520,39 +4613,47 @@ msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "YOB"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html:53
+msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
+msgstr "Category"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html:55
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Gender"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:59
+#: src/web/templates/admin_players/admin_players_filter_columns.html:61
 msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
 msgstr "Fide"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:65
+#: src/web/templates/admin_players/admin_players_filter_columns.html:67
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:67
+#: src/web/templates/admin_players/admin_players_filter_columns.html:69
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:69
+#: src/web/templates/admin_players/admin_players_filter_columns.html:71
 msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
 msgstr "Owed/paid"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:71
+#: src/web/templates/admin_players/admin_players_filter_columns.html:73
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:73
+#: src/web/templates/admin_players/admin_players_filter_columns.html:75
 msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
 msgstr "Comment"
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:75
+#: src/web/templates/admin_players/admin_players_filter_columns.html:77
 msgid "History *** HISTORY FOR PLAYERS COLUMNS"
 msgstr "History"
 
 #: src/web/templates/admin_players/admin_players_filter_federations.html:7
 msgid "Filter the federations."
+msgstr ""
+
+#: src/web/templates/admin_players/admin_players_filter_ffe_categories.html:8
+msgid "Filter the categories."
 msgstr ""
 
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:8
@@ -4663,5 +4764,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The following players did not check-in, choose what to do:"
+#~ msgstr ""
+
+#~ msgid "Please enter the first name."
 #~ msgstr ""
 

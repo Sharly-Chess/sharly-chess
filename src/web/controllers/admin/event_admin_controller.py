@@ -17,7 +17,7 @@ from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
-from data.util import PlayerGender, PlayerFFELicence
+from data.util import PlayerGender, PlayerFFELicence, PlayerCategory
 from database.sqlite import EventDatabase
 from database.store import StoredEvent
 from web.controllers.admin.index_admin_controller import AdminWebContext, AbstractIndexAdminController
@@ -220,6 +220,12 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 # The tournaments that will be selected on the tournament select list and used to filter the players
                 filter_tournaments: list[int] = SessionHandler.get_session_admin_players_filter_tournaments(
                     web_context.request)
+                # The categories that will be shown on the category select list
+                players_categories: list[PlayerCategory] = sorted(
+                    {player.category for player in admin_event.players_by_id.values()})
+                # The categories that will be selected on the category select list and used to filter the players
+                filter_categories: list[PlayerCategory] = SessionHandler.get_session_admin_players_filter_categories(
+                    web_context.request)
                 match SessionHandler.get_session_admin_players_sort(web_context.request):
                     case 'alpha':
                         sort_key = lambda player: (player.last_name, player.first_name)
@@ -231,6 +237,10 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                         sort_key = lambda player: (-player.year_of_birth, player.last_name, player.first_name)
                     case 'yob_asc':
                         sort_key = lambda player: (player.year_of_birth, player.last_name, player.first_name)
+                    case 'category_desc':
+                        sort_key = lambda player: (-player.category, player.last_name, player.first_name)
+                    case 'category_asc':
+                        sort_key = lambda player: (player.category, player.last_name, player.first_name)
                     case 'origin':
                         sort_key = lambda player: (
                         player.federation, player.league, player.club, player.last_name, player.first_name)
@@ -253,6 +263,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     player for player in web_context.admin_event.players_by_id.values()
                     if (player.ref_id > 1 and len(filter_genders) in [0, 3] or player.gender.value in filter_genders) \
                        and (len(filter_licences) in [0, len(players_licences)] or player.ffe_licence in filter_licences) \
+                       and (len(filter_categories) in [0, len(players_categories)] or player.category in filter_categories) \
                        and (len(filter_check_ins) in [0, 3] or (player.can_check_in_out and player.check_in in filter_check_ins) or (not player.can_check_in_out and None in filter_check_ins)) \
                        and (len(filter_tournaments) in [0, len(web_context.admin_event.tournaments_by_id)] or player.tournament_id in filter_tournaments) \
                        and (len(filter_federations) in [0, len(players_federations)] or player.federation_tuple in filter_federations) \
@@ -262,14 +273,15 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 template_context |= {
                     'admin_players': players,
                     'admin_players_columns': [
-                        'check_in', 'name', 'rating', 'federation', 'league', 'club', 'yob', 'mail', 'phone', 'gender',
-                        'fide', 'ffe', 'owed_paid', 'tournament', 'comment', 'history',
+                        'check_in', 'name', 'rating', 'federation', 'league', 'club', 'yob', 'category', 'mail',
+                        'phone', 'gender', 'fide', 'ffe', 'owed_paid', 'tournament', 'comment', 'history',
                     ],
                     'admin_players_sort': SessionHandler.get_session_admin_players_sort(web_context.request),
                     'admin_players_federations': players_federations,
                     'admin_players_leagues': players_leagues,
                     'admin_players_clubs': players_clubs,
                     'admin_players_yobs': players_yobs,
+                    'admin_players_categories': players_categories,
                     'admin_players_genders': players_genders,
                     'admin_players_licences': players_licences,
                     'admin_players_check_ins': players_check_ins,
@@ -288,6 +300,8 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     'admin_players_filter_check_ins': SessionHandler.get_session_admin_players_filter_check_ins(
                         web_context.request),
                     'admin_players_filter_tournaments': SessionHandler.get_session_admin_players_filter_tournaments(
+                        web_context.request),
+                    'admin_players_filter_categories': SessionHandler.get_session_admin_players_filter_categories(
                         web_context.request),
                 }
             case 'screens':
@@ -442,6 +456,7 @@ class EventAdminController(AbstractEventAdminController):
             admin_players_filter_licences: list[int] | None = None,
             admin_players_filter_check_ins: list[int] | None = None,
             admin_players_filter_tournaments: list[int] | None = None,
+            admin_players_filter_categories: list[int] | None = None,
             admin_players_clear_filters: int | None = None,
     ) -> Template | ClientRedirect:
         match admin_event_tab:
@@ -492,6 +507,11 @@ class EventAdminController(AbstractEventAdminController):
                         query_param for query_param in admin_players_filter_tournaments
                         if query_param > 0  # 0 must be ignored
                     ])
+                elif admin_players_filter_categories is not None:
+                    SessionHandler.set_session_admin_players_filter_categories(request, [
+                        PlayerCategory(query_param) for query_param in admin_players_filter_categories
+                        if query_param >= 0  # -1 must be ignored
+                    ])
                 elif admin_players_clear_filters:
                     SessionHandler.set_session_admin_players_filter_federations(request, [])
                     SessionHandler.set_session_admin_players_filter_leagues(request, [])
@@ -500,6 +520,7 @@ class EventAdminController(AbstractEventAdminController):
                     SessionHandler.set_session_admin_players_filter_licences(request, [])
                     SessionHandler.set_session_admin_players_filter_check_ins(request, [])
                     SessionHandler.set_session_admin_players_filter_tournaments(request, [])
+                    SessionHandler.set_session_admin_players_filter_categories(request, [])
             case 'screens':
                 if admin_screens_show_family_screens is not None:
                     SessionHandler.set_session_admin_screens_show_family_screens(

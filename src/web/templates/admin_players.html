@@ -94,6 +94,16 @@
                             {% endif %}
                         </th>
                     {% endif %}
+                    {% if 'category' in admin_players_filter_columns %}
+                        <th scope="col" class="text-nowrap text-center">
+                            {{ _('Cat *** CATEGORY COLUMN HEADER FOR PLAYERS') }}
+                            {% if admin_players_categories|length > 1 %}
+                                {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'category_desc', admin_players_sort) }}
+                                {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'category_asc', admin_players_sort) }}
+                            {% endif %}
+                            {% include 'admin_players/admin_players_filter_categories.html' %}
+                        </th>
+                    {% endif %}
                     {% if 'mail' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-start w-1">
                             <i class="bi-envelope-check" {{ tooltip_attributes('info', _('The mail addresses.'), 'top') }} ></i>
@@ -240,6 +250,11 @@
                                     {{ player.year_of_birth }}
                                 </td>
                             {% endif %}
+                            {% if 'category' in admin_players_filter_columns %}
+                                <td class="text-nowrap text-center">
+                                    {{ player.category.short_name }}
+                                </td>
+                            {% endif %}
                             {% if 'mail' in admin_players_filter_columns %}
                                 <td class="text-nowrap">
                                     <i
@@ -361,7 +376,7 @@
                 {% else %}
                     <tr>
                         {% set columns =
-                            3
+                            4
                             + admin_players_filter_columns|length
                             + (1 if ('tournament' in admin_players_filter_columns or admin_event.tournaments_by_id|length > 1) else 0)
                             + (1 if ('owed_paid' in admin_players_filter_columns) else 0)

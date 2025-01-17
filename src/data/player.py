@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 from common.i18n import _
 from data.pairing import Pairing
 from common.logger import get_logger
-from data.util import PlayerGender, PlayerTitle, BoardColor, PlayerFFELicence, TournamentRating, PlayerRatingType
+from data.util import PlayerGender, PlayerTitle, BoardColor, PlayerFFELicence, TournamentRating, PlayerRatingType, \
+    PlayerCategory
 
 logger: Logger = get_logger()
 
@@ -204,6 +205,10 @@ class Player:
     @property
     def year_of_birth(self) -> int:
         return self.date_of_birth.year if self.date_of_birth else 0
+
+    @cached_property
+    def category(self) -> PlayerCategory:
+        return PlayerCategory.from_year_of_birth(self.date_of_birth.year)
 
     @property
     def rating(self) -> int:
