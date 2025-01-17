@@ -76,7 +76,7 @@ class AbstractAdminController(AbstractController):
             '': '',
             '0': _('No recording'),
         } | {
-            i: ngettext('{num} illegal move max', '{num} illegal moves max', i).format(num=i)
+            str(i): ngettext('{num} illegal move max', '{num} illegal moves max', i).format(num=i)
             for i in range (1, 4)
         }
         options[''] = _('By default - {option}').format(option=options[str(default)])

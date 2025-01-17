@@ -21,7 +21,7 @@ from data.chessevent_tournament import ChessEventTournament
 from data.family import Family
 from data.player import Player, FederationTuple, LeagueTuple, ClubTuple
 from data.screen import Screen
-from data.util import Color, NeedsUpload, TournamentRating, PlayerFFELicence, PlayerGender
+from data.util import BoardColor, NeedsUpload, TournamentRating, PlayerFFELicence, PlayerGender
 from data.util import TournamentPairing, Result
 from database.papi import PapiDatabase
 from database.sqlite import EventDatabase
@@ -568,7 +568,7 @@ class Tournament:
                         player_board.white_player = player
                         break
                 if player_board is None:
-                    if player.pairings[self._current_round].color == Color.WHITE:
+                    if player.pairings[self._current_round].color == BoardColor.WHITE:
                         self._boards.append(Board(white_player=player))
                     else:
                         self._boards.append(Board(black_player=player))
@@ -579,8 +579,8 @@ class Tournament:
             board.id = index
             number: int = board.white_player.fixed or board.black_player.fixed or index
             board.number = number
-            board.white_player.set_board(index, number, Color.WHITE)
-            board.black_player.set_board(index, number, Color.BLACK)
+            board.white_player.set_board(index, number, BoardColor.WHITE)
+            board.black_player.set_board(index, number, BoardColor.BLACK)
             board.result = board.white_player.pairings[self._current_round].result
             if self.handicap:
                 strong_player: Player
@@ -743,13 +743,13 @@ class Tournament:
         assert not self.playing, f'Games are played for tournament [{self.uniq_id}].'
         assert not self.check_in_open, f'Check-in already open for tournament [{self.uniq_id}].'
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
-            event_database.set_tournament_check_in(self.id, True)
+            with PapiDatabase(self.file, write=True) as papi_database:
+                event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
+                event_database.set_tournament_check_in(self.id, True)
+                round: int = self.current_round + 1
+                papi_database.open_check_in(round)
+                papi_database.commit()
             event_database.commit()
-        round: int =self.current_round + 1
-        with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.open_check_in(round)
-            papi_database.commit()
 
     def close_check_in(self, forfeit_last_rounds: bool):
         """ Closes the check-in for the tournament and sets all the players not checked-in as forfeit

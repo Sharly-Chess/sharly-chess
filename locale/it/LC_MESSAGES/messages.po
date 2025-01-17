@@ -879,7 +879,7 @@ msgstr "Esente"
 msgid "Exempt *** MALE"
 msgstr "Esente"
 
-#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:846
+#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:917
 #: src/web/controllers/admin/index_admin_controller.py:108
 #: src/web/controllers/admin/screen_admin_controller.py:360
 #: src/web/templates/admin_screens.html:79
@@ -888,7 +888,7 @@ msgstr "Esente"
 msgid "Last results"
 msgstr "Ultimi risultati"
 
-#: src/data/screen.py:99 src/data/util.py:848
+#: src/data/screen.py:99 src/data/util.py:919
 #: src/web/controllers/admin/index_admin_controller.py:109
 #: src/web/controllers/admin/screen_admin_controller.py:362
 #: src/web/templates/admin_screens.html:80
@@ -1042,170 +1042,182 @@ msgstr "Connessione a scacchiEvent non definita."
 msgid "ChessEvent tournament name not set."
 msgstr "Nome del torneo di ChessEvent non impostato."
 
-#: src/data/util.py:245
+#: src/data/util.py:316
 #, ai_translation
 msgid "Standard rating"
 msgstr "Valutazione standard"
 
-#: src/data/util.py:247
+#: src/data/util.py:318
 #, ai_translation
 msgid "Rapid rating"
 msgstr "Valutazione rapida"
 
-#: src/data/util.py:249
+#: src/data/util.py:320
 #, ai_translation
 msgid "Blitz rating"
 msgstr "Valutazione Blitz"
 
-#: src/data/util.py:460
+#: src/data/util.py:531
 #, ai_translation
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py:462
+#: src/data/util.py:533
 #, ai_translation
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Femminile"
 
-#: src/data/util.py:464
+#: src/data/util.py:535
 #, ai_translation
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Maschio"
 
-#: src/data/util.py:472
+#: src/data/util.py:543
 #: src/web/templates/admin_players/admin_players_filter_genders.html:28
 #, ai_translation
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py:474
+#: src/data/util.py:545
 #: src/web/templates/admin_players/admin_players_filter_genders.html:32
 #, ai_translation
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
-#: src/data/util.py:476
+#: src/data/util.py:547
 #: src/web/templates/admin_players/admin_players_filter_genders.html:36
 #, ai_translation
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
-#: src/data/util.py:519
+#: src/data/util.py:590
 #, ai_translation, fuzzy
 msgid "No FFE Licence"
 msgstr "Nessuna licenza FFE"
 
-#: src/data/util.py:521
+#: src/data/util.py:592
 #, ai_translation
 msgid "Expired FFE licence"
 msgstr "Licenza FFE scaduta"
 
-#: src/data/util.py:523
+#: src/data/util.py:594
 #, ai_translation
 msgid "FFE licence B (leisure)"
 msgstr "Licenza FFE B (leisure)"
 
-#: src/data/util.py:525
+#: src/data/util.py:596
 #, ai_translation
 msgid "FFE licence A (competition)"
 msgstr "Licenza FFE A (concorso)"
 
-#: src/data/util.py:675
+#: src/data/util.py:746
 #, ai_translation, fuzzy
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Maschio"
 
-#: src/data/util.py:677
+#: src/data/util.py:748
 #, ai_translation
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "Nazionale"
 
-#: src/data/util.py:679
+#: src/data/util.py:750
 #, ai_translation, fuzzy
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Maschio"
 
-#: src/data/util.py:687
+#: src/data/util.py:758
 #, ai_translation, fuzzy
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "M"
 
-#: src/data/util.py:689
+#: src/data/util.py:760
 #, ai_translation, fuzzy
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "-"
 
-#: src/data/util.py:691
+#: src/data/util.py:762
 #, ai_translation, fuzzy
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-#: src/data/util.py:755
+#: src/data/util.py:826
 #, ai_translation, fuzzy
 msgid "No title"
 msgstr "Niente timer."
 
-#: src/data/util.py:757
+#: src/data/util.py:828
 #, ai_translation
 msgid "Woman Fide Master"
 msgstr "Donna Fide Master"
 
-#: src/data/util.py:759
+#: src/data/util.py:830
 #, ai_translation
 msgid "Fide Master"
 msgstr "Fide Master"
 
-#: src/data/util.py:761
+#: src/data/util.py:832
 #, ai_translation
 msgid "Woman International Master"
 msgstr "Woman International Master"
 
-#: src/data/util.py:763
+#: src/data/util.py:834
 #, ai_translation
 msgid "International Master"
 msgstr "Master internazionale"
 
-#: src/data/util.py:765
+#: src/data/util.py:836
 #, ai_translation
 msgid "Woman Grand Master"
 msgstr "Donna Gran Maestro"
 
-#: src/data/util.py:767
+#: src/data/util.py:838
 #, ai_translation
 msgid "Grand Master"
 msgstr "Gran Maestro"
 
-#: src/data/util.py:777
+#: src/data/util.py:848
 #, ai_translation, fuzzy
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
 msgstr "M"
 
-#: src/data/util.py:779
+#: src/data/util.py:850
 #, ai_translation, fuzzy
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "M"
 
-#: src/data/util.py:781
+#: src/data/util.py:852
 #, ai_translation, fuzzy
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "-"
 
-#: src/data/util.py:783
+#: src/data/util.py:854
 #, ai_translation, fuzzy
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "-"
 
-#: src/data/util.py:785
+#: src/data/util.py:856
 #, ai_translation, fuzzy
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "M"
 
-#: src/data/util.py:787
+#: src/data/util.py:858
 #, ai_translation, fuzzy
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "M"
 
-#: src/data/util.py:840 src/web/controllers/admin/index_admin_controller.py:104
+#: src/data/util.py:894 src/web/templates/user_boards_screen_set.html:23
+#: src/web/templates/user_results_screen.html:13
+#, ai_translation
+msgid "White"
+msgstr "Bianco"
+
+#: src/data/util.py:896 src/web/templates/user_boards_screen_set.html:25
+#: src/web/templates/user_results_screen.html:15
+#, ai_translation
+msgid "Black"
+msgstr "Nero"
+
+#: src/data/util.py:911 src/web/controllers/admin/index_admin_controller.py:104
 #: src/web/controllers/admin/tournament_admin_controller.py:339
 #: src/web/templates/admin_families.html:61
 #: src/web/templates/admin_screens.html:77
@@ -1214,7 +1226,7 @@ msgstr "M"
 msgid "Pairings by board"
 msgstr "Abbinamenti a bordo"
 
-#: src/data/util.py:842
+#: src/data/util.py:913
 #: src/web/controllers/admin/family_admin_controller.py:270
 #: src/web/controllers/admin/index_admin_controller.py:103
 #: src/web/controllers/admin/screen_admin_controller.py:354
@@ -1227,7 +1239,7 @@ msgstr "Abbinamenti a bordo"
 msgid "Results entry"
 msgstr "Inserimento dei risultati"
 
-#: src/data/util.py:844
+#: src/data/util.py:915
 #, ai_translation, fuzzy
 msgid "Parings by player"
 msgstr "accoppiamenti per giocatore"
@@ -1580,28 +1592,28 @@ msgstr "Evento di scacchi ({num})"
 msgid "Messages ({num})"
 msgstr "Messaggi ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:593
+#: src/web/controllers/admin/event_admin_controller.py:595
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Rinomina del database non riuscita: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:600
+#: src/web/controllers/admin/event_admin_controller.py:602
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "L'evento [{old_uniq_id}] è stato rinominato ([{new_uniq_id}]) e aggiornato."
 
-#: src/web/controllers/admin/event_admin_controller.py:603
+#: src/web/controllers/admin/event_admin_controller.py:605
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "Evento [{uniq_id}] è stato aggiornato."
 
-#: src/web/controllers/admin/event_admin_controller.py:611
+#: src/web/controllers/admin/event_admin_controller.py:613
 #: src/web/controllers/admin/index_admin_controller.py:676
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Evento [{uniq_id}] è stato creato."
 
-#: src/web/controllers/admin/event_admin_controller.py:621
+#: src/web/controllers/admin/event_admin_controller.py:623
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Evento [{uniq_id}] è stato eliminato, il database è stato archiviato ({arch})."
@@ -3968,14 +3980,14 @@ msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in to
 msgstr "Giocatore [%(last_name)s %(first_name)s] se perde per il round successivo nel torneo [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin_players.html:194
-#, ai_translation, fuzzy
-msgid "Click to check-in the player."
-msgstr "Check-in"
-
-#: src/web/templates/admin_players.html:200
 #, ai_translation
 msgid "Click to check-out the player."
 msgstr "Clicca per controllare il giocatore."
+
+#: src/web/templates/admin_players.html:200
+#, ai_translation, fuzzy
+msgid "Click to check-in the player."
+msgstr "Check-in"
 
 #: src/web/templates/admin_players.html:248
 #, ai_translation, fuzzy, python-format
@@ -4096,7 +4108,6 @@ msgid "Rotation delay: %(seconds)d sec."
 msgstr "Ritardo di rotazione: %(seconds)d sec."
 
 #: src/web/templates/admin_rotator_card.html:43
-#: src/web/templates/user_rotator_card.html:22
 #, ai_translation
 msgid "No screen neither family to rotate."
 msgstr "Nessun schermo né famiglia per ruotare."
@@ -4886,12 +4897,14 @@ msgstr "Non viene utilizzata alcuna connessione a ChessEvent."
 msgid "Illegal moves are not recorded."
 msgstr "Le mosse illegali non sono registrate."
 
+# Error: tokens differ between [At most %(num)d illegal move is recorded.] and
+# [Al massimo si registra una mossa illegale.]
 #: src/web/templates/admin_tournament_card.html:88
-#, ai_translation, python-format
-msgid "At most one illegal move is recorded."
+#, ai_translation, fuzzy, python-format
+msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] "Al massimo si registra una mossa illegale."
-msgstr[1] "Al massimo %(num)d vengono registrate mosse illegali."
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/web/templates/admin_tournament_card.html:105
 #, ai_translation
@@ -5347,22 +5360,10 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (intorno %(round)d)"
 
 #: src/web/templates/user_boards_screen_set.html:23
-#: src/web/templates/user_results_screen.html:13
-#, ai_translation
-msgid "White"
-msgstr "Bianco"
-
-#: src/web/templates/user_boards_screen_set.html:23
 #: src/web/templates/user_boards_screen_set.html:25
 #, ai_translation
 msgid "time control"
 msgstr "tempo di controllo"
-
-#: src/web/templates/user_boards_screen_set.html:25
-#: src/web/templates/user_results_screen.html:15
-#, ai_translation
-msgid "Black"
-msgstr "Nero"
 
 #: src/web/templates/user_boards_screen_set.html:89
 #, ai_translation, python-format
@@ -5433,6 +5434,11 @@ msgstr "Rnd.BoaCity name (optional, probably does not need a translation)"
 #, ai_translation
 msgid "Score"
 msgstr "Punteggio"
+
+#: src/web/templates/user_rotator_card.html:22
+#, ai_translation, fuzzy
+msgid "No screen nor family to rotate."
+msgstr "Nessun schermo né famiglia per ruotare."
 
 #: src/web/templates/user_rotator_card.html:43
 #, ai_translation, python-format

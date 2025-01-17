@@ -879,7 +879,7 @@ msgstr "Undantag"
 msgid "Exempt *** MALE"
 msgstr "Undantag"
 
-#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:846
+#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:917
 #: src/web/controllers/admin/index_admin_controller.py:108
 #: src/web/controllers/admin/screen_admin_controller.py:360
 #: src/web/templates/admin_screens.html:79
@@ -888,7 +888,7 @@ msgstr "Undantag"
 msgid "Last results"
 msgstr "Senaste resultat"
 
-#: src/data/screen.py:99 src/data/util.py:848
+#: src/data/screen.py:99 src/data/util.py:919
 #: src/web/controllers/admin/index_admin_controller.py:109
 #: src/web/controllers/admin/screen_admin_controller.py:362
 #: src/web/templates/admin_screens.html:80
@@ -1042,170 +1042,182 @@ msgstr "ChessEvent-anslutningen är inte definierad."
 msgid "ChessEvent tournament name not set."
 msgstr "ChessEvent turneringsnamn inte bestämt."
 
-#: src/data/util.py:245
+#: src/data/util.py:316
 #, ai_translation
 msgid "Standard rating"
 msgstr "Standardbetyg"
 
-#: src/data/util.py:247
+#: src/data/util.py:318
 #, ai_translation
 msgid "Rapid rating"
 msgstr "Snabba betyg"
 
-#: src/data/util.py:249
+#: src/data/util.py:320
 #, ai_translation
 msgid "Blitz rating"
 msgstr "Blitz-betyg"
 
-#: src/data/util.py:460
+#: src/data/util.py:531
 #, ai_translation
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "- Vad är det?"
 
-#: src/data/util.py:462
+#: src/data/util.py:533
 #, ai_translation
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Kvinna"
 
-#: src/data/util.py:464
+#: src/data/util.py:535
 #, ai_translation
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Män"
 
-#: src/data/util.py:472
+#: src/data/util.py:543
 #: src/web/templates/admin_players/admin_players_filter_genders.html:28
 #, ai_translation
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "- Vad är det?"
 
-#: src/data/util.py:474
+#: src/data/util.py:545
 #: src/web/templates/admin_players/admin_players_filter_genders.html:32
 #, ai_translation
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
 
-#: src/data/util.py:476
+#: src/data/util.py:547
 #: src/web/templates/admin_players/admin_players_filter_genders.html:36
 #, ai_translation
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "Ordförande"
 
-#: src/data/util.py:519
+#: src/data/util.py:590
 #, ai_translation, fuzzy
 msgid "No FFE Licence"
 msgstr "Ingen FFE-licens"
 
-#: src/data/util.py:521
+#: src/data/util.py:592
 #, ai_translation
 msgid "Expired FFE licence"
 msgstr "Körkort för FFE som upphör att gälla"
 
-#: src/data/util.py:523
+#: src/data/util.py:594
 #, ai_translation
 msgid "FFE licence B (leisure)"
 msgstr "FFE-tillstånd B (leisure)"
 
-#: src/data/util.py:525
+#: src/data/util.py:596
 #, ai_translation
 msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
-#: src/data/util.py:675
+#: src/data/util.py:746
 #, ai_translation, fuzzy
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Män"
 
-#: src/data/util.py:677
+#: src/data/util.py:748
 #, ai_translation
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "Nationellt"
 
-#: src/data/util.py:679
+#: src/data/util.py:750
 #, ai_translation, fuzzy
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Män"
 
-#: src/data/util.py:687
+#: src/data/util.py:758
 #, ai_translation, fuzzy
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "Ordförande"
 
-#: src/data/util.py:689
+#: src/data/util.py:760
 #, ai_translation, fuzzy
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "- Vad är det?"
 
-#: src/data/util.py:691
+#: src/data/util.py:762
 #, ai_translation, fuzzy
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
 
-#: src/data/util.py:755
+#: src/data/util.py:826
 #, ai_translation, fuzzy
 msgid "No title"
 msgstr "Inga timers."
 
-#: src/data/util.py:757
+#: src/data/util.py:828
 #, ai_translation
 msgid "Woman Fide Master"
 msgstr "Kvinnlig mästare"
 
-#: src/data/util.py:759
+#: src/data/util.py:830
 #, ai_translation
 msgid "Fide Master"
 msgstr "Fide Master Ordförande"
 
-#: src/data/util.py:761
+#: src/data/util.py:832
 #, ai_translation
 msgid "Woman International Master"
 msgstr "Kvinna internationell mästare"
 
-#: src/data/util.py:763
+#: src/data/util.py:834
 #, ai_translation
 msgid "International Master"
 msgstr "Internationell mästare"
 
-#: src/data/util.py:765
+#: src/data/util.py:836
 #, ai_translation
 msgid "Woman Grand Master"
 msgstr "Kvinna stormästare"
 
-#: src/data/util.py:767
+#: src/data/util.py:838
 #, ai_translation
 msgid "Grand Master"
 msgstr "Stormästare"
 
-#: src/data/util.py:777
+#: src/data/util.py:848
 #, ai_translation, fuzzy
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
 msgstr "Ordförande"
 
-#: src/data/util.py:779
+#: src/data/util.py:850
 #, ai_translation, fuzzy
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "Ordförande"
 
-#: src/data/util.py:781
+#: src/data/util.py:852
 #, ai_translation, fuzzy
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "- Vad är det?"
 
-#: src/data/util.py:783
+#: src/data/util.py:854
 #, ai_translation, fuzzy
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "- Vad är det?"
 
-#: src/data/util.py:785
+#: src/data/util.py:856
 #, ai_translation, fuzzy
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "Ordförande"
 
-#: src/data/util.py:787
+#: src/data/util.py:858
 #, ai_translation, fuzzy
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "Ordförande"
 
-#: src/data/util.py:840 src/web/controllers/admin/index_admin_controller.py:104
+#: src/data/util.py:894 src/web/templates/user_boards_screen_set.html:23
+#: src/web/templates/user_results_screen.html:13
+#, ai_translation
+msgid "White"
+msgstr "Vitt"
+
+#: src/data/util.py:896 src/web/templates/user_boards_screen_set.html:25
+#: src/web/templates/user_results_screen.html:15
+#, ai_translation
+msgid "Black"
+msgstr "Svart"
+
+#: src/data/util.py:911 src/web/controllers/admin/index_admin_controller.py:104
 #: src/web/controllers/admin/tournament_admin_controller.py:339
 #: src/web/templates/admin_families.html:61
 #: src/web/templates/admin_screens.html:77
@@ -1214,7 +1226,7 @@ msgstr "Ordförande"
 msgid "Pairings by board"
 msgstr "Parningar ombord"
 
-#: src/data/util.py:842
+#: src/data/util.py:913
 #: src/web/controllers/admin/family_admin_controller.py:270
 #: src/web/controllers/admin/index_admin_controller.py:103
 #: src/web/controllers/admin/screen_admin_controller.py:354
@@ -1227,7 +1239,7 @@ msgstr "Parningar ombord"
 msgid "Results entry"
 msgstr "Inlämning av resultat"
 
-#: src/data/util.py:844
+#: src/data/util.py:915
 #, ai_translation, fuzzy
 msgid "Parings by player"
 msgstr "parningar av spelare"
@@ -1580,28 +1592,28 @@ msgstr "ChessEvent ({num})"
 msgid "Messages ({num})"
 msgstr "Meddelanden ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:593
+#: src/web/controllers/admin/event_admin_controller.py:595
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Byte av databas misslyckades: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:600
+#: src/web/controllers/admin/event_admin_controller.py:602
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "Händelse [{old_uniq_id}] har bytt namn ([{new_uniq_id}]) och uppdaterats."
 
-#: src/web/controllers/admin/event_admin_controller.py:603
+#: src/web/controllers/admin/event_admin_controller.py:605
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "Händelse [{uniq_id}] har uppdaterats."
 
-#: src/web/controllers/admin/event_admin_controller.py:611
+#: src/web/controllers/admin/event_admin_controller.py:613
 #: src/web/controllers/admin/index_admin_controller.py:676
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Händelse [{uniq_id}] har skapats."
 
-#: src/web/controllers/admin/event_admin_controller.py:621
+#: src/web/controllers/admin/event_admin_controller.py:623
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch})."
@@ -3940,14 +3952,14 @@ msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in to
 msgstr "Spelare [%(last_name)s %(first_name)s] om förverkad för nästa omgång i turneringen [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin_players.html:194
-#, ai_translation, fuzzy
-msgid "Click to check-in the player."
-msgstr "Incheckning"
-
-#: src/web/templates/admin_players.html:200
 #, ai_translation
 msgid "Click to check-out the player."
 msgstr "Klicka för att checka ut spelaren."
+
+#: src/web/templates/admin_players.html:200
+#, ai_translation, fuzzy
+msgid "Click to check-in the player."
+msgstr "Incheckning"
 
 #: src/web/templates/admin_players.html:248
 #, ai_translation, fuzzy, python-format
@@ -4067,7 +4079,6 @@ msgid "Rotation delay: %(seconds)d sec."
 msgstr "Rotationsfördröjning: %(seconds)d sek."
 
 #: src/web/templates/admin_rotator_card.html:43
-#: src/web/templates/user_rotator_card.html:22
 #, ai_translation
 msgid "No screen neither family to rotate."
 msgstr "Ingen skärm varken familj att rotera."
@@ -4857,12 +4868,14 @@ msgstr "Ingen ChessEvent-anslutning används."
 msgid "Illegal moves are not recorded."
 msgstr "Olagliga rörelser registreras inte."
 
+# Error: tokens differ between [At most %(num)d illegal move is recorded.] and
+# [Som mest registreras ett olagligt drag.]
 #: src/web/templates/admin_tournament_card.html:88
-#, ai_translation, python-format
-msgid "At most one illegal move is recorded."
+#, ai_translation, fuzzy, python-format
+msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] "Som mest registreras ett olagligt drag."
-msgstr[1] "På de flesta %(num)d olagliga rörelser registreras."
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/web/templates/admin_tournament_card.html:105
 #, ai_translation
@@ -5318,22 +5331,10 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (runda %(round)d)"
 
 #: src/web/templates/user_boards_screen_set.html:23
-#: src/web/templates/user_results_screen.html:13
-#, ai_translation
-msgid "White"
-msgstr "Vitt"
-
-#: src/web/templates/user_boards_screen_set.html:23
 #: src/web/templates/user_boards_screen_set.html:25
 #, ai_translation
 msgid "time control"
 msgstr "Tidskontroll"
-
-#: src/web/templates/user_boards_screen_set.html:25
-#: src/web/templates/user_results_screen.html:15
-#, ai_translation
-msgid "Black"
-msgstr "Svart"
 
 #: src/web/templates/user_boards_screen_set.html:89
 #, ai_translation, python-format
@@ -5404,6 +5405,11 @@ msgstr "Styckningsdelar av höns av arten Gallus domesticus"
 #, ai_translation
 msgid "Score"
 msgstr "Poäng"
+
+#: src/web/templates/user_rotator_card.html:22
+#, ai_translation, fuzzy
+msgid "No screen nor family to rotate."
+msgstr "Ingen skärm varken familj att rotera."
 
 #: src/web/templates/user_rotator_card.html:43
 #, ai_translation, python-format

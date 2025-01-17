@@ -702,7 +702,7 @@ class PapiWebConfig(metaclass=Singleton):
         'ZIM': 'Zimbabwe',
     }
 
-    """ The federation names. """
+    """ The FFE league names. """
     ffe_leagues: dict[str, str] = {
         '': '',
         'ARA': 'Auvergne-Rhône-Alpes',

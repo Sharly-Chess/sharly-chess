@@ -686,7 +686,7 @@ msgstr ""
 msgid "Exempt *** MALE"
 msgstr ""
 
-#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:846
+#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:917
 #: src/web/controllers/admin/index_admin_controller.py:108
 #: src/web/controllers/admin/screen_admin_controller.py:360
 #: src/web/templates/admin_screens.html:79
@@ -694,7 +694,7 @@ msgstr ""
 msgid "Last results"
 msgstr ""
 
-#: src/data/screen.py:99 src/data/util.py:848
+#: src/data/screen.py:99 src/data/util.py:919
 #: src/web/controllers/admin/index_admin_controller.py:109
 #: src/web/controllers/admin/screen_admin_controller.py:362
 #: src/web/templates/admin_screens.html:80
@@ -822,138 +822,148 @@ msgstr ""
 msgid "ChessEvent tournament name not set."
 msgstr ""
 
-#: src/data/util.py:245
+#: src/data/util.py:316
 msgid "Standard rating"
 msgstr ""
 
-#: src/data/util.py:247
+#: src/data/util.py:318
 msgid "Rapid rating"
 msgstr ""
 
-#: src/data/util.py:249
+#: src/data/util.py:320
 msgid "Blitz rating"
 msgstr ""
 
-#: src/data/util.py:460
+#: src/data/util.py:531
 msgid "- *** NAME FOR GENDER NONE"
 msgstr ""
 
-#: src/data/util.py:462
+#: src/data/util.py:533
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr ""
 
-#: src/data/util.py:464
+#: src/data/util.py:535
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr ""
 
-#: src/data/util.py:472
+#: src/data/util.py:543
 #: src/web/templates/admin_players/admin_players_filter_genders.html:28
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr ""
 
-#: src/data/util.py:474
+#: src/data/util.py:545
 #: src/web/templates/admin_players/admin_players_filter_genders.html:32
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr ""
 
-#: src/data/util.py:476
+#: src/data/util.py:547
 #: src/web/templates/admin_players/admin_players_filter_genders.html:36
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr ""
 
-#: src/data/util.py:519
+#: src/data/util.py:590
 msgid "No FFE Licence"
 msgstr ""
 
-#: src/data/util.py:521
+#: src/data/util.py:592
 msgid "Expired FFE licence"
 msgstr ""
 
-#: src/data/util.py:523
+#: src/data/util.py:594
 msgid "FFE licence B (leisure)"
 msgstr ""
 
-#: src/data/util.py:525
+#: src/data/util.py:596
 msgid "FFE licence A (competition)"
 msgstr ""
 
-#: src/data/util.py:675
+#: src/data/util.py:746
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr ""
 
-#: src/data/util.py:677
+#: src/data/util.py:748
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr ""
 
-#: src/data/util.py:679
+#: src/data/util.py:750
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr ""
 
-#: src/data/util.py:687
+#: src/data/util.py:758
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr ""
 
-#: src/data/util.py:689
+#: src/data/util.py:760
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr ""
 
-#: src/data/util.py:691
+#: src/data/util.py:762
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr ""
 
-#: src/data/util.py:755
+#: src/data/util.py:826
 msgid "No title"
 msgstr ""
 
-#: src/data/util.py:757
+#: src/data/util.py:828
 msgid "Woman Fide Master"
 msgstr ""
 
-#: src/data/util.py:759
+#: src/data/util.py:830
 msgid "Fide Master"
 msgstr ""
 
-#: src/data/util.py:761
+#: src/data/util.py:832
 msgid "Woman International Master"
 msgstr ""
 
-#: src/data/util.py:763
+#: src/data/util.py:834
 msgid "International Master"
 msgstr ""
 
-#: src/data/util.py:765
+#: src/data/util.py:836
 msgid "Woman Grand Master"
 msgstr ""
 
-#: src/data/util.py:767
+#: src/data/util.py:838
 msgid "Grand Master"
 msgstr ""
 
-#: src/data/util.py:777
+#: src/data/util.py:848
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
 msgstr ""
 
-#: src/data/util.py:779
+#: src/data/util.py:850
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr ""
 
-#: src/data/util.py:781
+#: src/data/util.py:852
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr ""
 
-#: src/data/util.py:783
+#: src/data/util.py:854
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr ""
 
-#: src/data/util.py:785
+#: src/data/util.py:856
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr ""
 
-#: src/data/util.py:787
+#: src/data/util.py:858
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr ""
 
-#: src/data/util.py:840 src/web/controllers/admin/index_admin_controller.py:104
+#: src/data/util.py:894 src/web/templates/user_boards_screen_set.html:23
+#: src/web/templates/user_results_screen.html:13
+msgid "White"
+msgstr ""
+
+#: src/data/util.py:896 src/web/templates/user_boards_screen_set.html:25
+#: src/web/templates/user_results_screen.html:15
+msgid "Black"
+msgstr ""
+
+#: src/data/util.py:911 src/web/controllers/admin/index_admin_controller.py:104
 #: src/web/controllers/admin/tournament_admin_controller.py:339
 #: src/web/templates/admin_families.html:61
 #: src/web/templates/admin_screens.html:77
@@ -961,7 +971,7 @@ msgstr ""
 msgid "Pairings by board"
 msgstr ""
 
-#: src/data/util.py:842
+#: src/data/util.py:913
 #: src/web/controllers/admin/family_admin_controller.py:270
 #: src/web/controllers/admin/index_admin_controller.py:103
 #: src/web/controllers/admin/screen_admin_controller.py:354
@@ -973,7 +983,7 @@ msgstr ""
 msgid "Results entry"
 msgstr ""
 
-#: src/data/util.py:844
+#: src/data/util.py:915
 msgid "Parings by player"
 msgstr ""
 
@@ -1258,24 +1268,24 @@ msgstr ""
 msgid "Messages ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:593
+#: src/web/controllers/admin/event_admin_controller.py:595
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:600
+#: src/web/controllers/admin/event_admin_controller.py:602
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:603
+#: src/web/controllers/admin/event_admin_controller.py:605
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:611
+#: src/web/controllers/admin/event_admin_controller.py:613
 #: src/web/controllers/admin/index_admin_controller.py:676
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:621
+#: src/web/controllers/admin/event_admin_controller.py:623
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
@@ -3172,11 +3182,11 @@ msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in to
 msgstr ""
 
 #: src/web/templates/admin_players.html:194
-msgid "Click to check-in the player."
+msgid "Click to check-out the player."
 msgstr ""
 
 #: src/web/templates/admin_players.html:200
-msgid "Click to check-out the player."
+msgid "Click to check-in the player."
 msgstr ""
 
 #: src/web/templates/admin_players.html:248
@@ -3231,7 +3241,6 @@ msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
 
 #: src/web/templates/admin_rotator_card.html:43
-#: src/web/templates/user_rotator_card.html:22
 msgid "No screen neither family to rotate."
 msgstr ""
 
@@ -3898,7 +3907,7 @@ msgstr ""
 
 #: src/web/templates/admin_tournament_card.html:88
 #, python-format
-msgid "At most one illegal move is recorded."
+msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
@@ -4275,18 +4284,8 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr ""
 
 #: src/web/templates/user_boards_screen_set.html:23
-#: src/web/templates/user_results_screen.html:13
-msgid "White"
-msgstr ""
-
-#: src/web/templates/user_boards_screen_set.html:23
 #: src/web/templates/user_boards_screen_set.html:25
 msgid "time control"
-msgstr ""
-
-#: src/web/templates/user_boards_screen_set.html:25
-#: src/web/templates/user_results_screen.html:15
-msgid "Black"
 msgstr ""
 
 #: src/web/templates/user_boards_screen_set.html:89
@@ -4346,6 +4345,10 @@ msgstr ""
 
 #: src/web/templates/user_results_screen.html:14
 msgid "Score"
+msgstr ""
+
+#: src/web/templates/user_rotator_card.html:22
+msgid "No screen nor family to rotate."
 msgstr ""
 
 #: src/web/templates/user_rotator_card.html:43

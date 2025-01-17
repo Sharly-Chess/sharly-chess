@@ -14,21 +14,172 @@
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
 |Κενά υποχρεωτικά μηνύματα|0/59|
-|Κενά μηνύματα|3/1049|
-|Message flagged [ai_translation]|1046/1049|
-|Message flagged [fuzzy]|144/1049|
+|Κενά μηνύματα|4/1050|
+|Message flagged [fuzzy]|145/1050|
+|Message flagged [ai_translation]|1046/1050|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
-## Κενά μηνύματα (3)
+## Κενά μηνύματα (4)
 
 |Μήνυμα id|Τοποθεσίες|
 |--|--|
 |Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:191|
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:372|
+|**Μοναδικός:** At most %(num)d illegal move is recorded.<br/>**Πληθυντικός:** At most %(num)d illegal moves are recorded.|src/web/templates/admin_tournament_card.html:88|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Σημειωθέντα μηνύματα (1190)
+## Σημειωθέντα μηνύματα (1191)
+
+### Μήνυμα που σημαδεύτηκε [fuzzy] (145)
+
+|Μήνυμα id|Μετάφραση|Τοποθεσίες|
+|--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:32|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
+|C \*\*\* THE LETTER TO ANSWER CREATE|Γ|src/chessevent/action_selector.py:70|
+|U \*\*\* THE LETTER TO ANSWER UPLOAD|Χ|src/chessevent/action_selector.py:71<br>src/ffe/action_selector.py:95|
+|Q \*\*\* THE LETTER TO ANSWER QUIT|Q|src/chessevent/action_selector.py:72<br>src/chessevent/action_selector.py:92<br>src/chessevent/action_selector.py:113<br>src/chessevent/event_selector.py:29<br>src/common/engine.py:125<br>src/ffe/action_selector.py:96<br>src/ffe/event_selector.py:25|
+|1 \*\*\* THE LETTER TO ANSWER ONCE|1|src/chessevent/action_selector.py:90|
+|C \*\*\* THE LETTER TO ANSWER CONTINUOUSLY|Γ|src/chessevent/action_selector.py:91|
+|Y \*\*\* THE LETTER TO ANSWER YES|Υ|src/common/engine.py:45<br>src/common/engine.py:106<br>src/common/engine.py:147<br>src/common/engine.py:212|
+|N \*\*\* THE LETTER TO ANSWER NO|N|src/common/engine.py:46<br>src/common/engine.py:107<br>src/common/engine.py:148<br>src/common/engine.py:213|
+|Unpaired \*\*\* FEMALE|Μη ζευγάρι|src/data/player.py:272|
+|Unpaired \*\*\* MALE|Μη ζευγάρι|src/data/player.py:272|
+|Exempt \*\*\* FEMALE|Απομάκρυνση|src/data/player.py:276|
+|Exempt \*\*\* MALE|Απομάκρυνση|src/data/player.py:276|
+|No FFE Licence|-|src/data/util.py:590|
+|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Άρρενες|src/data/util.py:746|
+|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Άρρενες|src/data/util.py:750|
+|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|ςδ|src/data/util.py:758|
+|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|-|src/data/util.py:760|
+|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:762|
+|No title|Χωρίς χρονοδιακόπτες.|src/data/util.py:826|
+|WFM \*\*\* SHORT NAME FOR Woman Fide Master|ςδ|src/data/util.py:848|
+|FM \*\*\* SHORT NAME FOR Fide Master|ςδ|src/data/util.py:850|
+|WIM \*\*\* SHORT NAME FOR Woman International Master|-|src/data/util.py:852|
+|IM \*\*\* SHORT NAME FOR International Master|-|src/data/util.py:854|
+|WGM \*\*\* SHORT NAME FOR Woman Grand Master|ςδ|src/data/util.py:856|
+|GM \*\*\* SHORT NAME FOR Grand Master|ςδ|src/data/util.py:858|
+|Parings by player|ζευγάρωμα από τον παίκτη|src/data/util.py:915|
+|T \*\*\* THE LETTER TO ANSWER TEST|Τ|src/ffe/action_selector.py:91|
+|V \*\*\* THE LETTER TO ANSWER VISIBLE|V|src/ffe/action_selector.py:92|
+|F \*\*\* THE LETTER TO ANSWER FEES|F|src/ffe/action_selector.py:93|
+|R \*\*\* THE LETTER TO ANSWER RULES|Ρ|src/ffe/action_selector.py:94|
+|Players ({num})|Χρονοδιακόπτες ({num})|src/web/controllers/admin/event_admin_controller.py:121|
+|Please enter the last name.|Παρακαλώ εισάγετε την ώρα.|src/web/controllers/admin/player_admin_controller.py:78|
+|Please enter the first name.|Παρακαλώ εισάγετε την ώρα.|src/web/controllers/admin/player_admin_controller.py:84|
+|Please enter the date of birth.|Παρακαλώ εισάγετε την ημερομηνία λήξης της εκδήλωσης.|src/web/controllers/admin/player_admin_controller.py:90|
+|Invalid FIDE ID [{fide_id}].|Μη έγκυρη ταυτότητα FIDE [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:136|
+|Invalid FFE ID [{ffe_id}].|Μη έγκυρο FFE ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:142|
+|Invalid mail [{mail}].|Μη έγκυρο ταχυδρομείο [{mail}].|src/web/controllers/admin/player_admin_controller.py:158|
+|Invalid phone number [{phone}].|Μη έγκυρος αριθμός τηλεφώνου [{phone}].|src/web/controllers/admin/player_admin_controller.py:164|
+|Standard:|Έναρξη:|src/web/controllers/admin/player_admin_controller.py:314|
+|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει ζευγαρώματα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:429<br>src/web/controllers/admin/player_admin_controller.py:500|
+|Papi file [{tournament_file}] not found.|Το αρχείο Papi [{tournament_file}] δεν βρέθηκε.|src/web/controllers/admin/player_admin_controller.py:437|
+|FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:441|
+|Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] ήδη παρών στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:446|
+|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει αφαιρεθεί από το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:507|
+|Check-in is open for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:532|
+|Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:567|
+|No ChessEvent connection|Καμία σύνδεση με το Σκάκι.|src/web/controllers/admin/tournament_admin_controller.py:158|
+|Tournament [{tournament_uniq_id}] is not started yet.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/web/controllers/user/tournament_user_controller.py:57|
+|Tournament [{tournament_uniq_id}] is started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/web/controllers/user/tournament_user_controller.py:61|
+|Close check-in for tournament [%(tournament_uniq_id)s]|Διαγραφή του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_close_check_in_modal.html:5|
+|Mark as forfeit for the rest of the tournament|Επεξεργασία των ιδιοτήτων του τουρνουά.|src/web/templates/admin_close_check_in_modal.html:44|
+|Close the check-in|Διαγράψτε το χρονοδιακόπτη.|src/web/templates/admin_close_check_in_modal.html:63|
+|Create a screen family|Διαγράψτε την οικογένεια οθόνης.|src/web/templates/admin_families.html:56|
+|Menus|Μενού:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Player creation|Δημιουργία οθόνης παικτών|src/web/templates/admin_player_modal.html:16|
+|Last name:|Τελευταίος παίκτης:|src/web/templates/admin_player_modal.html:31|
+|E.g.: DOE|Π.χ.: κύρια|src/web/templates/admin_player_modal.html:37|
+|The player's last name.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:40|
+|First name:|Πρώτος παίκτης:|src/web/templates/admin_player_modal.html:51|
+|E.g.: John|Π.χ.: κύρια|src/web/templates/admin_player_modal.html:57|
+|The player's first name.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:60|
+|The player's birth date.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:79|
+|Gender:|Τέλος:|src/web/templates/admin_player_modal.html:90|
+|The player's gender.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:101|
+|The player's FIDE title.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:165|
+|Federation:|Δημιουργία γεγονότων|src/web/templates/admin_player_modal.html:176|
+|The player's federation.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:193|
+|FIDE ID:|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_player_modal.html:204|
+|The player's FIDE ID (do not change).|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:214|
+|French Chess Federation|Διαγράψτε τον περιστροφέα.|src/web/templates/admin_player_modal.html:225|
+|League:|Γλώσσα|src/web/templates/admin_player_modal.html:230|
+|The player's league.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:242|
+|Club:|Στήλες:|src/web/templates/admin_player_modal.html:253|
+|The player's club.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:262|
+|Licence:|-|src/web/templates/admin_player_modal.html:273|
+|The player's licence.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:285|
+|Licence number:|Τα νούμερα των τηλεφώνων.|src/web/templates/admin_player_modal.html:296|
+|The player's licence number.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:305|
+|FFE Uniq ID:|Μοναδική ταυτότητα|src/web/templates/admin_player_modal.html:316|
+|Contact and registration|Δημιουργία περιστροφέα|src/web/templates/admin_player_modal.html:337|
+|Email:|Λεπτομέρειες|src/web/templates/admin_player_modal.html:342|
+|The player's email.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:350|
+|Phone number:|Τα νούμερα των τηλεφώνων.|src/web/templates/admin_player_modal.html:361|
+|The player's phone number.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:369|
+|Comment:|Τουρνουά:|src/web/templates/admin_player_modal.html:380|
+|Owed:|Τέλος:|src/web/templates/admin_player_modal.html:399|
+|The price the player pays to register.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:407|
+|Add a player to the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_players.html:22|
+|Create a player|Δημιουργία χρονοδιακόπτη|src/web/templates/admin_players.html:31|
+|Clear all the filters.|όλοι οι παίκτες|src/web/templates/admin_players.html:48|
+|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:73|
+|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Πληρωμή|src/web/templates/admin_players.html:115|
+|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:120|
+|Edit the player's properties.|Επεξεργασία των ιδιοτήτων του χρονοδιακόπτη.|src/web/templates/admin_players.html:159|
+|Remove the player from the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_players.html:169|
+|Tournament [%(tournament_uniq_id)s] is finished.|Το τουρνουά [%(tournament_uniq_id)s] έχει τελειώσει.|src/web/templates/admin_players.html:182<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
+|Tournament [%(tournament_uniq_id)s] is playing.|Το τουρνουά [%(tournament_uniq_id)s] παίζει.|src/web/templates/admin_players.html:185<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
+|Check-in is closed for tournament [%(tournament_uniq_id)s].|Διαγραφή του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:188|
+|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:200|
+|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:248|
+|No mail defined.|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_players.html:250|
+|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:261|
+|No phone defined.|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_players.html:263|
+|FIDE ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:282|
+|No FIDE ID.|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_players.html:285|
+|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|Άδεια FFE: %(ffe_licence_number)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:298|
+|Unknown FFE Licence type [%(ffe_licence)s].|Άγνωστος τύπος άδειας FFE [%(ffe_licence)s]|src/web/templates/admin_players.html:302|
+|Change the player's tournament.|Κλώνε το τουρνουά.|src/web/templates/admin_players.html:326|
+|No players.|Παίκτες|src/web/templates/admin_players.html:370|
+|Create a screen|Δημιουργία ενός γεγονότος|src/web/templates/admin_screens.html:72|
+|Add a screen to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_screens.html:76|
+|Add a screen to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_screens.html:77|
+|Add a screen to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_screens.html:78|
+|Add a screen to display the last results.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:79|
+|Add a screen to display an image.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:80|
+|Sort the players by name.|Κλώνε το τουρνουά.|src/web/templates/macros.j2:203|
+|Sort the players by origin (federation, league, club).|Εμφάνιση/απόκρυψη των οθονών των παικτών.|src/web/templates/macros.j2:209|
+|Sort the players by tournament.|Κλώνε το τουρνουά.|src/web/templates/macros.j2:215|
+|No screen nor family to rotate.|Δεν έχει οθόνη ούτε οικογένεια να περιστραφεί.|src/web/templates/user_rotator_card.html:22|
+|Close check-in for tournament [%(tournament_uniq_id)s].|Διαγραφή του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:22|
+|Open check-in for tournament [%(tournament_uniq_id)s].|Έκδοση του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:24|
+|Filter the check-in status.|Διαγράψτε το χρονοδιακόπτη.|src/web/templates/admin_players/admin_players_filter_check_ins.html:8|
+|Not checked-in yet|ΕΛΕΓΚΤΙΚΟΣ ΕΙΣΟΔΟΣ|src/web/templates/admin_players/admin_players_filter_check_ins.html:34|
+|Checked-in|ΕΛΕΓΚΤΙΚΟΣ ΕΙΣΟΔΟΣ|src/web/templates/admin_players/admin_players_filter_check_ins.html:39|
+|Columns|Στήλες:|src/web/templates/admin_players/admin_players_filter_columns.html:7|
+|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:37|
+|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:39|
+|Name \*\*\* NAME FOR PLAYERS COLUMNS|Όνομα|src/web/templates/admin_players/admin_players_filter_columns.html:41|
+|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:45|
+|Club \*\*\* CLUB FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:49|
+|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOBCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:51|
+|FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:59|
+|FFE \*\*\* FFE FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:65|
+|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|ΆουτςCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:69|
+|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Όνομα|src/web/templates/admin_players/admin_players_filter_columns.html:71|
+|Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Σχόλιο|src/web/templates/admin_players/admin_players_filter_columns.html:73|
+|History \*\*\* HISTORY FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:75|
+|Filter the federations.|Διαγράψτε τον περιστροφέα.|src/web/templates/admin_players/admin_players_filter_federations.html:7|
+|Filter the genders.|Διαγράψτε το χρονοδιακόπτη.|src/web/templates/admin_players/admin_players_filter_genders.html:8|
+|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Όνομα|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
+|Filter the tournaments.|Διαγράψτε το τουρνουά.|src/web/templates/admin_players/admin_players_filter_tournaments.html:9|
+|English translation \*\*\* TRANSLATE !|Αγγλική μετάφραση|utils/i18n/i18n_update.py:209|
 
 ### Μήνυμα που σημαδεύτηκε [ai_translation] (1046)
 
@@ -201,8 +352,8 @@
 |Unpaired \*\*\* MALE|Μη ζευγάρι|src/data/player.py:272|
 |Exempt \*\*\* FEMALE|Απομάκρυνση|src/data/player.py:276|
 |Exempt \*\*\* MALE|Απομάκρυνση|src/data/player.py:276|
-|Last results|Τελευταία αποτελέσματα|src/data/screen.py:97<br>src/data/screen.py:178<br>src/data/util.py:846<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:360<br>src/web/templates/admin_screens.html:79<br>src/web/templates/admin_screens.html:117|
-|Image|Εικόνα|src/data/screen.py:99<br>src/data/util.py:848<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:362<br>src/web/templates/admin_screens.html:80<br>src/web/templates/admin_screens.html:122|
+|Last results|Τελευταία αποτελέσματα|src/data/screen.py:97<br>src/data/screen.py:178<br>src/data/util.py:917<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:360<br>src/web/templates/admin_screens.html:79<br>src/web/templates/admin_screens.html:117|
+|Image|Εικόνα|src/data/screen.py:99<br>src/data/util.py:919<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:362<br>src/web/templates/admin_screens.html:80<br>src/web/templates/admin_screens.html:122|
 |Boards %f-%l|Δ.Σ. %f-%l|src/data/screen.py:125<br>src/data/screen_set.py:124|
 |By board|Με το διοικητικό συμβούλιο|src/data/screen.py:127|
 |%t [Boards %f-%l]|%t [Συμβόλαια %f-%l]|src/data/screen.py:130|
@@ -231,41 +382,43 @@
 |Qualification number and FFE password not set, operations on the FFE website will not be available.|Ο αριθμός προσόντων και ο κωδικός πρόσβασης FFE δεν έχουν οριστεί, οι λειτουργίες στην ιστοσελίδα του FFE δεν θα είναι διαθέσιμες.|src/data/tournament.py:51|
 |ChessEvent connection not defined.|Δεν ορίζεται σύνδεση σκακιού.|src/data/tournament.py:54|
 |ChessEvent tournament name not set.|Το όνομα τουρνουά του Σκακιού δεν έχει οριστεί.|src/data/tournament.py:56|
-|Standard rating|Τυπική βαθμολογία|src/data/util.py:245|
-|Rapid rating|Ταχεία βαθμολογία|src/data/util.py:247|
-|Blitz rating|Βαθμολογία Blitz|src/data/util.py:249|
-|- \*\*\* NAME FOR GENDER NONE|-|src/data/util.py:460|
-|Female \*\*\* NAME FOR GENDER FEMALE|Θήλεις|src/data/util.py:462|
-|Male \*\*\* NAME FOR GENDER MALE|Άρρενες|src/data/util.py:464|
-|- \*\*\* SHORT NAME FOR GENDER NONE|-|src/data/util.py:472<br>src/web/templates/admin_players/admin_players_filter_genders.html:28|
-|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:474<br>src/web/templates/admin_players/admin_players_filter_genders.html:32|
-|M \*\*\* SHORT NAME FOR GENDER MALE|ςδ|src/data/util.py:476<br>src/web/templates/admin_players/admin_players_filter_genders.html:36|
-|No FFE Licence|-|src/data/util.py:519|
-|Expired FFE licence|Ληφθείσα άδεια FFE|src/data/util.py:521|
-|FFE licence B (leisure)|Άδεια FFE Β (ψυχραιμία)|src/data/util.py:523|
-|FFE licence A (competition)|Αδεια FFE A (ανταγωνιστικότητα)|src/data/util.py:525|
-|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Άρρενες|src/data/util.py:675|
-|National \*\*\* NAME FOR RATING TYPE NATIONAL|Εθνικές|src/data/util.py:677|
-|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Άρρενες|src/data/util.py:679|
-|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|ςδ|src/data/util.py:687|
-|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|-|src/data/util.py:689|
-|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:691|
-|No title|Χωρίς χρονοδιακόπτες.|src/data/util.py:755|
-|Woman Fide Master|Γυναικείος Δάσκαλος Πίστης|src/data/util.py:757|
-|Fide Master|Δάσκαλος Fide|src/data/util.py:759|
-|Woman International Master|Woman International Master|src/data/util.py:761|
-|International Master|Διεθνής Δάσκαλος|src/data/util.py:763|
-|Woman Grand Master|Γυναικείος Μεγάλος Δάσκαλος|src/data/util.py:765|
-|Grand Master|Μεγαλειότατε.|src/data/util.py:767|
-|WFM \*\*\* SHORT NAME FOR Woman Fide Master|ςδ|src/data/util.py:777|
-|FM \*\*\* SHORT NAME FOR Fide Master|ςδ|src/data/util.py:779|
-|WIM \*\*\* SHORT NAME FOR Woman International Master|-|src/data/util.py:781|
-|IM \*\*\* SHORT NAME FOR International Master|-|src/data/util.py:783|
-|WGM \*\*\* SHORT NAME FOR Woman Grand Master|ςδ|src/data/util.py:785|
-|GM \*\*\* SHORT NAME FOR Grand Master|ςδ|src/data/util.py:787|
-|Pairings by board|Ζευγαρώματα με βάση το πλοίο|src/data/util.py:840<br>src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:339<br>src/web/templates/admin_families.html:61<br>src/web/templates/admin_screens.html:77<br>src/web/templates/admin_screens.html:107|
-|Results entry|Είσοδος των αποτελεσμάτων|src/data/util.py:842<br>src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:354<br>src/web/controllers/admin/tournament_admin_controller.py:338<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:60<br>src/web/templates/admin_screens.html:76<br>src/web/templates/admin_screens.html:102|
-|Parings by player|ζευγάρωμα από τον παίκτη|src/data/util.py:844|
+|Standard rating|Τυπική βαθμολογία|src/data/util.py:316|
+|Rapid rating|Ταχεία βαθμολογία|src/data/util.py:318|
+|Blitz rating|Βαθμολογία Blitz|src/data/util.py:320|
+|- \*\*\* NAME FOR GENDER NONE|-|src/data/util.py:531|
+|Female \*\*\* NAME FOR GENDER FEMALE|Θήλεις|src/data/util.py:533|
+|Male \*\*\* NAME FOR GENDER MALE|Άρρενες|src/data/util.py:535|
+|- \*\*\* SHORT NAME FOR GENDER NONE|-|src/data/util.py:543<br>src/web/templates/admin_players/admin_players_filter_genders.html:28|
+|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:545<br>src/web/templates/admin_players/admin_players_filter_genders.html:32|
+|M \*\*\* SHORT NAME FOR GENDER MALE|ςδ|src/data/util.py:547<br>src/web/templates/admin_players/admin_players_filter_genders.html:36|
+|No FFE Licence|-|src/data/util.py:590|
+|Expired FFE licence|Ληφθείσα άδεια FFE|src/data/util.py:592|
+|FFE licence B (leisure)|Άδεια FFE Β (ψυχραιμία)|src/data/util.py:594|
+|FFE licence A (competition)|Αδεια FFE A (ανταγωνιστικότητα)|src/data/util.py:596|
+|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Άρρενες|src/data/util.py:746|
+|National \*\*\* NAME FOR RATING TYPE NATIONAL|Εθνικές|src/data/util.py:748|
+|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Άρρενες|src/data/util.py:750|
+|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|ςδ|src/data/util.py:758|
+|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|-|src/data/util.py:760|
+|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:762|
+|No title|Χωρίς χρονοδιακόπτες.|src/data/util.py:826|
+|Woman Fide Master|Γυναικείος Δάσκαλος Πίστης|src/data/util.py:828|
+|Fide Master|Δάσκαλος Fide|src/data/util.py:830|
+|Woman International Master|Woman International Master|src/data/util.py:832|
+|International Master|Διεθνής Δάσκαλος|src/data/util.py:834|
+|Woman Grand Master|Γυναικείος Μεγάλος Δάσκαλος|src/data/util.py:836|
+|Grand Master|Μεγαλειότατε.|src/data/util.py:838|
+|WFM \*\*\* SHORT NAME FOR Woman Fide Master|ςδ|src/data/util.py:848|
+|FM \*\*\* SHORT NAME FOR Fide Master|ςδ|src/data/util.py:850|
+|WIM \*\*\* SHORT NAME FOR Woman International Master|-|src/data/util.py:852|
+|IM \*\*\* SHORT NAME FOR International Master|-|src/data/util.py:854|
+|WGM \*\*\* SHORT NAME FOR Woman Grand Master|ςδ|src/data/util.py:856|
+|GM \*\*\* SHORT NAME FOR Grand Master|ςδ|src/data/util.py:858|
+|White|Λευκά|src/data/util.py:894<br>src/web/templates/user_boards_screen_set.html:23<br>src/web/templates/user_results_screen.html:13|
+|Black|Μαύρο|src/data/util.py:896<br>src/web/templates/user_boards_screen_set.html:25<br>src/web/templates/user_results_screen.html:15|
+|Pairings by board|Ζευγαρώματα με βάση το πλοίο|src/data/util.py:911<br>src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:339<br>src/web/templates/admin_families.html:61<br>src/web/templates/admin_screens.html:77<br>src/web/templates/admin_screens.html:107|
+|Results entry|Είσοδος των αποτελεσμάτων|src/data/util.py:913<br>src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:354<br>src/web/controllers/admin/tournament_admin_controller.py:338<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:60<br>src/web/templates/admin_screens.html:76<br>src/web/templates/admin_screens.html:102|
+|Parings by player|ζευγάρωμα από τον παίκτη|src/data/util.py:915|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:30<br>src/ffe/action_selector.py:43<br>src/ffe/action_selector.py:63|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:46|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν βρέθηκε [{file}] για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:50|
@@ -333,11 +486,11 @@
 |Timers ({num})|Χρονοδιακόπτες ({num})|src/web/controllers/admin/event_admin_controller.py:137|
 |ChessEvent ({num})|Σκακιστικό ({num})|src/web/controllers/admin/event_admin_controller.py:141|
 |Messages ({num})|Μηνύματα ({num})|src/web/controllers/admin/event_admin_controller.py:145|
-|Renaming the database failed: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/web/controllers/admin/event_admin_controller.py:593|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Το γεγονός [{old_uniq_id}] έχει μετονομαστεί ([{new_uniq_id}]) και έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:600|
-|Event [{uniq_id}] has been updated.|Το γεγονός [{uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:603|
-|Event [{uniq_id}] has been created.|Το γεγονός [{uniq_id}] δημιουργήθηκε.|src/web/controllers/admin/event_admin_controller.py:611<br>src/web/controllers/admin/index_admin_controller.py:676|
-|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Το γεγονός [{uniq_id}] έχει διαγραφεί, η βάση δεδομένων έχει αρχειοθετηθεί ({arch}).|src/web/controllers/admin/event_admin_controller.py:621|
+|Renaming the database failed: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/web/controllers/admin/event_admin_controller.py:595|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Το γεγονός [{old_uniq_id}] έχει μετονομαστεί ([{new_uniq_id}]) και έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:602|
+|Event [{uniq_id}] has been updated.|Το γεγονός [{uniq_id}] έχει ενημερωθεί.|src/web/controllers/admin/event_admin_controller.py:605|
+|Event [{uniq_id}] has been created.|Το γεγονός [{uniq_id}] δημιουργήθηκε.|src/web/controllers/admin/event_admin_controller.py:613<br>src/web/controllers/admin/index_admin_controller.py:676|
+|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Το γεγονός [{uniq_id}] έχει διαγραφεί, η βάση δεδομένων έχει αρχειοθετηθεί ({arch}).|src/web/controllers/admin/event_admin_controller.py:623|
 |Please enter the family ID.|Παρακαλώ εισάγετε την ταυτότητα της οικογένειας.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|Ο χαρακτήρας [{char}] δεν επιτρέπεται.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:233<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:76|
 |Family [{uniq_id}] already exists.|Η οικογένεια [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
@@ -738,8 +891,8 @@
 |Tournament [%(tournament_uniq_id)s] is finished.|Το τουρνουά [%(tournament_uniq_id)s] έχει τελειώσει.|src/web/templates/admin_players.html:182<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
 |Tournament [%(tournament_uniq_id)s] is playing.|Το τουρνουά [%(tournament_uniq_id)s] παίζει.|src/web/templates/admin_players.html:185<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
 |Check-in is closed for tournament [%(tournament_uniq_id)s].|Διαγραφή του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:188|
-|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:194|
-|Click to check-out the player.|Κάντε κλικ για να ελέγξετε τον παίκτη.|src/web/templates/admin_players.html:200|
+|Click to check-out the player.|Κάντε κλικ για να ελέγξετε τον παίκτη.|src/web/templates/admin_players.html:194|
+|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:200|
 |Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:248|
 |No mail defined.|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_players.html:250|
 |Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:261|
@@ -751,7 +904,7 @@
 |Change the player's tournament.|Κλώνε το τουρνουά.|src/web/templates/admin_players.html:326|
 |No players.|Παίκτες|src/web/templates/admin_players.html:370|
 |Rotation delay: %(seconds)d sec.|Καθυστέρηση περιστροφής: %(seconds)d sec.|src/web/templates/admin_rotator_card.html:15<br>src/web/templates/user_rotator_card.html:18|
-|No screen neither family to rotate.|Δεν έχει οθόνη ούτε οικογένεια να περιστραφεί.|src/web/templates/admin_rotator_card.html:43<br>src/web/templates/user_rotator_card.html:22|
+|No screen neither family to rotate.|Δεν έχει οθόνη ούτε οικογένεια να περιστραφεί.|src/web/templates/admin_rotator_card.html:43|
 |Screens:|Οθόνες:|src/web/templates/admin_rotator_card.html:49<br>src/web/templates/admin_rotator_modal.html:128<br>src/web/templates/user_rotator_card.html:28|
 |Screen families:|Οικογένειες οθόνης:|src/web/templates/admin_rotator_card.html:60<br>src/web/templates/admin_rotator_modal.html:163<br>src/web/templates/user_rotator_card.html:39|
 |**Μοναδικός:** (%(num)d screen)<br/>**Πληθυντικός:** (%(num)d screens)|**Μοναδικός:** (%(num)d οθόνη)<br/>**Πληθυντικός:** (%(num)d οθόνες)|src/web/templates/admin_rotator_card.html:68|
@@ -905,7 +1058,6 @@
 |ChessEvent connection [%(chessevent_uniq_id)s] is used.|Η σύνδεση σκακιού [%(chessevent_uniq_id)s] χρησιμοποιείται.|src/web/templates/admin_tournament_card.html:72|
 |No ChessEvent connection is used.|Δεν χρησιμοποιείται σύνδεση σκακιού.|src/web/templates/admin_tournament_card.html:74|
 |Illegal moves are not recorded.|Οι παράνομες κινήσεις δεν καταγράφονται.|src/web/templates/admin_tournament_card.html:86|
-|**Μοναδικός:** At most one illegal move is recorded.<br/>**Πληθυντικός:** At most %(num)d illegal moves are recorded.|**Μοναδικός:** Το πολύ μία παράνομη κίνηση καταγράφεται.<br/>**Πληθυντικός:** Το πολύ %(num)d καταγράφονται παράνομες κινήσεις.|src/web/templates/admin_tournament_card.html:88|
 |Rules file set|Σύνολο αρχείων κανόνων|src/web/templates/admin_tournament_card.html:105|
 |Edit the properties of the tournament.|Επεξεργασία των ιδιοτήτων του τουρνουά.|src/web/templates/admin_tournament_card.html:127|
 |Clone the tournament.|Κλώνε το τουρνουά.|src/web/templates/admin_tournament_card.html:142|
@@ -996,9 +1148,7 @@
 |EXEMPT|ΑΠΑΛΛΑΓΗ|src/web/templates/user_boards_screen_board_row_player_cell.html:15|
 |/move|/Κουνηθείτε|src/web/templates/user_boards_screen_board_row_player_cell.html:18|
 |%(set_name)s (round %(round)d)|%(set_name)s (γύρος %(round)d)|src/web/templates/user_boards_screen_set.html:11<br>src/web/templates/user_players_screen_set.html:9|
-|White|Λευκά|src/web/templates/user_boards_screen_set.html:23<br>src/web/templates/user_results_screen.html:13|
 |time control|Χρονοδιακόπτης|src/web/templates/user_boards_screen_set.html:23<br>src/web/templates/user_boards_screen_set.html:25|
-|Black|Μαύρο|src/web/templates/user_boards_screen_set.html:25<br>src/web/templates/user_results_screen.html:15|
 |%(set_name)s (check-in)|%(set_name)s (check-in)|src/web/templates/user_boards_screen_set.html:135|
 |Player / Elo|Παίκτης / Elo|src/web/templates/user_boards_screen_set.html:146|
 |Go back to the events page.|Πήγαινε πίσω στη σελίδα των γεγονότων.|src/web/templates/user_event.html:19|
@@ -1012,6 +1162,7 @@
 |Tournament|Τουρνουά|src/web/templates/user_results_screen.html:11|
 |Rnd.Boa|Rnd. Boa|src/web/templates/user_results_screen.html:12|
 |Score|Βαθμολογία|src/web/templates/user_results_screen.html:14|
+|No screen nor family to rotate.|Δεν έχει οθόνη ούτε οικογένεια να περιστραφεί.|src/web/templates/user_rotator_card.html:22|
 |%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)|%(family_uniq_id)s %(family_name)s (%(screens_number)d οθόνες)|src/web/templates/user_rotator_card.html:43|
 |Please enter the password to enter results:|Παρακαλώ εισάγετε τον κωδικό πρόσβασης για να εισάγετε τα αποτελέσματα:|src/web/templates/user_screen.html:130|
 |Event|Γεγονός|src/web/templates/user_screen.html:138|
@@ -1080,153 +1231,4 @@
 |Empty messages are not shown for the default language.|Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα.|utils/i18n/i18n_update.py:246|
 |Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:262|
 |Translation|Μετάφραση|utils/i18n/i18n_update.py:268|
-
-### Μήνυμα που σημαδεύτηκε [fuzzy] (144)
-
-|Μήνυμα id|Μετάφραση|Τοποθεσίες|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε scripts server.bat, faffe.bat και σκάκι.bat.|src/papi_web.py:32|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Η σύνδεση σκακιέρας δεν έχει οριστεί για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] has started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/chessevent/action_selector.py:50|
-|C \*\*\* THE LETTER TO ANSWER CREATE|Γ|src/chessevent/action_selector.py:70|
-|U \*\*\* THE LETTER TO ANSWER UPLOAD|Χ|src/chessevent/action_selector.py:71<br>src/ffe/action_selector.py:95|
-|Q \*\*\* THE LETTER TO ANSWER QUIT|Q|src/chessevent/action_selector.py:72<br>src/chessevent/action_selector.py:92<br>src/chessevent/action_selector.py:113<br>src/chessevent/event_selector.py:29<br>src/common/engine.py:125<br>src/ffe/action_selector.py:96<br>src/ffe/event_selector.py:25|
-|1 \*\*\* THE LETTER TO ANSWER ONCE|1|src/chessevent/action_selector.py:90|
-|C \*\*\* THE LETTER TO ANSWER CONTINUOUSLY|Γ|src/chessevent/action_selector.py:91|
-|Y \*\*\* THE LETTER TO ANSWER YES|Υ|src/common/engine.py:45<br>src/common/engine.py:106<br>src/common/engine.py:147<br>src/common/engine.py:212|
-|N \*\*\* THE LETTER TO ANSWER NO|N|src/common/engine.py:46<br>src/common/engine.py:107<br>src/common/engine.py:148<br>src/common/engine.py:213|
-|Unpaired \*\*\* FEMALE|Μη ζευγάρι|src/data/player.py:272|
-|Unpaired \*\*\* MALE|Μη ζευγάρι|src/data/player.py:272|
-|Exempt \*\*\* FEMALE|Απομάκρυνση|src/data/player.py:276|
-|Exempt \*\*\* MALE|Απομάκρυνση|src/data/player.py:276|
-|No FFE Licence|-|src/data/util.py:519|
-|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Άρρενες|src/data/util.py:675|
-|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Άρρενες|src/data/util.py:679|
-|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|ςδ|src/data/util.py:687|
-|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|-|src/data/util.py:689|
-|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:691|
-|No title|Χωρίς χρονοδιακόπτες.|src/data/util.py:755|
-|WFM \*\*\* SHORT NAME FOR Woman Fide Master|ςδ|src/data/util.py:777|
-|FM \*\*\* SHORT NAME FOR Fide Master|ςδ|src/data/util.py:779|
-|WIM \*\*\* SHORT NAME FOR Woman International Master|-|src/data/util.py:781|
-|IM \*\*\* SHORT NAME FOR International Master|-|src/data/util.py:783|
-|WGM \*\*\* SHORT NAME FOR Woman Grand Master|ςδ|src/data/util.py:785|
-|GM \*\*\* SHORT NAME FOR Grand Master|ςδ|src/data/util.py:787|
-|Parings by player|ζευγάρωμα από τον παίκτη|src/data/util.py:844|
-|T \*\*\* THE LETTER TO ANSWER TEST|Τ|src/ffe/action_selector.py:91|
-|V \*\*\* THE LETTER TO ANSWER VISIBLE|V|src/ffe/action_selector.py:92|
-|F \*\*\* THE LETTER TO ANSWER FEES|F|src/ffe/action_selector.py:93|
-|R \*\*\* THE LETTER TO ANSWER RULES|Ρ|src/ffe/action_selector.py:94|
-|Players ({num})|Χρονοδιακόπτες ({num})|src/web/controllers/admin/event_admin_controller.py:121|
-|Please enter the last name.|Παρακαλώ εισάγετε την ώρα.|src/web/controllers/admin/player_admin_controller.py:78|
-|Please enter the first name.|Παρακαλώ εισάγετε την ώρα.|src/web/controllers/admin/player_admin_controller.py:84|
-|Please enter the date of birth.|Παρακαλώ εισάγετε την ημερομηνία λήξης της εκδήλωσης.|src/web/controllers/admin/player_admin_controller.py:90|
-|Invalid FIDE ID [{fide_id}].|Μη έγκυρη ταυτότητα FIDE [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:136|
-|Invalid FFE ID [{ffe_id}].|Μη έγκυρο FFE ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:142|
-|Invalid mail [{mail}].|Μη έγκυρο ταχυδρομείο [{mail}].|src/web/controllers/admin/player_admin_controller.py:158|
-|Invalid phone number [{phone}].|Μη έγκυρος αριθμός τηλεφώνου [{phone}].|src/web/controllers/admin/player_admin_controller.py:164|
-|Standard:|Έναρξη:|src/web/controllers/admin/player_admin_controller.py:314|
-|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει ζευγαρώματα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:429<br>src/web/controllers/admin/player_admin_controller.py:500|
-|Papi file [{tournament_file}] not found.|Το αρχείο Papi [{tournament_file}] δεν βρέθηκε.|src/web/controllers/admin/player_admin_controller.py:437|
-|FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:441|
-|Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] ήδη παρών στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:446|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει αφαιρεθεί από το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:507|
-|Check-in is open for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:532|
-|Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:567|
-|No ChessEvent connection|Καμία σύνδεση με το Σκάκι.|src/web/controllers/admin/tournament_admin_controller.py:158|
-|Tournament [{tournament_uniq_id}] is not started yet.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/web/controllers/user/tournament_user_controller.py:57|
-|Tournament [{tournament_uniq_id}] is started.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/web/controllers/user/tournament_user_controller.py:61|
-|Close check-in for tournament [%(tournament_uniq_id)s]|Διαγραφή του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_close_check_in_modal.html:5|
-|Mark as forfeit for the rest of the tournament|Επεξεργασία των ιδιοτήτων του τουρνουά.|src/web/templates/admin_close_check_in_modal.html:44|
-|Close the check-in|Διαγράψτε το χρονοδιακόπτη.|src/web/templates/admin_close_check_in_modal.html:63|
-|Create a screen family|Διαγράψτε την οικογένεια οθόνης.|src/web/templates/admin_families.html:56|
-|Menus|Μενού:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|Player creation|Δημιουργία οθόνης παικτών|src/web/templates/admin_player_modal.html:16|
-|Last name:|Τελευταίος παίκτης:|src/web/templates/admin_player_modal.html:31|
-|E.g.: DOE|Π.χ.: κύρια|src/web/templates/admin_player_modal.html:37|
-|The player's last name.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:40|
-|First name:|Πρώτος παίκτης:|src/web/templates/admin_player_modal.html:51|
-|E.g.: John|Π.χ.: κύρια|src/web/templates/admin_player_modal.html:57|
-|The player's first name.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:60|
-|The player's birth date.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:79|
-|Gender:|Τέλος:|src/web/templates/admin_player_modal.html:90|
-|The player's gender.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:101|
-|The player's FIDE title.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:165|
-|Federation:|Δημιουργία γεγονότων|src/web/templates/admin_player_modal.html:176|
-|The player's federation.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:193|
-|FIDE ID:|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_player_modal.html:204|
-|The player's FIDE ID (do not change).|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:214|
-|French Chess Federation|Διαγράψτε τον περιστροφέα.|src/web/templates/admin_player_modal.html:225|
-|League:|Γλώσσα|src/web/templates/admin_player_modal.html:230|
-|The player's league.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:242|
-|Club:|Στήλες:|src/web/templates/admin_player_modal.html:253|
-|The player's club.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:262|
-|Licence:|-|src/web/templates/admin_player_modal.html:273|
-|The player's licence.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:285|
-|Licence number:|Τα νούμερα των τηλεφώνων.|src/web/templates/admin_player_modal.html:296|
-|The player's licence number.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:305|
-|FFE Uniq ID:|Μοναδική ταυτότητα|src/web/templates/admin_player_modal.html:316|
-|Contact and registration|Δημιουργία περιστροφέα|src/web/templates/admin_player_modal.html:337|
-|Email:|Λεπτομέρειες|src/web/templates/admin_player_modal.html:342|
-|The player's email.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:350|
-|Phone number:|Τα νούμερα των τηλεφώνων.|src/web/templates/admin_player_modal.html:361|
-|The player's phone number.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:369|
-|Comment:|Τουρνουά:|src/web/templates/admin_player_modal.html:380|
-|Owed:|Τέλος:|src/web/templates/admin_player_modal.html:399|
-|The price the player pays to register.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:407|
-|Add a player to the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_players.html:22|
-|Create a player|Δημιουργία χρονοδιακόπτη|src/web/templates/admin_players.html:31|
-|Clear all the filters.|όλοι οι παίκτες|src/web/templates/admin_players.html:48|
-|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:73|
-|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Πληρωμή|src/web/templates/admin_players.html:115|
-|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:120|
-|Edit the player's properties.|Επεξεργασία των ιδιοτήτων του χρονοδιακόπτη.|src/web/templates/admin_players.html:159|
-|Remove the player from the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_players.html:169|
-|Tournament [%(tournament_uniq_id)s] is finished.|Το τουρνουά [%(tournament_uniq_id)s] έχει τελειώσει.|src/web/templates/admin_players.html:182<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
-|Tournament [%(tournament_uniq_id)s] is playing.|Το τουρνουά [%(tournament_uniq_id)s] παίζει.|src/web/templates/admin_players.html:185<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
-|Check-in is closed for tournament [%(tournament_uniq_id)s].|Διαγραφή του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:188|
-|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:194|
-|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:248|
-|No mail defined.|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_players.html:250|
-|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:261|
-|No phone defined.|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_players.html:263|
-|FIDE ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:282|
-|No FIDE ID.|Δεν ορίζεται χρονοδιακόπτης|src/web/templates/admin_players.html:285|
-|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|Άδεια FFE: %(ffe_licence_number)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο).|src/web/templates/admin_players.html:298|
-|Unknown FFE Licence type [%(ffe_licence)s].|Άγνωστος τύπος άδειας FFE [%(ffe_licence)s]|src/web/templates/admin_players.html:302|
-|Change the player's tournament.|Κλώνε το τουρνουά.|src/web/templates/admin_players.html:326|
-|No players.|Παίκτες|src/web/templates/admin_players.html:370|
-|Create a screen|Δημιουργία ενός γεγονότος|src/web/templates/admin_screens.html:72|
-|Add a screen to enter the results.|Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα.|src/web/templates/admin_screens.html:76|
-|Add a screen to display the pairings by board.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο.|src/web/templates/admin_screens.html:77|
-|Add a screen to display the pairings by alphabetical order.|Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά.|src/web/templates/admin_screens.html:78|
-|Add a screen to display the last results.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:79|
-|Add a screen to display an image.|Προσθέστε μια οθόνη στο γεγονός.|src/web/templates/admin_screens.html:80|
-|Sort the players by name.|Κλώνε το τουρνουά.|src/web/templates/macros.j2:203|
-|Sort the players by origin (federation, league, club).|Εμφάνιση/απόκρυψη των οθονών των παικτών.|src/web/templates/macros.j2:209|
-|Sort the players by tournament.|Κλώνε το τουρνουά.|src/web/templates/macros.j2:215|
-|Close check-in for tournament [%(tournament_uniq_id)s].|Διαγραφή του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:22|
-|Open check-in for tournament [%(tournament_uniq_id)s].|Έκδοση του τουρνουά [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:24|
-|Filter the check-in status.|Διαγράψτε το χρονοδιακόπτη.|src/web/templates/admin_players/admin_players_filter_check_ins.html:8|
-|Not checked-in yet|ΕΛΕΓΚΤΙΚΟΣ ΕΙΣΟΔΟΣ|src/web/templates/admin_players/admin_players_filter_check_ins.html:34|
-|Checked-in|ΕΛΕΓΚΤΙΚΟΣ ΕΙΣΟΔΟΣ|src/web/templates/admin_players/admin_players_filter_check_ins.html:39|
-|Columns|Στήλες:|src/web/templates/admin_players/admin_players_filter_columns.html:7|
-|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:37|
-|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:39|
-|Name \*\*\* NAME FOR PLAYERS COLUMNS|Όνομα|src/web/templates/admin_players/admin_players_filter_columns.html:41|
-|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:45|
-|Club \*\*\* CLUB FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:49|
-|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOBCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:51|
-|FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:59|
-|FFE \*\*\* FFE FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:65|
-|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|ΆουτςCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:69|
-|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Όνομα|src/web/templates/admin_players/admin_players_filter_columns.html:71|
-|Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Σχόλιο|src/web/templates/admin_players/admin_players_filter_columns.html:73|
-|History \*\*\* HISTORY FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:75|
-|Filter the federations.|Διαγράψτε τον περιστροφέα.|src/web/templates/admin_players/admin_players_filter_federations.html:7|
-|Filter the genders.|Διαγράψτε το χρονοδιακόπτη.|src/web/templates/admin_players/admin_players_filter_genders.html:8|
-|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Όνομα|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
-|Filter the tournaments.|Διαγράψτε το τουρνουά.|src/web/templates/admin_players/admin_players_filter_tournaments.html:9|
-|English translation \*\*\* TRANSLATE !|Αγγλική μετάφραση|utils/i18n/i18n_update.py:209|
 

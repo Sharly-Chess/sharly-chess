@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 from common.i18n import _
 from data.pairing import Pairing
 from common.logger import get_logger
-from data.util import PlayerGender, PlayerTitle, Color, PlayerFFELicence, TournamentRating, PlayerRatingType
+from data.util import PlayerGender, PlayerTitle, BoardColor, PlayerFFELicence, TournamentRating, PlayerRatingType
 
 logger: Logger = get_logger()
 
@@ -172,7 +172,7 @@ class Player:
         self.vpoints: float | None = None
         self.board_id: int | None = None
         self.board_number: int | None = None
-        self.color: Color | None = None
+        self.color: BoardColor | None = None
         self.illegal_moves: int = 0
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
@@ -275,7 +275,7 @@ class Player:
     def exempt_str(self) -> str:
         return _('Exempt *** FEMALE') if self.gender == PlayerGender.FEMALE else _('Exempt *** MALE')
 
-    def set_board(self, board_id: int, board_number: int, color: Color):
+    def set_board(self, board_id: int, board_number: int, color: BoardColor):
         self.board_id = board_id
         self.board_number = board_number
         self.color = color
@@ -285,7 +285,7 @@ class Player:
         """ Returns True if the player has already been paired with an opponent
         (i.e. can not be deleted from the tournament anymore)."""
         for pairing in self.pairings.values():
-            if pairing.opponent_papi_id and pairing.opponent_papi_id > 1:
+            if pairing.opponent_id is not None and self.player_papi_id_from_papi_web_id(pairing.opponent_id) > 1:
                 return True
         return False
 

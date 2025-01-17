@@ -11,8 +11,8 @@ from data.chessevent_player import ChessEventPlayer
 from data.chessevent_tournament import ChessEventTournament
 from data.pairing import Pairing
 from data.player import Player
-from data.util import Result, TournamentPairing, PlayerGender, PlayerTitle, Color, TournamentRating, PlayerFFELicence, \
-    PlayerRatingType
+from data.util import Result, TournamentPairing, PlayerGender, PlayerTitle, TournamentRating, PlayerFFELicence, \
+    PlayerRatingType, BoardColor
 from database.access import AccessDatabase
 
 logger: Logger = get_logger()
@@ -166,19 +166,20 @@ class PapiDatabase(AccessDatabase):
             pairings: dict[int, Pairing] = {}
             for round_ in range(1, rounds + 1):
                 round_str = f'Rd{round_:0>2}'
-                color: str = row[f'{round_str}Cl']
+                color_str: str = row[f'{round_str}Cl']
+                color: BoardColor | None = None
                 with suppress(ValueError):
-                    color = Color.from_papi_value(color)
+                    color = BoardColor.from_papi_value(color)
                 opponent_papi_id: int | None = row[f'{round_str}Adv']
                 pairings[round_] = Pairing(
                     color,
                     Player.player_papi_web_id_from_papi_id(tournament_id, opponent_papi_id)
                     if opponent_papi_id else None,
-                    opponent_papi_id,
                     Result.from_papi_value(
                         row[f'{round_str}Res'],
-                        opponent_id is None,
-                        opponent_papi_id == 1))
+                        opponent_papi_id is None,
+                        opponent_papi_id == 1,
+                        color_str == 'F'))
             player_papi_web_id: int = Player.player_papi_web_id_from_papi_id(tournament_id, row['Ref'])
             fide_id: int | None = None
             if row['FideCode']:
@@ -430,7 +431,7 @@ class PapiDatabase(AccessDatabase):
                         raise ValueError
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
         query: str = f'UPDATE `joueur` SET {actions} WHERE Ref = ?'
-        params = tuple(data.values()) + (player_papi_id, ))
+        params = tuple(data.values()) + (player_papi_id, )
         self._execute(query, params)
 
     def _check_out_player(self, player_papi_id: int, tournament_skipped_rounds_dict: dict[int, dict[int, float]]):

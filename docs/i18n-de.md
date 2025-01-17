@@ -14,19 +14,155 @@
 | locale=`de` | Deutsch <img src="../src/web/static/images/locales/de.svg" style="height: 1em;"/> |
 |--|:--:|
 |obligatorische Nachrichten entleeren|0/59|
-|Leere Nachrichten|1/1049|
-|Message flagged [ai_translation]|1048/1049|
-|Message flagged [fuzzy]|129/1049|
+|Leere Nachrichten|2/1050|
+|Message flagged [fuzzy]|130/1050|
+|Message flagged [ai_translation]|1048/1050|
 
 ## obligatorische Nachrichten entleeren (-)
 
-## Leere Nachrichten (1)
+## Leere Nachrichten (2)
 
 |Meldungs-ID|Standorte|
 |--|--|
+|**Singulär:** At most %(num)d illegal move is recorded.<br/>**Plural:** At most %(num)d illegal moves are recorded.|src/web/templates/admin_tournament_card.html:88|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:89|
 
-## Gekennzeichnete Nachrichten (1177)
+## Gekennzeichnete Nachrichten (1178)
+
+### Nachricht markiert [fuzzy] (130)
+
+|Meldungs-ID|Übersetzung|Standorte|
+|--|--|--|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie scripts server.bat, ffe.bat und chessevent.bat.|src/papi_web.py:32|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent-Verbindung nicht für Turnier eingestellt [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
+|Tournament [{tournament_uniq_id}] has started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/chessevent/action_selector.py:50|
+|No FFE Licence|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:590|
+|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Männlich|src/data/util.py:746|
+|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Männlich|src/data/util.py:750|
+|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:758|
+|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:760|
+|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:762|
+|No title|Keine Timer.|src/data/util.py:826|
+|WFM \*\*\* SHORT NAME FOR Woman Fide Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:848|
+|FM \*\*\* SHORT NAME FOR Fide Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:850|
+|WIM \*\*\* SHORT NAME FOR Woman International Master|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:852|
+|IM \*\*\* SHORT NAME FOR International Master|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:854|
+|WGM \*\*\* SHORT NAME FOR Woman Grand Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:856|
+|GM \*\*\* SHORT NAME FOR Grand Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:858|
+|Parings by player|Paarungen nach Spielern|src/data/util.py:915|
+|Players ({num})|Zeitmesser ({num})|src/web/controllers/admin/event_admin_controller.py:121|
+|Please enter the last name.|Bitte geben Sie die Zeit ein.|src/web/controllers/admin/player_admin_controller.py:78|
+|Please enter the first name.|Bitte geben Sie die Zeit ein.|src/web/controllers/admin/player_admin_controller.py:84|
+|Please enter the date of birth.|Bitte geben Sie das Ende der Veranstaltung ein.|src/web/controllers/admin/player_admin_controller.py:90|
+|Invalid FIDE ID [{fide_id}].|Ungültige FIDE-ID [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:136|
+|Invalid FFE ID [{ffe_id}].|Ungültige FFE-ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:142|
+|Invalid mail [{mail}].|Ungültige Post [{mail}].|src/web/controllers/admin/player_admin_controller.py:158|
+|Invalid phone number [{phone}].|Ungültige Telefonnummer [{phone}].|src/web/controllers/admin/player_admin_controller.py:164|
+|Standard:|Beginnen:|src/web/controllers/admin/player_admin_controller.py:314|
+|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spieler [{last_name} {first_name}] hat Paarungen im Turnier [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:429<br>src/web/controllers/admin/player_admin_controller.py:500|
+|Papi file [{tournament_file}] not found.|Papi-Datei [{tournament_file}] nicht gefunden.|src/web/controllers/admin/player_admin_controller.py:437|
+|FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:441|
+|Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:446|
+|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Spieler [{last_name} {first_name}] wurde aus dem Turnier entfernt [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:507|
+|Check-in is open for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:532|
+|Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:567|
+|No ChessEvent connection|Keine ChessEvent-Verbindungen.|src/web/controllers/admin/tournament_admin_controller.py:158|
+|Tournament [{tournament_uniq_id}] is not started yet.|Turnier [{tournament_uniq_id}] wird gestartet.|src/web/controllers/user/tournament_user_controller.py:57|
+|Tournament [{tournament_uniq_id}] is started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/web/controllers/user/tournament_user_controller.py:61|
+|Close check-in for tournament [%(tournament_uniq_id)s]|Löschung des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_close_check_in_modal.html:5|
+|Mark as forfeit for the rest of the tournament|Bearbeiten Sie die Eigenschaften des Turniers.|src/web/templates/admin_close_check_in_modal.html:44|
+|Close the check-in|Löschen Sie den Timer.|src/web/templates/admin_close_check_in_modal.html:63|
+|Create a screen family|Löschen Sie die Bildschirmfamilie.|src/web/templates/admin_families.html:56|
+|Menus|Menü:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
+|Player creation|Erstellung des Bildschirms der Spieler|src/web/templates/admin_player_modal.html:16|
+|Last name:|Letzter Spieler:|src/web/templates/admin_player_modal.html:31|
+|E.g.: DOE|Z.B.: Haupt|src/web/templates/admin_player_modal.html:37|
+|The player's last name.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:40|
+|First name:|Erster Spieler:|src/web/templates/admin_player_modal.html:51|
+|E.g.: John|Z.B.: Haupt|src/web/templates/admin_player_modal.html:57|
+|The player's first name.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:60|
+|The player's birth date.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:79|
+|Gender:|Ende:|src/web/templates/admin_player_modal.html:90|
+|The player's gender.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:101|
+|The player's FIDE title.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:165|
+|Federation:|Ereigniserstellung|src/web/templates/admin_player_modal.html:176|
+|The player's federation.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:193|
+|FIDE ID:|Kein Timer definiert|src/web/templates/admin_player_modal.html:204|
+|The player's FIDE ID (do not change).|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:214|
+|French Chess Federation|Löschen Sie den Rotator.|src/web/templates/admin_player_modal.html:225|
+|League:|Sprache|src/web/templates/admin_player_modal.html:230|
+|The player's league.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:242|
+|Club:|Spalten:|src/web/templates/admin_player_modal.html:253|
+|The player's club.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:262|
+|Licence:|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/web/templates/admin_player_modal.html:273|
+|The player's licence.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:285|
+|Licence number:|Die Telefonnummern.|src/web/templates/admin_player_modal.html:296|
+|The player's licence number.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:305|
+|FFE Uniq ID:|Einzigartig id|src/web/templates/admin_player_modal.html:316|
+|Contact and registration|Erzeugung von Rotatoren|src/web/templates/admin_player_modal.html:337|
+|Email:|Einzelheiten|src/web/templates/admin_player_modal.html:342|
+|The player's email.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:350|
+|Phone number:|Die Telefonnummern.|src/web/templates/admin_player_modal.html:361|
+|The player's phone number.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:369|
+|Comment:|Turnier:|src/web/templates/admin_player_modal.html:380|
+|Owed:|Ende:|src/web/templates/admin_player_modal.html:399|
+|The price the player pays to register.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:407|
+|Add a player to the event.|Fügen Sie dem Event einen Timer hinzu.|src/web/templates/admin_players.html:22|
+|Create a player|Einen Timer erstellen|src/web/templates/admin_players.html:31|
+|Clear all the filters.|alle Spieler|src/web/templates/admin_players.html:48|
+|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players.html:73|
+|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Bezahlt|src/web/templates/admin_players.html:115|
+|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players.html:120|
+|Edit the player's properties.|Bearbeiten Sie die Eigenschaften des Timers.|src/web/templates/admin_players.html:159|
+|Remove the player from the event.|Fügen Sie dem Event einen Timer hinzu.|src/web/templates/admin_players.html:169|
+|Tournament [%(tournament_uniq_id)s] is finished.|Turnier [%(tournament_uniq_id)s] ist beendet.|src/web/templates/admin_players.html:182<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
+|Tournament [%(tournament_uniq_id)s] is playing.|Turnier [%(tournament_uniq_id)s] spielt.|src/web/templates/admin_players.html:185<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
+|Check-in is closed for tournament [%(tournament_uniq_id)s].|Löschung des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:188|
+|Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Spieler [%(last_name)s %(first_name)s] wenn für die nächste Runde im Turnier verfällt [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:191|
+|Click to check-in the player.|Einchecken|src/web/templates/admin_players.html:200|
+|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (Klicken Sie zum Kopieren in die Zwischenablage).|src/web/templates/admin_players.html:248|
+|No mail defined.|Kein Timer definiert|src/web/templates/admin_players.html:250|
+|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (Klicken Sie zum Kopieren in die Zwischenablage).|src/web/templates/admin_players.html:261|
+|No phone defined.|Kein Timer definiert|src/web/templates/admin_players.html:263|
+|FIDE ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (klicken Sie, um in die Zwischenablage zu kopieren).|src/web/templates/admin_players.html:282|
+|No FIDE ID.|Kein Timer definiert|src/web/templates/admin_players.html:285|
+|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|FFE-Lizenz: %(ffe_licence_number)s (Klicken Sie zum Kopieren in die Zwischenablage).|src/web/templates/admin_players.html:298|
+|Unknown FFE Licence type [%(ffe_licence)s].|Unbekannter FFE-Lizenztyp [%(ffe_licence)s]|src/web/templates/admin_players.html:302|
+|Change the player's tournament.|Klonen Sie das Turnier.|src/web/templates/admin_players.html:326|
+|No players.|Spieler|src/web/templates/admin_players.html:370|
+|Create a screen|Erzeugen eines Ereignisses|src/web/templates/admin_screens.html:72|
+|Add a screen to enter the results.|Fügen Sie eine Bildschirmfamilie hinzu, um die Ergebnisse einzugeben.|src/web/templates/admin_screens.html:76|
+|Add a screen to display the pairings by board.|Fügen Sie eine Reihe von Bildschirmen hinzu, um die Pairings nach Board anzuzeigen.|src/web/templates/admin_screens.html:77|
+|Add a screen to display the pairings by alphabetical order.|Fügen Sie eine Reihe von Bildschirmen hinzu, um die Pairings alphabetisch anzuzeigen.|src/web/templates/admin_screens.html:78|
+|Add a screen to display the last results.|Fügen Sie dem Ereignis einen Bildschirm hinzu.|src/web/templates/admin_screens.html:79|
+|Add a screen to display an image.|Fügen Sie dem Ereignis einen Bildschirm hinzu.|src/web/templates/admin_screens.html:80|
+|Sort the players by name.|Klonen Sie das Turnier.|src/web/templates/macros.j2:203|
+|Sort the players by origin (federation, league, club).|Zeigen/verbergen Sie die Bildschirme der Spieler.|src/web/templates/macros.j2:209|
+|Sort the players by tournament.|Klonen Sie das Turnier.|src/web/templates/macros.j2:215|
+|No screen nor family to rotate.|Kein Bildschirm weder Familie zu drehen.|src/web/templates/user_rotator_card.html:22|
+|Close check-in for tournament [%(tournament_uniq_id)s].|Löschung des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:22|
+|Open check-in for tournament [%(tournament_uniq_id)s].|Ausgabe des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:24|
+|Filter the check-in status.|Löschen Sie den Timer.|src/web/templates/admin_players/admin_players_filter_check_ins.html:8|
+|Not checked-in yet|CHECK-IN|src/web/templates/admin_players/admin_players_filter_check_ins.html:34|
+|Checked-in|CHECK-IN|src/web/templates/admin_players/admin_players_filter_check_ins.html:39|
+|Columns|Spalten:|src/web/templates/admin_players/admin_players_filter_columns.html:7|
+|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:37|
+|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:39|
+|Name \*\*\* NAME FOR PLAYERS COLUMNS|Bezeichnung|src/web/templates/admin_players/admin_players_filter_columns.html:41|
+|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:45|
+|Club \*\*\* CLUB FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:49|
+|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOB|src/web/templates/admin_players/admin_players_filter_columns.html:51|
+|FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:59|
+|FFE \*\*\* FFE FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:65|
+|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|gezüchtet|src/web/templates/admin_players/admin_players_filter_columns.html:69|
+|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Bezeichnung|src/web/templates/admin_players/admin_players_filter_columns.html:71|
+|Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Bemerkung|src/web/templates/admin_players/admin_players_filter_columns.html:73|
+|History \*\*\* HISTORY FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:75|
+|Filter the federations.|Löschen Sie den Rotator.|src/web/templates/admin_players/admin_players_filter_federations.html:7|
+|Filter the genders.|Löschen Sie den Timer.|src/web/templates/admin_players/admin_players_filter_genders.html:8|
+|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Bezeichnung|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
+|Filter the tournaments.|Löschen Sie das Turnier.|src/web/templates/admin_players/admin_players_filter_tournaments.html:9|
 
 ### Nachricht markiert [ai_translation] (1048)
 
@@ -199,8 +335,8 @@
 |Unpaired \*\*\* MALE|ungepaart|src/data/player.py:272|
 |Exempt \*\*\* FEMALE|Befreiung|src/data/player.py:276|
 |Exempt \*\*\* MALE|Befreiung|src/data/player.py:276|
-|Last results|Letzte Ergebnisse|src/data/screen.py:97<br>src/data/screen.py:178<br>src/data/util.py:846<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:360<br>src/web/templates/admin_screens.html:79<br>src/web/templates/admin_screens.html:117|
-|Image|Bild|src/data/screen.py:99<br>src/data/util.py:848<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:362<br>src/web/templates/admin_screens.html:80<br>src/web/templates/admin_screens.html:122|
+|Last results|Letzte Ergebnisse|src/data/screen.py:97<br>src/data/screen.py:178<br>src/data/util.py:917<br>src/web/controllers/admin/index_admin_controller.py:108<br>src/web/controllers/admin/screen_admin_controller.py:360<br>src/web/templates/admin_screens.html:79<br>src/web/templates/admin_screens.html:117|
+|Image|Bild|src/data/screen.py:99<br>src/data/util.py:919<br>src/web/controllers/admin/index_admin_controller.py:109<br>src/web/controllers/admin/screen_admin_controller.py:362<br>src/web/templates/admin_screens.html:80<br>src/web/templates/admin_screens.html:122|
 |Boards %f-%l|Gremien %f-%l|src/data/screen.py:125<br>src/data/screen_set.py:124|
 |By board|Nach Ansicht des Ausschusses|src/data/screen.py:127|
 |%t [Boards %f-%l]|%t [Organe %f-%l]|src/data/screen.py:130|
@@ -229,41 +365,43 @@
 |Qualification number and FFE password not set, operations on the FFE website will not be available.|Qualifikationsnummer und FFE-Passwort nicht festgelegt, Operationen auf der FFE-Website werden nicht verfügbar sein.|src/data/tournament.py:51|
 |ChessEvent connection not defined.|ChessEvent-Verbindung nicht definiert.|src/data/tournament.py:54|
 |ChessEvent tournament name not set.|ChessEvent Turniername nicht gesetzt.|src/data/tournament.py:56|
-|Standard rating|Standard-Rating|src/data/util.py:245|
-|Rapid rating|Schnelle Bewertung|src/data/util.py:247|
-|Blitz rating|Blitz-Rating|src/data/util.py:249|
-|- \*\*\* NAME FOR GENDER NONE|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:460|
-|Female \*\*\* NAME FOR GENDER FEMALE|Frauen|src/data/util.py:462|
-|Male \*\*\* NAME FOR GENDER MALE|Männlich|src/data/util.py:464|
-|- \*\*\* SHORT NAME FOR GENDER NONE|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:472<br>src/web/templates/admin_players/admin_players_filter_genders.html:28|
-|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:474<br>src/web/templates/admin_players/admin_players_filter_genders.html:32|
-|M \*\*\* SHORT NAME FOR GENDER MALE|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:476<br>src/web/templates/admin_players/admin_players_filter_genders.html:36|
-|No FFE Licence|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:519|
-|Expired FFE licence|Abgelaufene FFE-Lizenz|src/data/util.py:521|
-|FFE licence B (leisure)|FFE-Genehmigung B (Freizeit)|src/data/util.py:523|
-|FFE licence A (competition)|FFE-Lizenz A (Wettbewerb)|src/data/util.py:525|
-|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Männlich|src/data/util.py:675|
-|National \*\*\* NAME FOR RATING TYPE NATIONAL|Mitgliedstaat|src/data/util.py:677|
-|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Männlich|src/data/util.py:679|
-|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:687|
-|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:689|
-|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:691|
-|No title|Keine Timer.|src/data/util.py:755|
-|Woman Fide Master|Frau Fide Meister|src/data/util.py:757|
-|Fide Master|Fide-Meister|src/data/util.py:759|
-|Woman International Master|Frau Internationaler Meister|src/data/util.py:761|
-|International Master|Internationaler Meister|src/data/util.py:763|
-|Woman Grand Master|Frau Großmeisterin|src/data/util.py:765|
-|Grand Master|Großmeister|src/data/util.py:767|
-|WFM \*\*\* SHORT NAME FOR Woman Fide Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:777|
-|FM \*\*\* SHORT NAME FOR Fide Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:779|
-|WIM \*\*\* SHORT NAME FOR Woman International Master|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:781|
-|IM \*\*\* SHORT NAME FOR International Master|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:783|
-|WGM \*\*\* SHORT NAME FOR Woman Grand Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:785|
-|GM \*\*\* SHORT NAME FOR Grand Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:787|
-|Pairings by board|Kombinationen nach Bord|src/data/util.py:840<br>src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:339<br>src/web/templates/admin_families.html:61<br>src/web/templates/admin_screens.html:77<br>src/web/templates/admin_screens.html:107|
-|Results entry|Eingabe der Ergebnisse|src/data/util.py:842<br>src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:354<br>src/web/controllers/admin/tournament_admin_controller.py:338<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:60<br>src/web/templates/admin_screens.html:76<br>src/web/templates/admin_screens.html:102|
-|Parings by player|Paarungen nach Spielern|src/data/util.py:844|
+|Standard rating|Standard-Rating|src/data/util.py:316|
+|Rapid rating|Schnelle Bewertung|src/data/util.py:318|
+|Blitz rating|Blitz-Rating|src/data/util.py:320|
+|- \*\*\* NAME FOR GENDER NONE|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:531|
+|Female \*\*\* NAME FOR GENDER FEMALE|Frauen|src/data/util.py:533|
+|Male \*\*\* NAME FOR GENDER MALE|Männlich|src/data/util.py:535|
+|- \*\*\* SHORT NAME FOR GENDER NONE|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:543<br>src/web/templates/admin_players/admin_players_filter_genders.html:28|
+|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:545<br>src/web/templates/admin_players/admin_players_filter_genders.html:32|
+|M \*\*\* SHORT NAME FOR GENDER MALE|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:547<br>src/web/templates/admin_players/admin_players_filter_genders.html:36|
+|No FFE Licence|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:590|
+|Expired FFE licence|Abgelaufene FFE-Lizenz|src/data/util.py:592|
+|FFE licence B (leisure)|FFE-Genehmigung B (Freizeit)|src/data/util.py:594|
+|FFE licence A (competition)|FFE-Lizenz A (Wettbewerb)|src/data/util.py:596|
+|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Männlich|src/data/util.py:746|
+|National \*\*\* NAME FOR RATING TYPE NATIONAL|Mitgliedstaat|src/data/util.py:748|
+|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Männlich|src/data/util.py:750|
+|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:758|
+|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:760|
+|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:762|
+|No title|Keine Timer.|src/data/util.py:826|
+|Woman Fide Master|Frau Fide Meister|src/data/util.py:828|
+|Fide Master|Fide-Meister|src/data/util.py:830|
+|Woman International Master|Frau Internationaler Meister|src/data/util.py:832|
+|International Master|Internationaler Meister|src/data/util.py:834|
+|Woman Grand Master|Frau Großmeisterin|src/data/util.py:836|
+|Grand Master|Großmeister|src/data/util.py:838|
+|WFM \*\*\* SHORT NAME FOR Woman Fide Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:848|
+|FM \*\*\* SHORT NAME FOR Fide Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:850|
+|WIM \*\*\* SHORT NAME FOR Woman International Master|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:852|
+|IM \*\*\* SHORT NAME FOR International Master|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:854|
+|WGM \*\*\* SHORT NAME FOR Woman Grand Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:856|
+|GM \*\*\* SHORT NAME FOR Grand Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:858|
+|White|Weiß|src/data/util.py:894<br>src/web/templates/user_boards_screen_set.html:23<br>src/web/templates/user_results_screen.html:13|
+|Black|Schwarz|src/data/util.py:896<br>src/web/templates/user_boards_screen_set.html:25<br>src/web/templates/user_results_screen.html:15|
+|Pairings by board|Kombinationen nach Bord|src/data/util.py:911<br>src/web/controllers/admin/index_admin_controller.py:104<br>src/web/controllers/admin/tournament_admin_controller.py:339<br>src/web/templates/admin_families.html:61<br>src/web/templates/admin_screens.html:77<br>src/web/templates/admin_screens.html:107|
+|Results entry|Eingabe der Ergebnisse|src/data/util.py:913<br>src/web/controllers/admin/family_admin_controller.py:270<br>src/web/controllers/admin/index_admin_controller.py:103<br>src/web/controllers/admin/screen_admin_controller.py:354<br>src/web/controllers/admin/tournament_admin_controller.py:338<br>src/web/templates/admin_event_modal.html:190<br>src/web/templates/admin_families.html:60<br>src/web/templates/admin_screens.html:76<br>src/web/templates/admin_screens.html:102|
+|Parings by player|Paarungen nach Spielern|src/data/util.py:915|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/ffe/action_selector.py:30<br>src/ffe/action_selector.py:43<br>src/ffe/action_selector.py:63|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/ffe/action_selector.py:46|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Papi-Datei nicht gefunden [{file}] für Turnier [{tournament_uniq_id}].|src/ffe/action_selector.py:50|
@@ -331,11 +469,11 @@
 |Timers ({num})|Zeitmesser ({num})|src/web/controllers/admin/event_admin_controller.py:137|
 |ChessEvent ({num})|Schachveranstaltung ({num})|src/web/controllers/admin/event_admin_controller.py:141|
 |Messages ({num})|Nachrichten ({num})|src/web/controllers/admin/event_admin_controller.py:145|
-|Renaming the database failed: {ex}.|Umbenennen der Datenbank fehlgeschlagen: {ex}.|src/web/controllers/admin/event_admin_controller.py:593|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Event [{old_uniq_id}] wurde umbenannt ([{new_uniq_id}]) und aktualisiert.|src/web/controllers/admin/event_admin_controller.py:600|
-|Event [{uniq_id}] has been updated.|Event [{uniq_id}] wurde aktualisiert.|src/web/controllers/admin/event_admin_controller.py:603|
-|Event [{uniq_id}] has been created.|Event [{uniq_id}] wurde erstellt.|src/web/controllers/admin/event_admin_controller.py:611<br>src/web/controllers/admin/index_admin_controller.py:676|
-|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Event [{uniq_id}] wurde gelöscht, die Datenbank wurde archiviert ({arch}).|src/web/controllers/admin/event_admin_controller.py:621|
+|Renaming the database failed: {ex}.|Umbenennen der Datenbank fehlgeschlagen: {ex}.|src/web/controllers/admin/event_admin_controller.py:595|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Event [{old_uniq_id}] wurde umbenannt ([{new_uniq_id}]) und aktualisiert.|src/web/controllers/admin/event_admin_controller.py:602|
+|Event [{uniq_id}] has been updated.|Event [{uniq_id}] wurde aktualisiert.|src/web/controllers/admin/event_admin_controller.py:605|
+|Event [{uniq_id}] has been created.|Event [{uniq_id}] wurde erstellt.|src/web/controllers/admin/event_admin_controller.py:613<br>src/web/controllers/admin/index_admin_controller.py:676|
+|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Event [{uniq_id}] wurde gelöscht, die Datenbank wurde archiviert ({arch}).|src/web/controllers/admin/event_admin_controller.py:623|
 |Please enter the family ID.|Bitte geben Sie die Familien-ID ein.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|Zeichen [{char}] ist nicht erlaubt.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:233<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:76|
 |Family [{uniq_id}] already exists.|Familie [{uniq_id}] existiert bereits.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
@@ -737,8 +875,8 @@
 |Tournament [%(tournament_uniq_id)s] is playing.|Turnier [%(tournament_uniq_id)s] spielt.|src/web/templates/admin_players.html:185<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
 |Check-in is closed for tournament [%(tournament_uniq_id)s].|Löschung des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:188|
 |Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Spieler [%(last_name)s %(first_name)s] wenn für die nächste Runde im Turnier verfällt [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:191|
-|Click to check-in the player.|Einchecken|src/web/templates/admin_players.html:194|
-|Click to check-out the player.|Klicken Sie zum Auschecken des Players.|src/web/templates/admin_players.html:200|
+|Click to check-out the player.|Klicken Sie zum Auschecken des Players.|src/web/templates/admin_players.html:194|
+|Click to check-in the player.|Einchecken|src/web/templates/admin_players.html:200|
 |Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (Klicken Sie zum Kopieren in die Zwischenablage).|src/web/templates/admin_players.html:248|
 |No mail defined.|Kein Timer definiert|src/web/templates/admin_players.html:250|
 |Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (Klicken Sie zum Kopieren in die Zwischenablage).|src/web/templates/admin_players.html:261|
@@ -750,7 +888,7 @@
 |Change the player's tournament.|Klonen Sie das Turnier.|src/web/templates/admin_players.html:326|
 |No players.|Spieler|src/web/templates/admin_players.html:370|
 |Rotation delay: %(seconds)d sec.|Rotationsverzögerung: %(seconds)d sek.|src/web/templates/admin_rotator_card.html:15<br>src/web/templates/user_rotator_card.html:18|
-|No screen neither family to rotate.|Kein Bildschirm weder Familie zu drehen.|src/web/templates/admin_rotator_card.html:43<br>src/web/templates/user_rotator_card.html:22|
+|No screen neither family to rotate.|Kein Bildschirm weder Familie zu drehen.|src/web/templates/admin_rotator_card.html:43|
 |Screens:|Bildschirme:|src/web/templates/admin_rotator_card.html:49<br>src/web/templates/admin_rotator_modal.html:128<br>src/web/templates/user_rotator_card.html:28|
 |Screen families:|Bildschirmfamilien:|src/web/templates/admin_rotator_card.html:60<br>src/web/templates/admin_rotator_modal.html:163<br>src/web/templates/user_rotator_card.html:39|
 |**Singulär:** (%(num)d screen)<br/>**Plural:** (%(num)d screens)|**Singulär:** (%(num)d Bildschirm)<br/>**Plural:** (%(num)d Bildschirme)|src/web/templates/admin_rotator_card.html:68|
@@ -905,7 +1043,6 @@
 |ChessEvent connection [%(chessevent_uniq_id)s] is used.|ChessEvent Verbindung [%(chessevent_uniq_id)s] wird verwendet.|src/web/templates/admin_tournament_card.html:72|
 |No ChessEvent connection is used.|Es wird keine ChessEvent-Verbindung verwendet.|src/web/templates/admin_tournament_card.html:74|
 |Illegal moves are not recorded.|Illegale Bewegungen werden nicht erfasst.|src/web/templates/admin_tournament_card.html:86|
-|**Singulär:** At most one illegal move is recorded.<br/>**Plural:** At most %(num)d illegal moves are recorded.|**Singulär:** Höchstens wird ein illegaler Zug aufgezeichnet.<br/>**Plural:** Höchstens %(num)d werden illegale Züge aufgezeichnet.|src/web/templates/admin_tournament_card.html:88|
 |Rules file set|Regeln-Dateisatz|src/web/templates/admin_tournament_card.html:105|
 |Edit the properties of the tournament.|Bearbeiten Sie die Eigenschaften des Turniers.|src/web/templates/admin_tournament_card.html:127|
 |Clone the tournament.|Klonen Sie das Turnier.|src/web/templates/admin_tournament_card.html:142|
@@ -996,9 +1133,7 @@
 |EXEMPT|AUSWIRKUNGEN|src/web/templates/user_boards_screen_board_row_player_cell.html:15|
 |/move|/verschieben|src/web/templates/user_boards_screen_board_row_player_cell.html:18|
 |%(set_name)s (round %(round)d)|%(set_name)s (rund %(round)d)|src/web/templates/user_boards_screen_set.html:11<br>src/web/templates/user_players_screen_set.html:9|
-|White|Weiß|src/web/templates/user_boards_screen_set.html:23<br>src/web/templates/user_results_screen.html:13|
 |time control|Zeitkontrolle|src/web/templates/user_boards_screen_set.html:23<br>src/web/templates/user_boards_screen_set.html:25|
-|Black|Schwarz|src/web/templates/user_boards_screen_set.html:25<br>src/web/templates/user_results_screen.html:15|
 |%(set_name)s (check-in)|%(set_name)s (Einchecken)|src/web/templates/user_boards_screen_set.html:135|
 |Player / Elo|Spieler / Elo|src/web/templates/user_boards_screen_set.html:146|
 |Go back to the events page.|Gehen Sie zurück zur Veranstaltungsseite.|src/web/templates/user_event.html:19|
@@ -1012,6 +1147,7 @@
 |Tournament|Turnier|src/web/templates/user_results_screen.html:11|
 |Rnd.Boa|Rnd.Boa|src/web/templates/user_results_screen.html:12|
 |Score|Ergebnis|src/web/templates/user_results_screen.html:14|
+|No screen nor family to rotate.|Kein Bildschirm weder Familie zu drehen.|src/web/templates/user_rotator_card.html:22|
 |%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)|%(family_uniq_id)s %(family_name)s (%(screens_number)d Bildschirme)|src/web/templates/user_rotator_card.html:43|
 |Please enter the password to enter results:|Bitte geben Sie das Passwort ein, um Ergebnisse einzugeben:|src/web/templates/user_screen.html:130|
 |Event|Ereignis|src/web/templates/user_screen.html:138|
@@ -1080,138 +1216,4 @@
 |Empty messages are not shown for the default language.|Leere Nachrichten werden für die Standardsprache nicht angezeigt.|utils/i18n/i18n_update.py:246|
 |Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:262|
 |Translation|Übersetzung|utils/i18n/i18n_update.py:268|
-
-### Nachricht markiert [fuzzy] (129)
-
-|Meldungs-ID|Übersetzung|Standorte|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie scripts server.bat, ffe.bat und chessevent.bat.|src/papi_web.py:32|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|ChessEvent-Verbindung nicht für Turnier eingestellt [{tournament_uniq_id}].|src/chessevent/action_selector.py:42|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/chessevent/action_selector.py:46|
-|Tournament [{tournament_uniq_id}] has started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/chessevent/action_selector.py:50|
-|No FFE Licence|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:519|
-|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Männlich|src/data/util.py:675|
-|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Männlich|src/data/util.py:679|
-|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:687|
-|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:689|
-|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:691|
-|No title|Keine Timer.|src/data/util.py:755|
-|WFM \*\*\* SHORT NAME FOR Woman Fide Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:777|
-|FM \*\*\* SHORT NAME FOR Fide Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:779|
-|WIM \*\*\* SHORT NAME FOR Woman International Master|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:781|
-|IM \*\*\* SHORT NAME FOR International Master|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:783|
-|WGM \*\*\* SHORT NAME FOR Woman Grand Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:785|
-|GM \*\*\* SHORT NAME FOR Grand Master|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:787|
-|Parings by player|Paarungen nach Spielern|src/data/util.py:844|
-|Players ({num})|Zeitmesser ({num})|src/web/controllers/admin/event_admin_controller.py:121|
-|Please enter the last name.|Bitte geben Sie die Zeit ein.|src/web/controllers/admin/player_admin_controller.py:78|
-|Please enter the first name.|Bitte geben Sie die Zeit ein.|src/web/controllers/admin/player_admin_controller.py:84|
-|Please enter the date of birth.|Bitte geben Sie das Ende der Veranstaltung ein.|src/web/controllers/admin/player_admin_controller.py:90|
-|Invalid FIDE ID [{fide_id}].|Ungültige FIDE-ID [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:136|
-|Invalid FFE ID [{ffe_id}].|Ungültige FFE-ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:142|
-|Invalid mail [{mail}].|Ungültige Post [{mail}].|src/web/controllers/admin/player_admin_controller.py:158|
-|Invalid phone number [{phone}].|Ungültige Telefonnummer [{phone}].|src/web/controllers/admin/player_admin_controller.py:164|
-|Standard:|Beginnen:|src/web/controllers/admin/player_admin_controller.py:314|
-|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spieler [{last_name} {first_name}] hat Paarungen im Turnier [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:429<br>src/web/controllers/admin/player_admin_controller.py:500|
-|Papi file [{tournament_file}] not found.|Papi-Datei [{tournament_file}] nicht gefunden.|src/web/controllers/admin/player_admin_controller.py:437|
-|FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:441|
-|Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:446|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Spieler [{last_name} {first_name}] wurde aus dem Turnier entfernt [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:507|
-|Check-in is open for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:532|
-|Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:567|
-|No ChessEvent connection|Keine ChessEvent-Verbindungen.|src/web/controllers/admin/tournament_admin_controller.py:158|
-|Tournament [{tournament_uniq_id}] is not started yet.|Turnier [{tournament_uniq_id}] wird gestartet.|src/web/controllers/user/tournament_user_controller.py:57|
-|Tournament [{tournament_uniq_id}] is started.|Turnier [{tournament_uniq_id}] wird gestartet.|src/web/controllers/user/tournament_user_controller.py:61|
-|Close check-in for tournament [%(tournament_uniq_id)s]|Löschung des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_close_check_in_modal.html:5|
-|Mark as forfeit for the rest of the tournament|Bearbeiten Sie die Eigenschaften des Turniers.|src/web/templates/admin_close_check_in_modal.html:44|
-|Close the check-in|Löschen Sie den Timer.|src/web/templates/admin_close_check_in_modal.html:63|
-|Create a screen family|Löschen Sie die Bildschirmfamilie.|src/web/templates/admin_families.html:56|
-|Menus|Menü:|src/web/templates/admin_family_modal.html:344<br>src/web/templates/admin_screen_modal.html:222|
-|Player creation|Erstellung des Bildschirms der Spieler|src/web/templates/admin_player_modal.html:16|
-|Last name:|Letzter Spieler:|src/web/templates/admin_player_modal.html:31|
-|E.g.: DOE|Z.B.: Haupt|src/web/templates/admin_player_modal.html:37|
-|The player's last name.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:40|
-|First name:|Erster Spieler:|src/web/templates/admin_player_modal.html:51|
-|E.g.: John|Z.B.: Haupt|src/web/templates/admin_player_modal.html:57|
-|The player's first name.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:60|
-|The player's birth date.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:79|
-|Gender:|Ende:|src/web/templates/admin_player_modal.html:90|
-|The player's gender.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:101|
-|The player's FIDE title.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:165|
-|Federation:|Ereigniserstellung|src/web/templates/admin_player_modal.html:176|
-|The player's federation.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:193|
-|FIDE ID:|Kein Timer definiert|src/web/templates/admin_player_modal.html:204|
-|The player's FIDE ID (do not change).|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:214|
-|French Chess Federation|Löschen Sie den Rotator.|src/web/templates/admin_player_modal.html:225|
-|League:|Sprache|src/web/templates/admin_player_modal.html:230|
-|The player's league.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:242|
-|Club:|Spalten:|src/web/templates/admin_player_modal.html:253|
-|The player's club.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:262|
-|Licence:|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/web/templates/admin_player_modal.html:273|
-|The player's licence.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:285|
-|Licence number:|Die Telefonnummern.|src/web/templates/admin_player_modal.html:296|
-|The player's licence number.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:305|
-|FFE Uniq ID:|Einzigartig id|src/web/templates/admin_player_modal.html:316|
-|Contact and registration|Erzeugung von Rotatoren|src/web/templates/admin_player_modal.html:337|
-|Email:|Einzelheiten|src/web/templates/admin_player_modal.html:342|
-|The player's email.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:350|
-|Phone number:|Die Telefonnummern.|src/web/templates/admin_player_modal.html:361|
-|The player's phone number.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:369|
-|Comment:|Turnier:|src/web/templates/admin_player_modal.html:380|
-|Owed:|Ende:|src/web/templates/admin_player_modal.html:399|
-|The price the player pays to register.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:407|
-|Add a player to the event.|Fügen Sie dem Event einen Timer hinzu.|src/web/templates/admin_players.html:22|
-|Create a player|Einen Timer erstellen|src/web/templates/admin_players.html:31|
-|Clear all the filters.|alle Spieler|src/web/templates/admin_players.html:48|
-|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players.html:73|
-|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Bezahlt|src/web/templates/admin_players.html:115|
-|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players.html:120|
-|Edit the player's properties.|Bearbeiten Sie die Eigenschaften des Timers.|src/web/templates/admin_players.html:159|
-|Remove the player from the event.|Fügen Sie dem Event einen Timer hinzu.|src/web/templates/admin_players.html:169|
-|Tournament [%(tournament_uniq_id)s] is finished.|Turnier [%(tournament_uniq_id)s] ist beendet.|src/web/templates/admin_players.html:182<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
-|Tournament [%(tournament_uniq_id)s] is playing.|Turnier [%(tournament_uniq_id)s] spielt.|src/web/templates/admin_players.html:185<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
-|Check-in is closed for tournament [%(tournament_uniq_id)s].|Löschung des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:188|
-|Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Spieler [%(last_name)s %(first_name)s] wenn für die nächste Runde im Turnier verfällt [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:191|
-|Click to check-in the player.|Einchecken|src/web/templates/admin_players.html:194|
-|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (Klicken Sie zum Kopieren in die Zwischenablage).|src/web/templates/admin_players.html:248|
-|No mail defined.|Kein Timer definiert|src/web/templates/admin_players.html:250|
-|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (Klicken Sie zum Kopieren in die Zwischenablage).|src/web/templates/admin_players.html:261|
-|No phone defined.|Kein Timer definiert|src/web/templates/admin_players.html:263|
-|FIDE ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (klicken Sie, um in die Zwischenablage zu kopieren).|src/web/templates/admin_players.html:282|
-|No FIDE ID.|Kein Timer definiert|src/web/templates/admin_players.html:285|
-|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|FFE-Lizenz: %(ffe_licence_number)s (Klicken Sie zum Kopieren in die Zwischenablage).|src/web/templates/admin_players.html:298|
-|Unknown FFE Licence type [%(ffe_licence)s].|Unbekannter FFE-Lizenztyp [%(ffe_licence)s]|src/web/templates/admin_players.html:302|
-|Change the player's tournament.|Klonen Sie das Turnier.|src/web/templates/admin_players.html:326|
-|No players.|Spieler|src/web/templates/admin_players.html:370|
-|Create a screen|Erzeugen eines Ereignisses|src/web/templates/admin_screens.html:72|
-|Add a screen to enter the results.|Fügen Sie eine Bildschirmfamilie hinzu, um die Ergebnisse einzugeben.|src/web/templates/admin_screens.html:76|
-|Add a screen to display the pairings by board.|Fügen Sie eine Reihe von Bildschirmen hinzu, um die Pairings nach Board anzuzeigen.|src/web/templates/admin_screens.html:77|
-|Add a screen to display the pairings by alphabetical order.|Fügen Sie eine Reihe von Bildschirmen hinzu, um die Pairings alphabetisch anzuzeigen.|src/web/templates/admin_screens.html:78|
-|Add a screen to display the last results.|Fügen Sie dem Ereignis einen Bildschirm hinzu.|src/web/templates/admin_screens.html:79|
-|Add a screen to display an image.|Fügen Sie dem Ereignis einen Bildschirm hinzu.|src/web/templates/admin_screens.html:80|
-|Sort the players by name.|Klonen Sie das Turnier.|src/web/templates/macros.j2:203|
-|Sort the players by origin (federation, league, club).|Zeigen/verbergen Sie die Bildschirme der Spieler.|src/web/templates/macros.j2:209|
-|Sort the players by tournament.|Klonen Sie das Turnier.|src/web/templates/macros.j2:215|
-|Close check-in for tournament [%(tournament_uniq_id)s].|Löschung des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:22|
-|Open check-in for tournament [%(tournament_uniq_id)s].|Ausgabe des Turniers [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:24|
-|Filter the check-in status.|Löschen Sie den Timer.|src/web/templates/admin_players/admin_players_filter_check_ins.html:8|
-|Not checked-in yet|CHECK-IN|src/web/templates/admin_players/admin_players_filter_check_ins.html:34|
-|Checked-in|CHECK-IN|src/web/templates/admin_players/admin_players_filter_check_ins.html:39|
-|Columns|Spalten:|src/web/templates/admin_players/admin_players_filter_columns.html:7|
-|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:37|
-|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:39|
-|Name \*\*\* NAME FOR PLAYERS COLUMNS|Bezeichnung|src/web/templates/admin_players/admin_players_filter_columns.html:41|
-|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:45|
-|Club \*\*\* CLUB FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:49|
-|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOB|src/web/templates/admin_players/admin_players_filter_columns.html:51|
-|FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:59|
-|FFE \*\*\* FFE FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:65|
-|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|gezüchtet|src/web/templates/admin_players/admin_players_filter_columns.html:69|
-|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Bezeichnung|src/web/templates/admin_players/admin_players_filter_columns.html:71|
-|Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Bemerkung|src/web/templates/admin_players/admin_players_filter_columns.html:73|
-|History \*\*\* HISTORY FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:75|
-|Filter the federations.|Löschen Sie den Rotator.|src/web/templates/admin_players/admin_players_filter_federations.html:7|
-|Filter the genders.|Löschen Sie den Timer.|src/web/templates/admin_players/admin_players_filter_genders.html:8|
-|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Bezeichnung|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
-|Filter the tournaments.|Löschen Sie das Turnier.|src/web/templates/admin_players/admin_players_filter_tournaments.html:9|
 

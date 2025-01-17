@@ -46,12 +46,13 @@ class Result(IntEnum):
     FORFEIT_LOSS = 4
     DOUBLE_FORFEIT = 5
     FORFEIT_GAIN = 6
-    HALF_POINT_BYE = 7
-    PAIRING_ALLOCATED_BYE = 8
-    FULL_POINT_BYE = 9
-    UNRATED_LOSS = 10
-    UNRATED_DRAW = 11
-    UNRATED_GAIN = 12
+    ZERO_POINT_BYE = 7
+    HALF_POINT_BYE = 8
+    PAIRING_ALLOCATED_BYE = 9
+    FULL_POINT_BYE = 10
+    UNRATED_LOSS = 11
+    UNRATED_DRAW = 12
+    UNRATED_GAIN = 13
 
     def __str__(self) -> str:
         match self:
@@ -61,7 +62,7 @@ class Result(IntEnum):
                 return '0-1'
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return '1/2'
-            case Result.NO_RESULT:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE:
                 return ''
             case Result.FORFEIT_LOSS:
                 return 'F-1'
@@ -78,23 +79,37 @@ class Result(IntEnum):
             value: int,
             is_point_bye: bool = False,
             is_pairing_bye: bool = False,
+            is_zero_point_bye: bool = False,
             is_unrated: bool = False) -> Self:
         """Create a `Result` instance from the stored value in the
         Papi database."""
         match value:
+            case PapiResult.NOT_PAIRED.value if is_zero_point_bye:
+                return cls.ZERO_POINT_BYE
             case PapiResult.NOT_PAIRED.value:
                 return cls.NO_RESULT
+            case PapiResult.LOSS.value if is_unrated:
+                return cls.UNRATED_LOSS
             case PapiResult.LOSS.value:
-                return cls.UNRATED_LOSS if is_unrated else cls.LOSS
+                return cls.LOSS
+            case PapiResult.DRAW_OR_HPB.value if is_unrated:
+                return cls.UNRATED_DRAW
+            case PapiResult.DRAW_OR_HPB.value if is_point_bye:
+                return cls.HALF_POINT_BYE
             case PapiResult.DRAW_OR_HPB.value:
-                return cls.UNRATED_DRAW if is_unrated else cls.HALF_POINT_BYE if is_point_bye else cls.DRAW
+                return cls.DRAW
+            case PapiResult.GAIN.value if is_unrated:
+                return cls.UNRATED_GAIN
+            case PapiResult.GAIN.value:
+                return cls.GAIN
             case PapiResult.GAIN.value:
                 return cls.UNRATED_GAIN if is_unrated else cls.GAIN
+            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if is_point_bye:
+                return cls.FULL_POINT_BYE
+            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if is_pairing_bye:
+                return cls.PAIRING_ALLOCATED_BYE
             case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value:
-                return (
-                    cls.FULL_POINT_BYE if is_point_bye
-                    else cls.PAIRING_ALLOCATED_BYE if is_pairing_bye
-                    else cls.FORFEIT_GAIN)
+                return cls.FORFEIT_GAIN
             case PapiResult.FORFEIT_LOSS.value:
                 return cls.FORFEIT_LOSS
             case PapiResult.DOUBLE_FORFEIT.value:
@@ -111,7 +126,7 @@ class Result(IntEnum):
                 return PapiResult.LOSS
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return PapiResult.DRAW_OR_HPB
-            case Result.NOT_PAIRED:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE:
                 return PapiResult.NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS
@@ -134,11 +149,13 @@ class Result(IntEnum):
         Assumes a 0-0.5-1 scoring system.
         """
         match self:
-            case Result.NO_RESULT | Result.LOSS | Result.UNRATED_LOSS | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.LOSS \
+                 | Result.UNRATED_LOSS | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
                 return 0.0
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return 0.5
-            case Result.GAIN | Result.UNRATED_GAIN | Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case Result.GAIN | Result.UNRATED_GAIN | Result.FORFEIT_GAIN \
+                 | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 return 1.0
 
     @property
@@ -182,7 +199,8 @@ class Result(IntEnum):
                 return Result.DOUBLE_FORFEIT
             case Result.NO_RESULT:
                 return Result.NO_RESULT
-            case Result.HALF_POINT_BYE | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case Result.ZERO_POINT_BYE | Result.HALF_POINT_BYE \
+                 | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 raise ValueError(f"Result '{self}' is not reversible")
             case _:
                 raise ValueError(f"Unknown value: {self}")
@@ -845,7 +863,7 @@ class PlayerTitle(IntEnum):
         return self.short_name
 
 
-class Color(StrEnum):
+class BoardColor(StrEnum):
     WHITE = 'W'
     BLACK = 'B'
 
@@ -854,28 +872,28 @@ class Color(StrEnum):
         """Decode the database value"""
         match value:
             case 'B':
-                return Color.WHITE
+                return BoardColor.WHITE
             case 'N':
-                return Color.BLACK
+                return BoardColor.BLACK
             case _:
                 raise ValueError(f'Unknown value: {value}')
 
     @property
     def to_papi_value(self) -> str:
         match self:
-            case Color.WHITE:
+            case BoardColor.WHITE:
                 return 'B'
-            case Color.BLACK:
+            case BoardColor.BLACK:
                 return 'N'
             case _:
                 raise ValueError(f'Unknown value:  {self}')
 
     def __str__(self) -> str:
         match self:
-            case Color.WHITE:
-                return 'Blancs'
-            case Color.BLACK:
-                return 'Noirs'
+            case BoardColor.WHITE:
+                return _('White')
+            case BoardColor.BLACK:
+                return _('Black')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 

@@ -85,7 +85,7 @@
         {% if not tournament.record_illegal_moves %}
             {% set text=_('Illegal moves are not recorded.') %}
         {% else %}
-            {% set text=ngettext('At most one illegal move is recorded.', 'At most %(num)d illegal moves are recorded.', num=tournament.record_illegal_moves) %}
+            {% set text=ngettext('At most %(num)d illegal move is recorded.', 'At most %(num)d illegal moves are recorded.', tournament.record_illegal_moves) %}
         {% endif %}
         <span
                 class="me-2 text-nowrap"

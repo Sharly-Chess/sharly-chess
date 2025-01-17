@@ -2,7 +2,7 @@ from logging import Logger
 from common.logger import get_logger
 from dataclasses import dataclass
 
-from data.util import Result
+from data.util import Result, BoardColor
 
 logger: Logger = get_logger()
 
@@ -10,18 +10,17 @@ logger: Logger = get_logger()
 @dataclass(frozen=True)
 class Pairing:
     """A pairing (from the point of view of the `Player` class)"""
-    color: str | None = None
+    color: BoardColor | None = None
     opponent_id: int | None = None
-    opponent_papi_id: int | None = None
     result: Result | None = None
 
     @property
     def forfeit(self) -> bool:
-        return (self.result == Result.NO_RESULT) and (self.color == 'F')
+        return self.result == Result.ZERO_POINT_BYE
 
     @property
     def not_paired(self) -> bool:
-        return (self.result == Result.NO_RESULT) and (self.color == 'R') and (self.opponent_id is None)
+        return (self.result == Result.NO_RESULT) and (self.opponent_id is None)
 
     @property
     def playing(self) -> bool:
@@ -29,28 +28,27 @@ class Pairing:
 
     @property
     def exempt(self) -> bool:
-        return (self.result == Result.PAB_OR_FORFEIT_GAIN_OR_FPB) \
-            and (self.opponent_papi_id is not None) and (self.opponent_papi_id == 1)
+        return self.result == Result.PAIRING_ALLOCATED_BYE
 
     @property
     def loss(self) -> bool:
-        return self.result == Result.LOSS
+        return self.result in (Result.LOSS, Result.UNRATED_LOSS)
 
     @property
     def draw(self) -> bool:
-        return (self.result == Result.DRAW_OR_HPB) and (self.opponent_papi_id is not None)
+        return self.result in (Result.DRAW, Result.UNRATED_DRAW)
 
     @property
     def gain(self) -> bool:
-        return self.result == Result.GAIN
+        return self.result in (Result.GAIN, Result.UNRATED_GAIN)
 
     @property
     def half_point_bye(self) -> bool:
-        return (self.result == Result.DRAW_OR_HPB) and (self.opponent_papi_id is None)
+        return self.result == Result.HALF_POINT_BYE
 
     @property
     def full_point_bye(self) -> bool:
-        return (self.result == Result.PAB_OR_FORFEIT_GAIN_OR_FPB) and (self.opponent_papi_id is None)
+        return self.result == Result.FULL_POINT_BYE
 
     @property
     def forfeit_loss(self) -> bool:
@@ -62,8 +60,7 @@ class Pairing:
 
     @property
     def forfeit_gain(self) -> bool:
-        return (self.result == Result.PAB_OR_FORFEIT_GAIN_OR_FPB) \
-            and (self.opponent_papi_id is not None) and (self.opponent_papi_id > 1)
+        return self.result == Result.FORFEIT_GAIN
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result})'
