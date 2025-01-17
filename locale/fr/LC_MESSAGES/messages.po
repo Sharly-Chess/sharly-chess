@@ -58,7 +58,7 @@ msgstr "Quitter"
 #: src/chessevent/action_selector.py:85 src/chessevent/action_selector.py:105
 #: src/chessevent/action_selector.py:125
 msgid "Your choice (by default {default}): "
-msgstr "Votre choix, par défaut [{default}]."
+msgstr "Votre choix, par défaut [{default}] :"
 
 #: src/chessevent/action_selector.py:86 src/ffe/action_selector.py:110
 msgid "Action: {action}"
