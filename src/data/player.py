@@ -263,17 +263,16 @@ class Player:
     def to_trf(self) -> TrfPlayer:
         self.compute_points(len(self.pairings))
         return TrfPlayer(
-            self.ref_id,
-            f'{self.last_name}, {self.first_name}',
-            self.gender.to_trf,
-            self.title.to_trf,
-            self.rating,
-            self.federation,
-            self.fide_id,
-            self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else '',
-            self.points,
-            None,
-            [result.to_trf(round_nb) for round_nb, result in self.pairings.items()]
+            startrank=self.ref_id,
+            name=f'{self.last_name}, {self.first_name}',
+            sex=self.gender.to_trf,
+            title=self.title.to_trf,
+            rating=self.rating,
+            fed=self.federation,
+            id=self.fide_id,
+            birthdate=self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else '',
+            points=self.points,
+            games=[result.to_trf(round_nb) for round_nb, result in self.pairings.items()]
         )
 
     @property

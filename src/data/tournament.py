@@ -411,18 +411,27 @@ class Tournament:
 
     @property
     def to_trf(self) -> TrfTournament:
+        players = [player for id_, player in self.players_by_id.items() if id_ != 1]
+        xx_fields: dict[str, str] = {}
+        for player in players:
+            xx_fields[f'XXA {player.ref_id:>4}'] = self._trf_player_acceleration(player)
         return TrfTournament(
-            self.name,
-            self.location,
-            '',
-            self.start_date,
-            self.end_date,
-            len(self.players_by_id),
-            0, 0, '',
-            self.arbiter,
-            '', '', [],
-            [player.to_trf for id, player in self.players_by_id.items() if id != 1],
+            name=self.name,
+            city=self.location,
+            startdate=self.start_date,
+            enddate=self.end_date,
+            numplayers=len(self.players_by_id),
+            chiefarbiter=self.arbiter,
+            players=[player.to_trf for player in players],
+            xx_fields=xx_fields
         )
+
+    def _trf_player_acceleration(self, player: Player) -> str:
+        acceleration_history = [
+            f'{self._calculate_player_virtual_points(player, round_nb):>4}'
+            for round_nb in range(1, self._current_round+1)
+        ]
+        return ' '.join(acceleration_history)
 
     def read_papi(self):
         """Fetch tournament information from the Papi database, as well
@@ -498,60 +507,62 @@ class Tournament:
         for player in self._players_by_id.values():
             if player.ref_id == 1:
                 continue
-            # real points
+            vpoints = self._calculate_player_virtual_points(player, self._current_round)
             player.compute_points(self._current_round)
-            # virtual points
-            player.vpoints = 0.0
-            vpoints: float = 0.0
-            if self._pairing == TournamentPairing.HALEY:
-                if self._current_round <= 2 and player.rating >= self._rating_limit1:
-                    vpoints = 1.0
-            elif self._pairing == TournamentPairing.HALEY_SOFT:
-                # Round 1: All players above rating_limit1 get 1 vpoint
-                # Round 2: All players above rating_limit1 get 1 vpoint
-                # Round 2: All other players get .5 vpoints
-                # bottom of page #138 on
-                # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
-                # please remove if OK
-                if self._current_round <= 2 and player.rating >= self.rating_limit1:
-                    vpoints = 1.0
-                elif self._current_round == 2 and player.rating < self.rating_limit1:
-                    vpoints = 0.5
-            elif self._pairing == TournamentPairing.SAD:
-                # Before the second to last round, we remove the virtual
-                # points, and use a simple Swiss Dutch system.
-                if self._current_round <= self._rounds - 2:
-                    # Each 1.5 points earned, virtual points go up by 0.5
-                    # No player can have more than 2 points.
-                    # At the start, players are sorted in three groups
-                    # based on their rating.
-                    # Group A players start with 2 points
-                    # Group B players start with 1 point
-                    # Group C players start with 0 points.
-                    # If a player reaches more than half of the possible score,
-                    # their virtual points capital is raised to 2 points.
-
-                    # NOTE(Amaras): // is implemented on float as well, so it's
-                    # way simpler to implement than by applying the algorithm
-                    # step by step.
-                    potential_vpoints = 0.5 * (player.points // 1.5)
-                    if player.rating >= self.rating_limit1:
-                        # Group A players get 2 virtual points
-                        vpoints = 2.0
-                    elif player.rating >= self.rating_limit2:
-                        # Group B players start with 1 point
-                        # Players cannot have more than 2 points
-                        vpoints = min(2.0, 1.0 + potential_vpoints)
-                    else:
-                        # Group C players start with 0 points
-                        # Players cannot have more than 2 points
-                        vpoints = min(2.0, potential_vpoints)
-                    if 2 * player.points >= self._rounds:
-                        # If a player gets at least half the possible score,
-                        # their capital is set at 2 points.
-                        # Assumes a 0-0.5-1 scoring system.
-                        vpoints = 2.0
             player.vpoints = player.points + vpoints
+
+    def _calculate_player_virtual_points(self, player: Player, round_number: int) -> float:
+        vpoints = 0.0
+        if self._pairing == TournamentPairing.HALEY:
+            if round_number <= 2 and player.rating >= self._rating_limit1:
+                vpoints = 1.0
+        elif self._pairing == TournamentPairing.HALEY_SOFT:
+            # Round 1: All players above rating_limit1 get 1 vpoint
+            # Round 2: All players above rating_limit1 get 1 vpoint
+            # Round 2: All other players get .5 vpoints
+            # bottom of page #138 on
+            # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
+            # please remove if OK
+            if round_number <= 2 and player.rating >= self.rating_limit1:
+                vpoints = 1.0
+            elif round_number == 2 and player.rating < self.rating_limit1:
+                vpoints = 0.5
+        elif self._pairing == TournamentPairing.SAD:
+            # Before the second to last round, we remove the virtual
+            # points, and use a simple Swiss Dutch system.
+            if round_number <= self._rounds - 2:
+                # Each 1.5 points earned, virtual points go up by 0.5
+                # No player can have more than 2 points.
+                # At the start, players are sorted in three groups
+                # based on their rating.
+                # Group A players start with 2 points
+                # Group B players start with 1 point
+                # Group C players start with 0 points.
+                # If a player reaches more than half of the possible score,
+                # their virtual points capital is raised to 2 points.
+
+                # NOTE(Amaras): // is implemented on float as well, so it's
+                # way simpler to implement than by applying the algorithm
+                # step by step.
+                potential_vpoints = 0.5 * (player.points // 1.5)
+                if player.rating >= self.rating_limit1:
+                    # Group A players get 2 virtual points
+                    vpoints = 2.0
+                elif player.rating >= self.rating_limit2:
+                    # Group B players start with 1 point
+                    # Players cannot have more than 2 points
+                    vpoints = min(2.0, 1.0 + potential_vpoints)
+                else:
+                    # Group C players start with 0 points
+                    # Players cannot have more than 2 points
+                    vpoints = min(2.0, potential_vpoints)
+                player.compute_points(round_number)
+                if 2 * player.points >= self._rounds:
+                    # If a player gets at least half the possible score,
+                    # their capital is set at 2 points.
+                    # Assumes a 0-0.5-1 scoring system.
+                    vpoints = 2.0
+        return vpoints
 
     def store_illegal_move(self, player: Player):
         """Store an illegal move for the given `player`, for the current

@@ -71,10 +71,10 @@ class Pairing:
             if self.opponent_id else None
         )
         return TrfGame(
-            ' ' if opponent_papi_id == 1 else opponent_papi_id,
-            self.color.to_trf if self.color and not self.result.is_bye else ' ',
-            self.result.to_trf,
-            round_number)
+            startrank=' ' if opponent_papi_id == 1 else opponent_papi_id,
+            color=self.color.to_trf if self.color and not self.result.is_bye else ' ',
+            result=self.result.to_trf,
+            round=round_number)
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result})'
