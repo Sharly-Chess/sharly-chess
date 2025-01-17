@@ -653,9 +653,7 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
                 papi_database.write_chessevent_info(chessevent_tournament)
-                player_papi_id: int = 1
-                for chessevent_player in chessevent_tournament.players:
-                    player_papi_id += 1
+                for player_papi_id, chessevent_player in enumerate(chessevent_tournament.players, start=2):
                     papi_database.add_chessevent_player(
                         player_papi_id, chessevent_player, chessevent_tournament.check_in_started)
                 event_database.set_tournament_check_in(self.id, True)
