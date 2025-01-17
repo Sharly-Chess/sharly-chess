@@ -205,8 +205,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             try:
                 background_color = WebContext.form_data_to_rgb(data, field)
             except ValueError:
-                errors[field] = _('Invalid color [{color}] ([#RRGGBB] expected).').format(
-                                color={data[field]})
+                errors[field] = _('Invalid color [{color}] ([#RRGGBB] expected).').format(color={data[field]})
         return background_color
 
     @classmethod

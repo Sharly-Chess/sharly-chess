@@ -2,6 +2,11 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.4.20 - 19 janvier 2025
+- Ajout de la possibilité de pointer depuis les pages d'arbitrage
+- Ajout de la possibilité d'ouvrir/fermer le pointage à chaque ronde
+- Ajout de la possibilité de changer un·e joueur·euse de tournoi
+
 ## Version 2.4.19 - 12 janvier 2025
 - Passage en multilingue anglais et français
 - Ajout de l'onglet Joueur·euses
