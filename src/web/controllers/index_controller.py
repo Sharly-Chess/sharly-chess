@@ -182,7 +182,7 @@ class WebContext:
             return None
         if re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$', data[field]):
             return data[field]
-        raise ValueError
+        raise ValueError(f'data[{field}]=[{data[field]}] (mail expected)')
 
     @classmethod
     def form_data_to_phone(cls, data: dict[str, str], field: str) -> str | None:
@@ -202,7 +202,7 @@ class WebContext:
                 phonenumbers.parse(data[field], get_locale().upper())
                 return data[field]
             except NumberParseException:
-                raise ValueError
+                raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)')
 
     @classmethod
     def form_data_to_ffe_licence_number(cls, data: dict[str, str], field: str) -> str | None:
@@ -215,7 +215,7 @@ class WebContext:
             return None
         if re.match(r'^[A-Za-z][0-9]{5}$', data[field]):
             return data[field]
-        raise ValueError
+        raise ValueError(f'data[{field}]=[{data[field]}] (licence number expected)')
 
     @staticmethod
     def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
@@ -231,7 +231,7 @@ class WebContext:
             return f'{value:.2f}'
         if isinstance(value, Path):
             return str(value)
-        raise ValueError
+        raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod
     def value_to_datetime_form_data(value: float | datetime | None) -> str | None:
@@ -241,7 +241,7 @@ class WebContext:
             return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%dT%H:%M')
         if isinstance(value, datetime):
             return datetime.strftime(value, '%Y-%m-%dT%H:%M')
-        raise ValueError
+        raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod
     def value_to_date_form_data(value: date | None) -> str | None:
