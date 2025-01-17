@@ -314,7 +314,7 @@
                                     {{ player.paid }}
                                 </td>
                             {% endif %}
-                            {% if 'tournament' in admin_players_filter_columns %}
+                            {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
                                 <td class="text-nowrap text-center">
                                     {% if player.has_real_pairings %}
                                         {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
