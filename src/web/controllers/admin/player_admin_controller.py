@@ -80,9 +80,7 @@ class PlayerAdminController(AbstractEventAdminController):
             last_name = last_name.upper()
         field: str = 'first_name'
         first_name: str = WebContext.form_data_to_str(data, field)
-        if not first_name:
-            errors[field] = _('Please enter the first name.')
-        else:
+        if first_name:
             first_name = string.capwords(first_name)
         field: str = 'date_of_birth'
         date_of_birth: date | None = WebContext.form_data_to_date(data, field)
