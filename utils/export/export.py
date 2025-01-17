@@ -197,7 +197,7 @@ def update_readme():
     readme: Path = Path('README.md')
     if not re.match(r'^\d+\.\d+\.\d+$', str(papi_web_config.version)):
         return
-    if (input_interactive(f'Do you want to update {readme} with version 2.4.19 (y/N)?').upper() or 'N') != 'Y':
+    if (input_interactive(f'Do you want to update {readme} with version {papi_web_config.version} (y/N)?').upper() or 'N') != 'Y':
         return
     print_interactive_info(f'Updating {readme}...')
     lines_before_comment: list[str] = []
@@ -233,6 +233,18 @@ def update_readme():
     print_interactive_success(f'Successfully updated {readme}.')
 
 
+def update_pyproject():
+    papi_web_config: PapiWebConfig = PapiWebConfig()
+    pyproject_file: Path = Path('pyproject.toml')
+    print_interactive_info(f'Updating {pyproject_file}...')
+    with open(pyproject_file, 'r') as file:
+        content = file.read()
+    content = re.sub(r'version\s*=\s*"[\d\\.]+"', f'version = "{papi_web_config.version}"', content)
+    with open(pyproject_file, 'w') as file:
+        file.write(content)
+    print_interactive_success(f'Successfully updated {pyproject_file}.')
+
+
 def main():
     clean(clean_zip=True)
     if not I18nUpdater(locales).check_trusted_locales():
@@ -246,6 +258,7 @@ def main():
     build_test()
     clean(clean_zip=False)
     update_readme()
+    update_pyproject()
 
 
 main()
