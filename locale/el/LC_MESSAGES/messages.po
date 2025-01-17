@@ -4787,6 +4787,15 @@ msgid "Edit the properties of the tournament."
 msgstr "Επεξεργασία των ιδιοτήτων του τουρνουά."
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation, fuzzy
+msgid "Export tournament to the TRF format."
+msgstr "Προσθέστε ένα τουρνουά στην εκδήλωση."
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Download"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
 #, ai_translation
 msgid "Clone the tournament."
 msgstr "Κλώνε το τουρνουά."

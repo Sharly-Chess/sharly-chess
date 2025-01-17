@@ -136,14 +136,15 @@
             {{ _('Edit') }}
         </button>
     </span>
-    <span {{ tooltip_attributes('info', 'Exporter le tournoi au format TRF.', 'top') }}>
+    <span {{ tooltip_attributes('info', _('Export tournament to the TRF format.'), 'top') }}>
         <form
                 method="get"
                 class="d-inline"
                 action="{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
         >
             <button type="submit" class="btn btn-sm btn-primary p-1 text-nowrap">
-                <i class="bi-download"></i> Télécharger
+                <i class="bi-download"></i>
+                {{ _('Download') }}
             </button>
         </form>
     </span>

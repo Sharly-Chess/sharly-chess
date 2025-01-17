@@ -4787,6 +4787,15 @@ msgid "Edit the properties of the tournament."
 msgstr "Bearbeiten Sie die Eigenschaften des Turniers."
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation, fuzzy
+msgid "Export tournament to the TRF format."
+msgstr "Fügen Sie dem Event ein Turnier hinzu."
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Download"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
 #, ai_translation
 msgid "Clone the tournament."
 msgstr "Klonen Sie das Turnier."

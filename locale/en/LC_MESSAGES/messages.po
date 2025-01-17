@@ -3964,6 +3964,14 @@ msgid "Edit the properties of the tournament."
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html
+msgid "Export tournament to the TRF format."
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Download"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
 msgid "Clone the tournament."
 msgstr ""
 
