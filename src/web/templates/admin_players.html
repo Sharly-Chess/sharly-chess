@@ -38,15 +38,15 @@
         <table class="table table-striped table-sm table-hover border-black w-100 bg-light mx-auto justify-content-center">
             <thead class="table-dark position-sticky top-0 z-2">
                 <tr>
-                    <th scope="col" class="text-nowrap text-start w-1" colspan="2">
+                    <th scope="col" class="text-nowrap text-start w-1">
                         <i
-                                class="bi-x-circle btn btn-dark p-0 m-0"
+                                class="bi-x-circle btn btn-dark py-0 ps-1 pe-0 m-0"
                                 hx-get="{{ url }}"
                                 hx-vals='{"admin_players_clear_filters": "1"}'
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 {{ tooltip_attributes('info', _('Clear all the filters.'), 'top') }}
-                        ></i> {{ admin_players|length }}/{{admin_event.players_number}}
+                        ></i>
                     </th>
                     {% if 'check_in' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
@@ -60,6 +60,23 @@
                     <th scope="col" class="text-nowrap">
                         {{ _('Name *** NAME COLUMN HEADER FOR PLAYERS') }}
                         {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'alpha', admin_players_sort) }}
+                        <input
+                                type="text"
+                                name="admin_players_filter_name"
+                                class="admin-players-filter-name p-0"
+                                hx-get="{{ url }}"
+                                hx-swap="multi:#players-table-body,#players-table-counters"
+                                hx-trigger="keyup changed delay:1s"
+                                hx-indicator="#please-wait"
+                                value="{{ admin_players_filter_name }}"
+                        />
+                        <i
+                                class="bi-x-circle btn btn-dark p-0 m-0"
+                                hx-get="{{ url }}"
+                                hx-vals='{"admin_players_filter_name": ""}'
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                        ></i>
                     </th>
                     <th scope="col" class="text-nowrap text-center">
                         {{ _('Elo *** ELO COLUMN HEADER FOR PLAYERS') }}
@@ -71,7 +88,7 @@
                             (1 if 'federation' in admin_players_filter_columns else 0) + (1 if 'league' in admin_players_filter_columns else 0) + (1 if 'club' in admin_players_filter_columns else 0)
                         }}">
                             {{ _('Origin *** ORIGIN COLUMN HEADER FOR PLAYERS') }}
-                            {% if admin_players_federations|length > 1 %}
+                            {% if admin_players_clubs|length > 1 %}
                                 {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'origin', admin_players_sort) }}
                             {% endif %}
                             {% if admin_players_federations|length > 1 %}
@@ -83,6 +100,24 @@
                             {% if admin_players_clubs|length > 1 %}
                                 {% include 'admin_players/admin_players_filter_clubs.html' %}
                             {% endif %}
+                            <input
+                                    type="text"
+                                    name="admin_players_filter_origin"
+                                    class="admin-players-filter-origin p-0"
+                                    hx-get="{{ url }}"
+                                    hx-swap="multi:#players-table-body,#players-table-counters"
+                                    hx-trigger="keyup changed delay:1s"
+                                    preload
+                                    hx-indicator="#please-wait"
+                                    value="{{ admin_players_filter_origin }}"
+                            />
+                            <i
+                                    class="bi-x-circle btn btn-dark p-0 m-0"
+                                    hx-get="{{ url }}"
+                                    hx-vals='{"admin_players_filter_origin": ""}'
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                            ></i>
                         </th>
                     {% endif %}
                     {% if 'yob' in admin_players_filter_columns %}
@@ -146,43 +181,19 @@
                     {% if 'history' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap"><i class="bi-0-square"></i><i class="bi-1-square-fill"></i></th>
                     {% endif %}
+                    <th scope="col" class="text-nowrap text-end w-1">
+                        <span id="players-table-counters" class="pe-1">
+                            {{ admin_players|length }}/{{admin_event.players_number}}
+                        </span>
+                    </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="players-table-body">
                 {% if admin_players %}
                     {% for player in admin_players %}
                         <tr>
                             <th scope="row" class="text-nowrap text-end w-1">
                                 {{ loop.index }}
-                            </th>
-                            <th scope="row" class="text-nowrap w-1">
-                                <span class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
-                                        <i class="bi-three-dots"></i>
-                                    </button>
-                                    <ul class="dropdown-menu players-player-actions p-0" >
-                                        <li
-                                            class="dropdown-item btn py-0 px-1"
-                                            hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            {{ tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
-                                        >
-                                            <i class="bi-pencil-fill"></i> {{ _('Edit') }}
-                                        </li>
-                                        {% if not player.has_real_pairings %}
-                                            <li
-                                                class="dropdown-item py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
-                                                    hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                                    hx-target="body"
-                                                    hx-indicator="#please-wait"
-                                                    {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
-                                            >
-                                                <i class="bi-trash-fill"></i> {{ _('Delete') }}
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </span>
                             </th>
                             {% if 'check_in' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center">
@@ -371,6 +382,35 @@
                                     {{ player_history(player) }}
                                 </td>
                             {% endif %}
+                            <th scope="row" class="text-nowrap text-end w-1">
+                                <span class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                                        <i class="bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu players-player-actions p-0" >
+                                        <li
+                                            class="dropdown-item btn py-0 px-1"
+                                            hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            {{ tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
+                                        >
+                                            <i class="bi-pencil-fill"></i> {{ _('Edit') }}
+                                        </li>
+                                        {% if not player.has_real_pairings %}
+                                            <li
+                                                class="dropdown-item py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
+                                                    hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                    {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
+                                            >
+                                                <i class="bi-trash-fill"></i> {{ _('Delete') }}
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </span>
+                            </th>
                         </tr>
                     {% endfor %}
                 {% else %}
