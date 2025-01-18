@@ -80,9 +80,7 @@ class PlayerAdminController(AbstractEventAdminController):
             last_name = last_name.upper()
         field: str = 'first_name'
         first_name: str = WebContext.form_data_to_str(data, field)
-        if not first_name:
-            errors[field] = _('Please enter the first name.')
-        else:
+        if first_name:
             first_name = string.capwords(first_name)
         field: str = 'date_of_birth'
         date_of_birth: date | None = WebContext.form_data_to_date(data, field)
@@ -391,20 +389,6 @@ class PlayerAdminController(AbstractEventAdminController):
         event_loader: EventLoader = EventLoader.get(request=request)
         event_loader.clear_cache(event_uniq_id)
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
-
-    """
-    @post(
-        path='/admin/tournament-create/{event_uniq_id:str}',
-        name='admin-tournament-create'
-    )
-    async def htmx_admin_tournament_create(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
-            event_uniq_id: str,
-    ) -> Template | ClientRedirect:
-        return self._admin_tournament_update(
-            request, event_uniq_id=event_uniq_id, action='create', tournament_id=None, data=data)
-    """
 
     @patch(
         path='/admin/player-move/{event_uniq_id:str}/{player_id:int}/{tournament_id:int}',

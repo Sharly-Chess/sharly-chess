@@ -15,6 +15,7 @@ Les contributeur·ices de Papi-web sont les personnes qui ont contribué à une 
 - Sammy PLAT ([Amaras](https://github.com/Amaras))
 - Adrien AVENIA ([adrienave](https://github.com/adrienave))
 - Timothy ARMES ([timothyarmes](https://github.com/timothyarmes))
+- Youri AUBRY ([molrn](https://github.com/molrn))
 
 Depuis la version 2.0, le code source est ouvert aux contributions sur GitHub, il ne tient qu'à vous de figurer sur la liste des contributeur·ices !
 

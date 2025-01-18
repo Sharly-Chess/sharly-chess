@@ -197,12 +197,3 @@
 | `message_default`       | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Booléen :<br/>- `1` : le message d'alerte de l'évènement est utilisé (sauf si un message est défini pour les écrans) ;<br/>- `0` : le message d'alerte des écrans de l'écran rotatif est utilisé en remplacement de celui de l'évènement. |
 | `message_text`          | `TEXT`    |                                            | Le texte du message d'alerte de l'écran (par défaut aucun message d'alerte n'est affiché).                                                                                                                                                |
 
-### table `skipped_round` (forfaits et byes)
-
-| Champ              | Type      | Contrainte                                 | Description                                                                     |
-|--------------------|-----------|--------------------------------------------|---------------------------------------------------------------------------------|
-| `id`               | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | L'identifiant.                                                                  |
-| `tournament_id`    | `TEXT`    | NOT NULL<br/>REFERENCES `tournament`(`id`) | L'identifiant du tournoi.                                                       |
-| `round`            | `INTEGER` | NOT NULL                                   | Le numéro de la ronde.                                                          |
-| `papi_player_id`   | `INTEGER` | NOT NULL                                   | Lu numéro du·de la joueur·euse dans le fichier Papi.                            |
-| `score`            | `FLOAT`   | NOT NULL                                   | Le score :<br/>- `0` : forfait ;<br/>- `0.5` : bye ;<br/>- `1`: bye à un point. |

@@ -22,7 +22,7 @@ from data.board import Board
 from data.result import Result as DataResult
 from data.util import Result as UtilResult
 from database.store import StoredTournament, StoredEvent, StoredChessEvent, StoredTimer, StoredTimerHour, \
-    StoredFamily, StoredIllegalMove, StoredResult, StoredRotator, StoredScreenSet, StoredScreen, StoredSkippedRound
+    StoredFamily, StoredIllegalMove, StoredResult, StoredRotator, StoredScreenSet, StoredScreen
 
 logger: Logger = get_logger()
 
@@ -671,12 +671,12 @@ class EventDatabase(SQLiteDatabase):
 
     def load_stored_event(self) -> StoredEvent:
         stored_event: StoredEvent = self._get_stored_event()
-        stored_event.stored_chessevents = self.load_stored_chessevents()
-        stored_event.stored_tournaments = self.load_stored_tournaments()
-        stored_event.stored_timers = self.load_stored_timers()
-        stored_event.stored_families = self.load_stored_families()
-        stored_event.stored_screens = self.load_stored_screens()
-        stored_event.stored_rotators = self.load_stored_rotators()
+        stored_event.stored_chessevents = list(self.load_stored_chessevents())
+        stored_event.stored_tournaments = list(self.load_stored_tournaments())
+        stored_event.stored_timers = list(self.load_stored_timers())
+        stored_event.stored_families = list(self.load_stored_families())
+        stored_event.stored_screens = list(self.load_stored_screens())
+        stored_event.stored_rotators = list(self.load_stored_rotators())
         return stored_event
 
     @property
@@ -694,74 +694,86 @@ class EventDatabase(SQLiteDatabase):
         self._version = version
 
     def _upgrade(self):
-        target_version: Version = Version('2.4.2')
-        if self.version.public in ['2.4.0', '2.4.1', ]:
-            self._execute('ALTER TABLE `screen` ADD `results_max_age` INTEGER')
-            self._execute('ALTER TABLE `info` DROP COLUMN `allow_results_deletion_on_input_screens`')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.4')
-        if self.version.public in ['2.4.2', '2.4.3', ]:
-            self._execute('ALTER TABLE `screen` ADD `input_exit_button` INTEGER')
-            self._execute('ALTER TABLE `family` ADD `input_exit_button` INTEGER')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.5')
-        if self.version.public in ['2.4.4', ]:
-            self._execute('ALTER TABLE `rotator` DROP COLUMN `show_menus`')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.8')
-        if self.version.public in ['2.4.5', '2.4.6', '2.4.7', ]:
-            self._execute('ALTER TABLE `info` ADD `hide_background_image` INTEGER')
-            self._execute(
-                'UPDATE `info` SET `hide_background_image` = ?',
-                (1 if PapiWebConfig.default_hide_background_image else 0, ))
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.12')
-        if self.version.public in ['2.4.8', '2.4.9', '2.4.10', '2.4.11', ]:
-            self._execute('ALTER TABLE `info` ADD `rules` TEXT')
-            self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.13')
-        if self.version.public in ['2.4.12', ]:
-            self._execute('ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT')
-            self._execute('UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.16')
-        if self.version.public in ['2.4.13', '2.4.14', '2.4.15', ]:
-            self._execute('ALTER TABLE `info` ADD `message_text` TEXT')
-            self._execute('ALTER TABLE `info` ADD `message_color` TEXT')
-            self._execute('ALTER TABLE `info` ADD `message_background_color` TEXT')
-            self._execute('ALTER TABLE `screen` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
-            self._execute('ALTER TABLE `screen` ADD `message_text` TEXT')
-            self._execute('ALTER TABLE `family` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
-            self._execute('ALTER TABLE `family` ADD `message_text` TEXT')
-            self._execute('ALTER TABLE `rotator` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
-            self._execute('ALTER TABLE `rotator` ADD `message_text` TEXT')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.19')
-        if self.version.public in ['2.4.16', '2.4.17', '2.4.18', ]:
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.20')
-        if self.version.public in ['2.4.19', ]:
-            self._execute('ALTER TABLE `tournament` ADD `check_in_open` INTEGER NOT NULL DEFAULT 0')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+        target_version: Version = Version('2.4.0')
+        while True:
+            match self.version.public:
+                case '2.4.0' | '2.4.1':
+                    target_version: Version = Version('2.4.2')
+                    self._execute('ALTER TABLE `screen` ADD `results_max_age` INTEGER')
+                    self._execute('ALTER TABLE `info` DROP COLUMN `allow_results_deletion_on_input_screens`')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.2' | '2.4.3':
+                    target_version = Version('2.4.4')
+                    self._execute('ALTER TABLE `screen` ADD `input_exit_button` INTEGER')
+                    self._execute('ALTER TABLE `family` ADD `input_exit_button` INTEGER')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.4':
+                    target_version = Version('2.4.5')
+                    self._execute('ALTER TABLE `rotator` DROP COLUMN `show_menus`')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.5' | '2.4.6' | '2.4.7':
+                    target_version = Version('2.4.8')
+                    self._execute('ALTER TABLE `info` ADD `hide_background_image` INTEGER')
+                    self._execute(
+                        'UPDATE `info` SET `hide_background_image` = ?',
+                        (1 if PapiWebConfig.default_hide_background_image else 0,))
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.8' | '2.4.9' | '2.4.10' | '2.4.11':
+                    target_version = Version('2.4.12')
+                    self._execute('ALTER TABLE `info` ADD `rules` TEXT')
+                    self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.12':
+                    target_version = Version('2.4.13')
+                    self._execute('ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT')
+                    self._execute('UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.13' | '2.4.14' | '2.4.15':
+                    target_version = Version('2.4.16')
+                    self._execute('ALTER TABLE `info` ADD `message_text` TEXT')
+                    self._execute('ALTER TABLE `info` ADD `message_color` TEXT')
+                    self._execute('ALTER TABLE `info` ADD `message_background_color` TEXT')
+                    self._execute('ALTER TABLE `screen` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+                    self._execute('ALTER TABLE `screen` ADD `message_text` TEXT')
+                    self._execute('ALTER TABLE `family` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+                    self._execute('ALTER TABLE `family` ADD `message_text` TEXT')
+                    self._execute('ALTER TABLE `rotator` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+                    self._execute('ALTER TABLE `rotator` ADD `message_text` TEXT')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.16' | '2.4.17' | '2.4.18':
+                    target_version = Version('2.4.19')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.19':
+                    target_version = Version('2.4.20')
+                    self._execute('ALTER TABLE `tournament` ADD `check_in_open` INTEGER NOT NULL DEFAULT 0')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                # TODO uncomment this for version 2.4.21
+                #case '2.4.20':
+                    #target_version = Version('2.4.21')
+                    #self._execute('DROP TABLE `skipped_round`')
+                    #self.set_version(target_version)
+                    #self.commit()
+                    #logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case _:
+                    break
         if self.version == target_version:
             logger.info(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
             return
@@ -830,12 +842,12 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_chessevent(row)
         return None
 
-    def load_stored_chessevents(self) -> list[StoredChessEvent]:
+    def load_stored_chessevents(self) -> Iterator[StoredChessEvent]:
         self._execute(
             'SELECT * FROM `chessevent` ORDER BY `uniq_id`',
             (),
         )
-        return [self._row_to_stored_chessevent(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_chessevent, self._fetchall())
 
     def _write_stored_chessevent(
             self, stored_chessevent: StoredChessEvent,
@@ -929,12 +941,12 @@ class EventDatabase(SQLiteDatabase):
                 highest_round = max(highest_round, int(row['uniq_id']))
         return highest_round + 1
 
-    def load_stored_timer_hours(self, timer_id: int) -> list[StoredTimerHour]:
+    def load_stored_timer_hours(self, timer_id: int) -> Iterator[StoredTimerHour]:
         self._execute(
             'SELECT * FROM `timer_hour` WHERE `timer_id` = ? ORDER BY `order`',
             (timer_id, ),
         )
-        return [self._row_to_stored_timer_hour(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_timer_hour, self._fetchall())
 
     def _write_stored_timer_hour(
             self, stored_timer_hour: StoredTimerHour,
@@ -1061,21 +1073,16 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_timer(row)
         return None
 
-    def load_stored_timer(self, timer_id: int) -> StoredTimer:
-        stored_timer: StoredTimer
-        if stored_timer := self.get_stored_timer(timer_id):
-            stored_timer.stored_timer_hours = self.load_stored_timer_hours(stored_timer.id)
-        return stored_timer
-
-    def get_stored_timer_ids(self) -> list[int]:
+    def get_stored_timer_ids(self) -> Iterator[int]:
         self._execute('SELECT `id` FROM `timer` ORDER BY `uniq_id`', (), )
-        return [row['id'] for row in self._fetchall()]
+        for row in self._fetchall():
+            yield row['id']
 
-    def load_stored_timers(self) -> list[StoredTimer]:
-        stored_timers: list[StoredTimer] = [self.get_stored_timer(id) for id in self.get_stored_timer_ids()]
-        for stored_timer in stored_timers:
-            stored_timer.stored_timer_hours = self.load_stored_timer_hours(stored_timer.id)
-        return stored_timers
+    def load_stored_timers(self) -> Iterator[StoredTimer]:
+        for id in self.get_stored_timer_ids():
+            stored_timer: StoredTimer = self.get_stored_timer(id)
+            stored_timer.stored_timer_hours = list(self.load_stored_timer_hours(stored_timer.id))
+            yield stored_timer
 
     def _write_stored_timer(
             self, stored_timer: StoredTimer,
@@ -1128,50 +1135,6 @@ class EventDatabase(SQLiteDatabase):
 
     """
     ---------------------------------------------------------------------------------
-    Skipped rounds
-    ---------------------------------------------------------------------------------
-    """
-
-    @staticmethod
-    def _row_to_stored_skipped_round(row: dict[str, Any]) -> StoredSkippedRound:
-        return StoredSkippedRound(
-            id=row['id'],
-            tournament_id=row['tournament_id'],
-            round=row['round'],
-            papi_player_id=row['papi_player_id'],
-            score=row['score'],
-        )
-
-    def load_stored_skipped_rounds(self, tournament_id: int) -> list[StoredSkippedRound]:
-        self._execute(
-            'SELECT * FROM `skipped_round` WHERE `tournament_id` = ? ORDER BY `id`',
-            (tournament_id, ),
-        )
-        return [self._row_to_stored_skipped_round(row) for row in self._fetchall()]
-
-    def delete_tournament_stored_skipped_rounds(self, tournament_id: int):
-        self._execute(
-            'DELETE FROM `skipped_round` WHERE `tournament_id` = ?',
-            (tournament_id, ),
-        )
-
-    def add_player_stored_skipped_rounds(
-            self, tournament_id: int, papi_player_id: int, skipped_rounds: dict[int, float]
-    ):
-        if skipped_rounds:
-            for round, score in skipped_rounds.items():
-                self._execute(
-                    'INSERT INTO `skipped_round`('
-                    '    `tournament_id`, '
-                    '    `papi_player_id`, '
-                    '    `round`, '
-                    '    `score`'
-                    ') VALUES(?, ?, ?, ?)',
-                    (tournament_id, papi_player_id, round, score),
-                )
-
-    """
-    ---------------------------------------------------------------------------------
     StoredTournament
     ---------------------------------------------------------------------------------
     """
@@ -1194,14 +1157,17 @@ class EventDatabase(SQLiteDatabase):
             chessevent_id=row['chessevent_id'],
             chessevent_tournament_name=row['chessevent_tournament_name'],
             record_illegal_moves=row['record_illegal_moves'],
-            rules=row['rules'],
-            check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
+            # needed to open event databases when version < 2.4.11 before checking the version
+            rules=row.get('rules', None),
+            # needed to open event databases when version < 2.4.20 before checking the version
+            check_in_open=cls.load_bool_from_database_field(row.get('check_in_open', None)),
             last_update=row['last_update'],
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
             last_ffe_upload=row['last_ffe_upload'],
-            last_ffe_rules_upload=row['last_ffe_rules_upload'],
+            # needed to open event databases when version < 2.4.11 before checking the version
+            last_ffe_rules_upload=row.get('last_ffe_rules_upload', 0.0),
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
         )
 
@@ -1215,15 +1181,12 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_tournament(row)
         return None
 
-    def load_stored_tournaments(self) -> list[StoredTournament]:
+    def load_stored_tournaments(self) -> Iterator[StoredTournament]:
         self._execute(
             'SELECT * FROM `tournament` ORDER BY `uniq_id`',
             (),
         )
-        stored_tournaments: list[StoredTournament] = [self._row_to_stored_tournament(row) for row in self._fetchall()]
-        for stored_tournament in stored_tournaments:
-            stored_tournament.stored_skipped_rounds = self.load_stored_skipped_rounds(stored_tournament.id)
-        return stored_tournaments
+        yield from map(self._row_to_stored_tournament, self._fetchall())
 
     def _write_stored_tournament(
             self, stored_tournament: StoredTournament,
@@ -1277,7 +1240,6 @@ class EventDatabase(SQLiteDatabase):
         return self._write_stored_tournament(stored_tournament)
 
     def delete_stored_tournament(self, tournament_id: int):
-        self.delete_tournament_stored_skipped_rounds(tournament_id)
         self._delete_tournament_stored_screens(tournament_id)
         self._delete_tournament_stored_families(tournament_id)
         self._delete_tournament_stored_illegal_moves(tournament_id)
@@ -1524,8 +1486,9 @@ class EventDatabase(SQLiteDatabase):
             last=row['last'],
             parts=row['parts'],
             number=row['number'],
-            message_default=cls.load_bool_from_database_field(row['message_default']),
-            message_text=row['message_text'],
+            # needed to open event databases when version < 2.4.16 before checking the version
+            message_default=cls.load_bool_from_database_field(row.get('message_default', None)),
+            message_text=row.get('message_text', None),
             last_update=row['last_update'],
         )
 
@@ -1539,12 +1502,12 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_family(row)
         return None
 
-    def load_stored_families(self) -> list[StoredFamily]:
+    def load_stored_families(self) -> Iterator[StoredFamily]:
         self._execute(
             'SELECT * FROM `family` ORDER BY `uniq_id`',
             (),
         )
-        return [self._row_to_stored_family(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_family, self._fetchall())
 
     def _write_stored_family(
             self, stored_family: StoredFamily,
@@ -1622,8 +1585,10 @@ class EventDatabase(SQLiteDatabase):
             results_tournament_ids=cls.load_json_from_database_field(row['results_tournament_ids']),
             background_image=row['background_image'],
             background_color=row['background_color'],
-            message_default=cls.load_bool_from_database_field(row['message_default']),
-            message_text=row['message_text'],
+            # needed to open event databases when version < 2.4.16 before checking the version
+            message_default=cls.load_bool_from_database_field(row.get('message_default', None)),
+            # needed to open event databases when version < 2.4.16 before checking the version
+            message_text=row.get('message_text', None),
             last_update=row['last_update'],
         )
 
@@ -1637,21 +1602,15 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_screen(row)
         return None
 
-    def load_stored_screen(self, screen_id: int) -> StoredScreen:
-        stored_screen: StoredScreen
-        if stored_screen := self.get_stored_screen(screen_id):
-            stored_screen.stored_screen_sets = self.load_stored_screen_sets(stored_screen.id)
-        return stored_screen
-
-    def load_stored_screens(self) -> list[StoredScreen]:
+    def load_stored_screens(self) -> Iterator[StoredScreen]:
         self._execute(
             'SELECT * FROM `screen` ORDER BY `uniq_id`',
             (),
         )
-        stored_screens: list[StoredScreen] = [self._row_to_stored_screen(row) for row in self._fetchall()]
-        for stored_screen in stored_screens:
-            stored_screen.stored_screen_sets = self.load_stored_screen_sets(stored_screen.id)
-        return stored_screens
+        for row in self._fetchall():
+            stored_screen: StoredScreen = self._row_to_stored_screen(row)
+            stored_screen.stored_screen_sets = list(self.load_stored_screen_sets(stored_screen.id))
+            yield stored_screen
 
     def _set_stored_screen_last_update(self, screen_id: int):
         self._execute(
@@ -1768,12 +1727,12 @@ class EventDatabase(SQLiteDatabase):
         row: dict[str, Any] = self._fetchone()
         return (row['order_max'] if row['order_max'] else 0) + 1
 
-    def load_stored_screen_sets(self, screen_id: int) -> list[StoredScreenSet]:
+    def load_stored_screen_sets(self, screen_id: int) -> Iterator[StoredScreenSet]:
         self._execute(
             'SELECT * FROM `screen_set` WHERE `screen_id` = ? ORDER BY `order`',
             (screen_id, ),
         )
-        return [self._row_to_stored_screen_set(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_screen_set, self._fetchall())
 
     def reorder_stored_screen_sets(
             self, screen_id: int, screen_set_ids: list[int],
@@ -1873,8 +1832,9 @@ class EventDatabase(SQLiteDatabase):
             uniq_id=row['uniq_id'],
             public=cls.load_bool_from_database_field(row['public']),
             delay=row['delay'],
-            message_default=cls.load_bool_from_database_field(row['message_default']),
-            message_text=row['message_text'],
+            # needed to open event databases when version < 2.4.16 before checking the version
+            message_default=cls.load_bool_from_database_field(row.get('message_default', None)),
+            message_text=row.get('message_text', None),
             screen_ids=cls.load_json_from_database_field(row['screen_ids']),
             family_ids=cls.load_json_from_database_field(row['family_ids']),
         )
@@ -1889,12 +1849,12 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_rotator(row)
         return None
 
-    def load_stored_rotators(self) -> list[StoredRotator]:
+    def load_stored_rotators(self) -> Iterator[StoredRotator]:
         self._execute(
             'SELECT * FROM `rotator` ORDER BY `uniq_id`',
             (),
         )
-        return [self._row_to_stored_rotator(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_rotator, self._fetchall())
 
     def _write_stored_rotator(
             self, stored_rotator: StoredRotator,

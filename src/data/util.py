@@ -1,6 +1,6 @@
 """A file grouping all the "utility" classes/enum: Result, Color, PlayerTitle,
 PlayerSex, TournamentPairing, TournamentRating"""
-
+from datetime import datetime
 from enum import Enum, StrEnum, IntEnum, auto
 from itertools import islice
 from logging import Logger
@@ -497,7 +497,7 @@ class PlayerGender(IntEnum):
     MALE = 2
 
     @classmethod
-    def values(cls) -> tuple[int]:
+    def values(cls) -> tuple[int, ...]:
         return tuple(item.value for item in cls)
 
     @classmethod
@@ -621,9 +621,9 @@ class PlayerCategory(IntEnum):
     U16 = 5
     U18 = 6
     U20 = 7
-    Sen = 8
-    Sep = 9
-    Vet = 10
+    O20 = 8
+    O50 = 9
+    O65 = 10
 
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
@@ -645,11 +645,11 @@ class PlayerCategory(IntEnum):
             case 'Jun':
                 return cls.U20
             case 'Sen':
-                return cls.Sen
+                return cls.O20
             case 'Sep':
-                return cls.Sep
+                return cls.O50
             case 'Vet':
-                return cls.Vet
+                return cls.O65
             case _:
                 raise ValueError(f'Unknown value: {value}')
 
@@ -672,42 +672,101 @@ class PlayerCategory(IntEnum):
                 return 'Cad'
             case PlayerCategory.U20:
                 return 'Jun'
-            case PlayerCategory.Sen:
+            case PlayerCategory.O20:
                 return 'Sen'
-            case PlayerCategory.Sep:
+            case PlayerCategory.O50:
                 return 'Sep'
-            case PlayerCategory.Vet:
+            case PlayerCategory.O65:
                 return 'Vet'
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
-    def __str__(self) -> str:
-        # TODO Translate this (if used)!
+    @property
+    def short_name(self) -> str:
         match self:
             case PlayerCategory.NONE:
                 return ''
             case PlayerCategory.U8:
-                return 'U8'
+                return _('U8')
             case PlayerCategory.U10:
-                return 'U10'
+                return _('U10')
             case PlayerCategory.U12:
-                return 'U12'
+                return _('U12')
             case PlayerCategory.U14:
-                return 'U14'
+                return _('U14')
             case PlayerCategory.U16:
-                return 'U16'
+                return _('U16')
             case PlayerCategory.U18:
-                return 'U18'
+                return _('U18')
             case PlayerCategory.U20:
-                return 'U20'
-            case PlayerCategory.Sen:
-                return 'Sen'
-            case PlayerCategory.Sep:
-                return 'Sep'
-            case PlayerCategory.Vet:
-                return 'Vet'
+                return _('U20')
+            case PlayerCategory.O20:
+                return _('20+')
+            case PlayerCategory.O50:
+                return _('50+')
+            case PlayerCategory.O65:
+                return _('65+')
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def name(self) -> str:
+        match self:
+            case PlayerCategory.NONE:
+                return _('No category')
+            case PlayerCategory.U8:
+                return _('Under 8')
+            case PlayerCategory.U10:
+                return _('Under 10')
+            case PlayerCategory.U12:
+                return _('Under 12')
+            case PlayerCategory.U14:
+                return _('Under 14')
+            case PlayerCategory.U16:
+                return _('Under 16')
+            case PlayerCategory.U18:
+                return _('Under 18')
+            case PlayerCategory.U20:
+                return _('Under 20')
+            case PlayerCategory.O20:
+                return _('Over 20')
+            case PlayerCategory.O50:
+                return _('Over 50')
+            case PlayerCategory.O65:
+                return _('Over 65')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @staticmethod
+    def from_year_of_birth(year_of_birth: int | None) -> 'PlayerCategory':
+        if not year_of_birth:
+            return PlayerCategory.NONE
+        now: datetime = datetime.now()
+        ref_year: int = now.year if now.month < 9 else now.year + 1
+        age: int = ref_year - year_of_birth
+        if age < 8:
+            return PlayerCategory.U8
+        elif age < 10:
+            return PlayerCategory.U10
+        elif age < 12:
+            return PlayerCategory.U12
+        elif age < 14:
+            return PlayerCategory.U14
+        elif age < 16:
+            return PlayerCategory.U16
+        elif age < 18:
+            return PlayerCategory.U18
+        elif age < 20:
+            return PlayerCategory.U20
+        elif age < 50:
+            return PlayerCategory.O20
+        elif age < 65:
+            return PlayerCategory.O50
+        else:
+            return PlayerCategory.O65
+
+    def __str__(self) -> str:
+        return self.short_name
 
 
 class PlayerRatingType(IntEnum):
