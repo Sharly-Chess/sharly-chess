@@ -694,80 +694,82 @@ class EventDatabase(SQLiteDatabase):
         self._version = version
 
     def _upgrade(self):
-        target_version: Version = Version('2.4.2')
-        if self.version.public in ['2.4.0', '2.4.1', ]:
-            self._execute('ALTER TABLE `screen` ADD `results_max_age` INTEGER')
-            self._execute('ALTER TABLE `info` DROP COLUMN `allow_results_deletion_on_input_screens`')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.4')
-        if self.version.public in ['2.4.2', '2.4.3', ]:
-            self._execute('ALTER TABLE `screen` ADD `input_exit_button` INTEGER')
-            self._execute('ALTER TABLE `family` ADD `input_exit_button` INTEGER')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.5')
-        if self.version.public in ['2.4.4', ]:
-            self._execute('ALTER TABLE `rotator` DROP COLUMN `show_menus`')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.8')
-        if self.version.public in ['2.4.5', '2.4.6', '2.4.7', ]:
-            self._execute('ALTER TABLE `info` ADD `hide_background_image` INTEGER')
-            self._execute(
-                'UPDATE `info` SET `hide_background_image` = ?',
-                (1 if PapiWebConfig.default_hide_background_image else 0, ))
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.12')
-        if self.version.public in ['2.4.8', '2.4.9', '2.4.10', '2.4.11', ]:
-            self._execute('ALTER TABLE `info` ADD `rules` TEXT')
-            self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.13')
-        if self.version.public in ['2.4.12', ]:
-            self._execute('ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT')
-            self._execute('UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.16')
-        if self.version.public in ['2.4.13', '2.4.14', '2.4.15', ]:
-            self._execute('ALTER TABLE `info` ADD `message_text` TEXT')
-            self._execute('ALTER TABLE `info` ADD `message_color` TEXT')
-            self._execute('ALTER TABLE `info` ADD `message_background_color` TEXT')
-            self._execute('ALTER TABLE `screen` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
-            self._execute('ALTER TABLE `screen` ADD `message_text` TEXT')
-            self._execute('ALTER TABLE `family` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
-            self._execute('ALTER TABLE `family` ADD `message_text` TEXT')
-            self._execute('ALTER TABLE `rotator` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
-            self._execute('ALTER TABLE `rotator` ADD `message_text` TEXT')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.19')
-        if self.version.public in ['2.4.16', '2.4.17', '2.4.18', ]:
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.20')
-        if self.version.public in ['2.4.19', ]:
-            self._execute('ALTER TABLE `tournament` ADD `check_in_open` INTEGER NOT NULL DEFAULT 0')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-        target_version = Version('2.4.21')
-        if self.version.public in ['2.4.20', ]:
-            self._execute('DROP TABLE `skipped_round`')
-            self.set_version(target_version)
-            self.commit()
-            logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+        target_version: Version = Version('2.4.0')
+        match self.version.public:
+            case '2.4.0' | '2.4.1':
+                target_version: Version = Version('2.4.2')
+                self._execute('ALTER TABLE `screen` ADD `results_max_age` INTEGER')
+                self._execute('ALTER TABLE `info` DROP COLUMN `allow_results_deletion_on_input_screens`')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.2' | '2.4.3':
+                target_version = Version('2.4.4')
+                self._execute('ALTER TABLE `screen` ADD `input_exit_button` INTEGER')
+                self._execute('ALTER TABLE `family` ADD `input_exit_button` INTEGER')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.4':
+                target_version = Version('2.4.5')
+                self._execute('ALTER TABLE `rotator` DROP COLUMN `show_menus`')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.5' | '2.4.6' | '2.4.7':
+                target_version = Version('2.4.8')
+                self._execute('ALTER TABLE `info` ADD `hide_background_image` INTEGER')
+                self._execute(
+                    'UPDATE `info` SET `hide_background_image` = ?',
+                    (1 if PapiWebConfig.default_hide_background_image else 0,))
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.8' | '2.4.9' | '2.4.10' | '2.4.11':
+                target_version = Version('2.4.12')
+                self._execute('ALTER TABLE `info` ADD `rules` TEXT')
+                self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.12':
+                target_version = Version('2.4.13')
+                self._execute('ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT')
+                self._execute('UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.13' | '2.4.14' | '2.4.15':
+                target_version = Version('2.4.16')
+                self._execute('ALTER TABLE `info` ADD `message_text` TEXT')
+                self._execute('ALTER TABLE `info` ADD `message_color` TEXT')
+                self._execute('ALTER TABLE `info` ADD `message_background_color` TEXT')
+                self._execute('ALTER TABLE `screen` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+                self._execute('ALTER TABLE `screen` ADD `message_text` TEXT')
+                self._execute('ALTER TABLE `family` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+                self._execute('ALTER TABLE `family` ADD `message_text` TEXT')
+                self._execute('ALTER TABLE `rotator` ADD `message_default` INTEGER NOT NULL DEFAULT 1')
+                self._execute('ALTER TABLE `rotator` ADD `message_text` TEXT')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.16' | '2.4.17' | '2.4.18':
+                target_version = Version('2.4.19')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.19':
+                target_version = Version('2.4.20')
+                self._execute('ALTER TABLE `tournament` ADD `check_in_open` INTEGER NOT NULL DEFAULT 0')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+            case '2.4.20':
+                target_version = Version('2.4.21')
+                self._execute('DROP TABLE `skipped_round`')
+                self.set_version(target_version)
+                self.commit()
+                logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
         if self.version == target_version:
             logger.info(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
             return
@@ -1156,14 +1158,17 @@ class EventDatabase(SQLiteDatabase):
             chessevent_id=row['chessevent_id'],
             chessevent_tournament_name=row['chessevent_tournament_name'],
             record_illegal_moves=row['record_illegal_moves'],
-            rules=row['rules'],
-            check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
+            # needed to open event databases when version < 2.4.11 before checking the version
+            rules=row.get('rules', None),
+            # needed to open event databases when version < 2.4.20 before checking the version
+            check_in_open=cls.load_bool_from_database_field(row.get('check_in_open', None)),
             last_update=row['last_update'],
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
             last_ffe_upload=row['last_ffe_upload'],
-            last_ffe_rules_upload=row['last_ffe_rules_upload'],
+            # needed to open event databases when version < 2.4.11 before checking the version
+            last_ffe_rules_upload=row.get('last_ffe_rules_upload', 0.0),
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
         )
 
@@ -1580,8 +1585,10 @@ class EventDatabase(SQLiteDatabase):
             results_tournament_ids=cls.load_json_from_database_field(row['results_tournament_ids']),
             background_image=row['background_image'],
             background_color=row['background_color'],
-            message_default=cls.load_bool_from_database_field(row['message_default']),
-            message_text=row['message_text'],
+            # needed to open event databases when version < 2.4.16 before checking the version
+            message_default=cls.load_bool_from_database_field(row.get('message_default', None)),
+            # needed to open event databases when version < 2.4.16 before checking the version
+            message_text=row.get('message_text', None),
             last_update=row['last_update'],
         )
 
