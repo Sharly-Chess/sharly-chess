@@ -671,12 +671,12 @@ class EventDatabase(SQLiteDatabase):
 
     def load_stored_event(self) -> StoredEvent:
         stored_event: StoredEvent = self._get_stored_event()
-        stored_event.stored_chessevents = self.load_stored_chessevents()
-        stored_event.stored_tournaments = self.load_stored_tournaments()
-        stored_event.stored_timers = self.load_stored_timers()
-        stored_event.stored_families = self.load_stored_families()
-        stored_event.stored_screens = self.load_stored_screens()
-        stored_event.stored_rotators = self.load_stored_rotators()
+        stored_event.stored_chessevents = list(self.load_stored_chessevents())
+        stored_event.stored_tournaments = list(self.load_stored_tournaments())
+        stored_event.stored_timers = list(self.load_stored_timers())
+        stored_event.stored_families = list(self.load_stored_families())
+        stored_event.stored_screens = list(self.load_stored_screens())
+        stored_event.stored_rotators = list(self.load_stored_rotators())
         return stored_event
 
     @property
@@ -838,12 +838,12 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_chessevent(row)
         return None
 
-    def load_stored_chessevents(self) -> list[StoredChessEvent]:
+    def load_stored_chessevents(self) -> Iterator[StoredChessEvent]:
         self._execute(
             'SELECT * FROM `chessevent` ORDER BY `uniq_id`',
             (),
         )
-        return [self._row_to_stored_chessevent(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_chessevent, self._fetchall())
 
     def _write_stored_chessevent(
             self, stored_chessevent: StoredChessEvent,
@@ -937,12 +937,12 @@ class EventDatabase(SQLiteDatabase):
                 highest_round = max(highest_round, int(row['uniq_id']))
         return highest_round + 1
 
-    def load_stored_timer_hours(self, timer_id: int) -> list[StoredTimerHour]:
+    def load_stored_timer_hours(self, timer_id: int) -> Iterator[StoredTimerHour]:
         self._execute(
             'SELECT * FROM `timer_hour` WHERE `timer_id` = ? ORDER BY `order`',
             (timer_id, ),
         )
-        return [self._row_to_stored_timer_hour(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_timer_hour, self._fetchall())
 
     def _write_stored_timer_hour(
             self, stored_timer_hour: StoredTimerHour,
@@ -1069,21 +1069,16 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_timer(row)
         return None
 
-    def load_stored_timer(self, timer_id: int) -> StoredTimer:
-        stored_timer: StoredTimer
-        if stored_timer := self.get_stored_timer(timer_id):
-            stored_timer.stored_timer_hours = self.load_stored_timer_hours(stored_timer.id)
-        return stored_timer
-
-    def get_stored_timer_ids(self) -> list[int]:
+    def get_stored_timer_ids(self) -> Iterator[int]:
         self._execute('SELECT `id` FROM `timer` ORDER BY `uniq_id`', (), )
-        return [row['id'] for row in self._fetchall()]
+        for row in self._fetchall():
+            yield row['id']
 
-    def load_stored_timers(self) -> list[StoredTimer]:
-        stored_timers: list[StoredTimer] = [self.get_stored_timer(id) for id in self.get_stored_timer_ids()]
-        for stored_timer in stored_timers:
-            stored_timer.stored_timer_hours = self.load_stored_timer_hours(stored_timer.id)
-        return stored_timers
+    def load_stored_timers(self) -> Iterator[StoredTimer]:
+        for id in self.get_stored_timer_ids():
+            stored_timer: StoredTimer = self.get_stored_timer(id)
+            stored_timer.stored_timer_hours = list(self.load_stored_timer_hours(stored_timer.id))
+            yield stored_timer
 
     def _write_stored_timer(
             self, stored_timer: StoredTimer,
@@ -1182,12 +1177,12 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_tournament(row)
         return None
 
-    def load_stored_tournaments(self) -> list[StoredTournament]:
+    def load_stored_tournaments(self) -> Iterator[StoredTournament]:
         self._execute(
             'SELECT * FROM `tournament` ORDER BY `uniq_id`',
             (),
         )
-        return [self._row_to_stored_tournament(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_tournament, self._fetchall())
 
     def _write_stored_tournament(
             self, stored_tournament: StoredTournament,
@@ -1502,12 +1497,12 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_family(row)
         return None
 
-    def load_stored_families(self) -> list[StoredFamily]:
+    def load_stored_families(self) -> Iterator[StoredFamily]:
         self._execute(
             'SELECT * FROM `family` ORDER BY `uniq_id`',
             (),
         )
-        return [self._row_to_stored_family(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_family, self._fetchall())
 
     def _write_stored_family(
             self, stored_family: StoredFamily,
@@ -1602,21 +1597,15 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_screen(row)
         return None
 
-    def load_stored_screen(self, screen_id: int) -> StoredScreen:
-        stored_screen: StoredScreen
-        if stored_screen := self.get_stored_screen(screen_id):
-            stored_screen.stored_screen_sets = self.load_stored_screen_sets(stored_screen.id)
-        return stored_screen
-
-    def load_stored_screens(self) -> list[StoredScreen]:
+    def load_stored_screens(self) -> Iterator[StoredScreen]:
         self._execute(
             'SELECT * FROM `screen` ORDER BY `uniq_id`',
             (),
         )
-        stored_screens: list[StoredScreen] = [self._row_to_stored_screen(row) for row in self._fetchall()]
-        for stored_screen in stored_screens:
-            stored_screen.stored_screen_sets = self.load_stored_screen_sets(stored_screen.id)
-        return stored_screens
+        for row in self._fetchall():
+            stored_screen: StoredScreen = self._row_to_stored_screen(row)
+            stored_screen.stored_screen_sets = list(self.load_stored_screen_sets(stored_screen.id))
+            yield stored_screen
 
     def _set_stored_screen_last_update(self, screen_id: int):
         self._execute(
@@ -1733,12 +1722,12 @@ class EventDatabase(SQLiteDatabase):
         row: dict[str, Any] = self._fetchone()
         return (row['order_max'] if row['order_max'] else 0) + 1
 
-    def load_stored_screen_sets(self, screen_id: int) -> list[StoredScreenSet]:
+    def load_stored_screen_sets(self, screen_id: int) -> Iterator[StoredScreenSet]:
         self._execute(
             'SELECT * FROM `screen_set` WHERE `screen_id` = ? ORDER BY `order`',
             (screen_id, ),
         )
-        return [self._row_to_stored_screen_set(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_screen_set, self._fetchall())
 
     def reorder_stored_screen_sets(
             self, screen_id: int, screen_set_ids: list[int],
@@ -1854,12 +1843,12 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_rotator(row)
         return None
 
-    def load_stored_rotators(self) -> list[StoredRotator]:
+    def load_stored_rotators(self) -> Iterator[StoredRotator]:
         self._execute(
             'SELECT * FROM `rotator` ORDER BY `uniq_id`',
             (),
         )
-        return [self._row_to_stored_rotator(row) for row in self._fetchall()]
+        yield from map(self._row_to_stored_rotator, self._fetchall())
 
     def _write_stored_rotator(
             self, stored_rotator: StoredRotator,
