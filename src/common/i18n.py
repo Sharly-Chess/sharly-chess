@@ -1,4 +1,4 @@
-import gettext
+import gettext as gettext_lib
 import sys
 import threading
 from gettext import GNUTranslations
@@ -29,7 +29,7 @@ for l_entry in _locale_dir.iterdir():
     if l_entry.is_dir() and (l_entry / 'LC_MESSAGES' / 'messages.mo').is_file():
         l: str = l_entry.name
         try:
-            _all_translations[l] = gettext.translation('messages', _locale_dir, [l, ])
+            _all_translations[l] = gettext_lib.translation('messages', _locale_dir, [l, ])
             locales.append(l)
         except Exception as ex:
             logger.warning(f'Could not load locale [{l}]: {ex}')
@@ -123,7 +123,7 @@ def gettext(message: str, locale: str | None = None):
     if locales:
         return _all_translations[locale or get_locale()].gettext(message)
     else:
-        return gettext.gettext(message)
+        return gettext_lib.gettext(message)
 
 
 def _(message: str, locale: str | None = None):
@@ -136,4 +136,4 @@ def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
     if locales:
         return _all_translations[locale or get_locale()].ngettext(singular, plural, n)
     else:
-        return gettext.ngettext(singular, plural, n)
+        return gettext_lib.ngettext(singular, plural, n)
