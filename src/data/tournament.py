@@ -694,7 +694,7 @@ class Tournament:
                 # remove all the pairings (including non-played games)
                 data[f'Rd{round_:0>2}Adv'] = None
                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                data[f'Rd{round_:0>2}Cl'] = 'R' if round_ < self.current_round else 'F'
+                data[f'Rd{round_:0>2}Cl'] = 'F' if round_ < self.current_round else 'R'
             papi_database.write_player_dict(data)
             papi_database.commit()
         return player_papi_id
