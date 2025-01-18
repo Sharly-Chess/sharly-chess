@@ -14,9 +14,9 @@ from typing import Any
 
 from packaging.version import Version
 from requests import Response, get, request
-from requests.exceptions import ConnectionError, Timeout, RequestException, \
-    HTTPError  # pylint: disable=redefined-builtin
+from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
+from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger, configure_logger, input_interactive, print_interactive_input, \
     print_interactive_info, print_interactive_error, print_interactive_warning, print_interactive_success
@@ -446,7 +446,7 @@ class Engine:
                 logger.error(
                     _('Downloading failed with code [{code}].').format(code=response.status_code))
                 return False
-            zip_file = PapiWebConfig.tmp_dir / f'papi-web-{version}.zip'
+            zip_file = TMP_DIR / f'papi-web-{version}.zip'
             zip_file.write_bytes(response.content)
             print_interactive_info(_('File downloaded: [{zip_file}].').format(zip_file=zip_file))
             with zipfile.ZipFile(zip_file, 'r') as zip_ref:

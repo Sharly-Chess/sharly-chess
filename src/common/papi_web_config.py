@@ -2,7 +2,6 @@ import logging
 import platform
 import re
 import socket
-import sys
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
@@ -13,6 +12,7 @@ import pyodbc
 import uvicorn
 from packaging.version import Version
 
+from common import TMP_DIR, BASE_DIR
 from common.config_reader import ConfigReader
 from common.i18n import set_locale, default_locale, _, locale_localized_name, trusted_locales, untrusted_locales
 from common.logger import get_logger, configure_logger, print_interactive_error, print_interactive_input, \
@@ -30,11 +30,6 @@ class PapiWebConfig(metaclass=Singleton):
         3. The web port
         4. Whether a browser window opens
         5. The delay between FFE uploads."""
-
-    """ The temporary directory. """
-    tmp_dir: Path = Path('tmp')
-
-    base_dir: Path = Path(sys._MEIPASS) if getattr(sys, 'frozen', False) else Path(__file__).resolve().parents[2]
 
     """ The configuration file. """
     config_file: Path = Path('papi-web.ini')
@@ -58,6 +53,9 @@ class PapiWebConfig(metaclass=Singleton):
     }
 
     def __init__(self):
+        if not default_locale:
+            # This happens only for developers when no MO files are available
+            raise FileNotFoundError('No MO files found, please run i18n_update.')
         self._log_level: int | None = None
         self._web_host: str | None = None
         self._web_port: int | None = None
@@ -121,14 +119,9 @@ class PapiWebConfig(metaclass=Singleton):
                 self.save_locale_preference()
             # Once the language is set, make sure that important directories can be used
             try:
-                self.tmp_dir.mkdir(parents=True, exist_ok=True)
-            except PermissionError as pe:
-                logger.critical(f'Could not create directory [{self.tmp_dir.absolute()}]: {pe}')
-                raise pe
-            try:
                 PapiWebConfig.event_path.mkdir(parents=True, exist_ok=True)
             except PermissionError as pe:
-                logger.critical(f'Could not create directory [{self.tmp_dir.absolute()}]: {pe}')
+                logger.critical(f'Could not create directory [{TMP_DIR.absolute()}]: {pe}')
                 raise pe
             logger.debug('ODBC drivers found:')
             for driver in pyodbc.drivers():
@@ -317,7 +310,7 @@ class PapiWebConfig(metaclass=Singleton):
     custom_path: Path = Path().absolute() / 'custom'
 
     """ The path to the embedded custom files. """
-    embedded_custom_path: Path = base_dir / 'src/custom'
+    embedded_custom_path: Path = BASE_DIR / 'src/custom'
 
     """ The default path to the Papi files. """
     default_papi_path: Path = Path() / 'papi'
@@ -326,7 +319,7 @@ class PapiWebConfig(metaclass=Singleton):
     papi_ext: str = 'papi'
 
     """ The path to database source files (see below). """
-    _database_path: Path = base_dir / 'src/database'
+    _database_path: Path = BASE_DIR / 'src/database'
 
     """ The path to SQL files (used to create new event databases). """
     database_sql_path: Path = _database_path / 'sql'
@@ -345,17 +338,17 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ Other library versions, set manually and checked. """
     bootstrap_version: Version = Version('5.3.3')
-    assert (base_dir / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist').is_dir()
+    assert (BASE_DIR / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist').is_dir()
     bootstrap_icons_version: Version = Version('1.11.3')
-    assert (base_dir / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}').is_dir()
+    assert (BASE_DIR / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}').is_dir()
     htmx_version: Version = Version('1.9.12')
-    assert (base_dir / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
+    assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
     jquery_version: Version = Version('3.7.1')
-    assert (base_dir / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js').is_file()
+    assert (BASE_DIR / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js').is_file()
     sortable_version: Version = Version('1.15.2')
-    assert (base_dir / f'src/web/static/lib/sortable/sortable-{sortable_version}').is_dir()
+    assert (BASE_DIR / f'src/web/static/lib/sortable/sortable-{sortable_version}').is_dir()
     jstree_version: Version = Version('3.3.17')
-    assert (base_dir / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist').is_dir()
+    assert (BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist').is_dir()
 
     def _url(self, ip: str | None) -> str | None:
         """ Returns the URL of the application for the given IP. """

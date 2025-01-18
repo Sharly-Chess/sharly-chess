@@ -8,7 +8,8 @@ from string import capwords
 
 from babel import Locale
 
-from common import get_logger
+from common import get_logger, BASE_DIR, DEVEL_ENV
+from common.logger import print_interactive_error, print_interactive_warning, input_interactive
 
 logger: Logger = get_logger()
 
@@ -18,21 +19,38 @@ default_locale: str = 'en'
 
 
 """ The directory where to find the i18n files. """
-_locale_dir: Path = (
-        (Path(sys._MEIPASS) if getattr(sys, 'frozen', False) else Path(__file__).resolve().parents[2]) / "locale")
+_locale_dir: Path = BASE_DIR / "locale"
 
 
 """ Build a dict of all the translations with the available locales retrieved from the filesystem. """
 locales: list[str] = []
+locale_error: bool = False
 _all_translations: dict[str, GNUTranslations] = {}
 for l_entry in _locale_dir.iterdir():
-    if l_entry.is_dir() and (l_entry / 'LC_MESSAGES' / 'messages.mo').is_file():
-        l: str = l_entry.name
-        try:
-            _all_translations[l] = gettext_lib.translation('messages', _locale_dir, [l, ])
-            locales.append(l)
-        except Exception as ex:
-            logger.warning(f'Could not load locale [{l}]: {ex}')
+    if l_entry.is_dir():
+        mo_file: Path = l_entry / 'LC_MESSAGES' / 'messages.mo'
+        if mo_file.is_file():
+            l: str = l_entry.name
+            try:
+                _all_translations[l] = gettext_lib.translation('messages', _locale_dir, [l, ])
+                locales.append(l)
+                if DEVEL_ENV:
+                    # Check that the MO files are up-to-date.
+                    po_file: Path = mo_file.with_suffix('.po')
+                    if not po_file.is_file():
+                        print_interactive_warning(f'PO file [{po_file}] not found.')
+                    elif mo_file.lstat().st_mtime < po_file.lstat().st_mtime:
+                        print_interactive_warning(f'MO file [{po_file}] is out of date.')
+            except Exception as ex:
+                print_interactive_error(f'Could not load locale [{l}]: {ex}.')
+                locale_error = True
+                if not DEVEL_ENV:
+                    sys.exit()
+        else:
+            print_interactive_error(f'Invalid locale [{l_entry.name}], MO file [{mo_file}] not found.')
+            locale_error = True
+            if not DEVEL_ENV:
+                sys.exit()
 
 
 """ The translators (assigned to the trusted locales). """
@@ -49,48 +67,61 @@ untrusted_locales: list[str] = []
 
 # Considering the case when no translation is available is needed
 # when the compilation of the PO files failed and no MO files are available.
-if locales:
-    # Check that the default locale is present
-    assert default_locale in locales
-    """ The translators (assigned to the trusted locales). """
-    translators['en'] = [
-        {
-            'github_user': 'timothyarmes',
-            'name': 'Timothy ARMES',
-        },
-    ]
-    translators['fr']= [
-        {
-            'github_user': 'pascalaubry',
-            'name': 'Pascal AUBRY',
-        },
-        {
-            'github_user': 'Amaras',
-            'name': 'Sammy PLAT',
-        },
-    ]
-    """ Locales with translators assigned are considered trusted. """
-    trusted_locales = list(translators.keys())
-    """ Mark the untrusted locales as translated by an IA. """
-    translators |= {
-        locale: [
-            {
-                'github_user': None,
-                'name': 'AI (Opus-MT)',
-            },
-        ]
-        for locale in locales
-        if locale not in trusted_locales
-    }
-    """ Other as considered untrusted. """
-    untrusted_locales = list(set(locales) - set(trusted_locales))
-else:
+if not locales:
+    print_interactive_error('No locale found.')
+    locale_error = True
     default_locale = ''
+    if not DEVEL_ENV:
+        sys.exit()
+elif default_locale not in locales:
+    print_interactive_error(f'Default locale [{default_locale}] not found, defaults to [{locales[0]}].')
+    locale_error = True
+    default_locale = locales[0]
+    if not DEVEL_ENV:
+        sys.exit()
 
+""" The translators (assigned to the trusted locales). """
+translators['en'] = [
+    {
+        'github_user': 'timothyarmes',
+        'name': 'Timothy ARMES',
+    },
+]
+translators['fr']= [
+    {
+        'github_user': 'pascalaubry',
+        'name': 'Pascal AUBRY',
+    },
+    {
+        'github_user': 'Amaras',
+        'name': 'Sammy PLAT',
+    },
+]
+""" Locales with translators assigned are considered trusted. """
+trusted_locales = [locale for locale in translators if locale in locales]
+
+""" Mark the untrusted locales as translated by an IA. """
+translators |= {
+    locale: [
+        {
+            'github_user': None,
+            'name': 'AI (Opus-MT)',
+        },
+    ]
+    for locale in locales
+    if locale not in trusted_locales
+}
+""" Other as considered untrusted. """
+untrusted_locales = list(set(locales) - set(trusted_locales))
 
 """ Initialize the current thread with the default locale. """
 _thread_local_data = threading.local()
 
+if locale_error:
+    if Path(sys.argv[0]).name != 'i18n_update.py':
+        print_interactive_error(f'Errors were found while loading locales, you should run i18n_update.')
+        if (input_interactive(f'Do you still wish to continue (Y/n)? ') or 'Y') != 'Y':
+            sys.exit()
 
 def get_locale() -> str:
     try:

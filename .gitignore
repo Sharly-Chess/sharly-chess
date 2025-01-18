@@ -28,3 +28,4 @@ __pycache__/
 # Generated database files
 *.db
 /locale/*/LC_MESSAGES/messages.mo
+/locale/messages.pot
