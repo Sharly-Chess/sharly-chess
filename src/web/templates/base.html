@@ -17,6 +17,7 @@
             <script src="{{ url_for('static', file_path='/lib/htmx/htmx-1.9.12/htmx.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/htmx-1.9.12/ext/remove-me.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/htmx-1.9.12/ext/preload.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/htmx/htmx-1.9.12/ext/multi-swap.js') }}"></script>
             {# https://github.com/SortableJS/Sortable #}
             <script src="{{ url_for('static', file_path='/lib/sortable/sortable-1.15.2/Sortable.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/htmx-sortable.js') }}"></script>
@@ -29,7 +30,7 @@
         {% endif %}
     </head>
     <body
-            hx-ext="preload"
+            hx-ext="multi-swap,preload"
             hx-swap="transition:true"
     >
         <div id="messages" class="w-50 position-fixed top-0 end-0 m-2 z-2">

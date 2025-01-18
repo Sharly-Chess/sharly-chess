@@ -130,27 +130,27 @@
 |Add a player to the event.|Aggiungi un timer all'evento.|src/web/templates/admin_players.html:22|
 |Create a player|Crea un timer|src/web/templates/admin_players.html:31|
 |Clear all the filters.|tutti i giocatori|src/web/templates/admin_players.html:48|
-|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:73|
-|Cat \*\*\* CATEGORY COLUMN HEADER FOR PLAYERS|Nome|src/web/templates/admin_players.html:99|
-|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Pagato|src/web/templates/admin_players.html:125|
-|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:130|
-|Edit the player's properties.|Modifica le proprietà del timer.|src/web/templates/admin_players.html:169|
-|Remove the player from the event.|Aggiungi un timer all'evento.|src/web/templates/admin_players.html:179|
-|Tournament [%(tournament_uniq_id)s] is finished.|Il torneo [%(tournament_uniq_id)s] è finito.|src/web/templates/admin_players.html:192<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
-|Tournament [%(tournament_uniq_id)s] is playing.|Il torneo [%(tournament_uniq_id)s] sta giocando.|src/web/templates/admin_players.html:195<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
-|Check-in is closed for tournament [%(tournament_uniq_id)s].|Cancellazione del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:198|
-|Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Giocatore [%(last_name)s %(first_name)s] se perde per il round successivo nel torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:201|
-|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:210|
-|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:263|
-|No mail defined.|Nessun timer definito|src/web/templates/admin_players.html:265|
-|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:276|
-|No phone defined.|Nessun timer definito|src/web/templates/admin_players.html:278|
-|FIDE ID: %(fide_id)s (click to copy to the clipboard).|ID Fide: %(fide_id)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:297|
-|No FIDE ID.|Nessun timer definito|src/web/templates/admin_players.html:300|
-|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|Licenza FFE: %(ffe_licence_number)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:313|
-|Unknown FFE Licence type [%(ffe_licence)s].|Tipo di licenza FFE sconosciuto [%(ffe_licence)s]|src/web/templates/admin_players.html:317|
-|Change the player's tournament.|Clonate il torneo.|src/web/templates/admin_players.html:341|
-|No players.|Giocatori|src/web/templates/admin_players.html:385|
+|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:90|
+|Cat \*\*\* CATEGORY COLUMN HEADER FOR PLAYERS|Nome|src/web/templates/admin_players.html:134|
+|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Pagato|src/web/templates/admin_players.html:160|
+|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:165|
+|Tournament [%(tournament_uniq_id)s] is finished.|Il torneo [%(tournament_uniq_id)s] è finito.|src/web/templates/admin_players.html:203<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
+|Tournament [%(tournament_uniq_id)s] is playing.|Il torneo [%(tournament_uniq_id)s] sta giocando.|src/web/templates/admin_players.html:206<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
+|Check-in is closed for tournament [%(tournament_uniq_id)s].|Cancellazione del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:209|
+|Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Giocatore [%(last_name)s %(first_name)s] se perde per il round successivo nel torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:212|
+|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:221|
+|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:274|
+|No mail defined.|Nessun timer definito|src/web/templates/admin_players.html:276|
+|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:287|
+|No phone defined.|Nessun timer definito|src/web/templates/admin_players.html:289|
+|FIDE ID: %(fide_id)s (click to copy to the clipboard).|ID Fide: %(fide_id)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:308|
+|No FIDE ID.|Nessun timer definito|src/web/templates/admin_players.html:311|
+|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|Licenza FFE: %(ffe_licence_number)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:324|
+|Unknown FFE Licence type [%(ffe_licence)s].|Tipo di licenza FFE sconosciuto [%(ffe_licence)s]|src/web/templates/admin_players.html:328|
+|Change the player's tournament.|Clonate il torneo.|src/web/templates/admin_players.html:352|
+|Edit the player's properties.|Modifica le proprietà del timer.|src/web/templates/admin_players.html:396|
+|Remove the player from the event.|Aggiungi un timer all'evento.|src/web/templates/admin_players.html:406|
+|No players.|Giocatori|src/web/templates/admin_players.html:425|
 |Create a screen|Crea un evento|src/web/templates/admin_screens.html:72|
 |Add a screen to enter the results.|Aggiungere una famiglia di schermi per inserire i risultati.|src/web/templates/admin_screens.html:76|
 |Add a screen to display the pairings by board.|Aggiungi una famiglia di schermi per visualizzare gli accoppiamenti a bordo.|src/web/templates/admin_screens.html:77|
@@ -165,6 +165,7 @@
 |No screen nor family to rotate.|Nessun schermo né famiglia per ruotare.|src/web/templates/user_rotator_card.html:22|
 |Close check-in for tournament [%(tournament_uniq_id)s].|Cancellazione del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:22|
 |Open check-in for tournament [%(tournament_uniq_id)s].|Edizione del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:24|
+|Filter the categories.|Filtra le leghe.|src/web/templates/admin_players/admin_players_filter_categories.html:8|
 |Filter the check-in status.|Cancella il timer.|src/web/templates/admin_players/admin_players_filter_check_ins.html:8|
 |Not checked-in yet|CHECK-IN|src/web/templates/admin_players/admin_players_filter_check_ins.html:34|
 |Checked-in|CHECK-IN|src/web/templates/admin_players/admin_players_filter_check_ins.html:39|
@@ -183,7 +184,6 @@
 |Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Commento|src/web/templates/admin_players/admin_players_filter_columns.html:75|
 |History \*\*\* HISTORY FOR PLAYERS COLUMNS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:77|
 |Filter the federations.|Cancellare il rotatore.|src/web/templates/admin_players/admin_players_filter_federations.html:7|
-|Filter the categories.|Filtra le leghe.|src/web/templates/admin_players/admin_players_filter_ffe_categories.html:8|
 |Filter the genders.|Cancella il timer.|src/web/templates/admin_players/admin_players_filter_genders.html:8|
 |Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Nome|src/web/templates/admin_players/admin_players_filter_tournaments.html:2|
 |Filter the tournaments.|Elimina il torneo.|src/web/templates/admin_players/admin_players_filter_tournaments.html:9|
@@ -451,7 +451,7 @@
 |End of upload (Ctrl-C)|Fine del caricamento (Ctrl-C)|src/ffe/action_selector.py:188|
 |Content of URL [{url}] is not valid (input[id=[{id]] not found).|Il contenuto dell'URL [{url}] non è valido (input[id=[{id]] non trovato).|src/ffe/ffe_session.py:142|
 |Initializing a session to [{url}]...|Inizializzazione di una sessione a [{url}]...|src/ffe/ffe_session.py:156|
-|OK|OK|src/ffe/ffe_session.py:164<br>src/ffe/ffe_session.py:205<br>src/web/templates/admin_players/admin_players_filter_check_ins.html:22<br>src/web/templates/admin_players/admin_players_filter_clubs.html:21<br>src/web/templates/admin_players/admin_players_filter_columns.html:20<br>src/web/templates/admin_players/admin_players_filter_federations.html:21<br>src/web/templates/admin_players/admin_players_filter_ffe_categories.html:22<br>src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22<br>src/web/templates/admin_players/admin_players_filter_genders.html:22<br>src/web/templates/admin_players/admin_players_filter_leagues.html:21<br>src/web/templates/admin_players/admin_players_filter_tournaments.html:23|
+|OK|OK|src/ffe/ffe_session.py:164<br>src/ffe/ffe_session.py:205<br>src/web/templates/admin_players/admin_players_filter_categories.html:22<br>src/web/templates/admin_players/admin_players_filter_check_ins.html:22<br>src/web/templates/admin_players/admin_players_filter_clubs.html:21<br>src/web/templates/admin_players/admin_players_filter_columns.html:20<br>src/web/templates/admin_players/admin_players_filter_federations.html:21<br>src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22<br>src/web/templates/admin_players/admin_players_filter_genders.html:22<br>src/web/templates/admin_players/admin_players_filter_leagues.html:21<br>src/web/templates/admin_players/admin_players_filter_tournaments.html:23|
 |Authenticating...|Autenticante...|src/ffe/ffe_session.py:170|
 |Authentication failed.|Autenticazione non riuscita.|src/ffe/ffe_session.py:200|
 |Tournament [{ffe_id}]:|Torneo [{ffe_id}]:|src/ffe/ffe_session.py:210|
@@ -494,11 +494,11 @@
 |Timers ({num})|Timer ({num})|src/web/controllers/admin/event_admin_controller.py:137|
 |ChessEvent ({num})|Evento di scacchi ({num})|src/web/controllers/admin/event_admin_controller.py:141|
 |Messages ({num})|Messaggi ({num})|src/web/controllers/admin/event_admin_controller.py:145|
-|Renaming the database failed: {ex}.|Rinomina del database non riuscita: {ex}.|src/web/controllers/admin/event_admin_controller.py:616|
-|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|L'evento [{old_uniq_id}] è stato rinominato ([{new_uniq_id}]) e aggiornato.|src/web/controllers/admin/event_admin_controller.py:623|
-|Event [{uniq_id}] has been updated.|Evento [{uniq_id}] è stato aggiornato.|src/web/controllers/admin/event_admin_controller.py:626|
-|Event [{uniq_id}] has been created.|Evento [{uniq_id}] è stato creato.|src/web/controllers/admin/event_admin_controller.py:634<br>src/web/controllers/admin/index_admin_controller.py:675|
-|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evento [{uniq_id}] è stato eliminato, il database è stato archiviato ({arch}).|src/web/controllers/admin/event_admin_controller.py:644|
+|Renaming the database failed: {ex}.|Rinomina del database non riuscita: {ex}.|src/web/controllers/admin/event_admin_controller.py:636|
+|Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|L'evento [{old_uniq_id}] è stato rinominato ([{new_uniq_id}]) e aggiornato.|src/web/controllers/admin/event_admin_controller.py:643|
+|Event [{uniq_id}] has been updated.|Evento [{uniq_id}] è stato aggiornato.|src/web/controllers/admin/event_admin_controller.py:646|
+|Event [{uniq_id}] has been created.|Evento [{uniq_id}] è stato creato.|src/web/controllers/admin/event_admin_controller.py:654<br>src/web/controllers/admin/index_admin_controller.py:675|
+|Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evento [{uniq_id}] è stato eliminato, il database è stato archiviato ({arch}).|src/web/controllers/admin/event_admin_controller.py:664|
 |Please enter the family ID.|Inserire l'ID della famiglia.|src/web/controllers/admin/family_admin_controller.py:102|
 |Character [{char}] is not allowed.|Il carattere [{char}] non è consentito.|src/web/controllers/admin/family_admin_controller.py:104<br>src/web/controllers/admin/index_admin_controller.py:232<br>src/web/controllers/admin/screen_admin_controller.py:123<br>src/web/controllers/admin/tournament_admin_controller.py:76|
 |Family [{uniq_id}] already exists.|La famiglia [{uniq_id}] esiste già.|src/web/controllers/admin/family_admin_controller.py:109<br>src/web/controllers/admin/family_admin_controller.py:113|
@@ -628,7 +628,7 @@
 |ChessEvent password: %(chessevent_password)s|Password di ChessEvent: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:17|
 |ChessEvent event: %(chessevent_event)s|Evento di scacchi: %(chessevent_event)s|src/web/templates/admin_chessevent_card.html:20|
 |Edit the properties of the ChessEvent connection.|Modifica le proprietà della connessione ChessEvent.|src/web/templates/admin_chessevent_card.html:25|
-|Edit|Modifica|src/web/templates/admin_chessevent_card.html:33<br>src/web/templates/admin_event_config.html:15<br>src/web/templates/admin_family_card.html:125<br>src/web/templates/admin_players.html:171<br>src/web/templates/admin_rotator_card.html:92<br>src/web/templates/admin_screen_card.html:160<br>src/web/templates/admin_timer_card.html:43<br>src/web/templates/admin_tournament_card.html:136|
+|Edit|Modifica|src/web/templates/admin_chessevent_card.html:33<br>src/web/templates/admin_event_config.html:15<br>src/web/templates/admin_family_card.html:125<br>src/web/templates/admin_players.html:398<br>src/web/templates/admin_rotator_card.html:92<br>src/web/templates/admin_screen_card.html:160<br>src/web/templates/admin_timer_card.html:43<br>src/web/templates/admin_tournament_card.html:136|
 |Clone the ChessEvent connection.|Clonare la connessione ChessEvent.|src/web/templates/admin_chessevent_card.html:39|
 |Delete the ChessEvent connection.|Elimina la connessione ChessEvent.|src/web/templates/admin_chessevent_card.html:48|
 |ChessEvent connection creation|Creazione connessione ChessEvent|src/web/templates/admin_chessevent_modal.html:18|
@@ -650,7 +650,7 @@
 |The name of the event on the ChessEvent password.|Il nome dell'evento sulla password di ChessEvent.|src/web/templates/admin_chessevent_modal.html:143|
 |Create|Crea|src/web/templates/admin_chessevent_modal.html:166<br>src/web/templates/admin_event_modal.html:561<br>src/web/templates/admin_family_modal.html:480<br>src/web/templates/admin_player_modal.html:447<br>src/web/templates/admin_rotator_modal.html:221<br>src/web/templates/admin_screen_modal.html:492<br>src/web/templates/admin_timer_modal.html:82<br>src/web/templates/admin_tournament_modal.html:431|
 |Update|Aggiorna|src/web/templates/admin_chessevent_modal.html:168<br>src/web/templates/admin_event_modal.html:563<br>src/web/templates/admin_family_modal.html:482<br>src/web/templates/admin_player_modal.html:449<br>src/web/templates/admin_rotator_modal.html:223<br>src/web/templates/admin_screen_modal.html:494<br>src/web/templates/admin_screen_sets_modal_set_div.html:65<br>src/web/templates/admin_timer_modal.html:84<br>src/web/templates/admin_tournament_modal.html:433|
-|Delete|Elimina|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_players.html:181<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
+|Delete|Elimina|src/web/templates/admin_chessevent_modal.html:170<br>src/web/templates/admin_event_config.html:33<br>src/web/templates/admin_event_modal.html:565<br>src/web/templates/admin_family_modal.html:484<br>src/web/templates/admin_players.html:408<br>src/web/templates/admin_rotator_modal.html:225<br>src/web/templates/admin_screen_modal.html:496<br>src/web/templates/admin_timer_modal.html:86<br>src/web/templates/admin_tournament_modal.html:435|
 |Cancel|Annulla|src/web/templates/admin_chessevent_modal.html:186<br>src/web/templates/admin_close_check_in_modal.html:77<br>src/web/templates/admin_event_modal.html:584<br>src/web/templates/admin_family_modal.html:500<br>src/web/templates/admin_player_modal.html:465<br>src/web/templates/admin_rotator_modal.html:240<br>src/web/templates/admin_screen_modal.html:512<br>src/web/templates/admin_screen_sets_modal.html:66<br>src/web/templates/admin_screen_sets_modal_set_div.html:75<br>src/web/templates/admin_timer_modal.html:102<br>src/web/templates/admin_tournament_modal.html:463|
 |Refresh this page.|Aggiorna questa pagina.|src/web/templates/admin_chessevents.html:10<br>src/web/templates/admin_events.html:9<br>src/web/templates/admin_players.html:11<br>src/web/templates/admin_screens.html:42<br>src/web/templates/admin_timers.html:10<br>src/web/templates/admin_tournaments.html:10|
 |Add a ChessEvent connection to the event.|Aggiungi una connessione ChessEvent all'evento.|src/web/templates/admin_chessevents.html:21|
@@ -884,34 +884,34 @@
 |Create a player|Crea un timer|src/web/templates/admin_players.html:31|
 |Clear all the filters.|tutti i giocatori|src/web/templates/admin_players.html:48|
 |Name \*\*\* NAME COLUMN HEADER FOR PLAYERS|Nome|src/web/templates/admin_players.html:61|
-|Elo \*\*\* ELO COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:65|
-|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:73|
-|YOB \*\*\* YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS|YOB|src/web/templates/admin_players.html:90|
-|Cat \*\*\* CATEGORY COLUMN HEADER FOR PLAYERS|Nome|src/web/templates/admin_players.html:99|
-|The mail addresses.|Gli indirizzi di posta.|src/web/templates/admin_players.html:109|
-|The phone numbers.|I numeri di telefono.|src/web/templates/admin_players.html:114|
-|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Pagato|src/web/templates/admin_players.html:125|
-|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:130|
-|Owed \*\*\* OWED COLUMN HEADER FOR PLAYERS|Ahia|src/web/templates/admin_players.html:135|
-|Paid \*\*\* PAID COLUMN HEADER FOR PLAYERS|Pagato|src/web/templates/admin_players.html:136|
-|Edit the player's properties.|Modifica le proprietà del timer.|src/web/templates/admin_players.html:169|
-|Remove the player from the event.|Aggiungi un timer all'evento.|src/web/templates/admin_players.html:179|
-|Tournament [%(tournament_uniq_id)s] is finished.|Il torneo [%(tournament_uniq_id)s] è finito.|src/web/templates/admin_players.html:192<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
-|Tournament [%(tournament_uniq_id)s] is playing.|Il torneo [%(tournament_uniq_id)s] sta giocando.|src/web/templates/admin_players.html:195<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
-|Check-in is closed for tournament [%(tournament_uniq_id)s].|Cancellazione del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:198|
-|Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Giocatore [%(last_name)s %(first_name)s] se perde per il round successivo nel torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:201|
-|Click to check-out the player.|Clicca per controllare il giocatore.|src/web/templates/admin_players.html:204|
-|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:210|
-|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:263|
-|No mail defined.|Nessun timer definito|src/web/templates/admin_players.html:265|
-|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:276|
-|No phone defined.|Nessun timer definito|src/web/templates/admin_players.html:278|
-|FIDE ID: %(fide_id)s (click to copy to the clipboard).|ID Fide: %(fide_id)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:297|
-|No FIDE ID.|Nessun timer definito|src/web/templates/admin_players.html:300|
-|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|Licenza FFE: %(ffe_licence_number)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:313|
-|Unknown FFE Licence type [%(ffe_licence)s].|Tipo di licenza FFE sconosciuto [%(ffe_licence)s]|src/web/templates/admin_players.html:317|
-|Change the player's tournament.|Clonate il torneo.|src/web/templates/admin_players.html:341|
-|No players.|Giocatori|src/web/templates/admin_players.html:385|
+|Elo \*\*\* ELO COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:82|
+|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:90|
+|YOB \*\*\* YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS|YOB|src/web/templates/admin_players.html:125|
+|Cat \*\*\* CATEGORY COLUMN HEADER FOR PLAYERS|Nome|src/web/templates/admin_players.html:134|
+|The mail addresses.|Gli indirizzi di posta.|src/web/templates/admin_players.html:144|
+|The phone numbers.|I numeri di telefono.|src/web/templates/admin_players.html:149|
+|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Pagato|src/web/templates/admin_players.html:160|
+|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:165|
+|Owed \*\*\* OWED COLUMN HEADER FOR PLAYERS|Ahia|src/web/templates/admin_players.html:170|
+|Paid \*\*\* PAID COLUMN HEADER FOR PLAYERS|Pagato|src/web/templates/admin_players.html:171|
+|Tournament [%(tournament_uniq_id)s] is finished.|Il torneo [%(tournament_uniq_id)s] è finito.|src/web/templates/admin_players.html:203<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:18|
+|Tournament [%(tournament_uniq_id)s] is playing.|Il torneo [%(tournament_uniq_id)s] sta giocando.|src/web/templates/admin_players.html:206<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:20|
+|Check-in is closed for tournament [%(tournament_uniq_id)s].|Cancellazione del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:209|
+|Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Giocatore [%(last_name)s %(first_name)s] se perde per il round successivo nel torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:212|
+|Click to check-out the player.|Clicca per controllare il giocatore.|src/web/templates/admin_players.html:215|
+|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:221|
+|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:274|
+|No mail defined.|Nessun timer definito|src/web/templates/admin_players.html:276|
+|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:287|
+|No phone defined.|Nessun timer definito|src/web/templates/admin_players.html:289|
+|FIDE ID: %(fide_id)s (click to copy to the clipboard).|ID Fide: %(fide_id)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:308|
+|No FIDE ID.|Nessun timer definito|src/web/templates/admin_players.html:311|
+|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|Licenza FFE: %(ffe_licence_number)s (clicca per copiare negli appunti).|src/web/templates/admin_players.html:324|
+|Unknown FFE Licence type [%(ffe_licence)s].|Tipo di licenza FFE sconosciuto [%(ffe_licence)s]|src/web/templates/admin_players.html:328|
+|Change the player's tournament.|Clonate il torneo.|src/web/templates/admin_players.html:352|
+|Edit the player's properties.|Modifica le proprietà del timer.|src/web/templates/admin_players.html:396|
+|Remove the player from the event.|Aggiungi un timer all'evento.|src/web/templates/admin_players.html:406|
+|No players.|Giocatori|src/web/templates/admin_players.html:425|
 |Rotation delay: %(seconds)d sec.|Ritardo di rotazione: %(seconds)d sec.|src/web/templates/admin_rotator_card.html:15<br>src/web/templates/user_rotator_card.html:18|
 |No screen neither family to rotate.|Nessun schermo né famiglia per ruotare.|src/web/templates/admin_rotator_card.html:43|
 |Screens:|Schermi:|src/web/templates/admin_rotator_card.html:49<br>src/web/templates/admin_rotator_modal.html:128<br>src/web/templates/user_rotator_card.html:28|
@@ -1152,8 +1152,8 @@
 |Sort the players by rating (most rated first).|Ordinare i giocatori per il rating (più valutato per primo).|src/web/templates/macros.j2:205|
 |Sort the players by rating (less rated first).|Ordinare i giocatori per valutazione (meno valutato per primo).|src/web/templates/macros.j2:207|
 |Sort the players by origin (federation, league, club).|Mostra/nascondi le schermate dei giocatori.|src/web/templates/macros.j2:209|
-|Sort the players by year of birth (oldest first).|Ordinare i giocatori per anno di nascita (prima di tutto).|src/web/templates/macros.j2:211|
-|Sort the players by year of birth (youngest first).|Ordinare i giocatori per anno di nascita (primo più giovane).|src/web/templates/macros.j2:213|
+|Sort the players by year of birth (youngest first).|Ordinare i giocatori per anno di nascita (primo più giovane).|src/web/templates/macros.j2:211|
+|Sort the players by year of birth (oldest first).|Ordinare i giocatori per anno di nascita (prima di tutto).|src/web/templates/macros.j2:213|
 |Sort the players by category (oldest first).|Ordinare i giocatori per anno di nascita (prima di tutto).|src/web/templates/macros.j2:215|
 |Sort the players by category (youngest first).|Ordinare i giocatori per anno di nascita (primo più giovane).|src/web/templates/macros.j2:217|
 |Sort the players by tournament.|Clonate il torneo.|src/web/templates/macros.j2:219|
@@ -1201,6 +1201,7 @@
 |Open/close check-in.|Apri/chiudi il check-in.|src/web/templates/admin_players/admin_players_check_in_tournaments.html:6|
 |Close check-in for tournament [%(tournament_uniq_id)s].|Cancellazione del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:22|
 |Open check-in for tournament [%(tournament_uniq_id)s].|Edizione del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:24|
+|Filter the categories.|Filtra le leghe.|src/web/templates/admin_players/admin_players_filter_categories.html:8|
 |Filter the check-in status.|Cancella il timer.|src/web/templates/admin_players/admin_players_filter_check_ins.html:8|
 |Absent|Assente|src/web/templates/admin_players/admin_players_filter_check_ins.html:29|
 |Not checked-in yet|CHECK-IN|src/web/templates/admin_players/admin_players_filter_check_ins.html:34|
@@ -1226,7 +1227,6 @@
 |Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Commento|src/web/templates/admin_players/admin_players_filter_columns.html:75|
 |History \*\*\* HISTORY FOR PLAYERS COLUMNS|EloCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:77|
 |Filter the federations.|Cancellare il rotatore.|src/web/templates/admin_players/admin_players_filter_federations.html:7|
-|Filter the categories.|Filtra le leghe.|src/web/templates/admin_players/admin_players_filter_ffe_categories.html:8|
 |Filter the licences.|Filtrare le licenze.|src/web/templates/admin_players/admin_players_filter_ffe_licences.html:8|
 |Filter the genders.|Cancella il timer.|src/web/templates/admin_players/admin_players_filter_genders.html:8|
 |Filter the leagues.|Filtra le leghe.|src/web/templates/admin_players/admin_players_filter_leagues.html:7|

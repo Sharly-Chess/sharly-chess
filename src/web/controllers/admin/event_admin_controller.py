@@ -226,6 +226,12 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 # The categories that will be selected on the category select list and used to filter the players
                 filter_categories: list[PlayerCategory] = SessionHandler.get_session_admin_players_filter_categories(
                     web_context.request)
+                # The name the players must match
+                filter_name: str = SessionHandler.get_session_admin_players_filter_name(web_context.request)
+                filter_name_parts: list[str] = filter_name.lower().split(' ')
+                # The origin (federation+league+club) the players must match
+                filter_origin: str = SessionHandler.get_session_admin_players_filter_origin(web_context.request)
+                filter_origin_parts: list[str] = filter_origin.lower().split(' ')
                 match SessionHandler.get_session_admin_players_sort(web_context.request):
                     case 'alpha':
                         sort_key = lambda player: (player.last_name, player.first_name)
@@ -268,7 +274,9 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                        and (len(filter_tournaments) in [0, len(web_context.admin_event.tournaments_by_id)] or player.tournament_id in filter_tournaments) \
                        and (len(filter_federations) in [0, len(players_federations)] or player.federation_tuple in filter_federations) \
                        and (len(filter_leagues) in [0, len(players_leagues)] or player.league_tuple in filter_leagues) \
-                       and (len(filter_clubs) in [0, len(players_clubs)] or player.club_tuple in filter_clubs)
+                       and (len(filter_clubs) in [0, len(players_clubs)] or player.club_tuple in filter_clubs) \
+                       and all({filter_name_part in f'{player.last_name} {player.first_name}'.lower() for filter_name_part in filter_name_parts}) \
+                       and all({filter_origin_part in f'{player.federation} {player.league} {player.club}'.lower() for filter_origin_part in filter_origin_parts})
                     ], key=sort_key)
                 template_context |= {
                     'admin_players': players,
@@ -302,6 +310,10 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     'admin_players_filter_tournaments': SessionHandler.get_session_admin_players_filter_tournaments(
                         web_context.request),
                     'admin_players_filter_categories': SessionHandler.get_session_admin_players_filter_categories(
+                        web_context.request),
+                    'admin_players_filter_name': SessionHandler.get_session_admin_players_filter_name(
+                        web_context.request),
+                    'admin_players_filter_origin': SessionHandler.get_session_admin_players_filter_origin(
                         web_context.request),
                 }
             case 'screens':
@@ -457,6 +469,8 @@ class EventAdminController(AbstractEventAdminController):
             admin_players_filter_check_ins: list[int] | None = None,
             admin_players_filter_tournaments: list[int] | None = None,
             admin_players_filter_categories: list[int] | None = None,
+            admin_players_filter_name: str | None = None,
+            admin_players_filter_origin: str | None = None,
             admin_players_clear_filters: int | None = None,
     ) -> Template | ClientRedirect:
         match admin_event_tab:
@@ -512,6 +526,10 @@ class EventAdminController(AbstractEventAdminController):
                         PlayerCategory(query_param) for query_param in admin_players_filter_categories
                         if query_param >= 0  # -1 must be ignored
                     ])
+                elif admin_players_filter_name is not None:
+                    SessionHandler.set_session_admin_players_filter_name(request, admin_players_filter_name)
+                elif admin_players_filter_origin is not None:
+                    SessionHandler.set_session_admin_players_filter_origin(request, admin_players_filter_origin)
                 elif admin_players_clear_filters:
                     SessionHandler.set_session_admin_players_filter_federations(request, [])
                     SessionHandler.set_session_admin_players_filter_leagues(request, [])
@@ -521,6 +539,8 @@ class EventAdminController(AbstractEventAdminController):
                     SessionHandler.set_session_admin_players_filter_check_ins(request, [])
                     SessionHandler.set_session_admin_players_filter_tournaments(request, [])
                     SessionHandler.set_session_admin_players_filter_categories(request, [])
+                    SessionHandler.set_session_admin_players_filter_name(request, '')
+                    SessionHandler.set_session_admin_players_filter_origin(request, '')
             case 'screens':
                 if admin_screens_show_family_screens is not None:
                     SessionHandler.set_session_admin_screens_show_family_screens(

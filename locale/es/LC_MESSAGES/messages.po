@@ -1453,11 +1453,11 @@ msgid "Initializing a session to [{url}]..."
 msgstr "Iniciando una sesión a [{url}]..."
 
 #: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
+#: src/web/templates/admin_players/admin_players_filter_categories.html:22
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html:22
 #: src/web/templates/admin_players/admin_players_filter_clubs.html:21
 #: src/web/templates/admin_players/admin_players_filter_columns.html:20
 #: src/web/templates/admin_players/admin_players_filter_federations.html:21
-#: src/web/templates/admin_players/admin_players_filter_ffe_categories.html:22
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22
 #: src/web/templates/admin_players/admin_players_filter_genders.html:22
 #: src/web/templates/admin_players/admin_players_filter_leagues.html:21
@@ -1678,28 +1678,28 @@ msgstr "ChessEvent ({num})"
 msgid "Messages ({num})"
 msgstr "Mensajes ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py:616
+#: src/web/controllers/admin/event_admin_controller.py:636
 #, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Falló el cambio de nombre de la base de datos: {ex}."
 
-#: src/web/controllers/admin/event_admin_controller.py:623
+#: src/web/controllers/admin/event_admin_controller.py:643
 #, ai_translation
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "Evento [{old_uniq_id}] ha sido renombrado ([{new_uniq_id}]) y actualizado."
 
-#: src/web/controllers/admin/event_admin_controller.py:626
+#: src/web/controllers/admin/event_admin_controller.py:646
 #, ai_translation
 msgid "Event [{uniq_id}] has been updated."
 msgstr "El evento [{uniq_id}] ha sido actualizado."
 
-#: src/web/controllers/admin/event_admin_controller.py:634
+#: src/web/controllers/admin/event_admin_controller.py:654
 #: src/web/controllers/admin/index_admin_controller.py:675
 #, ai_translation
 msgid "Event [{uniq_id}] has been created."
 msgstr "Evento [{uniq_id}] ha sido creado."
 
-#: src/web/controllers/admin/event_admin_controller.py:644
+#: src/web/controllers/admin/event_admin_controller.py:664
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Evento [{uniq_id}] ha sido eliminado, la base de datos ha sido archivada ({arch})."
@@ -2467,7 +2467,7 @@ msgstr "Edite las propiedades de la conexión ChessEvent."
 #: src/web/templates/admin_chessevent_card.html:33
 #: src/web/templates/admin_event_config.html:15
 #: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:171
+#: src/web/templates/admin_players.html:398
 #: src/web/templates/admin_rotator_card.html:92
 #: src/web/templates/admin_screen_card.html:160
 #: src/web/templates/admin_timer_card.html:43
@@ -2615,7 +2615,7 @@ msgstr "Actualizar"
 #: src/web/templates/admin_event_config.html:33
 #: src/web/templates/admin_event_modal.html:565
 #: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:181
+#: src/web/templates/admin_players.html:408
 #: src/web/templates/admin_rotator_modal.html:225
 #: src/web/templates/admin_screen_modal.html:496
 #: src/web/templates/admin_timer_modal.html:86
@@ -3974,69 +3974,59 @@ msgstr "todos los jugadores"
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Nombre"
 
-#: src/web/templates/admin_players.html:65
+#: src/web/templates/admin_players.html:82
 #, ai_translation
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-#: src/web/templates/admin_players.html:73
+#: src/web/templates/admin_players.html:90
 #, ai_translation, fuzzy
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-#: src/web/templates/admin_players.html:90
+#: src/web/templates/admin_players.html:125
 #, ai_translation
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
-#: src/web/templates/admin_players.html:99
+#: src/web/templates/admin_players.html:134
 #, ai_translation, fuzzy
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Nombre"
 
-#: src/web/templates/admin_players.html:109
+#: src/web/templates/admin_players.html:144
 #, ai_translation
 msgid "The mail addresses."
 msgstr "Las direcciones de correo."
 
-#: src/web/templates/admin_players.html:114
+#: src/web/templates/admin_players.html:149
 #, ai_translation
 msgid "The phone numbers."
 msgstr "Los números de teléfono."
 
-#: src/web/templates/admin_players.html:125
+#: src/web/templates/admin_players.html:160
 #, ai_translation, fuzzy
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Pagada"
 
-#: src/web/templates/admin_players.html:130
+#: src/web/templates/admin_players.html:165
 #, ai_translation, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-#: src/web/templates/admin_players.html:135
+#: src/web/templates/admin_players.html:170
 #, ai_translation
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "Deuda"
 
-#: src/web/templates/admin_players.html:136
+#: src/web/templates/admin_players.html:171
 #, ai_translation
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Pagada"
 
-#: src/web/templates/admin_players.html:169
-#, ai_translation, fuzzy
-msgid "Edit the player's properties."
-msgstr "Editar las propiedades del temporizador."
-
-#: src/web/templates/admin_players.html:179
-#, ai_translation, fuzzy
-msgid "Remove the player from the event."
-msgstr "Añade un temporizador al evento."
-
 # Error: tokens differ between [Tournament [%(tournament_uniq_id)s] is
 # finished.] and [El torneo [{tournament_uniq_id}] ha comenzado.]
-#: src/web/templates/admin_players.html:192
+#: src/web/templates/admin_players.html:203
 #: src/web/templates/admin_players/admin_players_check_in_tournaments.html:18
 #, ai_translation, fuzzy, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is finished."
@@ -4044,13 +4034,13 @@ msgstr "Torneo [%(tournament_uniq_id)s] ha terminado."
 
 # Error: tokens differ between [Tournament [%(tournament_uniq_id)s] is
 # playing.] and [El torneo [{tournament_uniq_id}] ha comenzado.]
-#: src/web/templates/admin_players.html:195
+#: src/web/templates/admin_players.html:206
 #: src/web/templates/admin_players/admin_players_check_in_tournaments.html:20
 #, ai_translation, fuzzy, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr "Torneo [%(tournament_uniq_id)s] está jugando."
 
-#: src/web/templates/admin_players.html:198
+#: src/web/templates/admin_players.html:209
 #, ai_translation, fuzzy, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Supresión del torneo [%(tournament_uniq_id)s]"
@@ -4089,27 +4079,27 @@ msgstr "Supresión del torneo [%(tournament_uniq_id)s]"
 # forfeit for the next round in tournament [%(tournament_uniq_id)s].] and
 # [Jugador [{last_name} {first_name}] tiene emparejamientos en torneo
 # [{tournament_uniq_id}].]
-#: src/web/templates/admin_players.html:201
+#: src/web/templates/admin_players.html:212
 #, ai_translation, error, fuzzy, python-format
 msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Jugador [%(last_name)s %(first_name)s] si pierde por la siguiente ronda en el torneo [%(tournament_uniq_id)s]."
 
-#: src/web/templates/admin_players.html:204
+#: src/web/templates/admin_players.html:215
 #, ai_translation
 msgid "Click to check-out the player."
 msgstr "Haga clic para comprobar el jugador."
 
-#: src/web/templates/admin_players.html:210
+#: src/web/templates/admin_players.html:221
 #, ai_translation, fuzzy
 msgid "Click to check-in the player."
 msgstr "Check-in"
 
-#: src/web/templates/admin_players.html:263
+#: src/web/templates/admin_players.html:274
 #, ai_translation, fuzzy, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "%(mail)s (haga clic para copiar al portapapeles)."
 
-#: src/web/templates/admin_players.html:265
+#: src/web/templates/admin_players.html:276
 #, ai_translation, fuzzy
 msgid "No mail defined."
 msgstr "No se ha definido ningún temporizador"
@@ -4142,24 +4132,24 @@ msgstr "No se ha definido ningún temporizador"
 # ]
 # m
 # g
-#: src/web/templates/admin_players.html:276
+#: src/web/templates/admin_players.html:287
 #, ai_translation, error, fuzzy, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "%(phone)s (haga clic para copiar al portapapeles)."
 
-#: src/web/templates/admin_players.html:278
+#: src/web/templates/admin_players.html:289
 #, ai_translation, fuzzy
 msgid "No phone defined."
 msgstr "No se ha definido ningún temporizador"
 
 # Error: tokens differ between [Fide ID: %(fide_id)s (click to copy to the
 # clipboard).] and [%(mail)s (haga clic para copiar al portapapeles).]
-#: src/web/templates/admin_players.html:297
+#: src/web/templates/admin_players.html:308
 #, ai_translation, fuzzy, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr "Fide ID: %(fide_id)s (haga clic para copiar al portapapeles)."
 
-#: src/web/templates/admin_players.html:300
+#: src/web/templates/admin_players.html:311
 #, ai_translation, fuzzy
 msgid "No FIDE ID."
 msgstr "No se ha definido ningún temporizador"
@@ -4195,22 +4185,32 @@ msgstr "No se ha definido ningún temporizador"
 # Error: tokens differ between [FFE licence: %(ffe_licence_number)s (click to
 # copy to the clipboard).] and [%(phone)s (haga clic para copiar al
 # portapapeles).]
-#: src/web/templates/admin_players.html:313
+#: src/web/templates/admin_players.html:324
 #, ai_translation, error, fuzzy, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "Licencia FFE: %(ffe_licence_number)s (haga clic para copiar al portapapeles)."
 
-#: src/web/templates/admin_players.html:317
+#: src/web/templates/admin_players.html:328
 #, ai_translation, fuzzy, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Tipo de licencia FFE desconocido [%(ffe_licence)s]"
 
-#: src/web/templates/admin_players.html:341
+#: src/web/templates/admin_players.html:352
 #, ai_translation, fuzzy
 msgid "Change the player's tournament."
 msgstr "Clonó el torneo."
 
-#: src/web/templates/admin_players.html:385
+#: src/web/templates/admin_players.html:396
+#, ai_translation, fuzzy
+msgid "Edit the player's properties."
+msgstr "Editar las propiedades del temporizador."
+
+#: src/web/templates/admin_players.html:406
+#, ai_translation, fuzzy
+msgid "Remove the player from the event."
+msgstr "Añade un temporizador al evento."
+
+#: src/web/templates/admin_players.html:425
 #, ai_translation, fuzzy
 msgid "No players."
 msgstr "Jugadores"
@@ -5472,13 +5472,13 @@ msgstr "Mostrar/ocultar las pantallas de los reproductores."
 
 #: src/web/templates/macros.j2:211
 #, ai_translation
-msgid "Sort the players by year of birth (oldest first)."
-msgstr "Ordenar a los jugadores por año de nacimiento (el más antiguo primero)."
+msgid "Sort the players by year of birth (youngest first)."
+msgstr "Ordenar a los jugadores por año de nacimiento (el más joven primero)."
 
 #: src/web/templates/macros.j2:213
 #, ai_translation
-msgid "Sort the players by year of birth (youngest first)."
-msgstr "Ordenar a los jugadores por año de nacimiento (el más joven primero)."
+msgid "Sort the players by year of birth (oldest first)."
+msgstr "Ordenar a los jugadores por año de nacimiento (el más antiguo primero)."
 
 #: src/web/templates/macros.j2:215
 #, ai_translation, fuzzy
@@ -5720,6 +5720,11 @@ msgstr "Supresión del torneo [%(tournament_uniq_id)s]"
 msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
 msgstr "Edición del torneo [%(tournament_uniq_id)s]"
 
+#: src/web/templates/admin_players/admin_players_filter_categories.html:8
+#, ai_translation, fuzzy
+msgid "Filter the categories."
+msgstr "Filtra las ligas."
+
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html:8
 #, ai_translation, fuzzy
 msgid "Filter the check-in status."
@@ -5844,11 +5849,6 @@ msgstr "Elo"
 #, ai_translation, fuzzy
 msgid "Filter the federations."
 msgstr "Borra el rotador."
-
-#: src/web/templates/admin_players/admin_players_filter_ffe_categories.html:8
-#, ai_translation, fuzzy
-msgid "Filter the categories."
-msgstr "Filtra las ligas."
 
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:8
 #, ai_translation

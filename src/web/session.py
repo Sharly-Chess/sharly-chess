@@ -301,3 +301,23 @@ class SessionHandler:
             d if isinstance(d, PlayerCategory) else PlayerCategory(d)
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, [])
         ]
+
+    ADMIN_PLAYERS_FILTER_NAME_KEY: str = 'admin_players_filter_name'
+
+    @classmethod
+    def set_session_admin_players_filter_name(cls, request: HTMXRequest, name: str):
+        request.session[cls.ADMIN_PLAYERS_FILTER_NAME_KEY]: str = name
+
+    @classmethod
+    def get_session_admin_players_filter_name(cls, request: HTMXRequest) -> str:
+        return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, '')
+
+    ADMIN_PLAYERS_FILTER_ORIGIN_KEY: str = 'admin_players_filter_origin'
+
+    @classmethod
+    def set_session_admin_players_filter_origin(cls, request: HTMXRequest, origin: str):
+        request.session[cls.ADMIN_PLAYERS_FILTER_ORIGIN_KEY]: str = origin
+
+    @classmethod
+    def get_session_admin_players_filter_origin(cls, request: HTMXRequest) -> str:
+        return request.session.get(cls.ADMIN_PLAYERS_FILTER_ORIGIN_KEY, '')

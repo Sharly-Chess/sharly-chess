@@ -23,7 +23,9 @@
 .dropdown-menu.players-filter-club {
     min-width: 0;
 }
-
+.admin-players-filter-name, .admin-players-filter-origin {
+    width: 5em;
+}
 .fide-id-none {
     opacity: 0.3;
 }
