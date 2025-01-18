@@ -9,9 +9,7 @@ from operator import attrgetter
 from pathlib import Path
 from typing import Iterable
 
-from unidecode import unidecode
-
-from common import format_timestamp_date_time, format_timestamp_date, format_timestamp_time
+from common import format_timestamp_date_time, format_timestamp_date, format_timestamp_time, unicode_normalize
 from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
@@ -101,7 +99,7 @@ class Event:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
         index: int
         uniq_id: str
-        base_uniq_id = unidecode(base_uniq_id)
+        base_uniq_id = unicode_normalize(base_uniq_id)
         if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
             base_uniq_id = matches.group(1)
             index = int(matches.group(2))

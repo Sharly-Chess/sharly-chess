@@ -5,6 +5,8 @@ from datetime import datetime
 from functools import wraps
 from logging import Logger
 
+import unicodedata
+
 from common.logger import get_logger
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
@@ -65,3 +67,7 @@ def show_duration(func):
         logger.warning(f'{total_time:.4f}s {args[0].__class__.__name__}.{func.__name__}({args[1:]} {kwargs})')
         return result
     return show_duration_wrapper
+
+def unicode_normalize(string: str) -> str:
+    """Remove the accents of the string, cf https://www.unicode.org/reports/tr15/#Norm_Forms"""
+    return ''.join(filter(lambda c: not unicodedata.combining(c), unicodedata.normalize('NFKD', string)))

@@ -9,8 +9,8 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
-from unidecode import unidecode
 
+from common import unicode_normalize
 from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
@@ -276,8 +276,8 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                        and (len(filter_federations) in [0, len(players_federations)] or player.federation_tuple in filter_federations) \
                        and (len(filter_leagues) in [0, len(players_leagues)] or player.league_tuple in filter_leagues) \
                        and (len(filter_clubs) in [0, len(players_clubs)] or player.club_tuple in filter_clubs) \
-                       and all({filter_name_part in unidecode(f'{player.last_name} {player.first_name}'.lower()) for filter_name_part in filter_name_parts}) \
-                       and all({filter_origin_part in unidecode(f'{player.federation} {player.league} {player.club}'.lower()) for filter_origin_part in filter_origin_parts})
+                       and all({filter_name_part in unicode_normalize(f'{player.last_name} {player.first_name}'.lower()) for filter_name_part in filter_name_parts}) \
+                       and all({filter_origin_part in unicode_normalize(f'{player.federation} {player.league} {player.club}'.lower()) for filter_origin_part in filter_origin_parts})
                     ], key=sort_key)
                 template_context |= {
                     'admin_players': players,
@@ -529,10 +529,10 @@ class EventAdminController(AbstractEventAdminController):
                     ])
                 elif admin_players_filter_name is not None:
                     SessionHandler.set_session_admin_players_filter_name(
-                        request, unidecode(admin_players_filter_name).lower())
+                        request, unicode_normalize(admin_players_filter_name).lower())
                 elif admin_players_filter_origin is not None:
                     SessionHandler.set_session_admin_players_filter_origin(
-                        request, unidecode(admin_players_filter_origin).lower())
+                        request, unicode_normalize(admin_players_filter_origin).lower())
                 elif admin_players_clear_filters:
                     SessionHandler.set_session_admin_players_filter_federations(request, [])
                     SessionHandler.set_session_admin_players_filter_leagues(request, [])

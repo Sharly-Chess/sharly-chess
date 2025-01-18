@@ -6,11 +6,10 @@ from functools import cached_property
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
-from unidecode import unidecode
 
 from litestar.contrib.htmx.request import HTMXRequest
 
-from common import format_timestamp_date_time
+from common import format_timestamp_date_time, unicode_normalize
 from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
@@ -72,7 +71,7 @@ class EventLoader:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
         index: int
         uniq_id: str
-        base_uniq_id = unidecode(base_uniq_id)
+        base_uniq_id = unicode_normalize(base_uniq_id)
         if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
             base_uniq_id = matches.group(1)
             index = int(matches.group(2))
