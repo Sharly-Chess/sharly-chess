@@ -2,6 +2,9 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.4.20 - 19 janvier 2025
+- Correction du calcul des points virtuels en Système Accéléré Dégressif 
+
 ## Version 2.4.19 - 12 janvier 2025
 - Passage en multilingue anglais et français
 - Ajout de l'onglet Joueur·euses
