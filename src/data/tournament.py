@@ -486,7 +486,7 @@ class Tournament:
                     # NOTE(Amaras): // is implemented on float as well, so it's
                     # way simpler to implement than by applying the algorithm
                     # step by step.
-                    potential_vpoints = 0.5 * player.points // 1.5
+                    potential_vpoints = 0.5 * (player.points // 1.5)
                     if player.rating >= self.rating_limit1:
                         # Group A players get 2 virtual points
                         vpoints = 2.0

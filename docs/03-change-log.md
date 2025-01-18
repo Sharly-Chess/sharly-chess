@@ -6,6 +6,7 @@
 - Ajout de la possibilité de pointer depuis les pages d'arbitrage
 - Ajout de la possibilité d'ouvrir/fermer le pointage à chaque ronde
 - Ajout de la possibilité de changer un·e joueur·euse de tournoi
+- Correction du calcul des points virtuels en Système Accéléré Dégressif 
 
 ## Version 2.4.19 - 12 janvier 2025
 - Passage en multilingue anglais et français
