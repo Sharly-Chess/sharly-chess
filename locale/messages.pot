@@ -1,4738 +1,4630 @@
-#: src/papi_web.py:32
+#: src/papi_web.py
 msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 msgstr ""
 
-#: src/chessevent/action_selector.py:42
+#: src/chessevent/action_selector.py
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/chessevent/action_selector.py:46
+#: src/chessevent/action_selector.py
 msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/chessevent/action_selector.py:50
+#: src/chessevent/action_selector.py
 msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr ""
 
-#: src/chessevent/action_selector.py:63 src/ffe/action_selector.py:83
+#: src/chessevent/action_selector.py src/ffe/action_selector.py
 msgid "Event: {event_name}"
 msgstr ""
 
-#: src/chessevent/action_selector.py:66
+#: src/chessevent/action_selector.py
 msgid "Unable to create Papi files since no tournaments are defined."
 msgstr ""
 
-#: src/chessevent/action_selector.py:68
+#: src/chessevent/action_selector.py
 msgid "Tournaments: {tournament_names}"
 msgstr ""
 
-#: src/chessevent/action_selector.py:70
+#: src/chessevent/action_selector.py
 msgid "C *** THE LETTER TO ANSWER CREATE"
 msgstr ""
 
-#: src/chessevent/action_selector.py:71 src/ffe/action_selector.py:95
+#: src/chessevent/action_selector.py src/ffe/action_selector.py
 msgid "U *** THE LETTER TO ANSWER UPLOAD"
 msgstr ""
 
-#: src/chessevent/action_selector.py:72 src/chessevent/action_selector.py:92
-#: src/chessevent/action_selector.py:113 src/chessevent/event_selector.py:29
-#: src/common/engine.py:125 src/ffe/action_selector.py:96
-#: src/ffe/event_selector.py:25
+#: src/chessevent/action_selector.py src/chessevent/event_selector.py
+#: src/common/engine.py src/ffe/action_selector.py src/ffe/event_selector.py
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr ""
 
-#: src/chessevent/action_selector.py:75
+#: src/chessevent/action_selector.py
 msgid "Create the Papi files"
 msgstr ""
 
-#: src/chessevent/action_selector.py:76
+#: src/chessevent/action_selector.py
 msgid "Create the Papi files and send them to the FFE website"
 msgstr ""
 
-#: src/chessevent/action_selector.py:77 src/chessevent/action_selector.py:97
-#: src/chessevent/action_selector.py:117 src/chessevent/event_selector.py:39
-#: src/ffe/action_selector.py:103 src/ffe/event_selector.py:35
+#: src/chessevent/action_selector.py src/chessevent/event_selector.py
+#: src/ffe/action_selector.py src/ffe/event_selector.py
 msgid "Quit"
 msgstr ""
 
-#: src/chessevent/action_selector.py:85 src/chessevent/action_selector.py:105
-#: src/chessevent/action_selector.py:125
+#: src/chessevent/action_selector.py
 msgid "Your choice (by default {default}): "
 msgstr ""
 
-#: src/chessevent/action_selector.py:86 src/ffe/action_selector.py:110
+#: src/chessevent/action_selector.py src/ffe/action_selector.py
 msgid "Action: {action}"
 msgstr ""
 
-#: src/chessevent/action_selector.py:90
+#: src/chessevent/action_selector.py
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr ""
 
-#: src/chessevent/action_selector.py:91
+#: src/chessevent/action_selector.py
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr ""
 
-#: src/chessevent/action_selector.py:95
+#: src/chessevent/action_selector.py
 msgid "Once"
 msgstr ""
 
-#: src/chessevent/action_selector.py:96
+#: src/chessevent/action_selector.py
 msgid "Continuously"
 msgstr ""
 
-#: src/chessevent/action_selector.py:108
+#: src/chessevent/action_selector.py
 msgid "Frequency: {frequency}"
 msgstr ""
 
-#: src/chessevent/action_selector.py:112
+#: src/chessevent/action_selector.py
 msgid "Please choose the Papi version:"
 msgstr ""
 
-#: src/chessevent/action_selector.py:132
+#: src/chessevent/action_selector.py
 msgid "Papi version: {version}"
 msgstr ""
 
-#: src/chessevent/action_selector.py:142 src/ffe/action_selector.py:116
-#: src/ffe/action_selector.py:125 src/ffe/action_selector.py:133
-#: src/ffe/action_selector.py:142 src/ffe/action_selector.py:162
+#: src/chessevent/action_selector.py src/ffe/action_selector.py
 msgid "This action can not be applied to the tournaments of this event."
 msgstr ""
 
-#: src/chessevent/action_selector.py:166
+#: src/chessevent/action_selector.py
 msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
 msgstr ""
 
-#: src/chessevent/action_selector.py:173
+#: src/chessevent/action_selector.py
 msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
 msgstr ""
 
-#: src/chessevent/action_selector.py:184
+#: src/chessevent/action_selector.py
 msgid "Papi file [{file}] has been created (players: {num})."
 msgstr ""
 
-#: src/chessevent/action_selector.py:190
+#: src/chessevent/action_selector.py
 msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:54
+#: src/chessevent/chessevent_session.py
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:58
+#: src/chessevent/chessevent_session.py
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:63
+#: src/chessevent/chessevent_session.py
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:67
+#: src/chessevent/chessevent_session.py
 msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:71
+#: src/chessevent/chessevent_session.py
 msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:76
+#: src/chessevent/chessevent_session.py
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:81
+#: src/chessevent/chessevent_session.py
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:85 src/common/engine.py:283
-#: src/common/engine.py:413 src/common/engine.py:459 src/ffe/ffe_session.py:99
+#: src/chessevent/chessevent_session.py src/common/engine.py
+#: src/ffe/ffe_session.py
 msgid "Failed to read [{url}] (connection error): [{ex}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:88 src/common/engine.py:285
-#: src/common/engine.py:416 src/common/engine.py:462 src/ffe/ffe_session.py:101
+#: src/chessevent/chessevent_session.py src/common/engine.py
+#: src/ffe/ffe_session.py
 msgid "Failed to read [{url}] (timeout): [{ex}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:91 src/common/engine.py:287
-#: src/common/engine.py:419 src/common/engine.py:465 src/ffe/ffe_session.py:103
+#: src/chessevent/chessevent_session.py src/common/engine.py
+#: src/ffe/ffe_session.py
 msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
 msgstr ""
 
-#: src/chessevent/chessevent_session.py:95 src/common/engine.py:290
-#: src/common/engine.py:423 src/common/engine.py:469 src/ffe/ffe_session.py:106
+#: src/chessevent/chessevent_session.py src/common/engine.py
+#: src/ffe/ffe_session.py
 msgid "Failed to read [{url}]: [{ex}]."
 msgstr ""
 
-#: src/chessevent/event_selector.py:26 src/ffe/event_selector.py:22
+#: src/chessevent/event_selector.py src/ffe/event_selector.py
 msgid "No events found."
 msgstr ""
 
-#: src/chessevent/event_selector.py:32 src/ffe/event_selector.py:28
+#: src/chessevent/event_selector.py src/ffe/event_selector.py
 msgid "One event found, press Enter (Q to quit): "
 msgstr ""
 
-#: src/chessevent/event_selector.py:35 src/ffe/event_selector.py:31
+#: src/chessevent/event_selector.py src/ffe/event_selector.py
 msgid "Please choose the event:"
 msgstr ""
 
-#: src/chessevent/event_selector.py:44 src/common/papi_web_config.py:112
-#: src/ffe/event_selector.py:40
+#: src/chessevent/event_selector.py src/common/papi_web_config.py
+#: src/ffe/event_selector.py
 msgid "Your choice: "
 msgstr ""
 
-#: src/common/config_reader.py:28
+#: src/common/config_reader.py
 msgid "Configuration file [{file}] not found."
 msgstr ""
 
-#: src/common/config_reader.py:31
+#: src/common/config_reader.py
 msgid "Configuration file [{file}] is not a file."
 msgstr ""
 
-#: src/common/config_reader.py:50
+#: src/common/config_reader.py
 msgid "Could not read file [{file}]."
 msgstr ""
 
-#: src/common/config_reader.py:53
+#: src/common/config_reader.py
 msgid "Duplicated section at line [{lineno}]."
 msgstr ""
 
-#: src/common/config_reader.py:57
+#: src/common/config_reader.py
 msgid "Duplicated option at line [{lineno}]."
 msgstr ""
 
-#: src/common/config_reader.py:62
+#: src/common/config_reader.py
 msgid "Parsing error: [{ex}]."
 msgstr ""
 
-#: src/common/config_reader.py:66
+#: src/common/config_reader.py
 msgid "Error: [{ex}]."
 msgstr ""
 
-#: src/common/engine.py:40
+#: src/common/engine.py
 msgid "Checking Papi-web version..."
 msgstr ""
 
-#: src/common/engine.py:45 src/common/engine.py:106 src/common/engine.py:147
-#: src/common/engine.py:212
+#: src/common/engine.py
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr ""
 
-#: src/common/engine.py:46 src/common/engine.py:107 src/common/engine.py:148
-#: src/common/engine.py:213
+#: src/common/engine.py
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr ""
 
-#: src/common/engine.py:49
+#: src/common/engine.py
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
 msgstr ""
 
-#: src/common/engine.py:57
+#: src/common/engine.py
 msgid "The installation of version [{version}] failed."
 msgstr ""
 
-#: src/common/engine.py:90
+#: src/common/engine.py
 msgid "- Version {version} ({events})"
 msgstr ""
 
-#: src/common/engine.py:94
+#: src/common/engine.py
 msgid "- Version {version}: no events"
 msgstr ""
 
-#: src/common/engine.py:96
+#: src/common/engine.py
 msgid "No event found in previously installed versions."
 msgstr ""
 
-#: src/common/engine.py:98
+#: src/common/engine.py
 msgid "No previously installed version found."
 msgstr ""
 
-#: src/common/engine.py:110
+#: src/common/engine.py
 msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
 msgstr ""
 
-#: src/common/engine.py:119
+#: src/common/engine.py
 msgid "Please choose the version to recover:"
 msgstr ""
 
-#: src/common/engine.py:126
+#: src/common/engine.py
 msgid "  - [{q_uc}] Do not recover"
 msgstr ""
 
-#: src/common/engine.py:129
+#: src/common/engine.py
 msgid "Please enter the number of the version to recover [{default}]: "
 msgstr ""
 
-#: src/common/engine.py:151
+#: src/common/engine.py
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr ""
 
-#: src/common/engine.py:167
+#: src/common/engine.py
 msgid "Recovering events from version {version}..."
 msgstr ""
 
-#: src/common/engine.py:172
+#: src/common/engine.py
 msgid "Recovering event [{event_uniq_id}]..."
 msgstr ""
 
-#: src/common/engine.py:183
+#: src/common/engine.py
 msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
 msgstr ""
 
-#: src/common/engine.py:188
+#: src/common/engine.py
 msgid "Recovering custom files..."
 msgstr ""
 
-#: src/common/engine.py:202
+#: src/common/engine.py
 msgid "Events recovered: {num} (from directory [{dir}])."
 msgstr ""
 
-#: src/common/engine.py:204
+#: src/common/engine.py
 msgid "Tournaments recovered: {num} (from directory [{dir}])."
 msgstr ""
 
-#: src/common/engine.py:208
+#: src/common/engine.py
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr ""
 
-#: src/common/engine.py:216
+#: src/common/engine.py
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr ""
 
-#: src/common/engine.py:306
+#: src/common/engine.py
 msgid "Sending the files to a server..."
 msgstr ""
 
-#: src/common/engine.py:312
+#: src/common/engine.py
 msgid "Files have been sent to bin {bin_name}."
 msgstr ""
 
-#: src/common/engine.py:313
+#: src/common/engine.py
 msgid "- View the files on filebin.net: {bin_url}"
 msgstr ""
 
-#: src/common/engine.py:314
+#: src/common/engine.py
 msgid "- Download the files (ZIP archive): {bin_zip_url}"
 msgstr ""
 
-#: src/common/engine.py:316
+#: src/common/engine.py
 msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr ""
 
-#: src/common/engine.py:333
+#: src/common/engine.py
 msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr ""
 
-#: src/common/engine.py:345
+#: src/common/engine.py
 msgid "Checking the version failed."
 msgstr ""
 
-#: src/common/engine.py:348
+#: src/common/engine.py
 msgid "Your Papi-web version is up to date."
 msgstr ""
 
-#: src/common/engine.py:356
+#: src/common/engine.py
 msgid "A more recent version is available ([{version}])."
 msgstr ""
 
-#: src/common/engine.py:359
+#: src/common/engine.py
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
 msgstr ""
 
-#: src/common/engine.py:367
+#: src/common/engine.py
 msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
 msgstr ""
 
-#: src/common/engine.py:371
+#: src/common/engine.py
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr ""
 
-#: src/common/engine.py:383
+#: src/common/engine.py
 msgid "Looking for a more recent version on GitHub ([{url}])..."
 msgstr ""
 
-#: src/common/engine.py:387 src/common/engine.py:443
+#: src/common/engine.py
 msgid "No response from GitHub."
 msgstr ""
 
-#: src/common/engine.py:394
+#: src/common/engine.py
 msgid "Invalid response from GitHub: {ex}."
 msgstr ""
 
-#: src/common/engine.py:406
+#: src/common/engine.py
 msgid "No stable version found."
 msgstr ""
 
-#: src/common/engine.py:434
+#: src/common/engine.py
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr ""
 
-#: src/common/engine.py:439
+#: src/common/engine.py
 msgid "Downloading version {version} from GitHub ([{url}])..."
 msgstr ""
 
-#: src/common/engine.py:447
+#: src/common/engine.py
 msgid "Downloading failed with code [{code}]."
 msgstr ""
 
-#: src/common/engine.py:451
+#: src/common/engine.py
 msgid "File downloaded: [{zip_file}]."
 msgstr ""
 
-#: src/common/engine.py:454
+#: src/common/engine.py
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:78 src/common/papi_web_config.py:154
-#: src/common/papi_web_config.py:184 src/common/papi_web_config.py:196
-#: src/common/papi_web_config.py:211
+#: src/common/papi_web_config.py
 msgid "Option not set, by default [{default}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:84 src/common/papi_web_config.py:203
-#: src/web/controllers/admin/index_admin_controller.py:164
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Invalid value [{value}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:96
+#: src/common/papi_web_config.py
 msgid "Locale [{locale}] not found."
 msgstr ""
 
-#: src/common/papi_web_config.py:98 src/common/papi_web_config.py:166
+#: src/common/papi_web_config.py
 msgid "Option not set."
 msgstr ""
 
-#: src/common/papi_web_config.py:100 src/common/papi_web_config.py:158
-#: src/common/papi_web_config.py:161
+#: src/common/papi_web_config.py
 msgid "Section not found."
 msgstr ""
 
-#: src/common/papi_web_config.py:105
+#: src/common/papi_web_config.py
 msgid "The following languages are available:"
 msgstr ""
 
-#: src/common/papi_web_config.py:149
+#: src/common/papi_web_config.py
 msgid "Invalid log level [{level}], by default [{default}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:178
+#: src/common/papi_web_config.py
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:190
+#: src/common/papi_web_config.py
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr ""
 
-#: src/common/papi_web_config.py:218
+#: src/common/papi_web_config.py
 msgid "Invalid delay [{delay}], by default [{default}]"
 msgstr ""
 
-#: src/common/papi_web_config.py:222
+#: src/common/papi_web_config.py
 msgid "Section not found, default configuration set."
 msgstr ""
 
-#: src/common/papi_web_config.py:233
+#: src/common/papi_web_config.py
 msgid "Your file {ini_file} has been saved as {ini_file_org}."
 msgstr ""
 
-#: src/common/papi_web_config.py:236
+#: src/common/papi_web_config.py
 msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
 msgstr ""
 
-#: src/common/papi_web_config.py:242
+#: src/common/papi_web_config.py
 msgid "Adding lines to {file}..."
 msgstr ""
 
-#: src/common/papi_web_config.py:244
+#: src/common/papi_web_config.py
 msgid "[i18n] # Added by Papi-web {version}"
 msgstr ""
 
-#: src/common/papi_web_config.py:255
+#: src/common/papi_web_config.py
 msgid "# The line below has been commented by Papi-web {version}"
 msgstr ""
 
-#: src/common/papi_web_config.py:260
+#: src/common/papi_web_config.py
 msgid "Your file {ini_file} has been modified."
 msgstr ""
 
-#: src/common/papi_web_config.py:262
+#: src/common/papi_web_config.py
 msgid "Could not write to {ini_file}: {ex}."
 msgstr ""
 
-#: src/common/papi_web_config.py:305
+#: src/common/papi_web_config.py
 msgid "Papi-web project"
 msgstr ""
 
-#: src/data/event.py:55
+#: src/data/event.py
 msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
-#: src/data/event.py:58
+#: src/data/event.py
 msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
 msgstr ""
 
-#: src/data/event.py:61
+#: src/data/event.py
 msgid "Family [{family_uniq_id}]: {text}"
 msgstr ""
 
-#: src/data/event.py:64
+#: src/data/event.py
 msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
 msgstr ""
 
-#: src/data/event.py:67
+#: src/data/event.py
 msgid "Timer [{timer_uniq_id}]: {text}"
 msgstr ""
 
-#: src/data/event.py:70
+#: src/data/event.py
 msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
 msgstr ""
 
-#: src/data/event.py:73
+#: src/data/event.py
 msgid "Screen [{screen_uniq_id}]: {text}"
 msgstr ""
 
-#: src/data/event.py:75
+#: src/data/event.py
 msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr ""
 
-#: src/data/event.py:91
+#: src/data/event.py
 msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
 msgstr ""
 
-#: src/data/event.py:139
+#: src/data/event.py
 msgid "No name set, by default [{name}]"
 msgstr ""
 
-#: src/data/event.py:240
+#: src/data/event.py
 msgid "No directory set for Papi files, by default [{path}]."
 msgstr ""
 
-#: src/data/event.py:244 src/data/tournament.py:42
+#: src/data/event.py src/data/tournament.py
 msgid "Directory [{path}] not found."
 msgstr ""
 
-#: src/data/event.py:246 src/data/tournament.py:44
+#: src/data/event.py src/data/tournament.py
 msgid "[{path}] is not a directory."
 msgstr ""
 
-#: src/data/event.py:255
+#: src/data/event.py
 msgid "No background image set, by default [{background_image}]"
 msgstr ""
 
-#: src/data/event.py:269
+#: src/data/event.py
 msgid "No background colour set, by default [{background_color}]"
 msgstr ""
 
-#: src/data/event.py:279
+#: src/data/event.py
 msgid "No password set for the results entry"
 msgstr ""
 
-#: src/data/event.py:286
+#: src/data/event.py
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
 msgstr ""
 
-#: src/data/event.py:421
+#: src/data/event.py
 msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
 msgstr ""
 
-#: src/data/event.py:446
+#: src/data/event.py
 msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
 msgstr ""
 
-#: src/data/event.py:471
+#: src/data/event.py
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr ""
 
-#: src/data/event.py:501
+#: src/data/event.py
 msgid "Errors have been found on screens; families and rotators will not be loaded."
 msgstr ""
 
-#: src/data/event.py:530
+#: src/data/event.py
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr ""
 
-#: src/data/event.py:573
+#: src/data/event.py
 msgid "Errors have been found on rotators."
 msgstr ""
 
-#: src/data/family.py:49
+#: src/data/family.py
 #, python-format
 msgid "%t (%f to %l)"
 msgstr ""
 
-#: src/data/family.py:157
+#: src/data/family.py
 msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
 msgstr ""
 
-#: src/data/family.py:169
+#: src/data/family.py
 msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
 msgstr ""
 
-#: src/data/family.py:198
+#: src/data/family.py
 msgid "Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored."
 msgstr ""
 
-#: src/data/family.py:214
+#: src/data/family.py
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
 msgstr ""
 
-#: src/data/family.py:274 src/data/screen_set.py:287
+#: src/data/family.py src/data/screen_set.py
 msgid "all the boards"
 msgstr ""
 
-#: src/data/family.py:276 src/data/screen_set.py:289
+#: src/data/family.py src/data/screen_set.py
 msgid "boards from #{first} to end"
 msgstr ""
 
-#: src/data/family.py:278 src/data/screen_set.py:293
+#: src/data/family.py src/data/screen_set.py
 msgid "boards from start to #{last}"
 msgstr ""
 
-#: src/data/family.py:280 src/data/screen_set.py:291
+#: src/data/family.py src/data/screen_set.py
 msgid "boards from #{first} to #{last}"
 msgstr ""
 
-#: src/data/family.py:282
+#: src/data/family.py
 msgid "screens of {number} boards"
 msgstr ""
 
-#: src/data/family.py:284
+#: src/data/family.py
 msgid "screens of {number} boards from #{first} to end"
 msgstr ""
 
-#: src/data/family.py:286
+#: src/data/family.py
 msgid "screens of {number} boards from start to #{last}"
 msgstr ""
 
-#: src/data/family.py:288
+#: src/data/family.py
 msgid "screens of {number} boards from #{first} to #{last}"
 msgstr ""
 
-#: src/data/family.py:291
+#: src/data/family.py
 msgid "boards on {parts} screens"
 msgstr ""
 
-#: src/data/family.py:293
+#: src/data/family.py
 msgid "boards from #{first} to end, on {parts} screens"
 msgstr ""
 
-#: src/data/family.py:295
+#: src/data/family.py
 msgid "boards from start to #{last}, on {parts} screens"
 msgstr ""
 
-#: src/data/family.py:297
+#: src/data/family.py
 msgid "boards from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
-#: src/data/family.py:305 src/data/screen_set.py:300
+#: src/data/family.py src/data/screen_set.py
 msgid "all the players"
 msgstr ""
 
-#: src/data/family.py:307 src/data/screen_set.py:302
+#: src/data/family.py src/data/screen_set.py
 msgid "players from #{first} to end"
 msgstr ""
 
-#: src/data/family.py:309 src/data/screen_set.py:306
+#: src/data/family.py src/data/screen_set.py
 msgid "players from start to #{last}"
 msgstr ""
 
-#: src/data/family.py:311 src/data/screen_set.py:304
+#: src/data/family.py src/data/screen_set.py
 msgid "players from #{first} to #{last}"
 msgstr ""
 
-#: src/data/family.py:313
+#: src/data/family.py
 msgid "screens of {number} players"
 msgstr ""
 
-#: src/data/family.py:315
+#: src/data/family.py
 msgid "screens of {number} players from #{first} to end"
 msgstr ""
 
-#: src/data/family.py:317
+#: src/data/family.py
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
-#: src/data/family.py:319
+#: src/data/family.py
 msgid "screens of {number} players from #{first} to #{last}"
 msgstr ""
 
-#: src/data/family.py:322
+#: src/data/family.py
 msgid "players on {parts} screens"
 msgstr ""
 
-#: src/data/family.py:324
+#: src/data/family.py
 msgid "players from #{first} to end, on {parts} screens"
 msgstr ""
 
-#: src/data/family.py:326
+#: src/data/family.py
 msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
-#: src/data/family.py:328
+#: src/data/family.py
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
-#: src/data/player.py:277
+#: src/data/player.py
 msgid "Unpaired *** FEMALE"
 msgstr ""
 
-#: src/data/player.py:277
+#: src/data/player.py
 msgid "Unpaired *** MALE"
 msgstr ""
 
-#: src/data/player.py:281
+#: src/data/player.py
 msgid "Exempt *** FEMALE"
 msgstr ""
 
-#: src/data/player.py:281
+#: src/data/player.py
 msgid "Exempt *** MALE"
 msgstr ""
 
-#: src/data/screen.py:97 src/data/screen.py:178 src/data/util.py:976
-#: src/web/controllers/admin/index_admin_controller.py:108
-#: src/web/controllers/admin/screen_admin_controller.py:360
-#: src/web/templates/admin_screens.html:79
-#: src/web/templates/admin_screens.html:117
+#: src/data/screen.py src/data/util.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/templates/admin_screens.html
 msgid "Last results"
 msgstr ""
 
-#: src/data/screen.py:99 src/data/util.py:978
-#: src/web/controllers/admin/index_admin_controller.py:109
-#: src/web/controllers/admin/screen_admin_controller.py:362
-#: src/web/templates/admin_screens.html:80
-#: src/web/templates/admin_screens.html:122
+#: src/data/screen.py src/data/util.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/templates/admin_screens.html
 msgid "Image"
 msgstr ""
 
-#: src/data/screen.py:125 src/data/screen_set.py:124
+#: src/data/screen.py src/data/screen_set.py
 #, python-format
 msgid "Boards %f-%l"
 msgstr ""
 
-#: src/data/screen.py:127
+#: src/data/screen.py
 msgid "By board"
 msgstr ""
 
-#: src/data/screen.py:130
+#: src/data/screen.py
 #, python-format
 msgid "%t [Boards %f-%l]"
 msgstr ""
 
-#: src/data/screen.py:132
+#: src/data/screen.py
 msgid "%t (by board)"
 msgstr ""
 
-#: src/data/screen.py:140
+#: src/data/screen.py
 msgid "By player"
 msgstr ""
 
-#: src/data/screen.py:145
+#: src/data/screen.py
 msgid "%t (by player)"
 msgstr ""
 
-#: src/data/screen.py:193 src/data/screen.py:203 src/data/screen.py:213
-#: src/data/screen.py:223
+#: src/data/screen.py
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
-#: src/data/screen.py:231
+#: src/data/screen.py
 msgid "Pattern [{pattern}] can be used by screen families."
 msgstr ""
 
-#: src/data/screen.py:239
+#: src/data/screen.py
 msgid "Pattern [{pattern}] matches no screen."
 msgstr ""
 
-#: src/data/screen.py:249
+#: src/data/screen.py
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
-#: src/data/screen.py:326
+#: src/data/screen.py
 msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
 msgstr ""
 
-#: src/data/screen_set.py:60
-#: src/web/controllers/admin/screen_admin_controller.py:287
+#: src/data/screen_set.py src/web/controllers/admin/screen_admin_controller.py
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr ""
 
-#: src/data/screen_set.py:78
-#: src/web/controllers/admin/family_admin_controller.py:162
-#: src/web/controllers/admin/screen_admin_controller.py:274
+#: src/data/screen_set.py src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr ""
 
-#: src/data/screen_set.py:142
+#: src/data/screen_set.py
 #, python-format
 msgid "%f to %l"
 msgstr ""
 
-#: src/data/screen_set.py:283
+#: src/data/screen_set.py
 msgid "boards {board_numbers}"
 msgstr ""
 
-#: src/data/screen_set.py:312
+#: src/data/screen_set.py
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr ""
 
-#: src/data/timer.py:152
+#: src/data/timer.py
 msgid "Time is not defined."
 msgstr ""
 
-#: src/data/timer.py:157
+#: src/data/timer.py
 msgid "Invalid time [{time_str}]."
 msgstr ""
 
-#: src/data/timer.py:160
+#: src/data/timer.py
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
-#: src/data/timer.py:167
+#: src/data/timer.py
 msgid "Invalid date [{date_str}]."
 msgstr ""
 
-#: src/data/timer.py:179
-#: src/web/controllers/admin/timer_admin_controller.py:159
+#: src/data/timer.py src/web/controllers/admin/timer_admin_controller.py
 msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
 msgstr ""
 
-#: src/data/timer.py:185
+#: src/data/timer.py
 msgid "Invalid date and time [{datetime_str}]."
 msgstr ""
 
-#: src/data/timer.py:196
+#: src/data/timer.py
 msgid "No valid hour defined."
 msgstr ""
 
-#: src/data/tournament.py:40
+#: src/data/tournament.py
 msgid "No directory set for the Papi file, by default [{path}]."
 msgstr ""
 
-#: src/data/tournament.py:47
+#: src/data/tournament.py
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr ""
 
-#: src/data/tournament.py:51
+#: src/data/tournament.py
 msgid "Qualification number and FFE password not set, operations on the FFE website will not be available."
 msgstr ""
 
-#: src/data/tournament.py:54
+#: src/data/tournament.py
 msgid "ChessEvent connection not defined."
 msgstr ""
 
-#: src/data/tournament.py:56
+#: src/data/tournament.py
 msgid "ChessEvent tournament name not set."
 msgstr ""
 
-#: src/data/util.py:316
+#: src/data/util.py
 msgid "Standard rating"
 msgstr ""
 
-#: src/data/util.py:318
+#: src/data/util.py
 msgid "Rapid rating"
 msgstr ""
 
-#: src/data/util.py:320
+#: src/data/util.py
 msgid "Blitz rating"
 msgstr ""
 
-#: src/data/util.py:531
+#: src/data/util.py
 msgid "- *** NAME FOR GENDER NONE"
 msgstr ""
 
-#: src/data/util.py:533
+#: src/data/util.py
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr ""
 
-#: src/data/util.py:535
+#: src/data/util.py
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr ""
 
-#: src/data/util.py:543
-#: src/web/templates/admin_players/admin_players_filter_genders.html:28
+#: src/data/util.py
+#: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr ""
 
-#: src/data/util.py:545
-#: src/web/templates/admin_players/admin_players_filter_genders.html:32
+#: src/data/util.py
+#: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr ""
 
-#: src/data/util.py:547
-#: src/web/templates/admin_players/admin_players_filter_genders.html:36
+#: src/data/util.py
+#: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr ""
 
-#: src/data/util.py:590
+#: src/data/util.py
 msgid "No FFE Licence"
 msgstr ""
 
-#: src/data/util.py:592
+#: src/data/util.py
 msgid "Expired FFE licence"
 msgstr ""
 
-#: src/data/util.py:594
+#: src/data/util.py
 msgid "FFE licence B (leisure)"
 msgstr ""
 
-#: src/data/util.py:596
+#: src/data/util.py
 msgid "FFE licence A (competition)"
 msgstr ""
 
-#: src/data/util.py:690
+#: src/data/util.py
 msgid "U8"
 msgstr ""
 
-#: src/data/util.py:692
+#: src/data/util.py
 msgid "U10"
 msgstr ""
 
-#: src/data/util.py:694
+#: src/data/util.py
 msgid "U12"
 msgstr ""
 
-#: src/data/util.py:696
+#: src/data/util.py
 msgid "U14"
 msgstr ""
 
-#: src/data/util.py:698
+#: src/data/util.py
 msgid "U16"
 msgstr ""
 
-#: src/data/util.py:700
+#: src/data/util.py
 msgid "U18"
 msgstr ""
 
-#: src/data/util.py:702
+#: src/data/util.py
 msgid "U20"
 msgstr ""
 
-#: src/data/util.py:704
+#: src/data/util.py
 msgid "20+"
 msgstr ""
 
-#: src/data/util.py:706
+#: src/data/util.py
 msgid "50+"
 msgstr ""
 
-#: src/data/util.py:708
+#: src/data/util.py
 msgid "65+"
 msgstr ""
 
-#: src/data/util.py:716
+#: src/data/util.py
 msgid "No category"
 msgstr ""
 
-#: src/data/util.py:718
+#: src/data/util.py
 msgid "Under 8"
 msgstr ""
 
-#: src/data/util.py:720
+#: src/data/util.py
 msgid "Under 10"
 msgstr ""
 
-#: src/data/util.py:722
+#: src/data/util.py
 msgid "Under 12"
 msgstr ""
 
-#: src/data/util.py:724
+#: src/data/util.py
 msgid "Under 14"
 msgstr ""
 
-#: src/data/util.py:726
+#: src/data/util.py
 msgid "Under 16"
 msgstr ""
 
-#: src/data/util.py:728
+#: src/data/util.py
 msgid "Under 18"
 msgstr ""
 
-#: src/data/util.py:730
+#: src/data/util.py
 msgid "Under 20"
 msgstr ""
 
-#: src/data/util.py:732
+#: src/data/util.py
 msgid "Over 20"
 msgstr ""
 
-#: src/data/util.py:734
+#: src/data/util.py
 msgid "Over 50"
 msgstr ""
 
-#: src/data/util.py:736
+#: src/data/util.py
 msgid "Over 65"
 msgstr ""
 
-#: src/data/util.py:805
+#: src/data/util.py
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr ""
 
-#: src/data/util.py:807
+#: src/data/util.py
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr ""
 
-#: src/data/util.py:809
+#: src/data/util.py
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr ""
 
-#: src/data/util.py:817
+#: src/data/util.py
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr ""
 
-#: src/data/util.py:819
+#: src/data/util.py
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr ""
 
-#: src/data/util.py:821
+#: src/data/util.py
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr ""
 
-#: src/data/util.py:885
+#: src/data/util.py
 msgid "No title"
 msgstr ""
 
-#: src/data/util.py:887
+#: src/data/util.py
 msgid "Woman Fide Master"
 msgstr ""
 
-#: src/data/util.py:889
+#: src/data/util.py
 msgid "Fide Master"
 msgstr ""
 
-#: src/data/util.py:891
+#: src/data/util.py
 msgid "Woman International Master"
 msgstr ""
 
-#: src/data/util.py:893
+#: src/data/util.py
 msgid "International Master"
 msgstr ""
 
-#: src/data/util.py:895
+#: src/data/util.py
 msgid "Woman Grand Master"
 msgstr ""
 
-#: src/data/util.py:897
+#: src/data/util.py
 msgid "Grand Master"
 msgstr ""
 
-#: src/data/util.py:907
+#: src/data/util.py
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
 msgstr ""
 
-#: src/data/util.py:909
+#: src/data/util.py
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr ""
 
-#: src/data/util.py:911
+#: src/data/util.py
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr ""
 
-#: src/data/util.py:913
+#: src/data/util.py
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr ""
 
-#: src/data/util.py:915
+#: src/data/util.py
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr ""
 
-#: src/data/util.py:917
+#: src/data/util.py
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr ""
 
-#: src/data/util.py:953 src/web/templates/user_boards_screen_set.html:23
-#: src/web/templates/user_results_screen.html:13
+#: src/data/util.py src/web/templates/user_boards_screen_set.html
+#: src/web/templates/user_results_screen.html
 msgid "White"
 msgstr ""
 
-#: src/data/util.py:955 src/web/templates/user_boards_screen_set.html:25
-#: src/web/templates/user_results_screen.html:15
+#: src/data/util.py src/web/templates/user_boards_screen_set.html
+#: src/web/templates/user_results_screen.html
 msgid "Black"
 msgstr ""
 
-#: src/data/util.py:970 src/web/controllers/admin/index_admin_controller.py:104
-#: src/web/controllers/admin/tournament_admin_controller.py:339
-#: src/web/templates/admin_families.html:61
-#: src/web/templates/admin_screens.html:77
-#: src/web/templates/admin_screens.html:107
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin_families.html src/web/templates/admin_screens.html
 msgid "Pairings by board"
 msgstr ""
 
-#: src/data/util.py:972
-#: src/web/controllers/admin/family_admin_controller.py:270
-#: src/web/controllers/admin/index_admin_controller.py:103
-#: src/web/controllers/admin/screen_admin_controller.py:354
-#: src/web/controllers/admin/tournament_admin_controller.py:338
-#: src/web/templates/admin_event_modal.html:190
-#: src/web/templates/admin_families.html:60
-#: src/web/templates/admin_screens.html:76
-#: src/web/templates/admin_screens.html:102
+#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_families.html src/web/templates/admin_screens.html
 msgid "Results entry"
 msgstr ""
 
-#: src/data/util.py:974
+#: src/data/util.py
 msgid "Parings by player"
 msgstr ""
 
-#: src/ffe/action_selector.py:30 src/ffe/action_selector.py:43
-#: src/ffe/action_selector.py:63
+#: src/ffe/action_selector.py
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/ffe/action_selector.py:46
+#: src/ffe/action_selector.py
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/ffe/action_selector.py:50
+#: src/ffe/action_selector.py
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/ffe/action_selector.py:66
+#: src/ffe/action_selector.py
 msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/ffe/action_selector.py:70
+#: src/ffe/action_selector.py
 msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/ffe/action_selector.py:74
+#: src/ffe/action_selector.py
 msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/ffe/action_selector.py:86
+#: src/ffe/action_selector.py
 msgid "No FFE operations can be done on the tournaments of this event."
 msgstr ""
 
-#: src/ffe/action_selector.py:89
+#: src/ffe/action_selector.py
 msgid "Tournaments: {tournament_ffe_ids}"
 msgstr ""
 
-#: src/ffe/action_selector.py:91
+#: src/ffe/action_selector.py
 msgid "T *** THE LETTER TO ANSWER TEST"
 msgstr ""
 
-#: src/ffe/action_selector.py:92
+#: src/ffe/action_selector.py
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr ""
 
-#: src/ffe/action_selector.py:93
+#: src/ffe/action_selector.py
 msgid "F *** THE LETTER TO ANSWER FEES"
 msgstr ""
 
-#: src/ffe/action_selector.py:94
+#: src/ffe/action_selector.py
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr ""
 
-#: src/ffe/action_selector.py:98
+#: src/ffe/action_selector.py
 msgid "Test the tournament passwords on the FFE website"
 msgstr ""
 
-#: src/ffe/action_selector.py:99
+#: src/ffe/action_selector.py
 msgid "Make the tournaments visible on the FFE website"
 msgstr ""
 
-#: src/ffe/action_selector.py:100
+#: src/ffe/action_selector.py
 msgid "Download fees invoices"
 msgstr ""
 
-#: src/ffe/action_selector.py:101
+#: src/ffe/action_selector.py
 msgid "Upload the rules of the tournaments"
 msgstr ""
 
-#: src/ffe/action_selector.py:102
+#: src/ffe/action_selector.py
 msgid "Upload the results of the tournaments"
 msgstr ""
 
-#: src/ffe/action_selector.py:105
+#: src/ffe/action_selector.py
 msgid "Actions:"
 msgstr ""
 
-#: src/ffe/action_selector.py:151
+#: src/ffe/action_selector.py
 msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr ""
 
-#: src/ffe/action_selector.py:177
+#: src/ffe/action_selector.py
 msgid "No need to upload the results to the FFE website (up to date)."
 msgstr ""
 
-#: src/ffe/action_selector.py:179
+#: src/ffe/action_selector.py
 msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
 msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/ffe/action_selector.py:188
+#: src/ffe/action_selector.py
 msgid "End of upload (Ctrl-C)"
 msgstr ""
 
-#: src/ffe/ffe_session.py:142
+#: src/ffe/ffe_session.py
 msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
 msgstr ""
 
-#: src/ffe/ffe_session.py:156
+#: src/ffe/ffe_session.py
 msgid "Initializing a session to [{url}]..."
 msgstr ""
 
-#: src/ffe/ffe_session.py:164 src/ffe/ffe_session.py:205
-#: src/web/templates/admin_players/admin_players_filter_categories.html:22
-#: src/web/templates/admin_players/admin_players_filter_check_ins.html:22
-#: src/web/templates/admin_players/admin_players_filter_clubs.html:21
-#: src/web/templates/admin_players/admin_players_filter_columns.html:20
-#: src/web/templates/admin_players/admin_players_filter_federations.html:21
-#: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:22
-#: src/web/templates/admin_players/admin_players_filter_genders.html:22
-#: src/web/templates/admin_players/admin_players_filter_leagues.html:21
-#: src/web/templates/admin_players/admin_players_filter_tournaments.html:23
+#: src/ffe/ffe_session.py
+#: src/web/templates/admin_players/admin_players_filter_categories.html
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
+#: src/web/templates/admin_players/admin_players_filter_clubs.html
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#: src/web/templates/admin_players/admin_players_filter_federations.html
+#: src/web/templates/admin_players/admin_players_filter_ffe_licences.html
+#: src/web/templates/admin_players/admin_players_filter_genders.html
+#: src/web/templates/admin_players/admin_players_filter_leagues.html
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html
 msgid "OK"
 msgstr ""
 
-#: src/ffe/ffe_session.py:170
+#: src/ffe/ffe_session.py
 msgid "Authenticating..."
 msgstr ""
 
-#: src/ffe/ffe_session.py:200
+#: src/ffe/ffe_session.py
 msgid "Authentication failed."
 msgstr ""
 
-#: src/ffe/ffe_session.py:210
+#: src/ffe/ffe_session.py
 msgid "Tournament [{ffe_id}]:"
 msgstr ""
 
-#: src/ffe/ffe_session.py:218
+#: src/ffe/ffe_session.py
 msgid "Getting fees for tournament [{ffe_id}]..."
 msgstr ""
 
-#: src/ffe/ffe_session.py:228
+#: src/ffe/ffe_session.py
 msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
 msgstr ""
 
-#: src/ffe/ffe_session.py:231
+#: src/ffe/ffe_session.py
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
-#: src/ffe/ffe_session.py:234
+#: src/ffe/ffe_session.py
 msgid "Invalid fees link text [{text}]."
 msgstr ""
 
-#: src/ffe/ffe_session.py:259
+#: src/ffe/ffe_session.py
 msgid "Invoice saved to [{file}]."
 msgstr ""
 
-#: src/ffe/ffe_session.py:264
+#: src/ffe/ffe_session.py
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
-#: src/ffe/ffe_session.py:274
+#: src/ffe/ffe_session.py
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
-#: src/ffe/ffe_session.py:307 src/ffe/ffe_session.py:334
+#: src/ffe/ffe_session.py
 msgid "Results upload OK"
 msgstr ""
 
-#: src/ffe/ffe_session.py:310
+#: src/ffe/ffe_session.py
 msgid "Making the tournament visible on the FFE website..."
 msgstr ""
 
-#: src/ffe/ffe_session.py:314
+#: src/ffe/ffe_session.py
 msgid "Display link not found, check that a Papi file has already been sent."
 msgstr ""
 
-#: src/ffe/ffe_session.py:317
+#: src/ffe/ffe_session.py
 msgid "Data is already displayed on the FFE website."
 msgstr ""
 
-#: src/ffe/ffe_session.py:321
+#: src/ffe/ffe_session.py
 msgid "Invalid display link text [{text}]"
 msgstr ""
 
-#: src/ffe/ffe_session.py:338
+#: src/ffe/ffe_session.py
 msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
-#: src/ffe/ffe_session.py:348
+#: src/ffe/ffe_session.py
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
-#: src/web/server_engine.py:24
+#: src/web/server_engine.py
 msgid "Opening the welcome page [{url}] in a browser..."
 msgstr ""
 
-#: src/web/server_engine.py:30
+#: src/web/server_engine.py
 msgid "Web server not started yet ({ex}), waiting..."
 msgstr ""
 
-#: src/web/server_engine.py:40
+#: src/web/server_engine.py
 msgid "Starting Papi-web server, please wait..."
 msgstr ""
 
-#: src/web/server_engine.py:42
+#: src/web/server_engine.py
 msgid "Logging level: {log_level}"
 msgstr ""
 
-#: src/web/server_engine.py:43
+#: src/web/server_engine.py
 msgid "Port: {port}"
 msgstr ""
 
-#: src/web/server_engine.py:44
+#: src/web/server_engine.py
 msgid "Local URL: {local_url}"
 msgstr ""
 
-#: src/web/server_engine.py:46
+#: src/web/server_engine.py
 msgid "LAN/WAN URL: {lan_url}"
 msgstr ""
 
-#: src/web/server_engine.py:49
+#: src/web/server_engine.py
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr ""
 
-#: src/web/controllers/index_controller.py:285
+#: src/web/controllers/index_controller.py
 msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py:69
+#: src/web/controllers/admin/chessevent_admin_controller.py
 msgid "Please enter the ID of ChessEvent connection."
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py:74
-#: src/web/controllers/admin/chessevent_admin_controller.py:79
+#: src/web/controllers/admin/chessevent_admin_controller.py
 msgid "ChessEvent connection [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py:88
+#: src/web/controllers/admin/chessevent_admin_controller.py
 msgid "Please enter the ID used to connect to the ChessEvent platform."
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py:92
+#: src/web/controllers/admin/chessevent_admin_controller.py
 msgid "Please enter the password used to connect to the ChessEvent platform."
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py:96
+#: src/web/controllers/admin/chessevent_admin_controller.py
 msgid "Please enter the ID of the event on the ChessEvent platform."
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py:232
+#: src/web/controllers/admin/chessevent_admin_controller.py
 msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py:238
+#: src/web/controllers/admin/chessevent_admin_controller.py
 msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py:244
+#: src/web/controllers/admin/chessevent_admin_controller.py
 msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:117
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Tournaments ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:121
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Players ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:125
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Screens ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:129
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Families ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:133
-#: src/web/controllers/user/event_user_controller.py:125
+#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/user/event_user_controller.py
 msgid "Rotators ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:137
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Timers ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:141
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "ChessEvent ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:145
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Messages ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:636
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:643
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:646
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:654
-#: src/web/controllers/admin/index_admin_controller.py:675
+#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/event_admin_controller.py:664
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:102
+#: src/web/controllers/admin/family_admin_controller.py
 msgid "Please enter the family ID."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:104
-#: src/web/controllers/admin/index_admin_controller.py:232
-#: src/web/controllers/admin/screen_admin_controller.py:123
-#: src/web/controllers/admin/tournament_admin_controller.py:76
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Character [{char}] is not allowed."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:109
-#: src/web/controllers/admin/family_admin_controller.py:113
+#: src/web/controllers/admin/family_admin_controller.py
 msgid "Family [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:130
-#: src/web/controllers/admin/screen_admin_controller.py:90
-#: src/web/controllers/admin/screen_admin_controller.py:258
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Please choose the tournament."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:132
-#: src/web/controllers/admin/screen_admin_controller.py:260
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:135
-#: src/web/controllers/admin/family_admin_controller.py:140
-#: src/web/controllers/admin/family_admin_controller.py:150
-#: src/web/controllers/admin/family_admin_controller.py:155
-#: src/web/controllers/admin/family_admin_controller.py:160
-#: src/web/controllers/admin/family_admin_controller.py:179
-#: src/web/controllers/admin/family_admin_controller.py:184
-#: src/web/controllers/admin/rotator_admin_controller.py:94
-#: src/web/controllers/admin/screen_admin_controller.py:143
-#: src/web/controllers/admin/screen_admin_controller.py:154
-#: src/web/controllers/admin/screen_admin_controller.py:167
-#: src/web/controllers/admin/screen_admin_controller.py:172
-#: src/web/controllers/admin/screen_admin_controller.py:262
-#: src/web/controllers/admin/screen_admin_controller.py:267
-#: src/web/controllers/admin/screen_admin_controller.py:272
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "A positive integer is expected."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:148
-#: src/web/controllers/admin/screen_admin_controller.py:152
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Timer [{timer_id}] not found."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:186
+#: src/web/controllers/admin/family_admin_controller.py
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:272
-#: src/web/controllers/admin/screen_admin_controller.py:356
-#: src/web/templates/admin_rotator_modal.html:121
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/templates/admin_rotator_modal.html
 msgid "pairings by board"
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py:274
-#: src/web/controllers/admin/index_admin_controller.py:105
-#: src/web/controllers/admin/screen_admin_controller.py:358
-#: src/web/controllers/admin/tournament_admin_controller.py:340
-#: src/web/templates/admin_families.html:62
-#: src/web/templates/admin_screens.html:78
-#: src/web/templates/admin_screens.html:112
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin_families.html src/web/templates/admin_screens.html
 msgid "Pairings by player"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:77
-#: src/web/templates/admin_event_config.html:108
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/templates/admin_event_config.html
 msgid "No recording"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:79
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/web/controllers/admin/index_admin_controller.py:82
-#: src/web/controllers/admin/index_admin_controller.py:128
-#: src/web/controllers/admin/index_admin_controller.py:139
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "By default - {option}"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:88
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:91
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:94
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:115
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Use no timer"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:115
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "No timer defined"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:118
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Timer {timer_uniq_id}"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:125
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Display the exit button"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:126
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Hide the exit button"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:136
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Display only paired players"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:137
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Display all the players, paired and unpaired"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:179
-#: src/web/controllers/admin/index_admin_controller.py:288
-#: src/web/controllers/admin/screen_admin_controller.py:190
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:182
-#: src/web/controllers/admin/index_admin_controller.py:292
-#: src/web/controllers/admin/screen_admin_controller.py:194
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:186
-#: src/web/controllers/admin/index_admin_controller.py:300
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Incorrect path [{path}]."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:191
-#: src/web/controllers/admin/index_admin_controller.py:304
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "File [{file}] not found."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:193
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Wrong file extension [{ext}] ([pdf] expected)."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:208
-#: src/web/controllers/admin/index_admin_controller.py:314
-#: src/web/controllers/admin/index_admin_controller.py:329
-#: src/web/controllers/admin/index_admin_controller.py:335
-#: src/web/controllers/admin/timer_admin_controller.py:104
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:225
-#: src/web/controllers/admin/index_admin_controller.py:230
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Please enter the event ID."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:227
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "event ID does not match."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:238
-#: src/web/controllers/admin/index_admin_controller.py:241
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Event [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:264
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Please enter the name of the event."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:267
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Please enter the start date of the event."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:272
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Please enter the end date of the event."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:276
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Please enter a date after the start date."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:296
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:320
-#: src/web/controllers/admin/timer_admin_controller.py:110
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:427
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "New event"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:428
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "event"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:525
-#: src/web/controllers/user/index_user_controller.py:84
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
 msgid "Current events ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:529
-#: src/web/controllers/user/index_user_controller.py:86
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
 msgid "No current events."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:533
-#: src/web/controllers/user/index_user_controller.py:92
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
 msgid "Upcoming events ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:537
-#: src/web/controllers/user/index_user_controller.py:94
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
 msgid "No upcoming events."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:541
-#: src/web/controllers/user/index_user_controller.py:100
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
 msgid "Passed events ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:545
-#: src/web/controllers/user/index_user_controller.py:102
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
 msgid "No passed events."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:549
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Archived events ({num})"
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:553
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "No archived events."
 msgstr ""
 
-#: src/web/controllers/admin/index_admin_controller.py:557
-#: src/web/templates/admin_config.html:4
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/templates/admin_config.html
 msgid "Papi-web configuration"
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:78
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Please enter the last name."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:88
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Please enter the date of birth."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:134
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:140
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:156
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:162
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid phone number [{phone}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:312
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Standard:"
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:313
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:316
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Rapid:"
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:317
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:320
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Blitz:"
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:321
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:413
-#: src/web/controllers/admin/player_admin_controller.py:484
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:421
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:425
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:430
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:443
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:491
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:516
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/player_admin_controller.py:551
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-#: src/web/controllers/admin/rotator_admin_controller.py:74
+#: src/web/controllers/admin/rotator_admin_controller.py
 msgid "Please enter the rotator ID."
 msgstr ""
 
-#: src/web/controllers/admin/rotator_admin_controller.py:79
-#: src/web/controllers/admin/rotator_admin_controller.py:83
+#: src/web/controllers/admin/rotator_admin_controller.py
 msgid "Rotator [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/rotator_admin_controller.py:268
+#: src/web/controllers/admin/rotator_admin_controller.py
 msgid "Rotator [{rotator_uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/rotator_admin_controller.py:274
+#: src/web/controllers/admin/rotator_admin_controller.py
 msgid "Rotator [{rotator_uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/rotator_admin_controller.py:280
+#: src/web/controllers/admin/rotator_admin_controller.py
 msgid "Rotator [{rotator_uniq_id}] has been deleted."
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:121
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Please enter the screen ID."
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:128
-#: src/web/controllers/admin/screen_admin_controller.py:132
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Screen [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:182
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Please enter the image URL."
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:184
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Invalid URL [{background_image}]."
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:350
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "{screen_type}-screen"
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:563
-#: src/web/controllers/admin/screen_admin_controller.py:572
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:578
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:584
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
-#: src/web/controllers/admin/screen_admin_controller.py:692
+#: src/web/controllers/admin/screen_admin_controller.py
 msgid "The last set of a screen can not be deleted."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:83
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter the timer ID."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:88
-#: src/web/controllers/admin/timer_admin_controller.py:92
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Timer [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:135
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter the round number or the hour ID."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:139
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter the time."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:143
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter a valid time."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:145
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter the date of the first hour."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:148
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter a valid date."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:165
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter valid date and time."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:169
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Hour [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:175
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Round numbers must be positive integers."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:178
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter the text to display before the hour (mandatory except for rounds)."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:181
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Please enter the text to display after the hour (mandatory except for rounds)."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:349
-#: src/web/controllers/admin/timer_admin_controller.py:392
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Timer [{timer_uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:358
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Timer [{timer_uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/timer_admin_controller.py:381
+#: src/web/controllers/admin/timer_admin_controller.py
 msgid "Timer [{timer_uniq_id}] has been deleted."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:69
-#: src/web/controllers/admin/tournament_admin_controller.py:74
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Please enter the tournament ID."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:71
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "tournament ID does not match."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:81
-#: src/web/controllers/admin/tournament_admin_controller.py:85
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tournament [{uniq_id}] already exists."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:107
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Please enter the tournament name."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:113
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:116
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:158
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "No ChessEvent connection"
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:195
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "tournament"
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:196
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "New tournament"
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:369
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:374
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tournament [{tournament_uniq_id}] has been created."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:383
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tournament [{tournament_uniq_id}] has been updated."
 msgstr ""
 
-#: src/web/controllers/admin/tournament_admin_controller.py:392
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr ""
 
-#: src/web/controllers/user/event_user_controller.py:100
+#: src/web/controllers/user/event_user_controller.py
 msgid "Results entry ({num})"
 msgstr ""
 
-#: src/web/controllers/user/event_user_controller.py:105
+#: src/web/controllers/user/event_user_controller.py
 msgid "Pairings by board ({num})"
 msgstr ""
 
-#: src/web/controllers/user/event_user_controller.py:110
+#: src/web/controllers/user/event_user_controller.py
 msgid "Pairings by player ({num})"
 msgstr ""
 
-#: src/web/controllers/user/event_user_controller.py:115
+#: src/web/controllers/user/event_user_controller.py
 msgid "Last results ({num})"
 msgstr ""
 
-#: src/web/controllers/user/event_user_controller.py:120
+#: src/web/controllers/user/event_user_controller.py
 msgid "Image ({num})"
 msgstr ""
 
-#: src/web/controllers/user/screen_user_controller.py:77
+#: src/web/controllers/user/screen_user_controller.py
 msgid "Access denied, please authenticate to enter results."
 msgstr ""
 
-#: src/web/controllers/user/screen_user_controller.py:80
-#: src/web/controllers/user/screen_user_controller.py:218
+#: src/web/controllers/user/screen_user_controller.py
 msgid "Incorrect password."
 msgstr ""
 
-#: src/web/controllers/user/screen_user_controller.py:212
+#: src/web/controllers/user/screen_user_controller.py
 msgid "Authentication successful!"
 msgstr ""
 
-#: src/web/controllers/user/screen_user_controller.py:216
+#: src/web/controllers/user/screen_user_controller.py
 msgid "Please enter the password."
 msgstr ""
 
-#: src/web/controllers/user/tournament_user_controller.py:57
+#: src/web/controllers/user/tournament_user_controller.py
 msgid "Tournament [{tournament_uniq_id}] is not started yet."
 msgstr ""
 
-#: src/web/controllers/user/tournament_user_controller.py:61
+#: src/web/controllers/user/tournament_user_controller.py
 msgid "Tournament [{tournament_uniq_id}] is started."
 msgstr ""
 
-#: src/web/templates/admin_archives.html:11
+#: src/web/templates/admin_archives.html
 msgid "Archived event"
 msgstr ""
 
-#: src/web/templates/admin_archives.html:12
+#: src/web/templates/admin_archives.html
 msgid "Deletion date"
 msgstr ""
 
-#: src/web/templates/admin_check_in.html:1
-#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:11
-#: src/web/templates/user_screen.html:249
+#: src/web/templates/admin_check_in.html
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
+#: src/web/templates/user_screen.html
 msgid "Check-in"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_card.html:14
+#: src/web/templates/admin_chessevent_card.html
 #, python-format
 msgid "Chessevent ID: %(chessevent_user_id)s"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_card.html:17
+#: src/web/templates/admin_chessevent_card.html
 #, python-format
 msgid "ChessEvent password: %(chessevent_password)s"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_card.html:20
+#: src/web/templates/admin_chessevent_card.html
 #, python-format
 msgid "ChessEvent event: %(chessevent_event)s"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_card.html:25
+#: src/web/templates/admin_chessevent_card.html
 msgid "Edit the properties of the ChessEvent connection."
 msgstr ""
 
-#: src/web/templates/admin_chessevent_card.html:33
-#: src/web/templates/admin_event_config.html:15
-#: src/web/templates/admin_family_card.html:125
-#: src/web/templates/admin_players.html:398
-#: src/web/templates/admin_rotator_card.html:92
-#: src/web/templates/admin_screen_card.html:160
-#: src/web/templates/admin_timer_card.html:43
-#: src/web/templates/admin_tournament_card.html:136
+#: src/web/templates/admin_chessevent_card.html
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_screen_card.html
+#: src/web/templates/admin_timer_card.html
+#: src/web/templates/admin_tournament_card.html
 msgid "Edit"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_card.html:39
+#: src/web/templates/admin_chessevent_card.html
 msgid "Clone the ChessEvent connection."
 msgstr ""
 
-#: src/web/templates/admin_chessevent_card.html:48
+#: src/web/templates/admin_chessevent_card.html
 msgid "Delete the ChessEvent connection."
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:18
+#: src/web/templates/admin_chessevent_modal.html
 msgid "ChessEvent connection creation"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:20
+#: src/web/templates/admin_chessevent_modal.html
 #, python-format
 msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:22
+#: src/web/templates/admin_chessevent_modal.html
 #, python-format
 msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:31
+#: src/web/templates/admin_chessevent_modal.html
 msgid "Warning: the deletion of a ChessEvent connection is permanent!"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:34
+#: src/web/templates/admin_chessevent_modal.html
 msgid "The following tournaments will not be connected to ChessEvent anymore:"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:43
-#: src/web/templates/admin_event_modal.html:55
-#: src/web/templates/admin_rotator_modal.html:35
-#: src/web/templates/admin_screen_sets_modal_set_div.html:11
-#: src/web/templates/admin_timer_modal.html:37
-#: src/web/templates/admin_tournament_modal.html:71
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Properties"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:49
-#: src/web/templates/admin_event_modal.html:60
-#: src/web/templates/admin_family_modal.html:90
-#: src/web/templates/admin_rotator_modal.html:71
-#: src/web/templates/admin_screen_modal.html:96
-#: src/web/templates/admin_timer_modal.html:42
-#: src/web/templates/admin_tournament_modal.html:76
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "ID (unique):"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:58
+#: src/web/templates/admin_chessevent_modal.html
 msgid "The Unique ID, used to reference the ChessEvent connection."
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:70
+#: src/web/templates/admin_chessevent_modal.html
 msgid "Connection to the ChessEvent platform"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:76
+#: src/web/templates/admin_chessevent_modal.html
 msgid "Chessevent ID:"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:82
-#: src/web/templates/admin_player_modal.html:302
-#: src/web/templates/admin_screen_sets_modal_set_div.html:157
-#: src/web/templates/admin_tournament_modal.html:188
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_tournament_modal.html
 #, python-format
 msgid "E.g.: %(string)s"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:85
+#: src/web/templates/admin_chessevent_modal.html
 msgid "the ID used to connect to the ChessEvent platform."
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:98
+#: src/web/templates/admin_chessevent_modal.html
 msgid "Password:"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:105
-#: src/web/templates/admin_event_modal.html:202
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
 msgid "E.g.: my_password"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:112
+#: src/web/templates/admin_chessevent_modal.html
 msgid "The password used to connect to the ChessEvent platform."
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:134
+#: src/web/templates/admin_chessevent_modal.html
 msgid "ChessEvent event:"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:143
+#: src/web/templates/admin_chessevent_modal.html
 msgid "The name of the event on the ChessEvent password."
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:166
-#: src/web/templates/admin_event_modal.html:561
-#: src/web/templates/admin_family_modal.html:480
-#: src/web/templates/admin_player_modal.html:447
-#: src/web/templates/admin_rotator_modal.html:221
-#: src/web/templates/admin_screen_modal.html:492
-#: src/web/templates/admin_timer_modal.html:82
-#: src/web/templates/admin_tournament_modal.html:431
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Create"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:168
-#: src/web/templates/admin_event_modal.html:563
-#: src/web/templates/admin_family_modal.html:482
-#: src/web/templates/admin_player_modal.html:449
-#: src/web/templates/admin_rotator_modal.html:223
-#: src/web/templates/admin_screen_modal.html:494
-#: src/web/templates/admin_screen_sets_modal_set_div.html:65
-#: src/web/templates/admin_timer_modal.html:84
-#: src/web/templates/admin_tournament_modal.html:433
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Update"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:170
-#: src/web/templates/admin_event_config.html:33
-#: src/web/templates/admin_event_modal.html:565
-#: src/web/templates/admin_family_modal.html:484
-#: src/web/templates/admin_players.html:408
-#: src/web/templates/admin_rotator_modal.html:225
-#: src/web/templates/admin_screen_modal.html:496
-#: src/web/templates/admin_timer_modal.html:86
-#: src/web/templates/admin_tournament_modal.html:435
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Delete"
 msgstr ""
 
-#: src/web/templates/admin_chessevent_modal.html:186
-#: src/web/templates/admin_close_check_in_modal.html:77
-#: src/web/templates/admin_event_modal.html:584
-#: src/web/templates/admin_family_modal.html:500
-#: src/web/templates/admin_player_modal.html:465
-#: src/web/templates/admin_rotator_modal.html:240
-#: src/web/templates/admin_screen_modal.html:512
-#: src/web/templates/admin_screen_sets_modal.html:66
-#: src/web/templates/admin_screen_sets_modal_set_div.html:75
-#: src/web/templates/admin_timer_modal.html:102
-#: src/web/templates/admin_tournament_modal.html:463
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_close_check_in_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Cancel"
 msgstr ""
 
-#: src/web/templates/admin_chessevents.html:10
-#: src/web/templates/admin_events.html:9
-#: src/web/templates/admin_players.html:11
-#: src/web/templates/admin_screens.html:42
-#: src/web/templates/admin_timers.html:10
-#: src/web/templates/admin_tournaments.html:10
+#: src/web/templates/admin_chessevents.html src/web/templates/admin_events.html
+#: src/web/templates/admin_players.html src/web/templates/admin_screens.html
+#: src/web/templates/admin_timers.html src/web/templates/admin_tournaments.html
 msgid "Refresh this page."
 msgstr ""
 
-#: src/web/templates/admin_chessevents.html:21
+#: src/web/templates/admin_chessevents.html
 msgid "Add a ChessEvent connection to the event."
 msgstr ""
 
-#: src/web/templates/admin_chessevents.html:30
+#: src/web/templates/admin_chessevents.html
 msgid "Create a ChessEvent connection"
 msgstr ""
 
-#: src/web/templates/admin_chessevents.html:45
-#: src/web/templates/admin_tournament_modal.html:261
+#: src/web/templates/admin_chessevents.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "No ChessEvent connections."
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:5
+#: src/web/templates/admin_close_check_in_modal.html
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:12
+#: src/web/templates/admin_close_check_in_modal.html
 msgid "The following players did not check-in:"
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:18
+#: src/web/templates/admin_close_check_in_modal.html
 msgid "Choose what to do after closing the check-in:"
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:21
+#: src/web/templates/admin_close_check_in_modal.html
 msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:24
+#: src/web/templates/admin_close_check_in_modal.html
 msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:28
+#: src/web/templates/admin_close_check_in_modal.html
 msgid "All the players intended to play the coming round did check-in."
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:44
+#: src/web/templates/admin_close_check_in_modal.html
 msgid "Mark as forfeit for the rest of the tournament"
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:53
+#: src/web/templates/admin_close_check_in_modal.html
 msgid "Mark as forfeit for the coming round"
 msgstr ""
 
-#: src/web/templates/admin_close_check_in_modal.html:63
+#: src/web/templates/admin_close_check_in_modal.html
 msgid "Close the check-in"
 msgstr ""
 
-#: src/web/templates/admin_config.html:7 src/web/templates/admin_events.html:20
+#: src/web/templates/admin_config.html src/web/templates/admin_events.html
 msgid "Add an event."
 msgstr ""
 
-#: src/web/templates/admin_config.html:15
-#: src/web/templates/admin_events.html:28
+#: src/web/templates/admin_config.html src/web/templates/admin_events.html
 msgid "Create an event"
 msgstr ""
 
-#: src/web/templates/admin_config.html:24
+#: src/web/templates/admin_config.html
 msgid "Configuration"
 msgstr ""
 
-#: src/web/templates/admin_config.html:30
+#: src/web/templates/admin_config.html
 msgid "Port"
 msgstr ""
 
-#: src/web/templates/admin_config.html:34
+#: src/web/templates/admin_config.html
 msgid "Access from the Papi-web server"
 msgstr ""
 
-#: src/web/templates/admin_config.html:38
+#: src/web/templates/admin_config.html
 msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
-#: src/web/templates/admin_config.html:42
+#: src/web/templates/admin_config.html
 msgid "Launching the browser on server startup"
 msgstr ""
 
-#: src/web/templates/admin_config.html:43
+#: src/web/templates/admin_config.html
 msgid "Yes"
 msgstr ""
 
-#: src/web/templates/admin_config.html:43
+#: src/web/templates/admin_config.html
 msgid "No"
 msgstr ""
 
-#: src/web/templates/admin_config.html:46
-#: src/web/templates/admin_config.html:50
-#: src/web/templates/admin_config.html:54
-#: src/web/templates/admin_config.html:58
-#: src/web/templates/admin_config.html:62
-#: src/web/templates/admin_config.html:66
-#: src/web/templates/admin_config.html:70
-#: src/web/templates/admin_config.html:74
-#: src/web/templates/admin_config.html:78
-#: src/web/templates/admin_config.html:82
+#: src/web/templates/admin_config.html
 #, python-format
 msgid "%(lib)s version"
 msgstr ""
 
-#: src/web/templates/admin_config.html:87
+#: src/web/templates/admin_config.html
 msgid "Access driver (found)"
 msgstr ""
 
-#: src/web/templates/admin_config.html:89
+#: src/web/templates/admin_config.html
 msgid "Access driver (not found)"
 msgstr ""
 
-#: src/web/templates/admin_config.html:95
+#: src/web/templates/admin_config.html
 msgid "Other ODBC drivers found on the server"
 msgstr ""
 
-#: src/web/templates/admin_edit_timer_colors.html:11
+#: src/web/templates/admin_edit_timer_colors.html
 #, python-format
 msgid "Colour #%(num)d:"
 msgstr ""
 
-#: src/web/templates/admin_edit_timer_colors.html:17
-#: src/web/templates/admin_event_modal.html:352
-#: src/web/templates/admin_event_modal.html:501
-#: src/web/templates/admin_screen_modal.html:445
-#: src/web/templates/admin_screen_modal_message.html:12
-#: src/web/templates/user_screen_card.html:46
+#: src/web/templates/admin_edit_timer_colors.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_modal_message.html
+#: src/web/templates/user_screen_card.html
 msgid "by default"
 msgstr ""
 
-#: src/web/templates/admin_edit_timer_delays.html:5
+#: src/web/templates/admin_edit_timer_delays.html
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:20
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:27
-#: src/web/templates/user_event_card.html:20
+#: src/web/templates/admin_event_card.html
+#: src/web/templates/user_event_card.html
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:34
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "ChessEvent connections: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:41
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "Timers: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:48
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "Screens: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:55
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "Families: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:62
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "Rotators: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:69
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "Errors: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:76
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "Warnings: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_card.html:83
+#: src/web/templates/admin_event_card.html
 #, python-format
 msgid "Informations: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:24
+#: src/web/templates/admin_event_config.html
 msgid "Clone"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:41
+#: src/web/templates/admin_event_config.html
 msgid "Customization"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:47
+#: src/web/templates/admin_event_config.html
 msgid "Unique ID"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:52
+#: src/web/templates/admin_event_config.html
 msgid "Start"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:57
+#: src/web/templates/admin_event_config.html
 msgid "End"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:62
+#: src/web/templates/admin_event_config.html
 msgid "Visibility"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:65
-#: src/web/templates/admin_event_modal.html:116
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_event_modal.html
 msgid "Public event"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:65
+#: src/web/templates/admin_event_config.html
 msgid "Private event"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:70
+#: src/web/templates/admin_event_config.html
 msgid "Default directory of the Papi files"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:75
-#: src/web/templates/admin_event_config.html:112
-#: src/web/templates/admin_family_card.html:33
-#: src/web/templates/admin_family_card.html:60
-#: src/web/templates/admin_family_card.html:72
-#: src/web/templates/admin_family_card.html:84
-#: src/web/templates/admin_family_card.html:91
-#: src/web/templates/admin_rotator_card.html:18
-#: src/web/templates/admin_rotator_card.html:30
-#: src/web/templates/admin_rotator_card.html:37
-#: src/web/templates/admin_screen_card.html:28
-#: src/web/templates/admin_screen_card.html:56
-#: src/web/templates/admin_screen_card.html:68
-#: src/web/templates/admin_screen_card.html:88
-#: src/web/templates/admin_screen_card.html:104
-#: src/web/templates/admin_screen_card.html:117
-#: src/web/templates/admin_screen_card.html:124
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "(by default)"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:82
+#: src/web/templates/admin_event_config.html
 msgid "Background image and colour"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:90
+#: src/web/templates/admin_event_config.html
 msgid "Password to enter results"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:96
+#: src/web/templates/admin_event_config.html
 msgid "No password required"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:103
+#: src/web/templates/admin_event_config.html
 msgid "Maximum number of illegal moves"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:119
-#: src/web/templates/admin_event_modal.html:254
-#: src/web/templates/admin_tournament_modal.html:370
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Rules"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:125
-#: src/web/templates/admin_tournament_card.html:107
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_tournament_card.html
 msgid "No rules file set"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:132
+#: src/web/templates/admin_event_config.html
 msgid "Default timer configuration"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:134
-#: src/web/templates/admin_event_config.html:135
-#: src/web/templates/admin_timer_card.html:13
-#: src/web/templates/admin_timer_card.html:14
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_timer_card.html
 #, python-format
 msgid "%(minutes)d minutes before"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:136
-#: src/web/templates/admin_timer_card.html:15
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_timer_card.html
 #, python-format
 msgid "%(minutes)d minutes after"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:141
-#: src/web/templates/admin_event_modal.html:445
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_event_modal.html
 msgid "Alert message"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:151
-#: src/web/templates/admin_family_card.html:90
-#: src/web/templates/admin_rotator_card.html:36
-#: src/web/templates/admin_screen_card.html:123
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "No alert message"
 msgstr ""
 
-#: src/web/templates/admin_event_config.html:159
+#: src/web/templates/admin_event_config.html
 msgid "Last update"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:20
+#: src/web/templates/admin_event_modal.html
 msgid "Event creation"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:22
+#: src/web/templates/admin_event_modal.html
 #, python-format
 msgid "Edition of event [%(event_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:24
+#: src/web/templates/admin_event_modal.html
 #, python-format
 msgid "Deletion of event [%(event_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:31
+#: src/web/templates/admin_event_modal.html
 msgid "Warning: the deletion of an event is permanent!"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:35
+#: src/web/templates/admin_event_modal.html
 msgid "Enter the event ID to confirm its deletion:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:41
+#: src/web/templates/admin_event_modal.html
 msgid "Enter here the event ID"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:44
+#: src/web/templates/admin_event_modal.html
 msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:69
+#: src/web/templates/admin_event_modal.html
 msgid "The Unique ID, used for data storage and export."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:80
-#: src/web/templates/admin_family_modal.html:116
-#: src/web/templates/admin_screen_modal.html:122
-#: src/web/templates/admin_screen_sets_modal_set_div.html:40
-#: src/web/templates/admin_tournament_modal.html:96
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Name:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:89
+#: src/web/templates/admin_event_modal.html
 msgid "The name of the event, used for display and reports."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:105
-#: src/web/templates/admin_family_modal.html:65
-#: src/web/templates/admin_rotator_modal.html:45
-#: src/web/templates/admin_screen_modal.html:71
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Visibility:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:119
+#: src/web/templates/admin_event_modal.html
 msgid "Only arbiters can see private events."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:132
+#: src/web/templates/admin_event_modal.html
 msgid "Start:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:140
+#: src/web/templates/admin_event_modal.html
 msgid "The start date and time of the event."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:151
+#: src/web/templates/admin_event_modal.html
 msgid "End:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:159
+#: src/web/templates/admin_event_modal.html
 msgid "The end date and time of the event."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:170
+#: src/web/templates/admin_event_modal.html
 msgid "Default directory of the Papi files:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:179
+#: src/web/templates/admin_event_modal.html
 #, python-format
 msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:195
+#: src/web/templates/admin_event_modal.html
 msgid "Password to enter results:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:209
+#: src/web/templates/admin_event_modal.html
 msgid "The password required on input screens to enter results (optional)."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:229
-#: src/web/templates/admin_tournament_modal.html:395
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Illegal moves recording:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:240
+#: src/web/templates/admin_event_modal.html
 #, python-format
 msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:259
-#: src/web/templates/admin_tournament_modal.html:375
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_tournament_modal.html
 msgid "Rules file location:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:268
+#: src/web/templates/admin_event_modal.html
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:279
-#: src/web/templates/admin_rotator_modal.html:199
-#: src/web/templates/admin_screen_modal.html:307
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Display"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:290
+#: src/web/templates/admin_event_modal.html
 msgid "Background image:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:295
+#: src/web/templates/admin_event_modal.html
 msgid "no background image"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:327
+#: src/web/templates/admin_event_modal.html
 msgid "The URL or the path of the image to display (by default the Papi-web logo)."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:347
-#: src/web/templates/admin_event_modal.html:455
-#: src/web/templates/admin_screen_modal.html:439
-#: src/web/templates/user_screen_card.html:68
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/user_screen_card.html
 msgid "Background colour:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:384
-#: src/web/templates/admin_screen_modal.html:464
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "The background colour is used when the image dost fill the whole screen."
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:413
+#: src/web/templates/admin_event_modal.html
 msgid "Choose a custom image:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:436
+#: src/web/templates/admin_event_modal.html
 msgid "Timers"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:495
+#: src/web/templates/admin_event_modal.html
 msgid "Text colour:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:531
+#: src/web/templates/admin_event_modal.html
 msgid "Text:"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:537
-#: src/web/templates/admin_screen_modal_message.html:18
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_screen_modal_message.html
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr ""
 
-#: src/web/templates/admin_event_modal.html:540
+#: src/web/templates/admin_event_modal.html
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr ""
 
-#: src/web/templates/admin_families.html:6
+#: src/web/templates/admin_families.html
 msgid "Screen families"
 msgstr ""
 
-#: src/web/templates/admin_families.html:13
+#: src/web/templates/admin_families.html
 msgid "Enable/disable the details of the screen families on the cards below."
 msgstr ""
 
-#: src/web/templates/admin_families.html:23
-#: src/web/templates/admin_rotators.html:23
-#: src/web/templates/admin_screens.html:39
+#: src/web/templates/admin_families.html src/web/templates/admin_rotators.html
+#: src/web/templates/admin_screens.html
 msgid "Details"
 msgstr ""
 
-#: src/web/templates/admin_families.html:42
+#: src/web/templates/admin_families.html
 msgid "You must create a tournament before creating a screen family."
 msgstr ""
 
-#: src/web/templates/admin_families.html:56
+#: src/web/templates/admin_families.html
 msgid "Create a screen family"
 msgstr ""
 
-#: src/web/templates/admin_families.html:60
+#: src/web/templates/admin_families.html
 msgid "Add a family of screens to enter the results."
 msgstr ""
 
-#: src/web/templates/admin_families.html:61
+#: src/web/templates/admin_families.html
 msgid "Add a family of screens to display the pairings by board."
 msgstr ""
 
-#: src/web/templates/admin_families.html:62
+#: src/web/templates/admin_families.html
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr ""
 
-#: src/web/templates/admin_families.html:94
-#: src/web/templates/admin_rotator_modal.html:190
+#: src/web/templates/admin_families.html
+#: src/web/templates/admin_rotator_modal.html
 msgid "No screen families."
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:16
+#: src/web/templates/admin_family_card.html
 #, python-format
 msgid "Type: %(family_type)s"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:19
-#: src/web/templates/admin_screen_sets_modal_set_div.html:182
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 #, python-format
 msgid "Tournament: %(tournament_name)s"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:22
-#: src/web/templates/admin_screen_sets_modal_set_div.html:191
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:25
-#: src/web/templates/admin_family_modal.html:324
-#: src/web/templates/admin_screen_card.html:20
-#: src/web/templates/admin_screen_modal.html:202
-#: src/web/templates/user_screen_card.html:19
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_card.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/user_screen_card.html
 msgid "Columns:"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:30
-#: src/web/templates/admin_screen_card.html:25
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 #, python-format
 msgid "Menu link label: %(menu_label)s"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:38
-#: src/web/templates/admin_screen_card.html:33
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "Menu link label: none"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:44
-#: src/web/templates/admin_screen_card.html:39
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 #, python-format
 msgid "Menu: %(menu)s"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:44
-#: src/web/templates/admin_screen_card.html:39
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "Menu: none"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:48
-#: src/web/templates/admin_screen_card.html:43
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 #, python-format
 msgid "Timer: %(timer_uniq_id)s"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:48
-#: src/web/templates/admin_screen_card.html:43
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "Timer: none"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:53
-#: src/web/templates/admin_screen_card.html:49
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "Exit button:"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:55
-#: src/web/templates/admin_screen_card.html:51
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "yes"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:57
-#: src/web/templates/admin_screen_card.html:53
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "no"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:67
-#: src/web/templates/admin_screen_card.html:63
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "Unpaired: displayed"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:69
-#: src/web/templates/admin_screen_card.html:65
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
 msgid "Unpaired: hidden"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:102
+#: src/web/templates/admin_family_card.html
 #, python-format
 msgid "Boards from #%(first)d to #%(last)d"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:104
+#: src/web/templates/admin_family_card.html
 #, python-format
 msgid "Players from #%(first)s to #%(last)s"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:110
+#: src/web/templates/admin_family_card.html
 msgid "No screens"
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:117
+#: src/web/templates/admin_family_card.html
 msgid "Edit the properties of the screen family."
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:131
+#: src/web/templates/admin_family_card.html
 msgid "Clone the screen family."
 msgstr ""
 
-#: src/web/templates/admin_family_card.html:141
+#: src/web/templates/admin_family_card.html
 msgid "Delete the screen family."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:21
+#: src/web/templates/admin_family_modal.html
 msgid "Input screen family creation"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:23
+#: src/web/templates/admin_family_modal.html
 msgid "Boards screen family creation"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:25
+#: src/web/templates/admin_family_modal.html
 msgid "Players screen family creation"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:30
+#: src/web/templates/admin_family_modal.html
 #, python-format
 msgid "Cloning of screen family [%(family_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:32
+#: src/web/templates/admin_family_modal.html
 #, python-format
 msgid "Edition of screen family [%(family_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:34
+#: src/web/templates/admin_family_modal.html
 #, python-format
 msgid "Deletion of screen family [%(family_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:43
+#: src/web/templates/admin_family_modal.html
 msgid "Warning: the deletion of a screen family is permanent!"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:48
-#: src/web/templates/admin_screen_modal.html:50
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Properties (results entry)"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:50
-#: src/web/templates/admin_screen_modal.html:52
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Properties (pairings by board)"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:52
-#: src/web/templates/admin_screen_modal.html:54
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Properties (pairings by player)"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:76
+#: src/web/templates/admin_family_modal.html
 msgid "Public screen family"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:79
+#: src/web/templates/admin_family_modal.html
 msgid "Only arbiters can see private screen families."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:98
+#: src/web/templates/admin_family_modal.html
 #, python-format
 msgid "E.g.: %(family_type)s-family"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:105
+#: src/web/templates/admin_family_modal.html
 msgid "The Unique ID, used to reference the screen family."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:122
+#: src/web/templates/admin_family_modal.html
 msgid "E.g.: My screen family"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:125
+#: src/web/templates/admin_family_modal.html
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:136
-#: src/web/templates/admin_screen_modal.html:143
-#: src/web/templates/admin_screen_sets_modal_set_div.html:16
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Tournament:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:149
+#: src/web/templates/admin_family_modal.html
 msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:161
-#: src/web/templates/admin_screen_sets_modal_set_div.html:82
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Board selection (by number)"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:163
-#: src/web/templates/admin_screen_sets_modal_set_div.html:84
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Player selection (by alphabetical order)"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:173
-#: src/web/templates/admin_screen_sets_modal_set_div.html:92
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "First board:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:175
-#: src/web/templates/admin_screen_sets_modal_set_div.html:94
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "First player:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:185
-#: src/web/templates/admin_family_modal.html:330
-#: src/web/templates/admin_screen_modal.html:208
-#: src/web/templates/admin_screen_modal.html:349
-#: src/web/templates/admin_screen_sets_modal_set_div.html:102
-#: src/web/templates/admin_screen_sets_modal_set_div.html:132
-#: src/web/templates/admin_tournament_modal.html:167
-#: src/web/templates/admin_tournament_modal.html:296
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_tournament_modal.html
 #, python-format
 msgid "E.g.: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:189
-#: src/web/templates/admin_screen_sets_modal_set_div.html:106
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "The number of the first board to select, optional (the first board by default)."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:191
-#: src/web/templates/admin_screen_sets_modal_set_div.html:108
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:207
-#: src/web/templates/admin_screen_sets_modal_set_div.html:122
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Last board:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:209
-#: src/web/templates/admin_screen_sets_modal_set_div.html:124
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Last player:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:223
-#: src/web/templates/admin_screen_sets_modal_set_div.html:136
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "The number of the last board to select, optional (the last board by default)."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:225
-#: src/web/templates/admin_screen_sets_modal_set_div.html:138
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:240
+#: src/web/templates/admin_family_modal.html
 msgid "On a given number of screens:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:247
+#: src/web/templates/admin_family_modal.html
 msgid "E.g.: 4 (split on 4 screens)"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:251
+#: src/web/templates/admin_family_modal.html
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:253
+#: src/web/templates/admin_family_modal.html
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:268
+#: src/web/templates/admin_family_modal.html
 msgid "On fixed size screens:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:279
+#: src/web/templates/admin_family_modal.html
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:281
+#: src/web/templates/admin_family_modal.html
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:295
-#: src/web/templates/admin_screen_modal.html:169
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Layout"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:300
-#: src/web/templates/admin_screen_modal.html:174
-#: src/web/templates/user_screen_card.html:31
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/user_screen_card.html
 msgid "Timer:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:313
+#: src/web/templates/admin_family_modal.html
 msgid "The timer displayed on the screens of the family."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:333
-#: src/web/templates/admin_screen_modal.html:211
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "The number of columns used to display data."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:344
-#: src/web/templates/admin_screen_modal.html:222
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Menus"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:349
-#: src/web/templates/admin_screen_modal.html:227
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Links displayed on the screen menu:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:355
+#: src/web/templates/admin_family_modal.html
 msgid "E.g.: @boards, @family, another-screen"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:358
+#: src/web/templates/admin_family_modal.html
 msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:372
-#: src/web/templates/admin_screen_modal.html:250
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Links to this screen:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:380
-#: src/web/templates/admin_screen_modal.html:258
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Allow"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:392
+#: src/web/templates/admin_family_modal.html
 msgid "Check the box to allow other screens to display a link to the screen of this family."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:404
-#: src/web/templates/admin_screen_modal.html:282
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
 msgid "Menu link label:"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:412
+#: src/web/templates/admin_family_modal.html
 #, python-format
 msgid "E.g.: Boards %%f-%%l"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:414
+#: src/web/templates/admin_family_modal.html
 #, python-format
 msgid "E.g.: Players %%f-%%l"
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:425
+#: src/web/templates/admin_family_modal.html
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr ""
 
-#: src/web/templates/admin_family_modal.html:439
+#: src/web/templates/admin_family_modal.html
 msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr ""
 
-#: src/web/templates/admin_index.html:11 src/web/templates/user_index.html:11
+#: src/web/templates/admin_index.html src/web/templates/user_index.html
 msgid "Go back to the home page."
 msgstr ""
 
-#: src/web/templates/admin_messages.html:4
+#: src/web/templates/admin_messages.html
 msgid "Level"
 msgstr ""
 
-#: src/web/templates/admin_messages.html:5
+#: src/web/templates/admin_messages.html
 msgid "Message"
 msgstr ""
 
-#: src/web/templates/admin_messages.html:44
+#: src/web/templates/admin_messages.html
 msgid "No messages."
 msgstr ""
 
-#: src/web/templates/admin_pairings.html:1
+#: src/web/templates/admin_pairings.html
 msgid "Pairings"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:16
+#: src/web/templates/admin_player_modal.html
 msgid "Player creation"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:18
+#: src/web/templates/admin_player_modal.html
 #, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:26
+#: src/web/templates/admin_player_modal.html
 msgid "Identity"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:31
+#: src/web/templates/admin_player_modal.html
 msgid "Last name:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:37
+#: src/web/templates/admin_player_modal.html
 msgid "E.g.: DOE"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:40
+#: src/web/templates/admin_player_modal.html
 msgid "The player's last name."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:51
+#: src/web/templates/admin_player_modal.html
 msgid "First name:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:57
+#: src/web/templates/admin_player_modal.html
 msgid "E.g.: John"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:60
+#: src/web/templates/admin_player_modal.html
 msgid "The player's first name."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:71
+#: src/web/templates/admin_player_modal.html
 msgid "Date of birth:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:79
+#: src/web/templates/admin_player_modal.html
 msgid "The player's birth date."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:90
+#: src/web/templates/admin_player_modal.html
 msgid "Gender:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:101
+#: src/web/templates/admin_player_modal.html
 msgid "The player's gender."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:112
+#: src/web/templates/admin_player_modal.html
 msgid "FIDE ratings, title and fédération"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:153
+#: src/web/templates/admin_player_modal.html
 msgid "FIDE Title:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:165
+#: src/web/templates/admin_player_modal.html
 msgid "The player's FIDE title."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:176
+#: src/web/templates/admin_player_modal.html
 msgid "Federation:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:193
+#: src/web/templates/admin_player_modal.html
 msgid "The player's federation."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:204
+#: src/web/templates/admin_player_modal.html
 msgid "FIDE ID:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:214
+#: src/web/templates/admin_player_modal.html
 msgid "The player's FIDE ID (do not change)."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:225
+#: src/web/templates/admin_player_modal.html
 msgid "French Chess Federation"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:230
+#: src/web/templates/admin_player_modal.html
 msgid "League:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:242
+#: src/web/templates/admin_player_modal.html
 msgid "The player's league."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:253
+#: src/web/templates/admin_player_modal.html
 msgid "Club:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:259
+#: src/web/templates/admin_player_modal.html
 msgid "E.g.: My favourite club!"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:262
+#: src/web/templates/admin_player_modal.html
 msgid "The player's club."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:273
+#: src/web/templates/admin_player_modal.html
 msgid "Licence:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:285
+#: src/web/templates/admin_player_modal.html
 msgid "The player's licence."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:296
+#: src/web/templates/admin_player_modal.html
 msgid "Licence number:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:305
+#: src/web/templates/admin_player_modal.html
 msgid "The player's licence number."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:316
+#: src/web/templates/admin_player_modal.html
 msgid "FFE Uniq ID:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:326
+#: src/web/templates/admin_player_modal.html
 msgid "The player's Uniq ID for the French federation (do not change)."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:337
+#: src/web/templates/admin_player_modal.html
 msgid "Contact and registration"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:342
+#: src/web/templates/admin_player_modal.html
 msgid "Email:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:350
+#: src/web/templates/admin_player_modal.html
 msgid "The player's email."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:361
+#: src/web/templates/admin_player_modal.html
 msgid "Phone number:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:369
+#: src/web/templates/admin_player_modal.html
 msgid "The player's phone number."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:380
+#: src/web/templates/admin_player_modal.html
 msgid "Comment:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:388
+#: src/web/templates/admin_player_modal.html
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:399
+#: src/web/templates/admin_player_modal.html
 msgid "Owed:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:407
+#: src/web/templates/admin_player_modal.html
 msgid "The price the player pays to register."
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:418
+#: src/web/templates/admin_player_modal.html
 msgid "Paid:"
 msgstr ""
 
-#: src/web/templates/admin_player_modal.html:426
+#: src/web/templates/admin_player_modal.html
 msgid "The price the player already paid."
 msgstr ""
 
-#: src/web/templates/admin_players.html:6
-#: src/web/templates/admin_screen_card.html:183
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_screen_card.html
 msgid "Players"
 msgstr ""
 
-#: src/web/templates/admin_players.html:22
+#: src/web/templates/admin_players.html
 msgid "Add a player to the event."
 msgstr ""
 
-#: src/web/templates/admin_players.html:31
+#: src/web/templates/admin_players.html
 msgid "Create a player"
 msgstr ""
 
-#: src/web/templates/admin_players.html:48
+#: src/web/templates/admin_players.html
 msgid "Clear all the filters."
 msgstr ""
 
-#: src/web/templates/admin_players.html:61
+#: src/web/templates/admin_players.html
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:82
+#: src/web/templates/admin_players.html
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:90
+#: src/web/templates/admin_players.html
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:125
+#: src/web/templates/admin_players.html
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:134
+#: src/web/templates/admin_players.html
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:144
+#: src/web/templates/admin_players.html
 msgid "The mail addresses."
 msgstr ""
 
-#: src/web/templates/admin_players.html:149
+#: src/web/templates/admin_players.html
 msgid "The phone numbers."
 msgstr ""
 
-#: src/web/templates/admin_players.html:160
+#: src/web/templates/admin_players.html
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:165
+#: src/web/templates/admin_players.html
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:170
+#: src/web/templates/admin_players.html
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:171
+#: src/web/templates/admin_players.html
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players.html:203
-#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:18
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
 #, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is finished."
 msgstr ""
 
-#: src/web/templates/admin_players.html:206
-#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:20
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
 #, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr ""
 
-#: src/web/templates/admin_players.html:209
+#: src/web/templates/admin_players.html
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
-#: src/web/templates/admin_players.html:212
+#: src/web/templates/admin_players.html
 #, python-format
 msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
-#: src/web/templates/admin_players.html:215
+#: src/web/templates/admin_players.html
 msgid "Click to check-out the player."
 msgstr ""
 
-#: src/web/templates/admin_players.html:221
+#: src/web/templates/admin_players.html
 msgid "Click to check-in the player."
 msgstr ""
 
-#: src/web/templates/admin_players.html:274
+#: src/web/templates/admin_players.html
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:276
+#: src/web/templates/admin_players.html
 msgid "No mail defined."
 msgstr ""
 
-#: src/web/templates/admin_players.html:287
+#: src/web/templates/admin_players.html
 #, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:289
+#: src/web/templates/admin_players.html
 msgid "No phone defined."
 msgstr ""
 
-#: src/web/templates/admin_players.html:308
+#: src/web/templates/admin_players.html
 #, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:311
+#: src/web/templates/admin_players.html
 msgid "No FIDE ID."
 msgstr ""
 
-#: src/web/templates/admin_players.html:324
+#: src/web/templates/admin_players.html
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr ""
 
-#: src/web/templates/admin_players.html:328
+#: src/web/templates/admin_players.html
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
-#: src/web/templates/admin_players.html:352
+#: src/web/templates/admin_players.html
 msgid "Change the player's tournament."
 msgstr ""
 
-#: src/web/templates/admin_players.html:396
+#: src/web/templates/admin_players.html
 msgid "Edit the player's properties."
 msgstr ""
 
-#: src/web/templates/admin_players.html:406
+#: src/web/templates/admin_players.html
 msgid "Remove the player from the event."
 msgstr ""
 
-#: src/web/templates/admin_players.html:425
+#: src/web/templates/admin_players.html
 msgid "No players."
 msgstr ""
 
-#: src/web/templates/admin_rotator_card.html:15
-#: src/web/templates/user_rotator_card.html:18
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/user_rotator_card.html
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
 
-#: src/web/templates/admin_rotator_card.html:43
+#: src/web/templates/admin_rotator_card.html
 msgid "No screen neither family to rotate."
 msgstr ""
 
-#: src/web/templates/admin_rotator_card.html:49
-#: src/web/templates/admin_rotator_modal.html:128
-#: src/web/templates/user_rotator_card.html:28
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/user_rotator_card.html
 msgid "Screens:"
 msgstr ""
 
-#: src/web/templates/admin_rotator_card.html:60
-#: src/web/templates/admin_rotator_modal.html:163
-#: src/web/templates/user_rotator_card.html:39
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/user_rotator_card.html
 msgid "Screen families:"
 msgstr ""
 
-#: src/web/templates/admin_rotator_card.html:68
+#: src/web/templates/admin_rotator_card.html
 #, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/web/templates/admin_rotator_card.html:74
+#: src/web/templates/admin_rotator_card.html
 msgid "(no screens)"
 msgstr ""
 
-#: src/web/templates/admin_rotator_card.html:84
+#: src/web/templates/admin_rotator_card.html
 msgid "Edit the properties of the rotator."
 msgstr ""
 
-#: src/web/templates/admin_rotator_card.html:98
+#: src/web/templates/admin_rotator_card.html
 msgid "Clone the rotator."
 msgstr ""
 
-#: src/web/templates/admin_rotator_card.html:107
+#: src/web/templates/admin_rotator_card.html
 msgid "Delete the rotator."
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:18
+#: src/web/templates/admin_rotator_modal.html
 msgid "Rotator creation"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:20
+#: src/web/templates/admin_rotator_modal.html
 #, python-format
 msgid "Edition of rotator [%(rotator_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:22
+#: src/web/templates/admin_rotator_modal.html
 #, python-format
 msgid "Deletion of rotator [%(rotator_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:31
+#: src/web/templates/admin_rotator_modal.html
 msgid "Warning: the deletion of a rotator is permanent!"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:56
+#: src/web/templates/admin_rotator_modal.html
 msgid "Public rotator"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:59
+#: src/web/templates/admin_rotator_modal.html
 msgid "Only arbiters can view private rotators."
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:80
+#: src/web/templates/admin_rotator_modal.html
 msgid "The Unique ID, used to reference the rotator."
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:92
+#: src/web/templates/admin_rotator_modal.html
 msgid "Parameters"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:98
+#: src/web/templates/admin_rotator_modal.html
 msgid "Delay:"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:104
-#: src/web/templates/admin_tournament_modal.html:316
-#: src/web/templates/admin_tournament_modal.html:356
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_tournament_modal.html
 #, python-format
 msgid "E.g.: %(seconds)d (seconds)"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:107
+#: src/web/templates/admin_rotator_modal.html
 #, python-format
 msgid "The rotating delay between two screens (by default %(default)d seconds)."
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:119
+#: src/web/templates/admin_rotator_modal.html
 msgid "Selection"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:120
+#: src/web/templates/admin_rotator_modal.html
 msgid "results entry"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:122
+#: src/web/templates/admin_rotator_modal.html
 msgid "pairings by player"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:123
+#: src/web/templates/admin_rotator_modal.html
 msgid "last results"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:124
+#: src/web/templates/admin_rotator_modal.html
 msgid "image"
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:155
+#: src/web/templates/admin_rotator_modal.html
 msgid "No screens."
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:159
+#: src/web/templates/admin_rotator_modal.html
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:194
+#: src/web/templates/admin_rotator_modal.html
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr ""
 
-#: src/web/templates/admin_rotator_modal.html:202
+#: src/web/templates/admin_rotator_modal.html
 msgid "When not defined at rotator-level, the alert message defined at event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed). The alert message defined at rotator-level can be overridden at screen or family-level."
 msgstr ""
 
-#: src/web/templates/admin_rotators.html:6
+#: src/web/templates/admin_rotators.html
 msgid "Rotators"
 msgstr ""
 
-#: src/web/templates/admin_rotators.html:13
+#: src/web/templates/admin_rotators.html
 msgid "Enable/disable the details of the rotators on the cards below."
 msgstr ""
 
-#: src/web/templates/admin_rotators.html:40
+#: src/web/templates/admin_rotators.html
 msgid "Add a rotator to the event."
 msgstr ""
 
-#: src/web/templates/admin_rotators.html:42
+#: src/web/templates/admin_rotators.html
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr ""
 
-#: src/web/templates/admin_rotators.html:57
+#: src/web/templates/admin_rotators.html
 msgid "Create a rotator"
 msgstr ""
 
-#: src/web/templates/admin_rotators.html:76
-#: src/web/templates/user_event.html:100
+#: src/web/templates/admin_rotators.html src/web/templates/user_event.html
 msgid "No rotators."
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:17
+#: src/web/templates/admin_screen_card.html
 #, python-format
 msgid "Type: %(screen_type)s"
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:75
+#: src/web/templates/admin_screen_card.html
 #, python-format
 msgid "Max number: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:77
+#: src/web/templates/admin_screen_card.html
 msgid "Max number: unlimited"
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:82
+#: src/web/templates/admin_screen_card.html
 #, python-format
 msgid "Max age: %(num)d minute"
 msgid_plural "Max age: %(num)d minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/web/templates/admin_screen_card.html:84
+#: src/web/templates/admin_screen_card.html
 msgid "Max age: unlimited"
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:97
+#: src/web/templates/admin_screen_card.html
 #, python-format
 msgid "Image: %(image)s"
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:101
+#: src/web/templates/admin_screen_card.html
 #, python-format
 msgid "Background colour: %(color)s"
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:142
-#: src/web/templates/user_screen_card.html:90
+#: src/web/templates/admin_screen_card.html
+#: src/web/templates/user_screen_card.html
 msgid "All the tournaments"
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:151
+#: src/web/templates/admin_screen_card.html
 msgid "Edit the properties of the screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:168
+#: src/web/templates/admin_screen_card.html
 msgid "Edit the sets of boards displayed on the screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:170
+#: src/web/templates/admin_screen_card.html
 msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_card.html:181
+#: src/web/templates/admin_screen_card.html
 msgid "Boards"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:21
+#: src/web/templates/admin_screen_modal.html
 msgid "Input screen creation"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:23
+#: src/web/templates/admin_screen_modal.html
 msgid "Boards screen creation"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:25
+#: src/web/templates/admin_screen_modal.html
 msgid "Players screen creation"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:27
+#: src/web/templates/admin_screen_modal.html
 msgid "Results screen creation"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:29
+#: src/web/templates/admin_screen_modal.html
 msgid "Image screen creation"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:34
+#: src/web/templates/admin_screen_modal.html
 #, python-format
 msgid "Edition of screen [%(screen_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:36
+#: src/web/templates/admin_screen_modal.html
 #, python-format
 msgid "Deletion of screen [%(screen_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:45
+#: src/web/templates/admin_screen_modal.html
 msgid "Warning: the deletion of a screen is permanent!"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:56
+#: src/web/templates/admin_screen_modal.html
 msgid "Properties (last results)"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:58
+#: src/web/templates/admin_screen_modal.html
 msgid "Properties (image)"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:82
+#: src/web/templates/admin_screen_modal.html
 msgid "Public screen"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:85
+#: src/web/templates/admin_screen_modal.html
 msgid "Only arbiters can see private screens."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:104
+#: src/web/templates/admin_screen_modal.html
 #, python-format
 msgid "E.g.: %(screen_type)s-screen"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:111
+#: src/web/templates/admin_screen_modal.html
 msgid "The Unique ID, used to reference the screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:128
+#: src/web/templates/admin_screen_modal.html
 msgid "E.g.: My screen"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:131
+#: src/web/templates/admin_screen_modal.html
 msgid "The name of the screen, displayed on event screens."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:156
+#: src/web/templates/admin_screen_modal.html
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:191
+#: src/web/templates/admin_screen_modal.html
 msgid "The timer displayed on the screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:233
+#: src/web/templates/admin_screen_modal.html
 msgid "E.g.: @boards, fixed-boards, tournament-a-*"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:236
+#: src/web/templates/admin_screen_modal.html
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:270
+#: src/web/templates/admin_screen_modal.html
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:288
+#: src/web/templates/admin_screen_modal.html
 msgid "E.g.: Link to my screen"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:295
+#: src/web/templates/admin_screen_modal.html
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:310
+#: src/web/templates/admin_screen_modal.html
 msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:343
+#: src/web/templates/admin_screen_modal.html
 msgid "Maximum number of results displayed:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:352
+#: src/web/templates/admin_screen_modal.html
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:363
+#: src/web/templates/admin_screen_modal.html
 msgid "Maximum age of the results:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:369
+#: src/web/templates/admin_screen_modal.html
 #, python-format
 msgid "E.g.: %(minutes)d (minutes)"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:372
+#: src/web/templates/admin_screen_modal.html
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:382
+#: src/web/templates/admin_screen_modal.html
 msgid "Tournaments displayed:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:400
+#: src/web/templates/admin_screen_modal.html
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:414
-#: src/web/templates/user_screen_card.html:60
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/user_screen_card.html
 msgid "Image:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:420
+#: src/web/templates/admin_screen_modal.html
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal.html:423
+#: src/web/templates/admin_screen_modal.html
 msgid "The URL of the image to display."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal_input_exit_button.html:2
+#: src/web/templates/admin_screen_modal_input_exit_button.html
 msgid "Display of a screen exit button:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal_input_exit_button.html:15
+#: src/web/templates/admin_screen_modal_input_exit_button.html
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr ""
 
-#: src/web/templates/admin_screen_modal_message.html:7
+#: src/web/templates/admin_screen_modal_message.html
 msgid "Alert message:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal_players_show_unpaired.html:2
+#: src/web/templates/admin_screen_modal_players_show_unpaired.html
 msgid "Display of unpaired players:"
 msgstr ""
 
-#: src/web/templates/admin_screen_modal_players_show_unpaired.html:15
+#: src/web/templates/admin_screen_modal_players_show_unpaired.html
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal.html:6
+#: src/web/templates/admin_screen_sets_modal.html
 #, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal.html:8
+#: src/web/templates/admin_screen_sets_modal.html
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal.html:15
+#: src/web/templates/admin_screen_sets_modal.html
 msgid "Save the set or cancel."
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal.html:17
+#: src/web/templates/admin_screen_sets_modal.html
 msgid "Drag the sets to order them."
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal.html:49
+#: src/web/templates/admin_screen_sets_modal.html
 msgid "Add a set"
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:29
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "The tournament of which you want to show the pairings, mandatory."
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:46
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 #, python-format
 msgid "E.g.: Boards %%f to %%l"
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:46
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 #, python-format
 msgid "E.g.: Players %%f to %%l"
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:49
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "The name of the screen set (the name of the first set of a screen is by default the name of the screen)."
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:151
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Fixed boards:"
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:160
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Comma-separated board numbers ; if this field is set, other fields are omitted."
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:185
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Tournament: not set"
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:195
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 #, python-format
 msgid "Name: %(screen_set_name)s"
 msgstr ""
 
-#: src/web/templates/admin_screen_sets_modal_set_div.html:198
+#: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Name: by default"
 msgstr ""
 
-#: src/web/templates/admin_screens.html:6
+#: src/web/templates/admin_screens.html
 msgid "Screens"
 msgstr ""
 
-#: src/web/templates/admin_screens.html:13
+#: src/web/templates/admin_screens.html
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:23
+#: src/web/templates/admin_screens.html
 msgid "Families"
 msgstr ""
 
-#: src/web/templates/admin_screens.html:29
+#: src/web/templates/admin_screens.html
 msgid "Enable/disable the details of the screens on the cards below."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:58
+#: src/web/templates/admin_screens.html
 msgid "You must create a tournament before creating screens."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:72
+#: src/web/templates/admin_screens.html
 msgid "Create a screen"
 msgstr ""
 
-#: src/web/templates/admin_screens.html:76
+#: src/web/templates/admin_screens.html
 msgid "Add a screen to enter the results."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:77
+#: src/web/templates/admin_screens.html
 msgid "Add a screen to display the pairings by board."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:78
+#: src/web/templates/admin_screens.html
 msgid "Add a screen to display the pairings by alphabetical order."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:79
+#: src/web/templates/admin_screens.html
 msgid "Add a screen to display the last results."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:80
+#: src/web/templates/admin_screens.html
 msgid "Add a screen to display an image."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:103
+#: src/web/templates/admin_screens.html
 msgid "Show/hide the input screens."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:108
+#: src/web/templates/admin_screens.html
 msgid "Show/hide the boards screens."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:113
+#: src/web/templates/admin_screens.html
 msgid "Show/hide the players screens."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:118
+#: src/web/templates/admin_screens.html
 msgid "Show/hide the results screens."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:123
+#: src/web/templates/admin_screens.html
 msgid "Show/hide the image screens."
 msgstr ""
 
-#: src/web/templates/admin_screens.html:168
-#: src/web/templates/user_event.html:117
+#: src/web/templates/admin_screens.html src/web/templates/user_event.html
 msgid "No such screens."
 msgstr ""
 
-#: src/web/templates/admin_timer_card.html:23
+#: src/web/templates/admin_timer_card.html
 #, python-format
 msgid "Round #%(round)d"
 msgstr ""
 
-#: src/web/templates/admin_timer_card.html:29
-#: src/web/templates/admin_timer_hours_modal.html:29
+#: src/web/templates/admin_timer_card.html
+#: src/web/templates/admin_timer_hours_modal.html
 msgid "No hours."
 msgstr ""
 
-#: src/web/templates/admin_timer_card.html:35
+#: src/web/templates/admin_timer_card.html
 msgid "Edit the properties of the timer."
 msgstr ""
 
-#: src/web/templates/admin_timer_card.html:46
+#: src/web/templates/admin_timer_card.html
 msgid "Edit the hours of the timer"
 msgstr ""
 
-#: src/web/templates/admin_timer_card.html:54
+#: src/web/templates/admin_timer_card.html
 msgid "Hours"
 msgstr ""
 
-#: src/web/templates/admin_timer_card.html:60
+#: src/web/templates/admin_timer_card.html
 msgid "Clone the timer."
 msgstr ""
 
-#: src/web/templates/admin_timer_card.html:70
+#: src/web/templates/admin_timer_card.html
 msgid "Delete the timer."
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal.html:5
+#: src/web/templates/admin_timer_hours_modal.html
 msgid "Timer hours"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal.html:11
+#: src/web/templates/admin_timer_hours_modal.html
 msgid "Save the hour or cancel."
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal.html:13
+#: src/web/templates/admin_timer_hours_modal.html
 msgid "Drag the hours to order them."
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal.html:49
+#: src/web/templates/admin_timer_hours_modal.html
 msgid "Add a hour"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal.html:65
+#: src/web/templates/admin_timer_hours_modal.html
 msgid "Close"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:13
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Date:"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:19
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Format: YYYY-MM-DD"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:22
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:33
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Hour:"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:39
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Format: HH-MM"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:42
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Mandatory for all the hours."
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:53
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Round number or text:"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:59
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "E.g.: Start of check-in"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:62
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:95
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Text before the hour:"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:101
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 #, python-format
 msgid "E.g.: Start of check-in in %%s"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:104
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 #, python-format
 msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:115
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 msgid "Text after the hour:"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:121
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 #, python-format
 msgid "E.g.: Check-in started for %%s"
 msgstr ""
 
-#: src/web/templates/admin_timer_hours_modal_hour_div.html:124
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
 #, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr ""
 
-#: src/web/templates/admin_timer_modal.html:33
+#: src/web/templates/admin_timer_modal.html
 msgid "Warning: the deletion of a timer is permanent!"
 msgstr ""
 
-#: src/web/templates/admin_timer_modal.html:48
+#: src/web/templates/admin_timer_modal.html
 msgid "E.g.: timer"
 msgstr ""
 
-#: src/web/templates/admin_timers.html:21
+#: src/web/templates/admin_timers.html
 msgid "Add a timer to the event."
 msgstr ""
 
-#: src/web/templates/admin_timers.html:30
+#: src/web/templates/admin_timers.html
 msgid "Create a timer"
 msgstr ""
 
-#: src/web/templates/admin_timers.html:45
+#: src/web/templates/admin_timers.html
 msgid "No timers."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:15
+#: src/web/templates/admin_tournament_card.html
 #, python-format
 msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:18
+#: src/web/templates/admin_tournament_card.html
 #, python-format
 msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:21
+#: src/web/templates/admin_tournament_card.html
 #, python-format
 msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:48
+#: src/web/templates/admin_tournament_card.html
 #, python-format
 msgid "Players found in the Papi_file : %(num)d"
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:72
+#: src/web/templates/admin_tournament_card.html
 #, python-format
 msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:74
+#: src/web/templates/admin_tournament_card.html
 msgid "No ChessEvent connection is used."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:86
+#: src/web/templates/admin_tournament_card.html
 msgid "Illegal moves are not recorded."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:88
+#: src/web/templates/admin_tournament_card.html
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/web/templates/admin_tournament_card.html:105
+#: src/web/templates/admin_tournament_card.html
 msgid "Rules file set"
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:127
+#: src/web/templates/admin_tournament_card.html
 msgid "Edit the properties of the tournament."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:142
+#: src/web/templates/admin_tournament_card.html
 msgid "Clone the tournament."
 msgstr ""
 
-#: src/web/templates/admin_tournament_card.html:152
+#: src/web/templates/admin_tournament_card.html
 msgid "Delete the tournament."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:18
+#: src/web/templates/admin_tournament_modal.html
 msgid "Tournament creation"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:20
+#: src/web/templates/admin_tournament_modal.html
 #, python-format
 msgid "Edition of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:22
+#: src/web/templates/admin_tournament_modal.html
 #, python-format
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:31
+#: src/web/templates/admin_tournament_modal.html
 msgid "Warning: the deletion of a tournament is permanent!"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:34
+#: src/web/templates/admin_tournament_modal.html
 msgid "The following screens will also be deleted:"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:42
+#: src/web/templates/admin_tournament_modal.html
 msgid "The following screen families will also be deleted:"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:51
+#: src/web/templates/admin_tournament_modal.html
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:57
+#: src/web/templates/admin_tournament_modal.html
 msgid "Enter here the tournament ID"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:60
+#: src/web/templates/admin_tournament_modal.html
 msgid "The Papi-web tournament are deleted but the Papi file is still available on the filesystem."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:82
-#: src/web/templates/admin_tournament_modal.html:142
+#: src/web/templates/admin_tournament_modal.html
 msgid "E.g.: main"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:85
+#: src/web/templates/admin_tournament_modal.html
 msgid "The Unique ID, used to reference the tournament."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:102
-#: src/web/templates/admin_tournament_modal.html:247
+#: src/web/templates/admin_tournament_modal.html
 msgid "E.g.: Main tournament"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:105
+#: src/web/templates/admin_tournament_modal.html
 msgid "The name of the tournament, used for display."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:116
+#: src/web/templates/admin_tournament_modal.html
 msgid "Directory of the Papi file:"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:122
+#: src/web/templates/admin_tournament_modal.html
 msgid "E.g.: c:\\chess\\tournaments\\papi"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:125
+#: src/web/templates/admin_tournament_modal.html
 #, python-format
 msgid "The directory of the Papi file, by default %(dir)s."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:136
+#: src/web/templates/admin_tournament_modal.html
 msgid "Name of the Papi file (with no extension):"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:145
+#: src/web/templates/admin_tournament_modal.html
 msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:156
+#: src/web/templates/admin_tournament_modal.html
 msgid "Connections (FFE and ChessEvent)"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:161
+#: src/web/templates/admin_tournament_modal.html
 msgid "FFE qualification number (optional):"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:170
+#: src/web/templates/admin_tournament_modal.html
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:181
+#: src/web/templates/admin_tournament_modal.html
 msgid "FFE password:"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:195
+#: src/web/templates/admin_tournament_modal.html
 msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:216
+#: src/web/templates/admin_tournament_modal.html
 msgid "ChessEvent connection:"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:230
+#: src/web/templates/admin_tournament_modal.html
 msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:241
+#: src/web/templates/admin_tournament_modal.html
 msgid "Name of the ChessEvent tournament:"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:250
+#: src/web/templates/admin_tournament_modal.html
 msgid "The name of the tournament on the ChessEvent platform."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:265
+#: src/web/templates/admin_tournament_modal.html
 msgid "Time control"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:276
+#: src/web/templates/admin_tournament_modal.html
 #, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:279
+#: src/web/templates/admin_tournament_modal.html
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:290
+#: src/web/templates/admin_tournament_modal.html
 msgid "Increment (optional):"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:299
+#: src/web/templates/admin_tournament_modal.html
 msgid "The number of seconds added to the players' clock at each move."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:310
+#: src/web/templates/admin_tournament_modal.html
 msgid "Penalty (handicap):"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:319
+#: src/web/templates/admin_tournament_modal.html
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:330
+#: src/web/templates/admin_tournament_modal.html
 msgid "Elo step (handicap):"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:336
+#: src/web/templates/admin_tournament_modal.html
 msgid "E.g.: 50 (Elo)"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:339
+#: src/web/templates/admin_tournament_modal.html
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:350
+#: src/web/templates/admin_tournament_modal.html
 msgid "Minimal time (handicap):"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:359
+#: src/web/templates/admin_tournament_modal.html
 msgid "The minimum time, whatever the ranking difference between the two players."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:381
+#: src/web/templates/admin_tournament_modal.html
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:384
+#: src/web/templates/admin_tournament_modal.html
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:406
+#: src/web/templates/admin_tournament_modal.html
 #, python-format
 msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
 msgstr ""
 
-#: src/web/templates/admin_tournament_modal.html:449
+#: src/web/templates/admin_tournament_modal.html
 msgid "Create and add default screens"
 msgstr ""
 
-#: src/web/templates/admin_tournaments.html:6
+#: src/web/templates/admin_tournaments.html
 msgid "Tournaments"
 msgstr ""
 
-#: src/web/templates/admin_tournaments.html:21
+#: src/web/templates/admin_tournaments.html
 msgid "Add a tournament to the event."
 msgstr ""
 
-#: src/web/templates/admin_tournaments.html:30
+#: src/web/templates/admin_tournaments.html
 msgid "Create a tournament"
 msgstr ""
 
-#: src/web/templates/admin_tournaments.html:45
+#: src/web/templates/admin_tournaments.html
 msgid "No tournaments."
 msgstr ""
 
-#: src/web/templates/columns_number_dropdown.html:13
+#: src/web/templates/columns_number_dropdown.html
 msgid "Change the number of columns."
 msgstr ""
 
-#: src/web/templates/index.html:12
+#: src/web/templates/index.html
 msgid "Welcome to Papi-web!"
 msgstr ""
 
-#: src/web/templates/index.html:18
+#: src/web/templates/index.html
 msgid "Language"
 msgstr ""
 
-#: src/web/templates/index.html:52
+#: src/web/templates/index.html
 msgid "Web access"
 msgstr ""
 
-#: src/web/templates/index.html:58
+#: src/web/templates/index.html
 msgid "From the Papi-web server"
 msgstr ""
 
-#: src/web/templates/index.html:66
+#: src/web/templates/index.html
 msgid "From the local network (LAN/WAN)"
 msgstr ""
 
-#: src/web/templates/index.html:84
+#: src/web/templates/index.html
 msgid "Click here to access the public screens of the events."
 msgstr ""
 
-#: src/web/templates/index.html:86
+#: src/web/templates/index.html
 msgid "Events (public access)"
 msgstr ""
 
-#: src/web/templates/index.html:90
+#: src/web/templates/index.html
 msgid "The arbiter interface allows the management of the events."
 msgstr ""
 
-#: src/web/templates/index.html:92
+#: src/web/templates/index.html
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr ""
 
-#: src/web/templates/index.html:105
+#: src/web/templates/index.html
 msgid "Arbiter interface (private access)"
 msgstr ""
 
-#: src/web/templates/macros.j2:13
+#: src/web/templates/macros.j2
 msgid "This event is public (by default, screens are visible by the users)."
 msgstr ""
 
-#: src/web/templates/macros.j2:15
+#: src/web/templates/macros.j2
 msgid "This screen is public (visible by the users)."
 msgstr ""
 
-#: src/web/templates/macros.j2:17
+#: src/web/templates/macros.j2
 msgid "This screen family is public (visible by the users)."
 msgstr ""
 
-#: src/web/templates/macros.j2:19
+#: src/web/templates/macros.j2
 msgid "This rotator is public (visible by the users)."
 msgstr ""
 
-#: src/web/templates/macros.j2:26
+#: src/web/templates/macros.j2
 msgid "This event is private (by default, screens are not visible by the users)."
 msgstr ""
 
-#: src/web/templates/macros.j2:28
+#: src/web/templates/macros.j2
 msgid "This screen is private (not visible by the users)."
 msgstr ""
 
-#: src/web/templates/macros.j2:30
+#: src/web/templates/macros.j2
 msgid "This screen family is private (not visible by the users)."
 msgstr ""
 
-#: src/web/templates/macros.j2:32
+#: src/web/templates/macros.j2
 msgid "This rotator is private (not visible by the users)."
 msgstr ""
 
-#: src/web/templates/macros.j2:78
+#: src/web/templates/macros.j2
 msgid "The tournament is not started yet."
 msgstr ""
 
-#: src/web/templates/macros.j2:81
+#: src/web/templates/macros.j2
 #, python-format
 msgid "Round %(round)d is running."
 msgstr ""
 
-#: src/web/templates/macros.j2:84
+#: src/web/templates/macros.j2
 #, python-format
 msgid "Round #%(round)d is finished."
 msgstr ""
 
-#: src/web/templates/macros.j2:87
+#: src/web/templates/macros.j2
 msgid "The tournament is finished."
 msgstr ""
 
-#: src/web/templates/macros.j2:102
+#: src/web/templates/macros.j2
 msgid "Boards screens show pairings by board number."
 msgstr ""
 
-#: src/web/templates/macros.j2:105
+#: src/web/templates/macros.j2
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr ""
 
-#: src/web/templates/macros.j2:108
+#: src/web/templates/macros.j2
 msgid "Players screens show pairings by alphabetical order."
 msgstr ""
 
-#: src/web/templates/macros.j2:111
+#: src/web/templates/macros.j2
 msgid "Results screens show the last results (most recent first)."
 msgstr ""
 
-#: src/web/templates/macros.j2:114
+#: src/web/templates/macros.j2
 msgid "Image screens show an image (local or remote)."
 msgstr ""
 
-#: src/web/templates/macros.j2:132
+#: src/web/templates/macros.j2
 msgid "Rotator automatically rotate between multiple screens."
 msgstr ""
 
-#: src/web/templates/macros.j2:203
+#: src/web/templates/macros.j2
 msgid "Sort the players by name."
 msgstr ""
 
-#: src/web/templates/macros.j2:205
+#: src/web/templates/macros.j2
 msgid "Sort the players by rating (most rated first)."
 msgstr ""
 
-#: src/web/templates/macros.j2:207
+#: src/web/templates/macros.j2
 msgid "Sort the players by rating (less rated first)."
 msgstr ""
 
-#: src/web/templates/macros.j2:209
+#: src/web/templates/macros.j2
 msgid "Sort the players by origin (federation, league, club)."
 msgstr ""
 
-#: src/web/templates/macros.j2:211
+#: src/web/templates/macros.j2
 msgid "Sort the players by year of birth (youngest first)."
 msgstr ""
 
-#: src/web/templates/macros.j2:213
+#: src/web/templates/macros.j2
 msgid "Sort the players by year of birth (oldest first)."
 msgstr ""
 
-#: src/web/templates/macros.j2:215
+#: src/web/templates/macros.j2
 msgid "Sort the players by category (oldest first)."
 msgstr ""
 
-#: src/web/templates/macros.j2:217
+#: src/web/templates/macros.j2
 msgid "Sort the players by category (youngest first)."
 msgstr ""
 
-#: src/web/templates/macros.j2:219
+#: src/web/templates/macros.j2
 msgid "Sort the players by tournament."
 msgstr ""
 
-#: src/web/templates/user_boards_screen_board_row_player_cell.html:15
+#: src/web/templates/user_boards_screen_board_row_player_cell.html
 msgid "EXEMPT"
 msgstr ""
 
-#: src/web/templates/user_boards_screen_board_row_player_cell.html:18
+#: src/web/templates/user_boards_screen_board_row_player_cell.html
 msgid "/move"
 msgstr ""
 
-#: src/web/templates/user_boards_screen_set.html:11
-#: src/web/templates/user_players_screen_set.html:9
+#: src/web/templates/user_boards_screen_set.html
+#: src/web/templates/user_players_screen_set.html
 #, python-format
 msgid "%(set_name)s (round %(round)d)"
 msgstr ""
 
-#: src/web/templates/user_boards_screen_set.html:23
-#: src/web/templates/user_boards_screen_set.html:25
+#: src/web/templates/user_boards_screen_set.html
 msgid "time control"
 msgstr ""
 
-#: src/web/templates/user_boards_screen_set.html:89
+#: src/web/templates/user_boards_screen_set.html
 #, python-format
 msgid "#%(board_number)d"
 msgstr ""
 
-#: src/web/templates/user_boards_screen_set.html:135
+#: src/web/templates/user_boards_screen_set.html
 #, python-format
 msgid "%(set_name)s (check-in)"
 msgstr ""
 
-#: src/web/templates/user_boards_screen_set.html:146
+#: src/web/templates/user_boards_screen_set.html
 msgid "Player / Elo"
 msgstr ""
 
-#: src/web/templates/user_event.html:19
+#: src/web/templates/user_event.html
 msgid "Go back to the events page."
 msgstr ""
 
-#: src/web/templates/user_players_screen_set.html:18
+#: src/web/templates/user_players_screen_set.html
 msgid "Player Elo [Pts]"
 msgstr ""
 
-#: src/web/templates/user_players_screen_set.html:18
+#: src/web/templates/user_players_screen_set.html
 msgid "Player Elo"
 msgstr ""
 
-#: src/web/templates/user_players_screen_set.html:19
+#: src/web/templates/user_players_screen_set.html
 msgid "Board & color"
 msgstr ""
 
-#: src/web/templates/user_players_screen_set.html:20
+#: src/web/templates/user_players_screen_set.html
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
-#: src/web/templates/user_players_screen_set.html:20
+#: src/web/templates/user_players_screen_set.html
 msgid "Opponent Elo"
 msgstr ""
 
-#: src/web/templates/user_players_screen_set.html:38
+#: src/web/templates/user_players_screen_set.html
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
 
-#: src/web/templates/user_players_screen_set.html:39
+#: src/web/templates/user_players_screen_set.html
 msgid "vs"
 msgstr ""
 
-#: src/web/templates/user_results_screen.html:11
+#: src/web/templates/user_results_screen.html
 msgid "Tournament"
 msgstr ""
 
-#: src/web/templates/user_results_screen.html:12
+#: src/web/templates/user_results_screen.html
 msgid "Rnd.Boa"
 msgstr ""
 
-#: src/web/templates/user_results_screen.html:14
+#: src/web/templates/user_results_screen.html
 msgid "Score"
 msgstr ""
 
-#: src/web/templates/user_rotator_card.html:22
+#: src/web/templates/user_rotator_card.html
 msgid "No screen nor family to rotate."
 msgstr ""
 
-#: src/web/templates/user_rotator_card.html:43
+#: src/web/templates/user_rotator_card.html
 #, python-format
 msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr ""
 
-#: src/web/templates/user_screen.html:130
+#: src/web/templates/user_screen.html
 msgid "Please enter the password to enter results:"
 msgstr ""
 
-#: src/web/templates/user_screen.html:138
+#: src/web/templates/user_screen.html
 msgid "Event"
 msgstr ""
 
-#: src/web/templates/user_screen.html:140
+#: src/web/templates/user_screen.html
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr ""
 
-#: src/web/templates/user_screen.html:143
+#: src/web/templates/user_screen.html
 msgid "Password"
 msgstr ""
 
-#: src/web/templates/user_screen.html:150
+#: src/web/templates/user_screen.html
 msgid "Please ask the organizer to get the password."
 msgstr ""
 
-#: src/web/templates/user_screen.html:176
+#: src/web/templates/user_screen.html
 msgid "Enter the result"
 msgstr ""
 
-#: src/web/templates/user_screen.html:185
-#: src/web/templates/user_screen.html:205
+#: src/web/templates/user_screen.html
 msgid "WHITE WINS"
 msgstr ""
 
-#: src/web/templates/user_screen.html:191
+#: src/web/templates/user_screen.html
 msgid "DRAW"
 msgstr ""
 
-#: src/web/templates/user_screen.html:196
-#: src/web/templates/user_screen.html:216
+#: src/web/templates/user_screen.html
 msgid "BLACK WINS"
 msgstr ""
 
-#: src/web/templates/user_screen.html:205
-#: src/web/templates/user_screen.html:216
+#: src/web/templates/user_screen.html
 msgid "BY FORFEIT"
 msgstr ""
 
-#: src/web/templates/user_screen.html:211
+#: src/web/templates/user_screen.html
 msgid "DOUBLE"
 msgstr ""
 
-#: src/web/templates/user_screen.html:211
+#: src/web/templates/user_screen.html
 msgid "FORFEIT"
 msgstr ""
 
-#: src/web/templates/user_screen.html:228
+#: src/web/templates/user_screen.html
 msgid "CLEAR THE RESULT"
 msgstr ""
 
-#: src/web/templates/user_screen.html:258
+#: src/web/templates/user_screen.html
 msgid "CHECK-IN"
 msgstr ""
 
-#: src/web/templates/user_screen.html:258
+#: src/web/templates/user_screen.html
 msgid "CHECK-OUT"
 msgstr ""
 
-#: src/web/templates/user_screen_card.html:23
+#: src/web/templates/user_screen_card.html
 msgid "Menu label:"
 msgstr ""
 
-#: src/web/templates/user_screen_card.html:27
+#: src/web/templates/user_screen_card.html
 msgid "Menu:"
 msgstr ""
 
-#: src/web/templates/user_screen_card.html:42
+#: src/web/templates/user_screen_card.html
 msgid "Unpaired players: displayed"
 msgstr ""
 
-#: src/web/templates/user_screen_card.html:44
+#: src/web/templates/user_screen_card.html
 msgid "Unpaired players: hidden"
 msgstr ""
 
-#: src/web/templates/user_screen_card.html:52
+#: src/web/templates/user_screen_card.html
 #, python-format
 msgid "Maximum number of results: %(num)d"
 msgstr ""
 
-#: src/web/templates/user_screen_card.html:54
+#: src/web/templates/user_screen_card.html
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:6
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
 msgid "Open/close check-in."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:22
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_check_in_tournaments.html:24
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
 #, python-format
 msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_categories.html:8
+#: src/web/templates/admin_players/admin_players_filter_categories.html
 msgid "Filter the categories."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_check_ins.html:8
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
 msgid "Filter the check-in status."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_check_ins.html:29
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
 msgid "Absent"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_check_ins.html:34
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
 msgid "Not checked-in yet"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_check_ins.html:39
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
 msgid "Checked-in"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_clubs.html:7
+#: src/web/templates/admin_players/admin_players_filter_clubs.html
 msgid "Filter the clubs."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:6
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Choose the columns displayed."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:7
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Columns"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:37
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:39
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:41
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:43
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:45
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:47
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:49
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:51
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:53
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:55
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:61
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:67
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:69
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:71
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:73
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:75
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_columns.html:77
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "History *** HISTORY FOR PLAYERS COLUMNS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_federations.html:7
+#: src/web/templates/admin_players/admin_players_filter_federations.html
 msgid "Filter the federations."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_ffe_licences.html:8
+#: src/web/templates/admin_players/admin_players_filter_ffe_licences.html
 msgid "Filter the licences."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_genders.html:8
+#: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "Filter the genders."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_leagues.html:7
+#: src/web/templates/admin_players/admin_players_filter_leagues.html
 msgid "Filter the leagues."
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_tournaments.html:2
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html
 msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
-#: src/web/templates/admin_players/admin_players_filter_tournaments.html:9
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html
 msgid "Filter the tournaments."
 msgstr ""
 
-#: utils/i18n/i18n_update.py:208
+#: utils/i18n/i18n_update.py
 msgid "Return to documentation summary"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:209
+#: utils/i18n/i18n_update.py
 msgid "English translation *** TRANSLATE !"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:212
+#: utils/i18n/i18n_update.py
 msgid "View file {file}"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:214
+#: utils/i18n/i18n_update.py
 msgid "Summary"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:218 utils/i18n/i18n_update.py:228
+#: utils/i18n/i18n_update.py
 msgid "Empty mandatory messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:221 utils/i18n/i18n_update.py:243
+#: utils/i18n/i18n_update.py
 msgid "Empty messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:224 utils/i18n/i18n_update.py:266
+#: utils/i18n/i18n_update.py
 msgid "Message flagged [{flag}]"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:230 utils/i18n/i18n_update.py:248
-#: utils/i18n/i18n_update.py:268
+#: utils/i18n/i18n_update.py
 msgid "Message ID"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:230 utils/i18n/i18n_update.py:248
-#: utils/i18n/i18n_update.py:268
+#: utils/i18n/i18n_update.py
 msgid "Locations"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:237 utils/i18n/i18n_update.py:255
-#: utils/i18n/i18n_update.py:276 utils/i18n/i18n_update.py:279
+#: utils/i18n/i18n_update.py
 msgid "Singular:"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:238 utils/i18n/i18n_update.py:256
-#: utils/i18n/i18n_update.py:277 utils/i18n/i18n_update.py:280
+#: utils/i18n/i18n_update.py
 msgid "Plural:"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:246
+#: utils/i18n/i18n_update.py
 msgid "Empty messages are not shown for the default language."
 msgstr ""
 
-#: utils/i18n/i18n_update.py:262
+#: utils/i18n/i18n_update.py
 msgid "Flagged messages"
 msgstr ""
 
-#: utils/i18n/i18n_update.py:268
+#: utils/i18n/i18n_update.py
 msgid "Translation"
 msgstr ""
 

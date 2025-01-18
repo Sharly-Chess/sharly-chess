@@ -378,6 +378,7 @@ class I18nUpdater:
             [
                 f'--mapping-file={extract_config_file}',
                 f'--output-file={self.pot_file}',
+                '--add-location=file',
                 '--no-wrap',
                 '--omit-header',
                 '.',
