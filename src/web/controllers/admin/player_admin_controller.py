@@ -106,16 +106,19 @@ class PlayerAdminController(AbstractEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid gender value [{data[field]}].'
             data[field] = ''
-        field: str = 'rating'
-        ratings: dict[TournamentRating, int] = {
-            tr: WebContext.form_data_to_int(data, f'{field}_{tr.value}')
-            for tr in TournamentRating
-        }
         field: str = 'rating_type'
         rating_types: dict[TournamentRating, PlayerRatingType] = {
             tr: PlayerRatingType(WebContext.form_data_to_int(data, f'{field}_{tr.value}'))
             for tr in TournamentRating
         }
+        field: str = 'rating'
+        ratings: dict[TournamentRating, int] = {
+            tr: WebContext.form_data_to_int(data, f'{field}_{tr.value}')
+            for tr in TournamentRating
+        }
+        for tr in TournamentRating:
+            if rating_types[tr] != PlayerRatingType.ESTIMATED and not ratings[tr]:
+                errors[f'{field}_{tr.value}'] = _('Only estimated rankings are optional.')
         title: PlayerTitle | None = PlayerTitle.NONE
         try:
             title = PlayerTitle(WebContext.form_data_to_int(data, field := 'title'))
@@ -309,7 +312,7 @@ class PlayerAdminController(AbstractEventAdminController):
                         'paid': WebContext.value_to_form_data(paid),
                         'fixed': WebContext.value_to_form_data(fixed or None),
                     } | {
-                        f'rating_{tr.value}': WebContext.value_to_form_data(ratings[tr])
+                        f'rating_{tr.value}': WebContext.value_to_form_data(ratings[tr] or None)
                         for tr in TournamentRating
                     } | {
                         f'rating_type_{tr.value}': WebContext.value_to_form_data(rating_types[tr].value)
