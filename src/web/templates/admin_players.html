@@ -384,10 +384,10 @@
                             {% endif %}
                             <th scope="row" class="text-nowrap text-end w-1">
                                 <span class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
                                         <i class="bi-three-dots"></i>
                                     </button>
-                                    <ul class="dropdown-menu players-player-actions p-0" >
+                                    <ul class="dropdown-menu dropdown-menu-end players-player-actions p-0" >
                                         <li
                                             class="dropdown-item btn py-0 px-1"
                                             hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
