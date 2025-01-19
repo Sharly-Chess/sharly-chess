@@ -326,10 +326,6 @@ class Event:
         return self.stored_event.message_background_color or PapiWebConfig.default_message_background_color
 
     @cached_property
-    def tournaments_sorted_by_uniq_id(self) -> list[Tournament]:
-        return sorted(self.tournaments_by_id.values(), key=lambda tournament: tournament.uniq_id)
-
-    @cached_property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
         return sorted(self.screens_by_uniq_id.values(), key=lambda screen: screen.uniq_id)
 
@@ -475,6 +471,30 @@ class Event:
             tournament.uniq_id: tournament
             for tournament in self.tournaments_by_id.values()
         }
+
+    @cached_property
+    def tournaments_sorted_by_uniq_id(self) -> list[Tournament]:
+        return sorted(self.tournaments_by_id.values(), key=lambda tournament: tournament.uniq_id)
+
+    @cached_property
+    def tournaments_with_file_sorted_by_uniq_id(self) -> list[Tournament]:
+        """Returns the tournaments where the Papi file exists
+        (useful to tell the users why adding players is not possible)."""
+        return [
+            tournament
+            for tournament in self.tournaments_sorted_by_uniq_id
+            if tournament.file_exists
+        ]
+
+    @cached_property
+    def not_finished_tournaments_with_file_sorted_by_uniq_id(self) -> list[Tournament]:
+        """Returns the playing tournaments where the Papi file exists
+        (useful not to create players when there is no Papi file)."""
+        return [
+            tournament
+            for tournament in self.tournaments_sorted_by_uniq_id
+            if not tournament.finished and tournament.file_exists
+        ]
 
     def get_unused_tournament_uniq_id(self, base_uniq_id: str) -> str:
         """ Returns the first unused tournament uniq_id looking like base_uniq_id:

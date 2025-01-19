@@ -478,6 +478,7 @@ class PapiWebConfig(metaclass=Singleton):
         'mail',
         'phone',
         'gender',
+        'fixed',
         'fide',
         'ffe',
         'check_in',
@@ -487,6 +488,7 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ The federation names. """
     federations: dict[str, str] = {
+        'NON': 'None',
         'AFG': 'Afghanistan',
         'ALB': 'Albania',
         'ALG': 'Algeria',
@@ -620,7 +622,6 @@ class PapiWebConfig(metaclass=Singleton):
         'NED': 'Netherlands',
         'AHO': 'Netherlands Antilles',
         'NCL': 'New Caledonia',
-        'NON': 'None',
         'NZL': 'New Zealand',
         'NCA': 'Nicaragua',
         'NIG': 'Niger',

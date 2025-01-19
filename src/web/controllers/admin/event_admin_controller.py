@@ -66,11 +66,10 @@ class EventAdminWebContext(AdminWebContext):
         }
 
     def get_tournament_options(self) -> dict[str, str]:
-        options: dict[str, str] = {
+        return {
+            str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
+            for tournament in self.admin_event.tournaments_sorted_by_uniq_id
         }
-        for tournament in self.admin_event.tournaments_by_id.values():
-            options[str(tournament.id)] = f'{tournament.name} ({tournament.filename})'
-        return options
 
 
 class AbstractEventAdminController(AbstractIndexAdminController):
@@ -283,7 +282,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     'admin_players': players,
                     'admin_players_columns': [
                         'check_in', 'name', 'rating', 'federation', 'league', 'club', 'yob', 'category', 'mail',
-                        'phone', 'gender', 'fide', 'ffe', 'owed_paid', 'tournament', 'comment', 'history',
+                        'phone', 'gender', 'fixed', 'fide', 'ffe', 'owed_paid', 'tournament', 'comment', 'history',
                     ],
                     'admin_players_sort': SessionHandler.get_session_admin_players_sort(web_context.request),
                     'admin_players_federations': players_federations,
