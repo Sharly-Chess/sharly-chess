@@ -11,6 +11,7 @@ from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.pairing import Pairing
+from data.util import TrfType
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -420,7 +421,11 @@ class Tournament:
             case _:
                 return False
 
-    def to_trf(self, first_round_pairing: BoardColor = BoardColor.WHITE) -> TrfTournament:
+    def to_trf(
+        self, 
+        trf_type: TrfType,
+        first_round_pairing: BoardColor = BoardColor.WHITE,
+    ) -> TrfTournament:
         return TrfTournament(
             name=self.name,
             city=self.location,
@@ -431,7 +436,9 @@ class Tournament:
             players=[
                 player.to_trf(self._player_id_to_trf_id)
                 for id_, player in self.players_by_trf_id.items()],
-            xx_fields=self._trf_extra_fields(first_round_pairing)
+            xx_fields=(
+                self._trf_extra_fields(first_round_pairing)
+                if trf_type == TrfType.PAIRING else {}),
         )
 
     def _player_id_to_trf_id(self, player_id: int) -> int:
@@ -456,7 +463,7 @@ class Tournament:
             ]
             if sum(vpoints_history) > 0:
                 xx_fields[f'XXA {player.ref_id:>4}'] = ' '.join(
-                    [f'{vpoints}:>4' for vpoints in vpoints_history]
+                    [f'{vpoints:>4}' for vpoints in vpoints_history]
                 )
 
         # BBP fields

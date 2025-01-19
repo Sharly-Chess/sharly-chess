@@ -1146,3 +1146,18 @@ class NeedsUpload(Enum):
                 return False
             case _:
                 raise ValueError(f"Unknown value: {self}")
+
+
+class TrfType(StrEnum):
+    PAIRING = 'PAIRING'
+    RATING = 'RATING'
+
+    @property
+    def file_extension(self) -> str:
+        match self:
+            case TrfType.RATING:
+                return 'trf'
+            case TrfType.PAIRING:
+                return 'trfx'
+            case _:
+                raise ValueError(f"Unknown value: {self}")

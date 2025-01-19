@@ -17,6 +17,7 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
+from data.util import TrfType
 from database.sqlite import EventDatabase
 from database.store import StoredTournament, StoredScreen
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
@@ -313,14 +314,18 @@ class TournamentAdminController(AbstractEventAdminController):
         name='admin-tournament-trf-export',
     )
     async def admin_tournament_trf_export(
-            self, request: HTMXRequest, event_uniq_id: str, tournament_id: int
+            self,
+            request: HTMXRequest,
+            event_uniq_id: str,
+            tournament_id: int,
+            usage: TrfType = TrfType.PAIRING,
     ) -> File:
         context = TournamentAdminWebContext(request, event_uniq_id, None, tournament_id, None)
         tournament = context.admin_tournament
         temp_file = NamedTemporaryFile(delete=False, mode="w", suffix=".trf")
         with temp_file as file:
-            trf.dump(file, tournament.to_trf())
-        return File(path=temp_file.name, filename=f'{tournament.name}.trf')
+            trf.dump(file, tournament.to_trf(usage))
+        return File(path=temp_file.name, filename=f'{tournament.name}.{usage.file_extension}')
 
     def _admin_tournament_update(
             self, request: HTMXRequest,
