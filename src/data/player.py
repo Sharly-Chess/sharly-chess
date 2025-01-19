@@ -208,7 +208,7 @@ class Player:
 
     @cached_property
     def category(self) -> PlayerCategory:
-        return PlayerCategory.from_year_of_birth(self.date_of_birth.year)
+        return PlayerCategory.from_year_of_birth(self.year_of_birth)
 
     @property
     def rating(self) -> int:
