@@ -83,7 +83,7 @@
                             {% endif %}
                         {% endwith %}
                     </div>
-                    <div class="col-3">
+                    <div class="col-2">
                         {% with id='date-of-birth', name='date_of_birth' %}
                             <label for="{{ id }}" class="form-label">{{ _('Date of birth:') }}</label>
                             <input
@@ -106,7 +106,7 @@
                             {% endif %}
                         {% endwith %}
                     </div>
-                    <div class="col-3">
+                    <div class="col-2">
                         {% with id='gender', name='gender' %}
                             <label for="{{ id }}" class="form-label">{{ _('Gender:') }}</label>
                             <select
@@ -123,6 +123,34 @@
                             {% if action != 'delete' %}
                                 <div id="{{ id }}-help" class="form-text">
                                     {{ _('The player\'s gender.') }}
+                                </div>
+                            {% endif %}
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='tournament-id', name='tournament_id' %}
+                            <label for="{{ id }}" class="form-label">{{ _('Tournament:') }}</label>
+                            <select
+                                    name="{{ name }}"
+                                    id="{{ id }}"
+                                    class="form-control {% if name in errors or action == 'delete' %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    {% if action != 'create' %}disabled{% endif %}
+                            >
+                                {% for value, text in tournament_options.items() %}
+                                    <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
+                                        {{ text }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if action != 'delete' %}
+                                <div id="{{ id }}-help" class="form-text">
+                                    {{ _('The player\'s tournament.') }}
                                 </div>
                             {% endif %}
                             {% if name in errors %}
@@ -394,7 +422,7 @@
                     {{ _('Contact and registration') }}
                 </h3>
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-2">
                         {% with id='mail', name='mail' %}
                             <label for="{{ id }}" class="form-label d-block">{{ _('Email:') }}</label>
                             <input
@@ -440,7 +468,7 @@
                             {% endif %}
                         {% endwith %}
                     </div>
-                    <div class="col-3">
+                    <div class="col-2">
                         {% with id='comment', name='comment' %}
                             <label for="{{ id }}" class="form-label d-block">{{ _('Comment:') }}</label>
                             <input
@@ -500,6 +528,29 @@
                             {% if action != 'delete' %}
                                 <div id="{{ id }}-help" class="form-text">
                                     {{ _('The price the player already paid.') }}
+                                </div>
+                            {% endif %}
+                            {% if name in errors %}
+                                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                    {{ errors[name] }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-2">
+                        {% with id='fixed', name='fixed' %}
+                            <label for="{{ id }}" class="form-label d-block">{{ _('Fixed board:') }}</label>
+                            <input
+                                    name="{{ name }}"
+                                    type="number" id="{{ id }}"
+                                    class="form-control {% if name in errors or action == 'delete' %}is-invalid{% else %}is-valid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}"
+                                    {% if action == 'delete' %}disabled{% endif %}
+                            />
+                            {% if action != 'delete' %}
+                                <div id="{{ id }}-help" class="form-text">
+                                    {{ _('The board number the player will always be assigned to (use it for disabled people).') }}
                                 </div>
                             {% endif %}
                             {% if name in errors %}
