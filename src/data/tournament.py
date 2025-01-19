@@ -456,13 +456,13 @@ class Tournament:
         }
 
         # Acceleration
-        for player in [player for id_, player in self.players_by_id.items() if id_ != 1]:
+        for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, round_nb)
                 for round_nb in range(1, self._current_round+1)
             ]
             if sum(vpoints_history) > 0:
-                xx_fields[f'XXA {player.ref_id:>4}'] = ' '.join(
+                xx_fields[f'XXA {trf_id:>4}'] = ' '.join(
                     [f'{vpoints:>4}' for vpoints in vpoints_history]
                 )
 

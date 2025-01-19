@@ -950,17 +950,17 @@ class PlayerTitle(IntEnum):
             case PlayerTitle.NONE:
                 return ''
             case PlayerTitle.WOMAN_FIDE_MASTER:
-                return 'WFM'
+                return 'ff'
             case PlayerTitle.FIDE_MASTER:
-                return 'FM'
+                return 'f'
             case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
-                return 'WIM'
+                return 'mf'
             case PlayerTitle.INTERNATIONAL_MASTER:
-                return 'IM'
+                return 'm'
             case PlayerTitle.WOMAN_GRANDMASTER:
-                return 'WGM'
+                return 'gf'
             case PlayerTitle.GRANDMASTER:
-                return 'GM'
+                return 'g'
             case _:
                 raise ValueError(f'Unknown title: {self}')
 
