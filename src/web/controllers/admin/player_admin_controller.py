@@ -322,6 +322,11 @@ class PlayerAdminController(AbstractEventAdminController):
                     errors = player.errors
                 if errors is None:
                     errors = {}
+                federation_ids: list[str] = [
+                    federation_id for federation_id in PapiWebConfig.federations
+                    if federation_id != admin_event.federation
+                ]
+                federation_ids.insert(1, admin_event.federation)
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
                     'tournament_ratings_strings': {
@@ -344,6 +349,9 @@ class PlayerAdminController(AbstractEventAdminController):
                     'tournament_options': {
                         str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
                         for tournament in admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
+                    },
+                    'federations': {
+                        federation_id: PapiWebConfig.federations[federation_id] for federation_id in federation_ids
                     },
                     'modal': modal,
                     'action': action,

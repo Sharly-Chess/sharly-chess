@@ -244,7 +244,7 @@
                                         data-dynamic-select
                                     {% endif %}
                             >
-                                {% for federation_id, federation_name in papi_web_config.federations.items() %}
+                                {% for federation_id, federation_name in federations.items() %}
                                     <option
                                             value="{{ federation_id }}"
                                             {% if federation_id == data[name] %}selected{%endif %}

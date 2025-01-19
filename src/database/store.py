@@ -177,6 +177,12 @@ class StoredEvent:
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
+    @property
+    def federation(self) -> str:
+        """Returns the federation of the event (used by TRF exports)."""
+        # TODO Store the federation od the event in the database from version 2.4.21, for the moment assume that all the events are organized in FRA ;-)
+        return 'FRA'
+
 
 @dataclass
 class StoredIllegalMove:

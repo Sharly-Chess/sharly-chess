@@ -148,6 +148,10 @@ class Event:
         return self.stored_event.stop
 
     @property
+    def federation(self) -> str:
+        return self.stored_event.federation
+
+    @property
     def formatted_start_date_time(self) -> str:
         return format_timestamp_date_time(self.start)
 
