@@ -319,7 +319,7 @@ class TournamentAdminController(AbstractEventAdminController):
         tournament = context.admin_tournament
         temp_file = NamedTemporaryFile(delete=False, mode="w", suffix=".trf")
         with temp_file as file:
-            trf.dump(file, tournament.to_trf)
+            trf.dump(file, tournament.to_trf())
         return File(path=temp_file.name, filename=f'{tournament.name}.trf')
 
     def _admin_tournament_update(

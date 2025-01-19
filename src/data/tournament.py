@@ -304,6 +304,17 @@ class Tournament:
         return {player.fide_id: player for player in self.players_by_id.values() if player.fide_id}
 
     @cached_property
+    def players_by_trf_id(self) -> dict[int, Player]:
+        players = [player for id_, player in self.players_by_id.items() if id_ != 1]
+        le_method = Player.__le__
+        try:
+            Player.__le__ = lambda self_, other: self_.starting_rank_comparison(other)
+            ordered_players = sorted(players, reverse=True)
+            return {index + 1: player for index, player in enumerate(ordered_players)}
+        finally:
+            Player.__le__ = le_method
+
+    @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
         return sorted(list(self.players_by_id.values()), key=lambda player: (player.last_name, player.first_name))
 
@@ -409,12 +420,7 @@ class Tournament:
             case _:
                 return False
 
-    @property
-    def to_trf(self) -> TrfTournament:
-        players = [player for id_, player in self.players_by_id.items() if id_ != 1]
-        xx_fields: dict[str, str] = {}
-        for player in players:
-            xx_fields[f'XXA {player.ref_id:>4}'] = self._trf_player_acceleration(player)
+    def to_trf(self, first_round_pairing: BoardColor = BoardColor.WHITE) -> TrfTournament:
         return TrfTournament(
             name=self.name,
             city=self.location,
@@ -422,16 +428,48 @@ class Tournament:
             enddate=self.end_date,
             numplayers=len(self.players_by_id),
             chiefarbiter=self.arbiter,
-            players=[player.to_trf for player in players],
-            xx_fields=xx_fields
+            players=[
+                player.to_trf(self._player_id_to_trf_id)
+                for id_, player in self.players_by_trf_id.items()],
+            xx_fields=self._trf_extra_fields(first_round_pairing)
         )
 
-    def _trf_player_acceleration(self, player: Player) -> str:
-        acceleration_history = [
-            f'{self._calculate_player_virtual_points(player, round_nb):>4}'
-            for round_nb in range(1, self._current_round+1)
-        ]
-        return ' '.join(acceleration_history)
+    def _player_id_to_trf_id(self, player_id: int) -> int:
+        for trf_id, player in self.players_by_trf_id.items():
+            if player.id == player_id:
+                return trf_id
+        raise KeyError(f"Id of unknown player: {player_id}")
+
+    def _trf_extra_fields(
+        self, first_round_pairing: BoardColor, result_class: type[Result] = Result
+    ) -> dict[str, str]:
+        xx_fields: dict[str, str] = {
+            'XXR': str(self.rounds),
+            'XXC': first_round_pairing.to_trf_first_round_pairing,
+        }
+
+        # Acceleration
+        for player in [player for id_, player in self.players_by_id.items() if id_ != 1]:
+            vpoints_history = [
+                self._calculate_player_virtual_points(player, round_nb)
+                for round_nb in range(1, self._current_round+1)
+            ]
+            if sum(vpoints_history) > 0:
+                xx_fields[f'XXA {player.ref_id:>4}'] = ' '.join(
+                    [f'{vpoints}:>4' for vpoints in vpoints_history]
+                )
+
+        # BBP fields
+        for result in [
+            result_class.GAIN,
+            result_class.DRAW,
+            result_class.LOSS,
+            result_class.FORFEIT_LOSS,
+            result_class.PAIRING_ALLOCATED_BYE,
+            result_class.ZERO_POINT_BYE,
+        ]:
+            xx_fields[result.bbp_field] = f'{result.point_value:>4}'
+        return xx_fields
 
     def read_papi(self):
         """Fetch tournament information from the Papi database, as well

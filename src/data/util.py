@@ -238,6 +238,24 @@ class Result(IntEnum):
                 raise ValueError(f"Unknown value: {self}")
 
     @property
+    def bbp_field(self) -> str:
+        match self:
+            case Result.LOSS:
+                return 'BBL'
+            case Result.DRAW:
+                return 'BBD'
+            case Result.GAIN:
+                return 'BBW'
+            case Result.FORFEIT_LOSS:
+                return 'BBF'
+            case Result.PAIRING_ALLOCATED_BYE:
+                return 'BBU'
+            case Result.ZERO_POINT_BYE:
+                return 'BBZ'
+            case _:
+                raise ValueError(f"Result with no matching BBP field: {self}")
+
+    @property
     def is_bye(self) -> bool:
         return self in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE)
 
@@ -1022,6 +1040,16 @@ class BoardColor(StrEnum):
                 return 'w'
             case BoardColor.BLACK:
                 return 'b'
+            case _:
+                raise ValueError(f'Unknown value:  {self}')
+
+    @property
+    def to_trf_first_round_pairing(self) -> str:
+        match self:
+            case BoardColor.WHITE:
+                return 'white1'
+            case BoardColor.BLACK:
+                return 'black1'
             case _:
                 raise ValueError(f'Unknown value:  {self}')
 

@@ -184,7 +184,7 @@ class PapiDatabase(AccessDatabase):
                 pairings[round_] = Pairing(
                     color,
                     Player.player_papi_web_id_from_papi_id(tournament_id, opponent_papi_id)
-                    if opponent_papi_id else None,
+                    if opponent_papi_id and opponent_papi_id != 1 else None,
                     Result.from_papi_value(
                         row[f'{round_str}Res'],
                         opponent_papi_id is None,

@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Self, Callable
 from trf import Player as TrfPlayer
 
 if TYPE_CHECKING:
@@ -259,11 +259,10 @@ class Player:
         with suppress(TypeError):
             self.points += points
 
-    @property
-    def to_trf(self) -> TrfPlayer:
+    def to_trf(self, player_id_to_trf_id: Callable[[int], int]) -> TrfPlayer:
         self.compute_points(len(self.pairings))
         return TrfPlayer(
-            startrank=self.ref_id,
+            startrank=player_id_to_trf_id(self.id),
             name=f'{self.last_name}, {self.first_name}',
             sex=self.gender.to_trf,
             title=self.title.to_trf,
@@ -272,7 +271,7 @@ class Player:
             id=self.fide_id,
             birthdate=self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else '',
             points=self.points,
-            games=[result.to_trf(round_nb) for round_nb, result in self.pairings.items()]
+            games=[result.to_trf(round_nb, player_id_to_trf_id) for round_nb, result in self.pairings.items()]
         )
 
     @property
@@ -354,6 +353,11 @@ class Player:
         self.time_control_initial_time = initial_time
         self.time_control_increment = increment
         self.time_control_modified = modified
+
+    def starting_rank_comparison(self, other: "Player") -> bool:
+        return (
+            (self.rating, self.title, other.last_name, other.first_name) <=
+            (other.rating, other.title, self.last_name, self.first_name))
 
     def __le__(self, other):
         # p1 <= p2 calls p1.__le__(p2)
