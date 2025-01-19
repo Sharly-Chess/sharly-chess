@@ -6,6 +6,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
 
+from common import BASE_DIR
 from common.i18n import locales
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger, print_interactive_info, input_interactive, print_interactive_error, \
@@ -14,18 +15,18 @@ from utils.i18n.i18n_update import I18nUpdater
 
 logger: Logger = get_logger()
 
-BUILD_DIR: Path = PapiWebConfig.base_dir / 'build'
-DIST_DIR: Path = PapiWebConfig.base_dir / 'dist'
-DATA_DIR: Path = PapiWebConfig.base_dir / 'export-data'
-LOCALE_DIR: Path = PapiWebConfig.base_dir / 'locale'
+BUILD_DIR: Path = BASE_DIR / 'build'
+DIST_DIR: Path = BASE_DIR / 'dist'
+DATA_DIR: Path = BASE_DIR / 'export-data'
+LOCALE_DIR: Path = BASE_DIR / 'locale'
 basename: str = f'papi-web-{PapiWebConfig.version}'
-EXPORT_DIR: Path = PapiWebConfig.base_dir / 'export'
+EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
-SPEC_FILE: Path = PapiWebConfig.base_dir / f'{basename}.spec'
-TEST_DIR: Path = PapiWebConfig.base_dir / 'export-test'
-SOURCE_DIR: Path = PapiWebConfig.base_dir / 'src'
+SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
+TEST_DIR: Path = BASE_DIR / 'export-test'
+SOURCE_DIR: Path = BASE_DIR / 'src'
 ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 
 
@@ -115,16 +116,16 @@ def build_exe():
         if file.is_file()
     ]
     for file in files:
-        pyinstaller_params.append(f'--add-data={file};{file.parent.relative_to(PapiWebConfig.base_dir)}')
+        pyinstaller_params.append(f'--add-data={file};{file.parent.relative_to(BASE_DIR)}')
     files: list[Path] = []
     files += [
         file for file in Path(
-            PapiWebConfig.base_dir / 'venv/lib/site-packages/litestar/exceptions/responses/templates').glob('**/*')
+            BASE_DIR / 'venv/lib/site-packages/litestar/exceptions/responses/templates').glob('**/*')
         if file.is_file()
     ]
     for file in files:
         pyinstaller_params.append(
-            f'--add-data={file};{file.parent.relative_to(PapiWebConfig.base_dir / "venv/lib/site-packages")}')
+            f'--add-data={file};{file.parent.relative_to(BASE_DIR / "venv/lib/site-packages")}')
     run(pyinstaller_params)
 
 
@@ -179,7 +180,7 @@ def create_zip():
             for filename in file_names:
                 file_path: Path = Path(folder_name, filename)
                 zip_file.write(file_path, file_path)
-        os.chdir(PapiWebConfig.base_dir)
+        os.chdir(BASE_DIR)
 
 
 def build_test():

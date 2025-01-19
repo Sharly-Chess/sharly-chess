@@ -2,19 +2,19 @@ import re
 import time
 import webbrowser
 from datetime import datetime
+from logging import Logger
 from pathlib import Path
 from typing import Any
 
 from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
 from requests import Session, Response
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError
-from logging import Logger
 
+from common import TMP_DIR
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
-from data.tournament import Tournament
 from common.logger import get_logger, print_interactive_error, print_interactive_success, print_interactive_info, \
     print_interactive_warning
+from data.tournament import Tournament
 from database.papi import PapiDatabase
 from database.sqlite import EventDatabase
 
@@ -89,7 +89,7 @@ class FFESession(Session):
             content: str = response.content.decode()
             if self.debug:
                 date_str = datetime.strftime(datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S')
-                debug_file = PapiWebConfig.tmp_dir / f'{url.replace("/", "_")}-{date_str}-raw.html'
+                debug_file = TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
                 with open(debug_file, 'w') as file:
                     file.write(content)
                 logger.info('Raw content stored to %s.', debug_file)
@@ -116,7 +116,7 @@ class FFESession(Session):
         parser.parseStr(html)
         if self.debug:
             date_str = datetime.strftime(datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S')
-            debug_file = PapiWebConfig.tmp_dir / f'{self.last_url_read.replace("/", "_")}-{date_str}-parsed.html'
+            debug_file = TMP_DIR / f'{self.last_url_read.replace("/", "_")}-{date_str}-parsed.html'
             with open(debug_file, 'w', encoding="utf-8") as file:
                 file.write(parser.getHTML())
             logger.info('Parsed content stored to %s', debug_file)
@@ -282,8 +282,7 @@ class FFESession(Session):
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
         date: str = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-        tmp_file: Path = \
-            PapiWebConfig.tmp_dir / 'ffe' / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
+        tmp_file: Path = TMP_DIR / 'ffe' / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
         tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
         logger.debug('Copie de %s vers %s...', self.tournament.file, tmp_file)
         tmp_file.write_bytes(self.tournament.file.read_bytes())

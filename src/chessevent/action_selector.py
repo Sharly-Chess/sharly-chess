@@ -6,14 +6,13 @@ from json import JSONDecodeError
 from logging import Logger
 from pathlib import Path
 
-
 import chardet
 
 from chessevent.chessevent_session import ChessEventSession
+from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger, print_interactive_input, input_interactive, print_interactive_warning, \
     print_interactive_info, print_interactive_error, print_interactive_success
-from common.papi_web_config import PapiWebConfig
 from common.singleton import Singleton
 from data.chessevent_tournament import ChessEventTournament
 from data.event import Event
@@ -156,7 +155,7 @@ class ActionSelector(metaclass=Singleton):
                                 chessevent_tournament_info = json.loads(data)
                             except JSONDecodeError as ex:
                                 error_output: Path = (
-                                        PapiWebConfig.tmp_dir / event.uniq_id /
+                                        TMP_DIR / event.uniq_id /
                                         f'{tournament.uniq_id}_error_l{ex.lineno}_c{ex.colno}_p{ex.pos}.json'
                                 )
                                 error_output.parents[0].mkdir(parents=True, exist_ok=True)
