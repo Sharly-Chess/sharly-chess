@@ -56,7 +56,7 @@ class ConfigReader(ConfigParser):
             self.add_error(
                 _('Duplicated option at line [{lineno}].').format(lineno=ex.lineno), ex.section, ex.option)
             return
-        except MissingSectionHeaderError as ex:
+        except MissingSectionHeaderError:
             return
         except ParsingError as ex:
             self.add_error(_('Parsing error: [{ex}].').format(ex=ex.message))

@@ -436,7 +436,7 @@ class PlayerAdminController(AbstractEventAdminController):
                             last_name=player.last_name, first_name=player.first_name,
                             tournament_uniq_id=tournament.uniq_id))
                 else:
-                    tournament.delete_player(player.ref_id)
+                    tournament.delete_player(player)
                     event_loader: EventLoader = EventLoader.get(request=request)
                     event_loader.clear_cache(event_uniq_id)
             case _:
@@ -488,7 +488,7 @@ class PlayerAdminController(AbstractEventAdminController):
                     request,
                     f'FFE ID [{admin_player.ffe_id}] already present in tournament [{dst_tournament.uniq_id}].')
             else:
-                src_tournament.delete_player(admin_player.ref_id)
+                src_tournament.delete_player(admin_player)
                 dst_tournament.add_player(admin_player)
                 Message.success(
                     request,

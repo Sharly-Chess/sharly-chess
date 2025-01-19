@@ -144,7 +144,7 @@ class PapiDatabase(AccessDatabase):
         field_sets = (f"`{f}` = ?" for f in fields)
         self._execute(f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?', tuple(params))
 
-    def read_players(self, tournament_id: int, tournament_rating: TournamentRating, rounds: int) -> dict[int, Player]:
+    def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.
         The tournament_id is used to make the players' id unique for an event. """
         players: dict[int, Player] = {}

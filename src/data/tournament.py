@@ -398,7 +398,7 @@ class Tournament:
                     self._rating_limit1,
                     self._rating_limit2
                 ) = papi_database.read_info()
-                self._players_by_id = papi_database.read_players(self.id, self._rating, self._rounds)
+                self._players_by_id = papi_database.read_players(self.id, self._rounds)
             for player in self._players_by_id.values():
                 player.tournament = self
         else:
