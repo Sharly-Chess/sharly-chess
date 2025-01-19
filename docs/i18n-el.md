@@ -14,9 +14,9 @@
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
 |Κενά υποχρεωτικά μηνύματα|0/61|
-|Κενά μηνύματα|3/1075|
-|Message flagged [ai_translation]|1072/1075|
-|Message flagged [fuzzy]|151/1075|
+|Κενά μηνύματα|3/1076|
+|Message flagged [ai_translation]|1073/1076|
+|Message flagged [fuzzy]|152/1076|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
@@ -28,9 +28,9 @@
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:None|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 
-## Σημειωθέντα μηνύματα (1223)
+## Σημειωθέντα μηνύματα (1225)
 
-### Μήνυμα που σημαδεύτηκε [ai_translation] (1072)
+### Μήνυμα που σημαδεύτηκε [ai_translation] (1073)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -427,7 +427,6 @@
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] ήδη παρών στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει μετακινηθεί από το τουρνουά [{src_tournament_uniq_id}] στο τουρνουά [{dst_tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει αφαιρεθεί από το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the rotator ID.|Παρακαλώ εισάγετε την ταυτότητα του περιστροφέα.|src/web/controllers/admin/rotator_admin_controller.py:None|
@@ -512,7 +511,7 @@
 |The name of the event on the ChessEvent password.|Το όνομα της εκδήλωσης στον κωδικό πρόσβασης του ChessEvent.|src/web/templates/admin_chessevent_modal.html:None|
 |Create|Δημιουργία|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Update|Ενημέρωση|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
-|Delete|Διαγραφή|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
+|Delete|Διαγραφή|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Cancel|Ακύρωση|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_close_check_in_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Refresh this page.|Ανανέωση αυτής της σελίδας.|src/web/templates/admin_chessevents.html:None<br>src/web/templates/admin_events.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_screens.html:None<br>src/web/templates/admin_timers.html:None<br>src/web/templates/admin_tournaments.html:None|
 |Add a ChessEvent connection to the event.|Προσθέστε μια σύνδεση σκακιού στο γεγονός.|src/web/templates/admin_chessevents.html:None|
@@ -700,6 +699,8 @@
 |Pairings|Ζευγάρωμα|src/web/templates/admin_pairings.html:None|
 |Player creation|Δημιουργία οθόνης παικτών|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Έκδοση του παίκτη [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Έκδοση του παίκτη [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Προειδοποίηση: η διαγραφή ενός χρονοδιακόπτη είναι μόνιμη!|src/web/templates/admin_player_modal.html:None|
 |Identity|Ταυτότητα|src/web/templates/admin_player_modal.html:None|
 |Last name:|Τελευταίος παίκτης:|src/web/templates/admin_player_modal.html:None|
 |E.g.: DOE|Π.χ.: κύρια|src/web/templates/admin_player_modal.html:None|
@@ -1107,7 +1108,7 @@
 |Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:None|
 |Translation|Μετάφραση|utils/i18n/i18n_update.py:None|
 
-### Μήνυμα που σημαδεύτηκε [fuzzy] (151)
+### Μήνυμα που σημαδεύτηκε [fuzzy] (152)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -1157,7 +1158,6 @@
 |Papi file [{tournament_file}] not found.|Το αρχείο Papi [{tournament_file}] δεν βρέθηκε.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] ήδη παρών στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει αφαιρεθεί από το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |No ChessEvent connection|Καμία σύνδεση με το Σκάκι.|src/web/controllers/admin/tournament_admin_controller.py:None|
@@ -1169,6 +1169,8 @@
 |Create a screen family|Διαγράψτε την οικογένεια οθόνης.|src/web/templates/admin_families.html:None|
 |Menus|Μενού:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Player creation|Δημιουργία οθόνης παικτών|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Έκδοση του παίκτη [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Προειδοποίηση: η διαγραφή ενός χρονοδιακόπτη είναι μόνιμη!|src/web/templates/admin_player_modal.html:None|
 |Last name:|Τελευταίος παίκτης:|src/web/templates/admin_player_modal.html:None|
 |E.g.: DOE|Π.χ.: κύρια|src/web/templates/admin_player_modal.html:None|
 |The player's last name.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|

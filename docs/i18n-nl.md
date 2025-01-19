@@ -14,17 +14,17 @@
 | locale=`nl` | Nederlands <img src="../src/web/static/images/locales/nl.svg" style="height: 1em;"/> |
 |--|:--:|
 |Lege verplichte berichten|0/61|
-|Lege berichten|0/1075|
-|Message flagged [ai_translation]|1075/1075|
-|Message flagged [fuzzy]|136/1075|
+|Lege berichten|0/1076|
+|Message flagged [ai_translation]|1076/1076|
+|Message flagged [fuzzy]|137/1076|
 
 ## Lege verplichte berichten (-)
 
 ## Lege berichten (-)
 
-## Gemarkeerde berichten (1211)
+## Gemarkeerde berichten (1213)
 
-### Bericht gemarkeerd [ai_translation] (1075)
+### Bericht gemarkeerd [ai_translation] (1076)
 
 |Bericht-id|Vertaling|Locaties|
 |--|--|--|
@@ -421,7 +421,6 @@
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE licentie [{ffe_licence_number}] al aanwezig in toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] al aanwezig in toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}].|Speler [{last_name} {first_name}] is verplaatst van toernooi [{src_tournament_uniq_id}] naar toernooi [{dst_tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Speler [{last_name} {first_name}] is uit het toernooi verwijderd [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the rotator ID.|Voer het rotator-id in.|src/web/controllers/admin/rotator_admin_controller.py:None|
@@ -506,7 +505,7 @@
 |The name of the event on the ChessEvent password.|De naam van het evenement op het ChessEvent wachtwoord.|src/web/templates/admin_chessevent_modal.html:None|
 |Create|Aanmaken|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Update|Bijwerken|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
-|Delete|Verwijderen|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
+|Delete|Verwijderen|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Cancel|Annuleren|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_close_check_in_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Refresh this page.|Vernieuw deze pagina.|src/web/templates/admin_chessevents.html:None<br>src/web/templates/admin_events.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_screens.html:None<br>src/web/templates/admin_timers.html:None<br>src/web/templates/admin_tournaments.html:None|
 |Add a ChessEvent connection to the event.|Voeg een ChessEvent-verbinding toe aan het evenement.|src/web/templates/admin_chessevents.html:None|
@@ -694,6 +693,8 @@
 |Pairings|met een gewicht van niet meer dan 150 g/m2|src/web/templates/admin_pairings.html:None|
 |Player creation|Schermaanmaak voor spelers|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Editie van speler [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Editie van speler [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Waarschuwing: het verwijderen van een timer is permanent!|src/web/templates/admin_player_modal.html:None|
 |Identity|Identiteit|src/web/templates/admin_player_modal.html:None|
 |Last name:|Laatste speler:|src/web/templates/admin_player_modal.html:None|
 |E.g.: DOE|B.v.: hoofd|src/web/templates/admin_player_modal.html:None|
@@ -1104,7 +1105,7 @@
 |Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:None|
 |Translation|Vertaling|utils/i18n/i18n_update.py:None|
 
-### Bericht gemarkeerd [fuzzy] (136)
+### Bericht gemarkeerd [fuzzy] (137)
 
 |Bericht-id|Vertaling|Locaties|
 |--|--|--|
@@ -1139,7 +1140,6 @@
 |Papi file [{tournament_file}] not found.|Papi-bestand [{tournament_file}] niet gevonden.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE licentie [{ffe_licence_number}] al aanwezig in toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] al aanwezig in toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Speler [{last_name} {first_name}] is uit het toernooi verwijderd [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |No ChessEvent connection|Geen ChessEvent connecties.|src/web/controllers/admin/tournament_admin_controller.py:None|
@@ -1151,6 +1151,8 @@
 |Create a screen family|Verwijder de schermfamilie.|src/web/templates/admin_families.html:None|
 |Menus|Menu:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Player creation|Schermaanmaak voor spelers|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Editie van speler [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Waarschuwing: het verwijderen van een timer is permanent!|src/web/templates/admin_player_modal.html:None|
 |Last name:|Laatste speler:|src/web/templates/admin_player_modal.html:None|
 |E.g.: DOE|B.v.: hoofd|src/web/templates/admin_player_modal.html:None|
 |The player's last name.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|

@@ -2108,14 +2108,6 @@ msgstr "Fide ID [{fide_id}] bereits im Turnier vorhanden [{tournament_uniq_id}].
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Der Spieler [{last_name} {first_name}] wurde vom Turnier [{src_tournament_uniq_id}] ins Turnier [{dst_tournament_uniq_id}] verlegt."
 
-# Error: tokens differ between [Player [{last_name} {first_name}] has been
-# removed from tournament [{tournament_uniq_id}].] and [Papi-Datei nicht für
-# Turniere definiert [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
-msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
-msgstr "Spieler [{last_name} {first_name}] wurde aus dem Turnier entfernt [{tournament_uniq_id}]."
-
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation, fuzzy
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
@@ -2579,6 +2571,7 @@ msgstr "Aktualisieren"
 #: src/web/templates/admin_event_config.html
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_rotator_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -3614,6 +3607,16 @@ msgstr "Erstellung des Bildschirms der Spieler"
 #, ai_translation, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr "Ausgabe des Spielers [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr "Ausgabe des Spielers [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "Warning: the deletion of a player is permanent!"
+msgstr "Warnung: Das Löschen eines Timers ist dauerhaft!"
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -5862,4 +5865,10 @@ msgstr "Übersetzung"
 
 #~ msgid "Please enter the first name."
 #~ msgstr "Bitte geben Sie die Zeit ein."
+
+# Error: tokens differ between [Player [{last_name} {first_name}] has been
+# removed from tournament [{tournament_uniq_id}].] and [Papi-Datei nicht für
+# Turniere definiert [{tournament_uniq_id}].]
+#~ msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
+#~ msgstr "Spieler [{last_name} {first_name}] wurde aus dem Turnier entfernt [{tournament_uniq_id}]."
 

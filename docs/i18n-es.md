@@ -14,17 +14,17 @@
 | locale=`es` | Español <img src="../src/web/static/images/locales/es.svg" style="height: 1em;"/> |
 |--|:--:|
 |Mensajes obligatorios vacíos|0/61|
-|Mensajes vacíos|0/1075|
-|Message flagged [ai_translation]|1074/1075|
-|Message flagged [fuzzy]|136/1075|
+|Mensajes vacíos|0/1076|
+|Message flagged [ai_translation]|1075/1076|
+|Message flagged [fuzzy]|137/1076|
 
 ## Mensajes obligatorios vacíos (-)
 
 ## Mensajes vacíos (-)
 
-## Mensajes marcados (1210)
+## Mensajes marcados (1212)
 
-### Mensaje marcado [ai_translation] (1074)
+### Mensaje marcado [ai_translation] (1075)
 
 |id de mensaje|Traducción|Ubicaciones|
 |--|--|--|
@@ -421,7 +421,6 @@
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|Licencia FFE [{ffe_licence_number}] ya presente en el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] ya presente en el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}].|Jugador [{last_name} {first_name}] ha sido trasladado del torneo [{src_tournament_uniq_id}] al torneo [{dst_tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Jugador [{last_name} {first_name}] ha sido eliminado del torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the rotator ID.|Por favor, introduzca la identificación del rotador.|src/web/controllers/admin/rotator_admin_controller.py:None|
@@ -506,7 +505,7 @@
 |The name of the event on the ChessEvent password.|El nombre del evento en la contraseña ChessEvent.|src/web/templates/admin_chessevent_modal.html:None|
 |Create|Crear|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Update|Actualizar|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
-|Delete|Eliminar|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
+|Delete|Eliminar|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Cancel|Cancelar|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_close_check_in_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Refresh this page.|Actualizar esta página.|src/web/templates/admin_chessevents.html:None<br>src/web/templates/admin_events.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_screens.html:None<br>src/web/templates/admin_timers.html:None<br>src/web/templates/admin_tournaments.html:None|
 |Add a ChessEvent connection to the event.|Añade una conexión ChessEvent al evento.|src/web/templates/admin_chessevents.html:None|
@@ -694,6 +693,8 @@
 |Pairings|Maridajes|src/web/templates/admin_pairings.html:None|
 |Player creation|Creación de pantalla de jugadores|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Edición del jugador [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Edición del jugador [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Advertencia: ¡la eliminación de un temporizador es permanente!|src/web/templates/admin_player_modal.html:None|
 |Identity|Identidad|src/web/templates/admin_player_modal.html:None|
 |Last name:|Último jugador:|src/web/templates/admin_player_modal.html:None|
 |E.g.: DOE|Por ejemplo: principal|src/web/templates/admin_player_modal.html:None|
@@ -1103,7 +1104,7 @@
 |Flagged messages|Mensajes marcados|utils/i18n/i18n_update.py:None|
 |Translation|Traducción|utils/i18n/i18n_update.py:None|
 
-### Mensaje marcado [fuzzy] (136)
+### Mensaje marcado [fuzzy] (137)
 
 |id de mensaje|Traducción|Ubicaciones|
 |--|--|--|
@@ -1138,7 +1139,6 @@
 |Papi file [{tournament_file}] not found.|Archivo Papi [{tournament_file}] no encontrado.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|Licencia FFE [{ffe_licence_number}] ya presente en el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] ya presente en el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Jugador [{last_name} {first_name}] ha sido eliminado del torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |No ChessEvent connection|Sin conexiones ChessEvent.|src/web/controllers/admin/tournament_admin_controller.py:None|
@@ -1150,6 +1150,8 @@
 |Create a screen family|Borrar la familia de pantalla.|src/web/templates/admin_families.html:None|
 |Menus|Menú:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Player creation|Creación de pantalla de jugadores|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Edición del jugador [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Advertencia: ¡la eliminación de un temporizador es permanente!|src/web/templates/admin_player_modal.html:None|
 |Last name:|Último jugador:|src/web/templates/admin_player_modal.html:None|
 |E.g.: DOE|Por ejemplo: principal|src/web/templates/admin_player_modal.html:None|
 |The player's last name.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|

@@ -1643,10 +1643,6 @@ msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_to
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
-msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
-msgstr ""
-
-#: src/web/controllers/admin/player_admin_controller.py
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -2031,6 +2027,7 @@ msgstr ""
 #: src/web/templates/admin_event_config.html
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_rotator_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -2914,6 +2911,15 @@ msgstr ""
 #: src/web/templates/admin_player_modal.html
 #, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
+msgstr ""
+
+#: src/web/templates/admin_player_modal.html
+#, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr ""
+
+#: src/web/templates/admin_player_modal.html
+msgid "Warning: the deletion of a player is permanent!"
 msgstr ""
 
 #: src/web/templates/admin_player_modal.html
@@ -4659,5 +4665,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Please enter the first name."
+#~ msgstr ""
+
+#~ msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
 #~ msgstr ""
 

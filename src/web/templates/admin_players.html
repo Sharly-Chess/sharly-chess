@@ -399,8 +399,8 @@
                                         </li>
                                         {% if not player.has_real_pairings %}
                                             <li
-                                                class="dropdown-item py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
-                                                    hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                                class="dropdown-item btn py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
+                                                    hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                                     hx-target="body"
                                                     hx-indicator="#please-wait"
                                                     {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}

@@ -2118,14 +2118,6 @@ msgstr "Fide ID [{fide_id}] ήδη παρών στο τουρνουά [{tourname
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Ο παίκτης [{last_name} {first_name}] έχει μετακινηθεί από το τουρνουά [{src_tournament_uniq_id}] στο τουρνουά [{dst_tournament_uniq_id}]."
 
-# Error: tokens differ between [Player [{last_name} {first_name}] has been
-# removed from tournament [{tournament_uniq_id}].] and [Το αρχείο Papi δεν
-# ορίζεται για το τουρνουά [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
-msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
-msgstr "Ο παίκτης [{last_name} {first_name}] έχει αφαιρεθεί από το τουρνουά [{tournament_uniq_id}]."
-
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation, fuzzy
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
@@ -2589,6 +2581,7 @@ msgstr "Ενημέρωση"
 #: src/web/templates/admin_event_config.html
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_rotator_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -3624,6 +3617,16 @@ msgstr "Δημιουργία οθόνης παικτών"
 #, ai_translation, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr "Έκδοση του παίκτη [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr "Έκδοση του παίκτη [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "Warning: the deletion of a player is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή ενός χρονοδιακόπτη είναι μόνιμη!"
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -5944,4 +5947,10 @@ msgstr "Μετάφραση"
 
 #~ msgid "Please enter the first name."
 #~ msgstr "Παρακαλώ εισάγετε την ώρα."
+
+# Error: tokens differ between [Player [{last_name} {first_name}] has been
+# removed from tournament [{tournament_uniq_id}].] and [Το αρχείο Papi δεν
+# ορίζεται για το τουρνουά [{tournament_uniq_id}].]
+#~ msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
+#~ msgstr "Ο παίκτης [{last_name} {first_name}] έχει αφαιρεθεί από το τουρνουά [{tournament_uniq_id}]."
 

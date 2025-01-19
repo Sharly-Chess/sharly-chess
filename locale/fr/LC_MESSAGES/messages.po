@@ -1643,10 +1643,6 @@ msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_to
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
-msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
-msgstr "Le·la joueur·euse [{last_name} {first_name}] a été supprimé·e du tournoi [{tournament_uniq_id}]."
-
-#: src/web/controllers/admin/player_admin_controller.py
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
 msgstr "Le pointage est ouvert pour le tournoi [{tournament_uniq_id}]."
 
@@ -2031,6 +2027,7 @@ msgstr "Modifier"
 #: src/web/templates/admin_event_config.html
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_rotator_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -2915,6 +2912,15 @@ msgstr "Création d'un·e joueur·euse"
 #, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr "Édition du·de la joueur·euse [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr "Suppression du·de la joueur·euse [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+msgid "Warning: the deletion of a player is permanent!"
+msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
 
 #: src/web/templates/admin_player_modal.html
 msgid "Identity"
@@ -4641,4 +4647,7 @@ msgstr "Traduction"
 
 #~ msgid "Please enter the first name."
 #~ msgstr "Veuillez entrer le prénom."
+
+#~ msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
+#~ msgstr "Le·la joueur·euse [{last_name} {first_name}] a été supprimé·e du tournoi [{tournament_uniq_id}]."
 

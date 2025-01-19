@@ -14,17 +14,17 @@
 | locale=`sv` | Svenska <img src="../src/web/static/images/locales/sv.svg" style="height: 1em;"/> |
 |--|:--:|
 |Töm obligatoriska meddelanden|0/61|
-|Tomma meddelanden|0/1075|
-|Message flagged [ai_translation]|1075/1075|
-|Message flagged [fuzzy]|136/1075|
+|Tomma meddelanden|0/1076|
+|Message flagged [ai_translation]|1076/1076|
+|Message flagged [fuzzy]|137/1076|
 
 ## Töm obligatoriska meddelanden (-)
 
 ## Tomma meddelanden (-)
 
-## Flaggade meddelanden (1211)
+## Flaggade meddelanden (1213)
 
-### Meddelande flaggat [ai_translation] (1075)
+### Meddelande flaggat [ai_translation] (1076)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -421,7 +421,6 @@
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] redan närvarande i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har flyttats från turneringen [{src_tournament_uniq_id}] till turneringen [{dst_tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har tagits bort från turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID definieras inte för turnering [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID definieras inte för turnering [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the rotator ID.|Vänligen ange rotator-ID.|src/web/controllers/admin/rotator_admin_controller.py:None|
@@ -506,7 +505,7 @@
 |The name of the event on the ChessEvent password.|Namnet på händelsen på lösenordet ChessEvent.|src/web/templates/admin_chessevent_modal.html:None|
 |Create|Skapa|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Update|Uppdatera|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
-|Delete|Ta bort|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
+|Delete|Ta bort|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Cancel|Avbryt|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_close_check_in_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |Refresh this page.|Uppdatera den här sidan.|src/web/templates/admin_chessevents.html:None<br>src/web/templates/admin_events.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_screens.html:None<br>src/web/templates/admin_timers.html:None<br>src/web/templates/admin_tournaments.html:None|
 |Add a ChessEvent connection to the event.|Lägg till en ChessEvent-anslutning till evenemanget.|src/web/templates/admin_chessevents.html:None|
@@ -694,6 +693,8 @@
 |Pairings|Paraplyer|src/web/templates/admin_pairings.html:None|
 |Player creation|Bildskärmsskapelse för spelare|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Upplaga av spelare [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Upplaga av spelare [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Varning: raderingen av en timer är permanent!|src/web/templates/admin_player_modal.html:None|
 |Identity|Identitet|src/web/templates/admin_player_modal.html:None|
 |Last name:|Senaste spelare:|src/web/templates/admin_player_modal.html:None|
 |E.g.: DOE|T.ex.: huvud|src/web/templates/admin_player_modal.html:None|
@@ -1104,7 +1105,7 @@
 |Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:None|
 |Translation|Översättning|utils/i18n/i18n_update.py:None|
 
-### Meddelande flaggat [fuzzy] (136)
+### Meddelande flaggat [fuzzy] (137)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -1139,7 +1140,6 @@
 |Papi file [{tournament_file}] not found.|Papi-filen [{tournament_file}] hittades inte.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] redan närvarande i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har tagits bort från turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID definieras inte för turnering [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID definieras inte för turnering [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |No ChessEvent connection|Inga ChessEvent-förbindelser.|src/web/controllers/admin/tournament_admin_controller.py:None|
@@ -1151,6 +1151,8 @@
 |Create a screen family|Ta bort skärmfamiljen.|src/web/templates/admin_families.html:None|
 |Menus|Menyn:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Player creation|Bildskärmsskapelse för spelare|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Upplaga av spelare [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Varning: raderingen av en timer är permanent!|src/web/templates/admin_player_modal.html:None|
 |Last name:|Senaste spelare:|src/web/templates/admin_player_modal.html:None|
 |E.g.: DOE|T.ex.: huvud|src/web/templates/admin_player_modal.html:None|
 |The player's last name.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|

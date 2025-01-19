@@ -72,108 +72,106 @@ class PlayerAdminController(AbstractEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        field: str = 'last_name'
-        last_name: str = WebContext.form_data_to_str(data, field)
-        if not last_name:
-            errors[field] = _('Please enter the last name.')
-        else:
-            last_name = last_name.upper()
-        field: str = 'first_name'
-        first_name: str = WebContext.form_data_to_str(data, field)
-        if first_name:
-            first_name = string.capwords(first_name)
-        field: str = 'date_of_birth'
-        date_of_birth: date | None = WebContext.form_data_to_date(data, field)
-        if not date_of_birth:
-            errors[field] = _('Please enter the date of birth.')
-        field: str = 'gender'
+        last_name: str | None = None
+        first_name: str | None = None
+        date_of_birth: date | None = None
         gender: PlayerGender | None = PlayerGender.NONE
-        try:
-            gender = PlayerGender(WebContext.form_data_to_int(data, field))
-        except ValueError:
-            # should never happen, not translated.
-            errors[field] = f'Invalid gender value [{data[field]}].'
-            data[field] = ''
-        field: str = 'rating'
-        ratings: dict[TournamentRating, int] = {
-            tr: WebContext.form_data_to_int(data, f'{field}_{tr.value}')
-            for tr in TournamentRating
-        }
-        field: str = 'rating_type'
+        ratings: dict[TournamentRating, int] = {tr: 0 for tr in TournamentRating}
         rating_types: dict[TournamentRating, PlayerRatingType] = {
-            tr: PlayerRatingType(WebContext.form_data_to_int(data, f'{field}_{tr.value}'))
-            for tr in TournamentRating
+            tr: PlayerRatingType.ESTIMATED for tr in TournamentRating
         }
-        field: str = 'title'
         title: PlayerTitle | None = PlayerTitle.NONE
-        try:
-            title = PlayerTitle(WebContext.form_data_to_int(data, field))
-        except ValueError:
-            # should never happen, not translated.
-            errors[field] = f'Invalid title value [{data[field]}].'
-            data[field] = ''
-        field: str = 'federation'
-        federation: str | None = WebContext.form_data_to_str(data, field)
-        if not federation in PapiWebConfig.federations:
-            # should never happen, not translated.
-            errors[field] = f'Invalid federation value [{data[field]}].'
-            data[field] = ''
-        field: str = 'league'
-        league: str | None = WebContext.form_data_to_str(data, field)
-        if league and not league in PapiWebConfig.ffe_leagues:
-            # should never happen, not translated.
-            errors[field] = f'Invalid league value [{data[field]}].'
-            data[field] = ''
-        field: str = 'club'
-        club: str | None = WebContext.form_data_to_str(data, field)
-        field: str = 'fide_id'
+        federation: str | None = None
+        league: str | None = None
+        club: str | None = None
         fide_id: int | None = None
-        try:
-            fide_id = WebContext.form_data_to_int(data, field, minimum=1)
-        except ValueError:
-            errors[field] = _('Invalid FIDE ID [{fide_id}].').format(fide_id=data[field])
-        field: str = 'ffe_id'
         ffe_id: int | None = None
-        try:
-            ffe_id = WebContext.form_data_to_int(data, field, minimum=1)
-        except ValueError:
-            errors[field] = _('Invalid FFE ID [{ffe_id}].').format(fide_id=data[field])
-        field: str = 'ffe_licence'
         ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
-        try:
-            ffe_licence = PlayerFFELicence(WebContext.form_data_to_int(data, field))
-        except ValueError:
-            errors[field] = f'Invalid FFE licence [{data[field]}].'
-        field: str = 'ffe_licence_number'
-        ffe_licence_number: str | None = WebContext.form_data_to_str(data, field)
-        if not re.match(r'^[A-Z]\d{5}$', ffe_licence_number):
-            errors[field] = f'Invalid FFE licence [{data[field]}].'
-        field: str = 'mail'
+        ffe_licence_number: str | None = None
         mail: str | None = None
-        try:
-            mail = WebContext.form_data_to_mail(data, field)
-        except ValueError:
-            errors[field] = _('Invalid mail [{mail}].').format(mail=data[field])
-        field: str = 'phone'
         phone: str | None = None
-        try:
-            phone = WebContext.form_data_to_phone(data, field)
-        except ValueError:
-            errors[field] = _('Invalid phone number [{phone}].').format(phone=data[field])
-        field: str = 'owed'
         owed: float | None = 0.0
-        try:
-            owed = WebContext.form_data_to_float(data, field)
-        except ValueError:
-            errors[field] = f'Invalid amount [{data[field]}].'
-        field: str = 'paid'
         paid: float | None = 0.0
-        try:
-            paid = WebContext.form_data_to_float(data, field)
-        except ValueError:
-            errors[field] = f'Invalid amount [{data[field]}].'
-        field: str = 'comment'
-        comment: str | None = WebContext.form_data_to_mail(data, field)
+        comment: str | None = None
+        if action in ['delete', ]:
+            pass
+        else:
+            last_name = WebContext.form_data_to_str(data, field := 'last_name')
+            if not last_name:
+                errors[field] = _('Please enter the last name.')
+            else:
+                last_name = last_name.upper()
+            first_name = WebContext.form_data_to_str(data, field := 'first_name')
+            if first_name:
+                first_name = string.capwords(first_name)
+            date_of_birth = WebContext.form_data_to_date(data, field := 'date_of_birth')
+            if not date_of_birth:
+                errors[field] = _('Please enter the date of birth.')
+            try:
+                gender = PlayerGender(WebContext.form_data_to_int(data, field := 'gender'))
+            except ValueError:
+                # should never happen, not translated.
+                errors[field] = f'Invalid gender value [{data[field]}].'
+                data[field] = ''
+            field: str = 'rating'
+            ratings = {
+                tr: WebContext.form_data_to_int(data, f'{field}_{tr.value}')
+                for tr in TournamentRating
+            }
+            field: str = 'rating_type'
+            rating_types = {
+                tr: PlayerRatingType(WebContext.form_data_to_int(data, f'{field}_{tr.value}'))
+                for tr in TournamentRating
+            }
+            try:
+                title = PlayerTitle(WebContext.form_data_to_int(data, field := 'title'))
+            except ValueError:
+                # should never happen, not translated.
+                errors[field] = f'Invalid title value [{data[field]}].'
+                data[field] = ''
+            federation = WebContext.form_data_to_str(data, field := 'federation')
+            if not federation in PapiWebConfig.federations:
+                # should never happen, not translated.
+                errors[field] = f'Invalid federation value [{data[field]}].'
+                data[field] = ''
+            league = WebContext.form_data_to_str(data, field := 'league')
+            if league and not league in PapiWebConfig.ffe_leagues:
+                # should never happen, not translated.
+                errors[field] = f'Invalid league value [{data[field]}].'
+                data[field] = ''
+            club = WebContext.form_data_to_str(data, field := 'club')
+            try:
+                fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
+            except ValueError:
+                errors[field] = _('Invalid FIDE ID [{fide_id}].').format(fide_id=data[field])
+            try:
+                ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
+            except ValueError:
+                errors[field] = _('Invalid FFE ID [{ffe_id}].').format(fide_id=data[field])
+            try:
+                ffe_licence = PlayerFFELicence(WebContext.form_data_to_int(data, field := 'ffe_licence'))
+            except ValueError:
+                errors[field] = f'Invalid FFE licence [{data[field]}].'
+            ffe_licence_number = WebContext.form_data_to_str(data, field := 'ffe_licence_number')
+            if not re.match(r'^[A-Z]\d{5}$', ffe_licence_number):
+                errors[field] = f'Invalid FFE licence [{data[field]}].'
+            try:
+                mail = WebContext.form_data_to_mail(data, field := 'mail')
+            except ValueError:
+                errors[field] = _('Invalid mail [{mail}].').format(mail=data[field])
+            try:
+                phone = WebContext.form_data_to_phone(data, field := 'phone')
+            except ValueError:
+                errors[field] = _('Invalid phone number [{phone}].').format(phone=data[field])
+            try:
+                owed = WebContext.form_data_to_float(data, field := 'owed')
+            except ValueError:
+                errors[field] = f'Invalid amount [{data[field]}].'
+            try:
+                paid = WebContext.form_data_to_float(data, field := 'paid')
+            except ValueError:
+                errors[field] = f'Invalid amount [{data[field]}].'
+            comment = WebContext.form_data_to_mail(data, 'comment')
         return Player(
             id=web_context.admin_player.id,
             first_name=first_name,
@@ -252,7 +250,7 @@ class PlayerAdminController(AbstractEventAdminController):
                     owed: float = 0.0
                     paid: float = 0.0
                     match action:
-                        case 'update':
+                        case 'update' | 'delete':
                             first_name = web_context.admin_player.first_name
                             last_name = web_context.admin_player.last_name
                             gender = web_context.admin_player.gender
@@ -372,7 +370,7 @@ class PlayerAdminController(AbstractEventAdminController):
             player_id: int | None,
     ) -> Template | ClientRedirect:
         match action:
-            case 'update' | 'create':
+            case 'update' | 'create' | 'delete':
                 web_context: PlayerAdminWebContext = PlayerAdminWebContext(
                     request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=None, data=data)
             case _:
@@ -384,10 +382,28 @@ class PlayerAdminController(AbstractEventAdminController):
             return self._admin_event_players_render(
                 request, event_uniq_id=event_uniq_id, modal='player', action=action, player_id=player_id,
                 data=data, errors=player.errors)
-        tournament: Tournament = player.tournament
-        tournament.update_player(player)
-        event_loader: EventLoader = EventLoader.get(request=request)
-        event_loader.clear_cache(event_uniq_id)
+        match action:
+            case 'update':
+                tournament: Tournament = player.tournament
+                tournament.update_player(player)
+                event_loader: EventLoader = EventLoader.get(request=request)
+                event_loader.clear_cache(event_uniq_id)
+            case 'create':
+                raise ValueError(f'action=[{action}]')
+            case 'delete':
+                tournament: Tournament = player.tournament
+                if player.has_real_pairings:
+                    Message.error(
+                        request,
+                        _('Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].').format(
+                            last_name=player.last_name, first_name=player.first_name,
+                            tournament_uniq_id=tournament.uniq_id))
+                else:
+                    tournament.delete_player(player.ref_id, return_deleted_data=False)
+                    event_loader: EventLoader = EventLoader.get(request=request)
+                    event_loader.clear_cache(event_uniq_id)
+            case _:
+                raise ValueError(f'action=[{action}]')
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
 
     @patch(
@@ -412,7 +428,7 @@ class PlayerAdminController(AbstractEventAdminController):
                 request,
                 _('Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].').format(
                     last_name=admin_player.last_name, first_name=admin_player.first_name,
-                    tournament_uniq_id=src_tournament))
+                    tournament_uniq_id=src_tournament.uniq_id))
         else:
             dst_tournament: Tournament = web_context.admin_tournament
             if not dst_tournament.file_exists:
@@ -472,28 +488,8 @@ class PlayerAdminController(AbstractEventAdminController):
             event_uniq_id: str,
             player_id: int,
     ) -> Template | ClientRedirect:
-        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
-            request, event_uniq_id=event_uniq_id, player_id=player_id, tournament_id=None, data=data)
-        if web_context.error:
-            return web_context.error
-        admin_player: Player = web_context.admin_player
-        src_tournament: Tournament = admin_player.tournament
-        if admin_player.has_real_pairings:
-            Message.error(
-                request,
-                _('Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].').format(
-                    last_name=admin_player.last_name, first_name=admin_player.first_name,
-                    tournament_uniq_id=src_tournament))
-        else:
-            src_tournament.delete_player(admin_player.ref_id, return_deleted_data=False)
-            Message.success(
-                request,
-                _('Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].').format(
-                    last_name=admin_player.last_name, first_name=admin_player.first_name,
-                    tournament_uniq_id=admin_player.tournament.uniq_id))
-            event_loader: EventLoader = EventLoader.get(request=request)
-            event_loader.clear_cache(event_uniq_id)
-        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+        return self._admin_player_update(
+            request, event_uniq_id=event_uniq_id, action='delete', player_id=player_id, data=data)
 
     @patch(
         path='/admin/tournament-open-check-in/{event_uniq_id:str}/{tournament_id:int}',
