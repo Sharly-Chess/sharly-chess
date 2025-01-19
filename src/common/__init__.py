@@ -1,17 +1,45 @@
 import re
+import sys
 import time
 from collections import namedtuple
 from datetime import datetime
 from functools import wraps
 from logging import Logger
+from pathlib import Path
 
 import unicodedata
 
 from common.logger import get_logger
 
+"""True when the program is running in a development environment, False if running as an EXE file."""
+DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
+
+
+def devel_env() -> bool:
+    """Returns True when the program is running in a development environment, False if running as an EXE file."""
+    return not getattr(sys, 'frozen', False)
+
+
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 
+
 logger: Logger = get_logger()
+
+
+""" The temporary directory. """
+TMP_DIR: Path = Path('tmp')
+
+try:
+    TMP_DIR.mkdir(parents=True, exist_ok=True)
+except PermissionError as pe:
+    logger.critical(f'Could not create directory [{TMP_DIR.absolute()}]: {pe}')
+    sys.exit()
+
+""" 
+The base directory, differs for developers. base_dir must be used when looking for application files 
+(images, templates, ...) while user file should be search in the current directory. 
+"""
+BASE_DIR: Path = Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS)
 
 
 def check_rgb_str(color: str) -> str:
@@ -68,6 +96,7 @@ def show_duration(func):
         return result
     return show_duration_wrapper
 
+
 def unicode_normalize(string: str) -> str:
-    """Remove the accents of the string, cf https://www.unicode.org/reports/tr15/#Norm_Forms"""
+    """Removes the accents of the string, cf https://www.unicode.org/reports/tr15/#Norm_Forms"""
     return ''.join(filter(lambda c: not unicodedata.combining(c), unicodedata.normalize('NFKD', string)))

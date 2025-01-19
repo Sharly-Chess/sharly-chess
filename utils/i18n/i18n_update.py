@@ -219,7 +219,7 @@ class LocaleInfo:
                 num=len(self.empty_mandatory_messages), total=len(self.mandatory_messages)))
             f.write('|{text}|{num}/{total}|\n'.format(
                 text=_('Empty messages'), num=len(self.empty_optional_messages), total=len(self.messages)))
-            for flag, messages in self.flagged_messages.items():
+            for flag in sorted(self.flagged_messages.keys()):
                 f.write('|{text}|{num}/{total}|\n'.format(
                     text=_('Message flagged [{flag}]'.format(flag=flag)),
                     num=len(self.flagged_messages[flag]), total=len(self.messages)))
@@ -260,8 +260,8 @@ class LocaleInfo:
                     f.write('\n')
             f.write('## {text} ({num})\n\n'.format(
                 text=_('Flagged messages'),
-                num=sum([len(self.flagged_messages[flag]) for flag in self.flagged_messages])))
-            for flag in self.flagged_messages:
+                num=sum([len(self.flagged_messages[flag]) for flag in sorted(self.flagged_messages.keys())])))
+            for flag in sorted(self.flagged_messages.keys()):
                 f.write('### {text} ({num})\n\n'.format(
                     text=_('Message flagged [{flag}]').format(flag=flag), num=len(self.flagged_messages[flag])))
                 f.write('|{text1}|{text2}|{text3}|\n'.format(
@@ -308,9 +308,9 @@ class LocaleInfo:
                     print_interactive_warning(f'    - ({len(self.empty_optional_messages) - empty_messages_max} more)')
         if self.flagged_messages:
             flagged_messages_max: int = 3
-            for flag, msgs in self.flagged_messages.items():
+            for flag in sorted(self.flagged_messages.keys()):
                 print_interactive_warning(f'  * Messages flagged [{flag}] ({len(self.flagged_messages[flag])})')
-                for msg_id in list(msgs.keys())[:flagged_messages_max]:
+                for msg_id in list(self.flagged_messages[flag].keys())[:flagged_messages_max]:
                     print_interactive_warning(f'    - [{msg_id}]')
                 if len(self.flagged_messages[flag]) > flagged_messages_max:
                     print_interactive_warning(f'    - ({len(self.flagged_messages[flag]) - flagged_messages_max} more)')
@@ -378,6 +378,7 @@ class I18nUpdater:
             [
                 f'--mapping-file={extract_config_file}',
                 f'--output-file={self.pot_file}',
+                '--add-location=file',
                 '--no-wrap',
                 '--omit-header',
                 '.',
@@ -417,7 +418,7 @@ class I18nUpdater:
         lines: list[str] = []
         flags: set[str] = set()
         for locale in self.locale_infos:
-            for flag in self.locale_infos[locale].flagged_messages:
+            for flag in sorted(self.locale_infos[locale].flagged_messages.keys()):
                 flags.add(flag)
         headers: list[str] = ['Locale', 'Messages', 'Empty', 'Empty mandatory', ]
         headers += [f'[{flag}]' for flag in flags]
