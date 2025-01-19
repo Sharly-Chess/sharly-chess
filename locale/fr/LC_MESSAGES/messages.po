@@ -4693,3 +4693,6 @@ msgstr "Traduction"
 #~ msgid "Enter a FFE licence number, a Fide number, a part of a name..."
 #~ msgstr "Entrez un numéro de licence FFE, un numéro FIDE, une partie du nom..."
 
+#~ msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
+#~ msgstr "Le·la joueur·euse [{last_name} {first_name}] a été supprimé·e du tournoi [{tournament_uniq_id}]."
+

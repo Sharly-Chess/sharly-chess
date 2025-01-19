@@ -2104,14 +2104,6 @@ msgstr "Fide ID [{fide_id}] redan närvarande i turneringen [{tournament_uniq_id
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Spelaren [{last_name} {first_name}] har flyttats från turneringen [{src_tournament_uniq_id}] till turneringen [{dst_tournament_uniq_id}]."
 
-# Error: tokens differ between [Player [{last_name} {first_name}] has been
-# removed from tournament [{tournament_uniq_id}].] and [Papi fil inte
-# definierad för turnering [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
-msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
-msgstr "Spelaren [{last_name} {first_name}] har tagits bort från turneringen [{tournament_uniq_id}]."
-
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation, fuzzy
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
@@ -2575,6 +2567,7 @@ msgstr "Uppdatera"
 #: src/web/templates/admin_event_config.html
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_rotator_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -3610,6 +3603,16 @@ msgstr "Bildskärmsskapelse för spelare"
 #, ai_translation, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr "Upplaga av spelare [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr "Upplaga av spelare [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "Warning: the deletion of a player is permanent!"
+msgstr "Varning: raderingen av en timer är permanent!"
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -8534,4 +8537,10 @@ msgstr "Översättning"
 
 #~ msgid "Please enter the first name."
 #~ msgstr "Vänligen ange tiden."
+
+# Error: tokens differ between [Player [{last_name} {first_name}] has been
+# removed from tournament [{tournament_uniq_id}].] and [Papi fil inte
+# definierad för turnering [{tournament_uniq_id}].]
+#~ msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
+#~ msgstr "Spelaren [{last_name} {first_name}] har tagits bort från turneringen [{tournament_uniq_id}]."
 

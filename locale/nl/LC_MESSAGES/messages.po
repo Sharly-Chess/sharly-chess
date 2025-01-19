@@ -2106,14 +2106,6 @@ msgstr "Fide ID [{fide_id}] al aanwezig in toernooi [{tournament_uniq_id}]."
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Speler [{last_name} {first_name}] is verplaatst van toernooi [{src_tournament_uniq_id}] naar toernooi [{dst_tournament_uniq_id}]."
 
-# Error: tokens differ between [Player [{last_name} {first_name}] has been
-# removed from tournament [{tournament_uniq_id}].] and [Papi-bestand niet
-# gedefinieerd voor toernooi [{tournament_uniq_id}].]
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
-msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
-msgstr "Speler [{last_name} {first_name}] is uit het toernooi verwijderd [{tournament_uniq_id}]."
-
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation, fuzzy
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
@@ -2577,6 +2569,7 @@ msgstr "Bijwerken"
 #: src/web/templates/admin_event_config.html
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_rotator_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -3612,6 +3605,16 @@ msgstr "Schermaanmaak voor spelers"
 #, ai_translation, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr "Editie van speler [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr "Editie van speler [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "Warning: the deletion of a player is permanent!"
+msgstr "Waarschuwing: het verwijderen van een timer is permanent!"
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -5956,4 +5959,10 @@ msgstr "Vertaling"
 
 #~ msgid "Please enter the first name."
 #~ msgstr "Voer de tijd in."
+
+# Error: tokens differ between [Player [{last_name} {first_name}] has been
+# removed from tournament [{tournament_uniq_id}].] and [Papi-bestand niet
+# gedefinieerd voor toernooi [{tournament_uniq_id}].]
+#~ msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
+#~ msgstr "Speler [{last_name} {first_name}] is uit het toernooi verwijderd [{tournament_uniq_id}]."
 
