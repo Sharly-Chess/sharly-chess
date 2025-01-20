@@ -431,6 +431,7 @@
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}].|Der Spieler [{last_name} {first_name}] wurde vom Turnier [{src_tournament_uniq_id}] ins Turnier [{dst_tournament_uniq_id}] verlegt.|src/web/controllers/admin/player_admin_controller.py:None|
+|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Spieler [{last_name} {first_name}] wurde aus dem Turnier entfernt [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the rotator ID.|Bitte geben Sie die Rotator-ID ein.|src/web/controllers/admin/rotator_admin_controller.py:None|
@@ -1162,6 +1163,7 @@
 |Papi file [{tournament_file}] not found.|Papi-Datei [{tournament_file}] nicht gefunden.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}].|Spieler [{last_name} {first_name}] wurde aus dem Turnier entfernt [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is open for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID nicht für Turnier definiert [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |No ChessEvent connection|Keine ChessEvent-Verbindungen.|src/web/controllers/admin/tournament_admin_controller.py:None|
