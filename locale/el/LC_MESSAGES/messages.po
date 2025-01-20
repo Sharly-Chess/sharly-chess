@@ -1,0 +1,5674 @@
+#: src/papi_web.py
+#, ai_translation
+msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+msgstr "Αυτό το πρόγραμμα δεν πρέπει να ξεκινήσει άμεσα, χρησιμοποιήστε το scripts server.bat, foff.bat και σκάκι.bat."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
+msgstr "Η σύνδεση ChessEvent δεν ορίζεται για το τουρνουά [{tournament_uniq_id}]."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
+msgstr "Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}]."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has started."
+msgstr "Το τουρνουά [{tournament_uniq_id}] ξεκίνησε."
+
+#: src/chessevent/action_selector.py src/ffe/action_selector.py
+#, ai_translation
+msgid "Event: {event_name}"
+msgstr "Εκδήλωση: {event_name}"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Unable to create Papi files since no tournaments are defined."
+msgstr "Αδύνατη η δημιουργία αρχείων Papi δεδομένου ότι δεν ορίζονται τουρνουά."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Tournaments: {tournament_names}"
+msgstr "Τουρνουά: {tournament_names}"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "C *** THE LETTER TO ANSWER CREATE"
+msgstr "Γ"
+
+#: src/chessevent/action_selector.py src/ffe/action_selector.py
+#, ai_translation
+msgid "U *** THE LETTER TO ANSWER UPLOAD"
+msgstr "Χ"
+
+#: src/chessevent/action_selector.py src/chessevent/event_selector.py
+#: src/common/engine.py src/ffe/action_selector.py src/ffe/event_selector.py
+#, ai_translation
+msgid "Q *** THE LETTER TO ANSWER QUIT"
+msgstr "Q"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Create the Papi files"
+msgstr "Δημιουργία αρχείων Papi"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Create the Papi files and send them to the FFE website"
+msgstr "Δημιουργήστε τα αρχεία Papi και στείλτε τα στην ιστοσελίδα του FFE"
+
+#: src/chessevent/action_selector.py src/chessevent/event_selector.py
+#: src/ffe/action_selector.py src/ffe/event_selector.py
+#, ai_translation
+msgid "Quit"
+msgstr "Παραιτήσου."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Your choice (by default {default}): "
+msgstr "Η επιλογή σας (από προεπιλογή {default}):"
+
+#: src/chessevent/action_selector.py src/ffe/action_selector.py
+#, ai_translation
+msgid "Action: {action}"
+msgstr "Δράση: {action}"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "1 *** THE LETTER TO ANSWER ONCE"
+msgstr "1"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
+msgstr "Γ"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Once"
+msgstr "Μια φορά."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Continuously"
+msgstr "Συνεχώς"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Frequency: {frequency}"
+msgstr "Συχνότητα: {frequency}"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Please choose the Papi version:"
+msgstr "Παρακαλώ επιλέξτε την έκδοση Papi:"
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Papi version: {version}"
+msgstr "Papi έκδοση: {version}"
+
+#: src/chessevent/action_selector.py src/ffe/action_selector.py
+#, ai_translation
+msgid "This action can not be applied to the tournaments of this event."
+msgstr "Η δράση αυτή δεν μπορεί να εφαρμοστεί στα τουρνουά αυτής της εκδήλωσης."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
+msgstr "Τα δεδομένα για το τουρνουά [{tournament_uniq_id}] δεν μπορούσαν να αποκωδικοποιηθούν (κωδικοποίηση: [{encoding}]), αποθηκευμένα στο αρχείο [{file}] (γραμμή πυρός [{line}], στήλη [{column}], θέση [{position}]."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
+msgstr "Τα δεδομένα για το τουρνουά [{tournament_name}] στο ΣκάκιEvent είναι αμετάβλητα."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "Papi file [{file}] has been created (players: {num})."
+msgstr "Το αρχείο Papi [{file}] έχει δημιουργηθεί (παίκτες: {num})."
+
+#: src/chessevent/action_selector.py
+#, ai_translation
+msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+msgstr "Η ταυτότητα FFE και ο κωδικός πρόσβασης δεν έχουν οριστεί σωστά για το τουρνουά [{tournament_name}], τα δεδομένα δεν μπορούν να σταλούν στην ιστοσελίδα του FFE."
+
+#: src/chessevent/chessevent_session.py
+#, ai_translation
+msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
+msgstr "Σφάλμα ταυτοποίησης (κωδικός: [{code}]) για [{user_id}] ([{chessevent_string}])."
+
+#: src/chessevent/chessevent_session.py
+#, ai_translation
+msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
+msgstr "Απαγορεύεται η πρόσβαση (κωδικός: [{code}]) για [{user_id}] στο τουρνουά [{tournament_name}] ([{chessevent_string}]."
+
+#: src/chessevent/chessevent_session.py
+#, ai_translation
+msgid "Missing parameter (code: [{code}]): [{error}]."
+msgstr "Χαμένη παράμετρος (κωδικός: [{code}]): [{error}]."
+
+#: src/chessevent/chessevent_session.py
+#, ai_translation
+msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
+msgstr "ID [{user_id}] δεν βρέθηκε (κωδικός: [{code}]): [{error}]."
+
+#: src/chessevent/chessevent_session.py
+#, ai_translation
+msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
+msgstr "Τουρνουά [{tournament_name}] δεν βρέθηκε (κωδικός: [{code}]): [{error}]."
+
+#: src/chessevent/chessevent_session.py
+#, ai_translation
+msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
+msgstr "Γεγονός [{event_id}] δεν βρέθηκε (κωδικός: [{code}]): [{error}]."
+
+#: src/chessevent/chessevent_session.py
+#, ai_translation
+msgid "Unknown response code: [{code}] ([{chessevent_string}])."
+msgstr "Άγνωστος κωδικός απάντησης: [{code}] ([{chessevent_string}])."
+
+#: src/chessevent/chessevent_session.py src/common/engine.py
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Failed to read [{url}] (connection error): [{ex}]."
+msgstr "Απέτυχε να διαβάσει [{url}] (λάθος σύνδεσης): [{ex}]."
+
+#: src/chessevent/chessevent_session.py src/common/engine.py
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Failed to read [{url}] (timeout): [{ex}]."
+msgstr "Απέτυχε να διαβάσει [{url}] (διάλειμμα): [{ex}]."
+
+#: src/chessevent/chessevent_session.py src/common/engine.py
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
+msgstr "Απέτυχε να διαβάσει [{url}] (κώδικας σφάλματος [{errno}]): [{strerror}]."
+
+#: src/chessevent/chessevent_session.py src/common/engine.py
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Failed to read [{url}]: [{ex}]."
+msgstr "Απέτυχε να διαβάσει [{url}]: [{ex}]."
+
+#: src/chessevent/event_selector.py src/ffe/event_selector.py
+#, ai_translation
+msgid "No events found."
+msgstr "Δεν βρέθηκαν γεγονότα."
+
+#: src/chessevent/event_selector.py src/ffe/event_selector.py
+#, ai_translation
+msgid "One event found, press Enter (Q to quit): "
+msgstr "Βρέθηκε ένα γεγονός, πατήστε Enter (Q για να παραιτηθεί):"
+
+#: src/chessevent/event_selector.py src/ffe/event_selector.py
+#, ai_translation
+msgid "Please choose the event:"
+msgstr "Παρακαλώ επιλέξτε την εκδήλωση:"
+
+#: src/chessevent/event_selector.py src/common/papi_web_config.py
+#: src/ffe/event_selector.py
+#, ai_translation
+msgid "Your choice: "
+msgstr "Η επιλογή σας:"
+
+#: src/common/config_reader.py
+#, ai_translation
+msgid "Configuration file [{file}] not found."
+msgstr "Το αρχείο ρύθμισης [{file}] δεν βρέθηκε."
+
+#: src/common/config_reader.py
+#, ai_translation
+msgid "Configuration file [{file}] is not a file."
+msgstr "Το αρχείο ρύθμισης [{file}] δεν είναι αρχείο."
+
+#: src/common/config_reader.py
+#, ai_translation
+msgid "Could not read file [{file}]."
+msgstr "Αδύνατη η ανάγνωση του αρχείου [{file}]."
+
+#: src/common/config_reader.py
+#, ai_translation
+msgid "Duplicated section at line [{lineno}]."
+msgstr "Διπλό τμήμα στη γραμμή [{lineno}]."
+
+#: src/common/config_reader.py
+#, ai_translation
+msgid "Duplicated option at line [{lineno}]."
+msgstr "Διπλή επιλογή στη γραμμή [{lineno}]."
+
+#: src/common/config_reader.py
+#, ai_translation
+msgid "Parsing error: [{ex}]."
+msgstr "Σφάλμα ανάλυσης: [{ex}]."
+
+#: src/common/config_reader.py
+#, ai_translation
+msgid "Error: [{ex}]."
+msgstr "Σφάλμα: [{ex}]."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Checking Papi-web version..."
+msgstr "Ελέγχω την έκδοση Papi-web..."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Y *** THE LETTER TO ANSWER YES"
+msgstr "Υ"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "N *** THE LETTER TO ANSWER NO"
+msgstr "N"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+msgstr "Θέλετε να αναβαθμιστείτε από [{old_version}] σε [{new_version}] [{y_lc}/{n_uc}};"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "The installation of version [{version}] failed."
+msgstr "Η εγκατάσταση της έκδοσης [{version}] απέτυχε."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "- Version {version} ({events})"
+msgstr "- Έκδοση {version} ({events})"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "- Version {version}: no events"
+msgstr "- Έκδοση {version}: καμία εκδήλωση"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "No event found in previously installed versions."
+msgstr "Δεν βρέθηκε κανένα γεγονός σε παλαιότερες εγκατεστημένες εκδόσεις."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "No previously installed version found."
+msgstr "Δεν βρέθηκε προηγουμένως εγκατεστημένη έκδοση."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
+msgstr "Θέλετε να ανακτήσει τη διαμόρφωση της έκδοσης [{version}] [{y_uc}/{n_lc}];"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Please choose the version to recover:"
+msgstr "Παρακαλώ επιλέξτε την έκδοση για να ανακτήσει:"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "  - [{q_uc}] Do not recover"
+msgstr "- [{q_uc}] Μην ανακάμψετε"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Please enter the number of the version to recover [{default}]: "
+msgstr "Παρακαλώ εισάγετε τον αριθμό της έκδοσης για να ανακτήσει [{default}]:"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
+msgstr "Θέλετε να εγκαταστήσετε παραδείγματα βάσεων δεδομένων γεγονότων [{y_uc}/{n_lc}];"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Recovering events from version {version}..."
+msgstr "Ανάκτηση γεγονότων από την έκδοση {version}..."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Recovering event [{event_uniq_id}]..."
+msgstr "Ανάκτηση γεγονότος [{event_uniq_id}]..."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
+msgstr "Εκδήλωση [{event_uniq_id}]: τουρνουά ανάκτησης [{tournament_uniq_id}]..."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Recovering custom files..."
+msgstr "Ανάκτηση προσαρμοσμένου αρχείου..."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Events recovered: {num} (from directory [{dir}])."
+msgstr "Γεγονότα που ανακτήθηκαν: {num} (από τον κατάλογο [{dir}])."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Tournaments recovered: {num} (from directory [{dir}])."
+msgstr "Τουρνουά ανακτήθηκε: {num} (από τον κατάλογο [{dir}])."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Custom files recovered: {num} (from directory [{dir}])."
+msgstr "Συνήθεις αρχεία ανακτήθηκε: {num} (από τον κατάλογο [{dir}])."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
+msgstr "Θέλετε να στείλετε αυτά τα έθιμα αρχεία στους προγραμματιστές Papi-web για να ενισχύσει τις εκδόσεις μελλοντικής εκπλήρωσης [{y_uc}/{n_lc}];"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Sending the files to a server..."
+msgstr "Στέλνω τα αρχεία σε σέρβερ..."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Files have been sent to bin {bin_name}."
+msgstr "Τα αρχεία έχουν σταλεί στον κάδο {bin_name}."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "- View the files on filebin.net: {bin_url}"
+msgstr "- Δείτε τα αρχεία στο filebin.net: {bin_url}"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "- Download the files (ZIP archive): {bin_zip_url}"
+msgstr "- Κατεβάστε τα αρχεία (Αρχείο ZIP): {bin_zip_url}"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "[Papi-web {version}] Request for the integration of custom files"
+msgstr "[Papi-web {version}] Αίτηση για την ενσωμάτωση των συνηθισμένων αρχείων"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
+msgstr "Ένα παράθυρο θα ανοίξει για να στείλετε ένα email στο έργο Papi-web; Εάν το παράθυρο δεν ανοίξει, κάντε κλικ στο παρακάτω σύνδεσμο ή στείλτε χειροκίνητα ένα email στο {email}."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Checking the version failed."
+msgstr "Ο έλεγχος της έκδοσης απέτυχε."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Your Papi-web version is up to date."
+msgstr "Η δική σου έκδοση στο διαδίκτυο είναι ενημερωμένη."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "A more recent version is available ([{version}])."
+msgstr "Μια πιο πρόσφατη έκδοση είναι διαθέσιμη ([{version}]."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
+msgstr "Χρησιμοποιείτε μια έκδοση νεότερη από την τελευταία σταθερή έκδοση διαθέσιμη ([{version}]), είστε προγραμματιστής; ?-)"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
+msgstr "Μια σταθερή και πιο πρόσφατη έκδοση είναι διαθέσιμη ([{new_version}]) αλλά η αναβάθμιση ασταθών εκδόσεων (όπως αυτή που χρησιμοποιείτε αυτή τη στιγμή: [{old_version}]) πρέπει να γίνει χειροκίνητα (αναβάθμιση από την τελευταία σταθερή έκδοση που είναι εγκατεστημένη στον διακομιστή σας)."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "You are using un unstable version more recent than the last stable version available ({version})."
+msgstr "Χρησιμοποιείτε μια ασταθή έκδοση πιο πρόσφατη από την τελευταία σταθερή έκδοση που είναι διαθέσιμη ({version})."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Looking for a more recent version on GitHub ([{url}])..."
+msgstr "Ψάχνοντας για μια πιο πρόσφατη έκδοση στο GitHub ([{url}])..."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "No response from GitHub."
+msgstr "Καμία απάντηση από το GitHub."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Invalid response from GitHub: {ex}."
+msgstr "Μη έγκυρη απάντηση από το GitHub: {ex}."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "No stable version found."
+msgstr "Δεν βρέθηκε σταθερή έκδοση."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
+msgstr "Η έκδοση [{version}] έχει ήδη εγκατασταθεί στον κατάλογο [{dir}], παρακαλώ διαγράψτε χειροκίνητα αυτόν τον φάκελο πριν από την εγκατάσταση."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Downloading version {version} from GitHub ([{url}])..."
+msgstr "Λήψη της έκδοσης {version} από το GitHub ([{url}])..."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Downloading failed with code [{code}]."
+msgstr "Η λήψη απέτυχε με τον κωδικό [{code}]."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "File downloaded: [{zip_file}]."
+msgstr "Κατεβάστε το αρχείο: [{zip_file}]."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "New version [{version}] has been installed in [{dir}]."
+msgstr "Η νέα έκδοση [{version}] έχει εγκατασταθεί στο [{dir}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Η επιλογή δεν έχει οριστεί, εξ ορισμού [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Μη έγκυρη τιμή [{value}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Locale [{locale}] not found."
+msgstr "Τοπικά [{locale}] δεν βρέθηκε."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Option not set."
+msgstr "Η επιλογή δεν έχει οριστεί."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Section not found."
+msgstr "Ο τομέας δεν βρέθηκε."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "The following languages are available:"
+msgstr "Διατίθενται οι ακόλουθες γλώσσες:"
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Invalid log level [{level}], by default [{default}]."
+msgstr "Μη έγκυρο επίπεδο καταγραφής [{level}], εξ ορισμού [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Invalid host configuration [{host}], by default [{default}]."
+msgstr "Μη έγκυρη ρύθμιση υπολογιστή [{host}], εξ ορισμού [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Invalid port [{port}], by default [{default}]."
+msgstr "Μη έγκυρη θύρα [{port}], εξ ορισμού [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Invalid delay [{delay}], by default [{default}]"
+msgstr "Μη έγκυρη καθυστέρηση [{delay}], εξ ορισμού [{default}]"
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Section not found, default configuration set."
+msgstr "Το τμήμα δεν βρέθηκε, προκαθορισμένο σύνολο ρυθμίσεων."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Your file {ini_file} has been saved as {ini_file_org}."
+msgstr "Το αρχείο σας {ini_file} έχει αποθηκευτεί ως {ini_file_org}."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
+msgstr "Αδύνατη η αποθήκευση {ini_file} σε {ini_file_org}: {ex}."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Adding lines to {file}..."
+msgstr "Προσθήκη γραμμών στο {file}..."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "[i18n] # Added by Papi-web {version}"
+msgstr "[i18n] # Προστέθηκε από Papi-web {version}"
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "# The line below has been commented by Papi-web {version}"
+msgstr "# The line below has been commented by Papi-web {version}"
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Your file {ini_file} has been modified."
+msgstr "Το αρχείο σας {ini_file} έχει τροποποιηθεί."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Could not write to {ini_file}: {ex}."
+msgstr "Αδύνατη η εγγραφή στο {ini_file}: {ex}."
+
+#: src/common/papi_web_config.py
+#, ai_translation
+msgid "Papi-web project"
+msgstr "Σχέδιο Papi-web"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}]: {text}"
+msgstr "Τουρνουά [{tournament_uniq_id}]: {text}"
+
+#: src/data/event.py
+#, ai_translation
+msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
+msgstr "Σύνδεση σκακιού [{chessevent_uniq_id}]: {text}"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Family [{family_uniq_id}]: {text}"
+msgstr "Οικογένεια [{family_uniq_id}]: {text}"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
+msgstr "Χρονοδιακόπτης [{timer_uniq_id}], ώρα [{hour_order}]: {text}"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Timer [{timer_uniq_id}]: {text}"
+msgstr "Χρονοδιακόπτης [{timer_uniq_id}]: {text}"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
+msgstr "Οθόνη [{screen_uniq_id}], οθόνη σετ [{screen_set_order}]: {text}"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Screen [{screen_uniq_id}]: {text}"
+msgstr "Οθόνη [{screen_uniq_id}]: {text}"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Rotator [{rotator_uniq_id}]: {text}"
+msgstr "Περιστροφέας [{rotator_uniq_id}]: {text}"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
+msgstr "Σφάλματα έχουν βρεθεί στο γεγονός; Συνδέσεις σκακιού, χρονοδιακόπτες, τουρνουά, οθόνες, οικογένειες και περιστροφείς δεν θα φορτωθούν."
+
+#: src/data/event.py
+#, ai_translation
+msgid "No name set, by default [{name}]"
+msgstr "Κανένα σύνολο ονόματος, εξ ορισμού [{name}]"
+
+#: src/data/event.py
+#, ai_translation
+msgid "No directory set for Papi files, by default [{path}]."
+msgstr "Κανένα σύνολο καταλόγου για τα αρχεία Papi, από προεπιλογή [{path}]."
+
+#: src/data/event.py src/data/tournament.py
+#, ai_translation
+msgid "Directory [{path}] not found."
+msgstr "Κατάλογος [{path}] δεν βρέθηκε."
+
+#: src/data/event.py src/data/tournament.py
+#, ai_translation
+msgid "[{path}] is not a directory."
+msgstr "[{path}] δεν είναι ένας κατάλογος."
+
+#: src/data/event.py
+#, ai_translation
+msgid "No background image set, by default [{background_image}]"
+msgstr "Κανένα σύνολο εικόνας φόντου, από προεπιλογή [{background_image}]"
+
+#: src/data/event.py
+#, ai_translation
+msgid "No background colour set, by default [{background_color}]"
+msgstr "Κανένα σύνολο χρωμάτων φόντου, εξ ορισμού [{background_color}]"
+
+#: src/data/event.py
+#, ai_translation
+msgid "No password set for the results entry"
+msgstr "Δεν υπάρχει κωδικός πρόσβασης για την καταχώρηση αποτελεσμάτων"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
+msgstr "Μέγιστος αριθμός παράνομων κινήσεων που δεν έχουν οριστεί, εξ ορισμού [{record_illegal_moves}]"
+
+#: src/data/event.py
+#, ai_translation
+msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
+msgstr "Σφάλματα έχουν βρεθεί στις συνδέσεις Σκακιού; χρονοδιακόπτες, τουρνουά, οθόνες, οικογένειες και περιστροφείς δεν θα φορτωθούν."
+
+#: src/data/event.py
+#, ai_translation
+msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
+msgstr "Σφάλματα έχουν βρεθεί σε χρονοδιακόπτες· τουρνουά, οθόνες, οικογένειες και περιστροφείς δεν θα φορτωθούν."
+
+#: src/data/event.py
+#, ai_translation
+msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
+msgstr "Σφάλματα έχουν βρεθεί σε τουρνουά· οι οθόνες, οι οικογένειες και οι περιστροφείς δεν θα φορτωθούν."
+
+#: src/data/event.py
+#, ai_translation
+msgid "Errors have been found on screens; families and rotators will not be loaded."
+msgstr "Οι οικογένειες και οι περιστροφείς δεν θα φορτωθούν."
+
+#: src/data/event.py
+#, ai_translation
+msgid "Errors have been found on families; rotators will not be loaded."
+msgstr "Έχουν βρεθεί λάθη σε οικογένειες· οι περιστροφείς δεν θα φορτωθούν."
+
+#: src/data/event.py
+#, ai_translation
+msgid "Errors have been found on rotators."
+msgstr "Βρέθηκαν λάθη στους περιστροφείς."
+
+#: src/data/family.py
+#, ai_translation, python-format
+msgid "%t (%f to %l)"
+msgstr "%t (%f έως %l)"
+
+#: src/data/family.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
+msgstr "Τουρνουά [{tournament_uniq_id}] δεν μπορεί να διαβαστεί, αγνοείται η οικογένεια."
+
+#: src/data/family.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
+msgstr "Το τουρνουά [{tournament_uniq_id}] έχει μόνο [{boards_number}] σανίδες (< [{first}]), αγνοείται η οικογένεια."
+
+#: src/data/family.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored."
+msgstr "Το τουρνουά [{tournament_uniq_id}] έχει μόνο [{players_number}] παίκτες (< [{first}], αγνοείται η οικογένεια."
+
+#: src/data/family.py
+#, ai_translation
+msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
+msgstr "Τίποτα που να δείχνει για το τουρνουά [{tournament_uniq_id}], η οικογένεια αγνοείται."
+
+#: src/data/family.py src/data/screen_set.py
+#, ai_translation
+msgid "all the boards"
+msgstr "όλες οι σανίδες"
+
+#: src/data/family.py src/data/screen_set.py
+#, ai_translation
+msgid "boards from #{first} to end"
+msgstr "σανίδες από το #{first} έως το τέλος"
+
+#: src/data/family.py src/data/screen_set.py
+#, ai_translation
+msgid "boards from start to #{last}"
+msgstr "σανίδες από την αρχή έως #{last}"
+
+#: src/data/family.py src/data/screen_set.py
+#, ai_translation
+msgid "boards from #{first} to #{last}"
+msgstr "σανίδες από #{first} έως #{last}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "screens of {number} boards"
+msgstr "οθόνες του {number} σανίδες"
+
+#: src/data/family.py
+#, ai_translation
+msgid "screens of {number} boards from #{first} to end"
+msgstr "οθόνες του {number} σανίδες από #{first} έως τέλος"
+
+#: src/data/family.py
+#, ai_translation
+msgid "screens of {number} boards from start to #{last}"
+msgstr "οθόνες του {number} σανίδες από την αρχή έως #{last}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "screens of {number} boards from #{first} to #{last}"
+msgstr "οθόνες του {number} σανίδες από #{first} έως #{last}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "boards on {parts} screens"
+msgstr "σανίδες στις οθόνες {parts}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "boards from #{first} to end, on {parts} screens"
+msgstr "σανίδες από #{first} προς τέλος, στις οθόνες {parts}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "boards from start to #{last}, on {parts} screens"
+msgstr "σανίδες από την αρχή έως #{last}, στις οθόνες {parts}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "boards from #{first} to #{last}, on {parts} screens"
+msgstr "σανίδες από #{first} έως #{last}, στις οθόνες {parts}"
+
+#: src/data/family.py src/data/screen_set.py
+#, ai_translation
+msgid "all the players"
+msgstr "όλοι οι παίκτες"
+
+#: src/data/family.py src/data/screen_set.py
+#, ai_translation
+msgid "players from #{first} to end"
+msgstr "παίκτες από #{first} έως τέλος"
+
+#: src/data/family.py src/data/screen_set.py
+#, ai_translation
+msgid "players from start to #{last}"
+msgstr "παίκτες από την αρχή έως #{last}"
+
+#: src/data/family.py src/data/screen_set.py
+#, ai_translation
+msgid "players from #{first} to #{last}"
+msgstr "παίκτες από #{first} έως #{last}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "screens of {number} players"
+msgstr "οθόνες του {number} παίκτες"
+
+#: src/data/family.py
+#, ai_translation
+msgid "screens of {number} players from #{first} to end"
+msgstr "οθόνες του {number} παίκτες από #{first} έως τέλος"
+
+#: src/data/family.py
+#, ai_translation
+msgid "screens of {number} players from start to #{last}"
+msgstr "οθόνες του {number} παίκτες από την αρχή έως #{last}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "screens of {number} players from #{first} to #{last}"
+msgstr "οθόνες του {number} παίκτες από #{first} έως #{last}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "players on {parts} screens"
+msgstr "παίκτες στις οθόνες {parts}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "players from #{first} to end, on {parts} screens"
+msgstr "παίκτες από #{first} για να τελειώσει, στις οθόνες {parts}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "players from start to #{last}, on {parts} screens"
+msgstr "παίκτες από την αρχή έως #{last}, στις οθόνες {parts}"
+
+#: src/data/family.py
+#, ai_translation
+msgid "players from #{first} to #{last}, on {parts} screens"
+msgstr "παίκτες από #{first} έως #{last}, στις οθόνες {parts}"
+
+#: src/data/player.py
+#, ai_translation
+msgid "Unpaired *** FEMALE"
+msgstr "Μη ζευγάρι"
+
+#: src/data/player.py
+#, ai_translation
+msgid "Unpaired *** MALE"
+msgstr "Μη ζευγάρι"
+
+#: src/data/player.py
+#, ai_translation
+msgid "Exempt *** FEMALE"
+msgstr "Απομάκρυνση"
+
+#: src/data/player.py
+#, ai_translation
+msgid "Exempt *** MALE"
+msgstr "Απομάκρυνση"
+
+#: src/data/screen.py src/data/util.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Last results"
+msgstr "Τελευταία αποτελέσματα"
+
+#: src/data/screen.py src/data/util.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Image"
+msgstr "Εικόνα"
+
+#: src/data/screen.py src/data/screen_set.py
+#, ai_translation, python-format
+msgid "Boards %f-%l"
+msgstr "Δ.Σ. %f-%l"
+
+#: src/data/screen.py
+#, ai_translation
+msgid "By board"
+msgstr "Με το διοικητικό συμβούλιο"
+
+#: src/data/screen.py
+#, ai_translation, python-format
+msgid "%t [Boards %f-%l]"
+msgstr "%t [Συμβόλαια %f-%l]"
+
+#: src/data/screen.py
+#, ai_translation
+msgid "%t (by board)"
+msgstr "%t (κατά πλοίο)"
+
+#: src/data/screen.py
+#, ai_translation
+msgid "By player"
+msgstr "Από τον παίκτη"
+
+#: src/data/screen.py
+#, ai_translation
+msgid "%t (by player)"
+msgstr "%t (από τον παίκτη)"
+
+#: src/data/screen.py
+#, ai_translation
+msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
+msgstr "Δεν υπάρχει οθόνη τύπου [{screen_type}] για το μενού της οθόνης [{screen_uniq_id}]."
+
+#: src/data/screen.py
+#, ai_translation
+msgid "Pattern [{pattern}] can be used by screen families."
+msgstr "Το μοτίβο [{pattern}] μπορεί να χρησιμοποιηθεί από οικογένειες οθόνης."
+
+#: src/data/screen.py
+#, ai_translation
+msgid "Pattern [{pattern}] matches no screen."
+msgstr "Το μοτίβο [{pattern}] δεν ταιριάζει με την οθόνη."
+
+#: src/data/screen.py
+#, ai_translation
+msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
+msgstr "Οθόνη [{pattern}] δεν βρέθηκε για το μενού της οθόνης [{screen_uniq_id}]."
+
+#: src/data/screen.py
+#, ai_translation
+msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
+msgstr "Μέγιστος αριθμός αποτελεσμάτων που έχουν οριστεί σε [{results_limit}] για να χωρέσει στις στήλες [{columns}]."
+
+#: src/data/screen_set.py src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Invalid board number [{fixed_board_str}]."
+msgstr "Μη έγκυρος αριθμός σκάφους [{fixed_board_str}]."
+
+#: src/data/screen_set.py src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
+msgstr "Οι αριθμοί {first} και {last} δεν είναι συμβατοί ({first} > {last})."
+
+#: src/data/screen_set.py
+#, ai_translation, python-format
+msgid "%f to %l"
+msgstr "%f to %l"
+
+#: src/data/screen_set.py
+#, ai_translation
+msgid "boards {board_numbers}"
+msgstr "σανίδες {board_numbers}"
+
+#: src/data/screen_set.py
+#, ai_translation
+msgid "Tournament {tournament_uniq_id} ({numbers_str})"
+msgstr "Τουρνουά {tournament_uniq_id} ({numbers_str})"
+
+#: src/data/timer.py
+#, ai_translation
+msgid "Time is not defined."
+msgstr "Ο χρόνος δεν ορίζεται."
+
+#: src/data/timer.py
+#, ai_translation
+msgid "Invalid time [{time_str}]."
+msgstr "Μη έγκυρος χρόνος [{time_str}]."
+
+#: src/data/timer.py
+#, ai_translation
+msgid "The date of the first hour is not defined (mandatory)."
+msgstr "Η ημερομηνία της πρώτης ώρας δεν ορίζεται (υποχρεωτική)."
+
+#: src/data/timer.py
+#, ai_translation
+msgid "Invalid date [{date_str}]."
+msgstr "Μη έγκυρη ημερομηνία [{date_str}]."
+
+#: src/data/timer.py src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
+msgstr "Μη έγκυρη ώρα [{hour}] (πριν από την προηγούμενη ώρα [{previous_hour}])."
+
+#: src/data/timer.py
+#, ai_translation
+msgid "Invalid date and time [{datetime_str}]."
+msgstr "Μη έγκυρη ημερομηνία και ώρα [{datetime_str}]."
+
+#: src/data/timer.py
+#, ai_translation
+msgid "No valid hour defined."
+msgstr "Δεν ορίζεται έγκυρη ώρα."
+
+#: src/data/tournament.py
+#, ai_translation
+msgid "No directory set for the Papi file, by default [{path}]."
+msgstr "Δεν έχει οριστεί κατάλογος για το αρχείο Papi, εξ ορισμού [{path}]."
+
+#: src/data/tournament.py
+#, ai_translation
+msgid "The name of the Papi file is not set, by default [{filename}]"
+msgstr "Το όνομα του αρχείου Papi δεν έχει οριστεί, εξ ορισμού [{filename}]"
+
+#: src/data/tournament.py
+#, ai_translation
+msgid "Qualification number and FFE password not set, operations on the FFE website will not be available."
+msgstr "Ο αριθμός προσόντων και ο κωδικός πρόσβασης FFE δεν έχουν οριστεί, οι λειτουργίες στην ιστοσελίδα του FFE δεν θα είναι διαθέσιμες."
+
+#: src/data/tournament.py
+#, ai_translation
+msgid "ChessEvent connection not defined."
+msgstr "Δεν ορίζεται σύνδεση σκακιού."
+
+#: src/data/tournament.py
+#, ai_translation
+msgid "ChessEvent tournament name not set."
+msgstr "Το όνομα τουρνουά του Σκακιού δεν έχει οριστεί."
+
+#: src/data/util.py
+#, ai_translation
+msgid "Standard rating"
+msgstr "Τυπική βαθμολογία"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Rapid rating"
+msgstr "Ταχεία βαθμολογία"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Blitz rating"
+msgstr "Βαθμολογία Blitz"
+
+#: src/data/util.py
+#, ai_translation
+msgid "- *** NAME FOR GENDER NONE"
+msgstr "-"
+
+#: src/data/util.py src/fide/fide_player.py
+#, ai_translation
+msgid "Female *** NAME FOR GENDER FEMALE"
+msgstr "Θήλεις"
+
+#: src/data/util.py src/fide/fide_player.py
+#, ai_translation
+msgid "Male *** NAME FOR GENDER MALE"
+msgstr "Άρρενες"
+
+#: src/data/util.py
+#: src/web/templates/admin_players/admin_players_filter_genders.html
+#, ai_translation
+msgid "- *** SHORT NAME FOR GENDER NONE"
+msgstr "-"
+
+#: src/data/util.py src/fide/fide_player.py
+#: src/web/templates/admin_players/admin_players_filter_genders.html
+#, ai_translation
+msgid "F *** SHORT NAME FOR GENDER FEMALE"
+msgstr "F"
+
+#: src/data/util.py src/fide/fide_player.py
+#: src/web/templates/admin_players/admin_players_filter_genders.html
+#, ai_translation
+msgid "M *** SHORT NAME FOR GENDER MALE"
+msgstr "ςδ"
+
+#: src/data/util.py
+#, ai_translation
+msgid "No FFE Licence"
+msgstr "Καμία άδεια FFE"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Expired FFE licence"
+msgstr "Ληφθείσα άδεια FFE"
+
+#: src/data/util.py
+#, ai_translation
+msgid "FFE licence B (leisure)"
+msgstr "Άδεια FFE Β (ψυχραιμία)"
+
+#: src/data/util.py
+#, ai_translation
+msgid "FFE licence A (competition)"
+msgstr "Αδεια FFE A (ανταγωνιστικότητα)"
+
+#: src/data/util.py
+#, ai_translation
+msgid "U8"
+msgstr "U8"
+
+#: src/data/util.py
+#, ai_translation
+msgid "U10"
+msgstr "U10"
+
+#: src/data/util.py
+#, ai_translation
+msgid "U12"
+msgstr "U12"
+
+#: src/data/util.py
+#, ai_translation
+msgid "U14"
+msgstr "U14"
+
+#: src/data/util.py
+#, ai_translation
+msgid "U16"
+msgstr "U16"
+
+#: src/data/util.py
+#, ai_translation
+msgid "U18"
+msgstr "U18"
+
+#: src/data/util.py
+#, ai_translation
+msgid "U20"
+msgstr "U20"
+
+#: src/data/util.py
+#, ai_translation
+msgid "20+"
+msgstr "20+"
+
+#: src/data/util.py
+#, ai_translation
+msgid "50+"
+msgstr "50+"
+
+#: src/data/util.py
+#, ai_translation
+msgid "65+"
+msgstr "65+"
+
+#: src/data/util.py
+#, ai_translation
+msgid "No category"
+msgstr "Καμία κατηγορία"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Under 8"
+msgstr "Κάτω των 8 ετών"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Under 10"
+msgstr "Κάτω των 10 ετών"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Under 12"
+msgstr "Κάτω των 12 ετών"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Under 14"
+msgstr "Κάτω των 14 ετών"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Under 16"
+msgstr "Κάτω των 16 ετών"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Under 18"
+msgstr "Κάτω των 18 ετών"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Under 20"
+msgstr "Κάτω των 20 ετών"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Over 20"
+msgstr "άνω των 20"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Over 50"
+msgstr "άνω των 50"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Over 65"
+msgstr "άνω των 65"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
+msgstr "Υπολογιζόμενη"
+
+#: src/data/util.py
+#, ai_translation
+msgid "National *** NAME FOR RATING TYPE NATIONAL"
+msgstr "Εθνικές"
+
+#: src/data/util.py
+#, ai_translation
+msgid "FIDE *** NAME FOR RATING TYPE FIDE"
+msgstr "ΦΙΝΤΕConstellation name (optional, probably does not need a translation)"
+
+#: src/data/util.py
+#, ai_translation
+msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
+msgstr "Ε"
+
+#: src/data/util.py
+#, ai_translation
+msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
+msgstr "N"
+
+#: src/data/util.py
+#, ai_translation
+msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
+msgstr "F"
+
+#: src/data/util.py
+#, ai_translation
+msgid "No title"
+msgstr "Χωρίς τίτλο"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Woman Fide Master"
+msgstr "Γυναικείος Δάσκαλος Πίστης"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Fide Master"
+msgstr "Δάσκαλος Fide"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Woman International Master"
+msgstr "Woman International Master"
+
+#: src/data/util.py
+#, ai_translation
+msgid "International Master"
+msgstr "Διεθνής Δάσκαλος"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Woman Grand Master"
+msgstr "Γυναικείος Μεγάλος Δάσκαλος"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Grand Master"
+msgstr "Μεγαλειότατε."
+
+#: src/data/util.py
+#, ai_translation
+msgid "WFM *** SHORT NAME FOR Woman Fide Master"
+msgstr "WFM"
+
+#: src/data/util.py
+#, ai_translation
+msgid "FM *** SHORT NAME FOR Fide Master"
+msgstr "FMunit synonyms for matching user input"
+
+#: src/data/util.py
+#, ai_translation
+msgid "WIM *** SHORT NAME FOR Woman International Master"
+msgstr "ΓΟΥΙΜConstellation name (optional, probably does not need a translation)"
+
+#: src/data/util.py
+#, ai_translation
+msgid "IM *** SHORT NAME FOR International Master"
+msgstr "IM"
+
+#: src/data/util.py
+#, ai_translation
+msgid "WGM *** SHORT NAME FOR Woman Grand Master"
+msgstr "WGM"
+
+#: src/data/util.py
+#, ai_translation
+msgid "GM *** SHORT NAME FOR Grand Master"
+msgstr "GM"
+
+#: src/data/util.py src/web/templates/user_boards_screen_set.html
+#: src/web/templates/user_results_screen.html
+#, ai_translation
+msgid "White"
+msgstr "Λευκά"
+
+#: src/data/util.py src/web/templates/user_boards_screen_set.html
+#: src/web/templates/user_results_screen.html
+#, ai_translation
+msgid "Black"
+msgstr "Μαύρο"
+
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin_families.html src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Pairings by board"
+msgstr "Ζευγαρώματα με βάση το πλοίο"
+
+#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_families.html src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Results entry"
+msgstr "Είσοδος αποτελεσμάτων"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Parings by player"
+msgstr "Αποστολές από τον παίκτη"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
+msgstr "FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
+msgstr "Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+msgstr "Το αρχείο Papi δεν βρέθηκε [{file}] για το τουρνουά [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
+msgstr "Το αρχείο κανόνων δεν ορίζεται για το τουρνουά [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
+msgstr "Αρχείο κανόνων που ορίζεται από ένα URL για το τουρνουά [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
+msgstr "Αρχείο κανόνων [{file}] δεν βρέθηκε για το τουρνουά [{tournament_uniq_id}]."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "No FFE operations can be done on the tournaments of this event."
+msgstr "Καμία λειτουργία του FFE δεν μπορεί να γίνει στα τουρνουά αυτής της εκδήλωσης."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Tournaments: {tournament_ffe_ids}"
+msgstr "Τουρνουά: {tournament_ffe_ids}"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "T *** THE LETTER TO ANSWER TEST"
+msgstr "Τ"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "V *** THE LETTER TO ANSWER VISIBLE"
+msgstr "V"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "F *** THE LETTER TO ANSWER FEES"
+msgstr "F"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "R *** THE LETTER TO ANSWER RULES"
+msgstr "Ρ"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Test the tournament passwords on the FFE website"
+msgstr "Δοκιμάστε τους κωδικούς πρόσβασης του τουρνουά στην ιστοσελίδα του FFE"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Make the tournaments visible on the FFE website"
+msgstr "Κάντε τα τουρνουά ορατά στην ιστοσελίδα του FFE"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Download fees invoices"
+msgstr "Τιμολόγιο λήψης τελών"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Upload the rules of the tournaments"
+msgstr "Ανεβάστε τους κανόνες των τουρνουά"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Upload the results of the tournaments"
+msgstr "Ανεβάστε τα αποτελέσματα των τουρνουά"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "Actions:"
+msgstr "Ενέργειες:"
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "No need to upload the rules to the FFE website (up to date)."
+msgstr "Δεν χρειάζεται να ανεβάσετε τους κανόνες στην ιστοσελίδα του FFE (ενήμερη)."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "No need to upload the results to the FFE website (up to date)."
+msgstr "Δεν χρειάζεται να ανεβάσετε τα αποτελέσματα στην ιστοσελίδα του FFE (ενήμερη)."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
+msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
+msgstr[0] "{recent_updates} Το τουρνουά έχει ενημερωθεί λιγότερο από {ffe_upload_delay} δευτερόλεπτα πριν, περιμένοντας."
+msgstr[1] "{recent_updates} τουρνουά έχουν ενημερωθεί λιγότερο από {ffe_upload_delay} δευτερόλεπτα πριν, περιμένοντας."
+
+#: src/ffe/action_selector.py
+#, ai_translation
+msgid "End of upload (Ctrl-C)"
+msgstr "Τέλος αποστολής (Ctrl-C)"
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
+msgstr "Το περιεχόμενο του URL [{url}] δεν είναι έγκυρο (input[id=[{id]) δεν βρέθηκε)."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Initializing a session to [{url}]..."
+msgstr "Έναρξη μιας συνεδρίας σε [{url}]..."
+
+#: src/ffe/ffe_session.py
+#: src/web/templates/admin_players/admin_players_filter_categories.html
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
+#: src/web/templates/admin_players/admin_players_filter_clubs.html
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#: src/web/templates/admin_players/admin_players_filter_federations.html
+#: src/web/templates/admin_players/admin_players_filter_ffe_licences.html
+#: src/web/templates/admin_players/admin_players_filter_genders.html
+#: src/web/templates/admin_players/admin_players_filter_leagues.html
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html
+#, ai_translation
+msgid "OK"
+msgstr "Εντάξει."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Authenticating..."
+msgstr "Αυθεντικό..."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Authentication failed."
+msgstr "Η ταυτοποίηση απέτυχε."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Tournament [{ffe_id}]:"
+msgstr "Τουρνουά [{ffe_id}]:"
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Getting fees for tournament [{ffe_id}]..."
+msgstr "Παίρνοντας τέλη για το τουρνουά [{ffe_id}]..."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
+msgstr "Ο σύνδεσμος τελών δεν βρέθηκε, ελέγξτε ότι ένα αρχείο Papi έχει ήδη σταλεί και ότι το τουρνουά δεν έχει αρχειοθετηθεί στην ιστοσελίδα του FFE."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Tournament exempt from registration fees."
+msgstr "Τουρνουά εξαιρούνται από τα τέλη εγγραφής."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Invalid fees link text [{text}]."
+msgstr "Μη έγκυρο κείμενο σύνδεσης τελών [{text}]."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Invoice saved to [{file}]."
+msgstr "Τιμολόγιο αποθηκευμένο σε [{file}]."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr "Αποστολή τουρνουά [{ffe_id}] ({file}) στην ιστοσελίδα του FFE..."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgstr "Ανεβάστε το σύνδεσμο δεν βρέθηκε, ελέγξτε ότι το τουρνουά δεν σημειώνεται όπως ολοκληρώθηκε στην ιστοσελίδα του FFE."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Results upload OK"
+msgstr "Ανεβάστε τα αποτελέσματα OK"
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Making the tournament visible on the FFE website..."
+msgstr "Κάνοντας το τουρνουά ορατό στην ιστοσελίδα του FFE..."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Display link not found, check that a Papi file has already been sent."
+msgstr "Ο σύνδεσμος εμφάνισης δεν βρέθηκε, ελέγξτε ότι ένα αρχείο Papi έχει ήδη σταλεί."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Data is already displayed on the FFE website."
+msgstr "Τα δεδομένα εμφανίζονται ήδη στην ιστοσελίδα του FFE."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Invalid display link text [{text}]"
+msgstr "Μη έγκυρο κείμενο σύνδεσης οθόνης [{text}]"
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr "Αποστολή των κανόνων του τουρνουά [{ffe_id}] ({file}) στην ιστοσελίδα του FFE..."
+
+#: src/ffe/ffe_session.py
+#, ai_translation
+msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgstr "Κανόνες Ανεβάστε το σύνδεσμο δεν βρέθηκε, ελέγξτε ότι το τουρνουά δεν σημειώνεται όπως ολοκληρώθηκε στην ιστοσελίδα του FFE."
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "Opening the welcome page [{url}] in a browser..."
+msgstr "Άνοιγμα της σελίδας καλωσορίσματος [{url}] σε ένα πρόγραμμα περιήγησης..."
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "Web server not started yet ({ex}), waiting..."
+msgstr "Ο διακομιστής Web δεν ξεκίνησε ακόμα ({ex}), περιμένοντας..."
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "Starting Papi-web server, please wait..."
+msgstr "Εκκίνηση διακομιστή Papi-web, παρακαλώ περιμένετε..."
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "Logging level: {log_level}"
+msgstr "Επίπεδο καταγραφής: {log_level}"
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "Port: {port}"
+msgstr "Λιμάνι: {port}"
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "Local URL: {local_url}"
+msgstr "Τοπική URL: {local_url}"
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "LAN/WAN URL: {lan_url}"
+msgstr "LAN/WAN URL: {lan_url}"
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "Port [{port}] already in use, can not start Papi-web server."
+msgstr "Η θύρα [{port}] είναι ήδη σε χρήση, δεν μπορεί να ξεκινήσει το διακομιστή Papi-web."
+
+#: src/web/controllers/index_controller.py
+#, ai_translation
+msgid "USE AT YOUR OWN RISKS"
+msgstr "ΧΡΗΣΙΜΟΠΟΙΕΙΤΕ ΜΕ δικούς ΣΑΣ ΚΙΝΔΥΝΟΥΣ"
+
+#: src/web/controllers/admin/chessevent_admin_controller.py
+#, ai_translation
+msgid "Please enter the ID of ChessEvent connection."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα της σύνδεσης ChessEvent."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py
+#, ai_translation
+msgid "ChessEvent connection [{uniq_id}] already exists."
+msgstr "Η σύνδεση σκακιού [{uniq_id}] υπάρχει ήδη."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py
+#, ai_translation
+msgid "Please enter the ID used to connect to the ChessEvent platform."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα που χρησιμοποιήθηκε για να συνδεθείτε με την πλατφόρμα ChessEvent."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py
+#, ai_translation
+msgid "Please enter the password used to connect to the ChessEvent platform."
+msgstr "Παρακαλώ εισάγετε τον κωδικό πρόσβασης που χρησιμοποιήθηκε για να συνδεθείτε στην πλατφόρμα ChessEvent."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py
+#, ai_translation
+msgid "Please enter the ID of the event on the ChessEvent platform."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα της εκδήλωσης στην πλατφόρμα ChessEvent."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py
+#, ai_translation
+msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
+msgstr "Η σύνδεση σκακιού [{chessevent_uniq_id}] έχει δημιουργηθεί."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py
+#, ai_translation
+msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
+msgstr "Η σύνδεση με το σκάκι [{chessevent_uniq_id}] έχει ενημερωθεί."
+
+#: src/web/controllers/admin/chessevent_admin_controller.py
+#, ai_translation
+msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
+msgstr "Η σύνδεση σκακιού [{chessevent_uniq_id}] έχει διαγραφεί."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Tournaments ({num})"
+msgstr "Τουρνουά ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Players ({num})"
+msgstr "Παίκτες ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Screens ({num})"
+msgstr "Οθόνες ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Families ({num})"
+msgstr "Οικογένειες ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/user/event_user_controller.py
+#, ai_translation
+msgid "Rotators ({num})"
+msgstr "Περιστροφείς ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Timers ({num})"
+msgstr "Χρονοδιακόπτες ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "ChessEvent ({num})"
+msgstr "Σκακιστικό ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Messages ({num})"
+msgstr "Μηνύματα ({num})"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Renaming the database failed: {ex}."
+msgstr "Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
+msgstr "Το γεγονός [{old_uniq_id}] έχει μετονομαστεί ([{new_uniq_id}]) και έχει ενημερωθεί."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Event [{uniq_id}] has been updated."
+msgstr "Το γεγονός [{uniq_id}] έχει ενημερωθεί."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Event [{uniq_id}] has been created."
+msgstr "Το γεγονός [{uniq_id}] δημιουργήθηκε."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
+msgstr "Το γεγονός [{uniq_id}] έχει διαγραφεί, η βάση δεδομένων έχει αρχειοθετηθεί ({arch})."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#, ai_translation
+msgid "Please enter the family ID."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα της οικογένειας."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Character [{char}] is not allowed."
+msgstr "Ο χαρακτήρας [{char}] δεν επιτρέπεται."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#, ai_translation
+msgid "Family [{uniq_id}] already exists."
+msgstr "Η οικογένεια [{uniq_id}] υπάρχει ήδη."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Please choose the tournament."
+msgstr "Παρακαλώ επιλέξτε το τουρνουά."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Tournament [{tournament_id}] not found."
+msgstr "Τουρνουά [{tournament_id}] δεν βρέθηκε."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "A positive integer is expected."
+msgstr "Αναμένεται ένας θετικός ακέραιος αριθμός."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Timer [{timer_id}] not found."
+msgstr "Ο χρονοδιακόπτης [{timer_id}] δεν βρέθηκε."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#, ai_translation
+msgid "Specifying the number of parts and the number of items per part is not possible."
+msgstr "Ο προσδιορισμός του αριθμού των μερών και του αριθμού των στοιχείων ανά μέρος δεν είναι δυνατός."
+
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "pairings by board"
+msgstr "Συναρμολογήσεις με το διοικητικό συμβούλιο"
+
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin_families.html src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Ζευγάρωμα από τον παίκτη"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "No recording"
+msgstr "Χωρίς εγγραφή"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "{num} illegal move max"
+msgid_plural "{num} illegal moves max"
+msgstr[0] "{num} παράνομη κίνηση max"
+msgstr[1] "{num} παράνομες κινήσεις max"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "By default - {option}"
+msgstr "Από προεπιλογή - {option}"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
+msgstr "Χρώμα #1 χρησιμοποιείται μέχρι {delay_1} λεπτά πριν από την έναρξη των γύρων (Delay #1), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #2 ({delay_2} λεπτά πριν από την έναρξη των γύρων)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
+msgstr "Χρώμα #2 χρησιμοποιείται {delay_2} λεπτά πριν από την έναρξη των γύρων (delay #2), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #3 (στην αρχή των γύρων)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr "Χρώμα #3 χρησιμοποιείται από την αρχή των γύρων και για {delay_3} λεπτά μετά (delay #3)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Use no timer"
+msgstr "Μη χρησιμοποιείτε χρονοδιακόπτη"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "No timer defined"
+msgstr "Δεν ορίζεται χρονοδιακόπτης"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Timer {timer_uniq_id}"
+msgstr "Χρονοδιακόπτης {timer_uniq_id}"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Display the exit button"
+msgstr "Εμφάνιση του πλήκτρου εξόδου"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Hide the exit button"
+msgstr "Απόκρυψη του πλήκτρου εξόδου"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Display only paired players"
+msgstr "Εμφάνιση μόνο ζευγών παικτών"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Display all the players, paired and unpaired"
+msgstr "Εμφάνιση όλων των παικτών, ζευγάρωμα και χωρίς ζευγάρωμα"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "URL [{url}] responded code [{code}]."
+msgstr "Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}]."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "URL [{url}] did not respond (error: [{error}])."
+msgstr "Το URL [{url}] δεν ανταποκρίθηκε (δρόμος: [{error}])."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Incorrect path [{path}]."
+msgstr "Λάθος διαδρομή [{path}]."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "File [{file}] not found."
+msgstr "Το αρχείο [{file}] δεν βρέθηκε."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Wrong file extension [{ext}] ([pdf] expected)."
+msgstr "Λάθος επέκταση αρχείου [{ext}] ([pdf] αναμένεται)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Invalid color [{color}] ([#RRGGBB] expected)."
+msgstr "Μη έγκυρο χρώμα [{color}] ([#RRGGBB] αναμένεται)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Please enter the event ID."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα του γεγονότος."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "event ID does not match."
+msgstr "Η ταυτότητα του γεγονότος δεν ταιριάζει."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Event [{uniq_id}] already exists."
+msgstr "Το γεγονός [{uniq_id}] υπάρχει ήδη."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Please enter the name of the event."
+msgstr "Παρακαλώ εισάγετε το όνομα της εκδήλωσης."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Please enter the start date of the event."
+msgstr "Παρακαλώ εισάγετε την ημερομηνία έναρξης της εκδήλωσης."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Please enter the end date of the event."
+msgstr "Παρακαλώ εισάγετε την ημερομηνία λήξης της εκδήλωσης."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Please enter a date after the start date."
+msgstr "Παρακαλώ εισάγετε ημερομηνία μετά την ημερομηνία έναρξης."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Please enter a URL or select an image on the right hand side."
+msgstr "Παρακαλώ εισάγετε ένα URL ή επιλέξτε μια εικόνα στη δεξιά πλευρά."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr "Μη έγκυρη καθυστέρηση [{delay}] (θετικός ακέραιος αναμενόμενος)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "New event"
+msgstr "Νέο γεγονός"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "event"
+msgstr "γεγονός"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Current events ({num})"
+msgstr "Τρέχοντα γεγονότα ({num})"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No current events."
+msgstr "Δεν υπάρχουν τρέχοντα γεγονότα."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Upcoming events ({num})"
+msgstr "Προσεχή γεγονότα ({num})"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No upcoming events."
+msgstr "Όχι επερχόμενα γεγονότα."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Passed events ({num})"
+msgstr "Περασμένα γεγονότα ({num})"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No passed events."
+msgstr "Δεν πέρασαν τα γεγονότα."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Archived events ({num})"
+msgstr "Αρχειοθετημένες εκδηλώσεις ({num})"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "No archived events."
+msgstr "Δεν υπάρχουν αρχειοθετημένα γεγονότα."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Papi-web configuration"
+msgstr "Ρυθμίσεις Papi-webName"
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Please enter the last name."
+msgstr "Παρακαλώ εισάγετε το επίθετο."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Please enter the date of birth."
+msgstr "Παρακαλώ εισάγετε την ημερομηνία γέννησης."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Only estimated rankings are optional."
+msgstr "Μόνο η εκτιμώμενη κατάταξη είναι προαιρετική."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Invalid FIDE ID [{fide_id}]."
+msgstr "Μη έγκυρη ταυτότητα FIDE [{fide_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Invalid FFE ID [{ffe_id}]."
+msgstr "Μη έγκυρο FFE ID [{ffe_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr "Μη έγκυρος αριθμός άδειας FFE [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Invalid mail [{mail}]."
+msgstr "Μη έγκυρο ταχυδρομείο [{mail}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Invalid phone number [{phone}]."
+msgstr "Μη έγκυρος αριθμός τηλεφώνου [{phone}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Invalid amount [{amount}]."
+msgstr "Μη έγκυρο ποσό [{amount}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Invalid fixed board number [{fixed_board}]."
+msgstr "Μη έγκυρος αριθμός σταθερής πινακίδας [{fixed_board}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Standard:"
+msgstr "Τυπικό:"
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The rating used when the time control is at least 60 minutes."
+msgstr "Η βαθμολογία που χρησιμοποιείται όταν ο χρόνος ελέγχου είναι τουλάχιστον 60 λεπτά."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Rapid:"
+msgstr "Ταχεία:"
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
+msgstr "Η βαθμολογία που χρησιμοποιείται όταν ο χρόνος ελέγχου είναι περισσότερο από 10 λεπτά και λιγότερο από 60 λεπτά."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Blitz:"
+msgstr "Blitz:"
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The rating used when the time control is at most 10 minutes."
+msgstr "Η βαθμολογία που χρησιμοποιείται όταν ο χρόνος ελέγχου είναι το πολύ 10 λεπτά."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
+msgstr "Το τουρνουά [{tournament_uniq_id}] έχει τελειώσει, δεν μπορείτε να προσθέσετε παίκτες πια."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
+msgstr "Δεν βρέθηκε αρχείο Papi για το τουρνουά [{tournament_uniq_id}], δεν μπορεί να προσθέσει τον παίκτη."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
+msgstr "Ο παίκτης [{last_name} {first_name}] έχει ζευγαρώματα στο τουρνουά [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Papi file [{tournament_file}] not found."
+msgstr "Το αρχείο Papi [{tournament_file}] δεν βρέθηκε."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr "FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
+msgstr "Fide ID [{fide_id}] ήδη παρών στο τουρνουά [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgstr "Ο παίκτης [{last_name} {first_name}] έχει μετακινηθεί από το τουρνουά [{src_tournament_uniq_id}] στο τουρνουά [{dst_tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Check-in is open for tournament [{tournament_uniq_id}]."
+msgstr "Το check-in είναι ανοιχτό για τουρνουά [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
+msgstr "Το check-in είναι κλειστό για τουρνουά [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/rotator_admin_controller.py
+#, ai_translation
+msgid "Please enter the rotator ID."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα του περιστροφέα."
+
+#: src/web/controllers/admin/rotator_admin_controller.py
+#, ai_translation
+msgid "Rotator [{uniq_id}] already exists."
+msgstr "Ο περιστροφέας [{uniq_id}] υπάρχει ήδη."
+
+#: src/web/controllers/admin/rotator_admin_controller.py
+#, ai_translation
+msgid "Rotator [{rotator_uniq_id}] has been created."
+msgstr "Ο περιστροφέας [{rotator_uniq_id}] έχει δημιουργηθεί."
+
+#: src/web/controllers/admin/rotator_admin_controller.py
+#, ai_translation
+msgid "Rotator [{rotator_uniq_id}] has been updated."
+msgstr "Ο περιστροφέας [{rotator_uniq_id}] έχει ενημερωθεί."
+
+#: src/web/controllers/admin/rotator_admin_controller.py
+#, ai_translation
+msgid "Rotator [{rotator_uniq_id}] has been deleted."
+msgstr "Ο περιστροφέας [{rotator_uniq_id}] έχει διαγραφεί."
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Please enter the screen ID."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα οθόνης."
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Screen [{uniq_id}] already exists."
+msgstr "Η οθόνη [{uniq_id}] υπάρχει ήδη."
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Please enter the image URL."
+msgstr "Παρακαλώ εισάγετε το URL εικόνας."
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Invalid URL [{background_image}]."
+msgstr "Μη έγκυρο URL [{background_image}]."
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "{screen_type}-screen"
+msgstr "{screen_type}- οθόνη"
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Screen [{screen_uniq_id}] has been created."
+msgstr "Η οθόνη [{screen_uniq_id}] έχει δημιουργηθεί."
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Screen [{screen_uniq_id}] has been updated."
+msgstr "Η οθόνη [{screen_uniq_id}] έχει ενημερωθεί."
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Screen [{screen_uniq_id}] has been deleted."
+msgstr "Η οθόνη [{screen_uniq_id}] έχει διαγραφεί."
+
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "The last set of a screen can not be deleted."
+msgstr "Το τελευταίο σετ οθόνης δεν μπορεί να διαγραφεί."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter the timer ID."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα του χρονοδιακόπτη."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Timer [{uniq_id}] already exists."
+msgstr "Ο χρονοδιακόπτης [{uniq_id}] υπάρχει ήδη."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter the round number or the hour ID."
+msgstr "Παρακαλώ εισάγετε τον αριθμό γύρου ή την ταυτότητα ώρας."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter the time."
+msgstr "Παρακαλώ εισάγετε την ώρα."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter a valid time."
+msgstr "Παρακαλώ εισάγετε μια έγκυρη ώρα."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter the date of the first hour."
+msgstr "Παρακαλώ εισάγετε την ημερομηνία της πρώτης ώρας."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter a valid date."
+msgstr "Παρακαλώ εισάγετε μια έγκυρη ημερομηνία."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter valid date and time."
+msgstr "Παρακαλώ εισάγετε έγκυρη ημερομηνία και ώρα."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Hour [{uniq_id}] already exists."
+msgstr "Η ώρα [{uniq_id}] υπάρχει ήδη."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Round numbers must be positive integers."
+msgstr "Οι στρογγυλοί αριθμοί πρέπει να είναι θετικοί ακέραιοι."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter the text to display before the hour (mandatory except for rounds)."
+msgstr "Παρακαλώ εισάγετε το κείμενο που θα εμφανιστεί πριν από την ώρα (υποχρεωτικό εκτός από γύρους)."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Please enter the text to display after the hour (mandatory except for rounds)."
+msgstr "Παρακαλώ εισάγετε το κείμενο για εμφάνιση μετά την ώρα (υποχρεωτικό εκτός από γύρους)."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Timer [{timer_uniq_id}] has been created."
+msgstr "Ο χρονοδιακόπτης [{timer_uniq_id}] δημιουργήθηκε."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Timer [{timer_uniq_id}] has been updated."
+msgstr "Ο χρονοδιακόπτης [{timer_uniq_id}] έχει ενημερωθεί."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Timer [{timer_uniq_id}] has been deleted."
+msgstr "Ο χρονοδιακόπτης [{timer_uniq_id}] έχει διαγραφεί."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Please enter the tournament ID."
+msgstr "Παρακαλώ εισάγετε την ταυτότητα του τουρνουά."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "tournament ID does not match."
+msgstr "Η ταυτότητα του τουρνουά δεν ταιριάζει."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Tournament [{uniq_id}] already exists."
+msgstr "Τουρνουά [{uniq_id}] υπάρχει ήδη."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Please enter the tournament name."
+msgstr "Παρακαλώ εισάγετε το όνομα τουρνουά."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "The FFE ID is a positive integer."
+msgstr "Η ταυτότητα FFE είναι ένας θετικός ακέραιος αριθμός."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
+msgstr "Ο κωδικός πρόσβασης του τουρνουά στην ιστοσελίδα του FFE είναι κατασκευασμένος από 10 κεφαλαία γράμματα."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "No ChessEvent connection"
+msgstr "Δεν υπάρχει σύνδεση σκακιού"
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "tournament"
+msgstr "τουρνουά"
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "New tournament"
+msgstr "Νέο τουρνουά"
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
+msgstr "Τουρνουά [{tournament_uniq_id}] έχει δημιουργηθεί και προεπιλεγμένες οθόνες έχουν προστεθεί."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has been created."
+msgstr "Το τουρνουά [{tournament_uniq_id}] έχει δημιουργηθεί."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has been updated."
+msgstr "Το τουρνουά [{tournament_uniq_id}] έχει ενημερωθεί."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] has been deleted."
+msgstr "Το τουρνουά [{tournament_uniq_id}] έχει διαγραφεί."
+
+#: src/web/controllers/user/event_user_controller.py
+#, ai_translation
+msgid "Results entry ({num})"
+msgstr "Είσοδος αποτελεσμάτων ({num})"
+
+#: src/web/controllers/user/event_user_controller.py
+#, ai_translation
+msgid "Pairings by board ({num})"
+msgstr "Ζευγάρωμα με το πλοίο ({num})"
+
+#: src/web/controllers/user/event_user_controller.py
+#, ai_translation
+msgid "Pairings by player ({num})"
+msgstr "Ζευγάρωμα από τον παίκτη ({num})"
+
+#: src/web/controllers/user/event_user_controller.py
+#, ai_translation
+msgid "Last results ({num})"
+msgstr "Τελευταία αποτελέσματα ({num})"
+
+#: src/web/controllers/user/event_user_controller.py
+#, ai_translation
+msgid "Image ({num})"
+msgstr "Εικόνα ({num})"
+
+#: src/web/controllers/user/screen_user_controller.py
+#, ai_translation
+msgid "Access denied, please authenticate to enter results."
+msgstr "Η πρόσβαση απορρίπτεται, παρακαλούμε να πιστοποιήσετε για να εισάγετε τα αποτελέσματα."
+
+#: src/web/controllers/user/screen_user_controller.py
+#, ai_translation
+msgid "Incorrect password."
+msgstr "Λάθος κωδικός πρόσβασης."
+
+#: src/web/controllers/user/screen_user_controller.py
+#, ai_translation
+msgid "Authentication successful!"
+msgstr "Επιτυχής ταυτοποίηση!"
+
+#: src/web/controllers/user/screen_user_controller.py
+#, ai_translation
+msgid "Please enter the password."
+msgstr "Παρακαλώ εισάγετε τον κωδικό πρόσβασης."
+
+#: src/web/controllers/user/tournament_user_controller.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] is not started yet."
+msgstr "Το τουρνουά [{tournament_uniq_id}] δεν έχει ξεκινήσει ακόμα."
+
+#: src/web/controllers/user/tournament_user_controller.py
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] is started."
+msgstr "Ξεκίνησε το τουρνουά [{tournament_uniq_id}]."
+
+#: src/web/templates/admin_archives.html
+#, ai_translation
+msgid "Archived event"
+msgstr "Αρχειοθετήθηκε εκδήλωση"
+
+#: src/web/templates/admin_archives.html
+#, ai_translation
+msgid "Deletion date"
+msgstr "Ημερομηνία διαγραφής"
+
+#: src/web/templates/admin_check_in.html
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "Check-in"
+msgstr "Check-in"
+
+#: src/web/templates/admin_chessevent_card.html
+#, ai_translation, python-format
+msgid "Chessevent ID: %(chessevent_user_id)s"
+msgstr "ID σκακιού: %(chessevent_user_id)s"
+
+#: src/web/templates/admin_chessevent_card.html
+#, ai_translation, python-format
+msgid "ChessEvent password: %(chessevent_password)s"
+msgstr "Κωδικός πρόσβασης για το σκάκι: %(chessevent_password)s"
+
+#: src/web/templates/admin_chessevent_card.html
+#, ai_translation, python-format
+msgid "ChessEvent event: %(chessevent_event)s"
+msgstr "Εκδήλωση σκακιού: %(chessevent_event)s"
+
+#: src/web/templates/admin_chessevent_card.html
+#, ai_translation
+msgid "Edit the properties of the ChessEvent connection."
+msgstr "Επεξεργασία των ιδιοτήτων της σύνδεσης σκακιού."
+
+#: src/web/templates/admin_chessevent_card.html
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_screen_card.html
+#: src/web/templates/admin_timer_card.html
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+#: src/web/templates/admin_chessevent_card.html
+#, ai_translation
+msgid "Clone the ChessEvent connection."
+msgstr "Clone the ChessEvent connection."
+
+#: src/web/templates/admin_chessevent_card.html
+#, ai_translation
+msgid "Delete the ChessEvent connection."
+msgstr "Διαγραφή της σύνδεσης σκακιού."
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "ChessEvent connection creation"
+msgstr "Δημιουργία σύνδεσης σκακιού"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation, python-format
+msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
+msgstr "Έκδοση της σύνδεσης ChessEvent [%(chessevent_uniq_id)s]"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation, python-format
+msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
+msgstr "Διαγραφή της σύνδεσης σκακιού [%(chessevent_uniq_id)s]"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "Warning: the deletion of a ChessEvent connection is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή μιας σύνδεσης σκακιού είναι μόνιμη!"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "The following tournaments will not be connected to ChessEvent anymore:"
+msgstr "Τα ακόλουθα τουρνουά δεν θα συνδέονται με το Σκάκι πια:"
+
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Properties"
+msgstr "Ιδιότητες"
+
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "ID (unique):"
+msgstr "ID (μοναδική):"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "The Unique ID, used to reference the ChessEvent connection."
+msgstr "Η Μοναδική ταυτότητα, που χρησιμοποιείται για την αναφορά της σύνδεσης σκακιού."
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "Connection to the ChessEvent platform"
+msgstr "Σύνδεση με την πλατφόρμα ChessEvent"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "Chessevent ID:"
+msgstr "Ταυτότητα σκακιού:"
+
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(string)s"
+msgstr "Π.χ.: %(string)s"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "the ID used to connect to the ChessEvent platform."
+msgstr "την ταυτότητα που χρησιμοποιήθηκε για να συνδεθεί με την πλατφόρμα σκακιστικών γεγονότων."
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "Password:"
+msgstr "Κωδικός πρόσβασης:"
+
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "E.g.: my_password"
+msgstr "Π.χ.: my_password"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "The password used to connect to the ChessEvent platform."
+msgstr "Ο κωδικός πρόσβασης που χρησιμοποιήθηκε για να συνδεθεί με την πλατφόρμα ChessEvent."
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "ChessEvent event:"
+msgstr "Εκδήλωση σκακιού:"
+
+#: src/web/templates/admin_chessevent_modal.html
+#, ai_translation
+msgid "The name of the event on the ChessEvent password."
+msgstr "Το όνομα της εκδήλωσης στον κωδικό πρόσβασης του ChessEvent."
+
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Create"
+msgstr "Δημιουργία"
+
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Update"
+msgstr "Ενημέρωση"
+
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Delete"
+msgstr "Διαγραφή"
+
+#: src/web/templates/admin_chessevent_modal.html
+#: src/web/templates/admin_close_check_in_modal.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_timer_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+#: src/web/templates/admin_chessevents.html src/web/templates/admin_events.html
+#: src/web/templates/admin_players.html src/web/templates/admin_screens.html
+#: src/web/templates/admin_timers.html src/web/templates/admin_tournaments.html
+#, ai_translation
+msgid "Refresh this page."
+msgstr "Ανανέωση αυτής της σελίδας."
+
+#: src/web/templates/admin_chessevents.html
+#, ai_translation
+msgid "Add a ChessEvent connection to the event."
+msgstr "Προσθέστε μια σύνδεση σκακιού στο γεγονός."
+
+#: src/web/templates/admin_chessevents.html
+#, ai_translation
+msgid "Create a ChessEvent connection"
+msgstr "Δημιουργία σύνδεσης σκακιού"
+
+#: src/web/templates/admin_chessevents.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "No ChessEvent connections."
+msgstr "Καμία σύνδεση με το Σκάκι."
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation, python-format
+msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
+msgstr "Κλείσιμο check-in για το τουρνουά [%(tournament_uniq_id)s]"
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation
+msgid "The following players did not check-in:"
+msgstr "Οι ακόλουθοι παίκτες δεν έκαναν check-in:"
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation
+msgid "Choose what to do after closing the check-in:"
+msgstr "Επιλέξτε τι πρέπει να κάνετε μετά το κλείσιμο του check-in:"
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation
+msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
+msgstr "Σημειώστε τους παίκτες σαν να χάνουν για το υπόλοιπο τουρνουά (δεν επιτρέπεται check-in μέχρι να αφαιρεθούν οι απώλειες)."
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation
+msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
+msgstr "Σημειώστε ότι οι παίκτες χάνουν για τον επόμενο γύρο (οι παίκτες θα είναι σε θέση να κάνουν check-in για τους επόμενους γύρους)."
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation
+msgid "All the players intended to play the coming round did check-in."
+msgstr "Όλοι οι παίκτες που σκόπευαν να παίξουν τον επόμενο γύρο έκαναν check-in."
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation
+msgid "Mark as forfeit for the rest of the tournament"
+msgstr "Σημείωσε ότι χάνεις για το υπόλοιπο τουρνουά."
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation
+msgid "Mark as forfeit for the coming round"
+msgstr "Σημείωσε ότι χάνεις για τον ερχομό."
+
+#: src/web/templates/admin_close_check_in_modal.html
+#, ai_translation
+msgid "Close the check-in"
+msgstr "Κλείστε το check-in"
+
+#: src/web/templates/admin_config.html src/web/templates/admin_events.html
+#, ai_translation
+msgid "Add an event."
+msgstr "Προσθέστε ένα γεγονός."
+
+#: src/web/templates/admin_config.html src/web/templates/admin_events.html
+#, ai_translation
+msgid "Create an event"
+msgstr "Δημιουργία ενός γεγονότος"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Configuration"
+msgstr "Ρύθμιση"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Port"
+msgstr "Λιμένας"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Access from the Papi-web server"
+msgstr "Πρόσβαση από το διακομιστή Papi-web"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Access from the local network (LAN/WAN)"
+msgstr "Πρόσβαση από το τοπικό δίκτυο (LAN/WAN)"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Launching the browser on server startup"
+msgstr "Εκκίνηση του προγράμματος περιήγησης κατά την εκκίνηση του διακομιστή"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Yes"
+msgstr "Ναι."
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "No"
+msgstr "Όχι."
+
+#: src/web/templates/admin_config.html
+#, ai_translation, python-format
+msgid "%(lib)s version"
+msgstr "%(lib)s έκδοση"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Access driver (found)"
+msgstr "Οδηγός πρόσβασης (βρέθηκε)"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Access driver (not found)"
+msgstr "Οδηγός πρόσβασης (δεν βρέθηκε)"
+
+#: src/web/templates/admin_config.html
+#, ai_translation
+msgid "Other ODBC drivers found on the server"
+msgstr "Άλλοι οδηγοί ODBC που βρέθηκαν στο διακομιστή"
+
+#: src/web/templates/admin_edit_timer_colors.html
+#, ai_translation, python-format
+msgid "Colour #%(num)d:"
+msgstr "Χρώμα #%(num)d:"
+
+#: src/web/templates/admin_edit_timer_colors.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_modal_message.html
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "by default"
+msgstr "εξ ορισμού"
+
+#: src/web/templates/admin_edit_timer_delays.html
+#, ai_translation, python-format
+msgid "Delay #%(num)d:"
+msgstr "Καθυστέρηση #%(num)d:"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "Unique ID: %(uniq_id)s"
+msgstr "Μοναδική ταυτότητα: %(uniq_id)s"
+
+#: src/web/templates/admin_event_card.html
+#: src/web/templates/user_event_card.html
+#, ai_translation, python-format
+msgid "Tournaments: %(num)d"
+msgstr "Τουρνουά: %(num)d"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "ChessEvent connections: %(num)d"
+msgstr "Συνδέσεις Σκακιού: %(num)d"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "Timers: %(num)d"
+msgstr "Χρονοδιακόπτες: %(num)d"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "Screens: %(num)d"
+msgstr "Οθόνες: %(num)d"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "Families: %(num)d"
+msgstr "Οικογένειες: %(num)d"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "Rotators: %(num)d"
+msgstr "Περιστροφείς: %(num)d"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "Errors: %(num)d"
+msgstr "Σφάλματα: %(num)d"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "Warnings: %(num)d"
+msgstr "Προειδοποιήσεις: %(num)d"
+
+#: src/web/templates/admin_event_card.html
+#, ai_translation, python-format
+msgid "Informations: %(num)d"
+msgstr "Πληροφορίες: %(num)d"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Clone"
+msgstr "ΚλώνοςCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Customization"
+msgstr "Προσαρμογή"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Unique ID"
+msgstr "Μοναδική ταυτότητα"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Start"
+msgstr "Έναρξη"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "End"
+msgstr "Τέλος"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Visibility"
+msgstr "Ορατότητα"
+
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Public event"
+msgstr "Δημόσια εκδήλωση"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Private event"
+msgstr "Ιδιωτική εκδήλωση"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Default directory of the Papi files"
+msgstr "Προκαθορισμένος κατάλογος των αρχείων Papi"
+
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "(by default)"
+msgstr "(από προεπιλογή)"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Background image and colour"
+msgstr "Εικόνα φόντου και χρώμα"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Password to enter results"
+msgstr "Κωδικός πρόσβασης για να εισάγετε τα αποτελέσματα"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "No password required"
+msgstr "Δεν απαιτείται κωδικός πρόσβασης"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Maximum number of illegal moves"
+msgstr "Μέγιστος αριθμός παράνομων κινήσεων"
+
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Rules"
+msgstr "Κανόνες"
+
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation
+msgid "No rules file set"
+msgstr "Κανένα σύνολο αρχείων κανόνων"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Default timer configuration"
+msgstr "Προκαθορισμένη διαμόρφωση χρονοδιακόπτη"
+
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_timer_card.html
+#, ai_translation, python-format
+msgid "%(minutes)d minutes before"
+msgstr "%(minutes)d λεπτά πριν"
+
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_timer_card.html
+#, ai_translation, python-format
+msgid "%(minutes)d minutes after"
+msgstr "%(minutes)d λεπτά μετά"
+
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Alert message"
+msgstr "Μήνυμα ειδοποίησης"
+
+#: src/web/templates/admin_event_config.html
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "No alert message"
+msgstr "Κανένα μήνυμα συναγερμού"
+
+#: src/web/templates/admin_event_config.html
+#, ai_translation
+msgid "Last update"
+msgstr "Τελευταία ενημέρωση"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Event creation"
+msgstr "Δημιουργία γεγονότων"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation, python-format
+msgid "Edition of event [%(event_uniq_id)s]"
+msgstr "Έκδοση της εκδήλωσης [%(event_uniq_id)s]"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation, python-format
+msgid "Deletion of event [%(event_uniq_id)s]"
+msgstr "Διαγραφή γεγονότος [%(event_uniq_id)s]"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Warning: the deletion of an event is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή ενός γεγονότος είναι μόνιμη!"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Enter the event ID to confirm its deletion:"
+msgstr "Εισάγετε το αναγνωριστικό του γεγονότος για να επιβεβαιώσετε τη διαγραφή του:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Enter here the event ID"
+msgstr "Εισάγετε εδώ την ταυτότητα του γεγονότος"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
+msgstr "Η ανάκτηση διαγραμμένων γεγονότων δεν είναι δυνατή από τη διεπαφή ιστού (παρότι τα γεγονότα αρχειοθετούνται και μπορούν να ανακτηθούν από το σύστημα αρχείων."
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "The Unique ID, used for data storage and export."
+msgstr "Το μοναδικό αναγνωριστικό, που χρησιμοποιείται για την αποθήκευση και εξαγωγή δεδομένων."
+
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Name:"
+msgstr "Όνομα:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "The name of the event, used for display and reports."
+msgstr "Το όνομα του γεγονότος, που χρησιμοποιείται για την εμφάνιση και τις αναφορές."
+
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Visibility:"
+msgstr "Ορατότητα:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Only arbiters can see private events."
+msgstr "Μόνο οι στρατιώτες μπορούν να δουν ιδιωτικά γεγονότα."
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Start:"
+msgstr "Έναρξη:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "The start date and time of the event."
+msgstr "Η ημερομηνία έναρξης και η ώρα της εκδήλωσης."
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "End:"
+msgstr "Τέλος:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "The end date and time of the event."
+msgstr "Η ημερομηνία λήξης και η ώρα της εκδήλωσης."
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Default directory of the Papi files:"
+msgstr "Προκαθορισμένος κατάλογος των αρχείων Papi:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation, python-format
+msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
+msgstr "Ο προκαθορισμένος κατάλογος των αρχείων Papi για τα τουρνουά (απόλυτη ή σχετική διαδρομή, από προεπιλογή %(dir)s)."
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Password to enter results:"
+msgstr "Κωδικός πρόσβασης για να εισάγετε τα αποτελέσματα:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "The password required on input screens to enter results (optional)."
+msgstr "Ο κωδικός πρόσβασης που απαιτείται στις οθόνες εισόδου για να εισάγετε τα αποτελέσματα (προαιρετικά)."
+
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Illegal moves recording:"
+msgstr "Καταγραφή παράνομων κινήσεων:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation, python-format
+msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament."
+msgstr "Ο μέγιστος αριθμός παράνομων κινήσεων που μπορούν να καταγραφούν ανά γύρο για έναν παίκτη (από 0 έως 3, από προεπιλογή %(default)d)."
+
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Rules file location:"
+msgstr "Θέση αρχείου κανόνων:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
+msgstr "URL, ή η διαδρομή προς το αρχείο κανόνων του διακομιστή, σε μορφή PDF (προαιρετικά)."
+
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Display"
+msgstr "Εμφάνιση"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Background image:"
+msgstr "Εικόνα φόντου:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "no background image"
+msgstr "καμία εικόνα φόντου"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "The URL or the path of the image to display (by default the Papi-web logo)."
+msgstr "Το URL ή το μονοπάτι της εικόνας για να εμφανιστεί (από προεπιλογή το λογότυπο Papi-web)."
+
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Background colour:"
+msgstr "Χρώμα φόντου:"
+
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "The background colour is used when the image dost fill the whole screen."
+msgstr "Το χρώμα φόντου χρησιμοποιείται όταν η εικόνα γεμίζει ολόκληρη την οθόνη."
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Choose a custom image:"
+msgstr "Επιλέξτε μια προσαρμοσμένη εικόνα:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Timers"
+msgstr "Χρονοδιακόπτες"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Text colour:"
+msgstr "Χρώμα κειμένου:"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "Text:"
+msgstr "Κείμενο:"
+
+#: src/web/templates/admin_event_modal.html
+#: src/web/templates/admin_screen_modal_message.html
+#, ai_translation
+msgid "E.g.: Please keep quiet until the end of the round!"
+msgstr "Π.χ.: Παρακαλώ κάντε ησυχία μέχρι το τέλος του γύρου!"
+
+#: src/web/templates/admin_event_modal.html
+#, ai_translation
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
+msgstr "Όταν ορίζεται, το μήνυμα ειδοποίησης εμφανίζεται σε ένα λάβαρο κύλισης στο κάτω μέρος των οθονών. Το μήνυμα συναγερμού που ορίζεται στο επίπεδο γεγονότων μπορεί να παρακαμφθεί σε περιστροφέα, οικογένεια οθόνης ή επίπεδο οθόνης."
+
+#: src/web/templates/admin_families.html
+#, ai_translation
+msgid "Screen families"
+msgstr "Οικογένειες οθόνης"
+
+#: src/web/templates/admin_families.html
+#, ai_translation
+msgid "Enable/disable the details of the screen families on the cards below."
+msgstr "Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των οικογενειών οθόνης στις παρακάτω κάρτες."
+
+#: src/web/templates/admin_families.html src/web/templates/admin_rotators.html
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Details"
+msgstr "Λεπτομέρειες"
+
+#: src/web/templates/admin_families.html
+#, ai_translation
+msgid "You must create a tournament before creating a screen family."
+msgstr "Πρέπει να δημιουργήσετε ένα τουρνουά πριν από τη δημιουργία μιας οικογένειας οθόνη."
+
+#: src/web/templates/admin_families.html
+#, ai_translation
+msgid "Create a screen family"
+msgstr "Δημιουργία μιας οικογένειας οθόνης"
+
+#: src/web/templates/admin_families.html
+#, ai_translation
+msgid "Add a family of screens to enter the results."
+msgstr "Προσθέστε μια οικογένεια από οθόνες για να εισάγετε τα αποτελέσματα."
+
+#: src/web/templates/admin_families.html
+#, ai_translation
+msgid "Add a family of screens to display the pairings by board."
+msgstr "Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο."
+
+#: src/web/templates/admin_families.html
+#, ai_translation
+msgid "Add a family of screens to display the pairings by alphabetical order."
+msgstr "Προσθέστε μια οικογένεια από οθόνες για την εμφάνιση των ζευγών με αλφαβητική σειρά."
+
+#: src/web/templates/admin_families.html
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "No screen families."
+msgstr "Δεν υπάρχουν οικογένειες για την οθόνη."
+
+#: src/web/templates/admin_family_card.html
+#, ai_translation, python-format
+msgid "Type: %(family_type)s"
+msgstr "Τύπος: %(family_type)s"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation, python-format
+msgid "Tournament: %(tournament_name)s"
+msgstr "Τουρνουά: %(tournament_name)s"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation, python-format
+msgid "Selection: %(selection)s"
+msgstr "Επιλογή: %(selection)s"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_card.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Columns:"
+msgstr "Στήλες:"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation, python-format
+msgid "Menu link label: %(menu_label)s"
+msgstr "Ετικέτα σύνδεσης μενού: %(menu_label)s"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Menu link label: none"
+msgstr "Ετικέτα σύνδεσης μενού: καμία"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation, python-format
+msgid "Menu: %(menu)s"
+msgstr "Μενού: %(menu)s"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Menu: none"
+msgstr "Μενού: κανένα"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation, python-format
+msgid "Timer: %(timer_uniq_id)s"
+msgstr "Χρονοδιακόπτης: %(timer_uniq_id)s"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Timer: none"
+msgstr "Χρονόμετρο: κανένας"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Exit button:"
+msgstr "Έξοδος πλήκτρου:"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "yes"
+msgstr "Ναι"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "no"
+msgstr "Όχι."
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Unpaired: displayed"
+msgstr "Μη ζευγάρι: εμφανίζεται"
+
+#: src/web/templates/admin_family_card.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Unpaired: hidden"
+msgstr "Μη ζευγάρι: κρυφό"
+
+#: src/web/templates/admin_family_card.html
+#, ai_translation, python-format
+msgid "Boards from #%(first)d to #%(last)d"
+msgstr "Επιβιβάσεις από #%(first)d έως #%(last)d"
+
+#: src/web/templates/admin_family_card.html
+#, ai_translation, python-format
+msgid "Players from #%(first)s to #%(last)s"
+msgstr "Οι παίκτες από #%(first)s έως #%(last)s"
+
+#: src/web/templates/admin_family_card.html
+#, ai_translation
+msgid "No screens"
+msgstr "Χωρίς οθόνες"
+
+#: src/web/templates/admin_family_card.html
+#, ai_translation
+msgid "Edit the properties of the screen family."
+msgstr "Επεξεργασία των ιδιοτήτων της οικογένειας οθόνης."
+
+#: src/web/templates/admin_family_card.html
+#, ai_translation
+msgid "Clone the screen family."
+msgstr "Κλόουν την οικογένεια της οθόνης."
+
+#: src/web/templates/admin_family_card.html
+#, ai_translation
+msgid "Delete the screen family."
+msgstr "Διαγράψτε την οικογένεια οθόνης."
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "Input screen family creation"
+msgstr "Δημιουργία οικογένειας οθόνης εισόδου"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "Boards screen family creation"
+msgstr "Οικογενειακή δημιουργία σανίδων"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "Players screen family creation"
+msgstr "Οι παίκτες οθόνη οικογενειακή δημιουργία"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation, python-format
+msgid "Cloning of screen family [%(family_uniq_id)s]"
+msgstr "Κλωνοποίηση της οικογένειας οθόνης [%(family_uniq_id)s]"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation, python-format
+msgid "Edition of screen family [%(family_uniq_id)s]"
+msgstr "Έκδοση της οικογένειας οθόνης [%(family_uniq_id)s]"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation, python-format
+msgid "Deletion of screen family [%(family_uniq_id)s]"
+msgstr "Διαγραφή της οικογένειας οθόνης [%(family_uniq_id)s]"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "Warning: the deletion of a screen family is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή μιας οικογένειας οθόνης είναι μόνιμη!"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Properties (results entry)"
+msgstr "Ιδιότητες (καταχώριση αποτελεσμάτων)"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Properties (pairings by board)"
+msgstr "Ιδιότητες (ζευγάρια ανά πλοίο)"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Properties (pairings by player)"
+msgstr "Ιδιότητες (ζευγάρια από τον παίκτη)"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "Public screen family"
+msgstr "Οικογένεια δημόσιας οθόνης"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "Only arbiters can see private screen families."
+msgstr "Μόνο οι στρατιώτες μπορούν να δουν ιδιωτικές οικογένειες."
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(family_type)s-family"
+msgstr "Π.χ.: %(family_type)s-οικογένεια"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "The Unique ID, used to reference the screen family."
+msgstr "Η Μοναδική Ταυτότητα, που χρησιμοποιείται για την αναφορά της οικογένειας οθόνης."
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "E.g.: My screen family"
+msgstr "Π.χ.: Η οικογένειά μου στην οθόνη"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation, python-format
+msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
+msgstr "Το όνομα της οικογένειας οθόνης, προαιρετικό. Οι ακόλουθες μάρκες αντικαθίστανται αυτόματα από τους αριθμούς του πίνακα ή τα ονόματα των παικτών: %%f=πρώτο, %%l=τελευταίο, %%t=τουρνουά."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Tournament:"
+msgstr "Τουρνουά:"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
+msgstr "Το τουρνουά των οθονών της οικογένειας, υποχρεωτικό (δεν μοιάζει με βασικές οθόνες, μόνο ένα τουρνουά μπορεί να εμφανιστεί στις οικογενειακές οθόνες)."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Board selection (by number)"
+msgstr "Επιλογή του συμβουλίου (κατά αριθμό)"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Player selection (by alphabetical order)"
+msgstr "Επιλογή παίχτη (με αλφαβητική σειρά)"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "First board:"
+msgstr "Πρώτος πίνακας:"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "First player:"
+msgstr "Πρώτος παίκτης:"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(num)d"
+msgstr "Π.χ.: %(num)d"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The number of the first board to select, optional (the first board by default)."
+msgstr "Ο αριθμός του πρώτου συμβουλίου που θα επιλέξει, προαιρετικός (το πρώτο συμβούλιο εξ ορισμού)."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
+msgstr "Ο αριθμός του πρώτου παίκτη που επέλεξε, προαιρετικός (ο πρώτος παίκτης με αλφαβητική σειρά εξ ορισμού)."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Last board:"
+msgstr "Τελευταίος πίνακας:"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Last player:"
+msgstr "Τελευταίος παίκτης:"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The number of the last board to select, optional (the last board by default)."
+msgstr "Ο αριθμός του τελευταίου πίνακα για την επιλογή, προαιρετικός (το τελευταίο πίνακα από προεπιλογή)."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
+msgstr "Ο αριθμός του τελευταίου παίκτη που επέλεξε, προαιρετικός (ο τελευταίος παίκτης με αλφαβητική σειρά εξ ορισμού)."
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "On a given number of screens:"
+msgstr "Σε έναν δεδομένο αριθμό οθονών:"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "E.g.: 4 (split on 4 screens)"
+msgstr "Π.χ.: 4 (διαιρεμένο σε 4 οθόνες)"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
+msgstr "Ο αριθμός των οθονών στις οποίες θα διανεμηθούν οι πίνακες, προαιρετικός (ο αριθμός των οθονών είναι πάντα ο ίδιος και ο αριθμός των σανίδων ανά οθόνη προσαρμόζεται στον αριθμό των σανίδων)."
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
+msgstr "Ο αριθμός των οθονών στις οποίες θα διανεμηθούν οι παίκτες, προαιρετικός (ο αριθμός των οθονών είναι πάντα ο ίδιος και ο αριθμός των παικτών ανά οθόνη προσαρμόζεται στον αριθμό των παικτών."
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "On fixed size screens:"
+msgstr "Στις οθόνες σταθερού μεγέθους:"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
+msgstr "Ο αριθμός των σανίδων ανά οθόνη, προαιρετικός (ο αριθμός των οθονών προσαρμόζεται στον αριθμό των σανίδων)."
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
+msgstr "Ο αριθμός των παικτών ανά οθόνη, προαιρετικός (ο αριθμός των οθονών προσαρμόζεται στον αριθμό των παικτών)."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Layout"
+msgstr "Διάταξη"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Timer:"
+msgstr "Χρονόμετρο:"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "The timer displayed on the screens of the family."
+msgstr "Ο χρονοδιακόπτης εμφανίζεται στις οθόνες της οικογένειας."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "The number of columns used to display data."
+msgstr "Ο αριθμός των στηλών που χρησιμοποιούνται για την εμφάνιση δεδομένων."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Menus"
+msgstr "ΜενούCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Links displayed on the screen menu:"
+msgstr "Σύνδεσμοι που εμφανίζονται στο μενού οθόνης:"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "E.g.: @boards, @family, another-screen"
+msgstr "Π.χ.: @boards, @family, another-screen"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
+msgstr "Αυτό το πεδίο σας επιτρέπει να καθορίσετε τις οθόνες των οποίων οι σύνδεσμοι θα εμφανίζονται στο μενού των οθονών της οικογένειας. Τα αναγνωριστικά οθόνης πρέπει να χωρίζονται από κόμματα, τις λέξεις-κλειδιά @family (όλες οι οθόνες της οικογένειας), @boards (όλες οι οθόνες σανίδων), @input (όλες οι οθόνες εισόδου), @players (όλες οι οθόνες παικτών) καθώς και το wildcard * μπορούν να χρησιμοποιηθούν."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Links to this screen:"
+msgstr "Σύνδεσμοι σε αυτή την οθόνη:"
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Allow"
+msgstr "Επιτρέπεται"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "Check the box to allow other screens to display a link to the screen of this family."
+msgstr "Ενεργοποιήστε το πλαίσιο για να επιτρέψετε σε άλλες οθόνες να εμφανίσουν ένα σύνδεσμο στην οθόνη αυτής της οικογένειας."
+
+#: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Menu link label:"
+msgstr "Ετικέτα σύνδεσης μενού:"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation, python-format
+msgid "E.g.: Boards %%f-%%l"
+msgstr "Π.χ.: Δ.Σ. %%f-%%l"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation, python-format
+msgid "E.g.: Players %%f-%%l"
+msgstr "Π.χ.: Παίκτες %%f-%%l"
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
+msgstr "Αυτή η ετικέτα θα χρησιμοποιηθεί για τη σύνδεση με άλλες οθόνες με τις οθόνες της οικογένειας. Αν αφεθεί κενή, θα χρησιμοποιηθεί προεπιλεγμένη ετικέτα."
+
+#: src/web/templates/admin_family_modal.html
+#, ai_translation
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
+msgstr "Όταν δεν ορίζεται σε επίπεδο οικογένειας, χρησιμοποιείται το μήνυμα συναγερμού που ορίζεται σε περιστροφέα ή σε επίπεδο γεγονότος (εάν δεν έχει οριστεί κανένα μήνυμα συναγερμού, δεν εμφανίζεται το λάβαρο κύλισης στο κάτω μέρος των οθονών της οικογένειας)."
+
+#: src/web/templates/admin_index.html src/web/templates/user_index.html
+#, ai_translation
+msgid "Go back to the home page."
+msgstr "Πήγαινε πίσω στην αρχική σελίδα."
+
+#: src/web/templates/admin_messages.html
+#, ai_translation
+msgid "Level"
+msgstr "Επίπεδο"
+
+#: src/web/templates/admin_messages.html
+#, ai_translation
+msgid "Message"
+msgstr "Μήνυμα"
+
+#: src/web/templates/admin_messages.html
+#, ai_translation
+msgid "No messages."
+msgstr "Χωρίς μηνύματα."
+
+#: src/web/templates/admin_pairings.html
+#, ai_translation
+msgid "Pairings"
+msgstr "Ζευγάρωμα"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Player creation"
+msgstr "Δημιουργία παικτών"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, python-format
+msgid "Edition of player [%(last_name)s %(first_name)s]"
+msgstr "Έκδοση του παίκτη [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr ""
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Warning: the deletion of a player is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή ενός παίκτη είναι μόνιμη!"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Identity"
+msgstr "Ταυτότητα"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Last name:"
+msgstr "Επώνυμο:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "E.g.: DOE"
+msgstr "Π.χ.: DOE"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's last name."
+msgstr "Το επώνυμο του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "First name:"
+msgstr "Όνομα:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "E.g.: John"
+msgstr "Π.χ.: John"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's first name."
+msgstr "Το μικρό όνομα του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Date of birth:"
+msgstr "Ημερομηνία γέννησης:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's birth date."
+msgstr "Η ημερομηνία γέννησης του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Gender:"
+msgstr "Φύλο:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's gender."
+msgstr "Το φύλο του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's tournament."
+msgstr "Το τουρνουά του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "FIDE ratings, title and fédération"
+msgstr "ratings, τίτλος και fédération"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "FIDE Title:"
+msgstr "Τίτλος FIDE:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's FIDE title."
+msgstr "Ο τίτλος του παίκτη είναι FIDE."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Federation:"
+msgstr "Ομοσπονδία:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's federation."
+msgstr "Η ομοσπονδία του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "Ταυτότητα FIDE:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's FIDE ID (do not change)."
+msgstr "Η ταυτότητα FIDE του παίκτη (μην αλλάξετε)."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "French Chess Federation"
+msgstr "Γαλλική Ομοσπονδία Σκακιού"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "League:"
+msgstr "Λεγεώνα:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's league."
+msgstr "Το πρωτάθλημα του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Club:"
+msgstr "Λέσχη:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "E.g.: My favourite club!"
+msgstr "Το αγαπημένο μου κλαμπ!"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's club."
+msgstr "Το κλαμπ του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Άδεια:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "Η άδεια του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Αριθμός άδειας:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "Ο αριθμός της άδειας του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "FFE Uniq ID:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "Το Uniq ID του παίκτη για τη γαλλική ομοσπονδία (μην αλλάξετε)."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Contact and registration"
+msgstr "Επαφή και εγγραφή"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Email:"
+msgstr "Email:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's email."
+msgstr "Το email του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Phone number:"
+msgstr "Αριθμός τηλεφώνου:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's phone number."
+msgstr "Το τηλέφωνο του παίκτη."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Comment:"
+msgstr "Σχόλιο:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Κάθε σχόλιο για τον παίκτη (τα σχόλια είναι ορατά μόνο από τους arbiters)."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Owed:"
+msgstr "Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The price the player pays to register."
+msgstr "Η τιμή που πληρώνει ο παίκτης για να εγγραφείτε."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Paid:"
+msgstr "Πληρωμή:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The price the player already paid."
+msgstr "Το τίμημα που ήδη πλήρωσε ο παίκτης."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Fixed board:"
+msgstr "Σταθερή σανίδα:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Ο αριθμός του διοικητικού συμβουλίου στον οποίο θα ανατίθεται πάντα ο παίκτης (χρησιμοποιείστε τον για άτομα με ειδικές ανάγκες)."
+
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Players"
+msgstr "Παίκτες"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Add a player to the event."
+msgstr "Προσθέστε έναν παίκτη στην εκδήλωση."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Tournaments are finished, you can not add players any longer."
+msgstr "Τα τουρνουά έχουν τελειώσει, δεν μπορείτε να προσθέσετε παίκτες πια."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "No Papi file for the tournaments of the event, players can not be added."
+msgstr "Δεν αρχείο Papi για τα τουρνουά της εκδήλωσης, οι παίκτες δεν μπορούν να προστεθούν."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Add a tournament before adding players."
+msgstr "Προσθέστε ένα τουρνουά πριν από την προσθήκη των παικτών."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Create a player"
+msgstr "Δημιουργία ενός παίκτη"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Clear all the filters."
+msgstr "Καθαρίστε όλα τα φίλτρα."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
+msgstr "Όνομα"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
+msgstr "ΈλοCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
+msgstr "Καταγωγή"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
+msgstr "YOBCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
+msgstr "Γάτα"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "The mail addresses."
+msgstr "Οι διευθύνσεις αλληλογραφίας."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "The phone numbers."
+msgstr "Τα νούμερα των τηλεφώνων."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
+msgstr "ΦΙΝΤΕConstellation name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
+msgstr "FFE"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
+msgstr "ΆουτςCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
+msgstr "Πληρωμή"
+
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
+#, ai_translation, python-format
+msgid "Tournament [%(tournament_uniq_id)s] is finished."
+msgstr "Το τουρνουά [%(tournament_uniq_id)s] έχει τελειώσει."
+
+#: src/web/templates/admin_players.html
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
+#, ai_translation, python-format
+msgid "Tournament [%(tournament_uniq_id)s] is playing."
+msgstr "Το τουρνουά [%(tournament_uniq_id)s] παίζει."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, python-format
+msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
+msgstr "Το check-in είναι κλειστό για τουρνουά [%(tournament_uniq_id)s]."
+
+#: src/web/templates/admin_players.html
+#, python-format
+msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgstr ""
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Click to check-out the player."
+msgstr "Κάντε κλικ για να ελέγξετε τον παίκτη."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Click to check-in the player."
+msgstr "Κάντε κλικ για να ελέγξετε τον παίκτη."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, python-format
+msgid "Mail: %(mail)s (click to copy to the clipboard)."
+msgstr "Mail: %(mail)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο)."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "No mail defined."
+msgstr "Δεν έχει οριστεί η αλληλογραφία."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, python-format
+msgid "Phone: %(phone)s (click to copy to the clipboard)."
+msgstr "Τηλέφωνο: %(phone)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο)."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "No phone defined."
+msgstr "Δεν καθορίζεται το τηλέφωνο."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, python-format
+msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
+msgstr "FIDE ID: %(fide_id)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο)."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "No FIDE ID."
+msgstr "Δεν έχει ταυτότητα FIDE."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, python-format
+msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+msgstr "Άδεια FFE: %(ffe_licence_number)s (κάντε κλικ για να αντιγράψετε στο πρόχειρο)."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, python-format
+msgid "Unknown FFE Licence type [%(ffe_licence)s]."
+msgstr "Άγνωστος τύπος άδειας FFE [%(ffe_licence)s]."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Change the player's tournament."
+msgstr "Αλλάξτε το τουρνουά του παίκτη."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Edit the player's properties."
+msgstr "Επεξεργασία των ιδιοτήτων του παίκτη."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Remove the player from the event."
+msgstr "Απομακρύνετε τον παίκτη από την εκδήλωση."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "No players."
+msgstr "Όχι παίκτες."
+
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/user_rotator_card.html
+#, ai_translation, python-format
+msgid "Rotation delay: %(seconds)d sec."
+msgstr "Καθυστέρηση περιστροφής: %(seconds)d sec."
+
+#: src/web/templates/admin_rotator_card.html
+#, ai_translation
+msgid "No screen neither family to rotate."
+msgstr "Δεν έχει οθόνη ούτε οικογένεια να περιστραφεί."
+
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/user_rotator_card.html
+#, ai_translation
+msgid "Screens:"
+msgstr "Οθόνες:"
+
+#: src/web/templates/admin_rotator_card.html
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/user_rotator_card.html
+#, ai_translation
+msgid "Screen families:"
+msgstr "Οικογένειες οθόνης:"
+
+#: src/web/templates/admin_rotator_card.html
+#, ai_translation, python-format
+msgid "(%(num)d screen)"
+msgid_plural "(%(num)d screens)"
+msgstr[0] "(%(num)d οθόνη)"
+msgstr[1] "(%(num)d οθόνες)"
+
+#: src/web/templates/admin_rotator_card.html
+#, ai_translation
+msgid "(no screens)"
+msgstr "(Όχι οθόνες)"
+
+#: src/web/templates/admin_rotator_card.html
+#, ai_translation
+msgid "Edit the properties of the rotator."
+msgstr "Επεξεργασία των ιδιοτήτων του περιστροφέα."
+
+#: src/web/templates/admin_rotator_card.html
+#, ai_translation
+msgid "Clone the rotator."
+msgstr "Κλείσε τον περιστροφέα."
+
+#: src/web/templates/admin_rotator_card.html
+#, ai_translation
+msgid "Delete the rotator."
+msgstr "Διαγράψτε τον περιστροφέα."
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "Rotator creation"
+msgstr "Δημιουργία περιστροφέα"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation, python-format
+msgid "Edition of rotator [%(rotator_uniq_id)s]"
+msgstr "Έκδοση του περιστροφέα [%(rotator_uniq_id)s]"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation, python-format
+msgid "Deletion of rotator [%(rotator_uniq_id)s]"
+msgstr "Διαγραφή του περιστροφέα [%(rotator_uniq_id)s]"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "Warning: the deletion of a rotator is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή ενός περιστροφέα είναι μόνιμη!"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "Public rotator"
+msgstr "Δημόσιος περιστροφέας"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "Only arbiters can view private rotators."
+msgstr "Μόνο οι άρμπιτερ μπορούν να δουν ιδιωτικούς περιστροφείς."
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "The Unique ID, used to reference the rotator."
+msgstr "Η Μοναδική Ταυτότητα, που χρησιμοποιείται για την αναφορά του περιστροφέα."
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "Parameters"
+msgstr "Παράμετροι"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "Delay:"
+msgstr "Καθυστέρηση:"
+
+#: src/web/templates/admin_rotator_modal.html
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(seconds)d (seconds)"
+msgstr "Π.χ.: %(seconds)d (δευτερόλεπτα)"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation, python-format
+msgid "The rotating delay between two screens (by default %(default)d seconds)."
+msgstr "Η περιστρεφόμενη καθυστέρηση μεταξύ δύο οθονών (από προεπιλογή %(default)d δευτερόλεπτα)."
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "Selection"
+msgstr "Επιλογή"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "results entry"
+msgstr "καταχώρηση αποτελεσμάτων"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "pairings by player"
+msgstr "ζευγάρωμα από τον παίκτη"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "last results"
+msgstr "τελευταία αποτελέσματα"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "image"
+msgstr "εικόνα"
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "No screens."
+msgstr "Δεν υπάρχουν οθόνες."
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
+msgstr "Οι οθόνες για περιστροφή (οι οθόνες εισόδου τονίζονται επειδή δεν πρέπει να εμφανίζονται στους περιστροφείς)."
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
+msgstr "Οι οικογένειες οθόνης για περιστροφή (οι οικογένειες οθόνης εισόδου τονίζονται επειδή δεν πρέπει να εμφανίζονται στους περιστροφείς)."
+
+#: src/web/templates/admin_rotator_modal.html
+#, ai_translation
+msgid "When not defined at rotator-level, the alert message defined at event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed). The alert message defined at rotator-level can be overridden at screen or family-level."
+msgstr "Όταν δεν ορίζεται στο επίπεδο του περιστροφέα, χρησιμοποιείται το μήνυμα συναγερμού που ορίζεται στο επίπεδο του γεγονότος (εάν δεν ορίζεται σήμα συναγερμού, δεν εμφανίζεται το λάβαρο κύλισης στο κάτω μέρος της οθόνης). Το μήνυμα συναγερμού που ορίζεται στο επίπεδο του περιστροφέα μπορεί να παρακαμφθεί στην οθόνη ή στο επίπεδο της οικογένειας."
+
+#: src/web/templates/admin_rotators.html
+#, ai_translation
+msgid "Rotators"
+msgstr "Περιστροφείς"
+
+#: src/web/templates/admin_rotators.html
+#, ai_translation
+msgid "Enable/disable the details of the rotators on the cards below."
+msgstr "Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των περιστροφέων στις παρακάτω κάρτες."
+
+#: src/web/templates/admin_rotators.html
+#, ai_translation
+msgid "Add a rotator to the event."
+msgstr "Προσθέστε έναν περιστροφέα στο γεγονός."
+
+#: src/web/templates/admin_rotators.html
+#, ai_translation
+msgid "You must create a screen or a family of screens before creating a rotator."
+msgstr "Πρέπει να δημιουργήσετε μια οθόνη ή μια οικογένεια οθόνης πριν από τη δημιουργία ενός περιστροφέα."
+
+#: src/web/templates/admin_rotators.html
+#, ai_translation
+msgid "Create a rotator"
+msgstr "Δημιουργήστε έναν περιστροφέα"
+
+#: src/web/templates/admin_rotators.html src/web/templates/user_event.html
+#, ai_translation
+msgid "No rotators."
+msgstr "Χωρίς περιστροφείς."
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation, python-format
+msgid "Type: %(screen_type)s"
+msgstr "Τύπος: %(screen_type)s"
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation, python-format
+msgid "Max number: %(num)d"
+msgstr "Μέγιστος αριθμός: %(num)d"
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Max number: unlimited"
+msgstr "Μέγιστος αριθμός: απεριόριστος"
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation, python-format
+msgid "Max age: %(num)d minute"
+msgid_plural "Max age: %(num)d minutes"
+msgstr[0] "Μέγιστη ηλικία: %(num)d λεπτό"
+msgstr[1] "Μέγιστη ηλικία: %(num)d λεπτά"
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Max age: unlimited"
+msgstr "Μέγιστη ηλικία: απεριόριστος"
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation, python-format
+msgid "Image: %(image)s"
+msgstr "Εικόνα: %(image)s"
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation, python-format
+msgid "Background colour: %(color)s"
+msgstr "Χρώμα φόντου: %(color)s"
+
+#: src/web/templates/admin_screen_card.html
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "All the tournaments"
+msgstr "Όλα τα τουρνουά"
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Edit the properties of the screen."
+msgstr "Επεξεργασία των ιδιοτήτων της οθόνης."
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Edit the sets of boards displayed on the screen."
+msgstr "Επεξεργαστείτε τα σύνολα των πινάκων που εμφανίζονται στην οθόνη."
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Edit the sets of players displayed on the screen."
+msgstr "Επεξεργασία των συνόλων των παικτών που εμφανίζονται στην οθόνη."
+
+#: src/web/templates/admin_screen_card.html
+#, ai_translation
+msgid "Boards"
+msgstr "Δοχεία"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Input screen creation"
+msgstr "Δημιουργία οθόνης εισόδου"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Boards screen creation"
+msgstr "Δημιουργία οθόνης σανίδων"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Players screen creation"
+msgstr "Δημιουργία οθόνης παικτών"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Results screen creation"
+msgstr "Δημιουργία οθόνης αποτελεσμάτων"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Image screen creation"
+msgstr "Δημιουργία οθόνης εικόνας"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation, python-format
+msgid "Edition of screen [%(screen_uniq_id)s]"
+msgstr "Έκδοση οθόνης [%(screen_uniq_id)s]"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation, python-format
+msgid "Deletion of screen [%(screen_uniq_id)s]"
+msgstr "Διαγραφή οθόνης [%(screen_uniq_id)s]"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Warning: the deletion of a screen is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή μιας οθόνης είναι μόνιμη!"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Properties (last results)"
+msgstr "Ιδιότητες (τελευταία αποτελέσματα)"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Properties (image)"
+msgstr "Ιδιότητες (εικόνα)"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Public screen"
+msgstr "Δημόσια οθόνη"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Only arbiters can see private screens."
+msgstr "Μόνο οι στρατιώτες μπορούν να δουν ιδιωτικές οθόνες."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(screen_type)s-screen"
+msgstr "Π.χ.: %(screen_type)s-screen"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "The Unique ID, used to reference the screen."
+msgstr "Η Μοναδική Ταυτότητα, που χρησιμοποιείται για την αναφορά στην οθόνη."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "E.g.: My screen"
+msgstr "Π.χ.: Η οθόνη μου"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "The name of the screen, displayed on event screens."
+msgstr "Το όνομα της οθόνης, εμφανίζεται στις οθόνες γεγονότων."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
+msgstr "Το πρώτο τουρνουά της οθόνης, υποχρεωτικό (μπορεί να προσθέσει και άλλα τουρνουά αργότερα)."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "The timer displayed on the screen."
+msgstr "Ο χρονοδιακόπτης εμφανίζεται στην οθόνη."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "E.g.: @boards, fixed-boards, tournament-a-*"
+msgstr "Π.χ.: @boards, fixed-boards, tournament-a-*"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr "Αυτό το πεδίο σας επιτρέπει να καθορίσετε τις οθόνες των οποίων οι σύνδεσμοι θα εμφανίζονται στο μενού οθόνης. Τα αναγνωριστικά οθόνης πρέπει να χωρίζονται με κόμματα, τις λέξεις-κλειδιά @boards (όλες οι οθόνες σανίδων), @intut (όλες οι οθόνες εισόδου), @players (όλες οι οθόνες παικτών) καθώς και το wildcard * μπορούν να χρησιμοποιηθούν."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr "Ενεργοποιήστε το πλαίσιο για να επιτρέψετε σε άλλες οθόνες να εμφανίσουν ένα σύνδεσμο σε αυτή την οθόνη."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "E.g.: Link to my screen"
+msgstr "Π.χ.: Σύνδεσμος στην οθόνη μου"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr "Αυτή η ετικέτα θα χρησιμοποιηθεί για τη σύνδεση με άλλες οθόνες σε αυτή την οθόνη. Αν αφεθεί κενή, θα χρησιμοποιηθεί προεπιλεγμένη ετικέτα."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgstr "Όταν δεν ορίζεται σε επίπεδο οθόνης, χρησιμοποιείται το μήνυμα συναγερμού που ορίζεται στον περιστροφέα ή στο επίπεδο συμβάντων (εάν δεν έχει οριστεί κανένα μήνυμα συναγερμού, δεν εμφανίζεται το λάβαρο κύλισης στο κάτω μέρος της οθόνης)."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Maximum number of results displayed:"
+msgstr "Μέγιστος αριθμός αποτελεσμάτων που εμφανίζονται:"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr "Ο μέγιστος αριθμός αποτελεσμάτων που εμφανίζονται στην οθόνη, προαιρετικός (αν αφεθεί κενός, εμφανίζονται όλα τα αποτελέσματα)."
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Maximum age of the results:"
+msgstr "Μέγιστη ηλικία των αποτελεσμάτων:"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(minutes)d (minutes)"
+msgstr "Π.χ.: %(minutes)d (λεπτά)"
+
+#: src/web/templates/admin_screen_modal.html
+#, python-format
+msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
+msgstr ""
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "Tournaments displayed:"
+msgstr "Εμφανίζονται τουρνουά:"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "When not tournament is selected, the results of all the tournaments are displayed."
+msgstr "Όταν δεν επιλέγεται τουρνουά, εμφανίζονται τα αποτελέσματα όλων των τουρνουά."
+
+#: src/web/templates/admin_screen_modal.html
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Image:"
+msgstr "Εικόνα:"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "E.g.: https://my.club.us/tournament.jpg"
+msgstr "Π.χ.: https://my.club.us/τουρνουά.jpg"
+
+#: src/web/templates/admin_screen_modal.html
+#, ai_translation
+msgid "The URL of the image to display."
+msgstr "Το URL της εικόνας που θα εμφανιστεί."
+
+#: src/web/templates/admin_screen_modal_input_exit_button.html
+#, ai_translation
+msgid "Display of a screen exit button:"
+msgstr "Εμφάνιση ενός κουμπιού εξόδου οθόνης:"
+
+#: src/web/templates/admin_screen_modal_input_exit_button.html
+#, ai_translation
+msgid "When not displaying the exit button, users can not accidentally exit input screens."
+msgstr "Όταν δεν εμφανίζεται το κουμπί εξόδου, οι χρήστες δεν μπορούν κατά λάθος να βγουν από τις οθόνες εισόδου."
+
+#: src/web/templates/admin_screen_modal_message.html
+#, ai_translation
+msgid "Alert message:"
+msgstr "Μήνυμα ειδοποίησης:"
+
+#: src/web/templates/admin_screen_modal_players_show_unpaired.html
+#, ai_translation
+msgid "Display of unpaired players:"
+msgstr "Εμφάνιση μη ζευγαρωμένων παικτών:"
+
+#: src/web/templates/admin_screen_modal_players_show_unpaired.html
+#, ai_translation
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
+msgstr "Όταν οι παίκτες που δεν είναι ζευγάρι δεν εμφανίζονται, δεν υπάρχει τρόπος να ξεχωρίσετε τους παίκτες χωρίς (μηδενικό σημείο) και τους παίκτες με μισό σημείο αντίο)."
+
+#: src/web/templates/admin_screen_sets_modal.html
+#, ai_translation, python-format
+msgid "Board sets of screen [%(screen_uniq_id)s]"
+msgstr "Σετ οθόνης πίνακα [%(screen_uniq_id)s]"
+
+#: src/web/templates/admin_screen_sets_modal.html
+#, ai_translation, python-format
+msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgstr "Σετ οθόνης παικτών [%(screen_uniq_id)s]"
+
+#: src/web/templates/admin_screen_sets_modal.html
+#, ai_translation
+msgid "Save the set or cancel."
+msgstr "Αποθηκεύστε το σετ ή ακυρώστε."
+
+#: src/web/templates/admin_screen_sets_modal.html
+#, ai_translation
+msgid "Drag the sets to order them."
+msgstr "Σύρετε τα σετ για να τα παραγγείλετε."
+
+#: src/web/templates/admin_screen_sets_modal.html
+#, ai_translation
+msgid "Add a set"
+msgstr "Προσθήκη ενός συνόλου"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The tournament of which you want to show the pairings, mandatory."
+msgstr "Το τουρνουά του οποίου θέλετε να δείξετε τα ζεύγη, υποχρεωτικά."
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation, python-format
+msgid "E.g.: Boards %%f to %%l"
+msgstr "Π.χ.: Επιβιβάσεις %%f έως %%l"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation, python-format
+msgid "E.g.: Players %%f to %%l"
+msgstr "Π.χ.: Παίκτες %%f to %%l"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The name of the screen set (the name of the first set of a screen is by default the name of the screen)."
+msgstr "Το όνομα του συνόλου οθόνης (το όνομα του πρώτου συνόλου οθόνης είναι εξ ορισμού το όνομα της οθόνης)."
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Fixed boards:"
+msgstr "Σταθερές σανίδες:"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Comma-separated board numbers ; if this field is set, other fields are omitted."
+msgstr "Διαχωριζόμενοι αριθμοί σκάφους κόμμα , εάν αυτό το πεδίο έχει οριστεί, άλλα πεδία παραλείπονται."
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Tournament: not set"
+msgstr "Τουρνουά: δεν έχει οριστεί"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation, python-format
+msgid "Name: %(screen_set_name)s"
+msgstr "Όνομα: %(screen_set_name)s"
+
+#: src/web/templates/admin_screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Name: by default"
+msgstr "Όνομα: εξ ορισμού"
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Screens"
+msgstr "Οθόνες"
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Show/hide the screens created from screen families."
+msgstr "Εμφάνιση/απόκρυψη των οθονών που δημιουργούνται από οικογένειες οθόνης."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Families"
+msgstr "Οικογένειες"
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Enable/disable the details of the screens on the cards below."
+msgstr "Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των οθονών στις παρακάτω κάρτες."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "You must create a tournament before creating screens."
+msgstr "Πρέπει να δημιουργήσετε ένα τουρνουά πριν δημιουργήσετε οθόνες."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Create a screen"
+msgstr "Δημιουργία οθόνης"
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Add a screen to enter the results."
+msgstr "Προσθέστε μια οθόνη για να εισάγετε τα αποτελέσματα."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Add a screen to display the pairings by board."
+msgstr "Προσθέστε μια οθόνη για την εμφάνιση των ζευγών από το διοικητικό συμβούλιο."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Add a screen to display the pairings by alphabetical order."
+msgstr "Προσθέστε μια οθόνη για την εμφάνιση των ζευγών με αλφαβητική σειρά."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Add a screen to display the last results."
+msgstr "Προσθέστε μια οθόνη για να εμφανίσετε τα τελευταία αποτελέσματα."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Add a screen to display an image."
+msgstr "Προσθέστε μια οθόνη για να εμφανίσετε μια εικόνα."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Show/hide the input screens."
+msgstr "Εμφάνιση/απόκρυψη των οθονών εισόδου."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Show/hide the boards screens."
+msgstr "Εμφάνιση / απόκρυψη των οθονών πίνακες."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Show/hide the players screens."
+msgstr "Εμφάνιση/απόκρυψη των οθονών των παικτών."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Show/hide the results screens."
+msgstr "Εμφάνιση/απόκρυψη των οθονών αποτελεσμάτων."
+
+#: src/web/templates/admin_screens.html
+#, ai_translation
+msgid "Show/hide the image screens."
+msgstr "Εμφάνιση/απόκρυψη των οθονών εικόνας."
+
+#: src/web/templates/admin_screens.html src/web/templates/user_event.html
+#, ai_translation
+msgid "No such screens."
+msgstr "Δεν υπάρχουν τέτοιες οθόνες."
+
+#: src/web/templates/admin_timer_card.html
+#, ai_translation, python-format
+msgid "Round #%(round)d"
+msgstr "Στρογγυλός #%(round)d"
+
+#: src/web/templates/admin_timer_card.html
+#: src/web/templates/admin_timer_hours_modal.html
+#, ai_translation
+msgid "No hours."
+msgstr "Όχι ώρες."
+
+#: src/web/templates/admin_timer_card.html
+#, ai_translation
+msgid "Edit the properties of the timer."
+msgstr "Επεξεργασία των ιδιοτήτων του χρονοδιακόπτη."
+
+#: src/web/templates/admin_timer_card.html
+#, ai_translation
+msgid "Edit the hours of the timer"
+msgstr "Επεξεργασία των ωρών του χρονοδιακόπτη"
+
+#: src/web/templates/admin_timer_card.html
+#, ai_translation
+msgid "Hours"
+msgstr "Ώρες"
+
+#: src/web/templates/admin_timer_card.html
+#, ai_translation
+msgid "Clone the timer."
+msgstr "Κλόουν ο χρονοδιακόπτης."
+
+#: src/web/templates/admin_timer_card.html
+#, ai_translation
+msgid "Delete the timer."
+msgstr "Διαγράψτε το χρονοδιακόπτη."
+
+#: src/web/templates/admin_timer_hours_modal.html
+#, ai_translation
+msgid "Timer hours"
+msgstr "Ώρες χρόνου"
+
+#: src/web/templates/admin_timer_hours_modal.html
+#, ai_translation
+msgid "Save the hour or cancel."
+msgstr "Κράτα την ώρα ή ακύρωσέ την."
+
+#: src/web/templates/admin_timer_hours_modal.html
+#, ai_translation
+msgid "Drag the hours to order them."
+msgstr "Σύρετε τις ώρες για να τους παραγγείλετε."
+
+#: src/web/templates/admin_timer_hours_modal.html
+#, ai_translation
+msgid "Add a hour"
+msgstr "Προσθήκη μιας ώρας"
+
+#: src/web/templates/admin_timer_hours_modal.html
+#, ai_translation
+msgid "Close"
+msgstr "Κλείσιμο"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Date:"
+msgstr "Ημερομηνία:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Format: YYYY-MM-DD"
+msgstr "Μορφότυπος: YYYY-MM-DD"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Mandatory for the first hour, optional for next hours."
+msgstr "Υποχρεωτική για την πρώτη ώρα, προαιρετική για τις επόμενες ώρες."
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Hour:"
+msgstr "Ώρα:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Format: HH-MM"
+msgstr "Μορφότυπος: HH-MM"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Mandatory for all the hours."
+msgstr "Υποχρεωτική για όλες τις ώρες."
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Round number or text:"
+msgstr "Στρογγυλός αριθμός ή κείμενο:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "E.g.: Start of check-in"
+msgstr "Π.χ.: Έναρξη check-in"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
+msgstr "Τα κείμενα πριν και μετά την παρακάτω ώρα είναι προαιρετικά για στρογγυλούς αριθμούς, υποχρεωτικά διαφορετικά."
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Text before the hour:"
+msgstr "Κείμενο πριν από την ώρα:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation, python-format
+msgid "E.g.: Start of check-in in %%s"
+msgstr "Π.χ.: Έναρξη check-in σε %%s"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation, python-format
+msgid "%%s is replaced by the time left before the hour."
+msgstr "%%s αντικαθίσταται από το χρόνο που απομένει πριν από την ώρα."
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation
+msgid "Text after the hour:"
+msgstr "Κείμενο μετά την ώρα:"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation, python-format
+msgid "E.g.: Check-in started for %%s"
+msgstr "Π.χ.: Ξεκίνησε το check-in για %%s"
+
+#: src/web/templates/admin_timer_hours_modal_hour_div.html
+#, ai_translation, python-format
+msgid "%%s is replaced by the time elapsed since the hour."
+msgstr "%%s αντικαθίσταται από τον χρόνο που έχει παρέλθει από την ώρα."
+
+#: src/web/templates/admin_timer_modal.html
+#, ai_translation
+msgid "Warning: the deletion of a timer is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή ενός χρονοδιακόπτη είναι μόνιμη!"
+
+#: src/web/templates/admin_timer_modal.html
+#, ai_translation
+msgid "E.g.: timer"
+msgstr "Π.χ.: χρονοδιακόπτης"
+
+#: src/web/templates/admin_timers.html
+#, ai_translation
+msgid "Add a timer to the event."
+msgstr "Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση."
+
+#: src/web/templates/admin_timers.html
+#, ai_translation
+msgid "Create a timer"
+msgstr "Δημιουργία χρονοδιακόπτη"
+
+#: src/web/templates/admin_timers.html
+#, ai_translation
+msgid "No timers."
+msgstr "Χωρίς χρονοδιακόπτες."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation, python-format
+msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
+msgstr "Το αρχείο Papi για το τουρνουά δεν υπάρχει (%(papi_file)s)."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation, python-format
+msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
+msgstr "Το αρχείο Papi για το τουρνουά υπάρχει αλλά δεν μπορούσε να διαβαστεί (%(papi_file)s)."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation, python-format
+msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
+msgstr "Το αρχείο Papi για το τουρνουά διαβάστηκε με επιτυχία (%(papi_file)s)."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation, python-format
+msgid "Players found in the Papi_file : %(num)d"
+msgstr "Οι παίκτες βρέθηκαν στο αρχείο Papi_: %(num)d"
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation, python-format
+msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
+msgstr "Η σύνδεση σκακιού [%(chessevent_uniq_id)s] χρησιμοποιείται."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation
+msgid "No ChessEvent connection is used."
+msgstr "Δεν χρησιμοποιείται σύνδεση σκακιού."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation
+msgid "Illegal moves are not recorded."
+msgstr "Οι παράνομες κινήσεις δεν καταγράφονται."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation, python-format
+msgid "At most %(num)d illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] "Το πολύ %(num)d καταγράφεται παράνομη κίνηση."
+msgstr[1] "Το πολύ %(num)d καταγράφονται παράνομες κινήσεις."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation
+msgid "Rules file set"
+msgstr "Σύνολο αρχείων κανόνων"
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation
+msgid "Edit the properties of the tournament."
+msgstr "Επεξεργασία των ιδιοτήτων του τουρνουά."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation
+msgid "Clone the tournament."
+msgstr "Κλώνε το τουρνουά."
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation
+msgid "Delete the tournament."
+msgstr "Διαγράψτε το τουρνουά."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Tournament creation"
+msgstr "Δημιουργία τουρνουά"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation, python-format
+msgid "Edition of tournament [%(tournament_uniq_id)s]"
+msgstr "Έκδοση του τουρνουά [%(tournament_uniq_id)s]"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation, python-format
+msgid "Deletion of tournament [%(tournament_uniq_id)s]"
+msgstr "Διαγραφή του τουρνουά [%(tournament_uniq_id)s]"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Warning: the deletion of a tournament is permanent!"
+msgstr "Προειδοποίηση: η διαγραφή ενός τουρνουά είναι μόνιμη!"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The following screens will also be deleted:"
+msgstr "Οι ακόλουθες οθόνες διαγράφονται επίσης:"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The following screen families will also be deleted:"
+msgstr "Οι ακόλουθες οικογένειες οθόνης διαγράφονται επίσης:"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Enter the tournament ID to confirm its deletion:"
+msgstr "Εισάγετε το αναγνωριστικό τουρνουά για να επιβεβαιώσετε τη διαγραφή του:"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Enter here the tournament ID"
+msgstr "Εισάγετε εδώ την ταυτότητα του τουρνουά"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The Papi-web tournament are deleted but the Papi file is still available on the filesystem."
+msgstr "Το τουρνουά Papi-web διαγράφεται, αλλά το αρχείο Papi είναι ακόμα διαθέσιμο στο σύστημα αρχείων."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "E.g.: main"
+msgstr "Π.χ.: κύρια"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The Unique ID, used to reference the tournament."
+msgstr "Η Μοναδική Ταυτότητα, που χρησιμοποιείται για την αναφορά του τουρνουά."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "E.g.: Main tournament"
+msgstr "Π.χ.: Κύριο τουρνουά"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The name of the tournament, used for display."
+msgstr "Το όνομα του τουρνουά, που χρησιμοποιείται για επίδειξη."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Directory of the Papi file:"
+msgstr "Κατάλογος του αρχείου Papi:"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "E.g.: c:\\chess\\tournaments\\papi"
+msgstr "Π.χ.: c:\\chess\\ tournaments\\papi"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation, python-format
+msgid "The directory of the Papi file, by default %(dir)s."
+msgstr "Ο κατάλογος του αρχείου Papi, από προεπιλογή %(dir)s."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Name of the Papi file (with no extension):"
+msgstr "Όνομα του αρχείου Papi (χωρίς επέκταση):"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
+msgstr "Το όνομα του αρχείου Papi, χωρίς την επέκταση .papi (από προεπιλογή ο αριθμός προσόν FFE του τουρνουά, τότε The Unique ID του τουρνουά)."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Connections (FFE and ChessEvent)"
+msgstr "Συνδέσεις (FFE και σκάκι)"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "FFE qualification number (optional):"
+msgstr "Αριθμός αναγνώρισης FFE (προαιρετικά):"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
+msgstr "Ο αριθμός προεπιλογής που δίνεται από τη Γαλλική Ομοσπονδία είναι ακέραιος, χρησιμοποιείται για να συνδεθεί με την ιστοσελίδα του FFE."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "FFE password:"
+msgstr "Κωδικός πρόσβασης FFE:"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
+msgstr "Ο κωδικός πρόσβασης είναι κατασκευασμένος από 10 κεφαλαία γράμματα, χρησιμοποιείται για να συνδεθεί με την ιστοσελίδα του FFE."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "ChessEvent connection:"
+msgstr "Σύνδεση σκακιού:"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
+msgstr "Η σύνδεση ChessEvent επιτρέπει την ανάκτηση των εγγραφών από την πλατφόρμα ChessEvent."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Name of the ChessEvent tournament:"
+msgstr "Όνομα του τουρνουά σκακιού:"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The name of the tournament on the ChessEvent platform."
+msgstr "Το όνομα του τουρνουά στην πλατφόρμα ChessEvent."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Time control"
+msgstr "Χρονικός έλεγχος"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
+msgstr "Π.χ.: %(seconds)d (%(minutes)d λεπτά)"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The initial time in seconds (may be empty if an increment is set)."
+msgstr "Ο αρχικός χρόνος σε δευτερόλεπτα (μπορεί να είναι κενός εάν οριστεί αύξηση)."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Increment (optional):"
+msgstr "Στέγασμα (προαιρετικά):"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The number of seconds added to the players' clock at each move."
+msgstr "Ο αριθμός των δευτερολέπτων που προστίθενται στο ρολόι των παικτών σε κάθε κίνηση."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Penalty (handicap):"
+msgstr "Πέναλτι (χειροκίνητο):"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
+msgstr "Ο χρόνος που αφαιρείται από τον υψηλότερο παίκτη, σε δευτερόλεπτα (αυτός ο χρόνος πολλαπλασιάζεται με τον αριθμό των βημάτων διαφοράς μεταξύ των δύο παικτών)."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Elo step (handicap):"
+msgstr "Βήμα Elo (χειροκίνητο):"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "E.g.: 50 (Elo)"
+msgstr "Π.χ.: 50 (Elo)"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+msgstr "Ο αριθμός των σημείων διαφορά μεταξύ της κατάταξης των παικτών που χρησιμοποιούνται για τον υπολογισμό του αριθμού των κυρώσεων που εφαρμόζονται στον υψηλότερο βαθμό παίκτη."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Minimal time (handicap):"
+msgstr "Ελάχιστος χρόνος (χειροκίνητος):"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "The minimum time, whatever the ranking difference between the two players."
+msgstr "Ο ελάχιστος χρόνος, όποια και αν είναι η διαφορά κατάταξης μεταξύ των δύο παικτών."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
+msgstr "Π.χ.: c:\\chess\\ tournaments\\main\\rules.pdf"
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
+msgstr "URL, ή η διαδρομή προς το αρχείο κανόνων του διακομιστή, σε μορφή PDF (προαιρετικά, εξ ορισμού τα αρχεία κανόνων του γεγονότος)."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation, python-format
+msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
+msgstr "Ο μέγιστος αριθμός παράνομων κινήσεων που μπορούν να καταγραφούν ανά γύρο για έναν παίκτη (από 0 έως 3, από προεπιλογή %(default)d)."
+
+#: src/web/templates/admin_tournament_modal.html
+#, ai_translation
+msgid "Create and add default screens"
+msgstr "Δημιουργία και προσθήκη προεπιλεγμένων οθονών"
+
+#: src/web/templates/admin_tournaments.html
+#, ai_translation
+msgid "Tournaments"
+msgstr "Τουρνουά"
+
+#: src/web/templates/admin_tournaments.html
+#, ai_translation
+msgid "Add a tournament to the event."
+msgstr "Προσθέστε ένα τουρνουά στην εκδήλωση."
+
+#: src/web/templates/admin_tournaments.html
+#, ai_translation
+msgid "Create a tournament"
+msgstr "Δημιουργία ενός τουρνουά"
+
+#: src/web/templates/admin_tournaments.html
+#, ai_translation
+msgid "No tournaments."
+msgstr "Όχι τουρνουά."
+
+#: src/web/templates/columns_number_dropdown.html
+#, ai_translation
+msgid "Change the number of columns."
+msgstr "Αλλάξτε τον αριθμό των στηλών."
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "Welcome to Papi-web!"
+msgstr "Καλώς ήρθατε στο Papa-web!"
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "Language"
+msgstr "Γλώσσα"
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "Web access"
+msgstr "Πρόσβαση στο διαδίκτυο"
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "From the Papi-web server"
+msgstr "Από τον διακομιστή Papi-web"
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "From the local network (LAN/WAN)"
+msgstr "Από το τοπικό δίκτυο (LAN/WAN)"
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "Click here to access the public screens of the events."
+msgstr "Κάντε κλικ εδώ για να αποκτήσετε πρόσβαση στις δημόσιες οθόνες των γεγονότων."
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "Events (public access)"
+msgstr "Εκδηλώσεις (δημόσια πρόσβαση)"
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "The arbiter interface allows the management of the events."
+msgstr "Η διεπαφή του διαιτητή επιτρέπει τη διαχείριση των γεγονότων."
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "Access to the arbiter interface is not allowed from this client."
+msgstr "Η πρόσβαση στη διεπαφή του διαιτητή δεν επιτρέπεται από αυτόν τον πελάτη."
+
+#: src/web/templates/index.html
+#, ai_translation
+msgid "Arbiter interface (private access)"
+msgstr "Διασύνδεση Arbiter (ιδιωτική πρόσβαση)"
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "This event is public (by default, screens are visible by the users)."
+msgstr "Αυτό το γεγονός είναι δημόσιο (από προεπιλογή, οι οθόνες είναι ορατές από τους χρήστες)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "This screen is public (visible by the users)."
+msgstr "Αυτή η οθόνη είναι δημόσια (ορατή από τους χρήστες)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "This screen family is public (visible by the users)."
+msgstr "Αυτή η οικογένεια οθόνης είναι δημόσια (ορατή από τους χρήστες)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "This rotator is public (visible by the users)."
+msgstr "Αυτός ο περιστροφέας είναι δημόσιος (ορατός από τους χρήστες)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "This event is private (by default, screens are not visible by the users)."
+msgstr "Αυτό το γεγονός είναι ιδιωτικό (από προεπιλογή, οι οθόνες δεν είναι ορατές από τους χρήστες)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "This screen is private (not visible by the users)."
+msgstr "Αυτή η οθόνη είναι ιδιωτική (δεν είναι ορατή από τους χρήστες)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "This screen family is private (not visible by the users)."
+msgstr "Αυτή η οικογένεια οθόνης είναι ιδιωτική (δεν είναι ορατή από τους χρήστες)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "This rotator is private (not visible by the users)."
+msgstr "Αυτός ο περιστροφέας είναι ιδιωτικός (δεν είναι ορατός από τους χρήστες)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "The tournament is not started yet."
+msgstr "Το τουρνουά δεν έχει ξεκινήσει ακόμα."
+
+#: src/web/templates/macros.j2
+#, ai_translation, python-format
+msgid "Round %(round)d is running."
+msgstr "Ο γύρος %(round)d τρέχει."
+
+#: src/web/templates/macros.j2
+#, ai_translation, python-format
+msgid "Round #%(round)d is finished."
+msgstr "Ο γύρος #%(round)d τελείωσε."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "The tournament is finished."
+msgstr "Το τουρνουά τελείωσε."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Boards screens show pairings by board number."
+msgstr "Οι οθόνες του πίνακα δείχνουν ζευγάρωμα με τον αριθμό του σκάφους."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Input screens show pairings by board number and allow people to enter results."
+msgstr "Οι οθόνες εισόδου δείχνουν ζευγάρωμα ανά αριθμό σκάφους και επιτρέπουν στους ανθρώπους να εισέλθουν τα αποτελέσματα."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Players screens show pairings by alphabetical order."
+msgstr "Οι οθόνες των παικτών δείχνουν ζευγάρωμα με αλφαβητική σειρά."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Results screens show the last results (most recent first)."
+msgstr "Αποτελέσματα οθόνες δείχνουν τα τελευταία αποτελέσματα (πιο πρόσφατα πρώτα)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Image screens show an image (local or remote)."
+msgstr "Οι οθόνες εικόνας δείχνουν μια εικόνα (τοπική ή απομακρυσμένη)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Rotator automatically rotate between multiple screens."
+msgstr "Περιστροφέας περιστρέφεται αυτόματα μεταξύ πολλαπλών οθονών."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by name."
+msgstr "Ταξινόμηση των παικτών με το όνομά τους."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by rating (most rated first)."
+msgstr "Ταξινόμηση των παικτών με βαθμολογία (περισσότερο βαθμολογία πρώτα)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by rating (less rated first)."
+msgstr "Ταξινόμηση των παικτών με βαθμολογία (μικρότερη βαθμολογία πρώτα)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by origin (federation, league, club)."
+msgstr "Ταξινόμηση των παικτών κατά καταγωγή (ομοσπονδοποίηση, πρωτάθλημα, κλαμπ)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by year of birth (youngest first)."
+msgstr "Ταξινόμηση των παικτών ανά έτος γέννησης (μικρότερη πρώτη)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by year of birth (oldest first)."
+msgstr "Ταξινόμηση των παικτών ανά έτος γέννησης (πρώτα μεγαλύτερος)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by category (oldest first)."
+msgstr "Ταξινόμηση των παικτών ανά κατηγορία (πρώτα μεγαλύτερος)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by category (youngest first)."
+msgstr "Ταξινόμηση των παικτών ανά κατηγορία (μικρότερη πρώτη)."
+
+#: src/web/templates/macros.j2
+#, ai_translation
+msgid "Sort the players by tournament."
+msgstr "Ταξινόμηση των παικτών από το τουρνουά."
+
+#: src/web/templates/user_boards_screen_board_row_player_cell.html
+#, ai_translation
+msgid "EXEMPT"
+msgstr "ΑΠΑΛΛΑΓΗ"
+
+#: src/web/templates/user_boards_screen_board_row_player_cell.html
+#, ai_translation
+msgid "/move"
+msgstr "/Κουνηθείτε"
+
+#: src/web/templates/user_boards_screen_set.html
+#: src/web/templates/user_players_screen_set.html
+#, ai_translation, python-format
+msgid "%(set_name)s (round %(round)d)"
+msgstr "%(set_name)s (γύρος %(round)d)"
+
+#: src/web/templates/user_boards_screen_set.html
+#, ai_translation
+msgid "time control"
+msgstr "Χρονοδιακόπτης"
+
+#: src/web/templates/user_boards_screen_set.html
+#, python-format
+msgid "#%(board_number)d"
+msgstr ""
+
+#: src/web/templates/user_boards_screen_set.html
+#, ai_translation, python-format
+msgid "%(set_name)s (check-in)"
+msgstr "%(set_name)s (check-in)"
+
+#: src/web/templates/user_boards_screen_set.html
+#, ai_translation
+msgid "Player / Elo"
+msgstr "Παίκτης / Elo"
+
+#: src/web/templates/user_event.html
+#, ai_translation
+msgid "Go back to the events page."
+msgstr "Πήγαινε πίσω στη σελίδα των γεγονότων."
+
+#: src/web/templates/user_players_screen_set.html
+#, ai_translation
+msgid "Player Elo [Pts]"
+msgstr "Παίκτης Elo [Pts]"
+
+#: src/web/templates/user_players_screen_set.html
+#, ai_translation
+msgid "Player Elo"
+msgstr "Παίκτης Elo"
+
+#: src/web/templates/user_players_screen_set.html
+#, ai_translation
+msgid "Board & color"
+msgstr "& Χρώμα σκάφους"
+
+#: src/web/templates/user_players_screen_set.html
+#, ai_translation
+msgid "Opponent Elo [Pts]"
+msgstr "Αντίπαλο Elo [Pts]"
+
+#: src/web/templates/user_players_screen_set.html
+#, ai_translation
+msgid "Opponent Elo"
+msgstr "Αντίπαλος Elo"
+
+#: src/web/templates/user_players_screen_set.html
+#, ai_translation, python-format
+msgid "Board #%(board_number)d with %(color)s"
+msgstr "Διοικητικό Συμβούλιο #%(board_number)d με %(color)s"
+
+#: src/web/templates/user_players_screen_set.html
+#, ai_translation
+msgid "vs"
+msgstr "vs"
+
+#: src/web/templates/user_results_screen.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Τουρνουά"
+
+#: src/web/templates/user_results_screen.html
+#, ai_translation
+msgid "Rnd.Boa"
+msgstr "Rnd. Boa"
+
+#: src/web/templates/user_results_screen.html
+#, ai_translation
+msgid "Score"
+msgstr "Βαθμολογία"
+
+#: src/web/templates/user_rotator_card.html
+#, ai_translation
+msgid "No screen nor family to rotate."
+msgstr "Δεν έχει οθόνη ούτε οικογένεια να περιστραφεί."
+
+#: src/web/templates/user_rotator_card.html
+#, ai_translation, python-format
+msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
+msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d οθόνες)"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "Please enter the password to enter results:"
+msgstr "Παρακαλώ εισάγετε τον κωδικό πρόσβασης για να εισάγετε τα αποτελέσματα:"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "Event"
+msgstr "Γεγονός"
+
+#: src/web/templates/user_screen.html
+#, ai_translation, python-format
+msgid "A password is required to enter results for the event %(event_uniq_id)s."
+msgstr "Απαιτείται ένας κωδικός πρόσβασης για να εισάγετε αποτελέσματα για την εκδήλωση %(event_uniq_id)s."
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "Password"
+msgstr "Κωδικός πρόσβασης"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "Please ask the organizer to get the password."
+msgstr "Παρακαλώ ζητήστε από τον διοργανωτή να πάρει τον κωδικό πρόσβασης."
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "Enter the result"
+msgstr "Εισάγετε το αποτέλεσμα"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "WHITE WINS"
+msgstr "ΛΑΧΑΝΟΙ ΚΕΡΔΟΙ"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "DRAW"
+msgstr "ΣΚΑΦΗ"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "BLACK WINS"
+msgstr "ΜΑΥΡΑ ΚΕΡΔΙΣΜΑΤΑ"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "BY FORFEIT"
+msgstr "ΑΠΟΤΕΛΕΣΜΑ"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "DOUBLE"
+msgstr "ΔΥΟ"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "FORFEIT"
+msgstr "ΠΡΟΣΦΥΓΗ"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "CLEAR THE RESULT"
+msgstr "ΕΚΚΑΘΑΡΙΣΗ ΤΟΥ ΑΠΟΤΕΛΕΣΜΑΤΟΣ"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "CHECK-IN"
+msgstr "ΕΛΕΓΚΤΙΚΟΣ ΕΙΣΟΔΟΣ"
+
+#: src/web/templates/user_screen.html
+#, ai_translation
+msgid "CHECK-OUT"
+msgstr "ΕΛΕΓΚΤΙΚΟΣ ΤΕΛΟΣ"
+
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Menu label:"
+msgstr "Ετικέτα μενού:"
+
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Menu:"
+msgstr "Μενού:"
+
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Unpaired players: displayed"
+msgstr "Μη ζευγάρι παικτών: εμφανίζεται"
+
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Unpaired players: hidden"
+msgstr "Μη ζευγάρι παίκτες: κρυφό"
+
+#: src/web/templates/user_screen_card.html
+#, ai_translation, python-format
+msgid "Maximum number of results: %(num)d"
+msgstr "Μέγιστος αριθμός αποτελεσμάτων: %(num)d"
+
+#: src/web/templates/user_screen_card.html
+#, ai_translation
+msgid "Maximum number of results: unlimited"
+msgstr "Μέγιστος αριθμός αποτελεσμάτων: απεριόριστος"
+
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
+#, ai_translation
+msgid "Open/close check-in."
+msgstr "Ανοίξτε/κλείστε το check-in."
+
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
+#, ai_translation, python-format
+msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
+msgstr "Κλείσιμο check-in για το τουρνουά [%(tournament_uniq_id)s]."
+
+#: src/web/templates/admin_players/admin_players_check_in_tournaments.html
+#, ai_translation, python-format
+msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
+msgstr "Open check-in για το τουρνουά [%(tournament_uniq_id)s]."
+
+#: src/web/templates/admin_players/admin_players_filter_categories.html
+#, ai_translation
+msgid "Filter the categories."
+msgstr "Φίλτρο των κατηγοριών."
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
+#, ai_translation
+msgid "Filter the check-in status."
+msgstr "Φίλτρο της κατάστασης check-in."
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
+#, ai_translation
+msgid "Absent"
+msgstr "Απείχθεις"
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
+#, ai_translation
+msgid "Not checked-in yet"
+msgstr "Δεν έχει ελεγχθεί ακόμα"
+
+#: src/web/templates/admin_players/admin_players_filter_check_ins.html
+#, ai_translation
+msgid "Checked-in"
+msgstr "Έλεγξε το σύστημα"
+
+#: src/web/templates/admin_players/admin_players_filter_clubs.html
+#, ai_translation
+msgid "Filter the clubs."
+msgstr "Φίλτρο στα κλαμπ."
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Choose the columns displayed."
+msgstr "Επιλέξτε τις στήλες που εμφανίζονται."
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Columns"
+msgstr "Στήλες"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
+msgstr "Ταχυδρομείο"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
+msgstr "Τηλέφωνο"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Name *** NAME FOR PLAYERS COLUMNS"
+msgstr "Όνομα"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Rating *** RATING FOR PLAYERS COLUMNS"
+msgstr "Βαθμολογία"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
+msgstr "Ομοσπονδία"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
+msgstr "Πρωτάθλημα"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Club *** CLUB FOR PLAYERS COLUMNS"
+msgstr "ΚλαμπCity name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
+msgstr "Έτος γέννησης"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
+msgstr "Κατηγορία"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
+msgstr "Φύλο"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgstr "Σταθερό πλακίδιο"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
+msgstr "ΦΙΝΤΕConstellation name (optional, probably does not need a translation)"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "FFE *** FFE FOR PLAYERS COLUMNS"
+msgstr "FFE"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
+msgstr "Check-in"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
+msgstr "Χοιρινό/πληρωμένο"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
+msgstr "Τουρνουά"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
+msgstr "Σχόλιο"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
+msgid "History *** HISTORY FOR PLAYERS COLUMNS"
+msgstr "Ιστορία"
+
+#: src/web/templates/admin_players/admin_players_filter_federations.html
+#, ai_translation
+msgid "Filter the federations."
+msgstr "Φίλτρο των ομοσπονδιών."
+
+#: src/web/templates/admin_players/admin_players_filter_ffe_licences.html
+#, ai_translation
+msgid "Filter the licences."
+msgstr "Φίλτρο των αδειών."
+
+#: src/web/templates/admin_players/admin_players_filter_genders.html
+#, ai_translation
+msgid "Filter the genders."
+msgstr "Φίλτρο των φύλων."
+
+#: src/web/templates/admin_players/admin_players_filter_leagues.html
+#, ai_translation
+msgid "Filter the leagues."
+msgstr "Φίλτρο τα πρωταθλήματα."
+
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html
+#, ai_translation
+msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
+msgstr "Τουρνουά"
+
+#: src/web/templates/admin_players/admin_players_filter_tournaments.html
+#, ai_translation
+msgid "Filter the tournaments."
+msgstr "Φίλτρο τα τουρνουά."
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Return to documentation summary"
+msgstr "Επιστρέφω στην περίληψη τεκμηρίωσης"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "English translation *** TRANSLATE !"
+msgstr "Αγγλική μετάφραση"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "View file {file}"
+msgstr "Δείτε το αρχείο {file}"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Summary"
+msgstr "Περίληψη"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Empty mandatory messages"
+msgstr "Κενά υποχρεωτικά μηνύματα"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Empty messages"
+msgstr "Κενά μηνύματα"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Message flagged [{flag}]"
+msgstr "Μήνυμα που σημαδεύτηκε [{flag}]"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Message ID"
+msgstr "ID μηνύματος"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Locations"
+msgstr "Τοποθεσίες"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Singular:"
+msgstr "Μοναδικός:"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Plural:"
+msgstr "Πληθυντικός:"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Empty messages are not shown for the default language."
+msgstr "Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα."
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Flagged messages"
+msgstr "Σημειωθέντα μηνύματα"
+
+#: utils/i18n/i18n_update.py
+#, ai_translation
+msgid "Translation"
+msgstr "Μετάφραση"
+

@@ -821,11 +821,11 @@ msgstr "Classement blitz"
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Femme"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
 
@@ -834,12 +834,12 @@ msgstr "Homme"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
@@ -2945,10 +2945,6 @@ msgid "Deletion of player [%(last_name)s %(first_name)s]"
 msgstr "Suppression du·de la joueur·euse [%(last_name)s %(first_name)s]"
 
 #: src/web/templates/admin_player_modal.html
-msgid "Enter a FFE licence number, a Fide number, a part of a name..."
-msgstr "Entrez un numéro de licence FFE, un numéro FIDE, une partie du nom..."
-
-#: src/web/templates/admin_player_modal.html
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
 
@@ -4693,4 +4689,7 @@ msgstr "Messages marqués"
 #: utils/i18n/i18n_update.py
 msgid "Translation"
 msgstr "Traduction"
+
+#~ msgid "Enter a FFE licence number, a Fide number, a part of a name..."
+#~ msgstr "Entrez un numéro de licence FFE, un numéro FIDE, une partie du nom..."
 
