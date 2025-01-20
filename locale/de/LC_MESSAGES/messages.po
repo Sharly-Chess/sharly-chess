@@ -4788,11 +4788,15 @@ msgstr "Bearbeiten Sie die Eigenschaften des Turniers."
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation, fuzzy
-msgid "Export tournament to the TRF format."
-msgstr "Fügen Sie dem Event ein Turnier hinzu."
+msgid "Export"
+msgstr "Hafen"
 
 #: src/web/templates/admin_tournament_card.html
-msgid "Download"
+msgid "Export to TRF16 (rating)"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Export to TRF(bx) (pairing)"
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html

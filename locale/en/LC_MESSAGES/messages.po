@@ -3964,11 +3964,15 @@ msgid "Edit the properties of the tournament."
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html
-msgid "Export tournament to the TRF format."
+msgid "Export"
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html
-msgid "Download"
+msgid "Export to TRF16 (rating)"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Export to TRF(bx) (pairing)"
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html
