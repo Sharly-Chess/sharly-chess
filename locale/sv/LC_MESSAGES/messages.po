@@ -1719,6 +1719,7 @@ msgid "Family [{uniq_id}] already exists."
 msgstr "Familjen [{uniq_id}] finns redan."
 
 #: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "Please choose the tournament."
@@ -1983,6 +1984,11 @@ msgstr "Vänligen ange tiden."
 msgid "Please enter the date of birth."
 msgstr "Ange evenemangets slutdatum."
 
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Only estimated rankings are optional."
+msgstr "Endast uppskattade rankningar är valfria."
+
 # Error: tokens differ between [Invalid FIDE ID [{fide_id}].] and [Ogiltig tid
 # [{time_str}].]
 #: src/web/controllers/admin/player_admin_controller.py
@@ -1997,6 +2003,13 @@ msgstr "Ogiltigt FIDE-ID [{fide_id}]."
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Ogiltigt FFE-ID [{ffe_id}]."
 
+# Error: tokens differ between [Invalid FFE licence number
+# [{ffe_licence_number}].] and [Okänd typ av FFE-licens [%(ffe_licence)s]]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr "Ogiltigt FFE-tillståndsnummer [{ffe_licence_number}]."
+
 # Error: tokens differ between [Invalid mail [{mail}].] and [Ogiltigt värde
 # [{value}].]
 #: src/web/controllers/admin/player_admin_controller.py
@@ -2010,6 +2023,20 @@ msgstr "Ogiltigt brev [{mail}]."
 #, ai_translation, fuzzy
 msgid "Invalid phone number [{phone}]."
 msgstr "Ogiltigt telefonnummer [{phone}]."
+
+# Error: tokens differ between [Invalid amount [{amount}].] and [Ogiltigt
+# värde [{value}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid amount [{amount}]."
+msgstr "Ogiltigt belopp [{amount}]."
+
+# Error: tokens differ between [Invalid fixed board number [{fixed_board}].]
+# and [Ogiltigt styrelsenummer [{fixed_board_str}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid fixed board number [{fixed_board}]."
+msgstr "Ogiltigt fast brädnummer [{fixed_board}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation, fuzzy
@@ -2040,6 +2067,19 @@ msgstr "- Vad är det som händer?"
 #, ai_translation
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr "Det betyg som används när tidsstyrningen är högst 10 minuter."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
+msgstr "Turneringen inleds [{tournament_uniq_id}]."
+
+# Error: tokens differ between [No Papi file found for tournament
+# [{tournament_uniq_id}], can not add the player.] and [Papi-filen hittades
+# inte [{file}] för turnering [{tournament_uniq_id}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
+msgstr "Ingen papi fil hittades för turnering [{tournament_uniq_id}], kan inte lägga till spelaren."
 
 # E
 # r
@@ -3366,6 +3406,7 @@ msgid "The name of the screen family, optional. The following tokens are automat
 msgstr "Namn på skärmfamiljen, valfritt. Följande polletter ersätts automatiskt med brädnummer eller spelarnas namn: %%f=först, %%l=senaste, %%t=turnering."
 
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_screen_modal.html
 #: src/web/templates/admin_screen_sets_modal_set_div.html
 #, ai_translation
@@ -3610,6 +3651,11 @@ msgid "Deletion of player [%(last_name)s %(first_name)s]"
 msgstr "Upplaga av spelare [%(last_name)s %(first_name)s]"
 
 #: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Enter a FFE licence number, a Fide number, a part of a name..."
+msgstr "Ange ett FFE-licensnummer, ett Fide-nummer, en del av ett namn..."
+
+#: src/web/templates/admin_player_modal.html
 #, ai_translation, fuzzy
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Varning: raderingen av en timer är permanent!"
@@ -3667,6 +3713,11 @@ msgstr "Slut:"
 #: src/web/templates/admin_player_modal.html
 #, ai_translation, fuzzy
 msgid "The player's gender."
+msgstr "-Klara turneringen."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "The player's tournament."
 msgstr "-Klara turneringen."
 
 #: src/web/templates/admin_player_modal.html
@@ -3819,6 +3870,16 @@ msgstr "Betalat:"
 msgid "The price the player already paid."
 msgstr "Priset spelaren redan betalat."
 
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "Fixed board:"
+msgstr "Fasta brädor:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Kortnumret spelaren alltid kommer att tilldelas (använd det för funktionshindrade)."
+
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_screen_card.html
 #, ai_translation
@@ -3829,6 +3890,24 @@ msgstr "Spelare"
 #, ai_translation, fuzzy
 msgid "Add a player to the event."
 msgstr "Lägg till en timer till evenemanget."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Tournaments are finished, you can not add players any longer."
+msgstr "Turneringar är avslutade, du kan inte lägga till spelare längre."
+
+# Error: tokens differ between [No Papi file for the tournaments of the event,
+# players can not be added.] and [Papi-filen i turneringen finns inte
+# (%(papi_file)s).]
+#: src/web/templates/admin_players.html
+#, ai_translation, fuzzy
+msgid "No Papi file for the tournaments of the event, players can not be added."
+msgstr "Ingen papi fil för turneringarna i händelsen, spelare kan inte läggas till."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, fuzzy
+msgid "Add a tournament before adding players."
+msgstr "Du måste skapa en turnering innan du skapar skärmar."
 
 #: src/web/templates/admin_players.html
 #, ai_translation, fuzzy
@@ -5643,6 +5722,11 @@ msgstr "Elo Ordförande"
 #, ai_translation
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Kön"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation, fuzzy
+msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgstr "Betald"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
 #, ai_translation, fuzzy

@@ -1719,6 +1719,7 @@ msgid "Family [{uniq_id}] already exists."
 msgstr "La familia [{uniq_id}] ya existe."
 
 #: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "Please choose the tournament."
@@ -1983,6 +1984,11 @@ msgstr "Por favor, introduzca la hora."
 msgid "Please enter the date of birth."
 msgstr "Por favor, introduzca la fecha de finalización del evento."
 
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Only estimated rankings are optional."
+msgstr "Sólo los rankings estimados son opcionales."
+
 # Error: tokens differ between [Invalid FIDE ID [{fide_id}].] and [Hora no
 # válida [{time_str}].]
 #: src/web/controllers/admin/player_admin_controller.py
@@ -1997,6 +2003,14 @@ msgstr "ID FIDE no válido [{fide_id}]."
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Identificación FFE no válida [{ffe_id}]."
 
+# Error: tokens differ between [Invalid FFE licence number
+# [{ffe_licence_number}].] and [Tipo de licencia FFE desconocido
+# [%(ffe_licence)s]]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr "Número de licencia FFE no válido [{ffe_licence_number}]."
+
 # Error: tokens differ between [Invalid mail [{mail}].] and [Valor no válido
 # [{value}].]
 #: src/web/controllers/admin/player_admin_controller.py
@@ -2010,6 +2024,20 @@ msgstr "Correo no válido [{mail}]."
 #, ai_translation, fuzzy
 msgid "Invalid phone number [{phone}]."
 msgstr "Número de teléfono no válido [{phone}]."
+
+# Error: tokens differ between [Invalid amount [{amount}].] and [Valor no
+# válido [{value}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid amount [{amount}]."
+msgstr "Cantidad no válida [{amount}]."
+
+# Error: tokens differ between [Invalid fixed board number [{fixed_board}].]
+# and [Número de placa no válido [{fixed_board_str}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid fixed board number [{fixed_board}]."
+msgstr "Número de placa fijo no válido [{fixed_board}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation, fuzzy
@@ -2040,6 +2068,19 @@ msgstr "Blitz:"
 #, ai_translation
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr "La calificación utilizada cuando el control de tiempo es como máximo 10 minutos."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
+msgstr "El torneo [{tournament_uniq_id}] ha comenzado."
+
+# Error: tokens differ between [No Papi file found for tournament
+# [{tournament_uniq_id}], can not add the player.] and [Archivo Papi no
+# encontrado [{file}] para torneo [{tournament_uniq_id}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
+msgstr "No se ha encontrado ningún archivo Papi para el torneo [{tournament_uniq_id}], no se puede añadir el jugador."
 
 # E
 # r
@@ -3366,6 +3407,7 @@ msgid "The name of the screen family, optional. The following tokens are automat
 msgstr "El nombre de la familia de la pantalla, opcional. Los siguientes tokens son automáticamente reemplazados por los números de tablero o los nombres de los jugadores: %%f=first, %%l=last, %%t=tournament."
 
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_screen_modal.html
 #: src/web/templates/admin_screen_sets_modal_set_div.html
 #, ai_translation
@@ -3667,6 +3709,11 @@ msgid "Deletion of player [%(last_name)s %(first_name)s]"
 msgstr "Edición del jugador [%(last_name)s %(first_name)s]"
 
 #: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Enter a FFE licence number, a Fide number, a part of a name..."
+msgstr "Introduzca un número de licencia FFE, un número de fide, una parte de un nombre..."
+
+#: src/web/templates/admin_player_modal.html
 #, ai_translation, fuzzy
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Advertencia: ¡la eliminación de un temporizador es permanente!"
@@ -3724,6 +3771,11 @@ msgstr "Fin:"
 #: src/web/templates/admin_player_modal.html
 #, ai_translation, fuzzy
 msgid "The player's gender."
+msgstr "Clonó el torneo."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "The player's tournament."
 msgstr "Clonó el torneo."
 
 #: src/web/templates/admin_player_modal.html
@@ -3876,6 +3928,16 @@ msgstr "Pagada:"
 msgid "The price the player already paid."
 msgstr "El precio que el jugador ya pagó."
 
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "Fixed board:"
+msgstr "Tableros fijos:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "El número de tablero al que el jugador siempre será asignado (úselo para personas con discapacidad)."
+
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_screen_card.html
 #, ai_translation
@@ -3886,6 +3948,24 @@ msgstr "Jugadores"
 #, ai_translation, fuzzy
 msgid "Add a player to the event."
 msgstr "Añade un temporizador al evento."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Tournaments are finished, you can not add players any longer."
+msgstr "Los torneos están terminados, ya no se puede agregar jugadores."
+
+# Error: tokens differ between [No Papi file for the tournaments of the event,
+# players can not be added.] and [El archivo Papi del torneo no existe
+# (%(papi_file)s).]
+#: src/web/templates/admin_players.html
+#, ai_translation, fuzzy
+msgid "No Papi file for the tournaments of the event, players can not be added."
+msgstr "No hay archivo Papi para los torneos del evento, los jugadores no se pueden añadir."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, fuzzy
+msgid "Add a tournament before adding players."
+msgstr "Debes crear un torneo antes de crear pantallas."
 
 #: src/web/templates/admin_players.html
 #, ai_translation, fuzzy
@@ -5728,6 +5808,11 @@ msgstr "Elo"
 #, ai_translation
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Género"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation, fuzzy
+msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgstr "Pagada"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
 #, ai_translation, fuzzy

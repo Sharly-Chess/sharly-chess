@@ -13,18 +13,18 @@
 
 | locale=`nl` | Nederlands <img src="../src/web/static/images/locales/nl.svg" style="height: 1em;"/> |
 |--|:--:|
-|Lege verplichte berichten|0/61|
-|Lege berichten|0/1076|
-|Message flagged [ai_translation]|1076/1076|
-|Message flagged [fuzzy]|137/1076|
+|Lege verplichte berichten|0/62|
+|Lege berichten|0/1090|
+|Message flagged [ai_translation]|1090/1090|
+|Message flagged [fuzzy]|147/1090|
 
 ## Lege verplichte berichten (-)
 
 ## Lege berichten (-)
 
-## Gemarkeerde berichten (1213)
+## Gemarkeerde berichten (1237)
 
-### Bericht gemarkeerd [ai_translation] (1076)
+### Bericht gemarkeerd [ai_translation] (1090)
 
 |Bericht-id|Vertaling|Locaties|
 |--|--|--|
@@ -358,7 +358,7 @@
 |Please enter the family ID.|Voer het familie-id in.|src/web/controllers/admin/family_admin_controller.py:None|
 |Character [{char}] is not allowed.|Karakter [{char}] is niet toegestaan.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None|
 |Family [{uniq_id}] already exists.|Familie [{uniq_id}] bestaat al.|src/web/controllers/admin/family_admin_controller.py:None|
-|Please choose the tournament.|Kies alstublieft het toernooi.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
+|Please choose the tournament.|Kies alstublieft het toernooi.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/player_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Tournament [{tournament_id}] not found.|Toernooi [{tournament_id}] niet gevonden.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |A positive integer is expected.|Een positief geheel getal wordt verwacht.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/rotator_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Timer [{timer_id}] not found.|Timer [{timer_id}] niet gevonden.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
@@ -406,16 +406,22 @@
 |Papi-web configuration|Papi-webconfiguratie|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/templates/admin_config.html:None|
 |Please enter the last name.|Voer de tijd in.|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the date of birth.|Voer de einddatum van het evenement in.|src/web/controllers/admin/player_admin_controller.py:None|
+|Only estimated rankings are optional.|Alleen geschatte rankings zijn optioneel.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|Ongeldige FIDE ID [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Ongeldige FFE ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid FFE licence number [{ffe_licence_number}].|Ongeldig FFE-licentienummer [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid mail [{mail}].|Ongeldig bericht [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid phone number [{phone}].|Ongeldig telefoonnummer [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid amount [{amount}].|Ongeldig bedrag [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid fixed board number [{fixed_board}].|Ongeldig vast bordnummer [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Standard:|Begin:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at least 60 minutes.|De waarde die wordt gebruikt wanneer de tijdregeling ten minste 60 minuten bedraagt.|src/web/controllers/admin/player_admin_controller.py:None|
 |Rapid:|Snel:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is more than 10 minutes and less than 60 minutes.|De waarde die wordt gebruikt wanneer de tijdregeling meer dan 10 minuten en minder dan 60 minuten bedraagt.|src/web/controllers/admin/player_admin_controller.py:None|
 |Blitz:|Blitz:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at most 10 minutes.|De waarde die wordt gebruikt wanneer de tijdregeling maximaal 10 minuten bedraagt.|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Toernooi [{tournament_uniq_id}] wordt gestart.|src/web/controllers/admin/player_admin_controller.py:None|
+|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|Geen Papi-bestand gevonden voor toernooi [{tournament_uniq_id}], kan de speler niet toevoegen.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Speler [{last_name} {first_name}] heeft paren in toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Papi-bestand [{tournament_file}] niet gevonden.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE licentie [{ffe_licence_number}] al aanwezig in toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -650,7 +656,7 @@
 |The Unique ID, used to reference the screen family.|Het unieke id, gebruikt om naar de schermfamilie te verwijzen.|src/web/templates/admin_family_modal.html:None|
 |E.g.: My screen family|B.v.: Mijn schermfamilie|src/web/templates/admin_family_modal.html:None|
 |The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament.|De naam van de schermfamilie, optioneel. De volgende tokens worden automatisch vervangen door de namen van de boardnummers of spelers: %%f=first, %%l=last, %%t=tournament.|src/web/templates/admin_family_modal.html:None|
-|Tournament:|Toernooi:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
+|Tournament:|Toernooi:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens).|Het toernooi van de schermen van de familie, verplicht (in tegenstelling tot basisschermen, slechts één toernooi kan worden weergegeven op familieschermen).|src/web/templates/admin_family_modal.html:None|
 |Board selection (by number)|Selectie van het bestuur (op nummer)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |Player selection (by alphabetical order)|Spelerselectie (op alfabetische volgorde)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
@@ -694,6 +700,7 @@
 |Player creation|Schermaanmaak voor spelers|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Editie van speler [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
 |Deletion of player [%(last_name)s %(first_name)s]|Editie van speler [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Enter a FFE licence number, a Fide number, a part of a name...|Voer een FFE-licentienummer, een Fide-nummer, een deel van een naam in...|src/web/templates/admin_player_modal.html:None|
 |Warning: the deletion of a player is permanent!|Waarschuwing: het verwijderen van een timer is permanent!|src/web/templates/admin_player_modal.html:None|
 |Identity|Identiteit|src/web/templates/admin_player_modal.html:None|
 |Last name:|Laatste speler:|src/web/templates/admin_player_modal.html:None|
@@ -706,6 +713,7 @@
 |The player's birth date.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
 |Gender:|Einde:|src/web/templates/admin_player_modal.html:None|
 |The player's gender.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
 |FIDE ratings, title and fédération|FIDE ratings, titel en fédération|src/web/templates/admin_player_modal.html:None|
 |FIDE Title:|FIDE Titel:|src/web/templates/admin_player_modal.html:None|
 |The player's FIDE title.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
@@ -736,8 +744,13 @@
 |The price the player pays to register.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
 |Paid:|Betaald:|src/web/templates/admin_player_modal.html:None|
 |The price the player already paid.|De prijs die de speler al betaalde.|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Vaste planken:|src/web/templates/admin_player_modal.html:None|
+|The board number the player will always be assigned to (use it for disabled people).|Het bordnummer waaraan de speler altijd zal worden toegewezen (gebruik het voor mindervaliden).|src/web/templates/admin_player_modal.html:None|
 |Players|Spelers|src/web/templates/admin_players.html:None<br>src/web/templates/admin_screen_card.html:None|
 |Add a player to the event.|Voeg een timer toe aan het evenement.|src/web/templates/admin_players.html:None|
+|Tournaments are finished, you can not add players any longer.|Toernooien zijn klaar, je kunt geen spelers meer toevoegen.|src/web/templates/admin_players.html:None|
+|No Papi file for the tournaments of the event, players can not be added.|Geen Papi-bestand voor de toernooien van het evenement, spelers kunnen niet worden toegevoegd.|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Je moet een toernooi maken voordat je schermen maakt.|src/web/templates/admin_players.html:None|
 |Create a player|Een timer aanmaken|src/web/templates/admin_players.html:None|
 |Clear all the filters.|alle spelers|src/web/templates/admin_players.html:None|
 |Name \*\*\* NAME COLUMN HEADER FOR PLAYERS|Naam|src/web/templates/admin_players.html:None|
@@ -1077,6 +1090,7 @@
 |Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOB|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Gender \*\*\* GENDER FOR PLAYERS COLUMNS|Geslacht|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Betaald|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Betaald|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FFE \*\*\* FFE FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Check-in \*\*\* CHECK-IN FOR PLAYERS COLUMNS|Check-in|src/web/templates/admin_players/admin_players_filter_columns.html:None|
@@ -1105,7 +1119,7 @@
 |Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:None|
 |Translation|Vertaling|utils/i18n/i18n_update.py:None|
 
-### Bericht gemarkeerd [fuzzy] (137)
+### Bericht gemarkeerd [fuzzy] (147)
 
 |Bericht-id|Vertaling|Locaties|
 |--|--|--|
@@ -1133,9 +1147,14 @@
 |Please enter the date of birth.|Voer de einddatum van het evenement in.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|Ongeldige FIDE ID [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Ongeldige FFE ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid FFE licence number [{ffe_licence_number}].|Ongeldig FFE-licentienummer [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid mail [{mail}].|Ongeldig bericht [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid phone number [{phone}].|Ongeldig telefoonnummer [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid amount [{amount}].|Ongeldig bedrag [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid fixed board number [{fixed_board}].|Ongeldig vast bordnummer [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Standard:|Begin:|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Toernooi [{tournament_uniq_id}] wordt gestart.|src/web/controllers/admin/player_admin_controller.py:None|
+|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|Geen Papi-bestand gevonden voor toernooi [{tournament_uniq_id}], kan de speler niet toevoegen.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Speler [{last_name} {first_name}] heeft paren in toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Papi-bestand [{tournament_file}] niet gevonden.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE licentie [{ffe_licence_number}] al aanwezig in toernooi [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -1162,6 +1181,7 @@
 |The player's birth date.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
 |Gender:|Einde:|src/web/templates/admin_player_modal.html:None|
 |The player's gender.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
 |The player's FIDE title.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
 |Federation:|Aanmaken van event|src/web/templates/admin_player_modal.html:None|
 |The player's federation.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
@@ -1185,7 +1205,10 @@
 |Comment:|Toernooi:|src/web/templates/admin_player_modal.html:None|
 |Owed:|Einde:|src/web/templates/admin_player_modal.html:None|
 |The price the player pays to register.|Kloon het toernooi.|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Vaste planken:|src/web/templates/admin_player_modal.html:None|
 |Add a player to the event.|Voeg een timer toe aan het evenement.|src/web/templates/admin_players.html:None|
+|No Papi file for the tournaments of the event, players can not be added.|Geen Papi-bestand voor de toernooien van het evenement, spelers kunnen niet worden toegevoegd.|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Je moet een toernooi maken voordat je schermen maakt.|src/web/templates/admin_players.html:None|
 |Create a player|Een timer aanmaken|src/web/templates/admin_players.html:None|
 |Clear all the filters.|alle spelers|src/web/templates/admin_players.html:None|
 |Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|Elo|src/web/templates/admin_players.html:None|
@@ -1236,6 +1259,7 @@
 |Club \*\*\* CLUB FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOB|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Betaald|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Betaald|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FFE \*\*\* FFE FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|Auwedunit synonyms for matching user input|src/web/templates/admin_players/admin_players_filter_columns.html:None|

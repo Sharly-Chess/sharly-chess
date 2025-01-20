@@ -1726,6 +1726,7 @@ msgid "Family [{uniq_id}] already exists."
 msgstr "Η οικογένεια [{uniq_id}] υπάρχει ήδη."
 
 #: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "Please choose the tournament."
@@ -1990,6 +1991,11 @@ msgstr "Παρακαλώ εισάγετε την ώρα."
 msgid "Please enter the date of birth."
 msgstr "Παρακαλώ εισάγετε την ημερομηνία λήξης της εκδήλωσης."
 
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Only estimated rankings are optional."
+msgstr "Μόνο η εκτιμώμενη κατάταξη είναι προαιρετική."
+
 # Error: tokens differ between [Invalid FIDE ID [{fide_id}].] and [Μη έγκυρος
 # χρόνος [{time_str}].]
 #: src/web/controllers/admin/player_admin_controller.py
@@ -2004,6 +2010,13 @@ msgstr "Μη έγκυρη ταυτότητα FIDE [{fide_id}]."
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Μη έγκυρο FFE ID [{ffe_id}]."
 
+# Error: tokens differ between [Invalid FFE licence number
+# [{ffe_licence_number}].] and [Άγνωστος τύπος άδειας FFE [%(ffe_licence)s]]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr "Μη έγκυρος αριθμός άδειας FFE [{ffe_licence_number}]."
+
 # Error: tokens differ between [Invalid mail [{mail}].] and [Μη έγκυρη τιμή
 # [{value}].]
 #: src/web/controllers/admin/player_admin_controller.py
@@ -2017,6 +2030,20 @@ msgstr "Μη έγκυρο ταχυδρομείο [{mail}]."
 #, ai_translation, fuzzy
 msgid "Invalid phone number [{phone}]."
 msgstr "Μη έγκυρος αριθμός τηλεφώνου [{phone}]."
+
+# Error: tokens differ between [Invalid amount [{amount}].] and [Μη έγκυρη
+# τιμή [{value}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid amount [{amount}]."
+msgstr "Μη έγκυρο ποσό [{amount}]."
+
+# Error: tokens differ between [Invalid fixed board number [{fixed_board}].]
+# and [Μη έγκυρος αριθμός σκάφους [{fixed_board_str}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Invalid fixed board number [{fixed_board}]."
+msgstr "Μη έγκυρος αριθμός σταθερής πινακίδας [{fixed_board}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation, fuzzy
@@ -2047,6 +2074,19 @@ msgstr "Blitz:"
 #, ai_translation
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr "Η βαθμολογία που χρησιμοποιείται όταν ο χρόνος ελέγχου είναι το πολύ 10 λεπτά."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
+msgstr "Ξεκίνησε το τουρνουά [{tournament_uniq_id}]."
+
+# Error: tokens differ between [No Papi file found for tournament
+# [{tournament_uniq_id}], can not add the player.] and [Το αρχείο Papi δεν
+# βρέθηκε [{file}] για το τουρνουά [{tournament_uniq_id}].]
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation, fuzzy
+msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
+msgstr "Δεν βρέθηκε αρχείο Papi για το τουρνουά [{tournament_uniq_id}], δεν μπορεί να προσθέσει τον παίκτη."
 
 # E
 # r
@@ -3380,6 +3420,7 @@ msgid "The name of the screen family, optional. The following tokens are automat
 msgstr "Το όνομα της οικογένειας οθόνης, προαιρετικό. Οι ακόλουθες μάρκες αντικαθίστανται αυτόματα από τους αριθμούς του πίνακα ή τα ονόματα των παικτών: %%f=πρώτο, %%l=τελευταίο, %%t=τουρνουά."
 
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_screen_modal.html
 #: src/web/templates/admin_screen_sets_modal_set_div.html
 #, ai_translation
@@ -3624,6 +3665,11 @@ msgid "Deletion of player [%(last_name)s %(first_name)s]"
 msgstr "Έκδοση του παίκτη [%(last_name)s %(first_name)s]"
 
 #: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Enter a FFE licence number, a Fide number, a part of a name..."
+msgstr "Εισάγετε έναν αριθμό άδειας FFE, έναν αριθμό Fide, ένα μέρος ενός ονόματος..."
+
+#: src/web/templates/admin_player_modal.html
 #, ai_translation, fuzzy
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Προειδοποίηση: η διαγραφή ενός χρονοδιακόπτη είναι μόνιμη!"
@@ -3681,6 +3727,11 @@ msgstr "Τέλος:"
 #: src/web/templates/admin_player_modal.html
 #, ai_translation, fuzzy
 msgid "The player's gender."
+msgstr "Κλώνε το τουρνουά."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "The player's tournament."
 msgstr "Κλώνε το τουρνουά."
 
 #: src/web/templates/admin_player_modal.html
@@ -3833,6 +3884,16 @@ msgstr "Πληρωμή:"
 msgid "The price the player already paid."
 msgstr "Το τίμημα που ήδη πλήρωσε ο παίκτης."
 
+#: src/web/templates/admin_player_modal.html
+#, ai_translation, fuzzy
+msgid "Fixed board:"
+msgstr "Σταθερές σανίδες:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Ο αριθμός του διοικητικού συμβουλίου στον οποίο θα ανατίθεται πάντα ο παίκτης (χρησιμοποιείστε τον για άτομα με ειδικές ανάγκες)."
+
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_screen_card.html
 #, ai_translation
@@ -3843,6 +3904,24 @@ msgstr "Παίκτες"
 #, ai_translation, fuzzy
 msgid "Add a player to the event."
 msgstr "Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Tournaments are finished, you can not add players any longer."
+msgstr "Τα τουρνουά έχουν τελειώσει, δεν μπορείτε να προσθέσετε παίκτες πια."
+
+# Error: tokens differ between [No Papi file for the tournaments of the event,
+# players can not be added.] and [Το αρχείο Papi του τουρνουά δεν υπάρχει
+# (%(papi_file)s).]
+#: src/web/templates/admin_players.html
+#, ai_translation, fuzzy
+msgid "No Papi file for the tournaments of the event, players can not be added."
+msgstr "Δεν αρχείο Papi για τα τουρνουά της εκδήλωσης, οι παίκτες δεν μπορούν να προστεθούν."
+
+#: src/web/templates/admin_players.html
+#, ai_translation, fuzzy
+msgid "Add a tournament before adding players."
+msgstr "Πρέπει να δημιουργήσετε ένα τουρνουά πριν δημιουργήσετε οθόνες."
 
 #: src/web/templates/admin_players.html
 #, ai_translation, fuzzy
@@ -5662,6 +5741,11 @@ msgstr "ΈλοCity name (optional, probably does not need a translation)"
 #, ai_translation
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Φύλο"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation, fuzzy
+msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgstr "Πληρωμή"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
 #, ai_translation, fuzzy

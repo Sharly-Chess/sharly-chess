@@ -13,18 +13,18 @@
 
 | locale=`sv` | Svenska <img src="../src/web/static/images/locales/sv.svg" style="height: 1em;"/> |
 |--|:--:|
-|Töm obligatoriska meddelanden|0/61|
-|Tomma meddelanden|0/1076|
-|Message flagged [ai_translation]|1076/1076|
-|Message flagged [fuzzy]|137/1076|
+|Töm obligatoriska meddelanden|0/62|
+|Tomma meddelanden|0/1090|
+|Message flagged [ai_translation]|1090/1090|
+|Message flagged [fuzzy]|147/1090|
 
 ## Töm obligatoriska meddelanden (-)
 
 ## Tomma meddelanden (-)
 
-## Flaggade meddelanden (1213)
+## Flaggade meddelanden (1237)
 
-### Meddelande flaggat [ai_translation] (1076)
+### Meddelande flaggat [ai_translation] (1090)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -358,7 +358,7 @@
 |Please enter the family ID.|Vänligen ange familjens ID.|src/web/controllers/admin/family_admin_controller.py:None|
 |Character [{char}] is not allowed.|Tecken [{char}] är inte tillåtet.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None|
 |Family [{uniq_id}] already exists.|Familjen [{uniq_id}] finns redan.|src/web/controllers/admin/family_admin_controller.py:None|
-|Please choose the tournament.|Välj turneringen.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
+|Please choose the tournament.|Välj turneringen.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/player_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Tournament [{tournament_id}] not found.|Turneringen [{tournament_id}] hittades inte.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |A positive integer is expected.|Ett positivt heltal förväntas.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/rotator_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Timer [{timer_id}] not found.|Timer [{timer_id}] hittades inte.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
@@ -406,16 +406,22 @@
 |Papi-web configuration|Inställning av papi-webben|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/templates/admin_config.html:None|
 |Please enter the last name.|Vänligen ange tiden.|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the date of birth.|Ange evenemangets slutdatum.|src/web/controllers/admin/player_admin_controller.py:None|
+|Only estimated rankings are optional.|Endast uppskattade rankningar är valfria.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|Ogiltigt FIDE-ID [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Ogiltigt FFE-ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid FFE licence number [{ffe_licence_number}].|Ogiltigt FFE-tillståndsnummer [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid mail [{mail}].|Ogiltigt brev [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid phone number [{phone}].|Ogiltigt telefonnummer [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid amount [{amount}].|Ogiltigt belopp [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid fixed board number [{fixed_board}].|Ogiltigt fast brädnummer [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Standard:|Börja:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at least 60 minutes.|Det betyg som används när tidsstyrningen är minst 60 minuter.|src/web/controllers/admin/player_admin_controller.py:None|
 |Rapid:|Snabbt:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is more than 10 minutes and less than 60 minutes.|Den klassificering som används när tidsstyrningen är mer än 10 minuter och mindre än 60 minuter.|src/web/controllers/admin/player_admin_controller.py:None|
 |Blitz:|- Vad är det som händer?|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at most 10 minutes.|Det betyg som används när tidsstyrningen är högst 10 minuter.|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Turneringen inleds [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|Ingen papi fil hittades för turnering [{tournament_uniq_id}], kan inte lägga till spelaren.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Papi-filen [{tournament_file}] hittades inte.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -650,7 +656,7 @@
 |The Unique ID, used to reference the screen family.|Det unika id, som används för att referera till skärmfamiljen.|src/web/templates/admin_family_modal.html:None|
 |E.g.: My screen family|T.ex. min skärmfamilj|src/web/templates/admin_family_modal.html:None|
 |The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament.|Namn på skärmfamiljen, valfritt. Följande polletter ersätts automatiskt med brädnummer eller spelarnas namn: %%f=först, %%l=senaste, %%t=turnering.|src/web/templates/admin_family_modal.html:None|
-|Tournament:|Turnering:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
+|Tournament:|Turnering:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens).|Turneringen av skärmar i familjen, obligatorisk (till skillnad från grundläggande skärmar, bara en turnering kan visas på familjeskärmar).|src/web/templates/admin_family_modal.html:None|
 |Board selection (by number)|Utnämning av styrelse (antal)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |Player selection (by alphabetical order)|Val av spelare (i alfabetisk ordning)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
@@ -694,6 +700,7 @@
 |Player creation|Bildskärmsskapelse för spelare|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Upplaga av spelare [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
 |Deletion of player [%(last_name)s %(first_name)s]|Upplaga av spelare [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Enter a FFE licence number, a Fide number, a part of a name...|Ange ett FFE-licensnummer, ett Fide-nummer, en del av ett namn...|src/web/templates/admin_player_modal.html:None|
 |Warning: the deletion of a player is permanent!|Varning: raderingen av en timer är permanent!|src/web/templates/admin_player_modal.html:None|
 |Identity|Identitet|src/web/templates/admin_player_modal.html:None|
 |Last name:|Senaste spelare:|src/web/templates/admin_player_modal.html:None|
@@ -706,6 +713,7 @@
 |The player's birth date.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
 |Gender:|Slut:|src/web/templates/admin_player_modal.html:None|
 |The player's gender.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
 |FIDE ratings, title and fédération|FIDE-betyg, titel och fédération|src/web/templates/admin_player_modal.html:None|
 |FIDE Title:|FIDE-titel:|src/web/templates/admin_player_modal.html:None|
 |The player's FIDE title.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
@@ -736,8 +744,13 @@
 |The price the player pays to register.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
 |Paid:|Betalat:|src/web/templates/admin_player_modal.html:None|
 |The price the player already paid.|Priset spelaren redan betalat.|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Fasta brädor:|src/web/templates/admin_player_modal.html:None|
+|The board number the player will always be assigned to (use it for disabled people).|Kortnumret spelaren alltid kommer att tilldelas (använd det för funktionshindrade).|src/web/templates/admin_player_modal.html:None|
 |Players|Spelare|src/web/templates/admin_players.html:None<br>src/web/templates/admin_screen_card.html:None|
 |Add a player to the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:None|
+|Tournaments are finished, you can not add players any longer.|Turneringar är avslutade, du kan inte lägga till spelare längre.|src/web/templates/admin_players.html:None|
+|No Papi file for the tournaments of the event, players can not be added.|Ingen papi fil för turneringarna i händelsen, spelare kan inte läggas till.|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Du måste skapa en turnering innan du skapar skärmar.|src/web/templates/admin_players.html:None|
 |Create a player|Skapa en timer|src/web/templates/admin_players.html:None|
 |Clear all the filters.|alla spelare|src/web/templates/admin_players.html:None|
 |Name \*\*\* NAME COLUMN HEADER FOR PLAYERS|Beteckning|src/web/templates/admin_players.html:None|
@@ -1077,6 +1090,7 @@
 |Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|HUVUDBYGGNAD|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Gender \*\*\* GENDER FOR PLAYERS COLUMNS|Kön|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FFE \*\*\* FFE FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Check-in \*\*\* CHECK-IN FOR PLAYERS COLUMNS|Incheckning|src/web/templates/admin_players/admin_players_filter_columns.html:None|
@@ -1105,7 +1119,7 @@
 |Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:None|
 |Translation|Översättning|utils/i18n/i18n_update.py:None|
 
-### Meddelande flaggat [fuzzy] (137)
+### Meddelande flaggat [fuzzy] (147)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -1133,9 +1147,14 @@
 |Please enter the date of birth.|Ange evenemangets slutdatum.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|Ogiltigt FIDE-ID [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Ogiltigt FFE-ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid FFE licence number [{ffe_licence_number}].|Ogiltigt FFE-tillståndsnummer [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid mail [{mail}].|Ogiltigt brev [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid phone number [{phone}].|Ogiltigt telefonnummer [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid amount [{amount}].|Ogiltigt belopp [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid fixed board number [{fixed_board}].|Ogiltigt fast brädnummer [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Standard:|Börja:|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Turneringen inleds [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|Ingen papi fil hittades för turnering [{tournament_uniq_id}], kan inte lägga till spelaren.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Papi-filen [{tournament_file}] hittades inte.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -1162,6 +1181,7 @@
 |The player's birth date.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
 |Gender:|Slut:|src/web/templates/admin_player_modal.html:None|
 |The player's gender.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
 |The player's FIDE title.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
 |Federation:|Skapande av händelse|src/web/templates/admin_player_modal.html:None|
 |The player's federation.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
@@ -1185,7 +1205,10 @@
 |Comment:|Turnering:|src/web/templates/admin_player_modal.html:None|
 |Owed:|Slut:|src/web/templates/admin_player_modal.html:None|
 |The price the player pays to register.|-Klara turneringen.|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Fasta brädor:|src/web/templates/admin_player_modal.html:None|
 |Add a player to the event.|Lägg till en timer till evenemanget.|src/web/templates/admin_players.html:None|
+|No Papi file for the tournaments of the event, players can not be added.|Ingen papi fil för turneringarna i händelsen, spelare kan inte läggas till.|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Du måste skapa en turnering innan du skapar skärmar.|src/web/templates/admin_players.html:None|
 |Create a player|Skapa en timer|src/web/templates/admin_players.html:None|
 |Clear all the filters.|alla spelare|src/web/templates/admin_players.html:None|
 |Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|Elo Ordförande|src/web/templates/admin_players.html:None|
@@ -1236,6 +1259,7 @@
 |Club \*\*\* CLUB FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|HUVUDBYGGNAD|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Betald|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FFE \*\*\* FFE FOR PLAYERS COLUMNS|Elo Ordförande|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|På grund av detta|src/web/templates/admin_players/admin_players_filter_columns.html:None|

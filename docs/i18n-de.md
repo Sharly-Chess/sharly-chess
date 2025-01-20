@@ -13,10 +13,10 @@
 
 | locale=`de` | Deutsch <img src="../src/web/static/images/locales/de.svg" style="height: 1em;"/> |
 |--|:--:|
-|obligatorische Nachrichten entleeren|0/61|
-|Leere Nachrichten|1/1076|
-|Message flagged [ai_translation]|1075/1076|
-|Message flagged [fuzzy]|137/1076|
+|obligatorische Nachrichten entleeren|0/62|
+|Leere Nachrichten|1/1090|
+|Message flagged [ai_translation]|1089/1090|
+|Message flagged [fuzzy]|147/1090|
 
 ## obligatorische Nachrichten entleeren (-)
 
@@ -26,9 +26,9 @@
 |--|--|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 
-## Gekennzeichnete Nachrichten (1212)
+## Gekennzeichnete Nachrichten (1236)
 
-### Nachricht markiert [ai_translation] (1075)
+### Nachricht markiert [ai_translation] (1089)
 
 |Meldungs-ID|Übersetzung|Standorte|
 |--|--|--|
@@ -362,7 +362,7 @@
 |Please enter the family ID.|Bitte geben Sie die Familien-ID ein.|src/web/controllers/admin/family_admin_controller.py:None|
 |Character [{char}] is not allowed.|Zeichen [{char}] ist nicht erlaubt.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None|
 |Family [{uniq_id}] already exists.|Familie [{uniq_id}] existiert bereits.|src/web/controllers/admin/family_admin_controller.py:None|
-|Please choose the tournament.|Bitte wählen Sie das Turnier aus.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
+|Please choose the tournament.|Bitte wählen Sie das Turnier aus.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/player_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Tournament [{tournament_id}] not found.|Turnier [{tournament_id}] nicht gefunden.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |A positive integer is expected.|Eine positive Ganzzahl wird erwartet.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/rotator_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Timer [{timer_id}] not found.|Timer [{timer_id}] nicht gefunden.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
@@ -410,16 +410,22 @@
 |Papi-web configuration|Konfiguration von Papi-web|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/templates/admin_config.html:None|
 |Please enter the last name.|Bitte geben Sie die Zeit ein.|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the date of birth.|Bitte geben Sie das Ende der Veranstaltung ein.|src/web/controllers/admin/player_admin_controller.py:None|
+|Only estimated rankings are optional.|Nur geschätzte Rankings sind optional.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|Ungültige FIDE-ID [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Ungültige FFE-ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid FFE licence number [{ffe_licence_number}].|Ungültige FFE-Lizenznummer [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid mail [{mail}].|Ungültige Post [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid phone number [{phone}].|Ungültige Telefonnummer [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid amount [{amount}].|Ungültiger Betrag [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid fixed board number [{fixed_board}].|Ungültige feste Bordnummer [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Standard:|Beginnen:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at least 60 minutes.|Der Wert, der verwendet wird, wenn die Zeitregelung mindestens 60 Minuten beträgt.|src/web/controllers/admin/player_admin_controller.py:None|
 |Rapid:|Schnell:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is more than 10 minutes and less than 60 minutes.|Der Wert, der verwendet wird, wenn die Zeitregelung mehr als 10 Minuten und weniger als 60 Minuten beträgt.|src/web/controllers/admin/player_admin_controller.py:None|
 |Blitz:|Blitz:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at most 10 minutes.|Der Wert, der verwendet wird, wenn die Zeitregelung höchstens 10 Minuten beträgt.|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Turnier [{tournament_uniq_id}] wird gestartet.|src/web/controllers/admin/player_admin_controller.py:None|
+|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|Keine Papi-Datei für Turniere gefunden [{tournament_uniq_id}], kann den Spieler nicht hinzufügen.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spieler [{last_name} {first_name}] hat Paarungen im Turnier [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Papi-Datei [{tournament_file}] nicht gefunden.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -654,7 +660,7 @@
 |The Unique ID, used to reference the screen family.|Die einzigartige ID, verwendet, um die Bildschirmfamilie zu verweisen.|src/web/templates/admin_family_modal.html:None|
 |E.g.: My screen family|Z.B.: Meine Bildschirmfamilie|src/web/templates/admin_family_modal.html:None|
 |The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament.|Der Name der Bildschirmfamilie, optional. Folgende Token werden automatisch durch die Brettnummern oder Spielernamen ersetzt: %%f=first, %%l=last, %%t=tournament.|src/web/templates/admin_family_modal.html:None|
-|Tournament:|Turnier:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
+|Tournament:|Turnier:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens).|Das Turnier der Bildschirme der Familie, obligatorisch (im Gegensatz zu grundlegenden Bildschirmen, kann nur ein Turnier auf Familienbildschirmen angezeigt werden).|src/web/templates/admin_family_modal.html:None|
 |Board selection (by number)|Auswahl des Verwaltungsrats (nach Anzahl)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |Player selection (by alphabetical order)|Spielerauswahl (nach alphabetischer Reihenfolge)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
@@ -698,6 +704,7 @@
 |Player creation|Erstellung des Bildschirms der Spieler|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Ausgabe des Spielers [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
 |Deletion of player [%(last_name)s %(first_name)s]|Ausgabe des Spielers [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Enter a FFE licence number, a Fide number, a part of a name...|Geben Sie eine FFE-Lizenznummer, eine Fide-Nummer, einen Teil eines Namens ein...|src/web/templates/admin_player_modal.html:None|
 |Warning: the deletion of a player is permanent!|Warnung: Das Löschen eines Timers ist dauerhaft!|src/web/templates/admin_player_modal.html:None|
 |Identity|Identität|src/web/templates/admin_player_modal.html:None|
 |Last name:|Letzter Spieler:|src/web/templates/admin_player_modal.html:None|
@@ -710,6 +717,7 @@
 |The player's birth date.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
 |Gender:|Ende:|src/web/templates/admin_player_modal.html:None|
 |The player's gender.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
 |FIDE ratings, title and fédération|FIDE-Ratings, Titel und Fédération|src/web/templates/admin_player_modal.html:None|
 |FIDE Title:|FIDE-Titel:|src/web/templates/admin_player_modal.html:None|
 |The player's FIDE title.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
@@ -740,8 +748,13 @@
 |The price the player pays to register.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
 |Paid:|Bezahlt|src/web/templates/admin_player_modal.html:None|
 |The price the player already paid.|Der Preis, den der Spieler bereits bezahlt hat.|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Festplatten:|src/web/templates/admin_player_modal.html:None|
+|The board number the player will always be assigned to (use it for disabled people).|Die Brettnummer wird dem Spieler immer zugewiesen (für Behinderte).|src/web/templates/admin_player_modal.html:None|
 |Players|Spieler|src/web/templates/admin_players.html:None<br>src/web/templates/admin_screen_card.html:None|
 |Add a player to the event.|Fügen Sie dem Event einen Timer hinzu.|src/web/templates/admin_players.html:None|
+|Tournaments are finished, you can not add players any longer.|Turniere sind beendet, Sie können keine Spieler mehr hinzufügen.|src/web/templates/admin_players.html:None|
+|No Papi file for the tournaments of the event, players can not be added.|Keine Papi-Datei für die Turniere des Events, Spieler können nicht hinzugefügt werden.|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Sie müssen ein Turnier erstellen, bevor Sie Bildschirme erstellen.|src/web/templates/admin_players.html:None|
 |Create a player|Einen Timer erstellen|src/web/templates/admin_players.html:None|
 |Clear all the filters.|alle Spieler|src/web/templates/admin_players.html:None|
 |Name \*\*\* NAME COLUMN HEADER FOR PLAYERS|Bezeichnung|src/web/templates/admin_players.html:None|
@@ -1080,6 +1093,7 @@
 |Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOB|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Gender \*\*\* GENDER FOR PLAYERS COLUMNS|Geschlecht|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FFE \*\*\* FFE FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Check-in \*\*\* CHECK-IN FOR PLAYERS COLUMNS|Einchecken|src/web/templates/admin_players/admin_players_filter_columns.html:None|
@@ -1108,7 +1122,7 @@
 |Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:None|
 |Translation|Übersetzung|utils/i18n/i18n_update.py:None|
 
-### Nachricht markiert [fuzzy] (137)
+### Nachricht markiert [fuzzy] (147)
 
 |Meldungs-ID|Übersetzung|Standorte|
 |--|--|--|
@@ -1136,9 +1150,14 @@
 |Please enter the date of birth.|Bitte geben Sie das Ende der Veranstaltung ein.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|Ungültige FIDE-ID [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Ungültige FFE-ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid FFE licence number [{ffe_licence_number}].|Ungültige FFE-Lizenznummer [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid mail [{mail}].|Ungültige Post [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid phone number [{phone}].|Ungültige Telefonnummer [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid amount [{amount}].|Ungültiger Betrag [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid fixed board number [{fixed_board}].|Ungültige feste Bordnummer [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Standard:|Beginnen:|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Turnier [{tournament_uniq_id}] wird gestartet.|src/web/controllers/admin/player_admin_controller.py:None|
+|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|Keine Papi-Datei für Turniere gefunden [{tournament_uniq_id}], kann den Spieler nicht hinzufügen.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Spieler [{last_name} {first_name}] hat Paarungen im Turnier [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Papi-Datei [{tournament_file}] nicht gefunden.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -1165,6 +1184,7 @@
 |The player's birth date.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
 |Gender:|Ende:|src/web/templates/admin_player_modal.html:None|
 |The player's gender.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
 |The player's FIDE title.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
 |Federation:|Ereigniserstellung|src/web/templates/admin_player_modal.html:None|
 |The player's federation.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
@@ -1188,7 +1208,10 @@
 |Comment:|Turnier:|src/web/templates/admin_player_modal.html:None|
 |Owed:|Ende:|src/web/templates/admin_player_modal.html:None|
 |The price the player pays to register.|Klonen Sie das Turnier.|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Festplatten:|src/web/templates/admin_player_modal.html:None|
 |Add a player to the event.|Fügen Sie dem Event einen Timer hinzu.|src/web/templates/admin_players.html:None|
+|No Papi file for the tournaments of the event, players can not be added.|Keine Papi-Datei für die Turniere des Events, Spieler können nicht hinzugefügt werden.|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Sie müssen ein Turnier erstellen, bevor Sie Bildschirme erstellen.|src/web/templates/admin_players.html:None|
 |Create a player|Einen Timer erstellen|src/web/templates/admin_players.html:None|
 |Clear all the filters.|alle Spieler|src/web/templates/admin_players.html:None|
 |Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players.html:None|
@@ -1239,6 +1262,7 @@
 |Club \*\*\* CLUB FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOB|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Bezahlt|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FFE \*\*\* FFE FOR PLAYERS COLUMNS|- Elo. - Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein. nein, nein, nein. nein, nein, nein. nein.|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|gezüchtet|src/web/templates/admin_players/admin_players_filter_columns.html:None|
