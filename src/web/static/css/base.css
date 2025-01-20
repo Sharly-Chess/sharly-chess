@@ -80,6 +80,9 @@ body {
 .player-ffe-lic.ffe-lic-N {
     background-color: #767676;
 }
+.player-ffe-lic.ffe-lic-- {
+    background-color: #FF7CAE;
+}
 .player-federation-flag {
     height: 1em;
 }
