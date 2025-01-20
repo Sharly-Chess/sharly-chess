@@ -14,24 +14,53 @@
 | locale=`es` | Español <img src="../src/web/static/images/locales/es.svg" style="height: 1em;"/> |
 |--|:--:|
 |Mensajes obligatorios vacíos|0/62|
-|Mensajes vacíos|0/1090|
-|Message flagged [ai_translation]|1089/1090|
-|Message flagged [fuzzy]|147/1090|
+|Mensajes vacíos|27/1089|
+|Message flagged [ai_translation]|1062/1089|
 
 ## Mensajes obligatorios vacíos (-)
 
-## Mensajes vacíos (-)
+## Mensajes vacíos (27)
 
-## Mensajes marcados (1236)
+|ID del mensaje|Ubicaciones|
+|--|--|
+|Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? |src/common/engine.py:None|
+|boards from #{first} to end|src/data/family.py:None<br>src/data/screen_set.py:None|
+|boards from start to #{last}|src/data/family.py:None<br>src/data/screen_set.py:None|
+|boards from #{first} to #{last}|src/data/family.py:None<br>src/data/screen_set.py:None|
+|screens of {number} boards from #{first} to end|src/data/family.py:None|
+|screens of {number} boards from start to #{last}|src/data/family.py:None|
+|screens of {number} boards from #{first} to #{last}|src/data/family.py:None|
+|boards from #{first} to end, on {parts} screens|src/data/family.py:None|
+|boards from start to #{last}, on {parts} screens|src/data/family.py:None|
+|boards from #{first} to #{last}, on {parts} screens|src/data/family.py:None|
+|players from #{first} to end|src/data/family.py:None<br>src/data/screen_set.py:None|
+|players from start to #{last}|src/data/family.py:None<br>src/data/screen_set.py:None|
+|players from #{first} to #{last}|src/data/family.py:None<br>src/data/screen_set.py:None|
+|screens of {number} players from #{first} to end|src/data/family.py:None|
+|screens of {number} players from start to #{last}|src/data/family.py:None|
+|screens of {number} players from #{first} to #{last}|src/data/family.py:None|
+|players from #{first} to end, on {parts} screens|src/data/family.py:None|
+|players from start to #{last}, on {parts} screens|src/data/family.py:None|
+|players from #{first} to #{last}, on {parts} screens|src/data/family.py:None|
+|Colour #%(num)d:|src/web/templates/admin_edit_timer_colors.html:None|
+|Delay #%(num)d:|src/web/templates/admin_edit_timer_delays.html:None|
+|Boards from #%(first)d to #%(last)d|src/web/templates/admin_family_card.html:None|
+|Players from #%(first)s to #%(last)s|src/web/templates/admin_family_card.html:None|
+|Round #%(round)d|src/web/templates/admin_timer_card.html:None|
+|Round #%(round)d is finished.|src/web/templates/macros.j2:None|
+|#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
+|Board #%(board_number)d with %(color)s|src/web/templates/user_players_screen_set.html:None|
 
-### Mensaje marcado [ai_translation] (1089)
+## Mensajes marcados (1062)
 
-|id de mensaje|Traducción|Ubicaciones|
+### Mensaje marcado [ai_translation] (1062)
+
+|ID del mensaje|Traducción|Ubicaciones|
 |--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Este programa no debe ser lanzado directamente, utilizar scripts server.bat, ffe.bat y chessevent.bat.|src/papi_web.py:None|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Conexión ChessEvent no establecida para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:None|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Archivo Papi no definido para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:None|
-|Tournament [{tournament_uniq_id}] has started.|El torneo [{tournament_uniq_id}] ha comenzado.|src/chessevent/action_selector.py:None|
+|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Este programa no debe ser lanzado directamente, utilice los scripts server.bat, ffe.bat y chessevent.bat.|src/papi_web.py:None|
+|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|La conexión ChessEvent no está definida para el torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:None|
+|The Papi file is not defined for tournament [{tournament_uniq_id}].|El archivo Papi no está definido para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:None|
+|Tournament [{tournament_uniq_id}] has started.|Torneo [{tournament_uniq_id}] ha comenzado.|src/chessevent/action_selector.py:None|
 |Event: {event_name}|Evento: {event_name}|src/chessevent/action_selector.py:None<br>src/ffe/action_selector.py:None|
 |Unable to create Papi files since no tournaments are defined.|No se pueden crear archivos Papi ya que no se definen torneos.|src/chessevent/action_selector.py:None|
 |Tournaments: {tournament_names}|Torneos: {tournament_names}|src/chessevent/action_selector.py:None|
@@ -49,38 +78,37 @@
 |Continuously|Continuamente|src/chessevent/action_selector.py:None|
 |Frequency: {frequency}|Frecuencia: {frequency}|src/chessevent/action_selector.py:None|
 |Please choose the Papi version:|Por favor, elija la versión Papi:|src/chessevent/action_selector.py:None|
-|Papi version: {version}|Versión papi: {version}|src/chessevent/action_selector.py:None|
-|This action can not be applied to the tournaments of this event.|Esta acción se puede hacer en los torneos de este evento.|src/chessevent/action_selector.py:None<br>src/ffe/action_selector.py:None|
+|Papi version: {version}|Versión de Papi: {version}|src/chessevent/action_selector.py:None|
+|This action can not be applied to the tournaments of this event.|Esta acción no se puede aplicar a los torneos de este evento.|src/chessevent/action_selector.py:None<br>src/ffe/action_selector.py:None|
 |Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}]).|Los datos del torneo [{tournament_uniq_id}] no pudieron ser decodificados (codificación: [{encoding}]), guardados en el archivo [{file}] (línea de error [{line}], columna [{column}], posición [{position}]).|src/chessevent/action_selector.py:None|
 |Data for tournament [{tournament_name}] on ChessEvent are unchanged.|Los datos del torneo [{tournament_name}] en ChessEvent no cambian.|src/chessevent/action_selector.py:None|
-|Papi file [{file}] has been created (players: {num}).|Se ha creado el archivo Papi [{file}] (jugadores: {num}).|src/chessevent/action_selector.py:None|
-|FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.|La identificación y contraseña de FFE no están correctamente configuradas para el torneo [{tournament_name}], los datos no se pueden enviar al sitio web de FFE.|src/chessevent/action_selector.py:None|
+|Papi file [{file}] has been created (players: {num}).|El archivo Papi [{file}] ha sido creado (jugadores: {num}).|src/chessevent/action_selector.py:None|
+|FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.|FFE ID y contraseña no están correctamente establecidos para el torneo [{tournament_name}], los datos no se pueden enviar al sitio web de FFE.|src/chessevent/action_selector.py:None|
 |Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}]).|Error de autenticación (código: [{code}]) para [{user_id}] ([{chessevent_string}]).|src/chessevent/chessevent_session.py:None|
 |Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}]).|Acceso denegado (código: [{code}]) para [{user_id}] en el torneo [{tournament_name}] ([{chessevent_string}]).|src/chessevent/chessevent_session.py:None|
-|Missing parameter (code: [{code}]): [{error}].|Parámetro faltante (código: [{code}]: [{error}].|src/chessevent/chessevent_session.py:None|
-|ID [{user_id}] not found (code: [{code}]): [{error}].|Id [{user_id}] no encontrado (código: [{code}]: [{error}].|src/chessevent/chessevent_session.py:None|
-|Tournament [{tournament_name}] not found (code: [{code}]): [{error}].|Torneo [{tournament_name}] no encontrado (código: [{code}]: [{error}].|src/chessevent/chessevent_session.py:None|
-|Event [{event_id}] not found (code: [{code}]): [{error}].|Evento [{event_id}] no encontrado (código: [{code}]: [{error}].|src/chessevent/chessevent_session.py:None|
-|Unknown response code: [{code}] ([{chessevent_string}]).|Código de respuesta desconocido: [{code}] ([{chessevent_string})].|src/chessevent/chessevent_session.py:None|
+|Missing parameter (code: [{code}]): [{error}].|Parámetro faltante (código: [{code}]): [{error}].|src/chessevent/chessevent_session.py:None|
+|ID [{user_id}] not found (code: [{code}]): [{error}].|ID [{user_id}] no encontrado (código: [{code}]): [{error}].|src/chessevent/chessevent_session.py:None|
+|Tournament [{tournament_name}] not found (code: [{code}]): [{error}].|Torneo [{tournament_name}] no encontrado (código: [{code}]): [{error}].|src/chessevent/chessevent_session.py:None|
+|Event [{event_id}] not found (code: [{code}]): [{error}].|Evento [{event_id}] no encontrado (código: [{code}]): [{error}].|src/chessevent/chessevent_session.py:None|
+|Unknown response code: [{code}] ([{chessevent_string}]).|Código de respuesta desconocido: [{code}] ([{chessevent_string}]).|src/chessevent/chessevent_session.py:None|
 |Failed to read [{url}] (connection error): [{ex}].|Fallo al leer [{url}] (error de conexión): [{ex}].|src/chessevent/chessevent_session.py:None<br>src/common/engine.py:None<br>src/ffe/ffe_session.py:None|
-|Failed to read [{url}] (timeout): [{ex}].|Fallo al leer [{url}] (tiempo de espera): [{ex}].|src/chessevent/chessevent_session.py:None<br>src/common/engine.py:None<br>src/ffe/ffe_session.py:None|
-|Failed to read [{url}] (error code [{errno}]): [{strerror}].|Fallo al leer [{url}] (código de error [{errno}]: [{strerror}].|src/chessevent/chessevent_session.py:None<br>src/common/engine.py:None<br>src/ffe/ffe_session.py:None|
+|Failed to read [{url}] (timeout): [{ex}].|Fallo al leer [{url}] (timeout): [{ex}].|src/chessevent/chessevent_session.py:None<br>src/common/engine.py:None<br>src/ffe/ffe_session.py:None|
+|Failed to read [{url}] (error code [{errno}]): [{strerror}].|Fallo al leer [{url}] (código de error [{errno}]): [{strerror}].|src/chessevent/chessevent_session.py:None<br>src/common/engine.py:None<br>src/ffe/ffe_session.py:None|
 |Failed to read [{url}]: [{ex}].|Fallo al leer [{url}]: [{ex}].|src/chessevent/chessevent_session.py:None<br>src/common/engine.py:None<br>src/ffe/ffe_session.py:None|
 |No events found.|No se encontraron eventos.|src/chessevent/event_selector.py:None<br>src/ffe/event_selector.py:None|
-|One event found, press Enter (Q to quit): |Un evento encontrado, escriba Enter (Q para salir):|src/chessevent/event_selector.py:None<br>src/ffe/event_selector.py:None|
+|One event found, press Enter (Q to quit): |Un evento encontrado, presione Enter (Q para salir):|src/chessevent/event_selector.py:None<br>src/ffe/event_selector.py:None|
 |Please choose the event:|Por favor, elija el evento:|src/chessevent/event_selector.py:None<br>src/ffe/event_selector.py:None|
 |Your choice: |Su elección:|src/chessevent/event_selector.py:None<br>src/common/papi_web_config.py:None<br>src/ffe/event_selector.py:None|
 |Configuration file [{file}] not found.|Archivo de configuración [{file}] no encontrado.|src/common/config_reader.py:None|
-|Configuration file [{file}] is not a file.|El archivo de configuración [{file}] no es un archivo.|src/common/config_reader.py:None|
+|Configuration file [{file}] is not a file.|Archivo de configuración [{file}] no es un archivo.|src/common/config_reader.py:None|
 |Could not read file [{file}].|No se pudo leer el archivo [{file}].|src/common/config_reader.py:None|
-|Duplicated section at line [{lineno}].|Sección duplicada en línea [{lineno}].|src/common/config_reader.py:None|
-|Duplicated option at line [{lineno}].|Opción duplicada en línea [{lineno}].|src/common/config_reader.py:None|
+|Duplicated section at line [{lineno}].|Sección duplicada en la línea [{lineno}].|src/common/config_reader.py:None|
+|Duplicated option at line [{lineno}].|Opción duplicada en la línea [{lineno}].|src/common/config_reader.py:None|
 |Parsing error: [{ex}].|Error de análisis: [{ex}].|src/common/config_reader.py:None|
 |Error: [{ex}].|Error: [{ex}].|src/common/config_reader.py:None|
 |Checking Papi-web version...|Comprobando la versión de Papi-web...|src/common/engine.py:None|
 |Y \*\*\* THE LETTER TO ANSWER YES|Y|src/common/engine.py:None|
 |N \*\*\* THE LETTER TO ANSWER NO|N|src/common/engine.py:None|
-|Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? |¿Desea actualizar de [{old_version}] a [{new_version}] [{y_lc}/{n_uc}}]?|src/common/engine.py:None|
 |The installation of version [{version}] failed.|La instalación de la versión [{version}] falló.|src/common/engine.py:None|
 |- Version {version} ({events})|- Versión {version} ({events})|src/common/engine.py:None|
 |- Version {version}: no events|- Versión {version}: no hay eventos|src/common/engine.py:None|
@@ -88,8 +116,8 @@
 |No previously installed version found.|No se ha encontrado ninguna versión instalada previamente.|src/common/engine.py:None|
 |Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?|¿Desea recuperar la configuración de la versión [{version}] [{y_uc}/{n_lc}]?|src/common/engine.py:None|
 |Please choose the version to recover:|Por favor, elija la versión para recuperar:|src/common/engine.py:None|
-|  - [{q_uc}] Do not recover|- [{q_uc}] No recuperar|src/common/engine.py:None|
-|Please enter the number of the version to recover [{default}]: |Por favor entre el número de la versión para recuperar [{default}]:|src/common/engine.py:None|
+|  - [{q_uc}] Do not recover|- [{q_uc}] No se recupere|src/common/engine.py:None|
+|Please enter the number of the version to recover [{default}]: |Por favor, introduzca el número de la versión para recuperar [{default}]:|src/common/engine.py:None|
 |Do you want to install example event databases [{y_uc}/{n_lc}]?|¿Desea instalar bases de datos de eventos de ejemplo [{y_uc}/{n_lc}]?|src/common/engine.py:None|
 |Recovering events from version {version}...|Recuperando eventos de la versión {version}...|src/common/engine.py:None|
 |Recovering event [{event_uniq_id}]...|Recuperando evento [{event_uniq_id}]...|src/common/engine.py:None|
@@ -109,18 +137,18 @@
 |Your Papi-web version is up to date.|Tu versión de Papi-web está actualizada.|src/common/engine.py:None|
 |A more recent version is available ([{version}]).|Una versión más reciente está disponible ([{version}]).|src/common/engine.py:None|
 |You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)|Está utilizando una versión más reciente que la última versión estable disponible ([{version}]), ¿es usted un desarrollador? ;-)|src/common/engine.py:None|
-|A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).|Una versión estable y más reciente está disponible ([{new_version}]) pero la actualización de versiones inestables (como la que está usando actualmente: [{old_version}] debe hacerse manualmente (actualizar desde la última versión estable instalada en su servidor).|src/common/engine.py:None|
-|You are using un unstable version more recent than the last stable version available ({version}).|Está utilizando una versión inestable más reciente que la última versión estable disponible ({version}).|src/common/engine.py:None|
+|A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).|Una versión estable y más reciente está disponible ([{new_version}]) pero actualizar versiones inestables (como la que está utilizando actualmente: [{old_version}]) debe hacerse manualmente (actualizar desde la última versión estable instalada en su servidor).|src/common/engine.py:None|
+|You are using un unstable version more recent than the last stable version available ({version}).|Usted está utilizando una versión inestable más reciente que la última versión estable disponible ({version}).|src/common/engine.py:None|
 |Looking for a more recent version on GitHub ([{url}])...|Buscando una versión más reciente en GitHub ([{url}])...|src/common/engine.py:None|
 |No response from GitHub.|No hay respuesta de GitHub.|src/common/engine.py:None|
 |Invalid response from GitHub: {ex}.|Respuesta no válida de GitHub: {ex}.|src/common/engine.py:None|
 |No stable version found.|No se encontró ninguna versión estable.|src/common/engine.py:None|
-|Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing.|La versión [{version}] ya está instalada en el directorio [{dir}], por favor elimine manualmente esta carpeta antes de instalarla.|src/common/engine.py:None|
-|Downloading version {version} from GitHub ([{url}])...|Descargando la versión {version} desde GitHub ([{url}])...|src/common/engine.py:None|
+|Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing.|Versión [{version}] ya está instalado en el directorio [{dir}], por favor elimine manualmente esta carpeta antes de instalar.|src/common/engine.py:None|
+|Downloading version {version} from GitHub ([{url}])...|Descargando la versión {version} de GitHub ([{url}])...|src/common/engine.py:None|
 |Downloading failed with code [{code}].|La descarga falló con el código [{code}].|src/common/engine.py:None|
 |File downloaded: [{zip_file}].|Archivo descargado: [{zip_file}].|src/common/engine.py:None|
 |New version [{version}] has been installed in [{dir}].|Nueva versión [{version}] se ha instalado en [{dir}].|src/common/engine.py:None|
-|Option not set, by default [{default}].|Opción no definida, por defecto [{default}].|src/common/papi_web_config.py:None|
+|Option not set, by default [{default}].|Opción no establecida, por defecto [{default}].|src/common/papi_web_config.py:None|
 |Invalid value [{value}].|Valor no válido [{value}].|src/common/papi_web_config.py:None<br>src/web/controllers/admin/index_admin_controller.py:None|
 |Locale [{locale}] not found.|Locale [{locale}] no encontrado.|src/common/papi_web_config.py:None|
 |Option not set.|Opción no establecida.|src/common/papi_web_config.py:None|
@@ -134,7 +162,7 @@
 |Your file {ini_file} has been saved as {ini_file_org}.|Su archivo {ini_file} ha sido guardado como {ini_file_org}.|src/common/papi_web_config.py:None|
 |Could not save {ini_file} to {ini_file_org}: {ex}.|No se pudo guardar {ini_file} a {ini_file_org}: {ex}.|src/common/papi_web_config.py:None|
 |Adding lines to {file}...|Añadir líneas a {file}...|src/common/papi_web_config.py:None|
-|[i18n] # Added by Papi-web {version}|[i18n] # Añadido por Papi-web {version}|src/common/papi_web_config.py:None|
+|[i18n] # Added by Papi-web {version}|[i18n] # Agregado por Papi-web {version}|src/common/papi_web_config.py:None|
 |# The line below has been commented by Papi-web {version}|# La siguiente línea ha sido comentada por Papi-web {version}|src/common/papi_web_config.py:None|
 |Your file {ini_file} has been modified.|Su archivo {ini_file} ha sido modificado.|src/common/papi_web_config.py:None|
 |Could not write to {ini_file}: {ex}.|No se pudo escribir a {ini_file}: {ex}.|src/common/papi_web_config.py:None|
@@ -144,16 +172,16 @@
 |Family [{family_uniq_id}]: {text}|Familia [{family_uniq_id}]: {text}|src/data/event.py:None|
 |Timer [{timer_uniq_id}], hour [{hour_order}]: {text}|Temporizador [{timer_uniq_id}], hora [{hour_order}]: {text}|src/data/event.py:None|
 |Timer [{timer_uniq_id}]: {text}|Temporizador [{timer_uniq_id}]: {text}|src/data/event.py:None|
-|Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}|Pantalla [{screen_uniq_id}], conjunto de pantalla [{screen_set_order}]: {text}|src/data/event.py:None|
+|Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}|Pantalla [{screen_uniq_id}], set de pantalla [{screen_set_order}]: {text}|src/data/event.py:None|
 |Screen [{screen_uniq_id}]: {text}|Pantalla [{screen_uniq_id}]: {text}|src/data/event.py:None|
 |Rotator [{rotator_uniq_id}]: {text}|Rotador [{rotator_uniq_id}]: {text}|src/data/event.py:None|
 |Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded.|Se han encontrado errores en el evento; no se cargarán las conexiones ChessEvent, temporizadores, torneos, pantallas, familias y rotadores.|src/data/event.py:None|
-|No name set, by default [{name}]|Sin nombre, por defecto [{name}]|src/data/event.py:None|
-|No directory set for Papi files, by default [{path}].|No se ha establecido ningún directorio para los archivos Papi, por defecto [{path}].|src/data/event.py:None|
+|No name set, by default [{name}]|Sin conjunto de nombres, por defecto [{name}]|src/data/event.py:None|
+|No directory set for Papi files, by default [{path}].|No hay directorio establecido para los archivos Papi, por defecto [{path}].|src/data/event.py:None|
 |Directory [{path}] not found.|Directorio [{path}] no encontrado.|src/data/event.py:None<br>src/data/tournament.py:None|
 |[{path}] is not a directory.|[{path}] no es un directorio.|src/data/event.py:None<br>src/data/tournament.py:None|
 |No background image set, by default [{background_image}]|No hay conjunto de imágenes de fondo, por defecto [{background_image}]|src/data/event.py:None|
-|No background colour set, by default [{background_color}]|No hay conjunto de color de fondo, por defecto [{background_color}]|src/data/event.py:None|
+|No background colour set, by default [{background_color}]|Sin conjunto de color de fondo, por defecto [{background_color}]|src/data/event.py:None|
 |No password set for the results entry|No se ha establecido contraseña para la entrada de resultados|src/data/event.py:None|
 |Maximum number of illegal moves not set, by default [{record_illegal_moves}]|Número máximo de movimientos ilegales no establecidos, por defecto [{record_illegal_moves}]|src/data/event.py:None|
 |Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded.|Se han encontrado errores en las conexiones ChessEvent; no se cargarán temporizadores, torneos, pantallas, familias y rotadores.|src/data/event.py:None|
@@ -164,33 +192,15 @@
 |Errors have been found on rotators.|Se han encontrado errores en los rotadores.|src/data/event.py:None|
 |%t (%f to %l)|%t (%f a %l)|src/data/family.py:None|
 |Tournament [{tournament_uniq_id}] can not be read, family ignored.|Torneo [{tournament_uniq_id}] no se puede leer, familia ignorada.|src/data/family.py:None|
-|Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored.|Torneo [{tournament_uniq_id}] sólo tiene [{boards_number}] tablas (< [{first}]), familia ignorada.|src/data/family.py:None|
-|Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored.|Torneo [{tournament_uniq_id}] sólo tiene [{players_number}] jugadores (< [{first}]), familia ignorada.|src/data/family.py:None|
+|Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored.|Torneo [{tournament_uniq_id}] tiene sólo [{boards_number}] tablas (< [{first}]), familia ignorada.|src/data/family.py:None|
+|Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored.|Torneo [{tournament_uniq_id}] tiene sólo [{players_number}] jugadores (< [{first}]), familia ignorada.|src/data/family.py:None|
 |Nothing to display for tournament [{tournament_uniq_id}], family ignored.|Nada que mostrar para el torneo [{tournament_uniq_id}], familia ignorada.|src/data/family.py:None|
 |all the boards|todos los tableros|src/data/family.py:None<br>src/data/screen_set.py:None|
-|boards from #{first} to end|tableros desde #{first} hasta el final|src/data/family.py:None<br>src/data/screen_set.py:None|
-|boards from start to #{last}|desde el principio hasta #{last}|src/data/family.py:None<br>src/data/screen_set.py:None|
-|boards from #{first} to #{last}|tableros de #{first} a #{last}|src/data/family.py:None<br>src/data/screen_set.py:None|
-|screens of {number} boards|Pantallas de tableros {number}|src/data/family.py:None|
-|screens of {number} boards from #{first} to end|Pantallas de {number} desde #{first} hasta el final|src/data/family.py:None|
-|screens of {number} boards from start to #{last}|Pantallas de {number} desde el principio hasta #{last}|src/data/family.py:None|
-|screens of {number} boards from #{first} to #{last}|Pantallas de {number} de #{first} a #{last}|src/data/family.py:None|
-|boards on {parts} screens|tableros en las pantallas {parts}|src/data/family.py:None|
-|boards from #{first} to end, on {parts} screens|tableros desde #{first} hasta el final, en pantallas {parts}|src/data/family.py:None|
-|boards from start to #{last}, on {parts} screens|tableros de inicio a #{last}, en {parts} pantallas|src/data/family.py:None|
-|boards from #{first} to #{last}, on {parts} screens|tableros de #{first} a #{last}, en {parts} pantallas|src/data/family.py:None|
+|screens of {number} boards|pantallas de {number} tableros|src/data/family.py:None|
+|boards on {parts} screens|tableros en {parts} pantallas|src/data/family.py:None|
 |all the players|todos los jugadores|src/data/family.py:None<br>src/data/screen_set.py:None|
-|players from #{first} to end|jugadores desde #{first} hasta el final|src/data/family.py:None<br>src/data/screen_set.py:None|
-|players from start to #{last}|jugadores de inicio a #{last}|src/data/family.py:None<br>src/data/screen_set.py:None|
-|players from #{first} to #{last}|jugadores de #{first} a #{last}|src/data/family.py:None<br>src/data/screen_set.py:None|
-|screens of {number} players|Pantallas de reproductores {number}|src/data/family.py:None|
-|screens of {number} players from #{first} to end|pantallas de {number} reproductores desde #{first} hasta el final|src/data/family.py:None|
-|screens of {number} players from start to #{last}|pantallas de {number} reproductores desde el principio hasta #{last}|src/data/family.py:None|
-|screens of {number} players from #{first} to #{last}|pantallas de {number} reproductores de #{first} a #{last}|src/data/family.py:None|
-|players on {parts} screens|reproductores en las pantallas {parts}|src/data/family.py:None|
-|players from #{first} to end, on {parts} screens|reproductores desde #{first} hasta el final, en pantallas {parts}|src/data/family.py:None|
-|players from start to #{last}, on {parts} screens|reproductores de inicio a #{last}, en pantallas {parts}|src/data/family.py:None|
-|players from #{first} to #{last}, on {parts} screens|reproductores de #{first} a #{last}, en pantallas {parts}|src/data/family.py:None|
+|screens of {number} players|pantallas de {number} reproductores|src/data/family.py:None|
+|players on {parts} screens|reproductores en {parts} pantallas|src/data/family.py:None|
 |Unpaired \*\*\* FEMALE|Sin emparejar|src/data/player.py:None|
 |Unpaired \*\*\* MALE|Sin emparejar|src/data/player.py:None|
 |Exempt \*\*\* FEMALE|Exento|src/data/player.py:None|
@@ -200,24 +210,24 @@
 |Boards %f-%l|Tablas %f-%l|src/data/screen.py:None<br>src/data/screen_set.py:None|
 |By board|Por tablero|src/data/screen.py:None|
 |%t [Boards %f-%l]|%t [Boards %f-%l]|src/data/screen.py:None|
-|%t (by board)|%t (por tablero)|src/data/screen.py:None|
+|%t (by board)|%t (a bordo)|src/data/screen.py:None|
 |By player|Por jugador|src/data/screen.py:None|
 |%t (by player)|%t (por jugador)|src/data/screen.py:None|
 |No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].|No hay pantalla de tipo [{screen_type}] para el menú de pantalla [{screen_uniq_id}].|src/data/screen.py:None|
-|Pattern [{pattern}] can be used by screen families.|El patrón [{pattern}] puede ser utilizado por las familias de pantalla.|src/data/screen.py:None|
-|Pattern [{pattern}] matches no screen.|El patrón [{pattern}] no coincide con ninguna pantalla.|src/data/screen.py:None|
-|Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}].|Pantalla [{pattern}] no encontrada para el menú de pantalla [{screen_uniq_id}].|src/data/screen.py:None|
-|Maximum number of results set to [{results_limit}] to fit on [{columns}] columns.|Número máximo de resultados establecido en [{results_limit}] para encajar en [{columns}].|src/data/screen.py:None|
+|Pattern [{pattern}] can be used by screen families.|Patrón [{pattern}] puede ser utilizado por las familias de pantalla.|src/data/screen.py:None|
+|Pattern [{pattern}] matches no screen.|Patrón [{pattern}] no coincide con la pantalla.|src/data/screen.py:None|
+|Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}].|Pantalla [{pattern}] no se encuentra para el menú de la pantalla [{screen_uniq_id}].|src/data/screen.py:None|
+|Maximum number of results set to [{results_limit}] to fit on [{columns}] columns.|Número máximo de resultados establecido en [{results_limit}] para encajar en las columnas [{columns}].|src/data/screen.py:None|
 |Invalid board number [{fixed_board_str}].|Número de placa no válido [{fixed_board_str}].|src/data/screen_set.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
-|Numbers {first} and {last} are not compatible ({first} > {last}).|Números {first} y {last} no son compatibles ({first} > {last}).|src/data/screen_set.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
+|Numbers {first} and {last} are not compatible ({first} > {last}).|Los números {first} y {last} no son compatibles ({first} > {last}).|src/data/screen_set.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |%f to %l|%f a %l|src/data/screen_set.py:None|
 |boards {board_numbers}|tableros {board_numbers}|src/data/screen_set.py:None|
 |Tournament {tournament_uniq_id} ({numbers_str})|Torneo {tournament_uniq_id} ({numbers_str})|src/data/screen_set.py:None|
 |Time is not defined.|El tiempo no está definido.|src/data/timer.py:None|
 |Invalid time [{time_str}].|Hora no válida [{time_str}].|src/data/timer.py:None|
 |The date of the first hour is not defined (mandatory).|La fecha de la primera hora no está definida (obligatoria).|src/data/timer.py:None|
-|Invalid date [{date_str}].|Fecha no válida [{date_str}].|src/data/timer.py:None|
-|Invalid hour [{hour}] (before previous hour [{previous_hour}]).|Hora inválida [{hour}] (antes de la hora anterior [{previous_hour}]).|src/data/timer.py:None<br>src/web/controllers/admin/timer_admin_controller.py:None|
+|Invalid date [{date_str}].|Fecha inválida [{date_str}].|src/data/timer.py:None|
+|Invalid hour [{hour}] (before previous hour [{previous_hour}]).|Hora no válida [{hour}] (antes de la hora anterior [{previous_hour}]).|src/data/timer.py:None<br>src/web/controllers/admin/timer_admin_controller.py:None|
 |Invalid date and time [{datetime_str}].|Fecha y hora inválidas [{datetime_str}].|src/data/timer.py:None|
 |No valid hour defined.|No hay hora válida definida.|src/data/timer.py:None|
 |No directory set for the Papi file, by default [{path}].|No hay directorio establecido para el archivo Papi, por defecto [{path}].|src/data/tournament.py:None|
@@ -229,11 +239,11 @@
 |Rapid rating|Calificación rápida|src/data/util.py:None|
 |Blitz rating|Calificación Blitz|src/data/util.py:None|
 |- \*\*\* NAME FOR GENDER NONE|- ¡No! - ¡No!|src/data/util.py:None|
-|Female \*\*\* NAME FOR GENDER FEMALE|Mujeres|src/data/util.py:None|
-|Male \*\*\* NAME FOR GENDER MALE|Hombres|src/data/util.py:None|
+|Female \*\*\* NAME FOR GENDER FEMALE|Mujeres|src/data/util.py:None<br>src/fide/fide_player.py:None|
+|Male \*\*\* NAME FOR GENDER MALE|Hombres|src/data/util.py:None<br>src/fide/fide_player.py:None|
 |- \*\*\* SHORT NAME FOR GENDER NONE|- ¡No! - ¡No!|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|M \*\*\* SHORT NAME FOR GENDER MALE|M|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|M \*\*\* SHORT NAME FOR GENDER MALE|M|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
 |No FFE Licence|No hay licencia FFE|src/data/util.py:None|
 |Expired FFE licence|Expiración de la licencia FFE|src/data/util.py:None|
 |FFE licence B (leisure)|Licencia FFE B (ocio)|src/data/util.py:None|
@@ -248,7 +258,7 @@
 |20+|20+|src/data/util.py:None|
 |50+|50+|src/data/util.py:None|
 |65+|65+|src/data/util.py:None|
-|No category|No hay rotadores.|src/data/util.py:None|
+|No category|Sin categoría|src/data/util.py:None|
 |Under 8|Menores de 8 años|src/data/util.py:None|
 |Under 10|Menores de 10 años|src/data/util.py:None|
 |Under 12|Menores de 12 años|src/data/util.py:None|
@@ -259,36 +269,36 @@
 |Over 20|Más de 20|src/data/util.py:None|
 |Over 50|Más de 50|src/data/util.py:None|
 |Over 65|Más de 65|src/data/util.py:None|
-|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Hombres|src/data/util.py:None|
+|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Estimación|src/data/util.py:None|
 |National \*\*\* NAME FOR RATING TYPE NATIONAL|Nacional|src/data/util.py:None|
-|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Hombres|src/data/util.py:None|
-|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|M|src/data/util.py:None|
-|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|- ¡No! - ¡No!|src/data/util.py:None|
+|FIDE \*\*\* NAME FOR RATING TYPE FIDE|FIDE|src/data/util.py:None|
+|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|E|src/data/util.py:None|
+|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|N|src/data/util.py:None|
 |F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:None|
-|No title|Sin temporizadores.|src/data/util.py:None|
+|No title|Sin título|src/data/util.py:None|
 |Woman Fide Master|Mujer Fide Master|src/data/util.py:None|
 |Fide Master|Fide Master|src/data/util.py:None|
 |Woman International Master|Master Internacional de la Mujer|src/data/util.py:None|
 |International Master|Master Internacional|src/data/util.py:None|
 |Woman Grand Master|Mujer Gran Maestra|src/data/util.py:None|
 |Grand Master|Gran Maestro|src/data/util.py:None|
-|WFM \*\*\* SHORT NAME FOR Woman Fide Master|M|src/data/util.py:None|
-|FM \*\*\* SHORT NAME FOR Fide Master|M|src/data/util.py:None|
-|WIM \*\*\* SHORT NAME FOR Woman International Master|- ¡No! - ¡No!|src/data/util.py:None|
-|IM \*\*\* SHORT NAME FOR International Master|- ¡No! - ¡No!|src/data/util.py:None|
-|WGM \*\*\* SHORT NAME FOR Woman Grand Master|M|src/data/util.py:None|
-|GM \*\*\* SHORT NAME FOR Grand Master|M|src/data/util.py:None|
+|WFM \*\*\* SHORT NAME FOR Woman Fide Master|WFM|src/data/util.py:None|
+|FM \*\*\* SHORT NAME FOR Fide Master|FM|src/data/util.py:None|
+|WIM \*\*\* SHORT NAME FOR Woman International Master|WIM|src/data/util.py:None|
+|IM \*\*\* SHORT NAME FOR International Master|IM|src/data/util.py:None|
+|WGM \*\*\* SHORT NAME FOR Woman Grand Master|WGM|src/data/util.py:None|
+|GM \*\*\* SHORT NAME FOR Grand Master|GM|src/data/util.py:None|
 |White|Blanco|src/data/util.py:None<br>src/web/templates/user_boards_screen_set.html:None<br>src/web/templates/user_results_screen.html:None|
 |Black|Negro|src/data/util.py:None<br>src/web/templates/user_boards_screen_set.html:None<br>src/web/templates/user_results_screen.html:None|
 |Pairings by board|Maridajes a bordo|src/data/util.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
-|Results entry|Entrada de los resultados|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
-|Parings by player|emparejamientos por jugador|src/data/util.py:None|
+|Results entry|Entrada de resultados|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
+|Parings by player|Parings por jugador|src/data/util.py:None|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Archivo Papi no definido para torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
-|Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Archivo Papi no encontrado [{file}] para torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
+|Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Archivo Papi no encontrado [{file}] para el torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Rules file not defined for tournament [{tournament_uniq_id}].|Archivo de reglas no definido para torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
-|Rules file defined by a URL for tournament [{tournament_uniq_id}].|Archivo de reglas definido por una URL para torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
-|Rules file [{file}] not found for tournament [{tournament_uniq_id}].|Archivo de reglas [{file}] no encontrado para torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
+|Rules file defined by a URL for tournament [{tournament_uniq_id}].|Archivo de reglas definido por una URL para el torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
+|Rules file [{file}] not found for tournament [{tournament_uniq_id}].|Rules file [{file}] no se encuentra para el torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |No FFE operations can be done on the tournaments of this event.|No se pueden realizar operaciones FFE en los torneos de este evento.|src/ffe/action_selector.py:None|
 |Tournaments: {tournament_ffe_ids}|Torneos: {tournament_ffe_ids}|src/ffe/action_selector.py:None|
 |T \*\*\* THE LETTER TO ANSWER TEST|T|src/ffe/action_selector.py:None|
@@ -303,28 +313,28 @@
 |Actions:|Acciones:|src/ffe/action_selector.py:None|
 |No need to upload the rules to the FFE website (up to date).|No es necesario subir las reglas al sitio web de la FFE (hasta la fecha).|src/ffe/action_selector.py:None|
 |No need to upload the results to the FFE website (up to date).|No es necesario subir los resultados al sitio web de la FFE (hasta la fecha).|src/ffe/action_selector.py:None|
-|**Singular:** {recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting.<br/>**Plural:** {recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting.|**Singular:** El torneo {recent_updates} ha sido actualizado menos de {ffe_upload_delay} hace un segundo, esperando.<br/>**Plural:** Los torneos {recent_updates} han sido actualizados menos que {ffe_upload_delay} hace un segundo, esperando.|src/ffe/action_selector.py:None|
+|**Singular:** {recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting.<br/>**Plural:** {recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting.|**Singular:** {recent_updates} torneo se ha actualizado menos de {ffe_upload_delay} hace segundos, esperando.<br/>**Plural:** {recent_updates} torneos se han actualizado menos de {ffe_upload_delay} hace segundos, esperando.|src/ffe/action_selector.py:None|
 |End of upload (Ctrl-C)|Fin de la carga (Ctrl-C)|src/ffe/action_selector.py:None|
-|Content of URL [{url}] is not valid (input[id=[{id]] not found).|El contenido de URL [{url}] no es válido (no se ha encontrado entrada[id=[{id]].|src/ffe/ffe_session.py:None|
+|Content of URL [{url}] is not valid (input[id=[{id]] not found).|El contenido de URL [{url}] no es válido (input[id=[{id]] no se encuentra).|src/ffe/ffe_session.py:None|
 |Initializing a session to [{url}]...|Iniciando una sesión a [{url}]...|src/ffe/ffe_session.py:None|
 |OK|OK|src/ffe/ffe_session.py:None<br>src/web/templates/admin_players/admin_players_filter_categories.html:None<br>src/web/templates/admin_players/admin_players_filter_check_ins.html:None<br>src/web/templates/admin_players/admin_players_filter_clubs.html:None<br>src/web/templates/admin_players/admin_players_filter_columns.html:None<br>src/web/templates/admin_players/admin_players_filter_federations.html:None<br>src/web/templates/admin_players/admin_players_filter_ffe_licences.html:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None<br>src/web/templates/admin_players/admin_players_filter_leagues.html:None<br>src/web/templates/admin_players/admin_players_filter_tournaments.html:None|
 |Authenticating...|Autenticando...|src/ffe/ffe_session.py:None|
 |Authentication failed.|Falló la autenticación.|src/ffe/ffe_session.py:None|
 |Tournament [{ffe_id}]:|Torneo [{ffe_id}]:|src/ffe/ffe_session.py:None|
-|Getting fees for tournament [{ffe_id}]...|Obtener comisiones por torneo [{ffe_id}]...|src/ffe/ffe_session.py:None|
+|Getting fees for tournament [{ffe_id}]...|Obtener tasas por torneo [{ffe_id}]...|src/ffe/ffe_session.py:None|
 |Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website.|Cargos enlace no encontrado, comprobar que un archivo Papi ya se ha enviado y que el torneo no se ha archivado en el sitio web de la FFE.|src/ffe/ffe_session.py:None|
 |Tournament exempt from registration fees.|Torneo exento de tasas de inscripción.|src/ffe/ffe_session.py:None|
 |Invalid fees link text [{text}].|Texto de enlace de tarifas no válido [{text}].|src/ffe/ffe_session.py:None|
 |Invoice saved to [{file}].|Factura guardada en [{file}].|src/ffe/ffe_session.py:None|
-|Sending tournament [{ffe_id}] ({file}) to the FFE website...|Torneo de envío [{ffe_id}] ({file}) al sitio web de la FFE...|src/ffe/ffe_session.py:None|
-|Upload link not found, check that the tournament is not marked as finished on the FFE website.|Cargar enlace no encontrado, comprobar que el torneo no ha terminado en el sitio web de la FFE.|src/ffe/ffe_session.py:None|
+|Sending tournament [{ffe_id}] ({file}) to the FFE website...|Enviando torneo [{ffe_id}] ({file}) al sitio web de la FFE...|src/ffe/ffe_session.py:None|
+|Upload link not found, check that the tournament is not marked as finished on the FFE website.|Cargar enlace no encontrado, comprobar que el torneo no está marcado como terminado en el sitio web de la FFE.|src/ffe/ffe_session.py:None|
 |Results upload OK|Los resultados se cargan OK|src/ffe/ffe_session.py:None|
 |Making the tournament visible on the FFE website...|Hacer visible el torneo en el sitio web de la FFE...|src/ffe/ffe_session.py:None|
 |Display link not found, check that a Papi file has already been sent.|Mostrar enlace no encontrado, compruebe que un archivo Papi ya ha sido enviado.|src/ffe/ffe_session.py:None|
 |Data is already displayed on the FFE website.|Los datos ya se muestran en el sitio web de la FFE.|src/ffe/ffe_session.py:None|
 |Invalid display link text [{text}]|Texto de enlace de visualización no válido [{text}]|src/ffe/ffe_session.py:None|
 |Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...|Envío de las reglas del torneo [{ffe_id}] ({file}) al sitio web de la FFE...|src/ffe/ffe_session.py:None|
-|Rules upload link not found, check that the tournament is not marked as finished on the FFE website.|Reglas subir enlace no encontrado, comprobar que el torneo no ha terminado en el sitio web de la FFE.|src/ffe/ffe_session.py:None|
+|Rules upload link not found, check that the tournament is not marked as finished on the FFE website.|Reglas enlace de carga no encontrado, comprobar que el torneo no está marcado como terminado en el sitio web de la FFE.|src/ffe/ffe_session.py:None|
 |Opening the welcome page [{url}] in a browser...|Abrir la página de bienvenida [{url}] en un navegador...|src/web/server_engine.py:None|
 |Web server not started yet ({ex}), waiting...|El servidor web aún no ha comenzado ({ex}), esperando...|src/web/server_engine.py:None|
 |Starting Papi-web server, please wait...|Iniciando el servidor Papi-web, por favor espere...|src/web/server_engine.py:None|
@@ -334,30 +344,30 @@
 |LAN/WAN URL: {lan_url}|URL LAN/WAN: {lan_url}|src/web/server_engine.py:None|
 |Port [{port}] already in use, can not start Papi-web server.|Puerto [{port}] ya en uso, no puede iniciar el servidor Papi-web.|src/web/server_engine.py:None|
 |USE AT YOUR OWN RISKS|USO EN SUS PROPIOS RIESGOS|src/web/controllers/index_controller.py:None|
-|Please enter the ID of ChessEvent connection.|Por favor, introduzca el id de la conexión ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
+|Please enter the ID of ChessEvent connection.|Por favor, introduzca el ID de la conexión ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
 |ChessEvent connection [{uniq_id}] already exists.|ChessEvent connection [{uniq_id}] ya existe.|src/web/controllers/admin/chessevent_admin_controller.py:None|
-|Please enter the ID used to connect to the ChessEvent platform.|Por favor, introduzca el identificador utilizado para conectarse a la plataforma ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
+|Please enter the ID used to connect to the ChessEvent platform.|Introduzca el ID utilizado para conectarse a la plataforma ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
 |Please enter the password used to connect to the ChessEvent platform.|Introduzca la contraseña utilizada para conectarse a la plataforma ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
-|Please enter the ID of the event on the ChessEvent platform.|Por favor, introduzca el id del evento en la plataforma ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
-|ChessEvent connection [{chessevent_uniq_id}] has been created.|Conexión ChessEvent [{chessevent_uniq_id}] ha sido creada.|src/web/controllers/admin/chessevent_admin_controller.py:None|
+|Please enter the ID of the event on the ChessEvent platform.|Por favor, introduzca el ID del evento en la plataforma ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
+|ChessEvent connection [{chessevent_uniq_id}] has been created.|Conexión ChessEvent [{chessevent_uniq_id}] ha sido creado.|src/web/controllers/admin/chessevent_admin_controller.py:None|
 |ChessEvent connection [{chessevent_uniq_id}] has been updated.|Conexión ChessEvent [{chessevent_uniq_id}] ha sido actualizado.|src/web/controllers/admin/chessevent_admin_controller.py:None|
 |ChessEvent connection [{chessevent_uniq_id}] has been deleted.|Conexión ChessEvent [{chessevent_uniq_id}] ha sido eliminado.|src/web/controllers/admin/chessevent_admin_controller.py:None|
 |Tournaments ({num})|Torneos ({num})|src/web/controllers/admin/event_admin_controller.py:None|
-|Players ({num})|Cronómetros ({num})|src/web/controllers/admin/event_admin_controller.py:None|
+|Players ({num})|Jugadores ({num})|src/web/controllers/admin/event_admin_controller.py:None|
 |Screens ({num})|Pantallas ({num})|src/web/controllers/admin/event_admin_controller.py:None|
 |Families ({num})|Familias ({num})|src/web/controllers/admin/event_admin_controller.py:None|
 |Rotators ({num})|Rotadores ({num})|src/web/controllers/admin/event_admin_controller.py:None<br>src/web/controllers/user/event_user_controller.py:None|
-|Timers ({num})|Cronómetros ({num})|src/web/controllers/admin/event_admin_controller.py:None|
+|Timers ({num})|Temporizadores ({num})|src/web/controllers/admin/event_admin_controller.py:None|
 |ChessEvent ({num})|ChessEvent ({num})|src/web/controllers/admin/event_admin_controller.py:None|
 |Messages ({num})|Mensajes ({num})|src/web/controllers/admin/event_admin_controller.py:None|
 |Renaming the database failed: {ex}.|Falló el cambio de nombre de la base de datos: {ex}.|src/web/controllers/admin/event_admin_controller.py:None|
 |Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.|Evento [{old_uniq_id}] ha sido renombrado ([{new_uniq_id}]) y actualizado.|src/web/controllers/admin/event_admin_controller.py:None|
-|Event [{uniq_id}] has been updated.|El evento [{uniq_id}] ha sido actualizado.|src/web/controllers/admin/event_admin_controller.py:None|
+|Event [{uniq_id}] has been updated.|Evento [{uniq_id}] ha sido actualizado.|src/web/controllers/admin/event_admin_controller.py:None|
 |Event [{uniq_id}] has been created.|Evento [{uniq_id}] ha sido creado.|src/web/controllers/admin/event_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None|
 |Event [{uniq_id}] has been deleted, the database has been archived ({arch}).|Evento [{uniq_id}] ha sido eliminado, la base de datos ha sido archivada ({arch}).|src/web/controllers/admin/event_admin_controller.py:None|
 |Please enter the family ID.|Por favor, introduzca la identificación de la familia.|src/web/controllers/admin/family_admin_controller.py:None|
-|Character [{char}] is not allowed.|El carácter [{char}] no está permitido.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None|
-|Family [{uniq_id}] already exists.|La familia [{uniq_id}] ya existe.|src/web/controllers/admin/family_admin_controller.py:None|
+|Character [{char}] is not allowed.|Carácter [{char}] no está permitido.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None|
+|Family [{uniq_id}] already exists.|Familia [{uniq_id}] ya existe.|src/web/controllers/admin/family_admin_controller.py:None|
 |Please choose the tournament.|Por favor, elija el torneo.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/player_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Tournament [{tournament_id}] not found.|Torneo [{tournament_id}] no encontrado.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |A positive integer is expected.|Se espera un número entero positivo.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/rotator_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
@@ -368,44 +378,44 @@
 |No recording|Sin grabación|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/templates/admin_event_config.html:None|
 |**Singular:** {num} illegal move max<br/>**Plural:** {num} illegal moves max|**Singular:** {num} movimiento ilegal max<br/>**Plural:** {num} movimientos ilegales max|src/web/controllers/admin/index_admin_controller.py:None|
 |By default - {option}|Por defecto - {option}|src/web/controllers/admin/index_admin_controller.py:None|
-|Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|El colour #1 se utiliza hasta que {delay_1} minutos antes del inicio de las rondas (retraso #1), el color cambia gradualmente hasta el colour #2 ({delay_2} minutos antes del inicio de las rondas).|src/web/controllers/admin/index_admin_controller.py:None|
-|Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Colour #2 se utiliza {delay_2} minutos antes del inicio de las rondas (retraso #2), el color cambia gradualmente hasta el colour #3 (al comienzo de las rondas).|src/web/controllers/admin/index_admin_controller.py:None|
-|Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|El colour #3 se utiliza desde el inicio de las rondas y para {delay_3} minutos después (retraso #3).|src/web/controllers/admin/index_admin_controller.py:None|
+|Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).|El color #1 se utiliza hasta {delay_1} minutos antes del inicio de las rondas (retraso #1), el color cambia gradualmente hasta el color #2 ({delay_2} minutos antes del inicio de las rondas).|src/web/controllers/admin/index_admin_controller.py:None|
+|Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).|Color #2 se utiliza {delay_2} minutos antes del inicio de las rondas (retraso #2), el color cambia gradualmente hasta el color #3 (al comienzo de las rondas).|src/web/controllers/admin/index_admin_controller.py:None|
+|Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).|El color #3 se utiliza desde el comienzo de las rondas y para {delay_3} minutos después (retraso #3).|src/web/controllers/admin/index_admin_controller.py:None|
 |Use no timer|Usar sin temporizador|src/web/controllers/admin/index_admin_controller.py:None|
 |No timer defined|No se ha definido ningún temporizador|src/web/controllers/admin/index_admin_controller.py:None|
-|Timer {timer_uniq_id}|Cronómetro {timer_uniq_id}|src/web/controllers/admin/index_admin_controller.py:None|
+|Timer {timer_uniq_id}|Temporizador {timer_uniq_id}|src/web/controllers/admin/index_admin_controller.py:None|
 |Display the exit button|Mostrar el botón de salida|src/web/controllers/admin/index_admin_controller.py:None|
 |Hide the exit button|Ocultar el botón de salida|src/web/controllers/admin/index_admin_controller.py:None|
 |Display only paired players|Mostrar sólo jugadores emparejados|src/web/controllers/admin/index_admin_controller.py:None|
 |Display all the players, paired and unpaired|Mostrar todos los jugadores, emparejados y sin emparejar|src/web/controllers/admin/index_admin_controller.py:None|
-|URL [{url}] responded code [{code}].|URL [{url}] respondió código [{code}].|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
-|URL [{url}] did not respond (error: [{error}]).|URL [{url}] no respondió (error: [{error})].|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
+|URL [{url}] responded code [{code}].|URL [{url}] respondió el código [{code}].|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
+|URL [{url}] did not respond (error: [{error}]).|URL [{url}] no respondió (error: [{error}]).|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Incorrect path [{path}].|Ruta incorrecta [{path}].|src/web/controllers/admin/index_admin_controller.py:None|
 |File [{file}] not found.|Archivo [{file}] no encontrado.|src/web/controllers/admin/index_admin_controller.py:None|
 |Wrong file extension [{ext}] ([pdf] expected).|Extensión de archivo incorrecta [{ext}] ([pdf] esperado).|src/web/controllers/admin/index_admin_controller.py:None|
 |Invalid color [{color}] ([#RRGGBB] expected).|Color no válido [{color}] ([#RRGGBB] esperado).|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/timer_admin_controller.py:None|
 |Please enter the event ID.|Por favor, introduzca la identificación del evento.|src/web/controllers/admin/index_admin_controller.py:None|
-|event ID does not match.|El id de evento no coincide.|src/web/controllers/admin/index_admin_controller.py:None|
+|event ID does not match.|ID de evento no coincide.|src/web/controllers/admin/index_admin_controller.py:None|
 |Event [{uniq_id}] already exists.|Evento [{uniq_id}] ya existe.|src/web/controllers/admin/index_admin_controller.py:None|
 |Please enter the name of the event.|Por favor, introduzca el nombre del evento.|src/web/controllers/admin/index_admin_controller.py:None|
 |Please enter the start date of the event.|Por favor, introduzca la fecha de inicio del evento.|src/web/controllers/admin/index_admin_controller.py:None|
 |Please enter the end date of the event.|Por favor, introduzca la fecha de finalización del evento.|src/web/controllers/admin/index_admin_controller.py:None|
 |Please enter a date after the start date.|Introduzca una fecha después de la fecha de inicio.|src/web/controllers/admin/index_admin_controller.py:None|
 |Please enter a URL or select an image on the right hand side.|Introduzca una URL o seleccione una imagen en el lado derecho.|src/web/controllers/admin/index_admin_controller.py:None|
-|Invalid delay [{delay}] (positive integer expected).|Retardo no válido [{delay}] (se espera un entero positivo).|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/timer_admin_controller.py:None|
+|Invalid delay [{delay}] (positive integer expected).|Retraso no válido [{delay}] (se espera un número entero positivo).|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/timer_admin_controller.py:None|
 |New event|Nuevo evento|src/web/controllers/admin/index_admin_controller.py:None|
 |event|evento|src/web/controllers/admin/index_admin_controller.py:None|
 |Current events ({num})|Acontecimientos actuales ({num})|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/user/index_user_controller.py:None|
 |No current events.|No hay eventos actuales.|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/user/index_user_controller.py:None|
-|Upcoming events ({num})|Acontecimientos venideros ({num})|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/user/index_user_controller.py:None|
+|Upcoming events ({num})|Próximos acontecimientos ({num})|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/user/index_user_controller.py:None|
 |No upcoming events.|Nada de eventos venideros.|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/user/index_user_controller.py:None|
-|Passed events ({num})|Actos aprobados ({num})|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/user/index_user_controller.py:None|
+|Passed events ({num})|Acontecimientos pasados ({num})|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/user/index_user_controller.py:None|
 |No passed events.|No hay eventos pasados.|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/user/index_user_controller.py:None|
 |Archived events ({num})|Eventos archivados ({num})|src/web/controllers/admin/index_admin_controller.py:None|
 |No archived events.|No hay eventos archivados.|src/web/controllers/admin/index_admin_controller.py:None|
 |Papi-web configuration|Configuración de Papi-web|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/templates/admin_config.html:None|
-|Please enter the last name.|Por favor, introduzca la hora.|src/web/controllers/admin/player_admin_controller.py:None|
-|Please enter the date of birth.|Por favor, introduzca la fecha de finalización del evento.|src/web/controllers/admin/player_admin_controller.py:None|
+|Please enter the last name.|Por favor, introduzca el apellido.|src/web/controllers/admin/player_admin_controller.py:None|
+|Please enter the date of birth.|Por favor, introduzca la fecha de nacimiento.|src/web/controllers/admin/player_admin_controller.py:None|
 |Only estimated rankings are optional.|Sólo los rankings estimados son opcionales.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|ID FIDE no válido [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Identificación FFE no válida [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -414,38 +424,38 @@
 |Invalid phone number [{phone}].|Número de teléfono no válido [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid amount [{amount}].|Cantidad no válida [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid fixed board number [{fixed_board}].|Número de placa fijo no válido [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Standard:|Inicio:|src/web/controllers/admin/player_admin_controller.py:None|
+|Standard:|Estándar:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at least 60 minutes.|La calificación utilizada cuando el control de tiempo es de al menos 60 minutos.|src/web/controllers/admin/player_admin_controller.py:None|
 |Rapid:|Rápido:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is more than 10 minutes and less than 60 minutes.|La calificación utilizada cuando el control de tiempo es de más de 10 minutos y menos de 60 minutos.|src/web/controllers/admin/player_admin_controller.py:None|
 |Blitz:|Blitz:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at most 10 minutes.|La calificación utilizada cuando el control de tiempo es como máximo 10 minutos.|src/web/controllers/admin/player_admin_controller.py:None|
-|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|El torneo [{tournament_uniq_id}] ha comenzado.|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Torneo [{tournament_uniq_id}] está terminado, ya no se puede añadir jugadores.|src/web/controllers/admin/player_admin_controller.py:None|
 |No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|No se ha encontrado ningún archivo Papi para el torneo [{tournament_uniq_id}], no se puede añadir el jugador.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Jugador [{last_name} {first_name}] tiene emparejamientos en torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Archivo Papi [{tournament_file}] no encontrado.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|Licencia FFE [{ffe_licence_number}] ya presente en el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] ya presente en el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}].|Jugador [{last_name} {first_name}] ha sido trasladado del torneo [{src_tournament_uniq_id}] al torneo [{dst_tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Check-in is open for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Check-in is open for tournament [{tournament_uniq_id}].|El check-in está abierto para el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Check-in is closed for tournament [{tournament_uniq_id}].|El check-in está cerrado para el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the rotator ID.|Por favor, introduzca la identificación del rotador.|src/web/controllers/admin/rotator_admin_controller.py:None|
-|Rotator [{uniq_id}] already exists.|El rotador [{uniq_id}] ya existe.|src/web/controllers/admin/rotator_admin_controller.py:None|
-|Rotator [{rotator_uniq_id}] has been created.|Se ha creado el rotador [{rotator_uniq_id}].|src/web/controllers/admin/rotator_admin_controller.py:None|
-|Rotator [{rotator_uniq_id}] has been updated.|Se ha actualizado el rotador [{rotator_uniq_id}].|src/web/controllers/admin/rotator_admin_controller.py:None|
-|Rotator [{rotator_uniq_id}] has been deleted.|Se ha eliminado el rotador [{rotator_uniq_id}].|src/web/controllers/admin/rotator_admin_controller.py:None|
-|Please enter the screen ID.|Por favor, introduzca la identificación de pantalla.|src/web/controllers/admin/screen_admin_controller.py:None|
+|Rotator [{uniq_id}] already exists.|Rotador [{uniq_id}] ya existe.|src/web/controllers/admin/rotator_admin_controller.py:None|
+|Rotator [{rotator_uniq_id}] has been created.|Rotador [{rotator_uniq_id}] ha sido creado.|src/web/controllers/admin/rotator_admin_controller.py:None|
+|Rotator [{rotator_uniq_id}] has been updated.|El rotador [{rotator_uniq_id}] ha sido actualizado.|src/web/controllers/admin/rotator_admin_controller.py:None|
+|Rotator [{rotator_uniq_id}] has been deleted.|El rotador [{rotator_uniq_id}] ha sido eliminado.|src/web/controllers/admin/rotator_admin_controller.py:None|
+|Please enter the screen ID.|Por favor, introduzca el ID de pantalla.|src/web/controllers/admin/screen_admin_controller.py:None|
 |Screen [{uniq_id}] already exists.|Pantalla [{uniq_id}] ya existe.|src/web/controllers/admin/screen_admin_controller.py:None|
 |Please enter the image URL.|Introduzca la URL de la imagen.|src/web/controllers/admin/screen_admin_controller.py:None|
 |Invalid URL [{background_image}].|URL no válida [{background_image}].|src/web/controllers/admin/screen_admin_controller.py:None|
 |{screen_type}-screen|{screen_type}-pantalla|src/web/controllers/admin/screen_admin_controller.py:None|
-|Screen [{screen_uniq_id}] has been created.|Pantalla [{screen_uniq_id}] ha sido creada.|src/web/controllers/admin/screen_admin_controller.py:None|
-|Screen [{screen_uniq_id}] has been updated.|Se ha actualizado la pantalla [{screen_uniq_id}].|src/web/controllers/admin/screen_admin_controller.py:None|
-|Screen [{screen_uniq_id}] has been deleted.|Se ha eliminado la pantalla [{screen_uniq_id}].|src/web/controllers/admin/screen_admin_controller.py:None|
+|Screen [{screen_uniq_id}] has been created.|Pantalla [{screen_uniq_id}] ha sido creado.|src/web/controllers/admin/screen_admin_controller.py:None|
+|Screen [{screen_uniq_id}] has been updated.|Pantalla [{screen_uniq_id}] ha sido actualizada.|src/web/controllers/admin/screen_admin_controller.py:None|
+|Screen [{screen_uniq_id}] has been deleted.|Pantalla [{screen_uniq_id}] ha sido eliminado.|src/web/controllers/admin/screen_admin_controller.py:None|
 |The last set of a screen can not be deleted.|El último conjunto de una pantalla no puede ser eliminado.|src/web/controllers/admin/screen_admin_controller.py:None|
 |Please enter the timer ID.|Por favor, introduzca la identificación del temporizador.|src/web/controllers/admin/timer_admin_controller.py:None|
-|Timer [{uniq_id}] already exists.|El temporizador [{uniq_id}] ya existe.|src/web/controllers/admin/timer_admin_controller.py:None|
-|Please enter the round number or the hour ID.|Por favor, introduzca el número de ronda o la identificación de la hora.|src/web/controllers/admin/timer_admin_controller.py:None|
+|Timer [{uniq_id}] already exists.|Temporizador [{uniq_id}] ya existe.|src/web/controllers/admin/timer_admin_controller.py:None|
+|Please enter the round number or the hour ID.|Por favor, introduzca el número de ronda o el número de hora.|src/web/controllers/admin/timer_admin_controller.py:None|
 |Please enter the time.|Por favor, introduzca la hora.|src/web/controllers/admin/timer_admin_controller.py:None|
 |Please enter a valid time.|Por favor, introduzca una hora válida.|src/web/controllers/admin/timer_admin_controller.py:None|
 |Please enter the date of the first hour.|Introduzca la fecha de la primera hora.|src/web/controllers/admin/timer_admin_controller.py:None|
@@ -455,24 +465,24 @@
 |Round numbers must be positive integers.|Los números redondos deben ser enteros positivos.|src/web/controllers/admin/timer_admin_controller.py:None|
 |Please enter the text to display before the hour (mandatory except for rounds).|Por favor, introduzca el texto para mostrar antes de la hora (obligatorio excepto para las rondas).|src/web/controllers/admin/timer_admin_controller.py:None|
 |Please enter the text to display after the hour (mandatory except for rounds).|Por favor, introduzca el texto para mostrar después de la hora (obligatorio excepto para las rondas).|src/web/controllers/admin/timer_admin_controller.py:None|
-|Timer [{timer_uniq_id}] has been created.|Se ha creado el temporizador [{timer_uniq_id}].|src/web/controllers/admin/timer_admin_controller.py:None|
-|Timer [{timer_uniq_id}] has been updated.|El temporizador [{timer_uniq_id}] ha sido actualizado.|src/web/controllers/admin/timer_admin_controller.py:None|
-|Timer [{timer_uniq_id}] has been deleted.|Se ha eliminado el temporizador [{timer_uniq_id}].|src/web/controllers/admin/timer_admin_controller.py:None|
+|Timer [{timer_uniq_id}] has been created.|Timer [{timer_uniq_id}] ha sido creado.|src/web/controllers/admin/timer_admin_controller.py:None|
+|Timer [{timer_uniq_id}] has been updated.|Timer [{timer_uniq_id}] ha sido actualizado.|src/web/controllers/admin/timer_admin_controller.py:None|
+|Timer [{timer_uniq_id}] has been deleted.|El temporizador [{timer_uniq_id}] ha sido eliminado.|src/web/controllers/admin/timer_admin_controller.py:None|
 |Please enter the tournament ID.|Por favor, introduzca la identificación del torneo.|src/web/controllers/admin/tournament_admin_controller.py:None|
-|tournament ID does not match.|La identificación del torneo no coincide.|src/web/controllers/admin/tournament_admin_controller.py:None|
+|tournament ID does not match.|ID del torneo no coincide.|src/web/controllers/admin/tournament_admin_controller.py:None|
 |Tournament [{uniq_id}] already exists.|Torneo [{uniq_id}] ya existe.|src/web/controllers/admin/tournament_admin_controller.py:None|
 |Please enter the tournament name.|Por favor, introduzca el nombre del torneo.|src/web/controllers/admin/tournament_admin_controller.py:None|
-|The FFE ID is a positive integer.|El id FFE es un entero positivo.|src/web/controllers/admin/tournament_admin_controller.py:None|
+|The FFE ID is a positive integer.|El ID FFE es un entero positivo.|src/web/controllers/admin/tournament_admin_controller.py:None|
 |The password of the tournament on the FFE website is made of 10 uppercase letters.|La contraseña del torneo en el sitio web de la FFE está hecha de 10 letras mayúsculas.|src/web/controllers/admin/tournament_admin_controller.py:None|
-|No ChessEvent connection|Sin conexiones ChessEvent.|src/web/controllers/admin/tournament_admin_controller.py:None|
+|No ChessEvent connection|Sin conexión ChessEvent|src/web/controllers/admin/tournament_admin_controller.py:None|
 |tournament|torneo|src/web/controllers/admin/tournament_admin_controller.py:None|
 |New tournament|Nuevo torneo|src/web/controllers/admin/tournament_admin_controller.py:None|
 |Tournament [{tournament_uniq_id}] has been created and default screens have been added.|Torneo [{tournament_uniq_id}] se ha creado y se han añadido pantallas predeterminadas.|src/web/controllers/admin/tournament_admin_controller.py:None|
 |Tournament [{tournament_uniq_id}] has been created.|Torneo [{tournament_uniq_id}] ha sido creado.|src/web/controllers/admin/tournament_admin_controller.py:None|
 |Tournament [{tournament_uniq_id}] has been updated.|Torneo [{tournament_uniq_id}] ha sido actualizado.|src/web/controllers/admin/tournament_admin_controller.py:None|
 |Tournament [{tournament_uniq_id}] has been deleted.|Torneo [{tournament_uniq_id}] ha sido eliminado.|src/web/controllers/admin/tournament_admin_controller.py:None|
-|Results entry ({num})|Entrada de los resultados ({num})|src/web/controllers/user/event_user_controller.py:None|
-|Pairings by board ({num})|Maridajes por tablero ({num})|src/web/controllers/user/event_user_controller.py:None|
+|Results entry ({num})|Entrada de resultados ({num})|src/web/controllers/user/event_user_controller.py:None|
+|Pairings by board ({num})|Maridajes a bordo ({num})|src/web/controllers/user/event_user_controller.py:None|
 |Pairings by player ({num})|Maridajes por jugador ({num})|src/web/controllers/user/event_user_controller.py:None|
 |Last results ({num})|Últimos resultados ({num})|src/web/controllers/user/event_user_controller.py:None|
 |Image ({num})|Imagen ({num})|src/web/controllers/user/event_user_controller.py:None|
@@ -480,30 +490,30 @@
 |Incorrect password.|Contraseña incorrecta.|src/web/controllers/user/screen_user_controller.py:None|
 |Authentication successful!|Autenticación exitosa!|src/web/controllers/user/screen_user_controller.py:None|
 |Please enter the password.|Por favor, introduzca la contraseña.|src/web/controllers/user/screen_user_controller.py:None|
-|Tournament [{tournament_uniq_id}] is not started yet.|El torneo [{tournament_uniq_id}] ha comenzado.|src/web/controllers/user/tournament_user_controller.py:None|
-|Tournament [{tournament_uniq_id}] is started.|El torneo [{tournament_uniq_id}] ha comenzado.|src/web/controllers/user/tournament_user_controller.py:None|
+|Tournament [{tournament_uniq_id}] is not started yet.|Torneo [{tournament_uniq_id}] no ha comenzado todavía.|src/web/controllers/user/tournament_user_controller.py:None|
+|Tournament [{tournament_uniq_id}] is started.|Torneo [{tournament_uniq_id}] ha comenzado.|src/web/controllers/user/tournament_user_controller.py:None|
 |Archived event|Evento archivado|src/web/templates/admin_archives.html:None|
 |Deletion date|Fecha de supresión|src/web/templates/admin_archives.html:None|
 |Check-in|Check-in|src/web/templates/admin_check_in.html:None<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:None<br>src/web/templates/user_screen.html:None|
 |Chessevent ID: %(chessevent_user_id)s|Chessevent ID: %(chessevent_user_id)s|src/web/templates/admin_chessevent_card.html:None|
-|ChessEvent password: %(chessevent_password)s|Contraseña del evento de ajedrez: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:None|
-|ChessEvent event: %(chessevent_event)s|Evento del evento de Ajedrez: %(chessevent_event)s|src/web/templates/admin_chessevent_card.html:None|
+|ChessEvent password: %(chessevent_password)s|ChessEvent password: %(chessevent_password)s|src/web/templates/admin_chessevent_card.html:None|
+|ChessEvent event: %(chessevent_event)s|Evento de ChessEvent: %(chessevent_event)s|src/web/templates/admin_chessevent_card.html:None|
 |Edit the properties of the ChessEvent connection.|Edite las propiedades de la conexión ChessEvent.|src/web/templates/admin_chessevent_card.html:None|
 |Edit|Editar|src/web/templates/admin_chessevent_card.html:None<br>src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_family_card.html:None<br>src/web/templates/admin_players.html:None<br>src/web/templates/admin_rotator_card.html:None<br>src/web/templates/admin_screen_card.html:None<br>src/web/templates/admin_timer_card.html:None<br>src/web/templates/admin_tournament_card.html:None|
 |Clone the ChessEvent connection.|Clonar la conexión ChessEvent.|src/web/templates/admin_chessevent_card.html:None|
 |Delete the ChessEvent connection.|Borrar la conexión ChessEvent.|src/web/templates/admin_chessevent_card.html:None|
 |ChessEvent connection creation|Creación de conexión ChessEvent|src/web/templates/admin_chessevent_modal.html:None|
 |Edition of ChessEvent connection [%(chessevent_uniq_id)s]|Edición de la conexión ChessEvent [%(chessevent_uniq_id)s]|src/web/templates/admin_chessevent_modal.html:None|
-|Deletion of ChessEvent connection [%(chessevent_uniq_id)s]|Eliminación de la conexión ChessEvent [%(chessevent_uniq_id)s]|src/web/templates/admin_chessevent_modal.html:None|
+|Deletion of ChessEvent connection [%(chessevent_uniq_id)s]|Supresión de la conexión ChessEvent [%(chessevent_uniq_id)s]|src/web/templates/admin_chessevent_modal.html:None|
 |Warning: the deletion of a ChessEvent connection is permanent!|Advertencia: ¡la eliminación de una conexión ChessEvent es permanente!|src/web/templates/admin_chessevent_modal.html:None|
 |The following tournaments will not be connected to ChessEvent anymore:|Los siguientes torneos ya no estarán conectados a ChessEvent:|src/web/templates/admin_chessevent_modal.html:None|
 |Properties|Propiedades|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
-|ID (unique):|Id (único):|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
-|The Unique ID, used to reference the ChessEvent connection.|El identificador único, utilizado para hacer referencia a la conexión ChessEvent.|src/web/templates/admin_chessevent_modal.html:None|
+|ID (unique):|ID (único):|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_timer_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
+|The Unique ID, used to reference the ChessEvent connection.|El ID Único, utilizado para hacer referencia a la conexión ChessEvent.|src/web/templates/admin_chessevent_modal.html:None|
 |Connection to the ChessEvent platform|Conexión a la plataforma ChessEvent|src/web/templates/admin_chessevent_modal.html:None|
 |Chessevent ID:|Chessevent ID:|src/web/templates/admin_chessevent_modal.html:None|
 |E.g.: %(string)s|Por ejemplo: %(string)s|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_tournament_modal.html:None|
-|the ID used to connect to the ChessEvent platform.|El identificador utilizado para conectarse a la plataforma ChessEvent.|src/web/templates/admin_chessevent_modal.html:None|
+|the ID used to connect to the ChessEvent platform.|el ID utilizado para conectarse a la plataforma ChessEvent.|src/web/templates/admin_chessevent_modal.html:None|
 |Password:|Contraseña:|src/web/templates/admin_chessevent_modal.html:None|
 |E.g.: my_password|Por ejemplo: my_password|src/web/templates/admin_chessevent_modal.html:None<br>src/web/templates/admin_event_modal.html:None|
 |The password used to connect to the ChessEvent platform.|La contraseña utilizada para conectarse a la plataforma ChessEvent.|src/web/templates/admin_chessevent_modal.html:None|
@@ -517,15 +527,15 @@
 |Add a ChessEvent connection to the event.|Añade una conexión ChessEvent al evento.|src/web/templates/admin_chessevents.html:None|
 |Create a ChessEvent connection|Crear una conexión ChessEvent|src/web/templates/admin_chessevents.html:None|
 |No ChessEvent connections.|Sin conexiones ChessEvent.|src/web/templates/admin_chessevents.html:None<br>src/web/templates/admin_tournament_modal.html:None|
-|Close check-in for tournament [%(tournament_uniq_id)s]|Supresión del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_close_check_in_modal.html:None|
+|Close check-in for tournament [%(tournament_uniq_id)s]|Cierre el check-in para el torneo [%(tournament_uniq_id)s]|src/web/templates/admin_close_check_in_modal.html:None|
 |The following players did not check-in:|Los siguientes jugadores no hicieron el check-in:|src/web/templates/admin_close_check_in_modal.html:None|
 |Choose what to do after closing the check-in:|Elija qué hacer después de cerrar el check-in:|src/web/templates/admin_close_check_in_modal.html:None|
 |Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed).|Marque a los jugadores como perdedores para el resto del torneo (no se permite el check-in hasta que se eliminen las pérdidas).|src/web/templates/admin_close_check_in_modal.html:None|
 |Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds).|Marque a los jugadores como perdedores para la próxima ronda (los jugadores podrán hacer check-in para las próximas rondas).|src/web/templates/admin_close_check_in_modal.html:None|
 |All the players intended to play the coming round did check-in.|Todos los jugadores que tenían la intención de jugar la ronda siguiente hicieron check-in.|src/web/templates/admin_close_check_in_modal.html:None|
-|Mark as forfeit for the rest of the tournament|Edite las propiedades del torneo.|src/web/templates/admin_close_check_in_modal.html:None|
+|Mark as forfeit for the rest of the tournament|Marcar como pérdida por el resto del torneo|src/web/templates/admin_close_check_in_modal.html:None|
 |Mark as forfeit for the coming round|Marcar como pérdida para la ronda venidera|src/web/templates/admin_close_check_in_modal.html:None|
-|Close the check-in|Borra el temporizador.|src/web/templates/admin_close_check_in_modal.html:None|
+|Close the check-in|Cierre el check-in|src/web/templates/admin_close_check_in_modal.html:None|
 |Add an event.|Añade un evento.|src/web/templates/admin_config.html:None<br>src/web/templates/admin_events.html:None|
 |Create an event|Crear un evento|src/web/templates/admin_config.html:None<br>src/web/templates/admin_events.html:None|
 |Configuration|Configuración|src/web/templates/admin_config.html:None|
@@ -535,26 +545,24 @@
 |Launching the browser on server startup|Lanzar el navegador al iniciar el servidor|src/web/templates/admin_config.html:None|
 |Yes|Sí|src/web/templates/admin_config.html:None|
 |No|No|src/web/templates/admin_config.html:None|
-|%(lib)s version|Versión %(lib)s|src/web/templates/admin_config.html:None|
+|%(lib)s version|%(lib)s versión|src/web/templates/admin_config.html:None|
 |Access driver (found)|Conductor de acceso (encontrado)|src/web/templates/admin_config.html:None|
 |Access driver (not found)|Controlador de acceso (no encontrado)|src/web/templates/admin_config.html:None|
 |Other ODBC drivers found on the server|Otros controladores ODBC encontrados en el servidor|src/web/templates/admin_config.html:None|
-|Colour #%(num)d:|Colour #%(num)d:|src/web/templates/admin_edit_timer_colors.html:None|
 |by default|por defecto|src/web/templates/admin_edit_timer_colors.html:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_modal_message.html:None<br>src/web/templates/user_screen_card.html:None|
-|Delay #%(num)d:|Demora #%(num)d:|src/web/templates/admin_edit_timer_delays.html:None|
-|Unique ID: %(uniq_id)s|id único: %(uniq_id)s|src/web/templates/admin_event_card.html:None|
+|Unique ID: %(uniq_id)s|Único ID: %(uniq_id)s|src/web/templates/admin_event_card.html:None|
 |Tournaments: %(num)d|Torneos: %(num)d|src/web/templates/admin_event_card.html:None<br>src/web/templates/user_event_card.html:None|
-|ChessEvent connections: %(num)d|Conexiones ChessEvent: %(num)d|src/web/templates/admin_event_card.html:None|
-|Timers: %(num)d|Cronómetros: %(num)d|src/web/templates/admin_event_card.html:None|
+|ChessEvent connections: %(num)d|ChessEvent conexiones: %(num)d|src/web/templates/admin_event_card.html:None|
+|Timers: %(num)d|Temporizadores: %(num)d|src/web/templates/admin_event_card.html:None|
 |Screens: %(num)d|Pantallas: %(num)d|src/web/templates/admin_event_card.html:None|
 |Families: %(num)d|Familias: %(num)d|src/web/templates/admin_event_card.html:None|
 |Rotators: %(num)d|Rotadores: %(num)d|src/web/templates/admin_event_card.html:None|
 |Errors: %(num)d|Errores: %(num)d|src/web/templates/admin_event_card.html:None|
-|Warnings: %(num)d|Advertencias: %(num)d|src/web/templates/admin_event_card.html:None|
+|Warnings: %(num)d|Avisos: %(num)d|src/web/templates/admin_event_card.html:None|
 |Informations: %(num)d|Información: %(num)d|src/web/templates/admin_event_card.html:None|
 |Clone|Clon|src/web/templates/admin_event_config.html:None|
 |Customization|Personalización|src/web/templates/admin_event_config.html:None|
-|Unique ID|id único|src/web/templates/admin_event_config.html:None|
+|Unique ID|ID único|src/web/templates/admin_event_config.html:None|
 |Start|Comienzo|src/web/templates/admin_event_config.html:None|
 |End|Fin|src/web/templates/admin_event_config.html:None|
 |Visibility|Visibilidad|src/web/templates/admin_event_config.html:None|
@@ -575,13 +583,13 @@
 |No alert message|Sin mensaje de alerta|src/web/templates/admin_event_config.html:None<br>src/web/templates/admin_family_card.html:None<br>src/web/templates/admin_rotator_card.html:None<br>src/web/templates/admin_screen_card.html:None|
 |Last update|Última actualización|src/web/templates/admin_event_config.html:None|
 |Event creation|Creación de eventos|src/web/templates/admin_event_modal.html:None|
-|Edition of event [%(event_uniq_id)s]|Edición del acto [%(event_uniq_id)s]|src/web/templates/admin_event_modal.html:None|
-|Deletion of event [%(event_uniq_id)s]|Supresión del acto [%(event_uniq_id)s]|src/web/templates/admin_event_modal.html:None|
+|Edition of event [%(event_uniq_id)s]|Edición del evento [%(event_uniq_id)s]|src/web/templates/admin_event_modal.html:None|
+|Deletion of event [%(event_uniq_id)s]|Supresión del evento [%(event_uniq_id)s]|src/web/templates/admin_event_modal.html:None|
 |Warning: the deletion of an event is permanent!|Advertencia: ¡la eliminación de un evento es permanente!|src/web/templates/admin_event_modal.html:None|
-|Enter the event ID to confirm its deletion:|Introduzca el id de evento para confirmar su eliminación:|src/web/templates/admin_event_modal.html:None|
-|Enter here the event ID|Introduzca aquí el id de evento|src/web/templates/admin_event_modal.html:None|
+|Enter the event ID to confirm its deletion:|Introduzca el ID de evento para confirmar su eliminación:|src/web/templates/admin_event_modal.html:None|
+|Enter here the event ID|Introduzca aquí el ID de evento|src/web/templates/admin_event_modal.html:None|
 |Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.|Recuperar eventos borrados no es posible desde la interfaz web (sin embargo, los eventos se archivan y se pueden recuperar del sistema de archivos.|src/web/templates/admin_event_modal.html:None|
-|The Unique ID, used for data storage and export.|El id único, utilizado para el almacenamiento de datos y la exportación.|src/web/templates/admin_event_modal.html:None|
+|The Unique ID, used for data storage and export.|El identificador único, utilizado para el almacenamiento y la exportación de datos.|src/web/templates/admin_event_modal.html:None|
 |Name:|Nombre:|src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None<br>src/web/templates/admin_tournament_modal.html:None|
 |The name of the event, used for display and reports.|El nombre del evento, utilizado para la visualización y los informes.|src/web/templates/admin_event_modal.html:None|
 |Visibility:|Visibilidad:|src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
@@ -591,7 +599,7 @@
 |End:|Fin:|src/web/templates/admin_event_modal.html:None|
 |The end date and time of the event.|La fecha y hora finales del evento.|src/web/templates/admin_event_modal.html:None|
 |Default directory of the Papi files:|Directorio predeterminado de los archivos Papi:|src/web/templates/admin_event_modal.html:None|
-|The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).|El directorio predeterminado de los archivos Papi de los torneos (ruta absoluta o relativa, por defecto %(dir)s).|src/web/templates/admin_event_modal.html:None|
+|The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).|El directorio predeterminado de los archivos Papi para los torneos (ruta absoluta o relativa, por defecto %(dir)s).|src/web/templates/admin_event_modal.html:None|
 |Password to enter results:|Contraseña para introducir resultados:|src/web/templates/admin_event_modal.html:None|
 |The password required on input screens to enter results (optional).|La contraseña requerida en las pantallas de entrada para introducir resultados (opcional).|src/web/templates/admin_event_modal.html:None|
 |Illegal moves recording:|Grabación de movimientos ilegales:|src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_tournament_modal.html:None|
@@ -603,7 +611,7 @@
 |no background image|sin imagen de fondo|src/web/templates/admin_event_modal.html:None|
 |The URL or the path of the image to display (by default the Papi-web logo).|La URL o la ruta de la imagen a mostrar (por defecto el logotipo Papi-web).|src/web/templates/admin_event_modal.html:None|
 |Background colour:|Color del fondo:|src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/user_screen_card.html:None|
-|The background colour is used when the image dost fill the whole screen.|El color de fondo se utiliza cuando la imagen dost llena toda la pantalla.|src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
+|The background colour is used when the image dost fill the whole screen.|El color de fondo se utiliza cuando la imagen llena toda la pantalla.|src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Choose a custom image:|Elija una imagen personalizada:|src/web/templates/admin_event_modal.html:None|
 |Timers|Temporizadores|src/web/templates/admin_event_modal.html:None|
 |Text colour:|Color del texto:|src/web/templates/admin_event_modal.html:None|
@@ -614,7 +622,7 @@
 |Enable/disable the details of the screen families on the cards below.|Activar/desactivar los detalles de las familias de pantalla en las tarjetas de abajo.|src/web/templates/admin_families.html:None|
 |Details|Detalles|src/web/templates/admin_families.html:None<br>src/web/templates/admin_rotators.html:None<br>src/web/templates/admin_screens.html:None|
 |You must create a tournament before creating a screen family.|Debe crear un torneo antes de crear una familia de pantalla.|src/web/templates/admin_families.html:None|
-|Create a screen family|Borrar la familia de pantalla.|src/web/templates/admin_families.html:None|
+|Create a screen family|Crear una familia de pantallas|src/web/templates/admin_families.html:None|
 |Add a family of screens to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_families.html:None|
 |Add a family of screens to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_families.html:None|
 |Add a family of screens to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_families.html:None|
@@ -634,8 +642,6 @@
 |no|no|src/web/templates/admin_family_card.html:None<br>src/web/templates/admin_screen_card.html:None|
 |Unpaired: displayed|Sin emparejar: mostrado|src/web/templates/admin_family_card.html:None<br>src/web/templates/admin_screen_card.html:None|
 |Unpaired: hidden|Sin emparejar: oculto|src/web/templates/admin_family_card.html:None<br>src/web/templates/admin_screen_card.html:None|
-|Boards from #%(first)d to #%(last)d|Tablas de #%(first)d a #%(last)d|src/web/templates/admin_family_card.html:None|
-|Players from #%(first)s to #%(last)s|Jugadores de #%(first)s a #%(last)s|src/web/templates/admin_family_card.html:None|
 |No screens|Sin pantallas|src/web/templates/admin_family_card.html:None|
 |Edit the properties of the screen family.|Edite las propiedades de la familia de pantalla.|src/web/templates/admin_family_card.html:None|
 |Clone the screen family.|Clonó la familia de la pantalla.|src/web/templates/admin_family_card.html:None|
@@ -643,19 +649,19 @@
 |Input screen family creation|Creación de la familia de la pantalla de entrada|src/web/templates/admin_family_modal.html:None|
 |Boards screen family creation|Tableros de pantalla de creación de la familia|src/web/templates/admin_family_modal.html:None|
 |Players screen family creation|Creación de la familia de la pantalla de jugadores|src/web/templates/admin_family_modal.html:None|
-|Cloning of screen family [%(family_uniq_id)s]|Clonación de la familia de pantallas [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:None|
-|Edition of screen family [%(family_uniq_id)s]|Edición de la familia de pantallas [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:None|
-|Deletion of screen family [%(family_uniq_id)s]|Eliminación de la familia de pantallas [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:None|
+|Cloning of screen family [%(family_uniq_id)s]|Clonación de la familia de la pantalla [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:None|
+|Edition of screen family [%(family_uniq_id)s]|Edición de la familia de la pantalla [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:None|
+|Deletion of screen family [%(family_uniq_id)s]|Eliminación de la familia de la pantalla [%(family_uniq_id)s]|src/web/templates/admin_family_modal.html:None|
 |Warning: the deletion of a screen family is permanent!|Advertencia: ¡la eliminación de una familia de pantalla es permanente!|src/web/templates/admin_family_modal.html:None|
-|Properties (results entry)|Propiedades (entrada de los resultados)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
+|Properties (results entry)|Propiedades (introducción de resultados)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Properties (pairings by board)|Propiedades (combinaciones a bordo)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Properties (pairings by player)|Propiedades (combinaciones por jugador)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Public screen family|Familia de pantalla pública|src/web/templates/admin_family_modal.html:None|
 |Only arbiters can see private screen families.|Sólo los árbitros pueden ver familias de pantalla privada.|src/web/templates/admin_family_modal.html:None|
 |E.g.: %(family_type)s-family|Por ejemplo: %(family_type)s-familia|src/web/templates/admin_family_modal.html:None|
-|The Unique ID, used to reference the screen family.|El id único, utilizado para hacer referencia a la familia de la pantalla.|src/web/templates/admin_family_modal.html:None|
+|The Unique ID, used to reference the screen family.|La identificación única, utilizada para hacer referencia a la familia de la pantalla.|src/web/templates/admin_family_modal.html:None|
 |E.g.: My screen family|Por ejemplo: Mi familia de la pantalla|src/web/templates/admin_family_modal.html:None|
-|The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament.|El nombre de la familia de la pantalla, opcional. Los siguientes tokens son automáticamente reemplazados por los números de tablero o los nombres de los jugadores: %%f=first, %%l=last, %%t=tournament.|src/web/templates/admin_family_modal.html:None|
+|The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament.|El nombre de la familia de la pantalla, opcional. Los siguientes tokens son automáticamente reemplazados por los números de tablero o los nombres de los jugadores): %%f=first, %%l=last, %%t=tournament.|src/web/templates/admin_family_modal.html:None|
 |Tournament:|Torneo:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens).|El torneo de las pantallas de la familia, obligatorio (a diferencia de las pantallas básicas, sólo un torneo se puede mostrar en las pantallas familiares).|src/web/templates/admin_family_modal.html:None|
 |Board selection (by number)|Selección de la Junta (por número)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
@@ -672,7 +678,7 @@
 |On a given number of screens:|En un número dado de pantallas:|src/web/templates/admin_family_modal.html:None|
 |E.g.: 4 (split on 4 screens)|Por ejemplo: 4 (dividir en 4 pantallas)|src/web/templates/admin_family_modal.html:None|
 |The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards).|El número de pantallas en las que se distribuirán los tableros, opcional (el número de pantallas es siempre el mismo y el número de tableros por pantalla se adapta al número de tableros).|src/web/templates/admin_family_modal.html:None|
-|The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.|El número de pantallas en las que se distribuirá el reproductor, opcional (el número de pantallas es siempre el mismo y el número de reproductores por pantalla se adapta al número de reproductores.|src/web/templates/admin_family_modal.html:None|
+|The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.|El número de pantallas en las que se distribuirán los reproductores, opcional (el número de pantallas es siempre el mismo y el número de reproductores por pantalla se adapta al número de reproductores.|src/web/templates/admin_family_modal.html:None|
 |On fixed size screens:|En pantallas de tamaño fijo:|src/web/templates/admin_family_modal.html:None|
 |The number of boards per screen, optional (the number of screens adapts to the number of boards).|El número de placas por pantalla, opcional (el número de pantallas se adapta al número de placas).|src/web/templates/admin_family_modal.html:None|
 |The number of players per screen, optional (the number of screens adapts to the number of players).|El número de reproductores por pantalla, opcional (el número de pantallas se adapta al número de reproductores).|src/web/templates/admin_family_modal.html:None|
@@ -680,7 +686,7 @@
 |Timer:|Temporizador:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/user_screen_card.html:None|
 |The timer displayed on the screens of the family.|El temporizador mostrado en las pantallas de la familia.|src/web/templates/admin_family_modal.html:None|
 |The number of columns used to display data.|El número de columnas utilizadas para mostrar los datos.|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
-|Menus|Menú:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
+|Menus|Menús|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |Links displayed on the screen menu:|Enlaces mostrados en el menú de la pantalla:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
 |E.g.: @boards, @family, another-screen|Por ejemplo: @boards, @family, other-screen|src/web/templates/admin_family_modal.html:None|
 |This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard \* can be used. If this field is left empty, no menu will be displayed on the screens.|Este campo le permite especificar las pantallas cuyos enlaces se mostrarán en el menú de las pantallas de la familia. Los identificadores de pantalla deben ser separados por comas, las palabras clave @family (todas las pantallas de la familia), @boards (todas las pantallas de tableros), @input (todas las pantallas de entrada), @players (todas las pantallas de reproductores) así como el comodín \* puede ser utilizado. Si este campo se deja vacío, no se mostrará ningún menú en las pantallas.|src/web/templates/admin_family_modal.html:None|
@@ -697,92 +703,91 @@
 |Message|Mensaje|src/web/templates/admin_messages.html:None|
 |No messages.|Sin mensajes.|src/web/templates/admin_messages.html:None|
 |Pairings|Maridajes|src/web/templates/admin_pairings.html:None|
-|Player creation|Creación de pantalla de jugadores|src/web/templates/admin_player_modal.html:None|
+|Player creation|Creación de reproductores|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Edición del jugador [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
-|Deletion of player [%(last_name)s %(first_name)s]|Edición del jugador [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
-|Enter a FFE licence number, a Fide number, a part of a name...|Introduzca un número de licencia FFE, un número de fide, una parte de un nombre...|src/web/templates/admin_player_modal.html:None|
-|Warning: the deletion of a player is permanent!|Advertencia: ¡la eliminación de un temporizador es permanente!|src/web/templates/admin_player_modal.html:None|
+|Deletion of player [%(last_name)s %(first_name)s]|Supresión del jugador [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Warning: the deletion of a player is permanent!|Advertencia: ¡la eliminación de un jugador es permanente!|src/web/templates/admin_player_modal.html:None|
 |Identity|Identidad|src/web/templates/admin_player_modal.html:None|
-|Last name:|Último jugador:|src/web/templates/admin_player_modal.html:None|
-|E.g.: DOE|Por ejemplo: principal|src/web/templates/admin_player_modal.html:None|
-|The player's last name.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|First name:|Primer jugador:|src/web/templates/admin_player_modal.html:None|
-|E.g.: John|Por ejemplo: principal|src/web/templates/admin_player_modal.html:None|
-|The player's first name.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
+|Last name:|Apellido:|src/web/templates/admin_player_modal.html:None|
+|E.g.: DOE|Por ejemplo: DOE|src/web/templates/admin_player_modal.html:None|
+|The player's last name.|El apellido del jugador.|src/web/templates/admin_player_modal.html:None|
+|First name:|Nombre:|src/web/templates/admin_player_modal.html:None|
+|E.g.: John|Por ejemplo: John|src/web/templates/admin_player_modal.html:None|
+|The player's first name.|El nombre del jugador.|src/web/templates/admin_player_modal.html:None|
 |Date of birth:|Fecha de nacimiento:|src/web/templates/admin_player_modal.html:None|
-|The player's birth date.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Gender:|Fin:|src/web/templates/admin_player_modal.html:None|
-|The player's gender.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|The player's tournament.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
+|The player's birth date.|La fecha de nacimiento del jugador.|src/web/templates/admin_player_modal.html:None|
+|Gender:|Género:|src/web/templates/admin_player_modal.html:None|
+|The player's gender.|El género del jugador.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|El torneo del jugador.|src/web/templates/admin_player_modal.html:None|
 |FIDE ratings, title and fédération|Clasificación, título y fédération de la FIDE|src/web/templates/admin_player_modal.html:None|
 |FIDE Title:|Título FIDE:|src/web/templates/admin_player_modal.html:None|
-|The player's FIDE title.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Federation:|Creación de eventos|src/web/templates/admin_player_modal.html:None|
-|The player's federation.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|FIDE ID:|No se ha definido ningún temporizador|src/web/templates/admin_player_modal.html:None|
-|The player's FIDE ID (do not change).|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|French Chess Federation|Borra el rotador.|src/web/templates/admin_player_modal.html:None|
-|League:|Idioma|src/web/templates/admin_player_modal.html:None|
-|The player's league.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Club:|Columnas:|src/web/templates/admin_player_modal.html:None|
+|The player's FIDE title.|El título FIDE del jugador.|src/web/templates/admin_player_modal.html:None|
+|Federation:|Federación:|src/web/templates/admin_player_modal.html:None|
+|The player's federation.|La federación de jugadores.|src/web/templates/admin_player_modal.html:None|
+|FIDE ID:|ID FIDE:|src/web/templates/admin_player_modal.html:None|
+|The player's FIDE ID (do not change).|ID FIDE del jugador (no cambiar).|src/web/templates/admin_player_modal.html:None|
+|French Chess Federation|Federación Francesa de Ajedrez|src/web/templates/admin_player_modal.html:None|
+|League:|Liga:|src/web/templates/admin_player_modal.html:None|
+|The player's league.|La liga del jugador.|src/web/templates/admin_player_modal.html:None|
+|Club:|Club:|src/web/templates/admin_player_modal.html:None|
 |E.g.: My favourite club!|Por ejemplo: ¡Mi club favorito!|src/web/templates/admin_player_modal.html:None|
-|The player's club.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Licence:|No hay licencia FFE|src/web/templates/admin_player_modal.html:None|
-|The player's licence.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Licence number:|Los números de teléfono.|src/web/templates/admin_player_modal.html:None|
-|The player's licence number.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|FFE Uniq ID:|id único|src/web/templates/admin_player_modal.html:None|
+|The player's club.|El club de jugadores.|src/web/templates/admin_player_modal.html:None|
+|Licence:|Licencia:|src/web/templates/admin_player_modal.html:None|
+|The player's licence.|La licencia del jugador.|src/web/templates/admin_player_modal.html:None|
+|Licence number:|Número de licencia:|src/web/templates/admin_player_modal.html:None|
+|The player's licence number.|El número de licencia del jugador.|src/web/templates/admin_player_modal.html:None|
+|FFE Uniq ID:|FFE Uniq ID:|src/web/templates/admin_player_modal.html:None|
 |The player's Uniq ID for the French federation (do not change).|El Uniq ID del jugador para la federación francesa (no cambie).|src/web/templates/admin_player_modal.html:None|
-|Contact and registration|Creación de rotadores|src/web/templates/admin_player_modal.html:None|
-|Email:|Detalles|src/web/templates/admin_player_modal.html:None|
-|The player's email.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Phone number:|Los números de teléfono.|src/web/templates/admin_player_modal.html:None|
-|The player's phone number.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Comment:|Torneo:|src/web/templates/admin_player_modal.html:None|
+|Contact and registration|Contacto e inscripción|src/web/templates/admin_player_modal.html:None|
+|Email:|Correo electrónico:|src/web/templates/admin_player_modal.html:None|
+|The player's email.|El email del jugador.|src/web/templates/admin_player_modal.html:None|
+|Phone number:|Número de teléfono:|src/web/templates/admin_player_modal.html:None|
+|The player's phone number.|El número de teléfono del jugador.|src/web/templates/admin_player_modal.html:None|
+|Comment:|Comentario:|src/web/templates/admin_player_modal.html:None|
 |Any comment on the player (comments are visible only by the arbiters).|Cualquier comentario sobre el jugador (los comentarios son visibles sólo por los árbitros).|src/web/templates/admin_player_modal.html:None|
-|Owed:|Fin:|src/web/templates/admin_player_modal.html:None|
-|The price the player pays to register.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
+|Owed:|Deuda:|src/web/templates/admin_player_modal.html:None|
+|The price the player pays to register.|El precio que paga el jugador para registrarse.|src/web/templates/admin_player_modal.html:None|
 |Paid:|Pagada:|src/web/templates/admin_player_modal.html:None|
 |The price the player already paid.|El precio que el jugador ya pagó.|src/web/templates/admin_player_modal.html:None|
-|Fixed board:|Tableros fijos:|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Tablero fijo:|src/web/templates/admin_player_modal.html:None|
 |The board number the player will always be assigned to (use it for disabled people).|El número de tablero al que el jugador siempre será asignado (úselo para personas con discapacidad).|src/web/templates/admin_player_modal.html:None|
 |Players|Jugadores|src/web/templates/admin_players.html:None<br>src/web/templates/admin_screen_card.html:None|
-|Add a player to the event.|Añade un temporizador al evento.|src/web/templates/admin_players.html:None|
+|Add a player to the event.|Añade un jugador al evento.|src/web/templates/admin_players.html:None|
 |Tournaments are finished, you can not add players any longer.|Los torneos están terminados, ya no se puede agregar jugadores.|src/web/templates/admin_players.html:None|
 |No Papi file for the tournaments of the event, players can not be added.|No hay archivo Papi para los torneos del evento, los jugadores no se pueden añadir.|src/web/templates/admin_players.html:None|
-|Add a tournament before adding players.|Debes crear un torneo antes de crear pantallas.|src/web/templates/admin_players.html:None|
-|Create a player|Crear un temporizador|src/web/templates/admin_players.html:None|
-|Clear all the filters.|todos los jugadores|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Añade un torneo antes de añadir jugadores.|src/web/templates/admin_players.html:None|
+|Create a player|Crear un reproductor|src/web/templates/admin_players.html:None|
+|Clear all the filters.|Borrar todos los filtros.|src/web/templates/admin_players.html:None|
 |Name \*\*\* NAME COLUMN HEADER FOR PLAYERS|Nombre|src/web/templates/admin_players.html:None|
 |Elo \*\*\* ELO COLUMN HEADER FOR PLAYERS|Elo|src/web/templates/admin_players.html:None|
-|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|Elo|src/web/templates/admin_players.html:None|
+|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|Origen|src/web/templates/admin_players.html:None|
 |YOB \*\*\* YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS|YOB|src/web/templates/admin_players.html:None|
-|Cat \*\*\* CATEGORY COLUMN HEADER FOR PLAYERS|Nombre|src/web/templates/admin_players.html:None|
+|Cat \*\*\* CATEGORY COLUMN HEADER FOR PLAYERS|Gato|src/web/templates/admin_players.html:None|
 |The mail addresses.|Las direcciones de correo.|src/web/templates/admin_players.html:None|
 |The phone numbers.|Los números de teléfono.|src/web/templates/admin_players.html:None|
-|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Pagada|src/web/templates/admin_players.html:None|
-|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|Elo|src/web/templates/admin_players.html:None|
+|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|FIDE|src/web/templates/admin_players.html:None|
+|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|FFE|src/web/templates/admin_players.html:None|
 |Owed \*\*\* OWED COLUMN HEADER FOR PLAYERS|Deuda|src/web/templates/admin_players.html:None|
 |Paid \*\*\* PAID COLUMN HEADER FOR PLAYERS|Pagada|src/web/templates/admin_players.html:None|
 |Tournament [%(tournament_uniq_id)s] is finished.|Torneo [%(tournament_uniq_id)s] ha terminado.|src/web/templates/admin_players.html:None<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
 |Tournament [%(tournament_uniq_id)s] is playing.|Torneo [%(tournament_uniq_id)s] está jugando.|src/web/templates/admin_players.html:None<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
-|Check-in is closed for tournament [%(tournament_uniq_id)s].|Supresión del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:None|
+|Check-in is closed for tournament [%(tournament_uniq_id)s].|El check-in está cerrado para el torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:None|
 |Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Jugador [%(last_name)s %(first_name)s] si pierde por la siguiente ronda en el torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:None|
 |Click to check-out the player.|Haga clic para comprobar el jugador.|src/web/templates/admin_players.html:None|
-|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:None|
-|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
-|No mail defined.|No se ha definido ningún temporizador|src/web/templates/admin_players.html:None|
-|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
-|No phone defined.|No se ha definido ningún temporizador|src/web/templates/admin_players.html:None|
-|FIDE ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
-|No FIDE ID.|No se ha definido ningún temporizador|src/web/templates/admin_players.html:None|
+|Click to check-in the player.|Haga clic para comprobar el jugador.|src/web/templates/admin_players.html:None|
+|Mail: %(mail)s (click to copy to the clipboard).|Correo: %(mail)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
+|No mail defined.|No se ha definido ningún correo.|src/web/templates/admin_players.html:None|
+|Phone: %(phone)s (click to copy to the clipboard).|Teléfono: %(phone)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
+|No phone defined.|No hay ningún teléfono definido.|src/web/templates/admin_players.html:None|
+|FIDE ID: %(fide_id)s (click to copy to the clipboard).|ID FIDE: %(fide_id)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
+|No FIDE ID.|No hay identificación.|src/web/templates/admin_players.html:None|
 |FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|Licencia FFE: %(ffe_licence_number)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
-|Unknown FFE Licence type [%(ffe_licence)s].|Tipo de licencia FFE desconocido [%(ffe_licence)s]|src/web/templates/admin_players.html:None|
-|Change the player's tournament.|Clonó el torneo.|src/web/templates/admin_players.html:None|
-|Edit the player's properties.|Editar las propiedades del temporizador.|src/web/templates/admin_players.html:None|
-|Remove the player from the event.|Añade un temporizador al evento.|src/web/templates/admin_players.html:None|
-|No players.|Jugadores|src/web/templates/admin_players.html:None|
-|Rotation delay: %(seconds)d sec.|Retraso en la rotación: %(seconds)d seg.|src/web/templates/admin_rotator_card.html:None<br>src/web/templates/user_rotator_card.html:None|
+|Unknown FFE Licence type [%(ffe_licence)s].|Tipo de licencia FFE desconocido [%(ffe_licence)s].|src/web/templates/admin_players.html:None|
+|Change the player's tournament.|Cambiar el torneo del jugador.|src/web/templates/admin_players.html:None|
+|Edit the player's properties.|Edite las propiedades del reproductor.|src/web/templates/admin_players.html:None|
+|Remove the player from the event.|Retire el jugador del evento.|src/web/templates/admin_players.html:None|
+|No players.|No hay jugadores.|src/web/templates/admin_players.html:None|
+|Rotation delay: %(seconds)d sec.|Retraso en la rotación: %(seconds)d sec.|src/web/templates/admin_rotator_card.html:None<br>src/web/templates/user_rotator_card.html:None|
 |No screen neither family to rotate.|No hay pantalla ni familia para rotar.|src/web/templates/admin_rotator_card.html:None|
 |Screens:|Pantallas:|src/web/templates/admin_rotator_card.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/user_rotator_card.html:None|
 |Screen families:|Familias de pantalla:|src/web/templates/admin_rotator_card.html:None<br>src/web/templates/admin_rotator_modal.html:None<br>src/web/templates/user_rotator_card.html:None|
@@ -868,12 +873,13 @@
 |Alert message:|Mensaje de alerta:|src/web/templates/admin_screen_modal_message.html:None|
 |Display of unpaired players:|Visualización de jugadores no emparejados:|src/web/templates/admin_screen_modal_players_show_unpaired.html:None|
 |When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye).|Cuando los jugadores no emparejados no se muestran, no hay manera de distinguir los jugadores ausentes (punto cero) y los jugadores con un medio punto de adiós).|src/web/templates/admin_screen_modal_players_show_unpaired.html:None|
-|Board sets of screen [%(screen_uniq_id)s]|Paneles de pantalla [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:None|
+|Board sets of screen [%(screen_uniq_id)s]|Juegos de tablero de pantalla [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:None|
 |Player sets of screen [%(screen_uniq_id)s]|Juegos de reproductores de pantalla [%(screen_uniq_id)s]|src/web/templates/admin_screen_sets_modal.html:None|
 |Save the set or cancel.|Guarde el conjunto o cancélelo.|src/web/templates/admin_screen_sets_modal.html:None|
 |Drag the sets to order them.|Arrastra los sets para ordenarlos.|src/web/templates/admin_screen_sets_modal.html:None|
 |Add a set|Añadir un conjunto|src/web/templates/admin_screen_sets_modal.html:None|
 |The tournament of which you want to show the pairings, mandatory.|El torneo del que quieres mostrar los emparejamientos, obligatorio.|src/web/templates/admin_screen_sets_modal_set_div.html:None|
+|E.g.: Boards %%f to %%l|Por ejemplo: Tableros %%f a %%l|src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |E.g.: Players %%f to %%l|Por ejemplo: Jugadores %%f a %%l|src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |The name of the screen set (the name of the first set of a screen is by default the name of the screen).|El nombre del conjunto de pantalla (el nombre del primer conjunto de pantalla es por defecto el nombre de la pantalla).|src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |Fixed boards:|Tableros fijos:|src/web/templates/admin_screen_sets_modal_set_div.html:None|
@@ -886,19 +892,18 @@
 |Families|Familias|src/web/templates/admin_screens.html:None|
 |Enable/disable the details of the screens on the cards below.|Activar/desactivar los detalles de las pantallas de las tarjetas de abajo.|src/web/templates/admin_screens.html:None|
 |You must create a tournament before creating screens.|Debes crear un torneo antes de crear pantallas.|src/web/templates/admin_screens.html:None|
-|Create a screen|Crear un evento|src/web/templates/admin_screens.html:None|
-|Add a screen to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_screens.html:None|
-|Add a screen to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_screens.html:None|
-|Add a screen to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_screens.html:None|
-|Add a screen to display the last results.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:None|
-|Add a screen to display an image.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:None|
+|Create a screen|Crear una pantalla|src/web/templates/admin_screens.html:None|
+|Add a screen to enter the results.|Añadir una pantalla para introducir los resultados.|src/web/templates/admin_screens.html:None|
+|Add a screen to display the pairings by board.|Agregue una pantalla para mostrar los emparejamientos por tablero.|src/web/templates/admin_screens.html:None|
+|Add a screen to display the pairings by alphabetical order.|Añadir una pantalla para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_screens.html:None|
+|Add a screen to display the last results.|Añadir una pantalla para mostrar los últimos resultados.|src/web/templates/admin_screens.html:None|
+|Add a screen to display an image.|Añadir una pantalla para mostrar una imagen.|src/web/templates/admin_screens.html:None|
 |Show/hide the input screens.|Mostrar/ocultar las pantallas de entrada.|src/web/templates/admin_screens.html:None|
 |Show/hide the boards screens.|Mostrar/ocultar las pantallas de los tableros.|src/web/templates/admin_screens.html:None|
 |Show/hide the players screens.|Mostrar/ocultar las pantallas de los reproductores.|src/web/templates/admin_screens.html:None|
 |Show/hide the results screens.|Mostrar/ocultar las pantallas de resultados.|src/web/templates/admin_screens.html:None|
 |Show/hide the image screens.|Mostrar/ocultar las pantallas de imagen.|src/web/templates/admin_screens.html:None|
 |No such screens.|No hay tales pantallas.|src/web/templates/admin_screens.html:None<br>src/web/templates/user_event.html:None|
-|Round #%(round)d|Ronda #%(round)d|src/web/templates/admin_timer_card.html:None|
 |No hours.|No hay horas.|src/web/templates/admin_timer_card.html:None<br>src/web/templates/admin_timer_hours_modal.html:None|
 |Edit the properties of the timer.|Editar las propiedades del temporizador.|src/web/templates/admin_timer_card.html:None|
 |Edit the hours of the timer|Editar las horas del temporizador|src/web/templates/admin_timer_card.html:None|
@@ -921,20 +926,20 @@
 |Texts before and after the hour below are optional for round numbers, mandatory otherwise.|Los textos antes y después de la hora siguiente son opcionales para números redondos, obligatorios de lo contrario.|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
 |Text before the hour:|Texto antes de la hora:|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
 |E.g.: Start of check-in in %%s|Por ejemplo: Inicio del check-in en %%s|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
-|%%s is replaced by the time left before the hour.|%%s es reemplazado por el tiempo que queda antes de la hora.|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
+|%%s is replaced by the time left before the hour.|%%s se sustituye por el tiempo que queda antes de la hora.|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
 |Text after the hour:|Texto después de la hora:|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
-|E.g.: Check-in started for %%s|E.g.: Inicio del check-in para %%s|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
-|%%s is replaced by the time elapsed since the hour.|%%s es reemplazado por el tiempo transcurrido desde la hora.|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
+|E.g.: Check-in started for %%s|Por ejemplo: Inicio del check-in para %%s|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
+|%%s is replaced by the time elapsed since the hour.|%%s se sustituye por el tiempo transcurrido desde la hora.|src/web/templates/admin_timer_hours_modal_hour_div.html:None|
 |Warning: the deletion of a timer is permanent!|Advertencia: ¡la eliminación de un temporizador es permanente!|src/web/templates/admin_timer_modal.html:None|
 |E.g.: timer|Por ejemplo: temporizador|src/web/templates/admin_timer_modal.html:None|
 |Add a timer to the event.|Añade un temporizador al evento.|src/web/templates/admin_timers.html:None|
 |Create a timer|Crear un temporizador|src/web/templates/admin_timers.html:None|
 |No timers.|Sin temporizadores.|src/web/templates/admin_timers.html:None|
-|The Papi file for the tournament does not exist (%(papi_file)s).|El archivo Papi del torneo no existe (%(papi_file)s).|src/web/templates/admin_tournament_card.html:None|
-|The Papi file for the tournament exists but could not be read (%(papi_file)s).|El archivo Papi del torneo existe pero no se pudo leer (%(papi_file)s).|src/web/templates/admin_tournament_card.html:None|
-|The Papi file for the tournament was successfully read (%(papi_file)s).|El archivo Papi del torneo fue leído con éxito (%(papi_file)s).|src/web/templates/admin_tournament_card.html:None|
-|Players found in the Papi_file : %(num)d|Jugadores encontrados en el archivo Papi_: %(num)d|src/web/templates/admin_tournament_card.html:None|
-|ChessEvent connection [%(chessevent_uniq_id)s] is used.|Conexión ChessEvent [%(chessevent_uniq_id)s] se utiliza.|src/web/templates/admin_tournament_card.html:None|
+|The Papi file for the tournament does not exist (%(papi_file)s).|El archivo Papi para el torneo no existe (%(papi_file)s).|src/web/templates/admin_tournament_card.html:None|
+|The Papi file for the tournament exists but could not be read (%(papi_file)s).|El archivo Papi para el torneo existe pero no se pudo leer (%(papi_file)s).|src/web/templates/admin_tournament_card.html:None|
+|The Papi file for the tournament was successfully read (%(papi_file)s).|El archivo Papi para el torneo fue leído con éxito (%(papi_file)s).|src/web/templates/admin_tournament_card.html:None|
+|Players found in the Papi_file : %(num)d|Jugadores encontrados en el archivo Papi : %(num)d|src/web/templates/admin_tournament_card.html:None|
+|ChessEvent connection [%(chessevent_uniq_id)s] is used.|ChessEvent connection [%(chessevent_uniq_id)s] se utiliza.|src/web/templates/admin_tournament_card.html:None|
 |No ChessEvent connection is used.|No se utiliza ninguna conexión ChessEvent.|src/web/templates/admin_tournament_card.html:None|
 |Illegal moves are not recorded.|Los movimientos ilegales no se registran.|src/web/templates/admin_tournament_card.html:None|
 |**Singular:** At most %(num)d illegal move is recorded.<br/>**Plural:** At most %(num)d illegal moves are recorded.|**Singular:** Como mucho %(num)d movimiento ilegal se registra.<br/>**Plural:** Como mucho %(num)d movimientos ilegales se registran.|src/web/templates/admin_tournament_card.html:None|
@@ -948,18 +953,18 @@
 |Warning: the deletion of a tournament is permanent!|Advertencia: ¡la eliminación de un torneo es permanente!|src/web/templates/admin_tournament_modal.html:None|
 |The following screens will also be deleted:|También se suprimirán las siguientes pantallas:|src/web/templates/admin_tournament_modal.html:None|
 |The following screen families will also be deleted:|También se eliminarán las siguientes familias de pantalla:|src/web/templates/admin_tournament_modal.html:None|
-|Enter the tournament ID to confirm its deletion:|Introduzca la identificación del torneo para confirmar su eliminación:|src/web/templates/admin_tournament_modal.html:None|
-|Enter here the tournament ID|Ingrese aquí la identificación del torneo|src/web/templates/admin_tournament_modal.html:None|
+|Enter the tournament ID to confirm its deletion:|Introduzca el ID del torneo para confirmar su eliminación:|src/web/templates/admin_tournament_modal.html:None|
+|Enter here the tournament ID|Ingrese aquí el ID del torneo|src/web/templates/admin_tournament_modal.html:None|
 |The Papi-web tournament are deleted but the Papi file is still available on the filesystem.|El torneo Papi-web se elimina, pero el archivo Papi todavía está disponible en el sistema de archivos.|src/web/templates/admin_tournament_modal.html:None|
 |E.g.: main|Por ejemplo: principal|src/web/templates/admin_tournament_modal.html:None|
-|The Unique ID, used to reference the tournament.|El id único, utilizado para hacer referencia al torneo.|src/web/templates/admin_tournament_modal.html:None|
+|The Unique ID, used to reference the tournament.|La identificación única, utilizada para hacer referencia al torneo.|src/web/templates/admin_tournament_modal.html:None|
 |E.g.: Main tournament|Por ejemplo: torneo principal|src/web/templates/admin_tournament_modal.html:None|
 |The name of the tournament, used for display.|El nombre del torneo, utilizado para mostrar.|src/web/templates/admin_tournament_modal.html:None|
 |Directory of the Papi file:|Directorio del archivo Papi:|src/web/templates/admin_tournament_modal.html:None|
 |E.g.: c:\chess\tournaments\papi|Por ejemplo: c:\chess\tournaments\papi|src/web/templates/admin_tournament_modal.html:None|
 |The directory of the Papi file, by default %(dir)s.|El directorio del archivo Papi, por defecto %(dir)s.|src/web/templates/admin_tournament_modal.html:None|
 |Name of the Papi file (with no extension):|Nombre del archivo Papi (sin extensión):|src/web/templates/admin_tournament_modal.html:None|
-|The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament).|El nombre del archivo Papi, sin la extensión .papi (por defecto el número de calificación FFE del torneo, a continuación, el id único del torneo).|src/web/templates/admin_tournament_modal.html:None|
+|The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament).|El nombre del archivo Papi, sin la extensión .papi (por defecto el número de calificación FFE del torneo, a continuación, La identificación única del torneo).|src/web/templates/admin_tournament_modal.html:None|
 |Connections (FFE and ChessEvent)|Conexiones (FFE y ChessEvent)|src/web/templates/admin_tournament_modal.html:None|
 |FFE qualification number (optional):|Número de calificación FFE (opcional):|src/web/templates/admin_tournament_modal.html:None|
 |The qualification number given by the French Federation is an integer, it is used to connect to the FFE website.|El número de calificación dado por la Federación Francesa es un entero, se utiliza para conectarse a la página web de la FFE.|src/web/templates/admin_tournament_modal.html:None|
@@ -971,7 +976,7 @@
 |The name of the tournament on the ChessEvent platform.|El nombre del torneo en la plataforma ChessEvent.|src/web/templates/admin_tournament_modal.html:None|
 |Time control|Control del tiempo|src/web/templates/admin_tournament_modal.html:None|
 |E.g.: %(seconds)d (%(minutes)d minutes)|Por ejemplo: %(seconds)d (%(minutes)d minutos)|src/web/templates/admin_tournament_modal.html:None|
-|The initial time in seconds (may be empty if an increment is set).|El tiempo inicial en segundos (puede ser nulo si se establece un incremento).|src/web/templates/admin_tournament_modal.html:None|
+|The initial time in seconds (may be empty if an increment is set).|El tiempo inicial en segundos (puede estar vacío si se establece un incremento).|src/web/templates/admin_tournament_modal.html:None|
 |Increment (optional):|Incremento (opcional):|src/web/templates/admin_tournament_modal.html:None|
 |The number of seconds added to the players' clock at each move.|El número de segundos añadidos al reloj de los jugadores en cada movimiento.|src/web/templates/admin_tournament_modal.html:None|
 |Penalty (handicap):|Pena (hadicap):|src/web/templates/admin_tournament_modal.html:None|
@@ -1009,8 +1014,7 @@
 |This screen family is private (not visible by the users).|Esta familia de pantalla es privada (no visible por los usuarios).|src/web/templates/macros.j2:None|
 |This rotator is private (not visible by the users).|Este rotador es privado (no visible por los usuarios).|src/web/templates/macros.j2:None|
 |The tournament is not started yet.|El torneo aún no ha comenzado.|src/web/templates/macros.j2:None|
-|Round %(round)d is running.|La ronda %(round)d se está ejecutando.|src/web/templates/macros.j2:None|
-|Round #%(round)d is finished.|La ronda #%(round)d está terminada.|src/web/templates/macros.j2:None|
+|Round %(round)d is running.|Round %(round)d se está ejecutando.|src/web/templates/macros.j2:None|
 |The tournament is finished.|El torneo ha terminado.|src/web/templates/macros.j2:None|
 |Boards screens show pairings by board number.|Las pantallas de tableros muestran emparejamientos por número de tablero.|src/web/templates/macros.j2:None|
 |Input screens show pairings by board number and allow people to enter results.|Las pantallas de entrada muestran emparejamientos por número de placa y permiten a la gente introducir resultados.|src/web/templates/macros.j2:None|
@@ -1018,20 +1022,19 @@
 |Results screens show the last results (most recent first).|Las pantallas de resultados muestran los últimos resultados (primero los más recientes).|src/web/templates/macros.j2:None|
 |Image screens show an image (local or remote).|Las pantallas de imagen muestran una imagen (local o remota).|src/web/templates/macros.j2:None|
 |Rotator automatically rotate between multiple screens.|El rotador gira automáticamente entre múltiples pantallas.|src/web/templates/macros.j2:None|
-|Sort the players by name.|Clonó el torneo.|src/web/templates/macros.j2:None|
+|Sort the players by name.|Ordenar a los jugadores por su nombre.|src/web/templates/macros.j2:None|
 |Sort the players by rating (most rated first).|Ordenar a los jugadores por calificación (primero la más valorada).|src/web/templates/macros.j2:None|
 |Sort the players by rating (less rated first).|Ordenar a los jugadores por calificación (menos valorado primero).|src/web/templates/macros.j2:None|
-|Sort the players by origin (federation, league, club).|Mostrar/ocultar las pantallas de los reproductores.|src/web/templates/macros.j2:None|
+|Sort the players by origin (federation, league, club).|Ordenar los jugadores por origen (federación, liga, club).|src/web/templates/macros.j2:None|
 |Sort the players by year of birth (youngest first).|Ordenar a los jugadores por año de nacimiento (el más joven primero).|src/web/templates/macros.j2:None|
 |Sort the players by year of birth (oldest first).|Ordenar a los jugadores por año de nacimiento (el más antiguo primero).|src/web/templates/macros.j2:None|
-|Sort the players by category (oldest first).|Ordenar a los jugadores por año de nacimiento (el más antiguo primero).|src/web/templates/macros.j2:None|
-|Sort the players by category (youngest first).|Ordenar a los jugadores por año de nacimiento (el más joven primero).|src/web/templates/macros.j2:None|
-|Sort the players by tournament.|Clonó el torneo.|src/web/templates/macros.j2:None|
+|Sort the players by category (oldest first).|Ordenar los jugadores por categoría (el más antiguo primero).|src/web/templates/macros.j2:None|
+|Sort the players by category (youngest first).|Ordenar los jugadores por categoría (el más joven primero).|src/web/templates/macros.j2:None|
+|Sort the players by tournament.|Ordenar a los jugadores por torneo.|src/web/templates/macros.j2:None|
 |EXEMPT|EXENPT|src/web/templates/user_boards_screen_board_row_player_cell.html:None|
 |/move|/mover|src/web/templates/user_boards_screen_board_row_player_cell.html:None|
 |%(set_name)s (round %(round)d)|%(set_name)s (redonda %(round)d)|src/web/templates/user_boards_screen_set.html:None<br>src/web/templates/user_players_screen_set.html:None|
 |time control|control de tiempo|src/web/templates/user_boards_screen_set.html:None|
-|#%(board_number)d|#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 |%(set_name)s (check-in)|%(set_name)s (check-in)|src/web/templates/user_boards_screen_set.html:None|
 |Player / Elo|Jugador / Elo|src/web/templates/user_boards_screen_set.html:None|
 |Go back to the events page.|Vuelve a la página de eventos.|src/web/templates/user_event.html:None|
@@ -1040,7 +1043,6 @@
 |Board & color|Color del & tablero|src/web/templates/user_players_screen_set.html:None|
 |Opponent Elo [Pts]|Elo opositor [Pts]|src/web/templates/user_players_screen_set.html:None|
 |Opponent Elo|Elo opositor|src/web/templates/user_players_screen_set.html:None|
-|Board #%(board_number)d with %(color)s|#%(board_number)d con %(color)s|src/web/templates/user_players_screen_set.html:None|
 |vs|vs.|src/web/templates/user_players_screen_set.html:None|
 |Tournament|Torneo|src/web/templates/user_results_screen.html:None|
 |Rnd.Boa|Rnd.Boa|src/web/templates/user_results_screen.html:None|
@@ -1069,40 +1071,40 @@
 |Maximum number of results: %(num)d|Número máximo de resultados: %(num)d|src/web/templates/user_screen_card.html:None|
 |Maximum number of results: unlimited|Número máximo de resultados: ilimitado|src/web/templates/user_screen_card.html:None|
 |Open/close check-in.|Abrir/cerrar el check-in.|src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
-|Close check-in for tournament [%(tournament_uniq_id)s].|Supresión del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
-|Open check-in for tournament [%(tournament_uniq_id)s].|Edición del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
-|Filter the categories.|Filtra las ligas.|src/web/templates/admin_players/admin_players_filter_categories.html:None|
-|Filter the check-in status.|Borra el temporizador.|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
+|Close check-in for tournament [%(tournament_uniq_id)s].|Cierre el check-in para el torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
+|Open check-in for tournament [%(tournament_uniq_id)s].|Abra el check-in para el torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
+|Filter the categories.|Filtrar las categorías.|src/web/templates/admin_players/admin_players_filter_categories.html:None|
+|Filter the check-in status.|Filtrar el estado de check-in.|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
 |Absent|Ausente|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
-|Not checked-in yet|COMPETENCIA|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
-|Checked-in|COMPETENCIA|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
+|Not checked-in yet|Aún no se ha registrado la entrada|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
+|Checked-in|Chequeado|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
 |Filter the clubs.|Filtra los tréboles.|src/web/templates/admin_players/admin_players_filter_clubs.html:None|
 |Choose the columns displayed.|Elija las columnas mostradas.|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Columns|Columnas:|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Columns|Columnas|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Correo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Teléfono|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Name \*\*\* NAME FOR PLAYERS COLUMNS|Nombre|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Rating \*\*\* RATING FOR PLAYERS COLUMNS|Calificación|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Federación|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |League \*\*\* LEAGUE FOR PLAYERS COLUMNS|Liga|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Club \*\*\* CLUB FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOB|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Club \*\*\* CLUB FOR PLAYERS COLUMNS|Club|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|Año de nacimiento|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|Categoría|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Gender \*\*\* GENDER FOR PLAYERS COLUMNS|Género|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|FFE \*\*\* FFE FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Tablero fijo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|FIDE|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|FFE \*\*\* FFE FOR PLAYERS COLUMNS|FFE|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Check-in \*\*\* CHECK-IN FOR PLAYERS COLUMNS|Check-in|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|Deuda|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Nombre|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|Adeudado/pagado|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Torneo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Comentario|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|History \*\*\* HISTORY FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Filter the federations.|Borra el rotador.|src/web/templates/admin_players/admin_players_filter_federations.html:None|
+|History \*\*\* HISTORY FOR PLAYERS COLUMNS|Histórico|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Filter the federations.|Filtrar las federaciones.|src/web/templates/admin_players/admin_players_filter_federations.html:None|
 |Filter the licences.|Filtrar las licencias.|src/web/templates/admin_players/admin_players_filter_ffe_licences.html:None|
-|Filter the genders.|Borra el temporizador.|src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|Filter the genders.|Filtra los géneros.|src/web/templates/admin_players/admin_players_filter_genders.html:None|
 |Filter the leagues.|Filtra las ligas.|src/web/templates/admin_players/admin_players_filter_leagues.html:None|
-|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Nombre|src/web/templates/admin_players/admin_players_filter_tournaments.html:None|
-|Filter the tournaments.|Borra el torneo.|src/web/templates/admin_players/admin_players_filter_tournaments.html:None|
+|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Torneo|src/web/templates/admin_players/admin_players_filter_tournaments.html:None|
+|Filter the tournaments.|Filtrar los torneos.|src/web/templates/admin_players/admin_players_filter_tournaments.html:None|
 |Return to documentation summary|Volver al resumen de la documentación|utils/i18n/i18n_update.py:None|
 |English translation \*\*\* TRANSLATE !|Traducción al inglés|utils/i18n/i18n_update.py:None|
 |View file {file}|Ver archivo {file}|utils/i18n/i18n_update.py:None|
@@ -1110,163 +1112,11 @@
 |Empty mandatory messages|Mensajes obligatorios vacíos|utils/i18n/i18n_update.py:None|
 |Empty messages|Mensajes vacíos|utils/i18n/i18n_update.py:None|
 |Message flagged [{flag}]|Mensaje marcado [{flag}]|utils/i18n/i18n_update.py:None|
-|Message ID|id de mensaje|utils/i18n/i18n_update.py:None|
+|Message ID|ID del mensaje|utils/i18n/i18n_update.py:None|
 |Locations|Ubicaciones|utils/i18n/i18n_update.py:None|
 |Singular:|Singular:|utils/i18n/i18n_update.py:None|
 |Plural:|Plural:|utils/i18n/i18n_update.py:None|
 |Empty messages are not shown for the default language.|Los mensajes vacíos no se muestran para el idioma predeterminado.|utils/i18n/i18n_update.py:None|
 |Flagged messages|Mensajes marcados|utils/i18n/i18n_update.py:None|
 |Translation|Traducción|utils/i18n/i18n_update.py:None|
-
-### Mensaje marcado [fuzzy] (147)
-
-|id de mensaje|Traducción|Ubicaciones|
-|--|--|--|
-|This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.|Este programa no debe ser lanzado directamente, utilizar scripts server.bat, ffe.bat y chessevent.bat.|src/papi_web.py:None|
-|The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].|Conexión ChessEvent no establecida para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:None|
-|The Papi file is not defined for tournament [{tournament_uniq_id}].|Archivo Papi no definido para torneo [{tournament_uniq_id}].|src/chessevent/action_selector.py:None|
-|Tournament [{tournament_uniq_id}] has started.|El torneo [{tournament_uniq_id}] ha comenzado.|src/chessevent/action_selector.py:None|
-|No FFE Licence|No hay licencia FFE|src/data/util.py:None|
-|No category|No hay rotadores.|src/data/util.py:None|
-|Estimated \*\*\* NAME FOR RATING TYPE ESTIMATED|Hombres|src/data/util.py:None|
-|FIDE \*\*\* NAME FOR RATING TYPE FIDE|Hombres|src/data/util.py:None|
-|E \*\*\* SHORT NAME FOR RATING TYPE ESTIMATED|M|src/data/util.py:None|
-|N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|- ¡No! - ¡No!|src/data/util.py:None|
-|F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:None|
-|No title|Sin temporizadores.|src/data/util.py:None|
-|WFM \*\*\* SHORT NAME FOR Woman Fide Master|M|src/data/util.py:None|
-|FM \*\*\* SHORT NAME FOR Fide Master|M|src/data/util.py:None|
-|WIM \*\*\* SHORT NAME FOR Woman International Master|- ¡No! - ¡No!|src/data/util.py:None|
-|IM \*\*\* SHORT NAME FOR International Master|- ¡No! - ¡No!|src/data/util.py:None|
-|WGM \*\*\* SHORT NAME FOR Woman Grand Master|M|src/data/util.py:None|
-|GM \*\*\* SHORT NAME FOR Grand Master|M|src/data/util.py:None|
-|Parings by player|emparejamientos por jugador|src/data/util.py:None|
-|Players ({num})|Cronómetros ({num})|src/web/controllers/admin/event_admin_controller.py:None|
-|Please enter the last name.|Por favor, introduzca la hora.|src/web/controllers/admin/player_admin_controller.py:None|
-|Please enter the date of birth.|Por favor, introduzca la fecha de finalización del evento.|src/web/controllers/admin/player_admin_controller.py:None|
-|Invalid FIDE ID [{fide_id}].|ID FIDE no válido [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Invalid FFE ID [{ffe_id}].|Identificación FFE no válida [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Invalid FFE licence number [{ffe_licence_number}].|Número de licencia FFE no válido [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Invalid mail [{mail}].|Correo no válido [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Invalid phone number [{phone}].|Número de teléfono no válido [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Invalid amount [{amount}].|Cantidad no válida [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Invalid fixed board number [{fixed_board}].|Número de placa fijo no válido [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Standard:|Inicio:|src/web/controllers/admin/player_admin_controller.py:None|
-|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|El torneo [{tournament_uniq_id}] ha comenzado.|src/web/controllers/admin/player_admin_controller.py:None|
-|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|No se ha encontrado ningún archivo Papi para el torneo [{tournament_uniq_id}], no se puede añadir el jugador.|src/web/controllers/admin/player_admin_controller.py:None|
-|Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Jugador [{last_name} {first_name}] tiene emparejamientos en torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Papi file [{tournament_file}] not found.|Archivo Papi [{tournament_file}] no encontrado.|src/web/controllers/admin/player_admin_controller.py:None|
-|FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|Licencia FFE [{ffe_licence_number}] ya presente en el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].|Fide ID [{fide_id}] ya presente en el torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Check-in is open for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|Check-in is closed for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
-|No ChessEvent connection|Sin conexiones ChessEvent.|src/web/controllers/admin/tournament_admin_controller.py:None|
-|Tournament [{tournament_uniq_id}] is not started yet.|El torneo [{tournament_uniq_id}] ha comenzado.|src/web/controllers/user/tournament_user_controller.py:None|
-|Tournament [{tournament_uniq_id}] is started.|El torneo [{tournament_uniq_id}] ha comenzado.|src/web/controllers/user/tournament_user_controller.py:None|
-|Close check-in for tournament [%(tournament_uniq_id)s]|Supresión del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_close_check_in_modal.html:None|
-|Mark as forfeit for the rest of the tournament|Edite las propiedades del torneo.|src/web/templates/admin_close_check_in_modal.html:None|
-|Close the check-in|Borra el temporizador.|src/web/templates/admin_close_check_in_modal.html:None|
-|Create a screen family|Borrar la familia de pantalla.|src/web/templates/admin_families.html:None|
-|Menus|Menú:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None|
-|Player creation|Creación de pantalla de jugadores|src/web/templates/admin_player_modal.html:None|
-|Deletion of player [%(last_name)s %(first_name)s]|Edición del jugador [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
-|Warning: the deletion of a player is permanent!|Advertencia: ¡la eliminación de un temporizador es permanente!|src/web/templates/admin_player_modal.html:None|
-|Last name:|Último jugador:|src/web/templates/admin_player_modal.html:None|
-|E.g.: DOE|Por ejemplo: principal|src/web/templates/admin_player_modal.html:None|
-|The player's last name.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|First name:|Primer jugador:|src/web/templates/admin_player_modal.html:None|
-|E.g.: John|Por ejemplo: principal|src/web/templates/admin_player_modal.html:None|
-|The player's first name.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|The player's birth date.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Gender:|Fin:|src/web/templates/admin_player_modal.html:None|
-|The player's gender.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|The player's tournament.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|The player's FIDE title.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Federation:|Creación de eventos|src/web/templates/admin_player_modal.html:None|
-|The player's federation.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|FIDE ID:|No se ha definido ningún temporizador|src/web/templates/admin_player_modal.html:None|
-|The player's FIDE ID (do not change).|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|French Chess Federation|Borra el rotador.|src/web/templates/admin_player_modal.html:None|
-|League:|Idioma|src/web/templates/admin_player_modal.html:None|
-|The player's league.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Club:|Columnas:|src/web/templates/admin_player_modal.html:None|
-|The player's club.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Licence:|No hay licencia FFE|src/web/templates/admin_player_modal.html:None|
-|The player's licence.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Licence number:|Los números de teléfono.|src/web/templates/admin_player_modal.html:None|
-|The player's licence number.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|FFE Uniq ID:|id único|src/web/templates/admin_player_modal.html:None|
-|Contact and registration|Creación de rotadores|src/web/templates/admin_player_modal.html:None|
-|Email:|Detalles|src/web/templates/admin_player_modal.html:None|
-|The player's email.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Phone number:|Los números de teléfono.|src/web/templates/admin_player_modal.html:None|
-|The player's phone number.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Comment:|Torneo:|src/web/templates/admin_player_modal.html:None|
-|Owed:|Fin:|src/web/templates/admin_player_modal.html:None|
-|The price the player pays to register.|Clonó el torneo.|src/web/templates/admin_player_modal.html:None|
-|Fixed board:|Tableros fijos:|src/web/templates/admin_player_modal.html:None|
-|Add a player to the event.|Añade un temporizador al evento.|src/web/templates/admin_players.html:None|
-|No Papi file for the tournaments of the event, players can not be added.|No hay archivo Papi para los torneos del evento, los jugadores no se pueden añadir.|src/web/templates/admin_players.html:None|
-|Add a tournament before adding players.|Debes crear un torneo antes de crear pantallas.|src/web/templates/admin_players.html:None|
-|Create a player|Crear un temporizador|src/web/templates/admin_players.html:None|
-|Clear all the filters.|todos los jugadores|src/web/templates/admin_players.html:None|
-|Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|Elo|src/web/templates/admin_players.html:None|
-|Cat \*\*\* CATEGORY COLUMN HEADER FOR PLAYERS|Nombre|src/web/templates/admin_players.html:None|
-|FIDE \*\*\* FIDE COLUMN HEADER FOR PLAYERS|Pagada|src/web/templates/admin_players.html:None|
-|FFE \*\*\* FFE COLUMN HEADER FOR PLAYERS|Elo|src/web/templates/admin_players.html:None|
-|Tournament [%(tournament_uniq_id)s] is finished.|Torneo [%(tournament_uniq_id)s] ha terminado.|src/web/templates/admin_players.html:None<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
-|Tournament [%(tournament_uniq_id)s] is playing.|Torneo [%(tournament_uniq_id)s] está jugando.|src/web/templates/admin_players.html:None<br>src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
-|Check-in is closed for tournament [%(tournament_uniq_id)s].|Supresión del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players.html:None|
-|Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].|Jugador [%(last_name)s %(first_name)s] si pierde por la siguiente ronda en el torneo [%(tournament_uniq_id)s].|src/web/templates/admin_players.html:None|
-|Click to check-in the player.|Check-in|src/web/templates/admin_players.html:None|
-|Mail: %(mail)s (click to copy to the clipboard).|%(mail)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
-|No mail defined.|No se ha definido ningún temporizador|src/web/templates/admin_players.html:None|
-|Phone: %(phone)s (click to copy to the clipboard).|%(phone)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
-|No phone defined.|No se ha definido ningún temporizador|src/web/templates/admin_players.html:None|
-|FIDE ID: %(fide_id)s (click to copy to the clipboard).|Fide ID: %(fide_id)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
-|No FIDE ID.|No se ha definido ningún temporizador|src/web/templates/admin_players.html:None|
-|FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).|Licencia FFE: %(ffe_licence_number)s (haga clic para copiar al portapapeles).|src/web/templates/admin_players.html:None|
-|Unknown FFE Licence type [%(ffe_licence)s].|Tipo de licencia FFE desconocido [%(ffe_licence)s]|src/web/templates/admin_players.html:None|
-|Change the player's tournament.|Clonó el torneo.|src/web/templates/admin_players.html:None|
-|Edit the player's properties.|Editar las propiedades del temporizador.|src/web/templates/admin_players.html:None|
-|Remove the player from the event.|Añade un temporizador al evento.|src/web/templates/admin_players.html:None|
-|No players.|Jugadores|src/web/templates/admin_players.html:None|
-|Create a screen|Crear un evento|src/web/templates/admin_screens.html:None|
-|Add a screen to enter the results.|Añadir una familia de pantallas para introducir los resultados.|src/web/templates/admin_screens.html:None|
-|Add a screen to display the pairings by board.|Añadir una familia de pantallas para mostrar los emparejamientos por tablero.|src/web/templates/admin_screens.html:None|
-|Add a screen to display the pairings by alphabetical order.|Añadir una familia de pantallas para mostrar los emparejamientos por orden alfabético.|src/web/templates/admin_screens.html:None|
-|Add a screen to display the last results.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:None|
-|Add a screen to display an image.|Agregue una pantalla al evento.|src/web/templates/admin_screens.html:None|
-|**Singular:** At most %(num)d illegal move is recorded.<br/>**Plural:** At most %(num)d illegal moves are recorded.|**Singular:** Como mucho %(num)d movimiento ilegal se registra.<br/>**Plural:** Como mucho %(num)d movimientos ilegales se registran.|src/web/templates/admin_tournament_card.html:None|
-|Sort the players by name.|Clonó el torneo.|src/web/templates/macros.j2:None|
-|Sort the players by origin (federation, league, club).|Mostrar/ocultar las pantallas de los reproductores.|src/web/templates/macros.j2:None|
-|Sort the players by category (oldest first).|Ordenar a los jugadores por año de nacimiento (el más antiguo primero).|src/web/templates/macros.j2:None|
-|Sort the players by category (youngest first).|Ordenar a los jugadores por año de nacimiento (el más joven primero).|src/web/templates/macros.j2:None|
-|Sort the players by tournament.|Clonó el torneo.|src/web/templates/macros.j2:None|
-|No screen nor family to rotate.|No hay pantalla ni familia para rotar.|src/web/templates/user_rotator_card.html:None|
-|Close check-in for tournament [%(tournament_uniq_id)s].|Supresión del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
-|Open check-in for tournament [%(tournament_uniq_id)s].|Edición del torneo [%(tournament_uniq_id)s]|src/web/templates/admin_players/admin_players_check_in_tournaments.html:None|
-|Filter the categories.|Filtra las ligas.|src/web/templates/admin_players/admin_players_filter_categories.html:None|
-|Filter the check-in status.|Borra el temporizador.|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
-|Not checked-in yet|COMPETENCIA|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
-|Checked-in|COMPETENCIA|src/web/templates/admin_players/admin_players_filter_check_ins.html:None|
-|Columns|Columnas:|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Mail \*\*\* MAIL FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Phone \*\*\* PHONE FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Name \*\*\* NAME FOR PLAYERS COLUMNS|Nombre|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Federation \*\*\* FEDERATION FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Club \*\*\* CLUB FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOB|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Pagada|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|FFE \*\*\* FFE FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|Deuda|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Tournament \*\*\* TOURNAMENT FOR PLAYERS COLUMNS|Nombre|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Comment \*\*\* COMMENT FOR PLAYERS COLUMNS|Comentario|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|History \*\*\* HISTORY FOR PLAYERS COLUMNS|Elo|src/web/templates/admin_players/admin_players_filter_columns.html:None|
-|Filter the federations.|Borra el rotador.|src/web/templates/admin_players/admin_players_filter_federations.html:None|
-|Filter the genders.|Borra el temporizador.|src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|Tournament \*\*\* TOURNAMENT COLUMN HEADER FOR PLAYERS|Nombre|src/web/templates/admin_players/admin_players_filter_tournaments.html:None|
-|Filter the tournaments.|Borra el torneo.|src/web/templates/admin_players/admin_players_filter_tournaments.html:None|
 
