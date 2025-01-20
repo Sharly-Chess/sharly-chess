@@ -70,6 +70,8 @@ body {
 }
 .player-ffe-lic {
     color: #ffffff;
+    display: inline-block;
+    width: 1.2em;
 }
 .player-ffe-lic.ffe-lic-A {
     background-color: #001da3;

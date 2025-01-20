@@ -970,7 +970,7 @@ msgstr "F"
 
 #: src/data/util.py
 msgid "No title"
-msgstr "Aucun titre."
+msgstr "Aucun titre"
 
 #: src/data/util.py
 msgid "Woman Fide Master"
