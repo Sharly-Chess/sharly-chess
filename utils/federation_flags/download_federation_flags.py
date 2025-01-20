@@ -4,13 +4,14 @@ from pathlib import Path
 
 from requests import get, Response, HTTPError
 
+from common import TMP_DIR
 from common.papi_web_config import PapiWebConfig
 
 FIDE_PLAYERS_URL: str = 'https://ratings.fide.com/download/players_list_legacy.zip'
 
 def download_fide_players() -> Path | None:
     print('Downloading FIDE players...')
-    local_zip_file: Path = PapiWebConfig.tmp_dir / 'players_list_legacy.zip'
+    local_zip_file: Path = TMP_DIR / 'players_list_legacy.zip'
     with suppress(FileNotFoundError):
         local_zip_file.unlink()
     response: Response = get(FIDE_PLAYERS_URL, allow_redirects=True, timeout=5)
@@ -24,11 +25,11 @@ def download_fide_players() -> Path | None:
 
 def unzip_fide_players(local_zip_file: Path) -> Path | None:
     print('Unzipping archive...')
-    local_txt_file = PapiWebConfig.tmp_dir / 'players_list.txt'
+    local_txt_file = TMP_DIR / 'players_list.txt'
     with suppress(FileNotFoundError):
         local_txt_file.unlink()
     with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-        zip_ref.extractall(PapiWebConfig.tmp_dir)
+        zip_ref.extractall(TMP_DIR)
     if not local_txt_file.exists():
         print(f'Could not unzip archive [{local_zip_file}].')
         return None
@@ -66,7 +67,12 @@ def download_federation_flags(federation_ids: set[str]):
     flags_dir.mkdir(exist_ok=True, parents=True)
     for federation_id in federation_ids:
         flag_file: Path = flags_dir / f'{federation_id}.svg'
-        flag_url: str = f'https://ratings.fide.com/svg/{federation_id}.svg'
+        flag_url: str
+        match federation_id:
+            case 'NON':
+                flag_url = 'https://www.svgrepo.com/download/448108/question.svg'
+            case _:
+                flag_url = f'https://ratings.fide.com/svg/{federation_id}.svg'
         if not download_federation_url(federation_id, flag_file, flag_url):
             other_url: str | None = None
             match federation_id:
