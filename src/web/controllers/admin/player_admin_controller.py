@@ -415,11 +415,13 @@ class PlayerAdminController(AbstractEventAdminController):
                 data=data, errors=player.errors)
         match action:
             case 'update':
+                web_context.admin_event.set_player_default_ratings(player)
                 tournament: Tournament = player.tournament
                 tournament.update_player(player)
                 event_loader: EventLoader = EventLoader.get(request=request)
                 event_loader.clear_cache(event_uniq_id)
             case 'create':
+                web_context.admin_event.set_player_default_ratings(player)
                 tournament: Tournament = player.tournament
                 if tournament.finished:
                     Message.error(

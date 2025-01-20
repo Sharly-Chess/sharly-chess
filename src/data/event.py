@@ -22,7 +22,7 @@ from data.screen import Screen
 from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
-from data.util import ScreenType, PlayerFFELicence, PlayerGender
+from data.util import ScreenType, PlayerFFELicence, PlayerGender, PlayerCategory, TournamentRating
 from database.store import StoredEvent
 
 logger: Logger = get_logger()
@@ -150,6 +150,33 @@ class Event:
     @property
     def federation(self) -> str:
         return self.stored_event.federation
+
+    def set_player_default_ratings(self, player: Player):
+        match self.federation:
+            case 'FRA':
+                if not player.ratings[TournamentRating.RAPID]:
+                    match player.category:
+                        case PlayerCategory.U8 | PlayerCategory.U10:
+                            player.ratings[TournamentRating.RAPID] = 799
+                        case PlayerCategory.U12 | PlayerCategory.U14:
+                            player.ratings[TournamentRating.RAPID] = 999
+                        case _:
+                            player.ratings[TournamentRating.RAPID] = 1199
+                if not player.ratings[TournamentRating.BLITZ]:
+                    match player.category:
+                        case PlayerCategory.U8 | PlayerCategory.U10:
+                            player.ratings[TournamentRating.BLITZ] = 799
+                        case PlayerCategory.U12 | PlayerCategory.U14:
+                            player.ratings[TournamentRating.BLITZ] = 999
+                        case _:
+                            player.ratings[TournamentRating.BLITZ] = 1199
+                if not player.ratings[TournamentRating.STANDARD]:
+                    match player.category:
+                        case PlayerCategory.U8 | PlayerCategory.U10 | PlayerCategory.U12 | PlayerCategory.U14 \
+                             | PlayerCategory.U16 | PlayerCategory.U18 | PlayerCategory.U20:
+                            player.ratings[TournamentRating.STANDARD] = 1299
+                        case _:
+                            player.ratings[TournamentRating.STANDARD] = 1399
 
     @property
     def formatted_start_date_time(self) -> str:
