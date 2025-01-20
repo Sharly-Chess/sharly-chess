@@ -13,10 +13,10 @@
 
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
-|Κενά υποχρεωτικά μηνύματα|0/61|
-|Κενά μηνύματα|3/1076|
-|Message flagged [ai_translation]|1073/1076|
-|Message flagged [fuzzy]|152/1076|
+|Κενά υποχρεωτικά μηνύματα|0/62|
+|Κενά μηνύματα|3/1090|
+|Message flagged [ai_translation]|1087/1090|
+|Message flagged [fuzzy]|162/1090|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
@@ -28,9 +28,9 @@
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:None|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 
-## Σημειωθέντα μηνύματα (1225)
+## Σημειωθέντα μηνύματα (1249)
 
-### Μήνυμα που σημαδεύτηκε [ai_translation] (1073)
+### Μήνυμα που σημαδεύτηκε [ai_translation] (1087)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -364,7 +364,7 @@
 |Please enter the family ID.|Παρακαλώ εισάγετε την ταυτότητα της οικογένειας.|src/web/controllers/admin/family_admin_controller.py:None|
 |Character [{char}] is not allowed.|Ο χαρακτήρας [{char}] δεν επιτρέπεται.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None|
 |Family [{uniq_id}] already exists.|Η οικογένεια [{uniq_id}] υπάρχει ήδη.|src/web/controllers/admin/family_admin_controller.py:None|
-|Please choose the tournament.|Παρακαλώ επιλέξτε το τουρνουά.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
+|Please choose the tournament.|Παρακαλώ επιλέξτε το τουρνουά.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/player_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Tournament [{tournament_id}] not found.|Τουρνουά [{tournament_id}] δεν βρέθηκε.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |A positive integer is expected.|Αναμένεται ένας θετικός ακέραιος αριθμός.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/rotator_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
 |Timer [{timer_id}] not found.|Ο χρονοδιακόπτης [{timer_id}] δεν βρέθηκε.|src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None|
@@ -412,16 +412,22 @@
 |Papi-web configuration|Ρυθμίσεις Papi-webName|src/web/controllers/admin/index_admin_controller.py:None<br>src/web/templates/admin_config.html:None|
 |Please enter the last name.|Παρακαλώ εισάγετε την ώρα.|src/web/controllers/admin/player_admin_controller.py:None|
 |Please enter the date of birth.|Παρακαλώ εισάγετε την ημερομηνία λήξης της εκδήλωσης.|src/web/controllers/admin/player_admin_controller.py:None|
+|Only estimated rankings are optional.|Μόνο η εκτιμώμενη κατάταξη είναι προαιρετική.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|Μη έγκυρη ταυτότητα FIDE [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Μη έγκυρο FFE ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid FFE licence number [{ffe_licence_number}].|Μη έγκυρος αριθμός άδειας FFE [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid mail [{mail}].|Μη έγκυρο ταχυδρομείο [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid phone number [{phone}].|Μη έγκυρος αριθμός τηλεφώνου [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid amount [{amount}].|Μη έγκυρο ποσό [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid fixed board number [{fixed_board}].|Μη έγκυρος αριθμός σταθερής πινακίδας [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Standard:|Έναρξη:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at least 60 minutes.|Η βαθμολογία που χρησιμοποιείται όταν ο χρόνος ελέγχου είναι τουλάχιστον 60 λεπτά.|src/web/controllers/admin/player_admin_controller.py:None|
 |Rapid:|Ταχεία:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is more than 10 minutes and less than 60 minutes.|Η βαθμολογία που χρησιμοποιείται όταν ο χρόνος ελέγχου είναι περισσότερο από 10 λεπτά και λιγότερο από 60 λεπτά.|src/web/controllers/admin/player_admin_controller.py:None|
 |Blitz:|Blitz:|src/web/controllers/admin/player_admin_controller.py:None|
 |The rating used when the time control is at most 10 minutes.|Η βαθμολογία που χρησιμοποιείται όταν ο χρόνος ελέγχου είναι το πολύ 10 λεπτά.|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|Δεν βρέθηκε αρχείο Papi για το τουρνουά [{tournament_uniq_id}], δεν μπορεί να προσθέσει τον παίκτη.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει ζευγαρώματα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Το αρχείο Papi [{tournament_file}] δεν βρέθηκε.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -656,7 +662,7 @@
 |The Unique ID, used to reference the screen family.|Η μοναδική ταυτότητα, που χρησιμοποιείται για την αναφορά της οικογένειας οθόνης.|src/web/templates/admin_family_modal.html:None|
 |E.g.: My screen family|Π.χ.: Η οικογένειά μου στην οθόνη|src/web/templates/admin_family_modal.html:None|
 |The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament.|Το όνομα της οικογένειας οθόνης, προαιρετικό. Οι ακόλουθες μάρκες αντικαθίστανται αυτόματα από τους αριθμούς του πίνακα ή τα ονόματα των παικτών: %%f=πρώτο, %%l=τελευταίο, %%t=τουρνουά.|src/web/templates/admin_family_modal.html:None|
-|Tournament:|Τουρνουά:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
+|Tournament:|Τουρνουά:|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_player_modal.html:None<br>src/web/templates/admin_screen_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens).|Το τουρνουά των οθονών της οικογένειας, υποχρεωτικό (δεν μοιάζει με βασικές οθόνες, μόνο ένα τουρνουά μπορεί να εμφανιστεί στις οικογενειακές οθόνες).|src/web/templates/admin_family_modal.html:None|
 |Board selection (by number)|Επιλογή του συμβουλίου (κατά αριθμό)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
 |Player selection (by alphabetical order)|Επιλογή παίχτη (με αλφαβητική σειρά)|src/web/templates/admin_family_modal.html:None<br>src/web/templates/admin_screen_sets_modal_set_div.html:None|
@@ -700,6 +706,7 @@
 |Player creation|Δημιουργία οθόνης παικτών|src/web/templates/admin_player_modal.html:None|
 |Edition of player [%(last_name)s %(first_name)s]|Έκδοση του παίκτη [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
 |Deletion of player [%(last_name)s %(first_name)s]|Έκδοση του παίκτη [%(last_name)s %(first_name)s]|src/web/templates/admin_player_modal.html:None|
+|Enter a FFE licence number, a Fide number, a part of a name...|Εισάγετε έναν αριθμό άδειας FFE, έναν αριθμό Fide, ένα μέρος ενός ονόματος...|src/web/templates/admin_player_modal.html:None|
 |Warning: the deletion of a player is permanent!|Προειδοποίηση: η διαγραφή ενός χρονοδιακόπτη είναι μόνιμη!|src/web/templates/admin_player_modal.html:None|
 |Identity|Ταυτότητα|src/web/templates/admin_player_modal.html:None|
 |Last name:|Τελευταίος παίκτης:|src/web/templates/admin_player_modal.html:None|
@@ -712,6 +719,7 @@
 |The player's birth date.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
 |Gender:|Τέλος:|src/web/templates/admin_player_modal.html:None|
 |The player's gender.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
 |FIDE ratings, title and fédération|ratings, τίτλος και fédération|src/web/templates/admin_player_modal.html:None|
 |FIDE Title:|Τίτλος FIDE:|src/web/templates/admin_player_modal.html:None|
 |The player's FIDE title.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
@@ -742,8 +750,13 @@
 |The price the player pays to register.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
 |Paid:|Πληρωμή:|src/web/templates/admin_player_modal.html:None|
 |The price the player already paid.|Το τίμημα που ήδη πλήρωσε ο παίκτης.|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Σταθερές σανίδες:|src/web/templates/admin_player_modal.html:None|
+|The board number the player will always be assigned to (use it for disabled people).|Ο αριθμός του διοικητικού συμβουλίου στον οποίο θα ανατίθεται πάντα ο παίκτης (χρησιμοποιείστε τον για άτομα με ειδικές ανάγκες).|src/web/templates/admin_player_modal.html:None|
 |Players|Παίκτες|src/web/templates/admin_players.html:None<br>src/web/templates/admin_screen_card.html:None|
 |Add a player to the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_players.html:None|
+|Tournaments are finished, you can not add players any longer.|Τα τουρνουά έχουν τελειώσει, δεν μπορείτε να προσθέσετε παίκτες πια.|src/web/templates/admin_players.html:None|
+|No Papi file for the tournaments of the event, players can not be added.|Δεν αρχείο Papi για τα τουρνουά της εκδήλωσης, οι παίκτες δεν μπορούν να προστεθούν.|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Πρέπει να δημιουργήσετε ένα τουρνουά πριν δημιουργήσετε οθόνες.|src/web/templates/admin_players.html:None|
 |Create a player|Δημιουργία χρονοδιακόπτη|src/web/templates/admin_players.html:None|
 |Clear all the filters.|όλοι οι παίκτες|src/web/templates/admin_players.html:None|
 |Name \*\*\* NAME COLUMN HEADER FOR PLAYERS|Όνομα|src/web/templates/admin_players.html:None|
@@ -1080,6 +1093,7 @@
 |Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOBCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Gender \*\*\* GENDER FOR PLAYERS COLUMNS|Φύλο|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FFE \*\*\* FFE FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Check-in \*\*\* CHECK-IN FOR PLAYERS COLUMNS|Check-in|src/web/templates/admin_players/admin_players_filter_columns.html:None|
@@ -1108,7 +1122,7 @@
 |Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:None|
 |Translation|Μετάφραση|utils/i18n/i18n_update.py:None|
 
-### Μήνυμα που σημαδεύτηκε [fuzzy] (152)
+### Μήνυμα που σημαδεύτηκε [fuzzy] (162)
 
 |Μήνυμα id|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -1151,9 +1165,14 @@
 |Please enter the date of birth.|Παρακαλώ εισάγετε την ημερομηνία λήξης της εκδήλωσης.|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FIDE ID [{fide_id}].|Μη έγκυρη ταυτότητα FIDE [{fide_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid FFE ID [{ffe_id}].|Μη έγκυρο FFE ID [{ffe_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid FFE licence number [{ffe_licence_number}].|Μη έγκυρος αριθμός άδειας FFE [{ffe_licence_number}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid mail [{mail}].|Μη έγκυρο ταχυδρομείο [{mail}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Invalid phone number [{phone}].|Μη έγκυρος αριθμός τηλεφώνου [{phone}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid amount [{amount}].|Μη έγκυρο ποσό [{amount}].|src/web/controllers/admin/player_admin_controller.py:None|
+|Invalid fixed board number [{fixed_board}].|Μη έγκυρος αριθμός σταθερής πινακίδας [{fixed_board}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Standard:|Έναρξη:|src/web/controllers/admin/player_admin_controller.py:None|
+|Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.|Ξεκίνησε το τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
+|No Papi file found for tournament [{tournament_uniq_id}], can not add the player.|Δεν βρέθηκε αρχείο Papi για το τουρνουά [{tournament_uniq_id}], δεν μπορεί να προσθέσει τον παίκτη.|src/web/controllers/admin/player_admin_controller.py:None|
 |Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].|Ο παίκτης [{last_name} {first_name}] έχει ζευγαρώματα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
 |Papi file [{tournament_file}] not found.|Το αρχείο Papi [{tournament_file}] δεν βρέθηκε.|src/web/controllers/admin/player_admin_controller.py:None|
 |FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].|FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}].|src/web/controllers/admin/player_admin_controller.py:None|
@@ -1180,6 +1199,7 @@
 |The player's birth date.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
 |Gender:|Τέλος:|src/web/templates/admin_player_modal.html:None|
 |The player's gender.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
+|The player's tournament.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
 |The player's FIDE title.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
 |Federation:|Δημιουργία γεγονότων|src/web/templates/admin_player_modal.html:None|
 |The player's federation.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
@@ -1203,7 +1223,10 @@
 |Comment:|Τουρνουά:|src/web/templates/admin_player_modal.html:None|
 |Owed:|Τέλος:|src/web/templates/admin_player_modal.html:None|
 |The price the player pays to register.|Κλώνε το τουρνουά.|src/web/templates/admin_player_modal.html:None|
+|Fixed board:|Σταθερές σανίδες:|src/web/templates/admin_player_modal.html:None|
 |Add a player to the event.|Προσθέστε ένα χρονοδιακόπτη στην εκδήλωση.|src/web/templates/admin_players.html:None|
+|No Papi file for the tournaments of the event, players can not be added.|Δεν αρχείο Papi για τα τουρνουά της εκδήλωσης, οι παίκτες δεν μπορούν να προστεθούν.|src/web/templates/admin_players.html:None|
+|Add a tournament before adding players.|Πρέπει να δημιουργήσετε ένα τουρνουά πριν δημιουργήσετε οθόνες.|src/web/templates/admin_players.html:None|
 |Create a player|Δημιουργία χρονοδιακόπτη|src/web/templates/admin_players.html:None|
 |Clear all the filters.|όλοι οι παίκτες|src/web/templates/admin_players.html:None|
 |Origin \*\*\* ORIGIN COLUMN HEADER FOR PLAYERS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players.html:None|
@@ -1253,6 +1276,7 @@
 |Club \*\*\* CLUB FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Year of birth \*\*\* YEAR OF BIRTH FOR PLAYERS COLUMNS|YOBCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Category \*\*\* CATEGORY FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:None|
+|Fixed board \*\*\* FIXED FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FIDE \*\*\* FIDE FOR PLAYERS COLUMNS|Πληρωμή|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |FFE \*\*\* FFE FOR PLAYERS COLUMNS|ΈλοCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:None|
 |Owed/paid \*\*\* OWED/PAID FOR PLAYERS COLUMNS|ΆουτςCity name (optional, probably does not need a translation)|src/web/templates/admin_players/admin_players_filter_columns.html:None|
