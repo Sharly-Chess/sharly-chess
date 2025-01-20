@@ -589,6 +589,7 @@ class Tournament:
                 # NOTE(Amaras): // is implemented on float as well, so it's
                 # way simpler to implement than by applying the algorithm
                 # step by step.
+                player.compute_points(round_number)
                 potential_vpoints = 0.5 * (player.points // 1.5)
                 if player.rating >= self.rating_limit1:
                     # Group A players get 2 virtual points
@@ -601,7 +602,6 @@ class Tournament:
                     # Group C players start with 0 points
                     # Players cannot have more than 2 points
                     vpoints = min(2.0, potential_vpoints)
-                player.compute_points(round_number)
                 if 2 * player.points >= self._rounds:
                     # If a player gets at least half the possible score,
                     # their capital is set at 2 points.
