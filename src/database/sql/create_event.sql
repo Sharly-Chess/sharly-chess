@@ -1,16 +1,4 @@
-/* These lines ease debug on https://sqliteonline.com/ */
-DROP TABLE IF EXISTS `info`;
-DROP TABLE IF EXISTS `chessevent`;
-DROP TABLE IF EXISTS `timer_hour`;
-DROP TABLE IF EXISTS `timer`;
-DROP TABLE IF EXISTS `tournament`;
-DROP TABLE IF EXISTS `illegal_move`;
-DROP TABLE IF EXISTS `result`;
-DROP TABLE IF EXISTS `screen`;
-DROP TABLE IF EXISTS `screen_set`;
-DROP TABLE IF EXISTS `family`;
-DROP TABLE IF EXISTS `rotator`;
-DROP TABLE IF EXISTS `skipped_round`;
+/* These SQL commands are used to create new events. */
 
 CREATE TABLE `info` (
     `version` TEXT NOT NULL,

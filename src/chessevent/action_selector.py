@@ -18,7 +18,7 @@ from data.chessevent_tournament import ChessEventTournament
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from database.papi_template import create_empty_papi_database, PAPI_VERSIONS
+from database.access.papi.papi_template import create_empty_papi_database, PAPI_VERSIONS
 from ffe.ffe_session import FFESession
 
 logger: Logger = get_logger()

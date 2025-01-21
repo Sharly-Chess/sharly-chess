@@ -19,8 +19,8 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader, ArchiveLoader
-from database.access import access_driver, odbc_drivers
-from database.sqlite import EventDatabase
+from database.access.access_database import access_driver, odbc_drivers
+from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
 from web.controllers.index_controller import AbstractController, WebContext
 from web.messages import Message

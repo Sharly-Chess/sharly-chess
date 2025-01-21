@@ -1,14 +1,12 @@
-import json
 import shutil
 import time
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import suppress
-from dataclasses import dataclass, field
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from sqlite3 import Connection, Cursor, connect, OperationalError
+from sqlite3 import OperationalError
 from typing import Self, Any
 
 import yaml
@@ -21,97 +19,11 @@ from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
 from data.util import Result as UtilResult
+from database.sqlite.sqlite_database import SQLiteDatabase
 from database.store import StoredTournament, StoredEvent, StoredChessEvent, StoredTimer, StoredTimerHour, \
     StoredFamily, StoredIllegalMove, StoredResult, StoredRotator, StoredScreenSet, StoredScreen
 
 logger: Logger = get_logger()
-
-
-@dataclass
-class SQLiteDatabase:
-    """
-    The base generic class for SQLite databases.
-    """
-
-    file: Path
-    write: bool = field(default=False)
-    database: Connection | None = field(init=False, default=None)
-    cursor: Cursor | None = field(init=False, default=None)
-
-    def __enter__(self) -> Self:
-        db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
-        self.database = connect(db_url, detect_types=1, uri=True)
-        self.cursor = self.database.cursor()
-        return self
-
-    def __exit__(self, exc_type, exc_value, tb):
-        if self.database is not None:
-            self.cursor.close()
-            del self.cursor
-            self.cursor = None
-            self.database.close()
-            del self.database
-            self.database = None
-
-    def _execute(self, query: str, params: tuple = ()):
-        self.cursor.execute(query, params)
-
-    def _fetchall(self) -> Iterator[dict[str, Any]]:
-        columns = [column[0] for column in self.cursor.description]
-        for row in self.cursor.fetchall():
-            yield dict(zip(columns, row))
-
-    def _fetchone(self) -> dict[str, Any]:
-        columns = [column[0] for column in self.cursor.description]
-        result = self.cursor.fetchone()
-        return {} if result is None else dict(zip(columns, result))
-
-    def commit(self):
-        self.database.commit()
-
-    def _last_inserted_id(self) -> int:
-        return self.cursor.lastrowid
-
-    @staticmethod
-    def load_bool_from_database_field(data: int | None, if_none=None) -> bool:
-        """Returns True if `data` is 1, False if `data` is something else other
-        than None, and `if_none` if `data` is None."""
-        return data == 1 if data is not None else if_none
-
-    @staticmethod
-    def load_json_from_database_field(json_data: str | None, if_none=None) -> Any:
-        """Decodes the JSON data `json_data` and returns the result.
-        If `json_data` is None, returns `if_none`."""
-        return json.loads(json_data) if json_data is not None else if_none
-
-    @staticmethod
-    def set_dict_int_keys(string_dict: dict[str, Any] | None) -> dict[int, Any] | None:
-        """Maps the string keys to integer keys and returns the resulting dict.
-        If `string_dict` is None, returns None."""
-        # This method is needed because JSON turns all keys to strings
-        return None if string_dict is None else {int(k): v for k, v in string_dict.items()}
-
-    @staticmethod
-    def dump_to_json_database_field(obj: Any, if_none=None) -> str | None:
-        """Serializes the given object `obj` to JSON.
-        Returns the JSON serialization of `if_none` otherwise (may be None)."""
-        if obj is not None:
-            return json.dumps(obj)
-        if if_none is not None:
-            return json.dumps(if_none)
-        return None
-
-    @classmethod
-    def dump_to_json_database_timer_colors(cls, colors) -> str | None:
-        """Serializes the timer colors into JSON.
-        By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
-        return cls.dump_to_json_database_field(colors, {i: None for i in range(1, 4)})
-
-    @classmethod
-    def dump_to_json_database_timer_delays(cls, delays) -> str | None:
-        """Serializes the timer delays into JSON.
-        By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
-        return cls.dump_to_json_database_field(delays, {i: None for i in range(1, 4)})
 
 
 class EventDatabase(SQLiteDatabase):
@@ -127,10 +39,6 @@ class EventDatabase(SQLiteDatabase):
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
         return PapiWebConfig.event_path / f'{uniq_id}.{PapiWebConfig.event_ext}'
-
-    def exists(self) -> bool:
-        """Checks if the event database file exists."""
-        return self.file.exists()
 
     @staticmethod
     def _check_populate_dict(
@@ -196,7 +104,7 @@ class EventDatabase(SQLiteDatabase):
 
     def create(self, populate: bool = False):
         """
-        Create an event database, based on /database/sql/create-event.sql.
+        Create an event database, based on /database/sql/create_event.sql.
         The file associated to this database must not exist before calling
         this method.
         :param populate: if True, the corresponding file in /database/yml is used to populate the database (this way
@@ -207,20 +115,15 @@ class EventDatabase(SQLiteDatabase):
                 f'The database can not be created because the file [{self.file.resolve()}] already exists.')
         papi_web_config: PapiWebConfig = PapiWebConfig()
         papi_web_config.event_path.mkdir(parents=True, exist_ok=True)
-        database: Connection | None = None
-        cursor: Cursor | None = None
         try:
-            database = connect(database=self.file, detect_types=1, uri=True)
-            cursor = database.cursor()
             today_str: str = format_timestamp_date()
             event_start = time.mktime(datetime.strptime(f'{today_str} 00:00', '%Y-%m-%d %H:%M').timetuple())
             event_stop = time.mktime(datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple())
             with open(PapiWebConfig.database_sql_path / 'create_event.sql', encoding='utf-8') as f:
                 papi_web_version: Version = PapiWebConfig.version
-                cursor.executescript(f.read().format(
+                super().create(f.read().format(
                     version=f'{papi_web_version.major}.{papi_web_version.minor}.{papi_web_version.micro}',
                     name=self.uniq_id, start=event_start, stop=event_stop, now=time.time()))
-            database.commit()
             logger.info('Database [%s] has been created.', self.file)
             if populate:
                 with (EventDatabase(self.uniq_id, write=True) as event_database):
@@ -565,12 +468,8 @@ class EventDatabase(SQLiteDatabase):
                 logger.info('Database [%s] has been populated.', self.file)
         except OperationalError as e:
             logger.warning('Database [%s] creation failed: %s', self.file, e.args)
+            self.file.unlink(missing_ok=True)
             raise e
-        finally:
-            if cursor is not None:
-                cursor.close()
-            if database is not None:
-                database.close()
 
     def delete(self) -> Path:
         """Soft-deletes the event database file by archiving it."""

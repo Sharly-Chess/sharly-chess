@@ -1,55 +1,12 @@
-import zipfile
-from contextlib import suppress
 from pathlib import Path
 
 from requests import get, Response, HTTPError
 
-from common import TMP_DIR
+from common.i18n import _
+from common.logger import print_interactive_error
 from common.papi_web_config import PapiWebConfig
+from database.sqlite.fide_database import FideDatabase
 
-FIDE_PLAYERS_URL: str = 'https://ratings.fide.com/download/players_list_legacy.zip'
-
-def download_fide_players() -> Path | None:
-    print('Downloading FIDE players...')
-    local_zip_file: Path = TMP_DIR / 'players_list_legacy.zip'
-    with suppress(FileNotFoundError):
-        local_zip_file.unlink()
-    response: Response = get(FIDE_PLAYERS_URL, allow_redirects=True, timeout=5)
-    response.raise_for_status()
-    local_zip_file.write_bytes(response.content)
-    if not local_zip_file.exists():
-        print(f'Could not download FIDE players from [{FIDE_PLAYERS_URL}].')
-        return None
-    print(f'URL [{FIDE_PLAYERS_URL}] downloaded to [{local_zip_file}].')
-    return local_zip_file
-
-def unzip_fide_players(local_zip_file: Path) -> Path | None:
-    print('Unzipping archive...')
-    local_txt_file = TMP_DIR / 'players_list.txt'
-    with suppress(FileNotFoundError):
-        local_txt_file.unlink()
-    with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-        zip_ref.extractall(TMP_DIR)
-    if not local_txt_file.exists():
-        print(f'Could not unzip archive [{local_zip_file}].')
-        return None
-    print(f'Data unzipped to [{local_txt_file}].')
-    return local_txt_file
-
-def read_federations(local_txt_file: Path) -> set[str]:
-    print('Reading FIDE players and extracting federations...')
-    federation_ids: set[str] = set()
-    with open(local_txt_file, 'r') as file:
-        first_line: bool = True
-        for line in file:
-            if first_line:
-                first_line = False
-                continue
-            federation = line[76:79].upper()
-            if federation not in federation_ids:
-                federation_ids.add(federation)
-    print(f'{len(federation_ids)} federations found.')
-    return federation_ids
 
 def download_federation_url(federation_id: str, flag_file: Path, flag_url) -> bool:
     response: Response = get(flag_url, allow_redirects=True, timeout=5)
@@ -85,11 +42,13 @@ def download_federation_flags(federation_ids: set[str]):
                 download_federation_url(federation_id, flag_file, other_url)
 
 def run():
-    if not (local_zip_file := download_fide_players()):
+    papi_web_config: PapiWebConfig = PapiWebConfig()
+    if not FideDatabase(write=True).check():
+        print_interactive_error(
+            _('Error while updating the FIDE database.').format(port=papi_web_config.web_port))
         return
-    if not (local_txt_file := unzip_fide_players(local_zip_file)):
-        return
-    federation_ids: set[str] = read_federations(local_txt_file)
+    with FideDatabase() as fide_database:
+        federation_ids: set[str] = {federation_id for federation_id in fide_database.read_federation_ids()}
     undeclared_federation_ids: set[str] = {
         federation_id for federation_id in federation_ids if federation_id not in PapiWebConfig.federations
     }

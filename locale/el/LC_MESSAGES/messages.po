@@ -255,7 +255,7 @@ msgstr "Σφάλμα: [{ex}]."
 msgid "Checking Papi-web version..."
 msgstr "Ελέγχω την έκδοση Papi-web..."
 
-#: src/common/engine.py
+#: src/common/engine.py src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Υ"
@@ -1018,12 +1018,12 @@ msgstr "Βαθμολογία Blitz"
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #, ai_translation
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Θήλεις"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #, ai_translation
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Άρρενες"
@@ -1034,13 +1034,13 @@ msgstr "Άρρενες"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 #, ai_translation
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 #, ai_translation
 msgid "M *** SHORT NAME FOR GENDER MALE"
@@ -1300,6 +1300,69 @@ msgstr "Είσοδος αποτελεσμάτων"
 msgid "Parings by player"
 msgstr "Αποστολές από τον παίκτη"
 
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "Η βάση δεδομένων FIDE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);"
+
+# Error: tokens differ between [The FIDE database [{file}] is obsolete
+# ([{days}] days], do you want to update it (Y/n)? ] and [Η βάση δεδομένων
+# FIDE [{file}] είναι πάνω από μία ημέρα παλιά, θέλετε να την ενημερώσετε
+# (Y/n);]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);"
+
+# Error: tokens differ between [Downloading FIDE database...] and [Η λήψη
+# απέτυχε με τον κωδικό [{code}].]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Downloading FIDE database..."
+msgstr "Λήψη βάσης δεδομένων FIDE..."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}]: {ex}."
+msgstr "Απέτυχε να διαβάσει [{url}]: [{ex}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "No data received from [{url}]."
+msgstr "Δεν ελήφθησαν στοιχεία από [{url}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Could not unzip data."
+msgstr "Αδύνατη η αποσύνδεση δεδομένων."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Storing data..."
+msgstr "Αποθήκευση δεδομένων..."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Error at line [{line_no}] (player ignored): [{line}]."
+msgstr "Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο παίκτης): [{line}]"
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Error while creating the database: {ex}."
+msgstr "Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}."
+
+# Error: tokens differ between [{number} players written.] and [οθόνες του
+# {number} παίκτες από #{first} έως τέλος]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "{number} players written."
+msgstr "{number} παίκτες που γράφτηκαν."
+
 #: src/ffe/action_selector.py
 #, ai_translation
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
@@ -1555,6 +1618,11 @@ msgstr "Τοπική URL: {local_url}"
 #, ai_translation
 msgid "LAN/WAN URL: {lan_url}"
 msgstr "LAN/WAN URL: {lan_url}"
+
+#: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
+#, ai_translation
+msgid "Error while updating the FIDE database."
+msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE."
 
 #: src/web/server_engine.py
 #, ai_translation

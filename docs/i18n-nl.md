@@ -14,16 +14,17 @@
 | locale=`nl` | Nederlands <img src="../src/web/static/images/locales/nl.svg" style="height: 1em;"/> |
 |--|:--:|
 |Lege verplichte berichten|0/62|
-|Lege berichten|0/1089|
-|Message flagged [ai_translation]|1089/1089|
+|Lege berichten|0/1101|
+|Message flagged [ai_translation]|1100/1101|
+|Message flagged [fuzzy]|6/1101|
 
 ## Lege verplichte berichten (-)
 
 ## Lege berichten (-)
 
-## Gemarkeerde berichten (1089)
+## Gemarkeerde berichten (1106)
 
-### Bericht gemarkeerd [ai_translation] (1089)
+### Bericht gemarkeerd [ai_translation] (1100)
 
 |Bericht-ID|Vertaling|Locaties|
 |--|--|--|
@@ -77,7 +78,7 @@
 |Parsing error: [{ex}].|Ontledingsfout: [{ex}].|src/common/config_reader.py:None|
 |Error: [{ex}].|Fout: [{ex}].|src/common/config_reader.py:None|
 |Checking Papi-web version...|Papi-web-versie wordt gecontroleerd...|src/common/engine.py:None|
-|Y \*\*\* THE LETTER TO ANSWER YES|Y|src/common/engine.py:None|
+|Y \*\*\* THE LETTER TO ANSWER YES|Y|src/common/engine.py:None<br>src/database/sqlite/fide_database.py:None|
 |N \*\*\* THE LETTER TO ANSWER NO|N|src/common/engine.py:None|
 |Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? |Wilt u upgraden van [{old_version}] naar [{new_version}] [{y_lc}/{n_uc}}]?|src/common/engine.py:None|
 |The installation of version [{version}] failed.|De installatie van versie [{version}] is mislukt.|src/common/engine.py:None|
@@ -228,11 +229,11 @@
 |Rapid rating|Snelle rating|src/data/util.py:None|
 |Blitz rating|Blitz rating|src/data/util.py:None|
 |- \*\*\* NAME FOR GENDER NONE|-|src/data/util.py:None|
-|Female \*\*\* NAME FOR GENDER FEMALE|Vrouwen|src/data/util.py:None<br>src/fide/fide_player.py:None|
-|Male \*\*\* NAME FOR GENDER MALE|Mannelijk|src/data/util.py:None<br>src/fide/fide_player.py:None|
+|Female \*\*\* NAME FOR GENDER FEMALE|Vrouwen|src/data/util.py:None|
+|Male \*\*\* NAME FOR GENDER MALE|Mannelijk|src/data/util.py:None|
 |- \*\*\* SHORT NAME FOR GENDER NONE|-|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|M \*\*\* SHORT NAME FOR GENDER MALE|G|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|M \*\*\* SHORT NAME FOR GENDER MALE|G|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
 |No FFE Licence|Geen FFE-licentie|src/data/util.py:None|
 |Expired FFE licence|Verlopen FFE-licentie|src/data/util.py:None|
 |FFE licence B (leisure)|FFE-licentie B (vrijheid)|src/data/util.py:None|
@@ -282,6 +283,16 @@
 |Pairings by board|Paar per bord|src/data/util.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Results entry|Resultaten entry|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Parings by player|src/data/util.py:None|
+|The FIDE database [{file}] was not found, do you want to create it (Y/n)? |De FIDE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?|src/database/sqlite/fide_database.py:None|
+|Downloading FIDE database...|FIDE-database wordt gedownload...|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] reageerde op code [{code}].|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Lezen van [{url}] is mislukt: [{ex}].|src/database/sqlite/fide_database.py:None|
+|No data received from [{url}].|Geen gegevens ontvangen van [{url}].|src/database/sqlite/fide_database.py:None|
+|Could not unzip data.|Kon de data niet losmaken.|src/database/sqlite/fide_database.py:None|
+|Storing data...|Gegevens worden opgeslagen...|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}] (player ignored): [{line}].|Fout op regel [{line_no}] (speler genegeerd): [{line}]|src/database/sqlite/fide_database.py:None|
+|Error while creating the database: {ex}.|Hernoemen van de database is mislukt: {ex}.|src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} spelers geschreven.|src/database/sqlite/fide_database.py:None|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Papi-bestand niet gedefinieerd voor toernooi [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Papi-bestand niet gevonden [{file}] voor toernooi [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
@@ -331,6 +342,7 @@
 |Port: {port}|Haven: {port}|src/web/server_engine.py:None|
 |Local URL: {local_url}|Lokale URL: {local_url}|src/web/server_engine.py:None|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:None|
+|Error while updating the FIDE database.|Fout bij het bijwerken van de FIDE-database.|src/web/server_engine.py:None<br>utils/federation_flags/download_federation_flags.py:None|
 |Port [{port}] already in use, can not start Papi-web server.|Poort [{port}] al in gebruik, kan Papi-webserver niet starten.|src/web/server_engine.py:None|
 |USE AT YOUR OWN RISKS|GEBRUIK OP UW EIGEN RISICO'S|src/web/controllers/index_controller.py:None|
 |Please enter the ID of ChessEvent connection.|Voer de ID van ChessEvent-verbinding in.|src/web/controllers/admin/chessevent_admin_controller.py:None|
@@ -1116,4 +1128,15 @@
 |Empty messages are not shown for the default language.|Lege berichten worden niet getoond voor de standaardtaal.|utils/i18n/i18n_update.py:None|
 |Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:None|
 |Translation|Vertaling|utils/i18n/i18n_update.py:None|
+
+### Bericht gemarkeerd [fuzzy] (6)
+
+|Bericht-ID|Vertaling|Locaties|
+|--|--|--|
+|Downloading FIDE database...|FIDE-database wordt gedownload...|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] reageerde op code [{code}].|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Lezen van [{url}] is mislukt: [{ex}].|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}] (player ignored): [{line}].|Fout op regel [{line_no}] (speler genegeerd): [{line}]|src/database/sqlite/fide_database.py:None|
+|Error while creating the database: {ex}.|Hernoemen van de database is mislukt: {ex}.|src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} spelers geschreven.|src/database/sqlite/fide_database.py:None|
 

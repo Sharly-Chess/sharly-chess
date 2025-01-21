@@ -23,8 +23,8 @@ from data.player import Player, FederationTuple, LeagueTuple, ClubTuple
 from data.screen import Screen
 from data.util import BoardColor, NeedsUpload, TournamentRating, PlayerFFELicence, PlayerGender
 from data.util import TournamentPairing, Result
-from database.papi import PapiDatabase
-from database.sqlite import EventDatabase
+from database.access.papi.papi_database import PapiDatabase
+from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament
 
 logger: Logger = get_logger()

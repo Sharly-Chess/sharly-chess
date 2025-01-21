@@ -17,7 +17,7 @@ from data.loader import EventLoader
 from data.screen import Screen
 from data.screen_set import ScreenSet
 from data.util import ScreenType
-from database.sqlite import EventDatabase
+from database.sqlite.event_database import EventDatabase
 from database.store import StoredScreen, StoredScreenSet
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
 from web.controllers.index_controller import WebContext, AbstractController

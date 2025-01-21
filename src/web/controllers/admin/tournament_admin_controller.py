@@ -15,7 +15,7 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from database.sqlite import EventDatabase
+from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament, StoredScreen
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
 from web.controllers.index_controller import WebContext
