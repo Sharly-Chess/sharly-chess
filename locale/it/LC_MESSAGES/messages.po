@@ -1311,7 +1311,7 @@ msgstr "Il database FIDE [{file}] non è stato trovato, vuoi crearlo (Y/n)?"
 #: src/database/sqlite/fide_database.py
 #, ai_translation, fuzzy
 msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr ""
+msgstr "Il database FIDE [{file}] è obsoleto ([{days}] giorni], vuoi aggiornarlo (Y/n)?"
 
 # Error: tokens differ between [Downloading FIDE database...] and
 # [Scaricamento non riuscito con codice [{code}].]

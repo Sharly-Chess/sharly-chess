@@ -1311,7 +1311,7 @@ msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
 #: src/database/sqlite/fide_database.py
 #, ai_translation, fuzzy
 msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr ""
+msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
 
 # Error: tokens differ between [Downloading FIDE database...] and [Nedladdning
 # misslyckades med koden [{code}].]

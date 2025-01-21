@@ -15,16 +15,16 @@
 |--|:--:|
 |Lege verplichte berichten|0/62|
 |Lege berichten|0/1101|
-|Message flagged [ai_translation]|1100/1101|
-|Message flagged [fuzzy]|6/1101|
+|Message flagged [ai_translation]|1101/1101|
+|Message flagged [fuzzy]|7/1101|
 
 ## Lege verplichte berichten (-)
 
 ## Lege berichten (-)
 
-## Gemarkeerde berichten (1106)
+## Gemarkeerde berichten (1108)
 
-### Bericht gemarkeerd [ai_translation] (1100)
+### Bericht gemarkeerd [ai_translation] (1101)
 
 |Bericht-ID|Vertaling|Locaties|
 |--|--|--|
@@ -284,6 +284,7 @@
 |Results entry|Resultaten entry|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Parings by player|src/data/util.py:None|
 |The FIDE database [{file}] was not found, do you want to create it (Y/n)? |De FIDE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?|src/database/sqlite/fide_database.py:None|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |De FIDE-database [{file}] is verouderd ([{days}] dagen], wilt u deze updaten (Y/n)?|src/database/sqlite/fide_database.py:None|
 |Downloading FIDE database...|FIDE-database wordt gedownload...|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}], error code [{code}].|URL [{url}] reageerde op code [{code}].|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}]: {ex}.|Lezen van [{url}] is mislukt: [{ex}].|src/database/sqlite/fide_database.py:None|
@@ -1129,10 +1130,11 @@
 |Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:None|
 |Translation|Vertaling|utils/i18n/i18n_update.py:None|
 
-### Bericht gemarkeerd [fuzzy] (6)
+### Bericht gemarkeerd [fuzzy] (7)
 
 |Bericht-ID|Vertaling|Locaties|
 |--|--|--|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |De FIDE-database [{file}] is verouderd ([{days}] dagen], wilt u deze updaten (Y/n)?|src/database/sqlite/fide_database.py:None|
 |Downloading FIDE database...|FIDE-database wordt gedownload...|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}], error code [{code}].|URL [{url}] reageerde op code [{code}].|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}]: {ex}.|Lezen van [{url}] is mislukt: [{ex}].|src/database/sqlite/fide_database.py:None|
