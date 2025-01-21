@@ -53,6 +53,13 @@
                                 <i class="bi-tag"></i> {{ _('Category *** CATEGORY FOR PLAYERS COLUMNS') }}
                             {% elif column == 'gender' %}
                                 <i class="bi-person-standing-dress"></i><i class="bi-person-standing"></i> {{ _('Gender *** GENDER FOR PLAYERS COLUMNS') }}
+                            {% elif column == 'fixed' %}
+                                {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}<img
+                                    src="{{ url_for('static', file_path='/images/disabled-black.svg') }}"
+                                    style="height: 1.2em"
+                                    class="p-0"
+                                />
+                                {{ _('Fixed board *** FIXED FOR PLAYERS COLUMNS') }}
                             {% elif column == 'fide' %}
                                 <img
                                         src="{{ url_for('static', file_path='/images/federations/fide.svg') }}"

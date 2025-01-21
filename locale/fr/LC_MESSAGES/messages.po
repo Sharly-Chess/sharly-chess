@@ -821,11 +821,11 @@ msgstr "Classement blitz"
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Femme"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
 
@@ -834,12 +834,12 @@ msgstr "Homme"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
@@ -970,7 +970,7 @@ msgstr "F"
 
 #: src/data/util.py
 msgid "No title"
-msgstr "Aucun titre."
+msgstr "Aucun titre"
 
 #: src/data/util.py
 msgid "Woman Fide Master"
@@ -1366,6 +1366,7 @@ msgid "Family [{uniq_id}] already exists."
 msgstr "La famille [{uniq_id}] existe déjà."
 
 #: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
@@ -1583,6 +1584,10 @@ msgid "Please enter the date of birth."
 msgstr "Veuillez entrer la date de naissance."
 
 #: src/web/controllers/admin/player_admin_controller.py
+msgid "Only estimated rankings are optional."
+msgstr "Seuls les classements estimés sont optionnels."
+
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Identifiant FIDE [{fide_id}] non valide."
 
@@ -1591,12 +1596,24 @@ msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Identifiant FFE [{ffe_id}] non valide."
 
 #: src/web/controllers/admin/player_admin_controller.py
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
+
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
 
 #: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid phone number [{phone}]."
 msgstr "Numéro de téléphone [{phone}] non valide."
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "Invalid amount [{amount}]."
+msgstr "Montant [{amount}] non valide."
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "Invalid fixed board number [{fixed_board}]."
+msgstr "Numéro d'échiquier [{fixed_board}] non valide."
 
 #: src/web/controllers/admin/player_admin_controller.py
 msgid "Standard:"
@@ -1623,6 +1640,14 @@ msgid "The rating used when the time control is at most 10 minutes."
 msgstr "Le classement utilisé lorsque la cadence est inférieure à 10 minutes."
 
 #: src/web/controllers/admin/player_admin_controller.py
+msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
+msgstr "Le tournoi [{tournament_uniq_id}] est terminé, on ne peut plus y ajouter de joueur·euses."
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
+msgstr "Pas de fichier Papi trouvé pour le tournoi [{tournament_uniq_id}], on ne peut pas y ajouter de joueur·euses."
+
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a déjà été apparié·e dans le tournoi [{tournament_uniq_id}]."
 
@@ -1641,10 +1666,6 @@ msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tou
 #: src/web/controllers/admin/player_admin_controller.py
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
-
-#: src/web/controllers/admin/player_admin_controller.py
-msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
-msgstr "Le·la joueur·euse [{last_name} {first_name}] a été supprimé·e du tournoi [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
@@ -2031,6 +2052,7 @@ msgstr "Modifier"
 #: src/web/templates/admin_event_config.html
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_rotator_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -2717,6 +2739,7 @@ msgid "The name of the screen family, optional. The following tokens are automat
 msgstr "Le nom de la famille d' écrans, facultatif. Les mots-clés suivants sont remplacés automatiquement par les numéros des échiquiers ou les noms des joueur·euses : %%f=first (premier), %%l=last (dernier), %%t=tournament (tournoi)."
 
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_screen_modal.html
 #: src/web/templates/admin_screen_sets_modal_set_div.html
 msgid "Tournament:"
@@ -2917,6 +2940,15 @@ msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr "Édition du·de la joueur·euse [%(last_name)s %(first_name)s]"
 
 #: src/web/templates/admin_player_modal.html
+#, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr "Suppression du·de la joueur·euse [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+msgid "Warning: the deletion of a player is permanent!"
+msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
+
+#: src/web/templates/admin_player_modal.html
 msgid "Identity"
 msgstr "Identité"
 
@@ -2959,6 +2991,10 @@ msgstr "Genre :"
 #: src/web/templates/admin_player_modal.html
 msgid "The player's gender."
 msgstr "Le genre du·de la joueur·euse."
+
+#: src/web/templates/admin_player_modal.html
+msgid "The player's tournament."
+msgstr "Le tournoi du·de la joueur·euse."
 
 #: src/web/templates/admin_player_modal.html
 msgid "FIDE ratings, title and fédération"
@@ -3080,6 +3116,14 @@ msgstr "Payé :"
 msgid "The price the player already paid."
 msgstr "Le montant déjà payé."
 
+#: src/web/templates/admin_player_modal.html
+msgid "Fixed board:"
+msgstr "Échiquier fixe :"
+
+#: src/web/templates/admin_player_modal.html
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Le numéro d'échiquier qui sera toujours assigné au·à la joueur·euse (pour les personnes en situation de handicap)."
+
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_screen_card.html
 msgid "Players"
@@ -3088,6 +3132,18 @@ msgstr "Joueur·euses"
 #: src/web/templates/admin_players.html
 msgid "Add a player to the event."
 msgstr "Ajouter un·e joueur·euse à l'évènement."
+
+#: src/web/templates/admin_players.html
+msgid "Tournaments are finished, you can not add players any longer."
+msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
+
+#: src/web/templates/admin_players.html
+msgid "No Papi file for the tournaments of the event, players can not be added."
+msgstr "Aucun fichier Papi pour les tournois de l'évènement, on ne peut pas ajouter de joueur·euses."
+
+#: src/web/templates/admin_players.html
+msgid "Add a tournament before adding players."
+msgstr "Ajoutez un tournoi pour pouvoir ajouter des joueur·euses."
 
 #: src/web/templates/admin_players.html
 msgid "Create a player"
@@ -4523,6 +4579,10 @@ msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Genre"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
+msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgstr "Échiquier fixe"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
 msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
 msgstr "Fide"
 
@@ -4630,15 +4690,6 @@ msgstr "Messages marqués"
 msgid "Translation"
 msgstr "Traduction"
 
-#~ msgid "Edit the player's properties."
-#~ msgstr "Éditer les propriétés du·de la joueur·euse."
-
-#~ msgid "E.g.: John"
-#~ msgstr "Exemple : Pierre"
-
-#~ msgid "E.g.: Pierre"
-#~ msgstr "Exemple : chronometre"
-
-#~ msgid "Please enter the first name."
-#~ msgstr "Veuillez entrer le prénom."
+#~ msgid "Enter a FFE licence number, a Fide number, a part of a name..."
+#~ msgstr "Entrez un numéro de licence FFE, un numéro FIDE, une partie du nom..."
 

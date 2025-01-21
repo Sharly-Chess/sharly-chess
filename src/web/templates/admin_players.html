@@ -19,18 +19,31 @@
                     <i class="bi-arrow-clockwise"></i>
                 </button>
             </span>
-            <!--span {{ tooltip_attributes('info', _('Add a player to the event.'), 'top') }}>
+            <span
+                    {% if admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                        {{ tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
+                    {% elif admin_event.tournaments_with_file_sorted_by_uniq_id %}
+                        {{ tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
+                    {% elif admin_event.tournaments_by_id %}
+                        {{ tooltip_attributes('warning', _('No Papi file for the tournaments of the event, players can not be added.'), 'top') }}
+                    {% else %}
+                        {{ tooltip_attributes('warning', _('Add a tournament before adding players.'), 'top') }}
+                    {% endif %}
+            >
                 <button
                         class="btn btn-primary text-nowrap ms-1"
                         hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                         preload
                         hx-target="body"
                         hx-indicator="#please-wait"
+                        {% if not admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                            disabled
+                        {% endif %}
                 >
                     <i class="bi-plus-square-fill"></i>
                     {{ _('Create a player') }}
                 </button>
-            </span-->
+            </span>
         </div>
     </div>
 
@@ -151,8 +164,16 @@
                     {% endif %}
                     {% if 'gender' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
-                            <i class="bi-person-standing-dress"></i><i class="bi-person-standing"></i>
-                            {% include 'admin_players/admin_players_filter_genders.html' %}
+                            <i class="bi-person-standing-dress"></i><i class="bi-person-standing"></i>{%- include 'admin_players/admin_players_filter_genders.html' %}
+                        </th>
+                    {% endif %}
+                    {% if 'gender' in admin_players_filter_columns %}
+                        <th scope="col" class="text-nowrap text-center">
+                            {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}<img
+                                    src="{{ url_for('static', file_path='/images/disabled-white.svg') }}"
+                                    style="height: 1.2em"
+                                    class="p-0"
+                            />
                         </th>
                     {% endif %}
                     {% if 'fide' in admin_players_filter_columns %}
@@ -298,6 +319,11 @@
                                     {{ player.gender.short_name }}
                                 </td>
                             {% endif %}
+                            {% if 'fixed' in admin_players_filter_columns %}
+                                <td class="text-nowrap text-center">
+                                    {% if player.fixed %}{{ player.fixed }}{% endif %}
+                                </td>
+                            {% endif %}
                             {% if 'fide' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center w-1">
                                     <img
@@ -342,7 +368,7 @@
                             {% endif %}
                             {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
                                 <td class="text-nowrap text-center">
-                                    {% if player.has_real_pairings %}
+                                    {% if player.has_real_pairings or admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id|length == 1 %}
                                         {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
                                     {% else %}
                                         <span class="dropdown">
@@ -384,10 +410,10 @@
                             {% endif %}
                             <th scope="row" class="text-nowrap text-end w-1">
                                 <span class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
                                         <i class="bi-three-dots"></i>
                                     </button>
-                                    <ul class="dropdown-menu players-player-actions p-0" >
+                                    <ul class="dropdown-menu dropdown-menu-end players-player-actions p-0" >
                                         <li
                                             class="dropdown-item btn py-0 px-1"
                                             hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
@@ -399,8 +425,8 @@
                                         </li>
                                         {% if not player.has_real_pairings %}
                                             <li
-                                                class="dropdown-item py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
-                                                    hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                                class="dropdown-item btn py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
+                                                    hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                                     hx-target="body"
                                                     hx-indicator="#please-wait"
                                                     {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}

@@ -1,22 +1,22 @@
 #: src/papi_web.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 msgstr "Detta program bör inte startas direkt, använd scripts server.bat, ffe.bat och chessevent.bat."
 
 #: src/chessevent/action_selector.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
-msgstr "ChessEvent anslutning inte inställd för turnering [{tournament_uniq_id}]."
+msgstr "ChessEvent-anslutningen är inte definierad för turnering [{tournament_uniq_id}]."
 
 #: src/chessevent/action_selector.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
-msgstr "Papi fil inte definierad för turnering [{tournament_uniq_id}]."
+msgstr "Papi-filen är inte definierad för turnering [{tournament_uniq_id}]."
 
 #: src/chessevent/action_selector.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has started."
-msgstr "Turneringen inleds [{tournament_uniq_id}]."
+msgstr "Turneringen [{tournament_uniq_id}] har börjat."
 
 #: src/chessevent/action_selector.py src/ffe/action_selector.py
 #, ai_translation
@@ -113,7 +113,7 @@ msgstr "Papi version: {version}"
 #: src/chessevent/action_selector.py src/ffe/action_selector.py
 #, ai_translation
 msgid "This action can not be applied to the tournaments of this event."
-msgstr "Denna åtgärd kan göras på turneringarna i denna händelse."
+msgstr "Denna åtgärd kan inte tillämpas på turneringarna i denna händelse."
 
 #: src/chessevent/action_selector.py
 #, ai_translation
@@ -153,7 +153,7 @@ msgstr "Parameter saknas (kod: [{code}]): [{error}]."
 #: src/chessevent/chessevent_session.py
 #, ai_translation
 msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
-msgstr "Id [{user_id}] hittades inte (kod: [{code}]): [{error}]."
+msgstr "ID [{user_id}] hittades inte (kod: [{code}]): [{error}]."
 
 #: src/chessevent/chessevent_session.py
 #, ai_translation
@@ -202,7 +202,7 @@ msgstr "Inga händelser hittades."
 #: src/chessevent/event_selector.py src/ffe/event_selector.py
 #, ai_translation
 msgid "One event found, press Enter (Q to quit): "
-msgstr "En händelse hittades, skriv Enter (Q för att avsluta):"
+msgstr "En händelse hittades, tryck på Enter (Q för att avsluta):"
 
 #: src/chessevent/event_selector.py src/ffe/event_selector.py
 #, ai_translation
@@ -330,35 +330,8 @@ msgstr "Återhämtning av händelser från version {version}..."
 msgid "Recovering event [{event_uniq_id}]..."
 msgstr "Återhämtningsevenemang [{event_uniq_id}]..."
 
-# E
-# r
-# o
-# :
-# t
-# k
-# e
-# n
-# s
-# d
-# i
-# f
-# b
-# w
-# [
-# v
-# {
-# _
-# u
-# q
-# }
-# ]
-# c
-# g
-# a
-# m
-# .
 #: src/common/engine.py
-#, ai_translation, error
+#, ai_translation
 msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
 msgstr "Evenemang [{event_uniq_id}]: återhämtningsturnering [{tournament_uniq_id}]..."
 
@@ -440,7 +413,7 @@ msgstr "Du använder en version nyare än den senaste stabila versionen tillgän
 #: src/common/engine.py
 #, ai_translation
 msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
-msgstr "En stabil och nyare version är tillgänglig ([{new_version}]) men uppgradering av instabila versioner (som den du för närvarande använder: [{old_version}] måste göras manuellt (uppgradera från den senaste stabila versionen installerad på din server)."
+msgstr "En stabil och nyare version är tillgänglig ([{new_version}]) men uppgradering av instabila versioner (som den du för närvarande använder: [{old_version}]) måste göras manuellt (uppgradera från den senaste stabila versionen installerad på din server)."
 
 #: src/common/engine.py
 #, ai_translation
@@ -661,12 +634,12 @@ msgstr "Ingen bakgrundsbild inställd, som standard [{background_image}]"
 #: src/data/event.py
 #, ai_translation
 msgid "No background colour set, by default [{background_color}]"
-msgstr "Ingen bakgrundsfärg inställd, som standard [{background_color}]"
+msgstr "Ingen bakgrundsfärg, som standard [{background_color}]"
 
 #: src/data/event.py
 #, ai_translation
 msgid "No password set for the results entry"
-msgstr "Inget lösenord inställt för inmatning av resultat"
+msgstr "Inget lösenord inställt för resultatposten"
 
 #: src/data/event.py
 #, ai_translation
@@ -1045,12 +1018,12 @@ msgstr "Blitz-betyg"
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "- Vad är det?"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 #, ai_translation
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Kvinna"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 #, ai_translation
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Män"
@@ -1061,20 +1034,20 @@ msgstr "Män"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "- Vad är det?"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 #, ai_translation
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
 
-#: src/data/util.py
+#: src/data/util.py src/fide/fide_player.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 #, ai_translation
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "Ordförande"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No FFE Licence"
 msgstr "Ingen FFE-licens"
 
@@ -1144,9 +1117,9 @@ msgid "65+"
 msgstr "Försäkringstekniska avsättningar beräknade som helhet – bruttosoliditetsgradens exponeringsvärde – exponeringar enligt schablonmetoden"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No category"
-msgstr "Inga ruttnare."
+msgstr "Ingen kategori"
 
 #: src/data/util.py
 #, ai_translation
@@ -1199,9 +1172,9 @@ msgid "Over 65"
 msgstr "Över 65"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
-msgstr "Män"
+msgstr "Beräknad"
 
 #: src/data/util.py
 #, ai_translation
@@ -1209,29 +1182,29 @@ msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "Nationellt"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
-msgstr "Män"
+msgstr "FIDUCERA"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
-msgstr "Ordförande"
+msgstr "Ursprunglig hänvisning till den nationella lagstiftningen:"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
-msgstr "- Vad är det?"
+msgstr "Ej tillämpligt"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No title"
-msgstr "Inga timers."
+msgstr "Ingen titel"
 
 #: src/data/util.py
 #, ai_translation
@@ -1264,34 +1237,34 @@ msgid "Grand Master"
 msgstr "Stormästare"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
-msgstr "Ordförande"
+msgstr "WFM"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "FM *** SHORT NAME FOR Fide Master"
-msgstr "Ordförande"
+msgstr "FM Ordförande"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "WIM *** SHORT NAME FOR Woman International Master"
-msgstr "- Vad är det?"
+msgstr "WIM Ordförande"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "IM *** SHORT NAME FOR International Master"
-msgstr "- Vad är det?"
+msgstr "IM"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
-msgstr "Ordförande"
+msgstr "WGM"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "GM *** SHORT NAME FOR Grand Master"
-msgstr "Ordförande"
+msgstr "Genetiskt modifierade organismer"
 
 #: src/data/util.py src/web/templates/user_boards_screen_set.html
 #: src/web/templates/user_results_screen.html
@@ -1320,12 +1293,12 @@ msgstr "Parningar ombord"
 #: src/web/templates/admin_families.html src/web/templates/admin_screens.html
 #, ai_translation
 msgid "Results entry"
-msgstr "Inlämning av resultat"
+msgstr "Resultatinmatning"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Parings by player"
-msgstr "parningar av spelare"
+msgstr "Parningar per spelare"
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1511,7 +1484,7 @@ msgstr "Skickar turnering [{ffe_id}] ({file}) till FFE:s webbplats..."
 #: src/ffe/ffe_session.py
 #, ai_translation
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr "Ladda upp länk hittades inte, kontrollera att turneringen inte är klar på FFE webbplats."
+msgstr "Ladda upp länk hittades inte, kontrollera att turneringen inte är markerad som klar på FFE webbplats."
 
 #: src/ffe/ffe_session.py
 #, ai_translation
@@ -1546,7 +1519,7 @@ msgstr "Skicka reglerna för turneringen [{ffe_id}] ({file}) till FFE:s webbplat
 #: src/ffe/ffe_session.py
 #, ai_translation
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr "Regler ladda upp länk inte hittades, kontrollera att turneringen inte är klar på FFE webbplats."
+msgstr "Regler uppladdning länk hittades inte, kontrollera att turneringen inte är markerad som klar på FFE webbplats."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -1596,7 +1569,7 @@ msgstr "ANVÄNDNING VID DINA EGNA RISKER"
 #: src/web/controllers/admin/chessevent_admin_controller.py
 #, ai_translation
 msgid "Please enter the ID of ChessEvent connection."
-msgstr "Vänligen ange identifikationen för ChessEvent-anslutningen."
+msgstr "Ange identifikationen för ChessEvent-anslutningen."
 
 #: src/web/controllers/admin/chessevent_admin_controller.py
 #, ai_translation
@@ -1606,7 +1579,7 @@ msgstr "ChessEvent-anslutning [{uniq_id}] finns redan."
 #: src/web/controllers/admin/chessevent_admin_controller.py
 #, ai_translation
 msgid "Please enter the ID used to connect to the ChessEvent platform."
-msgstr "Ange det id som används för att ansluta till ChessEvent-plattformen."
+msgstr "Ange ID som används för att ansluta till ChessEvent-plattformen."
 
 #: src/web/controllers/admin/chessevent_admin_controller.py
 #, ai_translation
@@ -1616,7 +1589,7 @@ msgstr "Ange lösenordet som används för att ansluta till ChessEvent-plattform
 #: src/web/controllers/admin/chessevent_admin_controller.py
 #, ai_translation
 msgid "Please enter the ID of the event on the ChessEvent platform."
-msgstr "Vänligen ange id för händelsen på ChessEvent-plattformen."
+msgstr "Ange ID för händelsen på ChessEvent-plattformen."
 
 #: src/web/controllers/admin/chessevent_admin_controller.py
 #, ai_translation
@@ -1639,9 +1612,9 @@ msgid "Tournaments ({num})"
 msgstr "Turneringar ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Players ({num})"
-msgstr "Timers ({num})"
+msgstr "Spelare ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -1703,7 +1676,7 @@ msgstr "Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch}).
 #: src/web/controllers/admin/family_admin_controller.py
 #, ai_translation
 msgid "Please enter the family ID."
-msgstr "Vänligen ange familjens ID."
+msgstr "Ange familje-ID."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
@@ -1719,6 +1692,7 @@ msgid "Family [{uniq_id}] already exists."
 msgstr "Familjen [{uniq_id}] finns redan."
 
 #: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "Please choose the tournament."
@@ -1868,7 +1842,7 @@ msgstr "Ogiltig färg [{color}] ([# RRGGBB] förväntas)."
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
 msgid "Please enter the event ID."
-msgstr "Ange händelsens id."
+msgstr "Ange händelse-ID."
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -1974,47 +1948,59 @@ msgid "Papi-web configuration"
 msgstr "Inställning av papi-webben"
 
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Please enter the last name."
-msgstr "Vänligen ange tiden."
+msgstr "Ange efternamnet."
 
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Please enter the date of birth."
-msgstr "Ange evenemangets slutdatum."
+msgstr "Ange födelsedatum."
 
-# Error: tokens differ between [Invalid FIDE ID [{fide_id}].] and [Ogiltig tid
-# [{time_str}].]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
+msgid "Only estimated rankings are optional."
+msgstr "Endast uppskattade rankningar är valfria."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Ogiltigt FIDE-ID [{fide_id}]."
 
-# Error: tokens differ between [Invalid FFE ID [{ffe_id}].] and [Ogiltiga
-# avgifter länkar text [{text}].]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Ogiltigt FFE-ID [{ffe_id}]."
 
-# Error: tokens differ between [Invalid mail [{mail}].] and [Ogiltigt värde
-# [{value}].]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr "Ogiltigt FFE-tillståndsnummer [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Invalid mail [{mail}]."
 msgstr "Ogiltigt brev [{mail}]."
 
-# Error: tokens differ between [Invalid phone number [{phone}].] and [Ogiltigt
-# styrelsenummer [{fixed_board_str}].]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Invalid phone number [{phone}]."
 msgstr "Ogiltigt telefonnummer [{phone}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
+msgid "Invalid amount [{amount}]."
+msgstr "Ogiltigt belopp [{amount}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "Invalid fixed board number [{fixed_board}]."
+msgstr "Ogiltigt fast brädnummer [{fixed_board}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Standard:"
-msgstr "Börja:"
+msgstr "Standard:"
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2041,61 +2027,33 @@ msgstr "- Vad är det som händer?"
 msgid "The rating used when the time control is at most 10 minutes."
 msgstr "Det betyg som används när tidsstyrningen är högst 10 minuter."
 
-# E
-# r
-# o
-# :
-# t
-# k
-# e
-# n
-# s
-# d
-# i
-# f
-# b
-# w
-# [
-# v
-# {
-# _
-# u
-# q
-# }
-# ]
-# c
-# g
-# a
-# m
-# .
-# Error: tokens differ between [Player [{last_name} {first_name}] has pairings
-# in tournament [{tournament_uniq_id}].] and [Evenemang [{event_uniq_id}]:
-# återhämtningsturnering [{tournament_uniq_id}]...]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, error, fuzzy
+#, ai_translation
+msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
+msgstr "Turneringen [{tournament_uniq_id}] är klar, du kan inte lägga till spelare längre."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
+msgstr "Ingen papi fil hittades för turnering [{tournament_uniq_id}], kan inte lägga till spelaren."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Spelaren [{last_name} {first_name}] har parningar i turneringen [{tournament_uniq_id}]."
 
-# Error: tokens differ between [Papi file [{tournament_file}] not found.] and
-# [Turneringen [{tournament_id}] hittades inte.]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Papi-filen [{tournament_file}] hittades inte."
 
-# Error: tokens differ between [FFE licence [{ffe_licence_number}] already
-# present in tournament [{tournament_uniq_id}].] and [Regler fil [{file}]
-# hittades inte för turnering [{tournament_uniq_id}].]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr "FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}]."
 
-# Error: tokens differ between [Fide ID [{fide_id}] already present in
-# tournament [{tournament_uniq_id}].] and [Regler fil [{file}] hittades inte
-# för turnering [{tournament_uniq_id}].]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
 msgstr "Fide ID [{fide_id}] redan närvarande i turneringen [{tournament_uniq_id}]."
 
@@ -2104,28 +2062,20 @@ msgstr "Fide ID [{fide_id}] redan närvarande i turneringen [{tournament_uniq_id
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Spelaren [{last_name} {first_name}] har flyttats från turneringen [{src_tournament_uniq_id}] till turneringen [{dst_tournament_uniq_id}]."
 
-# Error: tokens differ between [Player [{last_name} {first_name}] has been
-# removed from tournament [{tournament_uniq_id}].] and [Papi fil inte
-# definierad för turnering [{tournament_uniq_id}].]
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
-msgid "Player [{last_name} {first_name}] has been removed from tournament [{tournament_uniq_id}]."
-msgstr "Spelaren [{last_name} {first_name}] har tagits bort från turneringen [{tournament_uniq_id}]."
-
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
-msgstr "FFE ID definieras inte för turnering [{tournament_uniq_id}]."
+msgstr "Incheckningen är öppen för turnering [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
-msgstr "FFE ID definieras inte för turnering [{tournament_uniq_id}]."
+msgstr "Incheckningen är stängd för turnering [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/rotator_admin_controller.py
 #, ai_translation
 msgid "Please enter the rotator ID."
-msgstr "Vänligen ange rotator-ID."
+msgstr "Ange rotator-ID."
 
 #: src/web/controllers/admin/rotator_admin_controller.py
 #, ai_translation
@@ -2195,7 +2145,7 @@ msgstr "Den sista uppsättningen av en skärm kan inte tas bort."
 #: src/web/controllers/admin/timer_admin_controller.py
 #, ai_translation
 msgid "Please enter the timer ID."
-msgstr "Vänligen ange timer-ID."
+msgstr "Ange timer-ID."
 
 #: src/web/controllers/admin/timer_admin_controller.py
 #, ai_translation
@@ -2205,7 +2155,7 @@ msgstr "Timer [{uniq_id}] finns redan."
 #: src/web/controllers/admin/timer_admin_controller.py
 #, ai_translation
 msgid "Please enter the round number or the hour ID."
-msgstr "Ange rundnumret eller timnumret."
+msgstr "Ange rundnumret eller tim-ID:et."
 
 #: src/web/controllers/admin/timer_admin_controller.py
 #, ai_translation
@@ -2270,7 +2220,7 @@ msgstr "Timer [{timer_uniq_id}] har utgått."
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
 msgid "Please enter the tournament ID."
-msgstr "Vänligen ange turneringens ID."
+msgstr "Ange turneringens ID."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
@@ -2290,7 +2240,7 @@ msgstr "Ange turneringens namn."
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
 msgid "The FFE ID is a positive integer."
-msgstr "FFE-ID är ett positivt heltal."
+msgstr "FFE ID är ett positivt heltal."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
@@ -2298,9 +2248,9 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr "Lösenordet för turneringen på FFE webbplats är gjord av 10 stora bokstäver."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No ChessEvent connection"
-msgstr "Inga ChessEvent-förbindelser."
+msgstr "Ingen ChessEvent-anslutning"
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
@@ -2335,7 +2285,7 @@ msgstr "Turneringen [{tournament_uniq_id}] har tagits bort."
 #: src/web/controllers/user/event_user_controller.py
 #, ai_translation
 msgid "Results entry ({num})"
-msgstr "Inlämning av resultat ({num})"
+msgstr "Resultatinmatning ({num})"
 
 #: src/web/controllers/user/event_user_controller.py
 #, ai_translation
@@ -2378,12 +2328,12 @@ msgid "Please enter the password."
 msgstr "Ange lösenordet."
 
 #: src/web/controllers/user/tournament_user_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Tournament [{tournament_uniq_id}] is not started yet."
-msgstr "Turneringen inleds [{tournament_uniq_id}]."
+msgstr "Turneringen [{tournament_uniq_id}] har inte startat ännu."
 
 #: src/web/controllers/user/tournament_user_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Tournament [{tournament_uniq_id}] is started."
 msgstr "Turneringen inleds [{tournament_uniq_id}]."
 
@@ -2490,12 +2440,12 @@ msgstr "Egenskaper"
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
 msgid "ID (unique):"
-msgstr "Id (enhetlig):"
+msgstr "Identitet (unik):"
 
 #: src/web/templates/admin_chessevent_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the ChessEvent connection."
-msgstr "Det unika id, som används för att referera till ChessEvent-anslutningen."
+msgstr "Det unika ID, som används för att referera till ChessEvent-anslutningen."
 
 #: src/web/templates/admin_chessevent_modal.html
 #, ai_translation
@@ -2518,7 +2468,7 @@ msgstr "T.ex.: %(string)s"
 #: src/web/templates/admin_chessevent_modal.html
 #, ai_translation
 msgid "the ID used to connect to the ChessEvent platform."
-msgstr "Id-kortet användes för att ansluta till ChessEvent-plattformen."
+msgstr "ID som används för att ansluta till ChessEvent-plattformen."
 
 #: src/web/templates/admin_chessevent_modal.html
 #, ai_translation
@@ -2575,6 +2525,7 @@ msgstr "Uppdatera"
 #: src/web/templates/admin_event_config.html
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_rotator_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -2623,9 +2574,9 @@ msgid "No ChessEvent connections."
 msgstr "Inga ChessEvent-förbindelser."
 
 #: src/web/templates/admin_close_check_in_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
-msgstr "Radering av turneringen [%(tournament_uniq_id)s]"
+msgstr "Stäng incheckning för turnering [%(tournament_uniq_id)s]"
 
 #: src/web/templates/admin_close_check_in_modal.html
 #, ai_translation
@@ -2653,9 +2604,9 @@ msgid "All the players intended to play the coming round did check-in."
 msgstr "Alla spelare avsedda att spela den kommande omgången gjorde incheckning."
 
 #: src/web/templates/admin_close_check_in_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Mark as forfeit for the rest of the tournament"
-msgstr "Redigera egenskaperna hos turneringen."
+msgstr "Markera som förverkad för resten av turneringen"
 
 #: src/web/templates/admin_close_check_in_modal.html
 #, ai_translation
@@ -2663,9 +2614,9 @@ msgid "Mark as forfeit for the coming round"
 msgstr "Markera som förverkad för den kommande omgången"
 
 #: src/web/templates/admin_close_check_in_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Close the check-in"
-msgstr "Ta bort timern."
+msgstr "Stäng incheckningen"
 
 #: src/web/templates/admin_config.html src/web/templates/admin_events.html
 #, ai_translation
@@ -2754,7 +2705,7 @@ msgstr "Försening nr %(num)d:"
 #: src/web/templates/admin_event_card.html
 #, ai_translation, python-format
 msgid "Unique ID: %(uniq_id)s"
-msgstr "Unikt id: %(uniq_id)s"
+msgstr "Unikt ID: %(uniq_id)s"
 
 #: src/web/templates/admin_event_card.html
 #: src/web/templates/user_event_card.html
@@ -2815,7 +2766,7 @@ msgstr "Anpassning"
 #: src/web/templates/admin_event_config.html
 #, ai_translation
 msgid "Unique ID"
-msgstr "Unikt id"
+msgstr "Unikt ID"
 
 #: src/web/templates/admin_event_config.html
 #, ai_translation
@@ -2948,22 +2899,22 @@ msgstr "Varning: Raderingen av en händelse är permanent!"
 #: src/web/templates/admin_event_modal.html
 #, ai_translation
 msgid "Enter the event ID to confirm its deletion:"
-msgstr "Ange händelsens id för att bekräfta dess radering:"
+msgstr "Ange händelsens ID för att bekräfta dess radering:"
 
 #: src/web/templates/admin_event_modal.html
 #, ai_translation
 msgid "Enter here the event ID"
-msgstr "Skriv in händelsens id här"
+msgstr "Ange händelsens ID här"
 
 #: src/web/templates/admin_event_modal.html
 #, ai_translation
 msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
-msgstr "Återhämtning av borttagen händelse är inte möjligt från webbgränssnittet (oavsett om händelserna arkiveras och kan återställas från filsystemet."
+msgstr "Återhämtning av raderade händelser är inte möjligt från webbgränssnittet (oavsett om händelserna arkiveras och kan återställas från filsystemet."
 
 #: src/web/templates/admin_event_modal.html
 #, ai_translation
 msgid "The Unique ID, used for data storage and export."
-msgstr "Det unika id, som används för datalagring och export."
+msgstr "Unikt ID, som används för datalagring och export."
 
 #: src/web/templates/admin_event_modal.html
 #: src/web/templates/admin_family_modal.html
@@ -3020,7 +2971,7 @@ msgstr "Förvald katalog för Papi-filerna:"
 #: src/web/templates/admin_event_modal.html
 #, ai_translation, python-format
 msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
-msgstr "Standardkatalogen för Papi-filerna i turneringarna (absolut eller relativ väg, som standard %(dir)s)."
+msgstr "Standardkatalogen för Papi-filerna för turneringarna (absolut eller relativ sökväg, som standard %(dir)s)."
 
 #: src/web/templates/admin_event_modal.html
 #, ai_translation
@@ -3142,9 +3093,9 @@ msgid "You must create a tournament before creating a screen family."
 msgstr "Du måste skapa en turnering innan du skapar en skärmfamilj."
 
 #: src/web/templates/admin_families.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Create a screen family"
-msgstr "Ta bort skärmfamiljen."
+msgstr "Skapa en skärmfamilj"
 
 #: src/web/templates/admin_families.html
 #, ai_translation
@@ -3328,7 +3279,7 @@ msgstr "Varning: Raderingen av en skärmfamilj är permanent!"
 #: src/web/templates/admin_screen_modal.html
 #, ai_translation
 msgid "Properties (results entry)"
-msgstr "Egenskaper (resultatinmatning)"
+msgstr "Egenskaper (resultatpost)"
 
 #: src/web/templates/admin_family_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -3360,7 +3311,7 @@ msgstr "T.ex.: %(family_type)s-familj"
 #: src/web/templates/admin_family_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the screen family."
-msgstr "Det unika id, som används för att referera till skärmfamiljen."
+msgstr "Det unika ID, som används för att referera till skärmfamiljen."
 
 #: src/web/templates/admin_family_modal.html
 #, ai_translation
@@ -3373,6 +3324,7 @@ msgid "The name of the screen family, optional. The following tokens are automat
 msgstr "Namn på skärmfamiljen, valfritt. Följande polletter ersätts automatiskt med brädnummer eller spelarnas namn: %%f=först, %%l=senaste, %%t=turnering."
 
 #: src/web/templates/admin_family_modal.html
+#: src/web/templates/admin_player_modal.html
 #: src/web/templates/admin_screen_modal.html
 #: src/web/templates/admin_screen_sets_modal_set_div.html
 #, ai_translation
@@ -3470,7 +3422,7 @@ msgstr "Antalet skärmar på vilka tavlorna kommer att fördelas, valfritt (anta
 #: src/web/templates/admin_family_modal.html
 #, ai_translation
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
-msgstr "Antalet skärmar där spelaren kommer att distribueras, valfritt (antalet skärmar är alltid samma och antalet spelare per skärm anpassar sig till antalet spelare."
+msgstr "Antalet skärmar där spelarna kommer att distribueras, valfritt (antalet skärmar är alltid samma och antalet spelare per skärm anpassar sig till antalet spelare."
 
 #: src/web/templates/admin_family_modal.html
 #, ai_translation
@@ -3513,9 +3465,9 @@ msgstr "Antalet kolumner som används för att visa data."
 
 #: src/web/templates/admin_family_modal.html
 #: src/web/templates/admin_screen_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Menus"
-msgstr "Menyn:"
+msgstr "Menyer"
 
 #: src/web/templates/admin_family_modal.html
 #: src/web/templates/admin_screen_modal.html
@@ -3602,9 +3554,9 @@ msgid "Pairings"
 msgstr "Paraplyer"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Player creation"
-msgstr "Bildskärmsskapelse för spelare"
+msgstr "Skapande av spelare"
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation, python-format
@@ -3612,39 +3564,49 @@ msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr "Upplaga av spelare [%(last_name)s %(first_name)s]"
 
 #: src/web/templates/admin_player_modal.html
+#, ai_translation, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr "Borttagning av spelare [%(last_name)s %(first_name)s]"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Warning: the deletion of a player is permanent!"
+msgstr "Varning: raderingen av en spelare är permanent!"
+
+#: src/web/templates/admin_player_modal.html
 #, ai_translation
 msgid "Identity"
 msgstr "Identitet"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Last name:"
-msgstr "Senaste spelare:"
+msgstr "Efternamn:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: DOE"
-msgstr "T.ex.: huvud"
+msgstr "T.ex.: DOE"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's last name."
-msgstr "-Klara turneringen."
+msgstr "Spelarens efternamn."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "First name:"
-msgstr "Första spelare:"
+msgstr "Förnamn:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: John"
-msgstr "T.ex.: huvud"
+msgstr "T.ex.: John"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's first name."
-msgstr "-Klara turneringen."
+msgstr "Spelarens förnamn."
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -3652,19 +3614,24 @@ msgid "Date of birth:"
 msgstr "Födelsedatum:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's birth date."
-msgstr "-Klara turneringen."
+msgstr "Spelarens födelsedatum."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Gender:"
-msgstr "Slut:"
+msgstr "Kön:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's gender."
-msgstr "-Klara turneringen."
+msgstr "Spelarens kön."
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The player's tournament."
+msgstr "Spelarens turnering."
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -3677,49 +3644,49 @@ msgid "FIDE Title:"
 msgstr "FIDE-titel:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's FIDE title."
-msgstr "-Klara turneringen."
+msgstr "Spelarens FIDE-titel."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Federation:"
-msgstr "Skapande av händelse"
+msgstr "Förbund:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's federation."
-msgstr "-Klara turneringen."
+msgstr "Spelarens förbund."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "FIDE ID:"
-msgstr "Ingen timer definierad"
+msgstr "FIDG-ID:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's FIDE ID (do not change)."
-msgstr "-Klara turneringen."
+msgstr "Spelarens FIDE-ID (ändras inte)."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "French Chess Federation"
-msgstr "Ta bort rotatorn."
+msgstr "Franska schackförbundet"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "League:"
-msgstr "Språk"
+msgstr "Förbundet:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's league."
-msgstr "-Klara turneringen."
+msgstr "Spelarens liga."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Club:"
-msgstr "Kolumner:"
+msgstr "Klubben:"
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -3727,34 +3694,34 @@ msgid "E.g.: My favourite club!"
 msgstr "T.ex. min favoritklubb!"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's club."
-msgstr "-Klara turneringen."
+msgstr "Spelarens klubb."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Licence:"
-msgstr "Ingen FFE-licens"
+msgstr "Körkort:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's licence."
-msgstr "-Klara turneringen."
+msgstr "Spelarens licens."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Licence number:"
-msgstr "Telefonnumren."
+msgstr "Licensnummer:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's licence number."
-msgstr "-Klara turneringen."
+msgstr "Spelarens licensnummer."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "FFE Uniq ID:"
-msgstr "Unikt id"
+msgstr "FFE Uniq- ID:"
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -3762,34 +3729,34 @@ msgid "The player's Uniq ID for the French federation (do not change)."
 msgstr "Spelarens Uniq ID för den franska federationen (ändra inte)."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Contact and registration"
-msgstr "Rotatorskapelse"
+msgstr "Kontakt och registrering"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Email:"
-msgstr "Detaljer"
+msgstr "E-post:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's email."
-msgstr "-Klara turneringen."
+msgstr "Spelarens e-post."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Phone number:"
-msgstr "Telefonnumren."
+msgstr "Telefonnummer:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The player's phone number."
-msgstr "-Klara turneringen."
+msgstr "Spelarens telefonnummer."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Comment:"
-msgstr "Turnering:"
+msgstr "Anmärkning:"
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -3797,14 +3764,14 @@ msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Owed:"
-msgstr "Slut:"
+msgstr "På grund av detta:"
 
 #: src/web/templates/admin_player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The price the player pays to register."
-msgstr "-Klara turneringen."
+msgstr "Priset spelaren betalar för att registrera sig."
 
 #: src/web/templates/admin_player_modal.html
 #, ai_translation
@@ -3816,6 +3783,16 @@ msgstr "Betalat:"
 msgid "The price the player already paid."
 msgstr "Priset spelaren redan betalat."
 
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "Fixed board:"
+msgstr "Fast bräde:"
+
+#: src/web/templates/admin_player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Kortnumret spelaren alltid kommer att tilldelas (använd det för funktionshindrade)."
+
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_screen_card.html
 #, ai_translation
@@ -3823,19 +3800,34 @@ msgid "Players"
 msgstr "Spelare"
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Add a player to the event."
-msgstr "Lägg till en timer till evenemanget."
+msgstr "Lägg till en spelare i evenemanget."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
+msgid "Tournaments are finished, you can not add players any longer."
+msgstr "Turneringar är avslutade, du kan inte lägga till spelare längre."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "No Papi file for the tournaments of the event, players can not be added."
+msgstr "Ingen papi fil för turneringarna i händelsen, spelare kan inte läggas till."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
+msgid "Add a tournament before adding players."
+msgstr "Lägg till en turnering innan du lägger till spelare."
+
+#: src/web/templates/admin_players.html
+#, ai_translation
 msgid "Create a player"
-msgstr "Skapa en timer"
+msgstr "Skapa en spelare"
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Clear all the filters."
-msgstr "alla spelare"
+msgstr "Rensa alla filter."
 
 #: src/web/templates/admin_players.html
 #, ai_translation
@@ -3848,9 +3840,9 @@ msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo Ordförande"
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-msgstr "Elo Ordförande"
+msgstr "Ursprung"
 
 #: src/web/templates/admin_players.html
 #, ai_translation
@@ -3858,9 +3850,9 @@ msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "HUVUDBYGGNAD"
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-msgstr "Beteckning"
+msgstr "Katt"
 
 #: src/web/templates/admin_players.html
 #, ai_translation
@@ -3873,14 +3865,14 @@ msgid "The phone numbers."
 msgstr "Telefonnumren."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
-msgstr "Betald"
+msgstr "FIDUCERA"
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "Elo Ordförande"
+msgstr "FFE Ordförande"
 
 #: src/web/templates/admin_players.html
 #, ai_translation
@@ -3892,63 +3884,25 @@ msgstr "På grund av detta"
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Betald"
 
-# Error: tokens differ between [Tournament [%(tournament_uniq_id)s] is
-# finished.] and [Turneringen inleds [{tournament_uniq_id}].]
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_players/admin_players_check_in_tournaments.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is finished."
 msgstr "Turneringen [%(tournament_uniq_id)s] är avslutad."
 
-# Error: tokens differ between [Tournament [%(tournament_uniq_id)s] is
-# playing.] and [Turneringen inleds [{tournament_uniq_id}].]
 #: src/web/templates/admin_players.html
 #: src/web/templates/admin_players/admin_players_check_in_tournaments.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr "Turneringen [%(tournament_uniq_id)s] spelas."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
-msgstr "Radering av turneringen [%(tournament_uniq_id)s]"
+msgstr "Incheckningen är stängd för turnering [%(tournament_uniq_id)s]."
 
-# E
-# r
-# o
-# :
-# t
-# k
-# e
-# n
-# s
-# d
-# i
-# f
-# b
-# w
-# [
-# v
-# {
-# _
-# u
-# q
-# }
-# ]
-# c
-# g
-# a
-# m
-# .
-# Error: tokens differ between [Player [{last_name} {first_name}] has pairings
-# in tournament [{tournament_uniq_id}].] and [Evenemang [{event_uniq_id}]:
-# återhämtningsturnering [{tournament_uniq_id}]...]
-# Error: tokens differ between [Player [%(last_name)s %(first_name)s] if
-# forfeit for the next round in tournament [%(tournament_uniq_id)s].] and
-# [Spelaren [{last_name} {first_name}] har parningar i turneringen
-# [{tournament_uniq_id}].]
 #: src/web/templates/admin_players.html
-#, ai_translation, error, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Spelare [%(last_name)s %(first_name)s] om förverkad för nästa omgång i turneringen [%(tournament_uniq_id)s]."
 
@@ -3958,130 +3912,69 @@ msgid "Click to check-out the player."
 msgstr "Klicka för att checka ut spelaren."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Click to check-in the player."
-msgstr "Incheckning"
+msgstr "Klicka för att checka in spelaren."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr "%(mail)s (klicka för att kopiera till klippbordet)."
+msgstr "Mail: %(mail)s (klicka för att kopiera till klippbordet)."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No mail defined."
-msgstr "Ingen timer definierad"
+msgstr "Ingen post definierad."
 
-# E
-# r
-# o
-# :
-# t
-# k
-# e
-# n
-# s
-# d
-# i
-# f
-# b
-# w
-# [
-# %
-# (
-# p
-# h
-# )
-# c
-# l
-# y
-# a
-# .
-# ]
-# m
-# ö
 #: src/web/templates/admin_players.html
-#, ai_translation, error, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
-msgstr "%(phone)s (klicka för att kopiera till klippbordet)."
+msgstr "Telefon: %(phone)s (klicka för att kopiera till klippbordet)."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No phone defined."
-msgstr "Ingen timer definierad"
+msgstr "Ingen telefon definierad."
 
-# Error: tokens differ between [Fide ID: %(fide_id)s (click to copy to the
-# clipboard).] and [%(mail)s (klicka för att kopiera till klippbordet).]
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
-msgstr "Fide ID: %(fide_id)s (klicka för att kopiera till klippbordet)."
+msgstr "FIDE ID: %(fide_id)s (klicka för att kopiera till klippbordet)."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No FIDE ID."
-msgstr "Ingen timer definierad"
+msgstr "Inget FID-ID."
 
-# E
-# r
-# o
-# :
-# t
-# k
-# e
-# n
-# s
-# d
-# i
-# f
-# b
-# w
-# [
-# %
-# (
-# p
-# h
-# )
-# c
-# l
-# y
-# a
-# .
-# ]
-# m
-# ö
-# Error: tokens differ between [FFE licence: %(ffe_licence_number)s (click to
-# copy to the clipboard).] and [%(phone)s (klicka för att kopiera till
-# klippbordet).]
 #: src/web/templates/admin_players.html
-#, ai_translation, error, fuzzy, python-format
+#, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet)."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr "Okänd typ av FFE-licens [%(ffe_licence)s]"
+msgstr "Okänd typ av FFE-licens [%(ffe_licence)s]."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Change the player's tournament."
-msgstr "-Klara turneringen."
+msgstr "Ändra spelarens turnering."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Edit the player's properties."
-msgstr "Redigera timerns egenskaper."
+msgstr "Redigera spelarens egenskaper."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Remove the player from the event."
-msgstr "Lägg till en timer till evenemanget."
+msgstr "Ta bort spelaren från händelsen."
 
 #: src/web/templates/admin_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No players."
-msgstr "Spelare"
+msgstr "Inga spelare."
 
 #: src/web/templates/admin_rotator_card.html
 #: src/web/templates/user_rotator_card.html
@@ -4168,7 +4061,7 @@ msgstr "Endast skiljedomare kan se privata rotatorer."
 #: src/web/templates/admin_rotator_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the rotator."
-msgstr "Det unika id, som används för att referera rotatorn."
+msgstr "Det unika ID, som används för att referera rotatorn."
 
 #: src/web/templates/admin_rotator_modal.html
 #, ai_translation
@@ -4199,7 +4092,7 @@ msgstr "Urval"
 #: src/web/templates/admin_rotator_modal.html
 #, ai_translation
 msgid "results entry"
-msgstr "Införsel av resultat"
+msgstr "resultatinmatning"
 
 #: src/web/templates/admin_rotator_modal.html
 #, ai_translation
@@ -4397,7 +4290,7 @@ msgstr "T.ex.: %(screen_type)s-skärm"
 #: src/web/templates/admin_screen_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the screen."
-msgstr "Det unika id, som används för att referera skärmen."
+msgstr "Det unika ID, som används för att referera skärmen."
 
 #: src/web/templates/admin_screen_modal.html
 #, ai_translation
@@ -4528,12 +4421,12 @@ msgstr "När oparade spelare inte visas, finns det inget sätt att skilja de fr�
 #: src/web/templates/admin_screen_sets_modal.html
 #, ai_translation, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
-msgstr "Brädornas uppsättningar av skärmar [%(screen_uniq_id)s]"
+msgstr "Skärmuppsättningar av brädor [%(screen_uniq_id)s]"
 
 #: src/web/templates/admin_screen_sets_modal.html
 #, ai_translation, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
-msgstr "Spelare uppsättningar av skärmen [%(screen_uniq_id)s]"
+msgstr "Spelaruppsättningar av skärmen [%(screen_uniq_id)s]"
 
 #: src/web/templates/admin_screen_sets_modal.html
 #, ai_translation
@@ -4621,34 +4514,34 @@ msgid "You must create a tournament before creating screens."
 msgstr "Du måste skapa en turnering innan du skapar skärmar."
 
 #: src/web/templates/admin_screens.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Create a screen"
-msgstr "Skapa en händelse"
+msgstr "Skapa en skärm"
 
 #: src/web/templates/admin_screens.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Add a screen to enter the results."
-msgstr "Lägg till en familj av skärmar för att ange resultaten."
+msgstr "Lägg till en skärm för att ange resultaten."
 
 #: src/web/templates/admin_screens.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Add a screen to display the pairings by board."
-msgstr "Lägg till en familj av skärmar för att visa parningar per bord."
+msgstr "Lägg till en skärm för att visa parningar efter bräde."
 
 #: src/web/templates/admin_screens.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Add a screen to display the pairings by alphabetical order."
-msgstr "Lägg till en grupp skärmar för att visa parningar i alfabetisk ordning."
+msgstr "Lägg till en skärm för att visa parningar i alfabetisk ordning."
 
 #: src/web/templates/admin_screens.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Add a screen to display the last results."
-msgstr "Lägg till en skärm i händelsen."
+msgstr "Lägg till en skärm för att visa de sista resultaten."
 
 #: src/web/templates/admin_screens.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Add a screen to display an image."
-msgstr "Lägg till en skärm i händelsen."
+msgstr "Lägg till en skärm för att visa en bild."
 
 #: src/web/templates/admin_screens.html
 #, ai_translation
@@ -4844,17 +4737,17 @@ msgstr "Inga timers."
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation, python-format
 msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
-msgstr "Papi-filen i turneringen finns inte (%(papi_file)s)."
+msgstr "Papi-filen för turneringen finns inte (%(papi_file)s)."
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation, python-format
 msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
-msgstr "Papi-filen i turneringen finns men kunde inte läsas (%(papi_file)s)."
+msgstr "Papi-filen för turneringen finns men kunde inte läsas (%(papi_file)s)."
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation, python-format
 msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
-msgstr "Papi-filen i turneringen lästes framgångsrikt (%(papi_file)s)."
+msgstr "Papi-filen för turneringen lästes framgångsrikt (%(papi_file)s)."
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation, python-format
@@ -4876,10 +4769,8 @@ msgstr "Ingen ChessEvent-anslutning används."
 msgid "Illegal moves are not recorded."
 msgstr "Olagliga rörelser registreras inte."
 
-# Error: tokens differ between [At most %(num)d illegal move is recorded.] and
-# [Som mest registreras ett olagligt drag.]
 #: src/web/templates/admin_tournament_card.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Högst %(num)d Olagligt drag registreras."
@@ -4938,12 +4829,12 @@ msgstr "Följande skärmfamiljer kommer också att strykas:"
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
 msgid "Enter the tournament ID to confirm its deletion:"
-msgstr "Ange turneringens id för att bekräfta dess radering:"
+msgstr "Ange turneringens ID för att bekräfta dess radering:"
 
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
 msgid "Enter here the tournament ID"
-msgstr "Skriv in turneringens id här"
+msgstr "Ange turneringens ID här"
 
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
@@ -4958,7 +4849,7 @@ msgstr "T.ex.: huvud"
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the tournament."
-msgstr "Det unika id, används för att referera turneringen."
+msgstr "Det unika ID, används för att referera turneringen."
 
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
@@ -4993,7 +4884,7 @@ msgstr "Namn på Papi- filen (utan förlängning):"
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
 msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
-msgstr "Namnet på Papi-filen, utan .papi förlängning (som standard FFE kvalificeringsnumret för turneringen, sedan den unika id av turneringen)."
+msgstr "Namnet på Papi-filen, utan .papi förlängning (som standard FFE kvalificeringsnumret för turneringen, sedan Den unika ID för turneringen)."
 
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
@@ -5053,7 +4944,7 @@ msgstr "T.ex.: %(seconds)d (%(minutes)dminuter)"
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
 msgid "The initial time in seconds (may be empty if an increment is set)."
-msgstr "Den inledande tiden i sekunder (kan vara nul om en ökning är inställd)."
+msgstr "Den inledande tiden i sekunder (kan vara tom om en ökning är inställd)."
 
 #: src/web/templates/admin_tournament_modal.html
 #, ai_translation
@@ -5286,9 +5177,9 @@ msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator roterar automatiskt mellan flera skärmar."
 
 #: src/web/templates/macros.j2
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Sort the players by name."
-msgstr "-Klara turneringen."
+msgstr "Sortera spelarna efter namn."
 
 #: src/web/templates/macros.j2
 #, ai_translation
@@ -5301,9 +5192,9 @@ msgid "Sort the players by rating (less rated first)."
 msgstr "Sortera spelarna efter betyg (mindre betyg först)."
 
 #: src/web/templates/macros.j2
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Sort the players by origin (federation, league, club)."
-msgstr "Visa/göm spelskärmarna."
+msgstr "Sortera spelarna efter ursprung (federation, liga, klubb)."
 
 #: src/web/templates/macros.j2
 #, ai_translation
@@ -5316,19 +5207,19 @@ msgid "Sort the players by year of birth (oldest first)."
 msgstr "Sortera spelarna efter födelseår (äldsta först)."
 
 #: src/web/templates/macros.j2
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Sort the players by category (oldest first)."
-msgstr "Sortera spelarna efter födelseår (äldsta först)."
+msgstr "Sortera spelarna efter kategori (äldsta först)."
 
 #: src/web/templates/macros.j2
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Sort the players by category (youngest first)."
-msgstr "Sortera spelarna efter födelseår (ungast först)."
+msgstr "Sortera spelarna efter kategori (ungast först)."
 
 #: src/web/templates/macros.j2
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Sort the players by tournament."
-msgstr "-Klara turneringen."
+msgstr "Sortera spelarna efter turnering."
 
 #: src/web/templates/user_boards_screen_board_row_player_cell.html
 #, ai_translation
@@ -5422,9 +5313,9 @@ msgid "Score"
 msgstr "Poäng"
 
 #: src/web/templates/user_rotator_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No screen nor family to rotate."
-msgstr "Ingen skärm varken familj att rotera."
+msgstr "Ingen skärm eller familj att rotera."
 
 #: src/web/templates/user_rotator_card.html
 #, ai_translation, python-format
@@ -5542,24 +5433,24 @@ msgid "Open/close check-in."
 msgstr "Öppna/stänga incheckningen."
 
 #: src/web/templates/admin_players/admin_players_check_in_tournaments.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
-msgstr "Radering av turneringen [%(tournament_uniq_id)s]"
+msgstr "Stäng incheckning för turnering [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin_players/admin_players_check_in_tournaments.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
-msgstr "Upplaga av turnering [%(tournament_uniq_id)s]"
+msgstr "Öppna incheckning för turnering [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin_players/admin_players_filter_categories.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Filter the categories."
-msgstr "Filtrera ligorna."
+msgstr "Filtrera kategorierna."
 
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Filter the check-in status."
-msgstr "Ta bort timern."
+msgstr "Filtrera incheckningsstatusen."
 
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html
 #, ai_translation
@@ -5567,14 +5458,14 @@ msgid "Absent"
 msgstr "Frånvarande"
 
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Not checked-in yet"
-msgstr "KONTROLLINSTRUMENT"
+msgstr "Inte incheckat än"
 
 #: src/web/templates/admin_players/admin_players_filter_check_ins.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Checked-in"
-msgstr "KONTROLLINSTRUMENT"
+msgstr "Incheckning"
 
 #: src/web/templates/admin_players/admin_players_filter_clubs.html
 #, ai_translation
@@ -5587,22 +5478,22 @@ msgid "Choose the columns displayed."
 msgstr "Välj kolumnerna som visas."
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Columns"
-msgstr "Kolumner:"
+msgstr "Kolumner"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
-msgstr "Betald"
+msgstr "Brev"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
-msgstr "Betald"
+msgstr "Tfn"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
 msgstr "Beteckning"
 
@@ -5612,9 +5503,9 @@ msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Betyg"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Betald"
+msgstr "Förbund"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
 #, ai_translation
@@ -5622,19 +5513,19 @@ msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
 msgstr "Förbundet"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
-msgstr "Elo Ordförande"
+msgstr "Klubb"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
-msgstr "HUVUDBYGGNAD"
+msgstr "Födelseår"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
-msgstr "Elo Ordförande"
+msgstr "Denna förordning träder i kraft den tjugonde dagen efter det att den har offentliggjorts i Europeiska unionens officiella tidning."
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
 #, ai_translation
@@ -5642,14 +5533,19 @@ msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Kön"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
-msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
-msgstr "Betald"
+#, ai_translation
+msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgstr "Fast bräde"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
+msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
+msgstr "FIDUCERA"
+
+#: src/web/templates/admin_players/admin_players_filter_columns.html
+#, ai_translation
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
-msgstr "Elo Ordförande"
+msgstr "FFE Ordförande"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
 #, ai_translation
@@ -5657,29 +5553,29 @@ msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Incheckning"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
-msgstr "På grund av detta"
+msgstr "Betald/utbetald"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
-msgstr "Beteckning"
+msgstr "Turnering"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
 msgstr "Anmärkningar"
 
 #: src/web/templates/admin_players/admin_players_filter_columns.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "History *** HISTORY FOR PLAYERS COLUMNS"
-msgstr "Elo Ordförande"
+msgstr "Bakgrund"
 
 #: src/web/templates/admin_players/admin_players_filter_federations.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Filter the federations."
-msgstr "Ta bort rotatorn."
+msgstr "Filtrera federationerna."
 
 #: src/web/templates/admin_players/admin_players_filter_ffe_licences.html
 #, ai_translation
@@ -5687,9 +5583,9 @@ msgid "Filter the licences."
 msgstr "Filtrera licenserna."
 
 #: src/web/templates/admin_players/admin_players_filter_genders.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Filter the genders."
-msgstr "Ta bort timern."
+msgstr "Filtrera könet."
 
 #: src/web/templates/admin_players/admin_players_filter_leagues.html
 #, ai_translation
@@ -5697,14 +5593,14 @@ msgid "Filter the leagues."
 msgstr "Filtrera ligorna."
 
 #: src/web/templates/admin_players/admin_players_filter_tournaments.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
-msgstr "Beteckning"
+msgstr "Turnering"
 
 #: src/web/templates/admin_players/admin_players_filter_tournaments.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Filter the tournaments."
-msgstr "Ta bort turneringen."
+msgstr "Filtrera turneringarna."
 
 #: utils/i18n/i18n_update.py
 #, ai_translation
@@ -5775,2763 +5671,4 @@ msgstr "Flaggade meddelanden"
 #, ai_translation
 msgid "Translation"
 msgstr "Översättning"
-
-#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-#~ msgstr "Detta program bör inte startas direkt, använd scripts server.bat, ffe.bat och chessevent.bat."
-
-#~ msgid "ChessEvent connection not set for tournament [{tournament_uniq_id}]."
-#~ msgstr "ChessEvent anslutning inte inställd för turnering [{tournament_uniq_id}]."
-
-#~ msgid "Papi file not set for tournament [{tournament_uniq_id}]."
-#~ msgstr "Papi fil inte inställd för turnering [{tournament_uniq_id}]."
-
-#~ msgid "Tournament [{tournament_uniq_id}] is started."
-#~ msgstr "Turneringen inleds [{tournament_uniq_id}]."
-
-#~ msgid "Event: {event_name}"
-#~ msgstr "Evenemang: {event_name}"
-
-#~ msgid "Tournaments: {tournament_names}"
-#~ msgstr "Turneringar: {tournament_names}"
-
-#~ msgid "C *** THE LETTER TO ANSWER CREATE"
-#~ msgstr "För produkter som inte är avsedda att användas som livsmedel ska följande villkor vara uppfyllda:"
-
-#~ msgid "U *** THE LETTER TO ANSWER UPLOAD"
-#~ msgstr "U Ordförande"
-
-#~ msgid "Q *** THE LETTER TO ANSWER QUIT"
-#~ msgstr "Q Uppskattningsvis."
-
-#~ msgid "Create the Papi files"
-#~ msgstr "Skapa Papi- filer"
-
-#~ msgid "Create the Papi files and send them to the FFE website"
-#~ msgstr "Skapa Papi-filerna och skicka dem till FFE:s webbplats"
-
-#~ msgid "Quit"
-#~ msgstr "Sluta"
-
-#~ msgid "Your choice (by default {default}): "
-#~ msgstr "Ditt val (som standard {default}):"
-
-#~ msgid "Action: {action}"
-#~ msgstr "Åtgärd: {action}"
-
-#~ msgid "1 *** THE LETTER TO ANSWER ONCE"
-#~ msgstr "I detta avsnitt ska följande punkt läggas till:"
-
-#~ msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
-#~ msgstr "För produkter som inte är avsedda att användas som livsmedel ska följande villkor vara uppfyllda:"
-
-#~ msgid "Once"
-#~ msgstr "En gång"
-
-#~ msgid "Continuously"
-#~ msgstr "Kontinuerligt"
-
-#~ msgid "Frequency: {frequency}"
-#~ msgstr "Frekvens: {frequency}"
-
-#~ msgid "Please choose the Papi version:"
-#~ msgstr "Välj Papi-versionen:"
-
-#~ msgid "Papi version: {version}"
-#~ msgstr "Papi version: {version}"
-
-#~ msgid "This action can not be applied to the tournaments of this event."
-#~ msgstr "Denna åtgärd kan göras på turneringarna i denna händelse."
-
-#~ msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
-#~ msgstr "Uppgifter för turneringen [{tournament_uniq_id}] kunde inte avkodas (kodning: [{encoding}]), sparas i fil [{file}] (terrorlinje [{line}], kolumn [{column}], position [{position}])."
-
-#~ msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
-#~ msgstr "Data för turneringen [{tournament_name}] på ChessEvent är oförändrade."
-
-#~ msgid "Papi file [{file}] has been created (players: {num})."
-#~ msgstr "Papi-fil [{file}] har skapats (spelare: {num})."
-
-#~ msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-#~ msgstr "FFE ID och lösenord är inte korrekt inställda för turnering [{tournament_name}], data kan inte skickas till FFE webbplats."
-
-#~ msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
-#~ msgstr "Behörighetskontrollfel (kod: [{code}]) för [{user_id}] ([{chessevent_string}])."
-
-#~ msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
-#~ msgstr "Tillträde nekat (kod: [{code}]) för [{user_id}] på turneringen [{tournament_name}] ([{chessevent_string}])."
-
-#~ msgid "Missing parameter (code: [{code}]): [{error}]."
-#~ msgstr "Parameter saknas (kod: [{code}]): [{error}]."
-
-#~ msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
-#~ msgstr "Id [{user_id}] hittades inte (kod: [{code}]): [{error}]."
-
-#~ msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
-#~ msgstr "Turneringen [{tournament_name}] hittades inte (kod: [{code}]): [{error}]."
-
-#~ msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
-#~ msgstr "Evenemang [{event_id}] hittades inte (kod: [{code}]): [{error}]."
-
-#~ msgid "Unknown response code: [{code}] ([{chessevent_string}])."
-#~ msgstr "Okänd svarskod: [{code}] ([{chessevent_string}])."
-
-#~ msgid "Failed to read [{url}] (connection error): [{ex}]."
-#~ msgstr "Läste inte [{url}] (anslutningsfel): [{ex}]."
-
-#~ msgid "Failed to read [{url}] (timeout): [{ex}]."
-#~ msgstr "Läste inte [{url}] (timeout): [{ex}]."
-
-#~ msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
-#~ msgstr "Läste inte [{url}] (terrorkod [{errno}]): [{strerror}]."
-
-#~ msgid "Failed to read [{url}]: [{ex}]."
-#~ msgstr "Läste inte [{url}]: [{ex}]."
-
-#~ msgid "No events found."
-#~ msgstr "Inga händelser hittades."
-
-#~ msgid "One event found, press Enter (Q to quit): "
-#~ msgstr "En händelse hittades, skriv Enter (Q för att avsluta):"
-
-#~ msgid "Please choose the event:"
-#~ msgstr "Välj evenemanget:"
-
-#~ msgid "Your choice: "
-#~ msgstr "Valet är ditt:"
-
-#~ msgid "Configuration file [{file}] not found."
-#~ msgstr "Inställningsfil [{file}] hittades inte."
-
-#~ msgid "Configuration file [{file}] is not a file."
-#~ msgstr "Inställningsfil [{file}] är inte en fil."
-
-#~ msgid "Could not read file [{file}]."
-#~ msgstr "Kunde inte läsa filen [{file}]."
-
-#~ msgid "Duplicated section at line [{lineno}]."
-#~ msgstr "Duplicerad sektion vid linje [{lineno}]."
-
-#~ msgid "Duplicated option at line [{lineno}]."
-#~ msgstr "Duplicerade alternativ vid linjen [{lineno}]."
-
-#~ msgid "Parsing error: [{ex}]."
-#~ msgstr "Tolkningsfel: [{ex}]."
-
-#~ msgid "Error: [{ex}]."
-#~ msgstr "Fel: [{ex}]."
-
-#~ msgid "Checking Papi-web version..."
-#~ msgstr "Kontrollerar papi- webbversion..."
-
-#~ msgid "Y *** THE LETTER TO ANSWER YES"
-#~ msgstr "Y Ordförande"
-
-#~ msgid "N *** THE LETTER TO ANSWER NO"
-#~ msgstr "Ej tillämpligt"
-
-#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-#~ msgstr "Vill du uppgradera från [{old_version}] till [{new_version}] [{y_lc}/{n_uc}]?"
-
-#~ msgid "The installation of version [{version}] failed."
-#~ msgstr "Installationen av version [{version}] misslyckades."
-
-#~ msgid "- Version {version} ({events})"
-#~ msgstr "- Version {version} ({events})"
-
-#~ msgid "- Version {version}: no events"
-#~ msgstr "- Version {version}: inga händelser"
-
-#~ msgid "No event found in previously installed versions."
-#~ msgstr "Ingen händelse hittades i tidigare installerade versioner."
-
-#~ msgid "No previously installed version found."
-#~ msgstr "Ingen tidigare installerad version hittades."
-
-#~ msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-#~ msgstr "Vill du återställa konfigurationen av version [{version}] [{y_uc}/{n_lc}]?"
-
-#~ msgid "Please choose the version to recover:"
-#~ msgstr "Välj den version som ska återställas:"
-
-#~ msgid "  - [{q_uc}] Do not recover"
-#~ msgstr "- [{q_uc}] Återvinn inte"
-
-#~ msgid "Please enter the number of the version to recover [{default}]: "
-#~ msgstr "Ange numret på den version som ska återställas [{default}]:"
-
-#~ msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
-#~ msgstr "Vill du installera exempel på evenemangsdatabaser [{y_uc}/{n_lc}]?"
-
-#~ msgid "Recovering events from version {version}..."
-#~ msgstr "Återhämtning av händelser från version {version}..."
-
-#~ msgid "Recovering event [{event_uniq_id}]..."
-#~ msgstr "Återhämtningsevenemang [{event_uniq_id}]..."
-
-#~ msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
-#~ msgstr "Evenemang [{event_uniq_id]: recovering tournament [{tournament_uniq_id}]"
-
-#~ msgid "Recovering custom files..."
-#~ msgstr "Återställer anpassade filer..."
-
-#~ msgid "Events recovered: {num} (from directory [{dir}])."
-#~ msgstr "Händelser som återvunnits: {num} (från katalog [{dir}])."
-
-#~ msgid "Tournaments recovered: {num} (from directory [{dir}])."
-#~ msgstr "Turneringar återvunna: {num} (från katalog [{dir}])."
-
-#~ msgid "Custom files recovered: {num} (from directory [{dir}])."
-#~ msgstr "Anpassade filer återvunna: {num} (från katalog [{dir}])."
-
-#~ msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
-#~ msgstr "Vill du skicka dessa anpassade filer till Papi-web utvecklare för att förbättra terminsversioner [{y_uc}/{n_lc}]?"
-
-#~ msgid "Sending the files to a server..."
-#~ msgstr "Skickar filerna till en server..."
-
-#~ msgid "Files have been sent to bin {bin_name}."
-#~ msgstr "Filer har skickats till bin {bin_name}."
-
-#~ msgid "- View the files on filebin.net: {bin_url}"
-#~ msgstr "- Visa filerna på filebin.net: {bin_url}"
-
-#~ msgid "- Download the files (ZIP archive): {bin_zip_url}"
-#~ msgstr "- Ladda ner filerna (ZIP-arkivet): {bin_zip_url}"
-
-#~ msgid "[Papi-web {version}] Request for the integration of custom files"
-#~ msgstr "[Papi-web {version}] Begäran om integrering av anpassade filer"
-
-#~ msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
-#~ msgstr "Ett fönster öppnas för att skicka ett e-postmeddelande till Papi-web-projektet; Om fönstret inte öppnas, klicka på länken nedan eller skicka ett e-postmeddelande manuellt till {email}."
-
-#~ msgid "Checking the version failed."
-#~ msgstr "Kontroll av versionen misslyckades."
-
-#~ msgid "Your Papi-web version is up to date."
-#~ msgstr "Din papi-webbversion är uppdaterad."
-
-#~ msgid "A more recent version is available ([{version}])."
-#~ msgstr "En nyare version finns tillgänglig ([{version}])."
-
-#~ msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
-#~ msgstr "Du använder en version nyare än den senaste stabila versionen tillgänglig ([{version}]), är du en utvecklare? ;-)"
-
-#~ msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
-#~ msgstr "En stabil och nyare version är tillgänglig ([{new_version}]) men uppgradering av instabila versioner (som den du för närvarande använder: [{old_version}] måste göras manuellt (uppgradera från den senaste stabila versionen installerad på din server)."
-
-#~ msgid "You are using un unstable version more recent than the last stable version available ({version})."
-#~ msgstr "Du använder un un unstable version nyare än den senaste stabila versionen tillgänglig ({version})."
-
-#~ msgid "Looking for a more recent version on GitHub ([{url}])..."
-#~ msgstr "Letar efter en nyare version av GitHub ([{url}])..."
-
-#~ msgid "No response from GitHub."
-#~ msgstr "Inget svar från GitHub."
-
-#~ msgid "Invalid response from GitHub: {ex}."
-#~ msgstr "Ogiltigt svar från GitHub: {ex}."
-
-#~ msgid "No stable version found."
-#~ msgstr "Ingen stabil version hittades."
-
-#~ msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
-#~ msgstr "Version [{version}] är redan installerat i katalogen [{dir}], vänligen ta bort den här mappen manuellt innan du installerar."
-
-#~ msgid "Downloading version {version} from GitHub ([{url}])..."
-#~ msgstr "Laddar ner version {version} från GitHub ([{url}])..."
-
-#~ msgid "Downloading failed with code [{code}]."
-#~ msgstr "Nedladdning misslyckades med koden [{code}]."
-
-#~ msgid "File downloaded: [{zip_file}]."
-#~ msgstr "Fil laddad ner: [{zip_file}]."
-
-#~ msgid "New version [{version}] has been installed in [{dir}]."
-#~ msgstr "Ny version [{version}] har installerats i [{dir}]."
-
-#~ msgid "Locale set to [{locale}]."
-#~ msgstr "Lokalen sätts till [{locale}]."
-
-#~ msgid "Unknown locale [{locale}]."
-#~ msgstr "Okänd ort [{locale}]."
-
-#~ msgid "Option not set, by default [{default}]."
-#~ msgstr "Alternativet är inte fastställt, som standard [{default}]."
-
-#~ msgid "Invalid value [{value}]."
-#~ msgstr "Ogiltigt värde [{value}]."
-
-#~ msgid "Locale [{locale}] not found."
-#~ msgstr "Locale [{locale}] hittades inte."
-
-#~ msgid "Option not set."
-#~ msgstr "Alternativet är inte fastställt."
-
-#~ msgid "Section not found."
-#~ msgstr "Avsnittet hittades inte."
-
-#~ msgid "The following languages are available:"
-#~ msgstr "Följande språk finns tillgängliga:"
-
-#~ msgid "Invalid log level [{level}], by default [{default}]."
-#~ msgstr "Ogiltig loggnivå [{level}], som standard [{default}]."
-
-#~ msgid "Invalid host configuration [{host}], by default [{default}]."
-#~ msgstr "Ogiltig värdkonfiguration [{host}], som standard [{default}]."
-
-#~ msgid "Invalid port [{port}], by default [{default}]."
-#~ msgstr "Ogiltig port [{port}], som standard [{default}]."
-
-#~ msgid "Option not set, by default [{ffe_upload_delay}]."
-#~ msgstr "Alternativet är inte fastställt, som standard [{ffe_upload_delay}]."
-
-#~ msgid "Invalid delay [{delay}], by default [{default}]"
-#~ msgstr "Ogiltig försening [{delay}], som standard [{default}]"
-
-#~ msgid "Section not found, default configuration set."
-#~ msgstr "Avsnitt hittades inte, förvald inställningsuppsättning."
-
-#~ msgid "Your file {ini_file} has been saved as {ini_file_org}."
-#~ msgstr "Din fil {ini_file} har sparats som {ini_file_org}."
-
-#~ msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
-#~ msgstr "Kunde inte spara {ini_file} till {ini_file_org}: {ex}."
-
-#~ msgid "Adding lines to {file}..."
-#~ msgstr "Lägger till rader i {file}..."
-
-#~ msgid "[i18n] # Added by Papi-web {version}"
-#~ msgstr "[i18n] # Tillagd av Papi-web {version}"
-
-#~ msgid "# The line below has been commented by Papi-web {version}"
-#~ msgstr "# Linjen nedan har kommenterats av Papi-web {version}"
-
-#~ msgid "Your file {ini_file} has been modified."
-#~ msgstr "Din akt {ini_file} har ändrats."
-
-#~ msgid "Could not write to {ini_file}: {ex}."
-#~ msgstr "Kunde inte skriva till {ini_file}: {ex}."
-
-#~ msgid "Papi-web project"
-#~ msgstr "Projekt för papi-web"
-
-#~ msgid "Tournament [{tournament_uniq_id}]: {text}"
-#~ msgstr "Turnering [{tournament_uniq_id}]: {text}"
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
-#~ msgstr "ChessEvent-anslutning [{chessevent_uniq_id}]: {text}"
-
-#~ msgid "Family [{family_uniq_id}]: {text}"
-#~ msgstr "Familj [{family_uniq_id}]: {text}"
-
-#~ msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
-#~ msgstr "Timer [{timer_uniq_id}], timme [{hour_order}]: {text}"
-
-#~ msgid "Timer [{timer_uniq_id}]: {text}"
-#~ msgstr "Tidpunkt [{timer_uniq_id}]: {text}"
-
-#~ msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
-#~ msgstr "Skärm [{screen_uniq_id}], skärmuppsättning [{screen_set_order}]: {text}"
-
-#~ msgid "Screen [{screen_uniq_id}]: {text}"
-#~ msgstr "Skärm [{screen_uniq_id}]: {text}"
-
-#~ msgid "Rotator [{rotator_uniq_id}]: {text}"
-#~ msgstr "Rotator [{rotator_uniq_id}]: {text}"
-
-#~ msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Fel har upptäckts på eventet; ChessEvent-anslutningar, timers, turneringar, skärmar, familjer och rotatorer kommer inte att laddas."
-
-#~ msgid "No name set, by default [{name}]"
-#~ msgstr "Inget namn angivet, som standard [{name}]"
-
-#~ msgid "No directory set for Papi files, by default [{path}]."
-#~ msgstr "Ingen kataloguppsättning för Papi-filer, som standard [{path}]."
-
-#~ msgid "Directory [{path}] not found."
-#~ msgstr "Katalog [{path}] hittades inte."
-
-#~ msgid "[{path}] is not a directory."
-#~ msgstr "[{path}] är inte en katalog."
-
-#~ msgid "No background image set, by default [{background_image}]"
-#~ msgstr "Ingen bakgrundsbild inställd, som standard [{background_image}]"
-
-#~ msgid "No background colour set, by default [{background_color}]"
-#~ msgstr "Ingen bakgrundsfärg inställd, som standard [{background_color}]"
-
-#~ msgid "No password set for the results entry"
-#~ msgstr "Inget lösenord inställt för inmatning av resultat"
-
-#~ msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
-#~ msgstr "Maximalt antal olagliga förflyttningar inte satta, som standard [{record_illegal_moves}]"
-
-#~ msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Fel har upptäckts på ChessEvent-anslutningar; timers, turneringar, skärmar, familjer och rotatorer kommer inte att laddas."
-
-#~ msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Fel har hittats på timers; turneringar, skärmar, familjer och rotatorer kommer inte att laddas."
-
-#~ msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
-#~ msgstr "Fel har hittats på turneringar; skärmar, familjer och rotatorer kommer inte att laddas."
-
-#~ msgid "Errors have been found on screens; families and rotators will not be loaded."
-#~ msgstr "Fel har hittats på skärmar; familjer och rotatorer kommer inte att laddas."
-
-#~ msgid "Errors have been found on families; rotators will not be loaded."
-#~ msgstr "Fel har hittats på familjer; rotatorer kommer inte att laddas."
-
-#~ msgid "Errors have been found on rotators."
-#~ msgstr "Fel har upptäckts på rotatorer."
-
-#~ msgid "%t (%f to %l)"
-#~ msgstr "%t (%f till %l)"
-
-#~ msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
-#~ msgstr "Turneringen [{tournament_uniq_id}] kan inte läsas, familjen ignoreras."
-
-#~ msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
-#~ msgstr "Turneringen [{tournament_uniq_id}] har endast [{boards_number}] styrelser (< [{first}]), familjen ignorerade."
-
-#~ msgid "Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored."
-#~ msgstr "Turneringen [{tournament_uniq_id}] har endast [{players_number}] spelare (< [{first}]), familjen ignorerade."
-
-#~ msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
-#~ msgstr "Inget att visa för turnering [{tournament_uniq_id}], familjen ignoreras."
-
-#~ msgid "all the boards"
-#~ msgstr "alla brädor"
-
-#~ msgid "boards from #{first} to end"
-#~ msgstr "brädor från #{first} till slutet"
-
-#~ msgid "boards from start to #{last}"
-#~ msgstr "brädor från start till #{last}"
-
-#~ msgid "boards from #{first} to #{last}"
-#~ msgstr "styrelser från #{first} till #{last}"
-
-#~ msgid "screens of {number} boards"
-#~ msgstr "skärmar av {number} tavlor"
-
-#~ msgid "screens of {number} boards from #{first} to end"
-#~ msgstr "screens av {number} styrelser från #{first} till slutet"
-
-#~ msgid "screens of {number} boards from start to #{last}"
-#~ msgstr "screens of {number} tavlor från start till #{last}"
-
-#~ msgid "screens of {number} boards from #{first} to #{last}"
-#~ msgstr "skärmar av {number} styrelser från #{first} till #{last}"
-
-#~ msgid "boards on {parts} screens"
-#~ msgstr "brädor på {parts} skärmar"
-
-#~ msgid "boards from #{first} to end, on {parts} screens"
-#~ msgstr "brädor från #{first} till slutet, på {parts} skärmar"
-
-#~ msgid "boards from start to #{last}, on {parts} screens"
-#~ msgstr "brädor från start till #{last}, på {parts} skärmar"
-
-#~ msgid "boards from #{first} to #{last}, on {parts} screens"
-#~ msgstr "brädor från #{first} till #{last}, på {parts} skärmar"
-
-#~ msgid "all the players"
-#~ msgstr "alla spelare"
-
-#~ msgid "players from #{first} to end"
-#~ msgstr "spelare från #{first} till slutet"
-
-#~ msgid "players from start to #{last}"
-#~ msgstr "spelare från start till #{last}"
-
-#~ msgid "players from #{first} to #{last}"
-#~ msgstr "spelare från #{first} till #{last}"
-
-#~ msgid "screens of {number} players"
-#~ msgstr "screens of {number} spelare"
-
-#~ msgid "screens of {number} players from #{first} to end"
-#~ msgstr "screens of {number} spelare från #{first} till slutet"
-
-#~ msgid "screens of {number} players from start to #{last}"
-#~ msgstr "screens of {number} spelare från start till #{last}"
-
-#~ msgid "screens of {number} players from #{first} to #{last}"
-#~ msgstr "screens of {number} spelare från #{first} till #{last}"
-
-#~ msgid "players on {parts} screens"
-#~ msgstr "spelare på {parts} skärmar"
-
-#~ msgid "players from #{first} to end, on {parts} screens"
-#~ msgstr "spelare från #{first} till slutet, på {parts} skärmar"
-
-#~ msgid "players from start to #{last}, on {parts} screens"
-#~ msgstr "spelare från start till #{last}, på {parts} skärmar"
-
-#~ msgid "players from #{first} to #{last}, on {parts} screens"
-#~ msgstr "spelare från #{first} till #{last}, på {parts} skärmar"
-
-#~ msgid "Unpaired *** FEMALE"
-#~ msgstr "Ouppklarade"
-
-#~ msgid "Unpaired *** MALE"
-#~ msgstr "Ouppklarade"
-
-#~ msgid "Exempt *** FEMALE"
-#~ msgstr "Undantag"
-
-#~ msgid "Exempt *** MALE"
-#~ msgstr "Undantag"
-
-#~ msgid "Last results"
-#~ msgstr "Senaste resultat"
-
-#~ msgid "Image"
-#~ msgstr "Bild"
-
-#~ msgid "Boards %f-%l"
-#~ msgstr "Styrelser %f-%l"
-
-#~ msgid "By board"
-#~ msgstr "Brädor"
-
-#~ msgid "%t [Boards %f-%l]"
-#~ msgstr "%t [Styrelsen %f-%l]"
-
-#~ msgid "%t (by board)"
-#~ msgstr "%t (board)"
-
-#~ msgid "By player"
-#~ msgstr "Av spelare"
-
-#~ msgid "%t (by player)"
-#~ msgstr "%t (per spelare)"
-
-#~ msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-#~ msgstr "Ingen skärm av typen [{screen_type}] för menyn på skärmen [{screen_uniq_id}]."
-
-#~ msgid "Pattern [{pattern}] can be used by screen families."
-#~ msgstr "Mönster [{pattern}] kan användas av skärmfamiljer."
-
-#~ msgid "Pattern [{pattern}] matches no screen."
-#~ msgstr "Mönster [{pattern}] matchar ingen skärm."
-
-#~ msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
-#~ msgstr "Skärm [{pattern}] hittades inte för menyn på skärmen [{screen_uniq_id}]."
-
-#~ msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
-#~ msgstr "Maximalt antal resultat satt till [{results_limit}] för att passa på [{columns}] kolumner."
-
-#~ msgid "Invalid board number [{fixed_board_str}]."
-#~ msgstr "Ogiltigt styrelsenummer [{fixed_board_str}]."
-
-#~ msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
-#~ msgstr "Siffrorna {first} och {last} är inte förenliga ({first} > {last})."
-
-#~ msgid "%f to %l"
-#~ msgstr "%f till %l"
-
-#~ msgid "boards {board_numbers}"
-#~ msgstr "styrelser {board_numbers}"
-
-#~ msgid "Tournament {tournament_uniq_id} ({numbers_str})"
-#~ msgstr "Turnering {tournament_uniq_id} ({numbers_str})"
-
-#~ msgid "Time is not defined."
-#~ msgstr "Tiden är inte definierad."
-
-#~ msgid "Invalid time [{time_str}]."
-#~ msgstr "Ogiltig tid [{time_str}]."
-
-#~ msgid "The date of the first hour is not defined (mandatory)."
-#~ msgstr "Datumet för den första timmen är inte fastställt (obligatoriskt)."
-
-#~ msgid "Invalid date [{date_str}]."
-#~ msgstr "Ogiltigt datum [{date_str}]."
-
-#~ msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
-#~ msgstr "Ogiltig timme [{hour}] (före föregående timme [{previous_hour}])."
-
-#~ msgid "Invalid date and time [{datetime_str}]."
-#~ msgstr "Ogiltigt datum och tid [{datetime_str}]."
-
-#~ msgid "No valid hour defined."
-#~ msgstr "Ingen giltig timme definierad."
-
-#~ msgid "No directory set for the Papi file, by default [{path}]."
-#~ msgstr "Ingen katalog inställd för Papi-filen, som standard [{path}]."
-
-#~ msgid "The name of the Papi file is not set, by default [{filename}]"
-#~ msgstr "Namnet på Papi- filen är inte inställt, som standard [{filename}]"
-
-#~ msgid "Qualification number and FFE password not set, operations on the FFE website will not be available."
-#~ msgstr "Kvalifikationsnummer och FFE-lösenord är inte satta, verksamheten på FFE:s webbplats kommer inte att vara tillgänglig."
-
-#~ msgid "ChessEvent connection not defined."
-#~ msgstr "ChessEvent-anslutningen är inte definierad."
-
-#~ msgid "ChessEvent tournament name not set."
-#~ msgstr "ChessEvent turneringsnamn inte bestämt."
-
-#~ msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
-#~ msgstr "FFE ID definieras inte för turnering [{tournament_uniq_id}]."
-
-#~ msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
-#~ msgstr "Papi fil inte definierad för turnering [{tournament_uniq_id}]."
-
-#~ msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
-#~ msgstr "Papi-filen hittades inte [{file}] för turnering [{tournament_uniq_id}]."
-
-#~ msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
-#~ msgstr "Regler fil inte definierad för turnering [{tournament_uniq_id}]."
-
-#~ msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
-#~ msgstr "Regler fil definieras av en URL för turnering [{tournament_uniq_id}]."
-
-#~ msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
-#~ msgstr "Regler fil [{file}] hittades inte för turnering [{tournament_uniq_id}]."
-
-#~ msgid "No FFE operations can be done on the tournaments of this event."
-#~ msgstr "Inga FFE operationer kan göras på turneringarna i denna händelse."
-
-#~ msgid "Tournaments: {tournament_ffe_ids}"
-#~ msgstr "Turneringar: {tournament_ffe_ids}"
-
-#~ msgid "T *** THE LETTER TO ANSWER TEST"
-#~ msgstr "Ursprunglig hänvisning till den nationella lagstiftningen:"
-
-#~ msgid "V *** THE LETTER TO ANSWER VISIBLE"
-#~ msgstr "V"
-
-#~ msgid "F *** THE LETTER TO ANSWER FEES"
-#~ msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
-
-#~ msgid "R *** THE LETTER TO ANSWER RULES"
-#~ msgstr "Obligatoriskt (\"R\")"
-
-#~ msgid "Test the tournament passwords on the FFE website"
-#~ msgstr "Testa turneringens lösenord på FFE:s webbplats"
-
-#~ msgid "Make the tournaments visible on the FFE website"
-#~ msgstr "Gör turneringarna synliga på FFE:s webbplats"
-
-#~ msgid "Download fees invoices"
-#~ msgstr "Fakturor för nedladdningsavgifter"
-
-#~ msgid "Upload the rules of the tournaments"
-#~ msgstr "Ladda upp reglerna för turneringarna"
-
-#~ msgid "Upload the results of the tournaments"
-#~ msgstr "Ladda upp resultatet av turneringarna"
-
-#~ msgid "Actions:"
-#~ msgstr "Åtgärder:"
-
-#~ msgid "No need to upload the rules to the FFE website (up to date)."
-#~ msgstr "Du behöver inte ladda upp reglerna till FFE:s webbplats (senaste datum)."
-
-#~ msgid "No need to upload the results to the FFE website (up to date)."
-#~ msgstr "Du behöver inte ladda upp resultaten till FFE:s webbplats (senaste datum)."
-
-#~ msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
-#~ msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
-#~ msgstr[0] "{recent_updates} turneringen har uppdaterats mindre än {ffe_upload_delay} sekunder sedan, väntar."
-#~ msgstr[1] "{recent_updates} turneringar har uppdaterats mindre än {ffe_upload_delay} sekunder sedan, väntar."
-
-#~ msgid "End of upload (Ctrl-C)"
-#~ msgstr "Slut på uppladdning (Ctrl-C)"
-
-#~ msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
-#~ msgstr "Innehållet i webbadressen [{url}] är inte giltigt (input[id=[{id]] hittades inte)."
-
-#~ msgid "Initializing a session to [{url}]..."
-#~ msgstr "Initiera en session till [{url}]..."
-
-#~ msgid "OK"
-#~ msgstr "Okej."
-
-#~ msgid "Authenticating..."
-#~ msgstr "Behörighetskontroll..."
-
-#~ msgid "Authentication failed."
-#~ msgstr "Behörighetskontroll misslyckades."
-
-#~ msgid "Tournament [{ffe_id}]:"
-#~ msgstr "Turnering [{ffe_id}]:"
-
-#~ msgid "Getting fees for tournament [{ffe_id}]..."
-#~ msgstr "Få avgifter för turnering [{ffe_id}]..."
-
-#~ msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
-#~ msgstr "Avgiftslänk hittades inte, kontrollera att en Papi-fil redan har skickats och att turneringen inte har arkiverats på FFE:s webbplats."
-
-#~ msgid "Tournament exempt from registration fees."
-#~ msgstr "Turnering befrias från registreringsavgifter."
-
-#~ msgid "Invalid fees link text [{text}]."
-#~ msgstr "Ogiltiga avgifter länkar text [{text}]."
-
-#~ msgid "Invoice saved to [{file}]."
-#~ msgstr "Fakturering sparad till [{file}]."
-
-#~ msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
-#~ msgstr "Skickar turnering [{ffe_id}] ({file}) till FFE:s webbplats..."
-
-#~ msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
-#~ msgstr "Ladda upp länk hittades inte, kontrollera att turneringen inte är klar på FFE webbplats."
-
-#~ msgid "Results upload OK"
-#~ msgstr "Resultat ladda upp OK"
-
-#~ msgid "Making the tournament visible on the FFE website..."
-#~ msgstr "Gör turneringen synlig på FFE:s webbplats..."
-
-#~ msgid "Display link not found, check that a Papi file has already been sent."
-#~ msgstr "Visa länk hittades inte, kontrollera att en Papi-fil redan har skickats."
-
-#~ msgid "Data is already displayed on the FFE website."
-#~ msgstr "Data visas redan på FFE:s webbplats."
-
-#~ msgid "Invalid display link text [{text}]"
-#~ msgstr "Ogiltig länktext för visning [{text}]"
-
-#~ msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
-#~ msgstr "Skicka reglerna för turneringen [{ffe_id}] ({file}) till FFE:s webbplats..."
-
-#~ msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
-#~ msgstr "Regler ladda upp länk inte hittades, kontrollera att turneringen inte är klar på FFE webbplats."
-
-#~ msgid "Opening the welcome page [{url}] in a browser..."
-#~ msgstr "Öppnar välkomstsidan [{url}] i en webbläsare..."
-
-#~ msgid "Web server not started yet ({ex}), waiting..."
-#~ msgstr "Webbserver ännu inte startat ({ex}), väntar..."
-
-#~ msgid "Starting Papi-web server, please wait..."
-#~ msgstr "Börjar papi-webbserver, vänta..."
-
-#~ msgid "Logging level: {log_level}"
-#~ msgstr "Loggningsnivå: {log_level}"
-
-#~ msgid "Port: {port}"
-#~ msgstr "Hamn: {port}"
-
-#~ msgid "Local URL: {local_url}"
-#~ msgstr "Lokal webbadress: {local_url}"
-
-#~ msgid "LAN/WAN URL: {lan_url}"
-#~ msgstr "LAN/WAN URL: {lan_url}"
-
-#~ msgid "Port [{port}] already in use, can not start Papi-web server."
-#~ msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
-
-#~ msgid "Please enter the ID of ChessEvent connection."
-#~ msgstr "Vänligen ange identifikationen för ChessEvent-anslutningen."
-
-#~ msgid "ChessEvent connection [{uniq_id}] already exists."
-#~ msgstr "ChessEvent-anslutning [{uniq_id}] finns redan."
-
-#~ msgid "Please enter the ID used to connect to the ChessEvent platform."
-#~ msgstr "Ange det id som används för att ansluta till ChessEvent-plattformen."
-
-#~ msgid "Please enter the password used to connect to the ChessEvent platform."
-#~ msgstr "Ange lösenordet som används för att ansluta till ChessEvent-plattformen."
-
-#~ msgid "Please enter the ID of the event on the ChessEvent platform."
-#~ msgstr "Vänligen ange id för händelsen på ChessEvent-plattformen."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
-#~ msgstr "ChessEvent-anslutning [{chessevent_uniq_id}] har skapats."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
-#~ msgstr "ChessEvent-anslutningen [{chessevent_uniq_id}] har uppdaterats."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
-#~ msgstr "ChessEvent anslutning [{chessevent_uniq_id}] har tagits bort."
-
-#~ msgid "Tournaments ({num})"
-#~ msgstr "Turneringar ({num})"
-
-#~ msgid "Screens ({num})"
-#~ msgstr "Skärmar ({num})"
-
-#~ msgid "Families ({num})"
-#~ msgstr "Familjer ({num})"
-
-#~ msgid "Rotators ({num})"
-#~ msgstr "Rotatorer ({num})"
-
-#~ msgid "Timers ({num})"
-#~ msgstr "Timers ({num})"
-
-#~ msgid "ChessEvent ({num})"
-#~ msgstr "ChessEvent ({num})"
-
-#~ msgid "Messages ({num})"
-#~ msgstr "Meddelanden ({num})"
-
-#~ msgid "Renaming the database failed: {ex}."
-#~ msgstr "Byte av databas misslyckades: {ex}."
-
-#~ msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
-#~ msgstr "Händelse [{old_uniq_id}] har bytt namn ([{new_uniq_id}]) och uppdaterats."
-
-#~ msgid "Event [{uniq_id}] has been updated."
-#~ msgstr "Händelse [{uniq_id}] har uppdaterats."
-
-#~ msgid "Event [{uniq_id}] has been created."
-#~ msgstr "Händelse [{uniq_id}] har skapats."
-
-#~ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
-#~ msgstr "Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch})."
-
-#~ msgid "Please enter the family ID."
-#~ msgstr "Vänligen ange familjens ID."
-
-#~ msgid "Character [{char}] is not allowed."
-#~ msgstr "Tecken [{char}] är inte tillåtet."
-
-#~ msgid "Family [{uniq_id}] already exists."
-#~ msgstr "Familjen [{uniq_id}] finns redan."
-
-#~ msgid "Please choose the tournament."
-#~ msgstr "Välj turneringen."
-
-#~ msgid "Tournament [{tournament_id}] not found."
-#~ msgstr "Turneringen [{tournament_id}] hittades inte."
-
-#~ msgid "A positive integer is expected."
-#~ msgstr "Ett positivt heltal förväntas."
-
-#~ msgid "Timer [{timer_id}] not found."
-#~ msgstr "Timer [{timer_id}] hittades inte."
-
-#~ msgid "Specifying the number of parts and the number of items per part is not possible."
-#~ msgstr "Det är inte möjligt att ange antalet delar och antalet objekt per del."
-
-#~ msgid "Results entry"
-#~ msgstr "Inlämning av resultat"
-
-#~ msgid "pairings by board"
-#~ msgstr "Parningar per plan"
-
-#~ msgid "Pairings by player"
-#~ msgstr "Parningar av spelare"
-
-#~ msgid "No recording"
-#~ msgstr "Ingen inspelning"
-
-#~ msgid "{num} illegal move max"
-#~ msgid_plural "{num} illegal moves max"
-#~ msgstr[0] "{num} olagligt drag max"
-#~ msgstr[1] "{num} olagliga förflyttningar max"
-
-#~ msgid "By default - {option}"
-#~ msgstr "Som standard - {option}"
-
-#~ msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
-#~ msgstr "Färg #1 används tills {delay_1} minuter innan rundorna börjar (fördröjning #1), färgen ändras sedan gradvis till färg #2 ({delay_2} minuter innan rundorna börjar)."
-
-#~ msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
-#~ msgstr "Färg #2 används {delay_2} minuter innan rundorna börjar (fördröj #2), färgen ändras sedan gradvis till färg #3 (i början av rundorna)."
-
-#~ msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
-#~ msgstr "Färg #3 används från början av rundorna och för {delay_3} minuter efter (fördröj #3)."
-
-#~ msgid "Pairings by board"
-#~ msgstr "Parningar ombord"
-
-#~ msgid "Use no timer"
-#~ msgstr "Använd ingen timer"
-
-#~ msgid "No timer defined"
-#~ msgstr "Ingen timer definierad"
-
-#~ msgid "Timer {timer_uniq_id}"
-#~ msgstr "Tidpunkt {timer_uniq_id}"
-
-#~ msgid "Display the exit button"
-#~ msgstr "Visa utgångsknappen@ info: whatsthis"
-
-#~ msgid "Hide the exit button"
-#~ msgstr "Dölj utgångsknappen"
-
-#~ msgid "Display only paired players"
-#~ msgstr "Visa endast parade spelare"
-
-#~ msgid "Display all the players, paired and unpaired"
-#~ msgstr "Visa alla spelare, parade och oparade"
-
-#~ msgid "URL [{url}] responded code [{code}]."
-#~ msgstr "URL [{url}] svarade kod [{code}]."
-
-#~ msgid "URL [{url}] did not respond (error: [{error}])."
-#~ msgstr "URL [{url}] svarade inte (terror: [{error}])."
-
-#~ msgid "Incorrect path [{path}]."
-#~ msgstr "Felaktig stig [{path}]."
-
-#~ msgid "File [{file}] not found."
-#~ msgstr "Filen [{file}] hittades inte."
-
-#~ msgid "Wrong file extension [{ext}] ([pdf] expected)."
-#~ msgstr "Fel filändelse [{ext}] ([pdf] förväntas)."
-
-#~ msgid "Invalid color [{color}] ([#RRGGBB] expected)."
-#~ msgstr "Ogiltig färg [{color}] ([# RRGGBB] förväntas)."
-
-#~ msgid "Please enter the event ID."
-#~ msgstr "Ange händelsens id."
-
-#~ msgid "event ID does not match."
-#~ msgstr "Händelse-ID matchar inte."
-
-#~ msgid "Event [{uniq_id}] already exists."
-#~ msgstr "Händelse [{uniq_id}] finns redan."
-
-#~ msgid "Please enter the name of the event."
-#~ msgstr "Ange händelsens namn."
-
-#~ msgid "Please enter the start date of the event."
-#~ msgstr "Ange evenemangets startdatum."
-
-#~ msgid "Please enter the end date of the event."
-#~ msgstr "Ange evenemangets slutdatum."
-
-#~ msgid "Please enter a date after the start date."
-#~ msgstr "Ange ett datum efter startdatum."
-
-#~ msgid "Please enter a URL or select an image on the right hand side."
-#~ msgstr "Ange en webbadress eller välj en bild på höger sida."
-
-#~ msgid "Invalid delay [{delay}] (positive integer expected)."
-#~ msgstr "Ogiltig fördröjning [{delay}] (positivt heltal förväntas)."
-
-#~ msgid "New event"
-#~ msgstr "Nytt evenemang"
-
-#~ msgid "event"
-#~ msgstr "händelse"
-
-#~ msgid "Current events ({num})"
-#~ msgstr "Aktuella händelser ({num})"
-
-#~ msgid "No current events."
-#~ msgstr "Inga aktuella händelser."
-
-#~ msgid "Upcoming events ({num})"
-#~ msgstr "Kommande evenemang ({num})"
-
-#~ msgid "No upcoming events."
-#~ msgstr "Inga kommande händelser."
-
-#~ msgid "Passed events ({num})"
-#~ msgstr "Godkända evenemang ({num})"
-
-#~ msgid "No passed events."
-#~ msgstr "Inga förbipasserade händelser."
-
-#~ msgid "Archived events ({num})"
-#~ msgstr "Arkiverade evenemang ({num})"
-
-#~ msgid "No archived events."
-#~ msgstr "Inga arkiverade händelser."
-
-#~ msgid "Papi-web configuration"
-#~ msgstr "Inställning av papi-webben"
-
-#~ msgid "Please enter the rotator ID."
-#~ msgstr "Vänligen ange rotator-ID."
-
-#~ msgid "Rotator [{uniq_id}] already exists."
-#~ msgstr "Rotator [{uniq_id}] finns redan."
-
-#~ msgid "Rotator [{rotator_uniq_id}] has been created."
-#~ msgstr "Rotator [{rotator_uniq_id}] har skapats."
-
-#~ msgid "Rotator [{rotator_uniq_id}] has been updated."
-#~ msgstr "Rotator [{rotator_uniq_id}] har uppdaterats."
-
-#~ msgid "Rotator [{rotator_uniq_id}] has been deleted."
-#~ msgstr "Rotator [{rotator_uniq_id}] har utgått."
-
-#~ msgid "Please enter the screen ID."
-#~ msgstr "Ange skärm-ID."
-
-#~ msgid "Screen [{uniq_id}] already exists."
-#~ msgstr "Skärmen [{uniq_id}] finns redan."
-
-#~ msgid "Please enter the image URL."
-#~ msgstr "Ange bildens URL."
-
-#~ msgid "Invalid URL [{background_image}]."
-#~ msgstr "Ogiltig webbadress [{background_image}]."
-
-#~ msgid "{screen_type}-screen"
-#~ msgstr "{screen_type}-skärm"
-
-#~ msgid "Screen [{screen_uniq_id}] has been created."
-#~ msgstr "Skärmen [{screen_uniq_id}] har skapats."
-
-#~ msgid "Screen [{screen_uniq_id}] has been updated."
-#~ msgstr "Skärmen [{screen_uniq_id}] har uppdaterats."
-
-#~ msgid "Screen [{screen_uniq_id}] has been deleted."
-#~ msgstr "Skärmen [{screen_uniq_id}] har tagits bort."
-
-#~ msgid "Please enter the timer ID."
-#~ msgstr "Vänligen ange timer-ID."
-
-#~ msgid "Timer [{uniq_id}] already exists."
-#~ msgstr "Timer [{uniq_id}] finns redan."
-
-#~ msgid "Please enter the round number or the hour ID."
-#~ msgstr "Ange rundnumret eller timnumret."
-
-#~ msgid "Please enter the time."
-#~ msgstr "Vänligen ange tiden."
-
-#~ msgid "Please enter a valid time."
-#~ msgstr "Ange en giltig tid."
-
-#~ msgid "Please enter the date of the first hour."
-#~ msgstr "Ange datum för första timmen."
-
-#~ msgid "Please enter a valid date."
-#~ msgstr "Ange ett giltigt datum."
-
-#~ msgid "Please enter valid date and time."
-#~ msgstr "Ange giltigt datum och tid."
-
-#~ msgid "Hour [{uniq_id}] already exists."
-#~ msgstr "Timme [{uniq_id}] finns redan."
-
-#~ msgid "Round numbers must be positive integers."
-#~ msgstr "Runda tal måste vara positiva heltal."
-
-#~ msgid "Please enter the text to display before the hour (mandatory except for rounds)."
-#~ msgstr "Ange texten som ska visas före timmen (obligatoriskt med undantag för rundor)."
-
-#~ msgid "Please enter the text to display after the hour (mandatory except for rounds)."
-#~ msgstr "Ange texten som ska visas efter timmen (obligatoriskt med undantag för rundor)."
-
-#~ msgid "Timer [{timer_uniq_id}] has been created."
-#~ msgstr "Timer [{timer_uniq_id}] har skapats."
-
-#~ msgid "Timer [{timer_uniq_id}] has been updated."
-#~ msgstr "Timer [{timer_uniq_id}] har uppdaterats."
-
-#~ msgid "Timer [{timer_uniq_id}] has been deleted."
-#~ msgstr "Timer [{timer_uniq_id}] har utgått."
-
-#~ msgid "Please enter the tournament ID."
-#~ msgstr "Vänligen ange turneringens ID."
-
-#~ msgid "tournament ID does not match."
-#~ msgstr "Turnerings-ID matchar inte."
-
-#~ msgid "Tournament [{uniq_id}] already exists."
-#~ msgstr "Turneringen [{uniq_id}] finns redan."
-
-#~ msgid "Please enter the tournament name."
-#~ msgstr "Ange turneringens namn."
-
-#~ msgid "The FFE ID is a positive integer."
-#~ msgstr "FFE-ID är ett positivt heltal."
-
-#~ msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-#~ msgstr "Lösenordet för turneringen på FFE webbplats är gjord av 10 stora bokstäver."
-
-#~ msgid "tournament"
-#~ msgstr "turnering"
-
-#~ msgid "New tournament"
-#~ msgstr "Ny turnering"
-
-#~ msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
-#~ msgstr "Turneringen [{tournament_uniq_id}] har skapats och standardskärmar har lagts till."
-
-#~ msgid "Tournament [{tournament_uniq_id}] has been created."
-#~ msgstr "Turneringen [{tournament_uniq_id}] har skapats."
-
-#~ msgid "Tournament [{tournament_uniq_id}] has been updated."
-#~ msgstr "Turneringen [{tournament_uniq_id}] har uppdaterats."
-
-#~ msgid "Tournament [{tournament_uniq_id}] has been deleted."
-#~ msgstr "Turneringen [{tournament_uniq_id}] har tagits bort."
-
-#~ msgid "Results entry ({num})"
-#~ msgstr "Inlämning av resultat ({num})"
-
-#~ msgid "Pairings by board ({num})"
-#~ msgstr "Parningar ombord ({num})"
-
-#~ msgid "Pairings by player ({num})"
-#~ msgstr "Parningar efter spelare ({num})"
-
-#~ msgid "Last results ({num})"
-#~ msgstr "Senaste resultaten ({num})"
-
-#~ msgid "Image ({num})"
-#~ msgstr "Bild ({num})"
-
-#~ msgid "Access denied, please authenticate to enter results."
-#~ msgstr "Åtkomst nekad, vänligen autentisera för att ange resultat."
-
-#~ msgid "Incorrect password."
-#~ msgstr "Felaktigt lösenord."
-
-#~ msgid "Authentication successful!"
-#~ msgstr "Behörighetskontroll lyckades!"
-
-#~ msgid "Please enter the password."
-#~ msgstr "Ange lösenordet."
-
-#~ msgid "Archived event"
-#~ msgstr "Arkiverad händelse"
-
-#~ msgid "Deletion date"
-#~ msgstr "Datum för borttagning"
-
-#~ msgid "Change the number of columns."
-#~ msgstr "Ändra antal kolumner."
-
-#~ msgid "Check-in"
-#~ msgstr "Incheckning"
-
-#~ msgid "Chessevent ID: %(chessevent_user_id)s"
-#~ msgstr "Chessevent ID: %(chessevent_user_id)s"
-
-#~ msgid "ChessEvent password: %(chessevent_password)s"
-#~ msgstr "ChessEvent lösenord: %(chessevent_password)s"
-
-#~ msgid "ChessEvent event: %(chessevent_event)s"
-#~ msgstr "ChessEvenemang: %(chessevent_event)s"
-
-#~ msgid "Edit the properties of the ChessEvent connection."
-#~ msgstr "Redigera egenskaperna hos ChessEvent-anslutningen."
-
-#~ msgid "Edit"
-#~ msgstr "Redigera"
-
-#~ msgid "Clone the ChessEvent connection."
-#~ msgstr "Clone the ChessEvent-anslutningen."
-
-#~ msgid "Delete the ChessEvent connection."
-#~ msgstr "Ta bort ChessEvent-anslutningen."
-
-#~ msgid "ChessEvent connection creation"
-#~ msgstr "ChessEvent-anslutningsskapande"
-
-#~ msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
-#~ msgstr "Upplaga av ChessEvent-anslutning [%(chessevent_uniq_id)s]"
-
-#~ msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
-#~ msgstr "Radering av ChessEvent-anslutningen [%(chessevent_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of a ChessEvent connection is permanent!"
-#~ msgstr "Varning: Raderingen av en ChessEvent-anslutning är permanent!"
-
-#~ msgid "The following tournaments will not be connected to ChessEvent anymore:"
-#~ msgstr "Följande turneringar kommer inte längre att kopplas till ChessEvent:"
-
-#~ msgid "Properties"
-#~ msgstr "Egenskaper"
-
-#~ msgid "ID (unique):"
-#~ msgstr "Id (enhetlig):"
-
-#~ msgid "The Unique ID, used to reference the ChessEvent connection."
-#~ msgstr "Det unika id, som används för att referera till ChessEvent-anslutningen."
-
-#~ msgid "Connection to the ChessEvent platform"
-#~ msgstr "Anslutning till ChessEvent-plattformen"
-
-#~ msgid "Chessevent ID:"
-#~ msgstr "Chessevent ID:"
-
-#~ msgid "E.g.: %(string)s"
-#~ msgstr "T.ex.: %(string)s"
-
-#~ msgid "the ID used to connect to the ChessEvent platform."
-#~ msgstr "Id-kortet användes för att ansluta till ChessEvent-plattformen."
-
-#~ msgid "Password:"
-#~ msgstr "Lösenord:"
-
-#~ msgid "E.g.: my_password"
-#~ msgstr "T.ex.: mitt lösenord"
-
-#~ msgid "The password used to connect to the ChessEvent platform."
-#~ msgstr "Lösenordet som användes för att ansluta till ChessEvent-plattformen."
-
-#~ msgid "ChessEvent event:"
-#~ msgstr "ChessEvent-evenemang:"
-
-#~ msgid "The name of the event on the ChessEvent password."
-#~ msgstr "Namnet på händelsen på lösenordet ChessEvent."
-
-#~ msgid "Create"
-#~ msgstr "Skapa"
-
-#~ msgid "Update"
-#~ msgstr "Uppdatera"
-
-#~ msgid "Delete"
-#~ msgstr "Ta bort"
-
-#~ msgid "Cancel"
-#~ msgstr "Avbryt"
-
-#~ msgid "Refresh this page."
-#~ msgstr "Uppdatera den här sidan."
-
-#~ msgid "Add a ChessEvent connection to the event."
-#~ msgstr "Lägg till en ChessEvent-anslutning till evenemanget."
-
-#~ msgid "Create a ChessEvent connection"
-#~ msgstr "Skapa en schackevent-anslutning"
-
-#~ msgid "No ChessEvent connections."
-#~ msgstr "Inga ChessEvent-förbindelser."
-
-#~ msgid "Add an event."
-#~ msgstr "Lägg till en händelse."
-
-#~ msgid "Create an event"
-#~ msgstr "Skapa en händelse"
-
-#~ msgid "Configuration"
-#~ msgstr "Inställning"
-
-#~ msgid "Port"
-#~ msgstr "Hamn"
-
-#~ msgid "Access from the Papi-web server"
-#~ msgstr "Åtkomst från Papi-web-servern"
-
-#~ msgid "Access from the local network (LAN/WAN)"
-#~ msgstr "Tillträde från det lokala nätverket (LAN/WAN)"
-
-#~ msgid "Launching the browser on server startup"
-#~ msgstr "Starta webbläsaren vid serverstart"
-
-#~ msgid "Yes"
-#~ msgstr "Ja, det är jag."
-
-#~ msgid "No"
-#~ msgstr "Ej tillämpligt"
-
-#~ msgid "%(lib)s version"
-#~ msgstr "%(lib)s version"
-
-#~ msgid "Access driver (found)"
-#~ msgstr "Åtkomstdrivrutin (hittad)"
-
-#~ msgid "Access driver (not found)"
-#~ msgstr "Åtkomstdrivrutin (finns inte)"
-
-#~ msgid "Other ODBC drivers found on the server"
-#~ msgstr "Andra ODBC-drivrutiner hittades på servern"
-
-#~ msgid "Colour #%(num)d:"
-#~ msgstr "Färg # %(num)d:"
-
-#~ msgid "by default"
-#~ msgstr "Som standard"
-
-#~ msgid "Delay #%(num)d:"
-#~ msgstr "Försening nr %(num)d:"
-
-#~ msgid "Unique ID: %(uniq_id)s"
-#~ msgstr "Unikt id: %(uniq_id)s"
-
-#~ msgid "Tournaments: %(num)d"
-#~ msgstr "Turneringar: %(num)d"
-
-#~ msgid "ChessEvent connections: %(num)d"
-#~ msgstr "ChessEvent-förbindelser: %(num)d"
-
-#~ msgid "Timers: %(num)d"
-#~ msgstr "Tidtagare: %(num)d"
-
-#~ msgid "Screens: %(num)d"
-#~ msgstr "Skärmar: %(num)d"
-
-#~ msgid "Families: %(num)d"
-#~ msgstr "Familjer: %(num)d"
-
-#~ msgid "Rotators: %(num)d"
-#~ msgstr "Rotatorer: %(num)d"
-
-#~ msgid "Errors: %(num)d"
-#~ msgstr "Fel: %(num)d"
-
-#~ msgid "Warnings: %(num)d"
-#~ msgstr "Varningar: %(num)d"
-
-#~ msgid "Informations: %(num)d"
-#~ msgstr "Information: %(num)d"
-
-#~ msgid "Clone"
-#~ msgstr "Clone Ordförande"
-
-#~ msgid "Customization"
-#~ msgstr "Anpassning"
-
-#~ msgid "Unique ID"
-#~ msgstr "Unikt id"
-
-#~ msgid "Start"
-#~ msgstr "Börja"
-
-#~ msgid "End"
-#~ msgstr "Slut"
-
-#~ msgid "Visibility"
-#~ msgstr "Synlighet"
-
-#~ msgid "Public event"
-#~ msgstr "Offentligt evenemang"
-
-#~ msgid "Private event"
-#~ msgstr "Privat evenemang"
-
-#~ msgid "Default directory of the Papi files"
-#~ msgstr "Förvald katalog för Papi-filerna"
-
-#~ msgid "(by default)"
-#~ msgstr "(som standard)"
-
-#~ msgid "Background image and colour"
-#~ msgstr "Bakgrundsbild och färg"
-
-#~ msgid "Password to enter results"
-#~ msgstr "Lösenord för att ange resultat"
-
-#~ msgid "No password required"
-#~ msgstr "Inget lösenord krävs"
-
-#~ msgid "Maximum number of illegal moves"
-#~ msgstr "Maximalt antal olagliga förflyttningar"
-
-#~ msgid "Rules"
-#~ msgstr "Regler"
-
-#~ msgid "No rules file set"
-#~ msgstr "Ingen regelfil inställd@ info: whatsthis"
-
-#~ msgid "Default timer configuration"
-#~ msgstr "Förvald timerinställning"
-
-#~ msgid "%(minutes)d minutes before"
-#~ msgstr "%(minutes)d minuter före"
-
-#~ msgid "%(minutes)d minutes after"
-#~ msgstr "%(minutes)d minuter efter"
-
-#~ msgid "Alert message"
-#~ msgstr "Varningsmeddelande"
-
-#~ msgid "No alert message"
-#~ msgstr "Inget varningsmeddelande"
-
-#~ msgid "Last update"
-#~ msgstr "Senaste uppdatering"
-
-#~ msgid "Event creation"
-#~ msgstr "Skapande av händelse"
-
-#~ msgid "Edition of event [%(event_uniq_id)s]"
-#~ msgstr "Upplaga av evenemang [%(event_uniq_id)s]"
-
-#~ msgid "Deletion of event [%(event_uniq_id)s]"
-#~ msgstr "Radering av evenemanget [%(event_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of an event is permanent!"
-#~ msgstr "Varning: Raderingen av en händelse är permanent!"
-
-#~ msgid "Enter the event ID to confirm its deletion:"
-#~ msgstr "Ange händelsens id för att bekräfta dess radering:"
-
-#~ msgid "Enter here the event ID"
-#~ msgstr "Skriv in händelsens id här"
-
-#~ msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
-#~ msgstr "Återhämtning av borttagen händelse är inte möjligt från webbgränssnittet (oavsett om händelserna arkiveras och kan återställas från filsystemet."
-
-#~ msgid "The Unique ID, used for data storage and export."
-#~ msgstr "Det unika id, som används för datalagring och export."
-
-#~ msgid "Name:"
-#~ msgstr "Beteckning:"
-
-#~ msgid "The name of the event, used for display and reports."
-#~ msgstr "Händelsens namn, som används för visning och rapporter."
-
-#~ msgid "Visibility:"
-#~ msgstr "Synlighet:"
-
-#~ msgid "Only arbiters can see private events."
-#~ msgstr "Endast skiljedomare kan se privata evenemang."
-
-#~ msgid "Start:"
-#~ msgstr "Börja:"
-
-#~ msgid "The start date and time of the event."
-#~ msgstr "Startdatum och tidpunkt för händelsen."
-
-#~ msgid "End:"
-#~ msgstr "Slut:"
-
-#~ msgid "The end date and time of the event."
-#~ msgstr "Slutdatum och tidpunkt för händelsen."
-
-#~ msgid "Default directory of the Papi files:"
-#~ msgstr "Förvald katalog för Papi-filerna:"
-
-#~ msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
-#~ msgstr "Standardkatalogen för Papi-filerna i turneringarna (absolut eller relativ väg, som standard %(dir)s)."
-
-#~ msgid "Password to enter results:"
-#~ msgstr "Lösenord för att ange resultat:"
-
-#~ msgid "The password required on input screens to enter results (optional)."
-#~ msgstr "Lösenordet som krävs på inmatningsskärmar för att ange resultat (valfritt)."
-
-#~ msgid "Illegal moves recording:"
-#~ msgstr "Olaglig förflyttning inspelning:"
-
-#~ msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament."
-#~ msgstr "Det maximala antalet olagliga drag som kan registreras per runda för en spelare (från 0 till 3, som standard %(default)d). Detta värde kan ändras för varje turnering."
-
-#~ msgid "Rules file location:"
-#~ msgstr "Regler filplats:"
-
-#~ msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
-#~ msgstr "En webbadress, eller sökvägen till regelfilen på servern, i PDF-format (valfritt)."
-
-#~ msgid "Display"
-#~ msgstr "Visa"
-
-#~ msgid "Background image:"
-#~ msgstr "Bakgrundsbild:"
-
-#~ msgid "no background image"
-#~ msgstr "ingen bakgrundsbild"
-
-#~ msgid "The URL or the path of the image to display (by default the Papi-web logo)."
-#~ msgstr "Webbadressen eller sökvägen för bilden att visa (som standard papi-web-logotypen)."
-
-#~ msgid "Background colour:"
-#~ msgstr "Bakgrundsfärg:"
-
-#~ msgid "The background colour is used when the image dost fill the whole screen."
-#~ msgstr "Bakgrundsfärgen används när bildens dost fyller hela skärmen."
-
-#~ msgid "Choose a custom image:"
-#~ msgstr "Välj en egen bild:"
-
-#~ msgid "Timers"
-#~ msgstr "Tidtagare"
-
-#~ msgid "Text colour:"
-#~ msgstr "Textfärg:"
-
-#~ msgid "Text:"
-#~ msgstr "Text:"
-
-#~ msgid "E.g.: Please keep quiet until the end of the round!"
-#~ msgstr "T.ex.: Var tyst till slutet av ronden!"
-
-#~ msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
-#~ msgstr "När det definieras visas varningsmeddelandet i en rullningsbanner längst ner på skärmarna. Varningsmeddelandet som definieras på händelsenivå kan överskridas på rotator, skärmfamilj eller skärmnivå."
-
-#~ msgid "Screen families"
-#~ msgstr "Skärmfamiljer"
-
-#~ msgid "Enable/disable the details of the screen families on the cards below."
-#~ msgstr "Aktivera/inaktivera detaljerna för skärmfamiljerna på korten nedan."
-
-#~ msgid "Details"
-#~ msgstr "Detaljer"
-
-#~ msgid "You must create a tournament before creating a screen family."
-#~ msgstr "Du måste skapa en turnering innan du skapar en skärmfamilj."
-
-#~ msgid "Add a family of screens to enter the results."
-#~ msgstr "Lägg till en familj av skärmar för att ange resultaten."
-
-#~ msgid "Add a family of screens to display the pairings by board."
-#~ msgstr "Lägg till en familj av skärmar för att visa parningar per bord."
-
-#~ msgid "Add a family of screens to display the pairings by alphabetical order."
-#~ msgstr "Lägg till en grupp skärmar för att visa parningar i alfabetisk ordning."
-
-#~ msgid "No screen families."
-#~ msgstr "Inga skärmfamiljer."
-
-#~ msgid "Type: %(family_type)s"
-#~ msgstr "Typ: %(family_type)s"
-
-#~ msgid "Tournament: %(tournament_name)s"
-#~ msgstr "Turnering: %(tournament_name)s"
-
-#~ msgid "Selection: %(selection)s"
-#~ msgstr "Urval: %(selection)s"
-
-#~ msgid "Columns:"
-#~ msgstr "Kolumner:"
-
-#~ msgid "Menu link label: %(menu_label)s"
-#~ msgstr "Menylänk etikett: %(menu_label)s"
-
-#~ msgid "Menu link label: none"
-#~ msgstr "Menylänketikett: ingen"
-
-#~ msgid "Menu: %(menu)s"
-#~ msgstr "Meny: %(menu)s"
-
-#~ msgid "Menu: none"
-#~ msgstr "Menyn: inget"
-
-#~ msgid "Timer: %(timer_uniq_id)s"
-#~ msgstr "Tidpunkt: %(timer_uniq_id)s"
-
-#~ msgid "Timer: none"
-#~ msgstr "Timer: inget"
-
-#~ msgid "Exit button:"
-#~ msgstr "Utgångsknapp:"
-
-#~ msgid "yes"
-#~ msgstr "Ja, det är jag."
-
-#~ msgid "no"
-#~ msgstr "Ingen känd frekvens:"
-
-#~ msgid "Unpaired: displayed"
-#~ msgstr "Oparerad: visas"
-
-#~ msgid "Unpaired: hidden"
-#~ msgstr "Oparerad: gömd"
-
-#~ msgid "Boards from #%(first)d to #%(last)d"
-#~ msgstr "Styrelser från #%(first)d till #%(last)d"
-
-#~ msgid "Players from #%(first)s to #%(last)s"
-#~ msgstr "Spelare från #%(first)s till #%(last)s"
-
-#~ msgid "No screens"
-#~ msgstr "Inga skärmar"
-
-#~ msgid "Edit the properties of the screen family."
-#~ msgstr "Redigera egenskaperna hos skärmfamiljen."
-
-#~ msgid "Clone the screen family."
-#~ msgstr "Klona filmfamiljen."
-
-#~ msgid "Delete the screen family."
-#~ msgstr "Ta bort skärmfamiljen."
-
-#~ msgid "Input screen family creation"
-#~ msgstr "Inmatningsskärmens familjeskapelse"
-
-#~ msgid "Boards screen family creation"
-#~ msgstr "Brädor skärmfamilj skapande"
-
-#~ msgid "Players screen family creation"
-#~ msgstr "Spelare skärmfamilj skapande"
-
-#~ msgid "Cloning of screen family [%(family_uniq_id)s]"
-#~ msgstr "Kloning av skärmfamiljen [%(family_uniq_id)s]"
-
-#~ msgid "Edition of screen family [%(family_uniq_id)s]"
-#~ msgstr "Upplaga av skärmfamilj [%(family_uniq_id)s]"
-
-#~ msgid "Deletion of screen family [%(family_uniq_id)s]"
-#~ msgstr "Radering av skärmfamiljen [%(family_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of a screen family is permanent!"
-#~ msgstr "Varning: Raderingen av en skärmfamilj är permanent!"
-
-#~ msgid "Properties (results entry)"
-#~ msgstr "Egenskaper (resultatinmatning)"
-
-#~ msgid "Properties (pairings by board)"
-#~ msgstr "Egenskaper (parningar efter styrelse)"
-
-#~ msgid "Properties (pairings by player)"
-#~ msgstr "Egenskaper (parningar av spelare)"
-
-#~ msgid "Public screen family"
-#~ msgstr "Allmänbildsfamilj"
-
-#~ msgid "Only arbiters can see private screen families."
-#~ msgstr "Endast skiljedomare kan se privata skärmfamiljer."
-
-#~ msgid "E.g.: %(family_type)s-family"
-#~ msgstr "T.ex.: %(family_type)s-familj"
-
-#~ msgid "The Unique ID, used to reference the screen family."
-#~ msgstr "Det unika id, som används för att referera till skärmfamiljen."
-
-#~ msgid "E.g.: My screen family"
-#~ msgstr "T.ex. min skärmfamilj"
-
-#~ msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-#~ msgstr "Namn på skärmfamiljen, valfritt. Följande polletter ersätts automatiskt med brädnummer eller spelarnas namn: %%f=först, %%l=senaste, %%t=turnering."
-
-#~ msgid "Tournament:"
-#~ msgstr "Turnering:"
-
-#~ msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
-#~ msgstr "Turneringen av skärmar i familjen, obligatorisk (till skillnad från grundläggande skärmar, bara en turnering kan visas på familjeskärmar)."
-
-#~ msgid "Board selection (by number)"
-#~ msgstr "Utnämning av styrelse (antal)"
-
-#~ msgid "Player selection (by alphabetical order)"
-#~ msgstr "Val av spelare (i alfabetisk ordning)"
-
-#~ msgid "First board:"
-#~ msgstr "Första brädet:"
-
-#~ msgid "First player:"
-#~ msgstr "Första spelare:"
-
-#~ msgid "E.g.: %(num)d"
-#~ msgstr "T.ex.: %(num)d"
-
-#~ msgid "The number of the first board to select, optional (the first board by default)."
-#~ msgstr "Numret på det första brädet att välja, valfritt (det första brädet som standard)."
-
-#~ msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
-#~ msgstr "Antalet av den första spelaren att välja, valfritt (den första spelaren i alfabetisk ordning som standard)."
-
-#~ msgid "Last board:"
-#~ msgstr "Sista brädet:"
-
-#~ msgid "Last player:"
-#~ msgstr "Senaste spelare:"
-
-#~ msgid "The number of the last board to select, optional (the last board by default)."
-#~ msgstr "Numret på det sista brädet att välja, valfritt (det sista brädet som standard)."
-
-#~ msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
-#~ msgstr "Antalet av den sista spelaren att välja, valfritt (den sista spelaren i alfabetisk ordning som standard)."
-
-#~ msgid "On a given number of screens:"
-#~ msgstr "På ett visst antal skärmar:"
-
-#~ msgid "E.g.: 4 (split on 4 screens)"
-#~ msgstr "T.ex.: 4 (splitta på 4 skärmar)"
-
-#~ msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
-#~ msgstr "Antalet skärmar på vilka tavlorna kommer att fördelas, valfritt (antalet skärmar är alltid samma och antalet tavlor per skärm anpassas till antalet tavlor)."
-
-#~ msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
-#~ msgstr "Antalet skärmar där spelaren kommer att distribueras, valfritt (antalet skärmar är alltid samma och antalet spelare per skärm anpassar sig till antalet spelare."
-
-#~ msgid "On fixed size screens:"
-#~ msgstr "På skärmar med fast storlek:"
-
-#~ msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
-#~ msgstr "Antalet tavlor per skärm, valfritt (antalet skärmar anpassar sig till antalet tavlor)."
-
-#~ msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
-#~ msgstr "Antalet spelare per skärm, valfritt (antalet skärmar anpassar sig till antalet spelare)."
-
-#~ msgid "Timer:"
-#~ msgstr "Tidpunkt:"
-
-#~ msgid "The timer displayed on the screens of the family."
-#~ msgstr "Timern visas på skärmar i familjen."
-
-#~ msgid "The number of columns used to display data."
-#~ msgstr "Antalet kolumner som används för att visa data."
-
-#~ msgid "Links displayed on the screen menu:"
-#~ msgstr "Länkar som visas på skärmens meny:"
-
-#~ msgid "E.g.: @boards, @family, another-screen"
-#~ msgstr "T.ex.: @ boards, @ family, another-screen"
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-#~ msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på menyn på skärmar i familjen. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ familj (alla skärmar i familjen), @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmarna."
-
-#~ msgid "Links to this screen:"
-#~ msgstr "Länkar till den här skärmen:"
-
-#~ msgid "Allow"
-#~ msgstr "Tillåt"
-
-#~ msgid "Check the box to allow other screens to display a link to the screen of this family."
-#~ msgstr "Markera rutan för att låta andra skärmar visa en länk till den här familjens skärm."
-
-#~ msgid "Menu link label:"
-#~ msgstr "Menyn länketikett:"
-
-#~ msgid "E.g.: Boards %%f-%%l"
-#~ msgstr "T.ex.: styrelser %%f-%%l"
-
-#~ msgid "E.g.: Players %%f-%%l"
-#~ msgstr "Till exempel: Spelare %%f-%%l"
-
-#~ msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
-#~ msgstr "Den här etiketten används för länken till andra skärmar i familjen. Om den lämnas tom, används en förvald etikett."
-
-#~ msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
-#~ msgstr "När det inte definieras på familjenivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmarna i familjen)."
-
-#~ msgid "Go back to the home page."
-#~ msgstr "Gå tillbaka till hemsidan."
-
-#~ msgid "Level"
-#~ msgstr "Nivå"
-
-#~ msgid "Message"
-#~ msgstr "Meddelande"
-
-#~ msgid "No messages."
-#~ msgstr "Inga meddelanden."
-
-#~ msgid "Pairings"
-#~ msgstr "Paraplyer"
-
-#~ msgid "Players"
-#~ msgstr "Spelare"
-
-#~ msgid "Rotation delay: %(seconds)d sec."
-#~ msgstr "Rotationsfördröjning: %(seconds)d sek."
-
-#~ msgid "No screen neither family to rotate."
-#~ msgstr "Ingen skärm varken familj att rotera."
-
-#~ msgid "Screens:"
-#~ msgstr "Skärmar:"
-
-#~ msgid "Screen families:"
-#~ msgstr "Skärmfamiljer:"
-
-#~ msgid "(%(num)d screen)"
-#~ msgid_plural "(%(num)d screens)"
-#~ msgstr[0] "(%(num)d s.k. screen)"
-#~ msgstr[1] "(%(num)d skärmar)"
-
-#~ msgid "(no screens)"
-#~ msgstr "(inga skärmar)"
-
-#~ msgid "Edit the properties of the rotator."
-#~ msgstr "Redigera rotatorns egenskaper."
-
-#~ msgid "Clone the rotator."
-#~ msgstr "Klona rotatorn."
-
-#~ msgid "Delete the rotator."
-#~ msgstr "Ta bort rotatorn."
-
-#~ msgid "Rotator creation"
-#~ msgstr "Rotatorskapelse"
-
-#~ msgid "Edition of rotator [%(rotator_uniq_id)s]"
-#~ msgstr "Upplaga av rotator [%(rotator_uniq_id)s]"
-
-#~ msgid "Deletion of rotator [%(rotator_uniq_id)s]"
-#~ msgstr "Borttagning av rotator [%(rotator_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of a rotator is permanent!"
-#~ msgstr "Varning: raderingen av en rotator är permanent!"
-
-#~ msgid "Public rotator"
-#~ msgstr "Offentlig rotator"
-
-#~ msgid "Only arbiters can view private rotators."
-#~ msgstr "Endast skiljedomare kan se privata rotatorer."
-
-#~ msgid "The Unique ID, used to reference the rotator."
-#~ msgstr "Det unika id, som används för att referera rotatorn."
-
-#~ msgid "Parameters"
-#~ msgstr "För en driftspänning av mer än 1000 V men högst 1000 V"
-
-#~ msgid "Delay:"
-#~ msgstr "Fördröjning:"
-
-#~ msgid "E.g.: %(seconds)d (seconds)"
-#~ msgstr "T.ex.: %(seconds)d (sekunder)"
-
-#~ msgid "The rotating delay between two screens (by default %(default)d seconds)."
-#~ msgstr "Den roterande fördröjningen mellan två skärmar (som standard %(default)d sekunder)."
-
-#~ msgid "Selection"
-#~ msgstr "Urval"
-
-#~ msgid "results entry"
-#~ msgstr "Införsel av resultat"
-
-#~ msgid "pairings by player"
-#~ msgstr "parningar av spelare"
-
-#~ msgid "last results"
-#~ msgstr "Senaste resultat"
-
-#~ msgid "image"
-#~ msgstr "bild"
-
-#~ msgid "No screens."
-#~ msgstr "Inga skärmar."
-
-#~ msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
-#~ msgstr "Skärmarna att rotera (ingångsskärmarna betonas eftersom de inte bör visas på rotatorer)."
-
-#~ msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
-#~ msgstr "Skärmfamiljerna att rotera (indataskärmsfamiljerna betonas eftersom de inte ska visas på rotatorer)."
-
-#~ msgid "When not defined at rotator-level, the alert message defined at event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed). The alert message defined at rotator-level can be overridden at screen or family-level."
-#~ msgstr "När det inte definieras på rotatornivå, används det varningsmeddelande som definieras på händelsenivå (om inget varningsmeddelande är inställt, visas inte rullningsbannern längst ner på skärmen). Varningsmeddelandet som definieras på rotatornivå kan överskridas på skärmen eller på familjenivå."
-
-#~ msgid "Rotators"
-#~ msgstr "Rotatorer"
-
-#~ msgid "Enable/disable the details of the rotators on the cards below."
-#~ msgstr "Aktivera/inaktivera information om rotatorerna på korten nedan."
-
-#~ msgid "Add a rotator to the event."
-#~ msgstr "Lägg till en rotator till händelsen."
-
-#~ msgid "You must create a screen or a family of screens before creating a rotator."
-#~ msgstr "Du måste skapa en skärm eller en familj av skärmar innan du skapar en rotator."
-
-#~ msgid "Create a rotator"
-#~ msgstr "Skapa en rotator"
-
-#~ msgid "No rotators."
-#~ msgstr "Inga ruttnare."
-
-#~ msgid "Type: %(screen_type)s"
-#~ msgstr "Typ: %(screen_type)s"
-
-#~ msgid "Max number: %(num)d"
-#~ msgstr "Max antal: %(num)d"
-
-#~ msgid "Max number: unlimited"
-#~ msgstr "Max antal: obegränsat"
-
-#~ msgid "Max age: %(num)d minute"
-#~ msgid_plural "Max age: %(num)d minutes"
-#~ msgstr[0] "Max ålder: %(num)d minut"
-#~ msgstr[1] "Max ålder: %(num)d minuter"
-
-#~ msgid "Max age: unlimited"
-#~ msgstr "Max ålder: obegränsad"
-
-#~ msgid "Image: %(image)s"
-#~ msgstr "Bild: %(image)s"
-
-#~ msgid "Background colour: %(color)s"
-#~ msgstr "Bakgrundsfärg: %(color)s"
-
-#~ msgid "All the tournaments"
-#~ msgstr "Alla turneringar"
-
-#~ msgid "Edit the properties of the screen."
-#~ msgstr "Redigera skärmens egenskaper."
-
-#~ msgid "Edit the sets of boards displayed on the screen."
-#~ msgstr "Redigera uppsättningar bräder som visas på skärmen."
-
-#~ msgid "Edit the sets of players displayed on the screen."
-#~ msgstr "Redigera uppsättningar spelare som visas på skärmen."
-
-#~ msgid "Boards"
-#~ msgstr "Brädor"
-
-#~ msgid "Input screen creation"
-#~ msgstr "Skapa skärminmatning"
-
-#~ msgid "Boards screen creation"
-#~ msgstr "Bildskärmsskapelse av brädor"
-
-#~ msgid "Players screen creation"
-#~ msgstr "Bildskärmsskapelse för spelare"
-
-#~ msgid "Results screen creation"
-#~ msgstr "Bildskärmens resultat"
-
-#~ msgid "Image screen creation"
-#~ msgstr "Bildskärmsskapelse"
-
-#~ msgid "Edition of screen [%(screen_uniq_id)s]"
-#~ msgstr "Upplaga av skärmen [%(screen_uniq_id)s]"
-
-#~ msgid "Deletion of screen [%(screen_uniq_id)s]"
-#~ msgstr "Radering av skärmen [%(screen_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of a screen is permanent!"
-#~ msgstr "Varning: Raderingen av en skärm är permanent!"
-
-#~ msgid "Properties (last results)"
-#~ msgstr "Egenskaper (sista resultat)"
-
-#~ msgid "Properties (image)"
-#~ msgstr "Egenskaper (bild)"
-
-#~ msgid "Public screen"
-#~ msgstr "Öppen skärm"
-
-#~ msgid "Only arbiters can see private screens."
-#~ msgstr "Endast skiljedomare kan se privata skärmar."
-
-#~ msgid "E.g.: %(screen_type)s-screen"
-#~ msgstr "T.ex.: %(screen_type)s-skärm"
-
-#~ msgid "The Unique ID, used to reference the screen."
-#~ msgstr "Det unika id, som används för att referera skärmen."
-
-#~ msgid "E.g.: My screen"
-#~ msgstr "T.ex. min skärm"
-
-#~ msgid "The name of the screen, displayed on event screens."
-#~ msgstr "Namn på skärmen, visas på händelseskärmar."
-
-#~ msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
-#~ msgstr "Den första turneringen på skärmen, obligatorisk (det är möjligt att lägga till andra turneringar senare)."
-
-#~ msgid "Layout"
-#~ msgstr "Layout (layout)"
-
-#~ msgid "The timer displayed on the screen."
-#~ msgstr "Timern som visas på skärmen."
-
-#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-#~ msgstr "T.ex.: @ boards, fasta boards, turnering-a-*"
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-#~ msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på skärmens meny. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmen."
-
-#~ msgid "Check the box to allow other screens to display a link to this screen."
-#~ msgstr "Markera rutan för att låta andra skärmar visa en länk till den här skärmen."
-
-#~ msgid "E.g.: Link to my screen"
-#~ msgstr "T.ex.: Länk till min skärm"
-
-#~ msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-#~ msgstr "Den här etiketten används för länken till andra skärmar till den här skärmen. Om den lämnas tom, används en förvald etikett."
-
-#~ msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
-#~ msgstr "När det inte definieras på skärmnivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmen)."
-
-#~ msgid "Maximum number of results displayed:"
-#~ msgstr "Maximalt antal resultat som visas:"
-
-#~ msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
-#~ msgstr "Maximalt antal resultat som visas på skärmen, valfritt (om det lämnas tomt, visas alla resultat)."
-
-#~ msgid "Maximum age of the results:"
-#~ msgstr "Högsta ålder på resultaten:"
-
-#~ msgid "E.g.: %(minutes)d (minutes)"
-#~ msgstr "T.ex.: %(minutes)d (minuter)"
-
-#~ msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
-#~ msgstr "Den maximala åldern för resultaten, i minuter (som standard %(minutes)d minuter)."
-
-#~ msgid "Tournaments displayed:"
-#~ msgstr "Turneringar visade:"
-
-#~ msgid "When not tournament is selected, the results of all the tournaments are displayed."
-#~ msgstr "När inte turnering väljs visas resultaten av alla turneringar."
-
-#~ msgid "Image:"
-#~ msgstr "Bild:"
-
-#~ msgid "E.g.: https://my.club.us/tournament.jpg"
-#~ msgstr "Till exempel: https://my.club.us/tournament.jpg"
-
-#~ msgid "The URL of the image to display."
-#~ msgstr "Webbadressen till bilden som ska visas."
-
-#~ msgid "Display of a screen exit button:"
-#~ msgstr "Visa en skärmutgångsknapp:"
-
-#~ msgid "When not displaying the exit button, users can not accidentally exit input screens."
-#~ msgstr "När du inte visar utgångsknappen, kan användare inte av misstag avsluta inmatningsskärmar."
-
-#~ msgid "Alert message:"
-#~ msgstr "Varningsmeddelande:"
-
-#~ msgid "Display of unpaired players:"
-#~ msgstr "Display av oparade spelare:"
-
-#~ msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
-#~ msgstr "När oparade spelare inte visas, finns det inget sätt att skilja de frånvarande (noll poäng) spelare och spelarna med en halv poäng bye)."
-
-#~ msgid "Board sets of screen [%(screen_uniq_id)s]"
-#~ msgstr "Brädornas uppsättningar av skärmar [%(screen_uniq_id)s]"
-
-#~ msgid "Player sets of screen [%(screen_uniq_id)s]"
-#~ msgstr "Spelare uppsättningar av skärmen [%(screen_uniq_id)s]"
-
-#~ msgid "Save the set or cancel."
-#~ msgstr "Spara uppsättningen eller avbryta."
-
-#~ msgid "Drag the sets to order them."
-#~ msgstr "Dra uppsättningarna för att beställa dem."
-
-#~ msgid "Add a set"
-#~ msgstr "Lägg till en uppsättning"
-
-#~ msgid "The tournament of which you want to show the pairings, mandatory."
-#~ msgstr "Turneringen som du vill visa parningar, obligatorisk."
-
-#~ msgid "E.g.: Boards %%f to %%l"
-#~ msgstr "T.ex.: styrelser %%f till %%l"
-
-#~ msgid "E.g.: Players %%f to %%l"
-#~ msgstr "T.ex.: Spelare %%f till %%l"
-
-#~ msgid "The name of the screen set (the name of the first set of a screen is by default the name of the screen)."
-#~ msgstr "Namnet på skärmen (namnet på den första uppsättningen av en skärm är som standard namnet på skärmen)."
-
-#~ msgid "Fixed boards:"
-#~ msgstr "Fasta brädor:"
-
-#~ msgid "Comma-separated board numbers ; if this field is set, other fields are omitted."
-#~ msgstr "Komma-separerade brädnummer ; om detta fält är inställt, utelämnas andra fält."
-
-#~ msgid "Tournament: not set"
-#~ msgstr "Turnering: inte inställd"
-
-#~ msgid "Name: %(screen_set_name)s"
-#~ msgstr "Namn: %(screen_set_name)s"
-
-#~ msgid "Name: by default"
-#~ msgstr "Namn: som standard"
-
-#~ msgid "Screens"
-#~ msgstr "Skärmar"
-
-#~ msgid "Show/hide the screens created from screen families."
-#~ msgstr "Visa/göm skärmarna skapade från skärmfamiljer."
-
-#~ msgid "Families"
-#~ msgstr "Familjer"
-
-#~ msgid "Enable/disable the details of the screens on the cards below."
-#~ msgstr "Aktivera/inaktivera detaljerna på skärmarna på korten nedan."
-
-#~ msgid "Show/hide the input screens."
-#~ msgstr "Visa/göm ingångsskärmarna."
-
-#~ msgid "Show/hide the boards screens."
-#~ msgstr "Visa/göm brädornas skärmar."
-
-#~ msgid "Show/hide the players screens."
-#~ msgstr "Visa/göm spelskärmarna."
-
-#~ msgid "Show/hide the results screens."
-#~ msgstr "Visa/göm resultatskärmarna."
-
-#~ msgid "Show/hide the image screens."
-#~ msgstr "Visa/göm bildskärmarna."
-
-#~ msgid "Add a screen to the event."
-#~ msgstr "Lägg till en skärm i händelsen."
-
-#~ msgid "You must create a tournament before creating screens."
-#~ msgstr "Du måste skapa en turnering innan du skapar skärmar."
-
-#~ msgid "No such screens."
-#~ msgstr "Inga sådana skärmar."
-
-#~ msgid "Round #%(round)d"
-#~ msgstr "Omgång nr %(round)d"
-
-#~ msgid "No hours."
-#~ msgstr "Inga timmar."
-
-#~ msgid "Edit the properties of the timer."
-#~ msgstr "Redigera timerns egenskaper."
-
-#~ msgid "Edit the hours of the timer"
-#~ msgstr "Redigera timmarna för timern"
-
-#~ msgid "Hours"
-#~ msgstr "Timmar"
-
-#~ msgid "Clone the timer."
-#~ msgstr "Klona timern."
-
-#~ msgid "Delete the timer."
-#~ msgstr "Ta bort timern."
-
-#~ msgid "Timer hours"
-#~ msgstr "Tidpunkt"
-
-#~ msgid "Save the hour or cancel."
-#~ msgstr "Spara timme eller avboka."
-
-#~ msgid "Drag the hours to order them."
-#~ msgstr "Dra timmarna för att beställa dem."
-
-#~ msgid "Add a hour"
-#~ msgstr "Lägg till en timme"
-
-#~ msgid "Close"
-#~ msgstr "Stäng"
-
-#~ msgid "Date:"
-#~ msgstr "Datum:"
-
-#~ msgid "Format: YYYY-MM-DD"
-#~ msgstr "Format: ÅÅÅÅÅ-MM-DD"
-
-#~ msgid "Mandatory for the first hour, optional for next hours."
-#~ msgstr "Obligatoriskt för den första timmen, valfritt för nästa timmar."
-
-#~ msgid "Hour:"
-#~ msgstr "Timme:"
-
-#~ msgid "Format: HH-MM"
-#~ msgstr "Format: HH-MM"
-
-#~ msgid "Mandatory for all the hours."
-#~ msgstr "Obligatoriskt för alla timmar."
-
-#~ msgid "Round number or text:"
-#~ msgstr "Runda nummer eller text:"
-
-#~ msgid "E.g.: Start of check-in"
-#~ msgstr "T.ex.: Incheckning börjar"
-
-#~ msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
-#~ msgstr "Texter före och efter timmen nedan är valfria för runda tal, annars obligatoriska."
-
-#~ msgid "Text before the hour:"
-#~ msgstr "Text före timmen:"
-
-#~ msgid "E.g.: Start of check-in in %%s"
-#~ msgstr "T.ex.: Incheckningen börjar kl. %%s"
-
-#~ msgid "%%s is replaced by the time left before the hour."
-#~ msgstr "%%s ersätts med den tid som återstår före timmen."
-
-#~ msgid "Text after the hour:"
-#~ msgstr "Text efter timmen:"
-
-#~ msgid "E.g.: Check-in started for %%s"
-#~ msgstr "T.ex.: Incheckning påbörjas för %%s"
-
-#~ msgid "%%s is replaced by the time elapsed since the hour."
-#~ msgstr "%%s ersätts med den tid som förflutit sedan timmen."
-
-#~ msgid "Warning: the deletion of a timer is permanent!"
-#~ msgstr "Varning: raderingen av en timer är permanent!"
-
-#~ msgid "E.g.: timer"
-#~ msgstr "T.ex. timer"
-
-#~ msgid "Add a timer to the event."
-#~ msgstr "Lägg till en timer till evenemanget."
-
-#~ msgid "Create a timer"
-#~ msgstr "Skapa en timer"
-
-#~ msgid "No timers."
-#~ msgstr "Inga timers."
-
-#~ msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
-#~ msgstr "Papi-filen i turneringen finns inte (%(papi_file)s)."
-
-#~ msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
-#~ msgstr "Papi-filen i turneringen finns men kunde inte läsas (%(papi_file)s)."
-
-#~ msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
-#~ msgstr "Papi-filen i turneringen lästes framgångsrikt (%(papi_file)s)."
-
-#~ msgid "Players found in the Papi_file : %(num)d"
-#~ msgstr "Spelare som finns i Papi_filen : %(num)d"
-
-#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
-#~ msgstr "ChessEvent-anslutning [%(chessevent_uniq_id)s] används."
-
-#~ msgid "No ChessEvent connection is used."
-#~ msgstr "Ingen ChessEvent-anslutning används."
-
-#~ msgid "Illegal moves are not recorded."
-#~ msgstr "Olagliga rörelser registreras inte."
-
-#~ msgid "At most one illegal move is recorded."
-#~ msgid_plural "At most %(num)d illegal moves are recorded."
-#~ msgstr[0] "Som mest registreras ett olagligt drag."
-#~ msgstr[1] "På de flesta %(num)d olagliga rörelser registreras."
-
-#~ msgid "Rules file set"
-#~ msgstr "Regelfil inställd"
-
-#~ msgid "Edit the properties of the tournament."
-#~ msgstr "Redigera egenskaperna hos turneringen."
-
-#~ msgid "Clone the tournament."
-#~ msgstr "-Klara turneringen."
-
-#~ msgid "Delete the tournament."
-#~ msgstr "Ta bort turneringen."
-
-#~ msgid "Tournament creation"
-#~ msgstr "Skapande av turneringar"
-
-#~ msgid "Edition of tournament [%(tournament_uniq_id)s]"
-#~ msgstr "Upplaga av turnering [%(tournament_uniq_id)s]"
-
-#~ msgid "Deletion of tournament [%(tournament_uniq_id)s]"
-#~ msgstr "Radering av turneringen [%(tournament_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of a tournament is permanent!"
-#~ msgstr "Varning: raderingen av en turnering är permanent!"
-
-#~ msgid "The following screens will also be deleted:"
-#~ msgstr "Följande skärmar kommer också att strykas:"
-
-#~ msgid "The following screen families will also be deleted:"
-#~ msgstr "Följande skärmfamiljer kommer också att strykas:"
-
-#~ msgid "Enter the tournament ID to confirm its deletion:"
-#~ msgstr "Ange turneringens id för att bekräfta dess radering:"
-
-#~ msgid "Enter here the tournament ID"
-#~ msgstr "Skriv in turneringens id här"
-
-#~ msgid "The Papi-web tournament are deleted but the Papi file is still available on the filesystem."
-#~ msgstr "Papi-web turneringen raderas men Papi-filen är fortfarande tillgänglig på filsystemet."
-
-#~ msgid "E.g.: main"
-#~ msgstr "T.ex.: huvud"
-
-#~ msgid "The Unique ID, used to reference the tournament."
-#~ msgstr "Det unika id, används för att referera turneringen."
-
-#~ msgid "E.g.: Main tournament"
-#~ msgstr "T.ex.: Huvudturnering"
-
-#~ msgid "The name of the tournament, used for display."
-#~ msgstr "Namnet på turneringen, som används för visning."
-
-#~ msgid "Directory of the Papi file:"
-#~ msgstr "Katalog över Papi-filen:"
-
-#~ msgid "E.g.: c:\\chess\\tournaments\\papi"
-#~ msgstr "T.ex.: c:\\chess\\ tournaments\\papi"
-
-#~ msgid "The directory of the Papi file, by default %(dir)s."
-#~ msgstr "Katalogen för Papi-filen, som standard %(dir)s."
-
-#~ msgid "Name of the Papi file (with no extension):"
-#~ msgstr "Namn på Papi- filen (utan förlängning):"
-
-#~ msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
-#~ msgstr "Namnet på Papi-filen, utan .papi förlängning (som standard FFE kvalificeringsnumret för turneringen, sedan den unika id av turneringen)."
-
-#~ msgid "Connections (FFE and ChessEvent)"
-#~ msgstr "Anslutningar (FFE och ChessEvent)"
-
-#~ msgid "FFE qualification number (optional):"
-#~ msgstr "FFE:s kvalifikationsnummer (frivilligt):"
-
-#~ msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
-#~ msgstr "Det kvalifikationsnummer som ges av den franska federationen är ett heltal, det används för att ansluta till FFE webbplats."
-
-#~ msgid "FFE password:"
-#~ msgstr "Lösenord för FFE:"
-
-#~ msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
-#~ msgstr "Lösenordet är gjort av 10 stora bokstäver, det används för att ansluta till FFE webbplats."
-
-#~ msgid "ChessEvent connection:"
-#~ msgstr "ChessEvent-anslutning:"
-
-#~ msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
-#~ msgstr "ChessEvent-anslutningen gör det möjligt att hämta registreringar från ChessEvent-plattformen."
-
-#~ msgid "Name of the ChessEvent tournament:"
-#~ msgstr "Namn på turneringen ChessEvent:"
-
-#~ msgid "The name of the tournament on the ChessEvent platform."
-#~ msgstr "Namnet på turneringen på ChessEvent-plattformen."
-
-#~ msgid "Time control"
-#~ msgstr "Tidskontroll"
-
-#~ msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
-#~ msgstr "T.ex.: %(seconds)d (%(minutes)dminuter)"
-
-#~ msgid "The initial time in seconds (may be empty if an increment is set)."
-#~ msgstr "Den inledande tiden i sekunder (kan vara nul om en ökning är inställd)."
-
-#~ msgid "Increment (optional):"
-#~ msgstr "Inkrement (frivillig uppgift):"
-
-#~ msgid "The number of seconds added to the players' clock at each move."
-#~ msgstr "Antalet sekunder som läggs till spelarnas klocka vid varje drag."
-
-#~ msgid "Penalty (handicap):"
-#~ msgstr "Påföljder (handikappa):"
-
-#~ msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
-#~ msgstr "Tiden subtraherade från den högst rankade spelaren, i sekunder (denna gång multipliceras med antalet differenssteg mellan de två spelarna)."
-
-#~ msgid "Elo step (handicap):"
-#~ msgstr "Elo steg (handikapp):"
-
-#~ msgid "E.g.: 50 (Elo)"
-#~ msgstr "T.ex.: 50 (Elo)"
-
-#~ msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
-#~ msgstr "Antalet poäng skillnad mellan rankingen av de spelare som används för att beräkna antalet straff som tillämpas på den högst rankade spelaren."
-
-#~ msgid "Minimal time (handicap):"
-#~ msgstr "Minimal tid (handikapp):"
-
-#~ msgid "The minimum time, whatever the ranking difference between the two players."
-#~ msgstr "Den minsta tiden, oavsett rankningsskillnaden mellan de två spelarna."
-
-#~ msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-#~ msgstr "T.ex.: c:\\chess\\ tournaments\\main\\ rules.pdf"
-
-#~ msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
-#~ msgstr "En URL, eller sökvägen till regelfilen på servern, i PDF-format (valfritt, som standard regelfilerna i händelsen)."
-
-#~ msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
-#~ msgstr "Det maximala antalet olagliga drag som kan spelas in per runda för en spelare (från 0 till 3, som standard %(default)d)."
-
-#~ msgid "Create and add default screens"
-#~ msgstr "Skapa och lägg till standardskärmar"
-
-#~ msgid "Tournaments"
-#~ msgstr "Turneringar"
-
-#~ msgid "Add a tournament to the event."
-#~ msgstr "Lägg till en turnering i evenemanget."
-
-#~ msgid "Create a tournament"
-#~ msgstr "Skapa en turnering"
-
-#~ msgid "No tournaments."
-#~ msgstr "Inga turneringar."
-
-#~ msgid "Welcome to Papi-web!"
-#~ msgstr "Välkommen till Papi-webben!"
-
-#~ msgid "Web access"
-#~ msgstr "Webbåtkomst"
-
-#~ msgid "From the Papi-web server"
-#~ msgstr "Från Papi- webbservern"
-
-#~ msgid "From the local network (LAN/WAN)"
-#~ msgstr "Från det lokala nätverket (LAN/WAN)"
-
-#~ msgid "Click here to access the public screens of the events."
-#~ msgstr "Klicka här för att komma åt evenemangens offentliga skärmar."
-
-#~ msgid "Events (public access)"
-#~ msgstr "Evenemang (allmän tillgång)"
-
-#~ msgid "The arbiter interface allows the management of the events."
-#~ msgstr "Arbiter-gränssnittet gör det möjligt att hantera händelserna."
-
-#~ msgid "Access to the arbiter interface is not allowed from this client."
-#~ msgstr "Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient."
-
-#~ msgid "Arbiter interface (private access)"
-#~ msgstr "Skiljemannagränssnitt (privat åtkomst)"
-
-#~ msgid "This event is public (by default, screens are visible by the users)."
-#~ msgstr "Denna händelse är offentlig (som standard är skärmarna synliga av användarna)."
-
-#~ msgid "This screen is public (visible by the users)."
-#~ msgstr "Den här skärmen är offentlig (synlig för användarna)."
-
-#~ msgid "This screen family is public (visible by the users)."
-#~ msgstr "Denna skärmfamilj är offentlig (synlig för användarna)."
-
-#~ msgid "This rotator is public (visible by the users)."
-#~ msgstr "Denna rotator är offentlig (synlig av användarna)."
-
-#~ msgid "This event is private (by default, screens are not visible by the users)."
-#~ msgstr "Denna händelse är privat (som standard är skärmarna inte synliga av användarna)."
-
-#~ msgid "This screen is private (not visible by the users)."
-#~ msgstr "Den här skärmen är privat (som inte syns av användarna)."
-
-#~ msgid "This screen family is private (not visible by the users)."
-#~ msgstr "Denna skärmfamilj är privat (som inte syns av användarna)."
-
-#~ msgid "This rotator is private (not visible by the users)."
-#~ msgstr "Denna rotator är privat (inte synlig av användarna)."
-
-#~ msgid "The tournament is not started yet."
-#~ msgstr "Turneringen är inte igång än."
-
-#~ msgid "Round %(round)d is running."
-#~ msgstr "Runda %(round)d är igång."
-
-#~ msgid "Round #%(round)d is finished."
-#~ msgstr "Runda #%(round)d är klar."
-
-#~ msgid "The tournament is finished."
-#~ msgstr "Turneringen är klar."
-
-#~ msgid "Boards screens show pairings by board number."
-#~ msgstr "Brädorna visar parningar efter brädnummer."
-
-#~ msgid "Input screens show pairings by board number and allow people to enter results."
-#~ msgstr "Inmatningsskärmar visar parningar efter brädnummer och tillåter människor att ange resultat."
-
-#~ msgid "Players screens show pairings by alphabetical order."
-#~ msgstr "Spelarskärmar visar parningar i alfabetisk ordning."
-
-#~ msgid "Results screens show the last results (most recent first)."
-#~ msgstr "Resultatskärmar visar de sista resultaten (senaste först)."
-
-#~ msgid "Image screens show an image (local or remote)."
-#~ msgstr "Bildskärmar visar en bild (lokal eller fjärr)."
-
-#~ msgid "Rotator automatically rotate between multiple screens."
-#~ msgstr "Rotator roterar automatiskt mellan flera skärmar."
-
-#~ msgid "EXEMPT"
-#~ msgstr "EXEMPEL"
-
-#~ msgid "/move"
-#~ msgstr "/förflyttning"
-
-#~ msgid "%(set_name)s (round %(round)d)"
-#~ msgstr "%(set_name)s (runda %(round)d)"
-
-#~ msgid "White"
-#~ msgstr "Vitt"
-
-#~ msgid "time control"
-#~ msgstr "Tidskontroll"
-
-#~ msgid "Black"
-#~ msgstr "Svart"
-
-#~ msgid "#%(board_number)d"
-#~ msgstr "#%(board_number)d"
-
-#~ msgid "%(set_name)s (check-in)"
-#~ msgstr "%(set_name)s (incheckning)"
-
-#~ msgid "Player / Elo"
-#~ msgstr "Spelare / Elo"
-
-#~ msgid "Go back to the events page."
-#~ msgstr "Gå tillbaka till händelsesidan."
-
-#~ msgid "Player Elo [Pts]"
-#~ msgstr "Spelare Elo [Pts]"
-
-#~ msgid "Player Elo"
-#~ msgstr "Spelare Elo"
-
-#~ msgid "Board & color"
-#~ msgstr "Skrivbordsfärg"
-
-#~ msgid "Opponent Elo [Pts]"
-#~ msgstr "Motståndare Elo [Pts]"
-
-#~ msgid "Opponent Elo"
-#~ msgstr "Motståndare Elo"
-
-#~ msgid "Board #%(board_number)d with %(color)s"
-#~ msgstr "Styrelsen #%(board_number)d med %(color)s"
-
-#~ msgid "vs"
-#~ msgstr "vs"
-
-#~ msgid "Tournament"
-#~ msgstr "Turnering"
-
-#~ msgid "Rnd.Boa"
-#~ msgstr "Styckningsdelar av höns av arten Gallus domesticus"
-
-#~ msgid "Score"
-#~ msgstr "Poäng"
-
-#~ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
-#~ msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d skärmar)"
-
-#~ msgid "Please enter the password to enter results:"
-#~ msgstr "Ange lösenordet för att ange resultat:"
-
-#~ msgid "Event"
-#~ msgstr "Händelse"
-
-#~ msgid "A password is required to enter results for the event %(event_uniq_id)s."
-#~ msgstr "Ett lösenord krävs för att ange resultat för evenemanget %(event_uniq_id)s."
-
-#~ msgid "Password"
-#~ msgstr "Lösenord"
-
-#~ msgid "Please ask the organizer to get the password."
-#~ msgstr "Be arrangören att få lösenordet."
-
-#~ msgid "Enter the result"
-#~ msgstr "Skriv in resultatet"
-
-#~ msgid "WHITE WINS"
-#~ msgstr "VITA VINSTER"
-
-#~ msgid "DRAW"
-#~ msgstr "DRÅK"
-
-#~ msgid "BLACK WINS"
-#~ msgstr "SVARTA VINSEN"
-
-#~ msgid "BY FORFEIT"
-#~ msgstr "GENOM UTFÄRDANDE"
-
-#~ msgid "DOUBLE"
-#~ msgstr "DUBBEL"
-
-#~ msgid "FORFEIT"
-#~ msgstr "UTFÄRDANDE"
-
-#~ msgid "CLEAR THE RESULT"
-#~ msgstr "GODKÄNN RESULTATET"
-
-#~ msgid "CHECK-IN"
-#~ msgstr "KONTROLLINSTRUMENT"
-
-#~ msgid "CHECK-OUT"
-#~ msgstr "KONTROLL AV KONTROLLEN"
-
-#~ msgid "Menu label:"
-#~ msgstr "Menyetikett:"
-
-#~ msgid "Menu:"
-#~ msgstr "Menyn:"
-
-#~ msgid "Unpaired players: displayed"
-#~ msgstr "Oparerade spelare: visas"
-
-#~ msgid "Unpaired players: hidden"
-#~ msgstr "Oparerade spelare: gömda"
-
-#~ msgid "Maximum number of results: %(num)d"
-#~ msgstr "Maximalt antal resultat: %(num)d"
-
-#~ msgid "Maximum number of results: unlimited"
-#~ msgstr "Maximalt antal resultat: obegränsad"
-
-#~ msgid "Return to documentation summary"
-#~ msgstr "Återgå till sammanfattningen av dokumentationen"
-
-#~ msgid "English translation *** TRANSLATE !"
-#~ msgstr "Engelsk översättning"
-
-#~ msgid "View file {file}"
-#~ msgstr "Visa fil {file}"
-
-#~ msgid "Summary"
-#~ msgstr "Sammanfattning"
-
-#~ msgid "Empty mandatory messages"
-#~ msgstr "Töm obligatoriska meddelanden"
-
-#~ msgid "Empty messages"
-#~ msgstr "Tomma meddelanden"
-
-#~ msgid "Message flagged [{flag}]"
-#~ msgstr "Meddelande flaggat [{flag}]"
-
-#~ msgid "Message ID"
-#~ msgstr "Meddelande- id"
-
-#~ msgid "Locations"
-#~ msgstr "Platser"
-
-#~ msgid "Singular:"
-#~ msgstr "Singular:"
-
-#~ msgid "Plural:"
-#~ msgstr "- Vad är det för fel på dig?"
-
-#~ msgid "Empty messages are not shown for the default language."
-#~ msgstr "Tomma brev visas inte för standardspråket."
-
-#~ msgid "Flagged messages"
-#~ msgstr "Flaggade meddelanden"
-
-#~ msgid "Translation"
-#~ msgstr "Översättning"
-
-#~ msgid "Choose your language"
-#~ msgstr "Välj ditt språk"
-
-#~ msgid "Rank"
-#~ msgstr ""
-
-#~ msgid "Name"
-#~ msgstr "Beteckning:"
-
-#~ msgid "Elo"
-#~ msgstr ""
-
-#~ msgid "YOB"
-#~ msgstr ""
-
-#~ msgid "CI"
-#~ msgstr ""
-
-#~ msgid "Cat"
-#~ msgstr "Skapa"
-
-#~ msgid "Owed"
-#~ msgstr ""
-
-#~ msgid "Paid"
-#~ msgstr ""
-
-#~ msgid "Comment"
-#~ msgstr ""
-
-#~ msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Katt"
-
-#~ msgid "ID *** ID COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Betald"
-
-#~ msgid "Apply"
-#~ msgstr ""
-
-#~ msgid "Federation *** FEDERATION COLUMN HEADER FOR PLAYERS"
-#~ msgstr "På grund av detta"
-
-#~ msgid "Gender *** GENDER COLUMN HEADER FOR PLAYERS"
-#~ msgstr "På grund av detta"
-
-#~ msgid "- *** NAME FOR FFE LICENCE NONE"
-#~ msgstr "Ingen FFE-licens"
-
-#~ msgid "- *** SHORT NAME FOR FFE LICENCE NONE"
-#~ msgstr ""
-
-#~ msgid "N *** SHORT NAME FOR FFE LICENCE N"
-#~ msgstr ""
-
-#~ msgid "A *** SHORT NAME FOR FFE LICENCE A"
-#~ msgstr ""
-
-#~ msgid "B *** SHORT NAME FOR FFE LICENCE B"
-#~ msgstr ""
-
-#~ msgid "No FFE Licence"
-#~ msgstr "Ingen FFE-licens"
-
-#~ msgid "Expired FFE Licence"
-#~ msgstr "Ingen FFE-licens"
-
-#~ msgid "FFE Licence A (competition)"
-#~ msgstr "FFE-licens A (tävling)"
-
-#~ msgid "FFE Licence B (leisure)"
-#~ msgstr "FFE-licens B (leisure)"
-
-#~ msgid "A *** NAME FOR FFE LICENCE A"
-#~ msgstr "Ingen FFE-licens"
-
-#~ msgid "B *** NAME FOR FFE LICENCE B"
-#~ msgstr "Ingen FFE-licens"
-
-#~ msgid "FFE licence A (compétition)"
-#~ msgstr ""
-
-#~ msgid "Check-in *** CHECK-IN COLUMN HEADER FOR PLAYERS"
-#~ msgstr "CI Ordförande"
-
-#~ msgid "# *** NUMBER COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Beteckning"
-
-#~ msgid "Licence *** LICENCE COLUMN HEADER FOR PLAYERS"
-#~ msgstr "CI Ordförande"
-
-#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Elo Ordförande"
-
-# Error: tokens differ between [Players (%(num)d/%(total)d)] and [Timers
-# ({num})]
-#~ msgid "Players (%(num)d/%(total)d)"
-#~ msgstr ""
-
-#~ msgid "Fide"
-#~ msgstr ""
-
-# Error: tokens differ between [%(fide_id)s (click to copy to the clipboard).]
-# and [%(mail)s (klicka för att kopiera till klippbordet).]
-#~ msgid "%(fide_id)s (click to copy to the clipboard)."
-#~ msgstr ""
-
-# E
-# r
-# o
-# :
-# t
-# k
-# e
-# n
-# s
-# d
-# i
-# f
-# b
-# w
-# [
-# %
-# (
-# p
-# h
-# )
-# c
-# l
-# y
-# a
-# .
-# ]
-# m
-# ö
-# Error: tokens differ between [%(ffe_licence_number)s (click to copy to the
-# clipboard).] and [%(phone)s (klicka för att kopiera till klippbordet).]
-#~ msgid "%(ffe_licence_number)s (click to copy to the clipboard)."
-#~ msgstr ""
-
-#~ msgid "Edit the player's properties."
-#~ msgstr "Redigera timerns egenskaper."
-
-#~ msgid "Invalid gender value [{value}]."
-#~ msgstr "Ogiltigt värde [{value}]."
-
-#~ msgid "E.g.: Pierre"
-#~ msgstr "T.ex. timer"
-
-#~ msgid "Ratings and title"
-#~ msgstr ""
-
-#~ msgid "FIDE ratings and title"
-#~ msgstr ""
-
-#~ msgid "Fédération Française des Échecs"
-#~ msgstr ""
-
-#~ msgid "The player's Uniq ID for the French federation (ne pas modifier)."
-#~ msgstr ""
-
-#~ msgid "The following players did not check-in, choose what to do:"
-#~ msgstr ""
-
-#~ msgid "Please enter the first name."
-#~ msgstr "Vänligen ange tiden."
 

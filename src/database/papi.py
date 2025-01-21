@@ -120,7 +120,7 @@ class PapiDatabase(AccessDatabase):
             player.ffe_id,
             player.last_name,
             player.first_name,
-            self._date_to_papi_date(player.date_of_birth),
+            self.date_to_papi_date(player.date_of_birth),
             player.gender.to_papi_value,
             player.title.to_papi_value,
             player.fide_id,
@@ -144,7 +144,7 @@ class PapiDatabase(AccessDatabase):
         field_sets = (f"`{f}` = ?" for f in fields)
         self._execute(f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?', tuple(params))
 
-    def read_players(self, tournament_id: int, tournament_rating: TournamentRating, rounds: int) -> dict[int, Player]:
+    def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.
         The tournament_id is used to make the players' id unique for an event. """
         players: dict[int, Player] = {}
@@ -227,7 +227,7 @@ class PapiDatabase(AccessDatabase):
         self._execute(query, (player_papi_id,))
 
     @staticmethod
-    def _timestamp_to_papi_date(ts: float) -> str:
+    def timestamp_to_papi_date(ts: float) -> str:
         dt: datetime
         if ts >= 0:
             dt = datetime.fromtimestamp(ts)
@@ -236,7 +236,7 @@ class PapiDatabase(AccessDatabase):
         return dt.strftime('%d/%m/%Y')
 
     @staticmethod
-    def _date_to_papi_date(d: date | None) -> str | None:
+    def date_to_papi_date(d: date | None) -> str | None:
         return datetime(d.year, d.month, d.day).strftime('%d/%m/%Y') if d else None
 
     def __write_var(self, name: str, value):
@@ -259,8 +259,8 @@ class PapiDatabase(AccessDatabase):
             'Cadence': chessevent_tournament.time_control,
             'Lieu': chessevent_tournament.location,
             'Arbitre': chessevent_tournament.arbiter,
-            'DateDebut': self._timestamp_to_papi_date(chessevent_tournament.start),
-            'DateFin': self._timestamp_to_papi_date(chessevent_tournament.end),
+            'DateDebut': self.timestamp_to_papi_date(chessevent_tournament.start),
+            'DateFin': self.timestamp_to_papi_date(chessevent_tournament.end),
             'Dep1': chessevent_tournament.tie_breaks[0].to_papi_value,
             'Dep2': chessevent_tournament.tie_breaks[1].to_papi_value,
             'Dep3': chessevent_tournament.tie_breaks[2].to_papi_value,
@@ -281,7 +281,7 @@ class PapiDatabase(AccessDatabase):
         """Creates a player in the database from the given ChessEvent player.
         If the player is not checked in when `check_in_started` is True,
         removes the player from play for subsequent rounds which are not
-        specifically unplayed rounds."""
+        specifically not-played rounds."""
         data: dict[str, str | int | float | None] = {
             'Ref': player_papi_id,
             'RefFFE': player.ffe_id,
@@ -289,7 +289,7 @@ class PapiDatabase(AccessDatabase):
             'Nom': player.last_name,
             'Prenom': player.first_name,
             'Sexe': player.gender.to_papi_value,
-            'NeLe': self._timestamp_to_papi_date(player.birth),
+            'NeLe': self.timestamp_to_papi_date(player.birth),
             'Cat': player.category.to_papi_value,
             'AffType': player.ffe_license.to_papi_value,
             'Elo': player.standard_rating,

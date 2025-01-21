@@ -398,7 +398,7 @@ class Tournament:
                     self._rating_limit1,
                     self._rating_limit2
                 ) = papi_database.read_info()
-                self._players_by_id = papi_database.read_players(self.id, self._rating, self._rounds)
+                self._players_by_id = papi_database.read_players(self.id, self._rounds)
             for player in self._players_by_id.values():
                 player.tournament = self
         else:
@@ -681,36 +681,62 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             return papi_database.read_player_dict(player_papi_id)
 
-    def add_player_from_dict(
+    def add_player(
             self,
-            data: dict[str, str | int | float | None],
+            player: Player,
     ) -> int:
-        """Takes the information of a player extracted from another Papi database, changes the Papi ID
-         and stores in the event database for this tournament. Returns the Papi ID set."""
+        """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            player_papi_id: int = papi_database.next_player_papi_id
-            data['Ref'] = player_papi_id
+            player.id = Player.player_papi_web_id_from_papi_id(self.id, papi_database.next_player_papi_id)
+            data: dict[str, str | int | float | None] = {
+                'Ref': player.ref_id,
+                'RefFFE': player.ffe_id,
+                'NrFFE': player.ffe_licence_number if player.ffe_licence_number else None,
+                'Nom': player.last_name,
+                'Prenom': player.first_name,
+                'Sexe': player.gender.to_papi_value,
+                'NeLe': PapiDatabase.date_to_papi_date(player.date_of_birth),
+                'Cat': player.category.to_papi_value,
+                'AffType': player.ffe_licence.to_papi_value,
+                'Elo': player.ratings[TournamentRating.STANDARD],
+                'Rapide': player.ratings[TournamentRating.RAPID],
+                'Blitz': player.ratings[TournamentRating.BLITZ],
+                'Federation': player.federation,
+                'ClubRef': 0,
+                'Club': player.club,
+                'Ligue': player.league,
+                'Fide': player.rating_types[TournamentRating.STANDARD].to_papi_value,
+                'RapideFide': player.rating_types[TournamentRating.RAPID].to_papi_value,
+                'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,
+                'FideCode': player.fide_id if player.fide_id else None,
+                'FideTitre': player.title.to_papi_value,
+                'Pointe': False,
+                'InscriptionRegle': player.paid,
+                'InscriptionDu': player.owed,
+                'Tel': player.phone,
+                'EMail': player.mail,
+                'Fixe': player.fixed or 0,
+                'Flotteur': 'X' * 24,
+                'Pts': 0,
+                'PtA': 0,
+            }
             for round_ in range(1, 25):
-                # remove all the pairings (including non-played games)
                 data[f'Rd{round_:0>2}Adv'] = None
                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                 data[f'Rd{round_:0>2}Cl'] = 'F' if round_ < self.current_round else 'R'
             papi_database.write_player_dict(data)
             papi_database.commit()
-        return player_papi_id
+        return player.id
 
     def delete_player(
             self,
-            player_papi_id: int,
-            return_deleted_data: bool = False
-    ) -> dict[str, str | int | float | None] | None:
+            player: Player,
+    ):
         """Removes a player from the tournament, returns the deleted data as a dict if needed
         (used to move players from one tournament to another one)."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            data: dict[str, str | int | float | None] | None = papi_database.delete_player(
-                player_papi_id, return_deleted_data)
+            papi_database.delete_player(player.ref_id)
             papi_database.commit()
-            return data
 
     def update_player(
             self,

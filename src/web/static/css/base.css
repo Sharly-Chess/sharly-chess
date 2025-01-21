@@ -70,6 +70,8 @@ body {
 }
 .player-ffe-lic {
     color: #ffffff;
+    display: inline-block;
+    width: 1.2em;
 }
 .player-ffe-lic.ffe-lic-A {
     background-color: #001da3;
@@ -79,6 +81,9 @@ body {
 }
 .player-ffe-lic.ffe-lic-N {
     background-color: #767676;
+}
+.player-ffe-lic.ffe-lic-- {
+    background-color: #FF7CAE;
 }
 .player-federation-flag {
     height: 1em;
