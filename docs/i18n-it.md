@@ -15,16 +15,16 @@
 |--|:--:|
 |Messaggi obbligatori vuoti|0/62|
 |Messaggi vuoti|0/1101|
-|Message flagged [ai_translation]|1100/1101|
-|Message flagged [fuzzy]|6/1101|
+|Message flagged [ai_translation]|1101/1101|
+|Message flagged [fuzzy]|7/1101|
 
 ## Messaggi obbligatori vuoti (-)
 
 ## Messaggi vuoti (-)
 
-## Messaggi contrassegnati (1106)
+## Messaggi contrassegnati (1108)
 
-### Messaggio segnalato [ai_translation] (1100)
+### Messaggio segnalato [ai_translation] (1101)
 
 |ID messaggio|Traduzione|Sedi|
 |--|--|--|
@@ -284,6 +284,7 @@
 |Results entry|Inserimento risultati|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Parings by player|src/data/util.py:None|
 |The FIDE database [{file}] was not found, do you want to create it (Y/n)? |Il database FIDE [{file}] non è stato trovato, vuoi crearlo (Y/n)?|src/database/sqlite/fide_database.py:None|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |Il database FIDE [{file}] è obsoleto ([{days}] giorni], vuoi aggiornarlo (Y/n)?|src/database/sqlite/fide_database.py:None|
 |Downloading FIDE database...|Scaricamento database FIDE...|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}], error code [{code}].|URL [{url}] ha risposto codice [{code}].|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}]: {ex}.|Lettura non riuscita [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
@@ -1129,10 +1130,11 @@
 |Flagged messages|Messaggi contrassegnati|utils/i18n/i18n_update.py:None|
 |Translation|Traduzione|utils/i18n/i18n_update.py:None|
 
-### Messaggio segnalato [fuzzy] (6)
+### Messaggio segnalato [fuzzy] (7)
 
 |ID messaggio|Traduzione|Sedi|
 |--|--|--|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |Il database FIDE [{file}] è obsoleto ([{days}] giorni], vuoi aggiornarlo (Y/n)?|src/database/sqlite/fide_database.py:None|
 |Downloading FIDE database...|Scaricamento database FIDE...|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}], error code [{code}].|URL [{url}] ha risposto codice [{code}].|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}]: {ex}.|Lettura non riuscita [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|

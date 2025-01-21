@@ -15,16 +15,16 @@
 |--|:--:|
 |Töm obligatoriska meddelanden|0/62|
 |Tomma meddelanden|0/1101|
-|Message flagged [ai_translation]|1100/1101|
-|Message flagged [fuzzy]|6/1101|
+|Message flagged [ai_translation]|1101/1101|
+|Message flagged [fuzzy]|7/1101|
 
 ## Töm obligatoriska meddelanden (-)
 
 ## Tomma meddelanden (-)
 
-## Flaggade meddelanden (1106)
+## Flaggade meddelanden (1108)
 
-### Meddelande flaggat [ai_translation] (1100)
+### Meddelande flaggat [ai_translation] (1101)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -284,6 +284,7 @@
 |Results entry|Resultatinmatning|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Parningar per spelare|src/data/util.py:None|
 |The FIDE database [{file}] was not found, do you want to create it (Y/n)? |FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?|src/database/sqlite/fide_database.py:None|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?|src/database/sqlite/fide_database.py:None|
 |Downloading FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}], error code [{code}].|URL [{url}] svarade kod [{code}].|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}]: {ex}.|Läste inte [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
@@ -1129,10 +1130,11 @@
 |Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:None|
 |Translation|Översättning|utils/i18n/i18n_update.py:None|
 
-### Meddelande flaggat [fuzzy] (6)
+### Meddelande flaggat [fuzzy] (7)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?|src/database/sqlite/fide_database.py:None|
 |Downloading FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}], error code [{code}].|URL [{url}] svarade kod [{code}].|src/database/sqlite/fide_database.py:None|
 |Could not download [{url}]: {ex}.|Läste inte [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
