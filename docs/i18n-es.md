@@ -14,8 +14,9 @@
 | locale=`es` | Español <img src="../src/web/static/images/locales/es.svg" style="height: 1em;"/> |
 |--|:--:|
 |Mensajes obligatorios vacíos|0/62|
-|Mensajes vacíos|27/1089|
-|Message flagged [ai_translation]|1062/1089|
+|Mensajes vacíos|27/1101|
+|Message flagged [ai_translation]|1074/1101|
+|Message flagged [fuzzy]|7/1101|
 
 ## Mensajes obligatorios vacíos (-)
 
@@ -51,9 +52,9 @@
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 |Board #%(board_number)d with %(color)s|src/web/templates/user_players_screen_set.html:None|
 
-## Mensajes marcados (1062)
+## Mensajes marcados (1081)
 
-### Mensaje marcado [ai_translation] (1062)
+### Mensaje marcado [ai_translation] (1074)
 
 |ID del mensaje|Traducción|Ubicaciones|
 |--|--|--|
@@ -107,7 +108,7 @@
 |Parsing error: [{ex}].|Error de análisis: [{ex}].|src/common/config_reader.py:None|
 |Error: [{ex}].|Error: [{ex}].|src/common/config_reader.py:None|
 |Checking Papi-web version...|Comprobando la versión de Papi-web...|src/common/engine.py:None|
-|Y \*\*\* THE LETTER TO ANSWER YES|Y|src/common/engine.py:None|
+|Y \*\*\* THE LETTER TO ANSWER YES|Y|src/common/engine.py:None<br>src/database/sqlite/fide_database.py:None|
 |N \*\*\* THE LETTER TO ANSWER NO|N|src/common/engine.py:None|
 |The installation of version [{version}] failed.|La instalación de la versión [{version}] falló.|src/common/engine.py:None|
 |- Version {version} ({events})|- Versión {version} ({events})|src/common/engine.py:None|
@@ -239,11 +240,11 @@
 |Rapid rating|Calificación rápida|src/data/util.py:None|
 |Blitz rating|Calificación Blitz|src/data/util.py:None|
 |- \*\*\* NAME FOR GENDER NONE|- ¡No! - ¡No!|src/data/util.py:None|
-|Female \*\*\* NAME FOR GENDER FEMALE|Mujeres|src/data/util.py:None<br>src/fide/fide_player.py:None|
-|Male \*\*\* NAME FOR GENDER MALE|Hombres|src/data/util.py:None<br>src/fide/fide_player.py:None|
+|Female \*\*\* NAME FOR GENDER FEMALE|Mujeres|src/data/util.py:None|
+|Male \*\*\* NAME FOR GENDER MALE|Hombres|src/data/util.py:None|
 |- \*\*\* SHORT NAME FOR GENDER NONE|- ¡No! - ¡No!|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|M \*\*\* SHORT NAME FOR GENDER MALE|M|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|M \*\*\* SHORT NAME FOR GENDER MALE|M|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
 |No FFE Licence|No hay licencia FFE|src/data/util.py:None|
 |Expired FFE licence|Expiración de la licencia FFE|src/data/util.py:None|
 |FFE licence B (leisure)|Licencia FFE B (ocio)|src/data/util.py:None|
@@ -293,6 +294,17 @@
 |Pairings by board|Maridajes a bordo|src/data/util.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Results entry|Entrada de resultados|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Parings por jugador|src/data/util.py:None|
+|The FIDE database [{file}] was not found, do you want to create it (Y/n)? |La base de datos FIDE [{file}] no fue encontrada, ¿quieres crearla (Y/n)?|src/database/sqlite/fide_database.py:None|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |La base de datos FIDE [{file}] es obsoleta ([{days}] días], ¿quieres actualizarla (Y/n)?|src/database/sqlite/fide_database.py:None|
+|Downloading FIDE database...|Descargando la base de datos FIDE...|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] respondió el código [{code}].|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Fallo al leer [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
+|No data received from [{url}].|No se han recibido datos de [{url}].|src/database/sqlite/fide_database.py:None|
+|Could not unzip data.|No se pudieron descomprimir los datos.|src/database/sqlite/fide_database.py:None|
+|Storing data...|Almacenando datos...|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}] (player ignored): [{line}].|Error en la línea [{line_no}] (jugador ignorado): [{line}]|src/database/sqlite/fide_database.py:None|
+|Error while creating the database: {ex}.|Falló el cambio de nombre de la base de datos: {ex}.|src/database/sqlite/fide_database.py:None|
+|{number} players written.|pantallas de {number} reproductores|src/database/sqlite/fide_database.py:None|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID no definido para torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Archivo Papi no definido para torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Archivo Papi no encontrado [{file}] para el torneo [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
@@ -342,6 +354,7 @@
 |Port: {port}|Puerto: {port}|src/web/server_engine.py:None|
 |Local URL: {local_url}|URL local: {local_url}|src/web/server_engine.py:None|
 |LAN/WAN URL: {lan_url}|URL LAN/WAN: {lan_url}|src/web/server_engine.py:None|
+|Error while updating the FIDE database.|Error al actualizar la base de datos FIDE.|src/web/server_engine.py:None<br>utils/federation_flags/download_federation_flags.py:None|
 |Port [{port}] already in use, can not start Papi-web server.|Puerto [{port}] ya en uso, no puede iniciar el servidor Papi-web.|src/web/server_engine.py:None|
 |USE AT YOUR OWN RISKS|USO EN SUS PROPIOS RIESGOS|src/web/controllers/index_controller.py:None|
 |Please enter the ID of ChessEvent connection.|Por favor, introduzca el ID de la conexión ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
@@ -1119,4 +1132,16 @@
 |Empty messages are not shown for the default language.|Los mensajes vacíos no se muestran para el idioma predeterminado.|utils/i18n/i18n_update.py:None|
 |Flagged messages|Mensajes marcados|utils/i18n/i18n_update.py:None|
 |Translation|Traducción|utils/i18n/i18n_update.py:None|
+
+### Mensaje marcado [fuzzy] (7)
+
+|ID del mensaje|Traducción|Ubicaciones|
+|--|--|--|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |La base de datos FIDE [{file}] es obsoleta ([{days}] días], ¿quieres actualizarla (Y/n)?|src/database/sqlite/fide_database.py:None|
+|Downloading FIDE database...|Descargando la base de datos FIDE...|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] respondió el código [{code}].|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Fallo al leer [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}] (player ignored): [{line}].|Error en la línea [{line_no}] (jugador ignorado): [{line}]|src/database/sqlite/fide_database.py:None|
+|Error while creating the database: {ex}.|Falló el cambio de nombre de la base de datos: {ex}.|src/database/sqlite/fide_database.py:None|
+|{number} players written.|pantallas de {number} reproductores|src/database/sqlite/fide_database.py:None|
 

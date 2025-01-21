@@ -13,7 +13,7 @@ from data.pairing import Pairing
 from data.player import Player
 from data.util import Result, TournamentPairing, PlayerGender, PlayerTitle, TournamentRating, PlayerFFELicence, \
     PlayerRatingType, BoardColor
-from database.access import AccessDatabase
+from database.access.access_database import AccessDatabase
 
 logger: Logger = get_logger()
 

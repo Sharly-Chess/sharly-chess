@@ -14,16 +14,17 @@
 | locale=`sv` | Svenska <img src="../src/web/static/images/locales/sv.svg" style="height: 1em;"/> |
 |--|:--:|
 |Töm obligatoriska meddelanden|0/62|
-|Tomma meddelanden|0/1089|
-|Message flagged [ai_translation]|1089/1089|
+|Tomma meddelanden|0/1101|
+|Message flagged [ai_translation]|1100/1101|
+|Message flagged [fuzzy]|6/1101|
 
 ## Töm obligatoriska meddelanden (-)
 
 ## Tomma meddelanden (-)
 
-## Flaggade meddelanden (1089)
+## Flaggade meddelanden (1106)
 
-### Meddelande flaggat [ai_translation] (1089)
+### Meddelande flaggat [ai_translation] (1100)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -77,7 +78,7 @@
 |Parsing error: [{ex}].|Tolkningsfel: [{ex}].|src/common/config_reader.py:None|
 |Error: [{ex}].|Fel: [{ex}].|src/common/config_reader.py:None|
 |Checking Papi-web version...|Kontrollerar papi- webbversion...|src/common/engine.py:None|
-|Y \*\*\* THE LETTER TO ANSWER YES|Y Ordförande|src/common/engine.py:None|
+|Y \*\*\* THE LETTER TO ANSWER YES|Y Ordförande|src/common/engine.py:None<br>src/database/sqlite/fide_database.py:None|
 |N \*\*\* THE LETTER TO ANSWER NO|Ej tillämpligt|src/common/engine.py:None|
 |Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? |Vill du uppgradera från [{old_version}] till [{new_version}] [{y_lc}/{n_uc}]?|src/common/engine.py:None|
 |The installation of version [{version}] failed.|Installationen av version [{version}] misslyckades.|src/common/engine.py:None|
@@ -228,11 +229,11 @@
 |Rapid rating|Snabba betyg|src/data/util.py:None|
 |Blitz rating|Blitz-betyg|src/data/util.py:None|
 |- \*\*\* NAME FOR GENDER NONE|- Vad är det?|src/data/util.py:None|
-|Female \*\*\* NAME FOR GENDER FEMALE|Kvinna|src/data/util.py:None<br>src/fide/fide_player.py:None|
-|Male \*\*\* NAME FOR GENDER MALE|Män|src/data/util.py:None<br>src/fide/fide_player.py:None|
+|Female \*\*\* NAME FOR GENDER FEMALE|Kvinna|src/data/util.py:None|
+|Male \*\*\* NAME FOR GENDER MALE|Män|src/data/util.py:None|
 |- \*\*\* SHORT NAME FOR GENDER NONE|- Vad är det?|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|F \*\*\* SHORT NAME FOR GENDER FEMALE|I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|M \*\*\* SHORT NAME FOR GENDER MALE|Ordförande|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|F \*\*\* SHORT NAME FOR GENDER FEMALE|I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|M \*\*\* SHORT NAME FOR GENDER MALE|Ordförande|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
 |No FFE Licence|Ingen FFE-licens|src/data/util.py:None|
 |Expired FFE licence|Körkort för FFE som upphör att gälla|src/data/util.py:None|
 |FFE licence B (leisure)|FFE-tillstånd B (leisure)|src/data/util.py:None|
@@ -282,6 +283,16 @@
 |Pairings by board|Parningar ombord|src/data/util.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Results entry|Resultatinmatning|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Parningar per spelare|src/data/util.py:None|
+|The FIDE database [{file}] was not found, do you want to create it (Y/n)? |FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?|src/database/sqlite/fide_database.py:None|
+|Downloading FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] svarade kod [{code}].|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Läste inte [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
+|No data received from [{url}].|Inga uppgifter inkom från [{url}].|src/database/sqlite/fide_database.py:None|
+|Could not unzip data.|Kunde inte packa upp data.|src/database/sqlite/fide_database.py:None|
+|Storing data...|Lagra data...|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}] (player ignored): [{line}].|Fel vid rad [{line_no}] (spelare ignorerad): [{line}]|src/database/sqlite/fide_database.py:None|
+|Error while creating the database: {ex}.|Byte av databas misslyckades: {ex}.|src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} Skrivna spelare.|src/database/sqlite/fide_database.py:None|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID definieras inte för turnering [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Papi fil inte definierad för turnering [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Papi-filen hittades inte [{file}] för turnering [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
@@ -331,6 +342,7 @@
 |Port: {port}|Hamn: {port}|src/web/server_engine.py:None|
 |Local URL: {local_url}|Lokal webbadress: {local_url}|src/web/server_engine.py:None|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:None|
+|Error while updating the FIDE database.|Fel vid uppdatering av FIDE- databasen.|src/web/server_engine.py:None<br>utils/federation_flags/download_federation_flags.py:None|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] redan i bruk, kan inte starta Papi-webbserver.|src/web/server_engine.py:None|
 |USE AT YOUR OWN RISKS|ANVÄNDNING VID DINA EGNA RISKER|src/web/controllers/index_controller.py:None|
 |Please enter the ID of ChessEvent connection.|Ange identifikationen för ChessEvent-anslutningen.|src/web/controllers/admin/chessevent_admin_controller.py:None|
@@ -1116,4 +1128,15 @@
 |Empty messages are not shown for the default language.|Tomma brev visas inte för standardspråket.|utils/i18n/i18n_update.py:None|
 |Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:None|
 |Translation|Översättning|utils/i18n/i18n_update.py:None|
+
+### Meddelande flaggat [fuzzy] (6)
+
+|Meddelande- id|Översättning|Platser|
+|--|--|--|
+|Downloading FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] svarade kod [{code}].|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Läste inte [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}] (player ignored): [{line}].|Fel vid rad [{line_no}] (spelare ignorerad): [{line}]|src/database/sqlite/fide_database.py:None|
+|Error while creating the database: {ex}.|Byte av databas misslyckades: {ex}.|src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} Skrivna spelare.|src/database/sqlite/fide_database.py:None|
 

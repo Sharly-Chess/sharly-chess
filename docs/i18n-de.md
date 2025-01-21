@@ -14,8 +14,9 @@
 | locale=`de` | Deutsch <img src="../src/web/static/images/locales/de.svg" style="height: 1em;"/> |
 |--|:--:|
 |obligatorische Nachrichten entleeren|0/62|
-|Leere Nachrichten|1/1089|
-|Message flagged [ai_translation]|1088/1089|
+|Leere Nachrichten|1/1101|
+|Message flagged [ai_translation]|1100/1101|
+|Message flagged [fuzzy]|7/1101|
 
 ## obligatorische Nachrichten entleeren (-)
 
@@ -25,9 +26,9 @@
 |--|--|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 
-## Gekennzeichnete Nachrichten (1088)
+## Gekennzeichnete Nachrichten (1107)
 
-### Nachricht markiert [ai_translation] (1088)
+### Nachricht markiert [ai_translation] (1100)
 
 |Nachrichten-ID|Übersetzung|Standorte|
 |--|--|--|
@@ -81,7 +82,7 @@
 |Parsing error: [{ex}].|Parsing-Fehler: [{ex}].|src/common/config_reader.py:None|
 |Error: [{ex}].|Fehler: [{ex}].|src/common/config_reader.py:None|
 |Checking Papi-web version...|Überprüfen der Papi-Web-Version...|src/common/engine.py:None|
-|Y \*\*\* THE LETTER TO ANSWER YES|Y . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/common/engine.py:None|
+|Y \*\*\* THE LETTER TO ANSWER YES|Y . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/common/engine.py:None<br>src/database/sqlite/fide_database.py:None|
 |N \*\*\* THE LETTER TO ANSWER NO|N . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/common/engine.py:None|
 |Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? |Möchten Sie ein Upgrade von [{old_version}] auf [{new_version}] [{y_lc}/{n_uc}}] durchführen?|src/common/engine.py:None|
 |The installation of version [{version}] failed.|Die Installation der Version [{version}] ist fehlgeschlagen.|src/common/engine.py:None|
@@ -232,11 +233,11 @@
 |Rapid rating|Schnelle Bewertung|src/data/util.py:None|
 |Blitz rating|Blitz-Rating|src/data/util.py:None|
 |- \*\*\* NAME FOR GENDER NONE|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:None|
-|Female \*\*\* NAME FOR GENDER FEMALE|Frauen|src/data/util.py:None<br>src/fide/fide_player.py:None|
-|Male \*\*\* NAME FOR GENDER MALE|Männlich|src/data/util.py:None<br>src/fide/fide_player.py:None|
+|Female \*\*\* NAME FOR GENDER FEMALE|Frauen|src/data/util.py:None|
+|Male \*\*\* NAME FOR GENDER MALE|Männlich|src/data/util.py:None|
 |- \*\*\* SHORT NAME FOR GENDER NONE|- Nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein.|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
-|M \*\*\* SHORT NAME FOR GENDER MALE|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:None<br>src/fide/fide_player.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|F \*\*\* SHORT NAME FOR GENDER FEMALE|F|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
+|M \*\*\* SHORT NAME FOR GENDER MALE|M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .|src/data/util.py:None<br>src/web/templates/admin_players/admin_players_filter_genders.html:None|
 |No FFE Licence|Keine FFE-Lizenz|src/data/util.py:None|
 |Expired FFE licence|Abgelaufene FFE-Lizenz|src/data/util.py:None|
 |FFE licence B (leisure)|FFE-Genehmigung B (Freizeit)|src/data/util.py:None|
@@ -286,6 +287,17 @@
 |Pairings by board|Kombinationen nach Bord|src/data/util.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Results entry|Ergebniseintrag|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Parings nach Spieler|src/data/util.py:None|
+|The FIDE database [{file}] was not found, do you want to create it (Y/n)? |Die FIDE-Datenbank [{file}] wurde nicht gefunden, wollen Sie sie erstellen (Y/n)?|src/database/sqlite/fide_database.py:None|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |Die FIDE-Datenbank [{file}] ist veraltet ([{days}] Tage), willst du sie aktualisieren (Y/n)?|src/database/sqlite/fide_database.py:None|
+|Downloading FIDE database...|FIDE-Datenbank wird heruntergeladen...|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] antwortete auf den Code [{code}].|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Nicht lesen [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
+|No data received from [{url}].|Keine Daten von [{url}].|src/database/sqlite/fide_database.py:None|
+|Could not unzip data.|Daten können nicht entpacken.|src/database/sqlite/fide_database.py:None|
+|Storing data...|Daten speichern...|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}] (player ignored): [{line}].|Fehler in der Zeile [{line_no}] (Spieler ignoriert): [{line}]|src/database/sqlite/fide_database.py:None|
+|Error while creating the database: {ex}.|Umbenennen der Datenbank fehlgeschlagen: {ex}.|src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} Spieler geschrieben.|src/database/sqlite/fide_database.py:None|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID nicht für Turniere definiert [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Papi-Datei nicht gefunden [{file}] für Turnier [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
@@ -335,6 +347,7 @@
 |Port: {port}|Hafen: {port}|src/web/server_engine.py:None|
 |Local URL: {local_url}|Lokale URL: {local_url}|src/web/server_engine.py:None|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:None|
+|Error while updating the FIDE database.|Fehler beim Aktualisieren der FIDE-Datenbank.|src/web/server_engine.py:None<br>utils/federation_flags/download_federation_flags.py:None|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] bereits in Betrieb, kann Papi-Web-Server nicht starten.|src/web/server_engine.py:None|
 |USE AT YOUR OWN RISKS|AUSWIRKUNGEN AUF IHRE RISIKEN|src/web/controllers/index_controller.py:None|
 |Please enter the ID of ChessEvent connection.|Bitte geben Sie die ID der ChessEvent-Verbindung ein.|src/web/controllers/admin/chessevent_admin_controller.py:None|
@@ -1119,4 +1132,16 @@
 |Empty messages are not shown for the default language.|Leere Nachrichten werden für die Standardsprache nicht angezeigt.|utils/i18n/i18n_update.py:None|
 |Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:None|
 |Translation|Übersetzung|utils/i18n/i18n_update.py:None|
+
+### Nachricht markiert [fuzzy] (7)
+
+|Nachrichten-ID|Übersetzung|Standorte|
+|--|--|--|
+|The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |Die FIDE-Datenbank [{file}] ist veraltet ([{days}] Tage), willst du sie aktualisieren (Y/n)?|src/database/sqlite/fide_database.py:None|
+|Downloading FIDE database...|FIDE-Datenbank wird heruntergeladen...|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] antwortete auf den Code [{code}].|src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Nicht lesen [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}] (player ignored): [{line}].|Fehler in der Zeile [{line_no}] (Spieler ignoriert): [{line}]|src/database/sqlite/fide_database.py:None|
+|Error while creating the database: {ex}.|Umbenennen der Datenbank fehlgeschlagen: {ex}.|src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} Spieler geschrieben.|src/database/sqlite/fide_database.py:None|
 

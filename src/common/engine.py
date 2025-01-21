@@ -23,7 +23,7 @@ from common.logger import get_logger, configure_logger, input_interactive, print
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
-from database.sqlite import EventDatabase
+from database.sqlite.event_database import EventDatabase
 
 logger: Logger = get_logger()
 configure_logger(logging.INFO)

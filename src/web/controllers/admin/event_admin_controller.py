@@ -19,7 +19,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
 from data.util import PlayerGender, PlayerFFELicence, PlayerCategory
-from database.sqlite import EventDatabase
+from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
 from web.controllers.admin.index_admin_controller import AdminWebContext, AbstractIndexAdminController
 from web.controllers.index_controller import AbstractController

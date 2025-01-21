@@ -15,8 +15,8 @@ from common.i18n import _
 from common.logger import get_logger, print_interactive_error, print_interactive_success, print_interactive_info, \
     print_interactive_warning
 from data.tournament import Tournament
-from database.papi import PapiDatabase
-from database.sqlite import EventDatabase
+from database.access.papi.papi_database import PapiDatabase
+from database.sqlite.event_database import EventDatabase
 
 logger: Logger = get_logger()
 
