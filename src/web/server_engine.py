@@ -1,7 +1,7 @@
 import socket
 from logging import Logger
 from threading import Thread
-from time import sleep, time
+from time import sleep
 from webbrowser import open
 
 import requests
@@ -11,8 +11,7 @@ from litestar.contrib.htmx.request import HTMXRequest
 
 from common.engine import Engine
 from common.i18n import _, set_locale
-from common.logger import get_logger, print_interactive_info, print_interactive_error, print_interactive_input, \
-    input_interactive
+from common.logger import get_logger, print_interactive_info, print_interactive_error
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.ffe_database import FfeDatabase
 from database.sqlite.fide_database import FideDatabase
@@ -47,9 +46,9 @@ class ServerEngine(Engine):
         print_interactive_info(_('Local URL: {local_url}').format(local_url=papi_web_config.local_url))
         if papi_web_config.lan_url:
             print_interactive_info(_('LAN/WAN URL: {lan_url}').format(lan_url=papi_web_config.lan_url))
-        if not FideDatabase(write=True).check():
+        if not FideDatabase().check():
             print_interactive_error(_('Error while updating the FIDE database.'))
-        if not FfeDatabase(write=True).check():
+        if not FfeDatabase().check():
             print_interactive_error(_('Error while updating the FFE database.'))
         if self.__port_in_use(papi_web_config.web_port):
             print_interactive_error(
