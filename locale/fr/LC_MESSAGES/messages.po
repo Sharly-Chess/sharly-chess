@@ -1058,7 +1058,7 @@ msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to up
 msgstr "La base de données [{file}] est osbolete ({days} jours), voulez-vous la mettre à jour (O/n) ? "
 
 #: src/database/sqlite/fide_database.py
-msgid "Downloading FIDE database..."
+msgid "Downloading the FIDE database..."
 msgstr "Téléchargement des la base de données de la FIDE..."
 
 #: src/database/sqlite/fide_database.py

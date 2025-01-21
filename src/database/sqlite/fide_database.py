@@ -46,7 +46,7 @@ class FideDatabase(SQLiteDatabase):
                     return True
             else:
                 return True
-        print_interactive_info(_('Downloading FIDE database...'))
+        print_interactive_info(_('Downloading the FIDE database...'))
         fide_database_url: str = 'https://ratings.fide.com/download/players_list_legacy.zip'
         local_zip_file: Path = TMP_DIR / os.path.basename(fide_database_url)
         with suppress(FileNotFoundError):
