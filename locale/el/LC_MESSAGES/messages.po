@@ -5258,8 +5258,8 @@ msgid "The tournament is not started yet."
 msgstr "Το τουρνουά δεν έχει ξεκινήσει ακόμα."
 
 #: src/web/templates/macros.j2
-#, ai_translation, python-format
-msgid "Round %(round)d is running."
+#, ai_translation, fuzzy, python-format
+msgid "Round #%(round)d is running."
 msgstr "Ο γύρος %(round)d τρέχει."
 
 #: src/web/templates/macros.j2

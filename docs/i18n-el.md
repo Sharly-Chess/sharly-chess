@@ -16,7 +16,7 @@
 |Κενά υποχρεωτικά μηνύματα|0/64|
 |Κενά μηνύματα|4/1110|
 |Message flagged [ai_translation]|1106/1110|
-|Message flagged [fuzzy]|16/1110|
+|Message flagged [fuzzy]|17/1110|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
@@ -29,7 +29,7 @@
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:None|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 
-## Σημειωθέντα μηνύματα (1122)
+## Σημειωθέντα μηνύματα (1123)
 
 ### Μήνυμα που σημαδεύτηκε [ai_translation] (1106)
 
@@ -1034,7 +1034,7 @@
 |This screen family is private (not visible by the users).|Αυτή η οικογένεια οθόνης είναι ιδιωτική (δεν είναι ορατή από τους χρήστες).|src/web/templates/macros.j2:None|
 |This rotator is private (not visible by the users).|Αυτός ο περιστροφέας είναι ιδιωτικός (δεν είναι ορατός από τους χρήστες).|src/web/templates/macros.j2:None|
 |The tournament is not started yet.|Το τουρνουά δεν έχει ξεκινήσει ακόμα.|src/web/templates/macros.j2:None|
-|Round %(round)d is running.|Ο γύρος %(round)d τρέχει.|src/web/templates/macros.j2:None|
+|Round #%(round)d is running.|Ο γύρος %(round)d τρέχει.|src/web/templates/macros.j2:None|
 |Round #%(round)d is finished.|Ο γύρος #%(round)d τελείωσε.|src/web/templates/macros.j2:None|
 |The tournament is finished.|Το τουρνουά τελείωσε.|src/web/templates/macros.j2:None|
 |Boards screens show pairings by board number.|Οι οθόνες του πίνακα δείχνουν ζευγάρωμα με τον αριθμό του σκάφους.|src/web/templates/macros.j2:None|
@@ -1142,7 +1142,7 @@
 |Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:None|
 |Translation|Μετάφραση|utils/i18n/i18n_update.py:None|
 
-### Μήνυμα που σημαδεύτηκε [fuzzy] (16)
+### Μήνυμα που σημαδεύτηκε [fuzzy] (17)
 
 |ID μηνύματος|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -1162,4 +1162,5 @@
 |Downloading the FIDE database...|Λήψη βάσης δεδομένων FIDE...|src/database/sqlite/fide_database.py:None|
 |Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Σφάλμα στη γραμμή [{line_no}]: [{ex}] (ο παίκτης αγνόησε: [{line}]).|src/database/sqlite/fide_database.py:None|
 |Error while updating the FFE database.|Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE.|src/web/server_engine.py:None|
+|Round #%(round)d is running.|Ο γύρος %(round)d τρέχει.|src/web/templates/macros.j2:None|
 

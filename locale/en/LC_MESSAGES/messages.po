@@ -4331,7 +4331,7 @@ msgstr ""
 
 #: src/web/templates/macros.j2
 #, python-format
-msgid "Round %(round)d is running."
+msgid "Round #%(round)d is running."
 msgstr ""
 
 #: src/web/templates/macros.j2
@@ -4792,5 +4792,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Error at line [{line_no}] (player ignored): [{line}]."
+#~ msgstr ""
+
+#~ msgid "Round %(round)d is running."
 #~ msgstr ""
 

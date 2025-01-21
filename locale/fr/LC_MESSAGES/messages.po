@@ -4333,8 +4333,8 @@ msgstr "Le tournoi n'est pas encore commencé."
 
 #: src/web/templates/macros.j2
 #, python-format
-msgid "Round %(round)d is running."
-msgstr "La ronde %(round)d est terminée."
+msgid "Round #%(round)d is running."
+msgstr "La ronde %(round)d est en cours."
 
 #: src/web/templates/macros.j2
 #, python-format

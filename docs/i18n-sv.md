@@ -16,13 +16,13 @@
 |Töm obligatoriska meddelanden|0/64|
 |Tomma meddelanden|0/1110|
 |Message flagged [ai_translation]|1110/1110|
-|Message flagged [fuzzy]|16/1110|
+|Message flagged [fuzzy]|17/1110|
 
 ## Töm obligatoriska meddelanden (-)
 
 ## Tomma meddelanden (-)
 
-## Flaggade meddelanden (1126)
+## Flaggade meddelanden (1127)
 
 ### Meddelande flaggat [ai_translation] (1110)
 
@@ -1030,7 +1030,7 @@
 |This screen family is private (not visible by the users).|Denna skärmfamilj är privat (som inte syns av användarna).|src/web/templates/macros.j2:None|
 |This rotator is private (not visible by the users).|Denna rotator är privat (inte synlig av användarna).|src/web/templates/macros.j2:None|
 |The tournament is not started yet.|Turneringen är inte igång än.|src/web/templates/macros.j2:None|
-|Round %(round)d is running.|Runda %(round)d är igång.|src/web/templates/macros.j2:None|
+|Round #%(round)d is running.|Runda %(round)d är igång.|src/web/templates/macros.j2:None|
 |Round #%(round)d is finished.|Runda #%(round)d är klar.|src/web/templates/macros.j2:None|
 |The tournament is finished.|Turneringen är klar.|src/web/templates/macros.j2:None|
 |Boards screens show pairings by board number.|Brädorna visar parningar efter brädnummer.|src/web/templates/macros.j2:None|
@@ -1139,7 +1139,7 @@
 |Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:None|
 |Translation|Översättning|utils/i18n/i18n_update.py:None|
 
-### Meddelande flaggat [fuzzy] (16)
+### Meddelande flaggat [fuzzy] (17)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -1159,4 +1159,5 @@
 |Downloading the FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
 |Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Fel på rad [{line_no}]: [{ex}] (spelare ignorerade: [{line}]).|src/database/sqlite/fide_database.py:None|
 |Error while updating the FFE database.|Fel vid uppdatering av FIDE- databasen.|src/web/server_engine.py:None|
+|Round #%(round)d is running.|Runda %(round)d är igång.|src/web/templates/macros.j2:None|
 

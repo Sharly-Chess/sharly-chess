@@ -16,7 +16,7 @@
 |Mensajes obligatorios vacíos|0/64|
 |Mensajes vacíos|27/1110|
 |Message flagged [ai_translation]|1083/1110|
-|Message flagged [fuzzy]|16/1110|
+|Message flagged [fuzzy]|17/1110|
 
 ## Mensajes obligatorios vacíos (-)
 
@@ -52,7 +52,7 @@
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 |Board #%(board_number)d with %(color)s|src/web/templates/user_players_screen_set.html:None|
 
-## Mensajes marcados (1099)
+## Mensajes marcados (1100)
 
 ### Mensaje marcado [ai_translation] (1083)
 
@@ -1036,7 +1036,7 @@
 |This screen family is private (not visible by the users).|Esta familia de pantalla es privada (no visible por los usuarios).|src/web/templates/macros.j2:None|
 |This rotator is private (not visible by the users).|Este rotador es privado (no visible por los usuarios).|src/web/templates/macros.j2:None|
 |The tournament is not started yet.|El torneo aún no ha comenzado.|src/web/templates/macros.j2:None|
-|Round %(round)d is running.|Round %(round)d se está ejecutando.|src/web/templates/macros.j2:None|
+|Round #%(round)d is running.|Round %(round)d se está ejecutando.|src/web/templates/macros.j2:None|
 |The tournament is finished.|El torneo ha terminado.|src/web/templates/macros.j2:None|
 |Boards screens show pairings by board number.|Las pantallas de tableros muestran emparejamientos por número de tablero.|src/web/templates/macros.j2:None|
 |Input screens show pairings by board number and allow people to enter results.|Las pantallas de entrada muestran emparejamientos por número de placa y permiten a la gente introducir resultados.|src/web/templates/macros.j2:None|
@@ -1142,7 +1142,7 @@
 |Flagged messages|Mensajes marcados|utils/i18n/i18n_update.py:None|
 |Translation|Traducción|utils/i18n/i18n_update.py:None|
 
-### Mensaje marcado [fuzzy] (16)
+### Mensaje marcado [fuzzy] (17)
 
 |ID del mensaje|Traducción|Ubicaciones|
 |--|--|--|
@@ -1162,4 +1162,5 @@
 |Downloading the FIDE database...|Descargando la base de datos FIDE...|src/database/sqlite/fide_database.py:None|
 |Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Error en la línea [{line_no}]: [{ex}] (jugador ignorado: [{line}]).|src/database/sqlite/fide_database.py:None|
 |Error while updating the FFE database.|Error al actualizar la base de datos FIDE.|src/web/server_engine.py:None|
+|Round #%(round)d is running.|Round %(round)d se está ejecutando.|src/web/templates/macros.j2:None|
 

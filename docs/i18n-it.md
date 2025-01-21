@@ -16,13 +16,13 @@
 |Messaggi obbligatori vuoti|0/64|
 |Messaggi vuoti|0/1110|
 |Message flagged [ai_translation]|1110/1110|
-|Message flagged [fuzzy]|16/1110|
+|Message flagged [fuzzy]|17/1110|
 
 ## Messaggi obbligatori vuoti (-)
 
 ## Messaggi vuoti (-)
 
-## Messaggi contrassegnati (1126)
+## Messaggi contrassegnati (1127)
 
 ### Messaggio segnalato [ai_translation] (1110)
 
@@ -1030,7 +1030,7 @@
 |This screen family is private (not visible by the users).|Questa famiglia di schermi è privata (non visibile dagli utenti).|src/web/templates/macros.j2:None|
 |This rotator is private (not visible by the users).|Questo rotatore è privato (non visibile dagli utenti).|src/web/templates/macros.j2:None|
 |The tournament is not started yet.|Il torneo non è ancora iniziato.|src/web/templates/macros.j2:None|
-|Round %(round)d is running.|Il round %(round)d è in esecuzione.|src/web/templates/macros.j2:None|
+|Round #%(round)d is running.|Il round %(round)d è in esecuzione.|src/web/templates/macros.j2:None|
 |Round #%(round)d is finished.|Round #%(round)d è finito.|src/web/templates/macros.j2:None|
 |The tournament is finished.|Il torneo è finito.|src/web/templates/macros.j2:None|
 |Boards screens show pairings by board number.|Le schermate mostrano gli accoppiamenti per numero di board.|src/web/templates/macros.j2:None|
@@ -1139,7 +1139,7 @@
 |Flagged messages|Messaggi contrassegnati|utils/i18n/i18n_update.py:None|
 |Translation|Traduzione|utils/i18n/i18n_update.py:None|
 
-### Messaggio segnalato [fuzzy] (16)
+### Messaggio segnalato [fuzzy] (17)
 
 |ID messaggio|Traduzione|Sedi|
 |--|--|--|
@@ -1159,4 +1159,5 @@
 |Downloading the FIDE database...|Scaricamento database FIDE...|src/database/sqlite/fide_database.py:None|
 |Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Errore alla riga [{line_no}]: [{ex}] (giocatore ignorato: [{line}]).|src/database/sqlite/fide_database.py:None|
 |Error while updating the FFE database.|Errore durante l'aggiornamento del database FIDE.|src/web/server_engine.py:None|
+|Round #%(round)d is running.|Il round %(round)d è in esecuzione.|src/web/templates/macros.j2:None|
 

@@ -78,7 +78,7 @@
         {% set _tooltip_text=_('The tournament is not started yet.') %}
     {% elif tournament.playing %}
         {% set _icon_class='bi-caret-right-square-fill' %}
-        {% set _tooltip_text=_('Round %(round)d is running.', round=tournament.current_round) %}
+        {% set _tooltip_text=_('Round #%(round)d is running.', round=tournament.current_round) %}
     {% elif not tournament.finished %}
         {% set _icon_class='bi-pause-fill' %}
         {% set _tooltip_text=_('Round #%(round)d is finished.', round=tournament.current_round) %}

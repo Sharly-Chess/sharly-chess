@@ -16,13 +16,13 @@
 |Lege verplichte berichten|0/64|
 |Lege berichten|0/1110|
 |Message flagged [ai_translation]|1110/1110|
-|Message flagged [fuzzy]|16/1110|
+|Message flagged [fuzzy]|17/1110|
 
 ## Lege verplichte berichten (-)
 
 ## Lege berichten (-)
 
-## Gemarkeerde berichten (1126)
+## Gemarkeerde berichten (1127)
 
 ### Bericht gemarkeerd [ai_translation] (1110)
 
@@ -1030,7 +1030,7 @@
 |This screen family is private (not visible by the users).|Deze schermfamilie is privé (niet zichtbaar door de gebruikers).|src/web/templates/macros.j2:None|
 |This rotator is private (not visible by the users).|Deze rotator is privé (niet zichtbaar door de gebruikers).|src/web/templates/macros.j2:None|
 |The tournament is not started yet.|Het toernooi is nog niet begonnen.|src/web/templates/macros.j2:None|
-|Round %(round)d is running.|Ronde %(round)d loopt.|src/web/templates/macros.j2:None|
+|Round #%(round)d is running.|Ronde %(round)d loopt.|src/web/templates/macros.j2:None|
 |Round #%(round)d is finished.|Ronde #%(round)d is voltooid.|src/web/templates/macros.j2:None|
 |The tournament is finished.|Het toernooi is afgelopen.|src/web/templates/macros.j2:None|
 |Boards screens show pairings by board number.|Schermen tonen paren per bordnummer.|src/web/templates/macros.j2:None|
@@ -1139,7 +1139,7 @@
 |Flagged messages|Gemarkeerde berichten|utils/i18n/i18n_update.py:None|
 |Translation|Vertaling|utils/i18n/i18n_update.py:None|
 
-### Bericht gemarkeerd [fuzzy] (16)
+### Bericht gemarkeerd [fuzzy] (17)
 
 |Bericht-ID|Vertaling|Locaties|
 |--|--|--|
@@ -1159,4 +1159,5 @@
 |Downloading the FIDE database...|FIDE-database wordt gedownload...|src/database/sqlite/fide_database.py:None|
 |Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Fout op regel [{line_no}]: [{ex}] (speler genegeerd: [{line}]).|src/database/sqlite/fide_database.py:None|
 |Error while updating the FFE database.|Fout bij het bijwerken van de FIDE-database.|src/web/server_engine.py:None|
+|Round #%(round)d is running.|Ronde %(round)d loopt.|src/web/templates/macros.j2:None|
 

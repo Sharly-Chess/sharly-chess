@@ -16,7 +16,7 @@
 |obligatorische Nachrichten entleeren|0/64|
 |Leere Nachrichten|1/1110|
 |Message flagged [ai_translation]|1109/1110|
-|Message flagged [fuzzy]|16/1110|
+|Message flagged [fuzzy]|17/1110|
 
 ## obligatorische Nachrichten entleeren (-)
 
@@ -26,7 +26,7 @@
 |--|--|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 
-## Gekennzeichnete Nachrichten (1125)
+## Gekennzeichnete Nachrichten (1126)
 
 ### Nachricht markiert [ai_translation] (1109)
 
@@ -1034,7 +1034,7 @@
 |This screen family is private (not visible by the users).|Diese Bildschirmfamilie ist privat (von den Benutzern nicht sichtbar).|src/web/templates/macros.j2:None|
 |This rotator is private (not visible by the users).|Dieser Rotator ist privat (von den Benutzern nicht sichtbar).|src/web/templates/macros.j2:None|
 |The tournament is not started yet.|Das Turnier ist noch nicht gestartet.|src/web/templates/macros.j2:None|
-|Round %(round)d is running.|Runde %(round)d läuft.|src/web/templates/macros.j2:None|
+|Round #%(round)d is running.|Runde %(round)d läuft.|src/web/templates/macros.j2:None|
 |Round #%(round)d is finished.|Runde #%(round)d ist beendet.|src/web/templates/macros.j2:None|
 |The tournament is finished.|Das Turnier ist beendet.|src/web/templates/macros.j2:None|
 |Boards screens show pairings by board number.|Boards Bildschirme zeigen Paarungen nach Boardnummer.|src/web/templates/macros.j2:None|
@@ -1142,7 +1142,7 @@
 |Flagged messages|Gekennzeichnete Nachrichten|utils/i18n/i18n_update.py:None|
 |Translation|Übersetzung|utils/i18n/i18n_update.py:None|
 
-### Nachricht markiert [fuzzy] (16)
+### Nachricht markiert [fuzzy] (17)
 
 |Nachrichten-ID|Übersetzung|Standorte|
 |--|--|--|
@@ -1162,4 +1162,5 @@
 |Downloading the FIDE database...|FIDE-Datenbank wird heruntergeladen...|src/database/sqlite/fide_database.py:None|
 |Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Fehler in der Zeile [{line_no}]: [{ex}] (Spieler ignoriert: [{line}]).|src/database/sqlite/fide_database.py:None|
 |Error while updating the FFE database.|Fehler beim Aktualisieren der FIDE-Datenbank.|src/web/server_engine.py:None|
+|Round #%(round)d is running.|Runde %(round)d läuft.|src/web/templates/macros.j2:None|
 

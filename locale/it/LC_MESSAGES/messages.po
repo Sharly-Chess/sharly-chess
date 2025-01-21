@@ -5256,8 +5256,8 @@ msgid "The tournament is not started yet."
 msgstr "Il torneo non è ancora iniziato."
 
 #: src/web/templates/macros.j2
-#, ai_translation, python-format
-msgid "Round %(round)d is running."
+#, ai_translation, fuzzy, python-format
+msgid "Round #%(round)d is running."
 msgstr "Il round %(round)d è in esecuzione."
 
 #: src/web/templates/macros.j2
