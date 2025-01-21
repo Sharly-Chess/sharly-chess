@@ -360,4 +360,4 @@ class Player:
         if self.ref_id == 1:
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (f'{self.__class__.__name__}'
-                f'(#{self.id} {self.title.short_name}{self.last_name} {self.first_name} {self.rating} [{self.vpoints}])')
+                f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} licence={self.ffe_licence.value} {self.last_name} {self.first_name} {self.club_tuple})')

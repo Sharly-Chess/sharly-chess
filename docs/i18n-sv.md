@@ -13,18 +13,18 @@
 
 | locale=`sv` | Svenska <img src="../src/web/static/images/locales/sv.svg" style="height: 1em;"/> |
 |--|:--:|
-|Töm obligatoriska meddelanden|0/62|
-|Tomma meddelanden|0/1101|
-|Message flagged [ai_translation]|1101/1101|
-|Message flagged [fuzzy]|7/1101|
+|Töm obligatoriska meddelanden|0/64|
+|Tomma meddelanden|0/1110|
+|Message flagged [ai_translation]|1110/1110|
+|Message flagged [fuzzy]|16/1110|
 
 ## Töm obligatoriska meddelanden (-)
 
 ## Tomma meddelanden (-)
 
-## Flaggade meddelanden (1108)
+## Flaggade meddelanden (1126)
 
-### Meddelande flaggat [ai_translation] (1101)
+### Meddelande flaggat [ai_translation] (1110)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
@@ -78,7 +78,7 @@
 |Parsing error: [{ex}].|Tolkningsfel: [{ex}].|src/common/config_reader.py:None|
 |Error: [{ex}].|Fel: [{ex}].|src/common/config_reader.py:None|
 |Checking Papi-web version...|Kontrollerar papi- webbversion...|src/common/engine.py:None|
-|Y \*\*\* THE LETTER TO ANSWER YES|Y Ordförande|src/common/engine.py:None<br>src/database/sqlite/fide_database.py:None|
+|Y \*\*\* THE LETTER TO ANSWER YES|Y Ordförande|src/common/engine.py:None<br>src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
 |N \*\*\* THE LETTER TO ANSWER NO|Ej tillämpligt|src/common/engine.py:None|
 |Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? |Vill du uppgradera från [{old_version}] till [{new_version}] [{y_lc}/{n_uc}]?|src/common/engine.py:None|
 |The installation of version [{version}] failed.|Installationen av version [{version}] misslyckades.|src/common/engine.py:None|
@@ -266,12 +266,16 @@
 |N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|Ej tillämpligt|src/data/util.py:None|
 |F \*\*\* SHORT NAME FOR RATING TYPE FIDE|I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:|src/data/util.py:None|
 |No title|Ingen titel|src/data/util.py:None|
+|Woman Candidate Master|Kvinnlig mästare|src/data/util.py:None|
+|Candidate Master|Fide Master Ordförande|src/data/util.py:None|
 |Woman Fide Master|Kvinnlig mästare|src/data/util.py:None|
 |Fide Master|Fide Master Ordförande|src/data/util.py:None|
 |Woman International Master|Kvinna internationell mästare|src/data/util.py:None|
 |International Master|Internationell mästare|src/data/util.py:None|
 |Woman Grand Master|Kvinna stormästare|src/data/util.py:None|
 |Grand Master|Stormästare|src/data/util.py:None|
+|WCM \*\*\* SHORT NAME FOR Woman Candidate Master|WFM|src/data/util.py:None|
+|CM \*\*\* SHORT NAME FOR Candidate Master|FM Ordförande|src/data/util.py:None|
 |WFM \*\*\* SHORT NAME FOR Woman Fide Master|WFM|src/data/util.py:None|
 |FM \*\*\* SHORT NAME FOR Fide Master|FM Ordförande|src/data/util.py:None|
 |WIM \*\*\* SHORT NAME FOR Woman International Master|WIM Ordförande|src/data/util.py:None|
@@ -283,17 +287,21 @@
 |Pairings by board|Parningar ombord|src/data/util.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Results entry|Resultatinmatning|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Parningar per spelare|src/data/util.py:None|
+|The FFE database [{file}] was not found, do you want to create it (Y/n)? |FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?|src/database/sqlite/ffe_database.py:None|
+|The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?|src/database/sqlite/ffe_database.py:None|
+|Downloading the FFE database...|Laddar ner FIDE- databas...|src/database/sqlite/ffe_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] svarade kod [{code}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Läste inte [{url}]: [{ex}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|No data received from [{url}].|Inga uppgifter inkom från [{url}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Could not unzip data.|Kunde inte packa upp data.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Storing data...|Lagra data...|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Error reading the following row (player ignored): [{row}].|Fel vid läsning av följande rad (spelare ignorerad): [{row}].|src/database/sqlite/ffe_database.py:None|
+|Error while creating the database: {ex}.|Byte av databas misslyckades: {ex}.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} Skrivna spelare.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
 |The FIDE database [{file}] was not found, do you want to create it (Y/n)? |FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?|src/database/sqlite/fide_database.py:None|
 |The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?|src/database/sqlite/fide_database.py:None|
-|Downloading FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
-|Could not download [{url}], error code [{code}].|URL [{url}] svarade kod [{code}].|src/database/sqlite/fide_database.py:None|
-|Could not download [{url}]: {ex}.|Läste inte [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
-|No data received from [{url}].|Inga uppgifter inkom från [{url}].|src/database/sqlite/fide_database.py:None|
-|Could not unzip data.|Kunde inte packa upp data.|src/database/sqlite/fide_database.py:None|
-|Storing data...|Lagra data...|src/database/sqlite/fide_database.py:None|
-|Error at line [{line_no}] (player ignored): [{line}].|Fel vid rad [{line_no}] (spelare ignorerad): [{line}]|src/database/sqlite/fide_database.py:None|
-|Error while creating the database: {ex}.|Byte av databas misslyckades: {ex}.|src/database/sqlite/fide_database.py:None|
-|{number} players written.|{number} Skrivna spelare.|src/database/sqlite/fide_database.py:None|
+|Downloading the FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Fel på rad [{line_no}]: [{ex}] (spelare ignorerade: [{line}]).|src/database/sqlite/fide_database.py:None|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID definieras inte för turnering [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Papi fil inte definierad för turnering [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Papi-filen hittades inte [{file}] för turnering [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
@@ -344,6 +352,7 @@
 |Local URL: {local_url}|Lokal webbadress: {local_url}|src/web/server_engine.py:None|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:None|
 |Error while updating the FIDE database.|Fel vid uppdatering av FIDE- databasen.|src/web/server_engine.py:None<br>utils/federation_flags/download_federation_flags.py:None|
+|Error while updating the FFE database.|Fel vid uppdatering av FIDE- databasen.|src/web/server_engine.py:None|
 |Port [{port}] already in use, can not start Papi-web server.|Port [{port}] redan i bruk, kan inte starta Papi-webbserver.|src/web/server_engine.py:None|
 |USE AT YOUR OWN RISKS|ANVÄNDNING VID DINA EGNA RISKER|src/web/controllers/index_controller.py:None|
 |Please enter the ID of ChessEvent connection.|Ange identifikationen för ChessEvent-anslutningen.|src/web/controllers/admin/chessevent_admin_controller.py:None|
@@ -1130,15 +1139,24 @@
 |Flagged messages|Flaggade meddelanden|utils/i18n/i18n_update.py:None|
 |Translation|Översättning|utils/i18n/i18n_update.py:None|
 
-### Meddelande flaggat [fuzzy] (7)
+### Meddelande flaggat [fuzzy] (16)
 
 |Meddelande- id|Översättning|Platser|
 |--|--|--|
+|Woman Candidate Master|Kvinnlig mästare|src/data/util.py:None|
+|Candidate Master|Fide Master Ordförande|src/data/util.py:None|
+|WCM \*\*\* SHORT NAME FOR Woman Candidate Master|WFM|src/data/util.py:None|
+|CM \*\*\* SHORT NAME FOR Candidate Master|FM Ordförande|src/data/util.py:None|
+|The FFE database [{file}] was not found, do you want to create it (Y/n)? |FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?|src/database/sqlite/ffe_database.py:None|
+|The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?|src/database/sqlite/ffe_database.py:None|
+|Downloading the FFE database...|Laddar ner FIDE- databas...|src/database/sqlite/ffe_database.py:None|
+|Could not download [{url}], error code [{code}].|URL [{url}] svarade kod [{code}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Läste inte [{url}]: [{ex}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Error reading the following row (player ignored): [{row}].|Fel vid läsning av följande rad (spelare ignorerad): [{row}].|src/database/sqlite/ffe_database.py:None|
+|Error while creating the database: {ex}.|Byte av databas misslyckades: {ex}.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} Skrivna spelare.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
 |The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?|src/database/sqlite/fide_database.py:None|
-|Downloading FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
-|Could not download [{url}], error code [{code}].|URL [{url}] svarade kod [{code}].|src/database/sqlite/fide_database.py:None|
-|Could not download [{url}]: {ex}.|Läste inte [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
-|Error at line [{line_no}] (player ignored): [{line}].|Fel vid rad [{line_no}] (spelare ignorerad): [{line}]|src/database/sqlite/fide_database.py:None|
-|Error while creating the database: {ex}.|Byte av databas misslyckades: {ex}.|src/database/sqlite/fide_database.py:None|
-|{number} players written.|{number} Skrivna spelare.|src/database/sqlite/fide_database.py:None|
+|Downloading the FIDE database...|Laddar ner FIDE- databas...|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Fel på rad [{line_no}]: [{ex}] (spelare ignorerade: [{line}]).|src/database/sqlite/fide_database.py:None|
+|Error while updating the FFE database.|Fel vid uppdatering av FIDE- databasen.|src/web/server_engine.py:None|
 

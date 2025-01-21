@@ -205,7 +205,8 @@ msgstr ""
 msgid "Checking Papi-web version..."
 msgstr ""
 
-#: src/common/engine.py src/database/sqlite/fide_database.py
+#: src/common/engine.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
 
@@ -973,6 +974,14 @@ msgid "No title"
 msgstr ""
 
 #: src/data/util.py
+msgid "Woman Candidate Master"
+msgstr ""
+
+#: src/data/util.py
+msgid "Candidate Master"
+msgstr ""
+
+#: src/data/util.py
 msgid "Woman Fide Master"
 msgstr ""
 
@@ -995,6 +1004,14 @@ msgstr ""
 #: src/data/util.py
 msgid "Grand Master"
 msgstr ""
+
+#: src/data/util.py
+msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
+msgstr "WCM"
+
+#: src/data/util.py
+msgid "CM *** SHORT NAME FOR Candidate Master"
+msgstr "CM"
 
 #: src/data/util.py
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
@@ -1049,6 +1066,50 @@ msgstr ""
 msgid "Parings by player"
 msgstr ""
 
+#: src/database/sqlite/ffe_database.py
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py
+msgid "Downloading the FFE database..."
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Could not download [{url}], error code [{code}]."
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Could not download [{url}]: {ex}."
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "No data received from [{url}]."
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Could not unzip data."
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Storing data..."
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py
+msgid "Error reading the following row (player ignored): [{row}]."
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Error while creating the database: {ex}."
+msgstr ""
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "{number} players written."
+msgstr ""
+
 #: src/database/sqlite/fide_database.py
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
@@ -1058,39 +1119,11 @@ msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to up
 msgstr ""
 
 #: src/database/sqlite/fide_database.py
-msgid "Downloading FIDE database..."
+msgid "Downloading the FIDE database..."
 msgstr ""
 
 #: src/database/sqlite/fide_database.py
-msgid "Could not download [{url}], error code [{code}]."
-msgstr ""
-
-#: src/database/sqlite/fide_database.py
-msgid "Could not download [{url}]: {ex}."
-msgstr ""
-
-#: src/database/sqlite/fide_database.py
-msgid "No data received from [{url}]."
-msgstr ""
-
-#: src/database/sqlite/fide_database.py
-msgid "Could not unzip data."
-msgstr ""
-
-#: src/database/sqlite/fide_database.py
-msgid "Storing data..."
-msgstr ""
-
-#: src/database/sqlite/fide_database.py
-msgid "Error at line [{line_no}] (player ignored): [{line}]."
-msgstr ""
-
-#: src/database/sqlite/fide_database.py
-msgid "Error while creating the database: {ex}."
-msgstr ""
-
-#: src/database/sqlite/fide_database.py
-msgid "{number} players written."
+msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
 msgstr ""
 
 #: src/ffe/action_selector.py
@@ -1302,6 +1335,10 @@ msgstr ""
 
 #: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
 msgid "Error while updating the FIDE database."
+msgstr ""
+
+#: src/web/server_engine.py
+msgid "Error while updating the FFE database."
 msgstr ""
 
 #: src/web/server_engine.py
@@ -4749,5 +4786,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Error while creating the database: {ex}"
+#~ msgstr ""
+
+#~ msgid "Downloading FIDE database..."
+#~ msgstr ""
+
+#~ msgid "Error at line [{line_no}] (player ignored): [{line}]."
 #~ msgstr ""
 

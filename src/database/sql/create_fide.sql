@@ -2,20 +2,15 @@
 
 CREATE TABLE `player` (
     `id` INTEGER NOT NULL,
-    `id_number` INTEGER NOT NULL,
-    `name` TEXT NOT NULL,
+    `fide_id` INTEGER NOT NULL,
+    `last_name` TEXT NOT NULL,
+    `first_name` TEXT,
     `federation` TEXT NOT NULL,
-    `sex` TEXT NOT NULL,
-    `title` TEXT,
-    `woman_title` TEXT,
-    `other_title` TEXT,
-    `standard_rating` INT NOT NULL,
-    `rapid_rating` INT NOT NULL,
-    `blitz_rating` INT NOT NULL,
-    `standard_k_factor` INT NOT NULL,
-    `rapid_k_factor` INT NOT NULL,
-    `blitz_k_factor` INT NOT NULL,
-    `year_of_birth` INT NOT NULL,
-    PRIMARY KEY(`id` AUTOINCREMENT),
-    UNIQUE(`id_number`)
+    `gender` INTEGER NOT NULL,
+    `fide_title` INTEGER,
+    `standard_rating` INTEGER NOT NULL,
+    `rapid_rating` INTEGER NOT NULL,
+    `blitz_rating` INTEGER NOT NULL,
+    `year_of_birth` INTEGER NOT NULL,
+    PRIMARY KEY(`id` AUTOINCREMENT)
 );

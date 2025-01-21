@@ -255,7 +255,8 @@ msgstr "Fel: [{ex}]."
 msgid "Checking Papi-web version..."
 msgstr "Kontrollerar papi- webbversion..."
 
-#: src/common/engine.py src/database/sqlite/fide_database.py
+#: src/common/engine.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y Ordförande"
@@ -1207,6 +1208,16 @@ msgid "No title"
 msgstr "Ingen titel"
 
 #: src/data/util.py
+#, ai_translation, fuzzy
+msgid "Woman Candidate Master"
+msgstr "Kvinnlig mästare"
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "Candidate Master"
+msgstr "Fide Master Ordförande"
+
+#: src/data/util.py
 #, ai_translation
 msgid "Woman Fide Master"
 msgstr "Kvinnlig mästare"
@@ -1235,6 +1246,16 @@ msgstr "Kvinna stormästare"
 #, ai_translation
 msgid "Grand Master"
 msgstr "Stormästare"
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
+msgstr "WFM"
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "CM *** SHORT NAME FOR Candidate Master"
+msgstr "FM Ordförande"
 
 #: src/data/util.py
 #, ai_translation
@@ -1300,6 +1321,71 @@ msgstr "Resultatinmatning"
 msgid "Parings by player"
 msgstr "Parningar per spelare"
 
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
+
+# Error: tokens differ between [The FIDE database [{file}] is obsolete
+# ([{days}] days], do you want to update it (Y/n)? ] and [FIDE-databasen
+# [{file}] är mer än en dag gammal, vill du uppdatera den (Y/n)?]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
+
+# Error: tokens differ between [Downloading FIDE database...] and [Nedladdning
+# misslyckades med koden [{code}].]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "Downloading the FFE database..."
+msgstr "Laddar ner FIDE- databas..."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "URL [{url}] svarade kod [{code}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}]: {ex}."
+msgstr "Läste inte [{url}]: [{ex}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "No data received from [{url}]."
+msgstr "Inga uppgifter inkom från [{url}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Could not unzip data."
+msgstr "Kunde inte packa upp data."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Storing data..."
+msgstr "Lagra data..."
+
+# Error: tokens differ between [Error reading the following row (player
+# ignored): [{row}].] and [Fel vid rad [{line_no}] (spelare ignorerad):
+# [{line}]]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "Error reading the following row (player ignored): [{row}]."
+msgstr "Fel vid läsning av följande rad (spelare ignorerad): [{row}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Error while creating the database: {ex}."
+msgstr "Byte av databas misslyckades: {ex}."
+
+# Error: tokens differ between [{number} players written.] and [screens of
+# {number} spelare från #{first} till slutet]
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "{number} players written."
+msgstr "{number} Skrivna spelare."
+
 #: src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -1317,50 +1403,16 @@ msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdat
 # misslyckades med koden [{code}].]
 #: src/database/sqlite/fide_database.py
 #, ai_translation, fuzzy
-msgid "Downloading FIDE database..."
+msgid "Downloading the FIDE database..."
 msgstr "Laddar ner FIDE- databas..."
 
+# Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
+# ignored: [{line}]).] and [Fel vid rad [{line_no}] (spelare ignorerad):
+# [{line}]]
 #: src/database/sqlite/fide_database.py
 #, ai_translation, fuzzy
-msgid "Could not download [{url}], error code [{code}]."
-msgstr "URL [{url}] svarade kod [{code}]."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Could not download [{url}]: {ex}."
-msgstr "Läste inte [{url}]: [{ex}]."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "No data received from [{url}]."
-msgstr "Inga uppgifter inkom från [{url}]."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Could not unzip data."
-msgstr "Kunde inte packa upp data."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Storing data..."
-msgstr "Lagra data..."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Error at line [{line_no}] (player ignored): [{line}]."
-msgstr "Fel vid rad [{line_no}] (spelare ignorerad): [{line}]"
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Error while creating the database: {ex}."
-msgstr "Byte av databas misslyckades: {ex}."
-
-# Error: tokens differ between [{number} players written.] and [screens of
-# {number} spelare från #{first} till slutet]
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "{number} players written."
-msgstr "{number} Skrivna spelare."
+msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
+msgstr "Fel på rad [{line_no}]: [{ex}] (spelare ignorerade: [{line}])."
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1621,6 +1673,11 @@ msgstr "LAN/WAN URL: {lan_url}"
 #: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
 #, ai_translation
 msgid "Error while updating the FIDE database."
+msgstr "Fel vid uppdatering av FIDE- databasen."
+
+#: src/web/server_engine.py
+#, ai_translation, fuzzy
+msgid "Error while updating the FFE database."
 msgstr "Fel vid uppdatering av FIDE- databasen."
 
 #: src/web/server_engine.py

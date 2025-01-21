@@ -524,6 +524,16 @@ class PlayerGender(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    @classmethod
+    def from_fide_value(cls, value: str) -> Self:
+        match value:
+            case 'F' | 'f':
+                return cls.FEMALE
+            case 'M' | 'm':
+                return cls.MALE
+            case _:
+                raise ValueError(f'Unknown value: {value}')
+
     @property
     def name(self) -> str:
         match self:
@@ -831,12 +841,14 @@ class PlayerTitle(IntEnum):
     Also includes the "no title" case, but does not include CM nor WCM.
     This is for Papi-compatibility reasons."""
     NONE = 0
-    WOMAN_FIDE_MASTER = 1
-    FIDE_MASTER = 2
-    WOMAN_INTERNATIONAL_MASTER = 3
-    INTERNATIONAL_MASTER = 4
-    WOMAN_GRANDMASTER = 5
-    GRANDMASTER = 6
+    WOMAN_CANDIDATE_MASTER = 1
+    CANDIDATE_MASTER = 2
+    WOMAN_FIDE_MASTER = 3
+    FIDE_MASTER = 4
+    WOMAN_INTERNATIONAL_MASTER = 5
+    INTERNATIONAL_MASTER = 6
+    WOMAN_GRANDMASTER = 7
+    GRANDMASTER = 8
 
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
@@ -861,7 +873,7 @@ class PlayerTitle(IntEnum):
     @property
     def to_papi_value(self) -> str:
         match self:
-            case PlayerTitle.NONE:
+            case PlayerTitle.NONE | PlayerTitle.WOMAN_CANDIDATE_MASTER | PlayerTitle.CANDIDATE_MASTER:
                 return ''
             case PlayerTitle.WOMAN_FIDE_MASTER:
                 return 'ff'
@@ -878,11 +890,39 @@ class PlayerTitle(IntEnum):
             case _:
                 raise ValueError(f'Unknown title: {self}')
 
+    @classmethod
+    def from_fide_value(cls, value: str) -> Self:
+        match value.strip():
+            case '':
+                return PlayerTitle.NONE
+            case 'WCM':
+                return PlayerTitle.WOMAN_CANDIDATE_MASTER
+            case 'CM':
+                return PlayerTitle.CANDIDATE_MASTER
+            case 'WFM':
+                return PlayerTitle.WOMAN_FIDE_MASTER
+            case 'FM':
+                return PlayerTitle.FIDE_MASTER
+            case 'WIM':
+                return PlayerTitle.WOMAN_INTERNATIONAL_MASTER
+            case 'IM':
+                return PlayerTitle.INTERNATIONAL_MASTER
+            case 'WGM':
+                return PlayerTitle.WOMAN_GRANDMASTER
+            case 'GM':
+                return PlayerTitle.GRANDMASTER
+            case _:
+                raise ValueError(f"Unknown title value: {value}")
+
     @property
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
                 return _('No title')
+            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
+                return _('Woman Candidate Master')
+            case PlayerTitle.CANDIDATE_MASTER:
+                return _('Candidate Master')
             case PlayerTitle.WOMAN_FIDE_MASTER:
                 return _('Woman Fide Master')
             case PlayerTitle.FIDE_MASTER:
@@ -903,6 +943,10 @@ class PlayerTitle(IntEnum):
         match self:
             case PlayerTitle.NONE:
                 return ''
+            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
+                return _('WCM *** SHORT NAME FOR Woman Candidate Master')
+            case PlayerTitle.CANDIDATE_MASTER:
+                return _('CM *** SHORT NAME FOR Candidate Master')
             case PlayerTitle.WOMAN_FIDE_MASTER:
                 return _('WFM *** SHORT NAME FOR Woman Fide Master')
             case PlayerTitle.FIDE_MASTER:

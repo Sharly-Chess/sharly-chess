@@ -13,10 +13,10 @@
 
 | locale=`el` | Ελληνικά <img src="../src/web/static/images/locales/el.svg" style="height: 1em;"/> |
 |--|:--:|
-|Κενά υποχρεωτικά μηνύματα|0/62|
-|Κενά μηνύματα|4/1101|
-|Message flagged [ai_translation]|1097/1101|
-|Message flagged [fuzzy]|7/1101|
+|Κενά υποχρεωτικά μηνύματα|0/64|
+|Κενά μηνύματα|4/1110|
+|Message flagged [ai_translation]|1106/1110|
+|Message flagged [fuzzy]|16/1110|
 
 ## Κενά υποχρεωτικά μηνύματα (-)
 
@@ -29,9 +29,9 @@
 |The maximum age of the results, in minutes (by default %(minutes)d minutes).|src/web/templates/admin_screen_modal.html:None|
 |#%(board_number)d|src/web/templates/user_boards_screen_set.html:None|
 
-## Σημειωθέντα μηνύματα (1104)
+## Σημειωθέντα μηνύματα (1122)
 
-### Μήνυμα που σημαδεύτηκε [ai_translation] (1097)
+### Μήνυμα που σημαδεύτηκε [ai_translation] (1106)
 
 |ID μηνύματος|Μετάφραση|Τοποθεσίες|
 |--|--|--|
@@ -85,7 +85,7 @@
 |Parsing error: [{ex}].|Σφάλμα ανάλυσης: [{ex}].|src/common/config_reader.py:None|
 |Error: [{ex}].|Σφάλμα: [{ex}].|src/common/config_reader.py:None|
 |Checking Papi-web version...|Ελέγχω την έκδοση Papi-web...|src/common/engine.py:None|
-|Y \*\*\* THE LETTER TO ANSWER YES|Υ|src/common/engine.py:None<br>src/database/sqlite/fide_database.py:None|
+|Y \*\*\* THE LETTER TO ANSWER YES|Υ|src/common/engine.py:None<br>src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
 |N \*\*\* THE LETTER TO ANSWER NO|N|src/common/engine.py:None|
 |Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? |Θέλετε να αναβαθμιστείτε από [{old_version}] σε [{new_version}] [{y_lc}/{n_uc}};|src/common/engine.py:None|
 |The installation of version [{version}] failed.|Η εγκατάσταση της έκδοσης [{version}] απέτυχε.|src/common/engine.py:None|
@@ -273,12 +273,16 @@
 |N \*\*\* SHORT NAME FOR RATING TYPE NATIONAL|N|src/data/util.py:None|
 |F \*\*\* SHORT NAME FOR RATING TYPE FIDE|F|src/data/util.py:None|
 |No title|Χωρίς τίτλο|src/data/util.py:None|
+|Woman Candidate Master|Γυναικείος Δάσκαλος Πίστης|src/data/util.py:None|
+|Candidate Master|Δάσκαλος Fide|src/data/util.py:None|
 |Woman Fide Master|Γυναικείος Δάσκαλος Πίστης|src/data/util.py:None|
 |Fide Master|Δάσκαλος Fide|src/data/util.py:None|
 |Woman International Master|Woman International Master|src/data/util.py:None|
 |International Master|Διεθνής Δάσκαλος|src/data/util.py:None|
 |Woman Grand Master|Γυναικείος Μεγάλος Δάσκαλος|src/data/util.py:None|
 |Grand Master|Μεγαλειότατε.|src/data/util.py:None|
+|WCM \*\*\* SHORT NAME FOR Woman Candidate Master|WFM|src/data/util.py:None|
+|CM \*\*\* SHORT NAME FOR Candidate Master|FMunit synonyms for matching user input|src/data/util.py:None|
 |WFM \*\*\* SHORT NAME FOR Woman Fide Master|WFM|src/data/util.py:None|
 |FM \*\*\* SHORT NAME FOR Fide Master|FMunit synonyms for matching user input|src/data/util.py:None|
 |WIM \*\*\* SHORT NAME FOR Woman International Master|ΓΟΥΙΜConstellation name (optional, probably does not need a translation)|src/data/util.py:None|
@@ -290,17 +294,21 @@
 |Pairings by board|Ζευγαρώματα με βάση το πλοίο|src/data/util.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Results entry|Είσοδος αποτελεσμάτων|src/data/util.py:None<br>src/web/controllers/admin/family_admin_controller.py:None<br>src/web/controllers/admin/index_admin_controller.py:None<br>src/web/controllers/admin/screen_admin_controller.py:None<br>src/web/controllers/admin/tournament_admin_controller.py:None<br>src/web/templates/admin_event_modal.html:None<br>src/web/templates/admin_families.html:None<br>src/web/templates/admin_screens.html:None|
 |Parings by player|Αποστολές από τον παίκτη|src/data/util.py:None|
+|The FFE database [{file}] was not found, do you want to create it (Y/n)? |Η βάση δεδομένων FIDE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);|src/database/sqlite/ffe_database.py:None|
+|The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);|src/database/sqlite/ffe_database.py:None|
+|Downloading the FFE database...|Λήψη βάσης δεδομένων FIDE...|src/database/sqlite/ffe_database.py:None|
+|Could not download [{url}], error code [{code}].|Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Απέτυχε να διαβάσει [{url}]: [{ex}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|No data received from [{url}].|Δεν ελήφθησαν στοιχεία από [{url}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Could not unzip data.|Αδύνατη η αποσύνδεση δεδομένων.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Storing data...|Αποθήκευση δεδομένων...|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Error reading the following row (player ignored): [{row}].|Σφάλμα ανάγνωσης της ακόλουθης σειράς (αγνοείται ο παίκτης): [{row}].|src/database/sqlite/ffe_database.py:None|
+|Error while creating the database: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} παίκτες που γράφτηκαν.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
 |The FIDE database [{file}] was not found, do you want to create it (Y/n)? |Η βάση δεδομένων FIDE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);|src/database/sqlite/fide_database.py:None|
 |The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);|src/database/sqlite/fide_database.py:None|
-|Downloading FIDE database...|Λήψη βάσης δεδομένων FIDE...|src/database/sqlite/fide_database.py:None|
-|Could not download [{url}], error code [{code}].|Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}].|src/database/sqlite/fide_database.py:None|
-|Could not download [{url}]: {ex}.|Απέτυχε να διαβάσει [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
-|No data received from [{url}].|Δεν ελήφθησαν στοιχεία από [{url}].|src/database/sqlite/fide_database.py:None|
-|Could not unzip data.|Αδύνατη η αποσύνδεση δεδομένων.|src/database/sqlite/fide_database.py:None|
-|Storing data...|Αποθήκευση δεδομένων...|src/database/sqlite/fide_database.py:None|
-|Error at line [{line_no}] (player ignored): [{line}].|Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο παίκτης): [{line}]|src/database/sqlite/fide_database.py:None|
-|Error while creating the database: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/database/sqlite/fide_database.py:None|
-|{number} players written.|{number} παίκτες που γράφτηκαν.|src/database/sqlite/fide_database.py:None|
+|Downloading the FIDE database...|Λήψη βάσης δεδομένων FIDE...|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Σφάλμα στη γραμμή [{line_no}]: [{ex}] (ο παίκτης αγνόησε: [{line}]).|src/database/sqlite/fide_database.py:None|
 |FFE ID not defined for tournament [{tournament_uniq_id}].|FFE ID δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not defined for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν ορίζεται για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
 |Papi file not found [{file}] for tournament [{tournament_uniq_id}].|Το αρχείο Papi δεν βρέθηκε [{file}] για το τουρνουά [{tournament_uniq_id}].|src/ffe/action_selector.py:None|
@@ -351,6 +359,7 @@
 |Local URL: {local_url}|Τοπική URL: {local_url}|src/web/server_engine.py:None|
 |LAN/WAN URL: {lan_url}|LAN/WAN URL: {lan_url}|src/web/server_engine.py:None|
 |Error while updating the FIDE database.|Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE.|src/web/server_engine.py:None<br>utils/federation_flags/download_federation_flags.py:None|
+|Error while updating the FFE database.|Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE.|src/web/server_engine.py:None|
 |Port [{port}] already in use, can not start Papi-web server.|Η θύρα [{port}] είναι ήδη σε χρήση, δεν μπορεί να ξεκινήσει το διακομιστή Papi-web.|src/web/server_engine.py:None|
 |USE AT YOUR OWN RISKS|ΧΡΗΣΙΜΟΠΟΙΕΙΤΕ ΜΕ δικούς ΣΑΣ ΚΙΝΔΥΝΟΥΣ|src/web/controllers/index_controller.py:None|
 |Please enter the ID of ChessEvent connection.|Παρακαλώ εισάγετε την ταυτότητα της σύνδεσης ChessEvent.|src/web/controllers/admin/chessevent_admin_controller.py:None|
@@ -1133,15 +1142,24 @@
 |Flagged messages|Σημειωθέντα μηνύματα|utils/i18n/i18n_update.py:None|
 |Translation|Μετάφραση|utils/i18n/i18n_update.py:None|
 
-### Μήνυμα που σημαδεύτηκε [fuzzy] (7)
+### Μήνυμα που σημαδεύτηκε [fuzzy] (16)
 
 |ID μηνύματος|Μετάφραση|Τοποθεσίες|
 |--|--|--|
+|Woman Candidate Master|Γυναικείος Δάσκαλος Πίστης|src/data/util.py:None|
+|Candidate Master|Δάσκαλος Fide|src/data/util.py:None|
+|WCM \*\*\* SHORT NAME FOR Woman Candidate Master|WFM|src/data/util.py:None|
+|CM \*\*\* SHORT NAME FOR Candidate Master|FMunit synonyms for matching user input|src/data/util.py:None|
+|The FFE database [{file}] was not found, do you want to create it (Y/n)? |Η βάση δεδομένων FIDE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);|src/database/sqlite/ffe_database.py:None|
+|The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);|src/database/sqlite/ffe_database.py:None|
+|Downloading the FFE database...|Λήψη βάσης δεδομένων FIDE...|src/database/sqlite/ffe_database.py:None|
+|Could not download [{url}], error code [{code}].|Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Could not download [{url}]: {ex}.|Απέτυχε να διαβάσει [{url}]: [{ex}].|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|Error reading the following row (player ignored): [{row}].|Σφάλμα ανάγνωσης της ακόλουθης σειράς (αγνοείται ο παίκτης): [{row}].|src/database/sqlite/ffe_database.py:None|
+|Error while creating the database: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
+|{number} players written.|{number} παίκτες που γράφτηκαν.|src/database/sqlite/ffe_database.py:None<br>src/database/sqlite/fide_database.py:None|
 |The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? |Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);|src/database/sqlite/fide_database.py:None|
-|Downloading FIDE database...|Λήψη βάσης δεδομένων FIDE...|src/database/sqlite/fide_database.py:None|
-|Could not download [{url}], error code [{code}].|Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}].|src/database/sqlite/fide_database.py:None|
-|Could not download [{url}]: {ex}.|Απέτυχε να διαβάσει [{url}]: [{ex}].|src/database/sqlite/fide_database.py:None|
-|Error at line [{line_no}] (player ignored): [{line}].|Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο παίκτης): [{line}]|src/database/sqlite/fide_database.py:None|
-|Error while creating the database: {ex}.|Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}.|src/database/sqlite/fide_database.py:None|
-|{number} players written.|{number} παίκτες που γράφτηκαν.|src/database/sqlite/fide_database.py:None|
+|Downloading the FIDE database...|Λήψη βάσης δεδομένων FIDE...|src/database/sqlite/fide_database.py:None|
+|Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).|Σφάλμα στη γραμμή [{line_no}]: [{ex}] (ο παίκτης αγνόησε: [{line}]).|src/database/sqlite/fide_database.py:None|
+|Error while updating the FFE database.|Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE.|src/web/server_engine.py:None|
 
