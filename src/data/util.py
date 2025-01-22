@@ -985,6 +985,10 @@ class PlayerTitle(IntEnum):
         match self:
             case PlayerTitle.NONE:
                 return ''
+            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
+                return 'cf'
+            case PlayerTitle.CANDIDATE_MASTER:
+                return 'c'
             case PlayerTitle.WOMAN_FIDE_MASTER:
                 return 'ff'
             case PlayerTitle.FIDE_MASTER:
