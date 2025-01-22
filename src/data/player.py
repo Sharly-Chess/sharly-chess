@@ -1,10 +1,11 @@
 import base64
 from contextlib import suppress
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Self, Callable
+from trf import Player as TrfPlayer
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -236,13 +237,19 @@ class Player:
         # NOTE(Amaras) this does not rely on the fact that insertion order
         # is preserved in 3.6+ dict, because I can't be sure insertion order
         # is the correct (increasing) round order
-        self.points = sum(
-                pairing.result.point_value
-                for round_index, pairing in self.pairings.items()
-                # NOTE(Amaras) if you were to include the current round
-                # in the computation, boards regularly change their ordering
-                # during the current round as results are added
-                if round_index < max_round)
+        # NOTE(Amaras) if you were to include the current round
+        # in the computation, boards regularly change their ordering
+        # during the current round as results are added
+        self.points = self.points_before(max_round)
+
+    def points_before(self, max_round: int) -> float:
+        return sum(
+            pairing.result.point_value
+            for round_index, pairing in self.pairings.items()
+            if round_index < max_round)
+
+    def points_total(self) -> float:
+        return sum(pairing.result.point_value for pairing in self.pairings.values())
 
     @staticmethod
     def _points_str(points: float | None) -> str:
@@ -257,6 +264,20 @@ class Player:
         Otherwise, leave `self.points` as None."""
         with suppress(TypeError):
             self.points += points
+
+    def to_trf(self, player_id_to_trf_id: Callable[[int], int]) -> TrfPlayer:
+        return TrfPlayer(
+            startrank=player_id_to_trf_id(self.id),
+            name=f'{self.last_name}, {self.first_name}',
+            sex=self.gender.to_trf,
+            title=self.title.to_trf,
+            rating=self.rating,
+            fed=self.federation,
+            id=self.fide_id,
+            birthdate=self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else '',
+            points=self.points_total(),
+            games=[result.to_trf(round_nb, player_id_to_trf_id) for round_nb, result in self.pairings.items()]
+        )
 
     @property
     def points_str(self) -> str:
@@ -337,6 +358,11 @@ class Player:
         self.time_control_initial_time = initial_time
         self.time_control_increment = increment
         self.time_control_modified = modified
+
+    def starting_rank_comparison(self, other: "Player") -> bool:
+        return (
+            (self.rating, self.title, other.last_name, other.first_name) <=
+            (other.rating, other.title, self.last_name, self.first_name))
 
     def __le__(self, other):
         # p1 <= p2 calls p1.__le__(p2)

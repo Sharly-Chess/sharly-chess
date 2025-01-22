@@ -4911,6 +4911,19 @@ msgid "Edit the properties of the tournament."
 msgstr "Bewerk de eigenschappen van het toernooi."
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation, fuzzy
+msgid "Export"
+msgstr "Poort"
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Export to TRF16 (rating)"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Export to TRF(bx) (pairing)"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
 #, ai_translation
 msgid "Clone the tournament."
 msgstr "Kloon het toernooi."
