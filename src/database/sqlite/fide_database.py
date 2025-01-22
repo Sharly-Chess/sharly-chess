@@ -124,7 +124,14 @@ class FideDatabase(SQLiteDatabase):
                             for field_name, (field_size, field_type) in fields.items():
                                 real_field_size: int = field_size + (gap if field_name == 'other_title' else 0)
                                 if field_type:
-                                    data[field_name] = field_type(line[:real_field_size].strip())
+                                    title: str = 'WH'
+                                    if field_name in ['fide_title'] and title in line[:real_field_size]:
+                                        data[field_name] = ''
+                                        print_interactive_warning(
+                                            _('Added player [{fide_id} {name}] by ignoring title [{title}].').format(
+                                                fide_id=data["fide_id"], name=data["name"].strip(), title=title))
+                                    else:
+                                        data[field_name] = field_type(line[:real_field_size].strip())
                                 line = line[real_field_size:]
                             if ',' in data['name']:
                                 name_parts: list[str] = data['name'].split(',', maxsplit=2)
@@ -134,10 +141,11 @@ class FideDatabase(SQLiteDatabase):
                             else:
                                 data['last_name'] = data['name']
                                 data['first_name'] = None
-                            del data['name']
                             if gap:
                                 print_interactive_warning(
-                                    f'Fixed player [{orig_line.strip()}] with a gap of [{gap}] chars on field other_title.')
+                                    _('Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}].').format(
+                                        fide_id=data["fide_id"], name=data["name"].strip(), gap=gap, field='other_title'))
+                            del data['name']
                             query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?", ] * len(data))})'
                             self._execute(query, tuple(data.values()))
                             players_number += 1
