@@ -13,7 +13,7 @@ EXEMPT_ID = 0
 
 def generate_pairings(tournament: Tournament):
     """Generate the pairings of a tournament's next round"""
-    if tournament.started and (tournament.finished or tournament.playing):
+    if tournament.finished or tournament.playing:
         raise ValueError(
             'Impossible to generate pairings '
             'if tournament is finished '
