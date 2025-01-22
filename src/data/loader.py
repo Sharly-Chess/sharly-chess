@@ -13,7 +13,7 @@ from common import format_timestamp_date_time, unicode_normalize
 from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
-from database.sqlite import EventDatabase
+from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
 from common.logger import get_logger
 

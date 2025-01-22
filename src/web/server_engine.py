@@ -13,6 +13,8 @@ from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import get_logger, print_interactive_info, print_interactive_error
 from common.papi_web_config import PapiWebConfig
+from database.sqlite.ffe_database import FfeDatabase
+from database.sqlite.fide_database import FideDatabase
 from web.settings import route_handlers, template_config, middlewares
 
 logger: Logger = get_logger()
@@ -44,6 +46,10 @@ class ServerEngine(Engine):
         print_interactive_info(_('Local URL: {local_url}').format(local_url=papi_web_config.local_url))
         if papi_web_config.lan_url:
             print_interactive_info(_('LAN/WAN URL: {lan_url}').format(lan_url=papi_web_config.lan_url))
+        if not FideDatabase().check():
+            print_interactive_error(_('Error while updating the FIDE database.'))
+        if not FfeDatabase().check():
+            print_interactive_error(_('Error while updating the FFE database.'))
         if self.__port_in_use(papi_web_config.web_port):
             print_interactive_error(
                 _('Port [{port}] already in use, can not start Papi-web server.').format(port=papi_web_config.web_port))

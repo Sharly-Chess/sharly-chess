@@ -255,7 +255,8 @@ msgstr "Σφάλμα: [{ex}]."
 msgid "Checking Papi-web version..."
 msgstr "Ελέγχω την έκδοση Papi-web..."
 
-#: src/common/engine.py
+#: src/common/engine.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Υ"
@@ -1018,12 +1019,12 @@ msgstr "Βαθμολογία Blitz"
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #, ai_translation
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Θήλεις"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #, ai_translation
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Άρρενες"
@@ -1034,13 +1035,13 @@ msgstr "Άρρενες"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 #, ai_translation
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 #, ai_translation
 msgid "M *** SHORT NAME FOR GENDER MALE"
@@ -1207,6 +1208,16 @@ msgid "No title"
 msgstr "Χωρίς τίτλο"
 
 #: src/data/util.py
+#, ai_translation, fuzzy
+msgid "Woman Candidate Master"
+msgstr "Γυναικείος Δάσκαλος Πίστης"
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "Candidate Master"
+msgstr "Δάσκαλος Fide"
+
+#: src/data/util.py
 #, ai_translation
 msgid "Woman Fide Master"
 msgstr "Γυναικείος Δάσκαλος Πίστης"
@@ -1235,6 +1246,16 @@ msgstr "Γυναικείος Μεγάλος Δάσκαλος"
 #, ai_translation
 msgid "Grand Master"
 msgstr "Μεγαλειότατε."
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
+msgstr "WFM"
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "CM *** SHORT NAME FOR Candidate Master"
+msgstr "FMunit synonyms for matching user input"
 
 #: src/data/util.py
 #, ai_translation
@@ -1299,6 +1320,101 @@ msgstr "Είσοδος αποτελεσμάτων"
 #, ai_translation
 msgid "Parings by player"
 msgstr "Αποστολές από τον παίκτη"
+
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "Η βάση δεδομένων FIDE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);"
+
+# Error: tokens differ between [The FIDE database [{file}] is obsolete
+# ([{days}] days], do you want to update it (Y/n)? ] and [Η βάση δεδομένων
+# FIDE [{file}] είναι πάνω από μία ημέρα παλιά, θέλετε να την ενημερώσετε
+# (Y/n);]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);"
+
+# Error: tokens differ between [Downloading FIDE database...] and [Η λήψη
+# απέτυχε με τον κωδικό [{code}].]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "Downloading the FFE database..."
+msgstr "Λήψη βάσης δεδομένων FIDE..."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}]: {ex}."
+msgstr "Απέτυχε να διαβάσει [{url}]: [{ex}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "No data received from [{url}]."
+msgstr "Δεν ελήφθησαν στοιχεία από [{url}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Could not unzip data."
+msgstr "Αδύνατη η αποσύνδεση δεδομένων."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Storing data..."
+msgstr "Αποθήκευση δεδομένων..."
+
+# Error: tokens differ between [Error reading the following row (player
+# ignored): [{row}].] and [Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο
+# παίκτης): [{line}]]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "Error reading the following row (player ignored): [{row}]."
+msgstr "Σφάλμα ανάγνωσης της ακόλουθης σειράς (αγνοείται ο παίκτης): [{row}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Error while creating the database: {ex}."
+msgstr "Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}."
+
+# Error: tokens differ between [{number} players written.] and [οθόνες του
+# {number} παίκτες από #{first} έως τέλος]
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "{number} players written."
+msgstr "{number} παίκτες που γράφτηκαν."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "Η βάση δεδομένων FIDE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);"
+
+# Error: tokens differ between [The FIDE database [{file}] is obsolete
+# ([{days}] days], do you want to update it (Y/n)? ] and [Η βάση δεδομένων
+# FIDE [{file}] είναι πάνω από μία ημέρα παλιά, θέλετε να την ενημερώσετε
+# (Y/n);]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);"
+
+# Error: tokens differ between [Downloading FIDE database...] and [Η λήψη
+# απέτυχε με τον κωδικό [{code}].]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Downloading the FIDE database..."
+msgstr "Λήψη βάσης δεδομένων FIDE..."
+
+# Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
+# ignored: [{line}]).] and [Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο
+# παίκτης): [{line}]]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
+msgstr "Σφάλμα στη γραμμή [{line_no}]: [{ex}] (ο παίκτης αγνόησε: [{line}])."
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1555,6 +1671,16 @@ msgstr "Τοπική URL: {local_url}"
 #, ai_translation
 msgid "LAN/WAN URL: {lan_url}"
 msgstr "LAN/WAN URL: {lan_url}"
+
+#: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
+#, ai_translation
+msgid "Error while updating the FIDE database."
+msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE."
+
+#: src/web/server_engine.py
+#, ai_translation, fuzzy
+msgid "Error while updating the FFE database."
+msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -5145,8 +5271,8 @@ msgid "The tournament is not started yet."
 msgstr "Το τουρνουά δεν έχει ξεκινήσει ακόμα."
 
 #: src/web/templates/macros.j2
-#, ai_translation, python-format
-msgid "Round %(round)d is running."
+#, ai_translation, fuzzy, python-format
+msgid "Round #%(round)d is running."
 msgstr "Ο γύρος %(round)d τρέχει."
 
 #: src/web/templates/macros.j2

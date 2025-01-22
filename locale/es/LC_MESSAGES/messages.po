@@ -255,7 +255,8 @@ msgstr "Error: [{ex}]."
 msgid "Checking Papi-web version..."
 msgstr "Comprobando la versión de Papi-web..."
 
-#: src/common/engine.py
+#: src/common/engine.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
@@ -999,12 +1000,12 @@ msgstr "Calificación Blitz"
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "- ¡No! - ¡No!"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #, ai_translation
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Mujeres"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #, ai_translation
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Hombres"
@@ -1015,13 +1016,13 @@ msgstr "Hombres"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "- ¡No! - ¡No!"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 #, ai_translation
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 #, ai_translation
 msgid "M *** SHORT NAME FOR GENDER MALE"
@@ -1188,6 +1189,16 @@ msgid "No title"
 msgstr "Sin título"
 
 #: src/data/util.py
+#, ai_translation, fuzzy
+msgid "Woman Candidate Master"
+msgstr "Mujer Fide Master"
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "Candidate Master"
+msgstr "Fide Master"
+
+#: src/data/util.py
 #, ai_translation
 msgid "Woman Fide Master"
 msgstr "Mujer Fide Master"
@@ -1216,6 +1227,16 @@ msgstr "Mujer Gran Maestra"
 #, ai_translation
 msgid "Grand Master"
 msgstr "Gran Maestro"
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
+msgstr "WFM"
+
+#: src/data/util.py
+#, ai_translation, fuzzy
+msgid "CM *** SHORT NAME FOR Candidate Master"
+msgstr "FM"
 
 #: src/data/util.py
 #, ai_translation
@@ -1280,6 +1301,99 @@ msgstr "Entrada de resultados"
 #, ai_translation
 msgid "Parings by player"
 msgstr "Parings por jugador"
+
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "La base de datos FIDE [{file}] no fue encontrada, ¿quieres crearla (Y/n)?"
+
+# Error: tokens differ between [The FIDE database [{file}] is obsolete
+# ([{days}] days], do you want to update it (Y/n)? ] and [La base de datos
+# FIDE [{file}] tiene más de un día de antigüedad, ¿quieres actualizarla
+# (Y/n)?]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "La base de datos FIDE [{file}] es obsoleta ([{days}] días], ¿quieres actualizarla (Y/n)?"
+
+# Error: tokens differ between [Downloading FIDE database...] and [La descarga
+# falló con el código [{code}].]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "Downloading the FFE database..."
+msgstr "Descargando la base de datos FIDE..."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "URL [{url}] respondió el código [{code}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}]: {ex}."
+msgstr "Fallo al leer [{url}]: [{ex}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "No data received from [{url}]."
+msgstr "No se han recibido datos de [{url}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Could not unzip data."
+msgstr "No se pudieron descomprimir los datos."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Storing data..."
+msgstr "Almacenando datos..."
+
+# Error: tokens differ between [Error reading the following row (player
+# ignored): [{row}].] and [Error en la línea [{line_no}] (jugador ignorado):
+# [{line}]]
+#: src/database/sqlite/ffe_database.py
+#, ai_translation, fuzzy
+msgid "Error reading the following row (player ignored): [{row}]."
+msgstr "Error al leer la siguiente fila (jugador ignorado): [{row}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Error while creating the database: {ex}."
+msgstr "Falló el cambio de nombre de la base de datos: {ex}."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "{number} players written."
+msgstr "pantallas de {number} reproductores"
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "La base de datos FIDE [{file}] no fue encontrada, ¿quieres crearla (Y/n)?"
+
+# Error: tokens differ between [The FIDE database [{file}] is obsolete
+# ([{days}] days], do you want to update it (Y/n)? ] and [La base de datos
+# FIDE [{file}] tiene más de un día de antigüedad, ¿quieres actualizarla
+# (Y/n)?]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "La base de datos FIDE [{file}] es obsoleta ([{days}] días], ¿quieres actualizarla (Y/n)?"
+
+# Error: tokens differ between [Downloading FIDE database...] and [La descarga
+# falló con el código [{code}].]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Downloading the FIDE database..."
+msgstr "Descargando la base de datos FIDE..."
+
+# Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
+# ignored: [{line}]).] and [Error en la línea [{line_no}] (jugador ignorado):
+# [{line}]]
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
+msgstr "Error en la línea [{line_no}]: [{ex}] (jugador ignorado: [{line}])."
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1536,6 +1650,16 @@ msgstr "URL local: {local_url}"
 #, ai_translation
 msgid "LAN/WAN URL: {lan_url}"
 msgstr "URL LAN/WAN: {lan_url}"
+
+#: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
+#, ai_translation
+msgid "Error while updating the FIDE database."
+msgstr "Error al actualizar la base de datos FIDE."
+
+#: src/web/server_engine.py
+#, ai_translation, fuzzy
+msgid "Error while updating the FFE database."
+msgstr "Error al actualizar la base de datos FIDE."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -5126,8 +5250,8 @@ msgid "The tournament is not started yet."
 msgstr "El torneo aún no ha comenzado."
 
 #: src/web/templates/macros.j2
-#, ai_translation, python-format
-msgid "Round %(round)d is running."
+#, ai_translation, fuzzy, python-format
+msgid "Round #%(round)d is running."
 msgstr "Round %(round)d se está ejecutando."
 
 #: src/web/templates/macros.j2

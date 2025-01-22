@@ -13,7 +13,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.chessevent import ChessEvent
 from data.loader import EventLoader
-from database.sqlite import EventDatabase
+from database.sqlite.event_database import EventDatabase
 from database.store import StoredChessEvent
 from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
 from web.controllers.index_controller import WebContext

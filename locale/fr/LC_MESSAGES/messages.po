@@ -205,7 +205,8 @@ msgstr "Erreur : [{ex}]."
 msgid "Checking Papi-web version..."
 msgstr "Vérification de la version de Papi-web..."
 
-#: src/common/engine.py
+#: src/common/engine.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "O"
 
@@ -821,11 +822,11 @@ msgstr "Classement blitz"
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Femme"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
 
@@ -834,12 +835,12 @@ msgstr "Homme"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
-#: src/data/util.py src/fide/fide_player.py
+#: src/data/util.py
 #: src/web/templates/admin_players/admin_players_filter_genders.html
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
@@ -973,6 +974,14 @@ msgid "No title"
 msgstr "Aucun titre"
 
 #: src/data/util.py
+msgid "Woman Candidate Master"
+msgstr "Candidat Maître Femme"
+
+#: src/data/util.py
+msgid "Candidate Master"
+msgstr "Candidat Maître"
+
+#: src/data/util.py
 msgid "Woman Fide Master"
 msgstr "Maître Fide Femme"
 
@@ -995,6 +1004,14 @@ msgstr "Grand Maître Internationale Femme"
 #: src/data/util.py
 msgid "Grand Master"
 msgstr "Grand Maître International"
+
+#: src/data/util.py
+msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
+msgstr "WCM"
+
+#: src/data/util.py
+msgid "CM *** SHORT NAME FOR Candidate Master"
+msgstr "CM"
 
 #: src/data/util.py
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
@@ -1048,6 +1065,66 @@ msgstr "Saisie des résultats"
 #: src/data/util.py
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
+
+#: src/database/sqlite/ffe_database.py
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "La base de données FFE [{file}] est introuvable, voulez-vous la créer (O/n) ? "
+
+#: src/database/sqlite/ffe_database.py
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "La base de données FFE [{file}] est osbolète ({days} jours), voulez-vous la mettre à jour (O/n) ? "
+
+#: src/database/sqlite/ffe_database.py
+msgid "Downloading the FFE database..."
+msgstr "Téléchargement de la base de données de la FFE..."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "Impossible de télécharger [{url}], code d'erreur [{code}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Could not download [{url}]: {ex}."
+msgstr "Impossible de lire [{url}] : {ex}."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "No data received from [{url}]."
+msgstr "Aucune donnée reçue de [{url}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Could not unzip data."
+msgstr "Impossible de décompresser les données."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Storing data..."
+msgstr "Enregistrement des données..."
+
+#: src/database/sqlite/ffe_database.py
+msgid "Error reading the following row (player ignored): [{row}]."
+msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Error while creating the database: {ex}."
+msgstr "Erreur à la création de la base de données : {ex}."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "{number} players written."
+msgstr "{number} joueur·euses enregistré·es."
+
+#: src/database/sqlite/fide_database.py
+msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "La base de données FIDE [{file}] est introuvable, voulez-vous la créer (O/n) ? "
+
+#: src/database/sqlite/fide_database.py
+msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "La base de données FIDE [{file}] est osbolète ({days} jours), voulez-vous la mettre à jour (O/n) ? "
+
+#: src/database/sqlite/fide_database.py
+msgid "Downloading the FIDE database..."
+msgstr "Téléchargement des la base de données de la FIDE..."
+
+#: src/database/sqlite/fide_database.py
+msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
+msgstr "Erreur à la ligne [{line_no}] : [{ex}] (joueur·euse ignoré·e : [{line}])."
 
 #: src/ffe/action_selector.py
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
@@ -1255,6 +1332,14 @@ msgstr "URL locale : {local_url}"
 #: src/web/server_engine.py
 msgid "LAN/WAN URL: {lan_url}"
 msgstr "URL LAN/WAN : {lan_url}"
+
+#: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
+msgid "Error while updating the FIDE database."
+msgstr "Erreur pendant la mise à jour de la base de données FIDE."
+
+#: src/web/server_engine.py
+msgid "Error while updating the FFE database."
+msgstr "Erreur pendant la mise à jour de la base de données FFE."
 
 #: src/web/server_engine.py
 msgid "Port [{port}] already in use, can not start Papi-web server."
@@ -4260,8 +4345,8 @@ msgstr "Le tournoi n'est pas encore commencé."
 
 #: src/web/templates/macros.j2
 #, python-format
-msgid "Round %(round)d is running."
-msgstr "La ronde %(round)d est terminée."
+msgid "Round #%(round)d is running."
+msgstr "La ronde %(round)d est en cours."
 
 #: src/web/templates/macros.j2
 #, python-format
