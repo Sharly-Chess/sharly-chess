@@ -180,7 +180,7 @@ class StoredEvent:
     @property
     def federation(self) -> str:
         """Returns the federation of the event (used by TRF exports)."""
-        # TODO Store the federation od the event in the database from version 2.4.21, for the moment assume that all the events are organized in FRA ;-)
+        # TODO Store the federation of the event in the database from version 2.4.21, for the moment assume that all the events are organized in FRA ;-)
         return 'FRA'
 
 
