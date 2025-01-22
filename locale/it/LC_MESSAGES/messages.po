@@ -4787,6 +4787,19 @@ msgid "Edit the properties of the tournament."
 msgstr "Modifica le proprietà del torneo."
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation, fuzzy
+msgid "Export"
+msgstr "Porta"
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Export to TRF16 (rating)"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Export to TRF(bx) (pairing)"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
 #, ai_translation
 msgid "Clone the tournament."
 msgstr "Clonate il torneo."

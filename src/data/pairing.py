@@ -1,4 +1,7 @@
 from logging import Logger
+from typing import Callable
+
+from trf.Player import Game as TrfGame
 from common.logger import get_logger
 from dataclasses import dataclass
 
@@ -61,6 +64,13 @@ class Pairing:
     @property
     def forfeit_gain(self) -> bool:
         return self.result == Result.FORFEIT_GAIN
+
+    def to_trf(self, round_number: int, player_id_to_trf_id: Callable[[int], int]) -> TrfGame:
+        return TrfGame(
+            startrank=player_id_to_trf_id(self.opponent_id) if self.opponent_id else '',
+            color=self.color.to_trf if self.color and not self.result.is_bye else '',
+            result=self.result.to_trf,
+            round=round_number)
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result})'

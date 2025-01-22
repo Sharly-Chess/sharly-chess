@@ -25,6 +25,10 @@ class TournamentInfo(NamedTuple):
     rating: TournamentRating
     rating_limit1: int
     rating_limit2: int
+    location: str
+    start_date: str
+    end_date: str
+    arbiter: str
 
 
 class PapiDatabase(AccessDatabase):
@@ -51,7 +55,13 @@ class PapiDatabase(AccessDatabase):
         rating: TournamentRating = TournamentRating.from_papi_value(self._read_var('ClassElo'))
         rating_limit1: int = int(self._read_var('EloBase1'))
         rating_limit2: int = int(self._read_var('EloBase2'))
-        return TournamentInfo(rounds, pairing, rating, rating_limit1, rating_limit2)
+        location: str = self._read_var('Lieu')
+        start_date: str = self._read_var('DateDebut')
+        end_date: str = self._read_var('DateFin')
+        arbiter: str = self._read_var('Arbitre')
+        return TournamentInfo(
+            rounds, pairing, rating, rating_limit1, rating_limit2,
+            location, start_date, end_date, arbiter)
 
     def read_player_dict(
             self, player_papi_id: int
@@ -174,7 +184,7 @@ class PapiDatabase(AccessDatabase):
                 pairings[round_] = Pairing(
                     color,
                     Player.player_papi_web_id_from_papi_id(tournament_id, opponent_papi_id)
-                    if opponent_papi_id else None,
+                    if opponent_papi_id and opponent_papi_id != 1 else None,
                     Result.from_papi_value(
                         row[f'{round_str}Res'],
                         opponent_papi_id is None,

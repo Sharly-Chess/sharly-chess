@@ -4,12 +4,14 @@ from functools import cached_property
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
+from trf import Tournament as TrfTournament
 from typing import TYPE_CHECKING
 
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.pairing import Pairing
+from data.util import TrfType
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -62,6 +64,10 @@ class Tournament:
         self._playing: bool = False
         self._rating_limit1: int = 0
         self._rating_limit2: int = 0
+        self._location: str = ''
+        self._start_date: str = ''
+        self._end_date: str = ''
+        self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
         self._papi_read = False
@@ -260,6 +266,26 @@ class Tournament:
         return self._rating_limit2
 
     @property
+    def location(self) -> str:
+        self.read_papi()
+        return self._location
+
+    @property
+    def start_date(self) -> str:
+        self.read_papi()
+        return self._start_date
+
+    @property
+    def end_date(self) -> str:
+        self.read_papi()
+        return self._end_date
+
+    @property
+    def arbiter(self) -> str:
+        self.read_papi()
+        return self._arbiter
+
+    @property
     def players_by_id(self) -> dict[int, Player]:
         self.read_papi()
         return self._players_by_id
@@ -277,6 +303,17 @@ class Tournament:
     @cached_property
     def players_by_fide_id(self) -> dict[int, Player]:
         return {player.fide_id: player for player in self.players_by_id.values() if player.fide_id}
+
+    @cached_property
+    def players_by_trf_id(self) -> dict[int, Player]:
+        players = [player for id_, player in self.players_by_id.items() if id_ != 1]
+        le_method = Player.__le__
+        try:
+            Player.__le__ = lambda self_, other: self_.starting_rank_comparison(other)
+            ordered_players = sorted(players, reverse=True)
+            return {index + 1: player for index, player in enumerate(ordered_players)}
+        finally:
+            Player.__le__ = le_method
 
     @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
@@ -384,6 +421,64 @@ class Tournament:
             case _:
                 return False
 
+    def to_trf(
+        self, 
+        trf_type: TrfType,
+        first_round_pairing: BoardColor = BoardColor.WHITE,
+    ) -> TrfTournament:
+        return TrfTournament(
+            name=self.name,
+            city=self.location,
+            startdate=self.start_date,
+            enddate=self.end_date,
+            numplayers=len(self.players_by_id),
+            chiefarbiter=self.arbiter,
+            players=[
+                player.to_trf(self._player_id_to_trf_id)
+                for id_, player in self.players_by_trf_id.items()],
+            xx_fields=(
+                self._trf_xx_fields(first_round_pairing)
+                if trf_type == TrfType.PAIRING else {}),
+            bb_fields=(
+                self._trf_bb_fields()
+                if trf_type == TrfType.PAIRING else {}),
+        )
+
+    def _player_id_to_trf_id(self, player_id: int) -> int:
+        for trf_id, player in self.players_by_trf_id.items():
+            if player.id == player_id:
+                return trf_id
+        raise KeyError(f"Id of unknown player: {player_id}")
+
+    def _trf_xx_fields(self, first_round_pairing: BoardColor):
+        fields: dict[str, str] = {
+            'XXR': str(self.rounds),
+            'XXC': first_round_pairing.to_trf_first_round_pairing,
+        }
+        for trf_id, player in self.players_by_trf_id.items():
+            vpoints_history = [
+                self._calculate_player_virtual_points(player, round_nb)
+                for round_nb in range(1, self._current_round + 1)
+            ]
+            if sum(vpoints_history) > 0:
+                fields[f'XXA {trf_id:>4}'] = ' '.join(
+                    [f'{vpoints:>4}' for vpoints in vpoints_history]
+                )
+        return fields
+
+    def _trf_bb_fields(self, result_class: type[Result] = Result) -> dict[str, str]:
+        fields: dict[str, str] = {}
+        for result in [
+            result_class.GAIN,
+            result_class.DRAW,
+            result_class.LOSS,
+            result_class.FORFEIT_LOSS,
+            result_class.PAIRING_ALLOCATED_BYE,
+            result_class.ZERO_POINT_BYE,
+        ]:
+            fields[result.bbp_field] = f'{result.point_value:>4}'
+        return fields
+
     def read_papi(self):
         """Fetch tournament information from the Papi database, as well
         as the player information."""
@@ -396,7 +491,11 @@ class Tournament:
                     self._pairing,
                     self._rating,
                     self._rating_limit1,
-                    self._rating_limit2
+                    self._rating_limit2,
+                    self._location,
+                    self._start_date,
+                    self._end_date,
+                    self._arbiter,
                 ) = papi_database.read_info()
                 self._players_by_id = papi_database.read_players(self.id, self._rounds)
             for player in self._players_by_id.values():
@@ -407,6 +506,10 @@ class Tournament:
             self._current_round = 0
             self._rating_limit1 = None
             self._rating_limit2 = None
+            self._location = ''
+            self._start_date = ''
+            self._end_date = ''
+            self._arbiter = ''
             self._boards = []
             self._unpaired_players = []
         self._papi_read = True
@@ -450,60 +553,62 @@ class Tournament:
         for player in self._players_by_id.values():
             if player.ref_id == 1:
                 continue
-            # real points
+            vpoints = self._calculate_player_virtual_points(player, self._current_round)
             player.compute_points(self._current_round)
-            # virtual points
-            player.vpoints = 0.0
-            vpoints: float = 0.0
-            if self._pairing == TournamentPairing.HALEY:
-                if self._current_round <= 2 and player.rating >= self._rating_limit1:
-                    vpoints = 1.0
-            elif self._pairing == TournamentPairing.HALEY_SOFT:
-                # Round 1: All players above rating_limit1 get 1 vpoint
-                # Round 2: All players above rating_limit1 get 1 vpoint
-                # Round 2: All other players get .5 vpoints
-                # bottom of page #138 on
-                # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
-                # please remove if OK
-                if self._current_round <= 2 and player.rating >= self.rating_limit1:
-                    vpoints = 1.0
-                elif self._current_round == 2 and player.rating < self.rating_limit1:
-                    vpoints = 0.5
-            elif self._pairing == TournamentPairing.SAD:
-                # Before the second to last round, we remove the virtual
-                # points, and use a simple Swiss Dutch system.
-                if self._current_round <= self._rounds - 2:
-                    # Each 1.5 points earned, virtual points go up by 0.5
-                    # No player can have more than 2 points.
-                    # At the start, players are sorted in three groups
-                    # based on their rating.
-                    # Group A players start with 2 points
-                    # Group B players start with 1 point
-                    # Group C players start with 0 points.
-                    # If a player reaches more than half of the possible score,
-                    # their virtual points capital is raised to 2 points.
-
-                    # NOTE(Amaras): // is implemented on float as well, so it's
-                    # way simpler to implement than by applying the algorithm
-                    # step by step.
-                    potential_vpoints = 0.5 * (player.points // 1.5)
-                    if player.rating >= self.rating_limit1:
-                        # Group A players get 2 virtual points
-                        vpoints = 2.0
-                    elif player.rating >= self.rating_limit2:
-                        # Group B players start with 1 point
-                        # Players cannot have more than 2 points
-                        vpoints = min(2.0, 1.0 + potential_vpoints)
-                    else:
-                        # Group C players start with 0 points
-                        # Players cannot have more than 2 points
-                        vpoints = min(2.0, potential_vpoints)
-                    if 2 * player.points >= self._rounds:
-                        # If a player gets at least half the possible score,
-                        # their capital is set at 2 points.
-                        # Assumes a 0-0.5-1 scoring system.
-                        vpoints = 2.0
             player.vpoints = player.points + vpoints
+
+    def _calculate_player_virtual_points(self, player: Player, round_number: int) -> float:
+        vpoints = 0.0
+        if self._pairing == TournamentPairing.HALEY:
+            if round_number <= 2 and player.rating >= self._rating_limit1:
+                vpoints = 1.0
+        elif self._pairing == TournamentPairing.HALEY_SOFT:
+            # Round 1: All players above rating_limit1 get 1 vpoint
+            # Round 2: All players above rating_limit1 get 1 vpoint
+            # Round 2: All other players get .5 vpoints
+            # bottom of page #138 on
+            # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
+            # please remove if OK
+            if round_number <= 2 and player.rating >= self.rating_limit1:
+                vpoints = 1.0
+            elif round_number == 2 and player.rating < self.rating_limit1:
+                vpoints = 0.5
+        elif self._pairing == TournamentPairing.SAD:
+            # Before the second to last round, we remove the virtual
+            # points, and use a simple Swiss Dutch system.
+            if round_number <= self._rounds - 2:
+                # Each 1.5 points earned, virtual points go up by 0.5
+                # No player can have more than 2 points.
+                # At the start, players are sorted in three groups
+                # based on their rating.
+                # Group A players start with 2 points
+                # Group B players start with 1 point
+                # Group C players start with 0 points.
+                # If a player reaches more than half of the possible score,
+                # their virtual points capital is raised to 2 points.
+
+                # NOTE(Amaras): // is implemented on float as well, so it's
+                # way simpler to implement than by applying the algorithm
+                # step by step.
+                points = player.points_before(round_number)
+                potential_vpoints = 0.5 * (points // 1.5)
+                if player.rating >= self.rating_limit1:
+                    # Group A players get 2 virtual points
+                    vpoints = 2.0
+                elif player.rating >= self.rating_limit2:
+                    # Group B players start with 1 point
+                    # Players cannot have more than 2 points
+                    vpoints = min(2.0, 1.0 + potential_vpoints)
+                else:
+                    # Group C players start with 0 points
+                    # Players cannot have more than 2 points
+                    vpoints = min(2.0, potential_vpoints)
+                if 2 * points >= self._rounds:
+                    # If a player gets at least half the possible score,
+                    # their capital is set at 2 points.
+                    # Assumes a 0-0.5-1 scoring system.
+                    vpoints = 2.0
+        return vpoints
 
     def store_illegal_move(self, player: Player):
         """Store an illegal move for the given `player`, for the current

@@ -136,6 +136,24 @@
             {{ _('Edit') }}
         </button>
     </span>
+
+    <div class="dropdown d-inline">
+        <button class="btn btn-sm btn-primary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi-download"></i> {{ _('Export') }}
+        </button>
+        <ul class="dropdown-menu locale">
+            <li
+                    class="dropdown-item text-start cursor-pointer"
+                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=RATING', '_blank')">
+                {{ _('Export to TRF16 (rating)') }}
+            </li>
+            <li
+                    class="dropdown-item text-start cursor-pointer"
+                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=PAIRING', '_blank')">
+                {{ _('Export to TRF(bx) (pairing)') }}
+            </li>
+        </ul>
+    </div>
 {% endblock %}
 
 {% block card_buttons_right %}
