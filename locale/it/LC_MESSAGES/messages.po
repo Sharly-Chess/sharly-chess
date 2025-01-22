@@ -4903,6 +4903,15 @@ msgid "Edit the properties of the tournament."
 msgstr "Modifica le proprietà del torneo."
 
 #: src/web/templates/admin_tournament_card.html
+msgid "Generate pairings for the next round."
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation, fuzzy
+msgid "Pair"
+msgstr "Abbinamenti"
+
+#: src/web/templates/admin_tournament_card.html
 #, ai_translation, fuzzy
 msgid "Export"
 msgstr "Porta"

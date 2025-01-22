@@ -65,6 +65,12 @@ class Pairing:
     def forfeit_gain(self) -> bool:
         return self.result == Result.FORFEIT_GAIN
 
+    @property
+    def color_papi_value(self) -> str:
+        if self.color:
+            return self.color.to_papi_value
+        return 'F' if self.result.is_bye else 'R'
+
     def to_trf(self, round_number: int, player_id_to_trf_id: Callable[[int], int]) -> TrfGame:
         return TrfGame(
             startrank=player_id_to_trf_id(self.opponent_id) if self.opponent_id else '',

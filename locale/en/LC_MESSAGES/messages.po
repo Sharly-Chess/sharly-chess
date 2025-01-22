@@ -4045,6 +4045,14 @@ msgid "Edit the properties of the tournament."
 msgstr ""
 
 #: src/web/templates/admin_tournament_card.html
+msgid "Generate pairings for the next round."
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
+msgid "Pair"
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
 msgid "Export"
 msgstr ""
 

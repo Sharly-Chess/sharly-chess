@@ -12,6 +12,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from common.bbp_pairings import generate_pairings
 from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
@@ -326,6 +327,21 @@ class TournamentAdminController(AbstractEventAdminController):
         with temp_file as file:
             trf.dump(file, tournament.to_trf(usage))
         return File(path=temp_file.name, filename=f'{tournament.name}.{usage.file_extension}')
+
+    @post(
+        path='/admin/tournament-generate-pairings/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-generate-pairings',
+    )
+    async def admin_tournament_generate_pairings(
+        self, request: HTMXRequest, event_uniq_id: str, tournament_id: int
+    ) -> ClientRedirect:
+        context = TournamentAdminWebContext(request, event_uniq_id, None, tournament_id, None)
+        tournament = context.admin_tournament
+        generate_pairings(tournament)
+        return ClientRedirect(context.request.app.route_reverse(
+            'admin-event-tab',
+            event_uniq_id=event_uniq_id,
+            admin_event_tab='tournaments'))
 
     def _admin_tournament_update(
             self, request: HTMXRequest,

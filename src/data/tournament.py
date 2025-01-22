@@ -532,7 +532,7 @@ class Tournament:
             for player in self._players_by_id.values():
                 if player.ref_id != 1:
                     pairing: Pairing = player.pairings[round_]
-                    if pairing.color in ('W', 'B', ):
+                    if pairing.color in (BoardColor.WHITE, BoardColor.BLACK, ):
                         round_infos[round_]['pairings_found'] = True
                         paired_rounds.append(round_)
                     if pairing.result == Result.NO_RESULT and pairing.opponent_id is not None:
@@ -859,6 +859,15 @@ class Tournament:
         """Updates a player."""
         with PapiDatabase(self.file, write=True) as papi_database:
             papi_database.update_player(player)
+            papi_database.commit()
+
+    def update_round_pairings(self, round_nb: int):
+        """Updates the pairings of all players for a round."""
+        with PapiDatabase(self.file, write=True) as papi_database:
+            for player in self.players_by_id.values():
+                if round_nb in player.pairings:
+                    papi_database.update_player_pairing(
+                        player, round_nb, player.pairings[round_nb])
             papi_database.commit()
 
     def open_check_in(self):
