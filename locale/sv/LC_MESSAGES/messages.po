@@ -1406,6 +1406,16 @@ msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdat
 msgid "Downloading the FIDE database..."
 msgstr "Laddar ner FIDE- databas..."
 
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
+msgstr "Tillagd spelare [{fide_id} {name}] genom att ignorera titeln [{title}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
+msgstr "Tillagd spelare [{fide_id} {name}] genom att lägga till [{gap}] tecken i fältet [{field}]."
+
 # Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
 # ignored: [{line}]).] and [Fel vid rad [{line_no}] (spelare ignorerad):
 # [{line}]]
@@ -4916,12 +4926,14 @@ msgid "Export"
 msgstr "Hamn"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF16 (rating)"
-msgstr ""
+msgstr "Export till TRF16 (kriterium)"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF(bx) (pairing)"
-msgstr ""
+msgstr "Export till TRF (bx) (parning)"
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation

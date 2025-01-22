@@ -1406,6 +1406,16 @@ msgstr "De FIDE-database [{file}] is verouderd ([{days}] dagen], wilt u deze upd
 msgid "Downloading the FIDE database..."
 msgstr "FIDE-database wordt gedownload..."
 
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
+msgstr "Toegevoegd speler [{fide_id} {name}] door het negeren van titel [{title}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
+msgstr "Toegevoegd speler [{fide_id} {name}] door toe te voegen [{gap}] tekens aan veld [{field}]."
+
 # Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
 # ignored: [{line}]).] and [Fout op regel [{line_no}] (speler genegeerd):
 # [{line}]]
@@ -4916,12 +4926,14 @@ msgid "Export"
 msgstr "Poort"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF16 (rating)"
-msgstr ""
+msgstr "Exporteren naar TRF16 (rating)"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF(bx) (pairing)"
-msgstr ""
+msgstr "Exporteren naar TRF(bx) (paarden)"
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation

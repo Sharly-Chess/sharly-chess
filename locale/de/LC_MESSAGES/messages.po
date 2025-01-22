@@ -1406,6 +1406,16 @@ msgstr "Die FIDE-Datenbank [{file}] ist veraltet ([{days}] Tage), willst du sie 
 msgid "Downloading the FIDE database..."
 msgstr "FIDE-Datenbank wird heruntergeladen..."
 
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
+msgstr "Zugefügter Spieler [{fide_id} {name}] durch Ignorieren des Titels [{title}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
+msgstr "Spieler hinzugefügt [{fide_id} {name}] durch Hinzufügen von [{gap}] Zeichen zum Feld [{field}]."
+
 # Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
 # ignored: [{line}]).] and [Fehler in der Zeile [{line_no}] (Spieler
 # ignoriert): [{line}]]
@@ -4916,12 +4926,14 @@ msgid "Export"
 msgstr "Hafen"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF16 (rating)"
-msgstr ""
+msgstr "Nach TRF16 exportieren (Rating)"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF(bx) (pairing)"
-msgstr ""
+msgstr "Nach TRF(bx) exportieren (Paarung)"
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation

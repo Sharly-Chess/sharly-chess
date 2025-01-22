@@ -1408,6 +1408,16 @@ msgstr "Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμ
 msgid "Downloading the FIDE database..."
 msgstr "Λήψη βάσης δεδομένων FIDE..."
 
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
+msgstr "Προστέθηκε παίκτης [{fide_id} {name}] αγνοώντας τον τίτλο [{title}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
+msgstr "Προστέθηκε παίκτης [{fide_id} {name}] με την προσθήκη [{gap}] chars στο πεδίο [{field}]."
+
 # Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
 # ignored: [{line}]).] and [Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο
 # παίκτης): [{line}]]
@@ -4918,12 +4928,14 @@ msgid "Export"
 msgstr "Λιμένας"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF16 (rating)"
-msgstr ""
+msgstr "Εξαγωγή σε TRF16 (βαθμολόγηση)"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF(bx) (pairing)"
-msgstr ""
+msgstr "Εξαγωγή σε TRF (bx) (ζευγάρι)"
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation
