@@ -231,19 +231,25 @@ class Player:
     def federation_tuple(self) -> FederationTuple:
         return FederationTuple(self.federation)
 
-    def compute_points(self, max_round: int) -> float:
-        """Computes and returns the points of the player,
-        from round 1 to round `max_round`"""
+    def compute_points(self, max_round: int):
+        """Computes and stores the points of the player,
+        from round 1 to round `max_round` (returns None)"""
         # NOTE(Amaras) this does not rely on the fact that insertion order
         # is preserved in 3.6+ dict, because I can't be sure insertion order
         # is the correct (increasing) round order
+        # NOTE(Amaras) if you were to include the current round
+        # in the computation, boards regularly change their ordering
+        # during the current round as results are added
+        self.points = self.points_before(max_round)
+
+    def points_before(self, max_round: int) -> float:
         return sum(
-                pairing.result.point_value
-                for round_index, pairing in self.pairings.items()
-                # NOTE(Amaras) if you were to include the current round
-                # in the computation, boards regularly change their ordering
-                # during the current round as results are added
-                if round_index < max_round)
+            pairing.result.point_value
+            for round_index, pairing in self.pairings.items()
+            if round_index < max_round)
+
+    def points_total(self) -> float:
+        return sum(pairing.result.point_value for pairing in self.pairings.values())
 
     @staticmethod
     def _points_str(points: float | None) -> str:
@@ -269,7 +275,7 @@ class Player:
             fed=self.federation,
             id=self.fide_id,
             birthdate=self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else '',
-            points=self.compute_points(max(self.pairings.keys())+1),
+            points=self.points_total(),
             games=[result.to_trf(round_nb, player_id_to_trf_id) for round_nb, result in self.pairings.items()]
         )
 

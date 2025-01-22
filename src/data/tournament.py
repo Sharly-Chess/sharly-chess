@@ -437,7 +437,10 @@ class Tournament:
                 player.to_trf(self._player_id_to_trf_id)
                 for id_, player in self.players_by_trf_id.items()],
             xx_fields=(
-                self._trf_extra_fields(first_round_pairing)
+                self._trf_xx_fields(first_round_pairing)
+                if trf_type == TrfType.PAIRING else {}),
+            bb_fields=(
+                self._trf_bb_fields()
                 if trf_type == TrfType.PAIRING else {}),
         )
 
@@ -447,26 +450,24 @@ class Tournament:
                 return trf_id
         raise KeyError(f"Id of unknown player: {player_id}")
 
-    def _trf_extra_fields(
-        self, first_round_pairing: BoardColor, result_class: type[Result] = Result
-    ) -> dict[str, str]:
-        xx_fields: dict[str, str] = {
+    def _trf_xx_fields(self, first_round_pairing: BoardColor):
+        fields: dict[str, str] = {
             'XXR': str(self.rounds),
             'XXC': first_round_pairing.to_trf_first_round_pairing,
         }
-
-        # Acceleration
         for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, round_nb)
-                for round_nb in range(1, self._current_round+1)
+                for round_nb in range(1, self._current_round + 1)
             ]
             if sum(vpoints_history) > 0:
-                xx_fields[f'XXA {trf_id:>4}'] = ' '.join(
+                fields[f'XXA {trf_id:>4}'] = ' '.join(
                     [f'{vpoints:>4}' for vpoints in vpoints_history]
                 )
+        return fields
 
-        # BBP fields
+    def _trf_bb_fields(self, result_class: type[Result] = Result) -> dict[str, str]:
+        fields: dict[str, str] = {}
         for result in [
             result_class.GAIN,
             result_class.DRAW,
@@ -475,8 +476,8 @@ class Tournament:
             result_class.PAIRING_ALLOCATED_BYE,
             result_class.ZERO_POINT_BYE,
         ]:
-            xx_fields[result.bbp_field] = f'{result.point_value:>4}'
-        return xx_fields
+            fields[result.bbp_field] = f'{result.point_value:>4}'
+        return fields
 
     def read_papi(self):
         """Fetch tournament information from the Papi database, as well
@@ -552,9 +553,9 @@ class Tournament:
         for player in self._players_by_id.values():
             if player.ref_id == 1:
                 continue
-            player.points = player.compute_points(self._current_round)
-            player.vpoints = player.points + self._calculate_player_virtual_points(
-                player, self._current_round)
+            vpoints = self._calculate_player_virtual_points(player, self._current_round)
+            player.compute_points(self._current_round)
+            player.vpoints = player.points + vpoints
 
     def _calculate_player_virtual_points(self, player: Player, round_number: int) -> float:
         vpoints = 0.0
@@ -589,7 +590,7 @@ class Tournament:
                 # NOTE(Amaras): // is implemented on float as well, so it's
                 # way simpler to implement than by applying the algorithm
                 # step by step.
-                points = player.compute_points(round_number)
+                points = player.points_before(round_number)
                 potential_vpoints = 0.5 * (points // 1.5)
                 if player.rating >= self.rating_limit1:
                     # Group A players get 2 virtual points

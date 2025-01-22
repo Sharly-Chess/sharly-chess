@@ -584,7 +584,7 @@ class PlayerGender(IntEnum):
             case PlayerGender.NONE:
                 return ''
             case PlayerGender.FEMALE:
-                return 'f'
+                return 'w'
             case PlayerGender.MALE:
                 return 'm'
             case _:
