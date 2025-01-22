@@ -4916,12 +4916,14 @@ msgid "Export"
 msgstr "Hamn"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF16 (rating)"
-msgstr ""
+msgstr "Export till TRF16 (kriterium)"
 
 #: src/web/templates/admin_tournament_card.html
+#, ai_translation
 msgid "Export to TRF(bx) (pairing)"
-msgstr ""
+msgstr "Export till TRF (bx) (parning)"
 
 #: src/web/templates/admin_tournament_card.html
 #, ai_translation
@@ -5739,73 +5741,45 @@ msgstr "Turnering"
 msgid "Filter the tournaments."
 msgstr "Filtrera turneringarna."
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Return to documentation summary"
-msgstr "Återgå till sammanfattningen av dokumentationen"
+#~ msgid "Return to documentation summary"
+#~ msgstr "Återgå till sammanfattningen av dokumentationen"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "English translation *** TRANSLATE !"
-msgstr "Engelsk översättning"
+#~ msgid "English translation *** TRANSLATE !"
+#~ msgstr "Engelsk översättning"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "View file {file}"
-msgstr "Visa fil {file}"
+#~ msgid "View file {file}"
+#~ msgstr "Visa fil {file}"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Summary"
-msgstr "Sammanfattning"
+#~ msgid "Summary"
+#~ msgstr "Sammanfattning"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty mandatory messages"
-msgstr "Töm obligatoriska meddelanden"
+#~ msgid "Empty mandatory messages"
+#~ msgstr "Töm obligatoriska meddelanden"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty messages"
-msgstr "Tomma meddelanden"
+#~ msgid "Empty messages"
+#~ msgstr "Tomma meddelanden"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Message flagged [{flag}]"
-msgstr "Meddelande flaggat [{flag}]"
+#~ msgid "Message flagged [{flag}]"
+#~ msgstr "Meddelande flaggat [{flag}]"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Message ID"
-msgstr "Meddelande- id"
+#~ msgid "Message ID"
+#~ msgstr "Meddelande- id"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Locations"
-msgstr "Platser"
+#~ msgid "Locations"
+#~ msgstr "Platser"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Singular:"
-msgstr "Singular:"
+#~ msgid "Singular:"
+#~ msgstr "Singular:"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Plural:"
-msgstr "- Vad är det för fel på dig?"
+#~ msgid "Plural:"
+#~ msgstr "- Vad är det för fel på dig?"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty messages are not shown for the default language."
-msgstr "Tomma brev visas inte för standardspråket."
+#~ msgid "Empty messages are not shown for the default language."
+#~ msgstr "Tomma brev visas inte för standardspråket."
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Flagged messages"
-msgstr "Flaggade meddelanden"
+#~ msgid "Flagged messages"
+#~ msgstr "Flaggade meddelanden"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Translation"
-msgstr "Översättning"
+#~ msgid "Translation"
+#~ msgstr "Översättning"
 
