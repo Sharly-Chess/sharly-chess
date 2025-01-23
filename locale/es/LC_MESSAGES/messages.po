@@ -1387,6 +1387,16 @@ msgstr "La base de datos FIDE [{file}] es obsoleta ([{days}] días], ¿quieres a
 msgid "Downloading the FIDE database..."
 msgstr "Descargando la base de datos FIDE..."
 
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
+msgstr "Jugador añadido [{fide_id} {name}] ignorando el título [{title}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
+msgstr "Jugador añadido [{fide_id} {name}] añadiendo [{gap}] caracteres al campo [{field}]."
+
 # Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
 # ignored: [{line}]).] and [Error en la línea [{line_no}] (jugador ignorado):
 # [{line}]]

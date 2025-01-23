@@ -1408,6 +1408,16 @@ msgstr "Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμ
 msgid "Downloading the FIDE database..."
 msgstr "Λήψη βάσης δεδομένων FIDE..."
 
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
+msgstr "Προστέθηκε παίκτης [{fide_id} {name}] αγνοώντας τον τίτλο [{title}]."
+
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
+msgstr "Προστέθηκε παίκτης [{fide_id} {name}] με την προσθήκη [{gap}] chars στο πεδίο [{field}]."
+
 # Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
 # ignored: [{line}]).] and [Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο
 # παίκτης): [{line}]]

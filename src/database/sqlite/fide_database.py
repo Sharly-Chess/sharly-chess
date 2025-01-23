@@ -110,30 +110,48 @@ class FideDatabase(SQLiteDatabase):
                         'year_of_birth': (6, int),
                         'flag': (4, None),
                     }
+                    line_normal_length: int = 0
                     for line_no, line in enumerate(file, start=1):
-                        if line_no > 1:
-                            try:
-                                data: dict[str, Any] = {}
-                                orig_line = line
-                                for field_name, (field_size, field_type) in fields.items():
-                                    if field_type:
-                                        data[field_name] = field_type(line[:field_size].strip())
-                                    line = line[field_size:]
-                                if ',' in data['name']:
-                                    name_parts: list[str] = data['name'].split(',', maxsplit=2)
-                                    data['last_name'] = name_parts[0]
-                                    data['first_name'] = name_parts[1]
-                                    data['last_name'], data['first_name'] = data['name'].split(',', maxsplit=1)
-                                else:
-                                    data['last_name'] = data['name']
-                                    data['first_name'] = None
-                                del data['name']
-                                query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?", ] * len(data))})'
-                                self._execute(query, tuple(data.values()))
-                                players_number += 1
-                            except ValueError as ex:
+                        if line_no == 1:
+                            line_normal_length = len(line)
+                            continue
+                        try:
+                            data: dict[str, Any] = {}
+                            orig_line: str = line
+                            # if the line length is more than the expected length, we assume that the too-big field
+                            # is other_title (see FIDE ID 3101959)
+                            gap: int = len(line) - line_normal_length
+                            for field_name, (field_size, field_type) in fields.items():
+                                real_field_size: int = field_size + (gap if field_name == 'other_title' else 0)
+                                if field_type:
+                                    title: str = 'WH'
+                                    if field_name in ['fide_title'] and title in line[:real_field_size]:
+                                        data[field_name] = ''
+                                        print_interactive_warning(
+                                            _('Added player [{fide_id} {name}] by ignoring title [{title}].').format(
+                                                fide_id=data["fide_id"], name=data["name"].strip(), title=title))
+                                    else:
+                                        data[field_name] = field_type(line[:real_field_size].strip())
+                                line = line[real_field_size:]
+                            if ',' in data['name']:
+                                name_parts: list[str] = data['name'].split(',', maxsplit=2)
+                                data['last_name'] = name_parts[0]
+                                data['first_name'] = name_parts[1]
+                                data['last_name'], data['first_name'] = data['name'].split(',', maxsplit=1)
+                            else:
+                                data['last_name'] = data['name']
+                                data['first_name'] = None
+                            if gap:
                                 print_interactive_warning(
-                                    _('Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).').format(line_no=line_no, ex=ex, line=orig_line.strip()))
+                                    _('Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}].').format(
+                                        fide_id=data["fide_id"], name=data["name"].strip(), gap=gap, field='other_title'))
+                            del data['name']
+                            query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?", ] * len(data))})'
+                            self._execute(query, tuple(data.values()))
+                            players_number += 1
+                        except ValueError as ex:
+                            print_interactive_warning(
+                                _('Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).').format(line_no=line_no, ex=ex, line=orig_line.strip()))
                 self.commit()
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(_('Error while creating the database: {ex}.').format(ex=ex))

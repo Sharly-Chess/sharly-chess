@@ -1123,6 +1123,14 @@ msgid "Downloading the FIDE database..."
 msgstr ""
 
 #: src/database/sqlite/fide_database.py
+msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py
+msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py
 msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
 msgstr ""
 
