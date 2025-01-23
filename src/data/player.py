@@ -265,7 +265,9 @@ class Player:
         with suppress(TypeError):
             self.points += points
 
-    def to_trf(self, player_id_to_trf_id: Callable[[int], int]) -> TrfPlayer:
+    def to_trf(
+        self, player_id_to_trf_id: Callable[[int], int], max_round: int
+    ) -> TrfPlayer:
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
             name=f'{self.last_name}, {self.first_name}',
@@ -276,7 +278,10 @@ class Player:
             id=self.fide_id,
             birthdate=self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else '',
             points=self.points_total(),
-            games=[result.to_trf(round_nb, player_id_to_trf_id) for round_nb, result in self.pairings.items()]
+            games=[
+                result.to_trf(round_nb, player_id_to_trf_id)
+                for round_nb, result in self.pairings.items()
+                if round_nb <= max_round]
         )
 
     @property

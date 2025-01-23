@@ -73,8 +73,13 @@ class Pairing:
 
     def to_trf(self, round_number: int, player_id_to_trf_id: Callable[[int], int]) -> TrfGame:
         return TrfGame(
-            startrank=player_id_to_trf_id(self.opponent_id) if self.opponent_id else '',
-            color=self.color.to_trf if self.color and not self.result.is_bye else '',
+            startrank=(
+                '0000' if self.result.is_bye else
+                player_id_to_trf_id(self.opponent_id)
+                if self.opponent_id else ''),
+            color=(
+                '-' if self.result.is_bye else
+                self.color.to_trf if self.color else ''),
             result=self.result.to_trf,
             round=round_number)
 

@@ -434,7 +434,11 @@ class Tournament:
             numplayers=len(self.players_by_id),
             chiefarbiter=self.arbiter,
             players=[
-                player.to_trf(self._player_id_to_trf_id)
+                player.to_trf(
+                    self._player_id_to_trf_id,
+                    self.current_round + 1
+                    if trf_type == TrfType.PAIRING
+                    else self.rounds)
                 for id_, player in self.players_by_trf_id.items()],
             xx_fields=(
                 self._trf_xx_fields(first_round_pairing)
@@ -451,14 +455,20 @@ class Tournament:
         raise KeyError(f"Id of unknown player: {player_id}")
 
     def _trf_xx_fields(self, first_round_pairing: BoardColor):
+        next_round = self.current_round + 1
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
             'XXC': first_round_pairing.to_trf_first_round_pairing,
+            'XXZ': ' '.join([
+                str(trf_id) for trf_id, player
+                in self.players_by_trf_id.items()
+                if next_round in player.pairings
+                and player.pairings[next_round].result.is_bye]),
         }
         for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, round_nb)
-                for round_nb in range(1, self._current_round + 1)
+                for round_nb in range(1, next_round)
             ]
             if sum(vpoints_history) > 0:
                 fields[f'XXA {trf_id:>4}'] = ' '.join(
