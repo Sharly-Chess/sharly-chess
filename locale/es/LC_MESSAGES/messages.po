@@ -5732,73 +5732,45 @@ msgstr "Torneo"
 msgid "Filter the tournaments."
 msgstr "Filtrar los torneos."
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Return to documentation summary"
-msgstr "Volver al resumen de la documentación"
+#~ msgid "Return to documentation summary"
+#~ msgstr "Volver al resumen de la documentación"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "English translation *** TRANSLATE !"
-msgstr "Traducción al inglés"
+#~ msgid "English translation *** TRANSLATE !"
+#~ msgstr "Traducción al inglés"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "View file {file}"
-msgstr "Ver archivo {file}"
+#~ msgid "View file {file}"
+#~ msgstr "Ver archivo {file}"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Summary"
-msgstr "Resumen"
+#~ msgid "Summary"
+#~ msgstr "Resumen"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty mandatory messages"
-msgstr "Mensajes obligatorios vacíos"
+#~ msgid "Empty mandatory messages"
+#~ msgstr "Mensajes obligatorios vacíos"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty messages"
-msgstr "Mensajes vacíos"
+#~ msgid "Empty messages"
+#~ msgstr "Mensajes vacíos"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Message flagged [{flag}]"
-msgstr "Mensaje marcado [{flag}]"
+#~ msgid "Message flagged [{flag}]"
+#~ msgstr "Mensaje marcado [{flag}]"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Message ID"
-msgstr "ID del mensaje"
+#~ msgid "Message ID"
+#~ msgstr "ID del mensaje"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Locations"
-msgstr "Ubicaciones"
+#~ msgid "Locations"
+#~ msgstr "Ubicaciones"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Singular:"
-msgstr "Singular:"
+#~ msgid "Singular:"
+#~ msgstr "Singular:"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Plural:"
-msgstr "Plural:"
+#~ msgid "Plural:"
+#~ msgstr "Plural:"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty messages are not shown for the default language."
-msgstr "Los mensajes vacíos no se muestran para el idioma predeterminado."
+#~ msgid "Empty messages are not shown for the default language."
+#~ msgstr "Los mensajes vacíos no se muestran para el idioma predeterminado."
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Flagged messages"
-msgstr "Mensajes marcados"
+#~ msgid "Flagged messages"
+#~ msgstr "Mensajes marcados"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Translation"
-msgstr "Traducción"
+#~ msgid "Translation"
+#~ msgstr "Traducción"
 

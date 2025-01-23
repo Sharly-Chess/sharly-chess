@@ -5753,73 +5753,45 @@ msgstr "Τουρνουά"
 msgid "Filter the tournaments."
 msgstr "Φίλτρο τα τουρνουά."
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Return to documentation summary"
-msgstr "Επιστρέφω στην περίληψη τεκμηρίωσης"
+#~ msgid "Return to documentation summary"
+#~ msgstr "Επιστρέφω στην περίληψη τεκμηρίωσης"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "English translation *** TRANSLATE !"
-msgstr "Αγγλική μετάφραση"
+#~ msgid "English translation *** TRANSLATE !"
+#~ msgstr "Αγγλική μετάφραση"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "View file {file}"
-msgstr "Δείτε το αρχείο {file}"
+#~ msgid "View file {file}"
+#~ msgstr "Δείτε το αρχείο {file}"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Summary"
-msgstr "Περίληψη"
+#~ msgid "Summary"
+#~ msgstr "Περίληψη"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty mandatory messages"
-msgstr "Κενά υποχρεωτικά μηνύματα"
+#~ msgid "Empty mandatory messages"
+#~ msgstr "Κενά υποχρεωτικά μηνύματα"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty messages"
-msgstr "Κενά μηνύματα"
+#~ msgid "Empty messages"
+#~ msgstr "Κενά μηνύματα"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Message flagged [{flag}]"
-msgstr "Μήνυμα που σημαδεύτηκε [{flag}]"
+#~ msgid "Message flagged [{flag}]"
+#~ msgstr "Μήνυμα που σημαδεύτηκε [{flag}]"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Message ID"
-msgstr "ID μηνύματος"
+#~ msgid "Message ID"
+#~ msgstr "ID μηνύματος"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Locations"
-msgstr "Τοποθεσίες"
+#~ msgid "Locations"
+#~ msgstr "Τοποθεσίες"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Singular:"
-msgstr "Μοναδικός:"
+#~ msgid "Singular:"
+#~ msgstr "Μοναδικός:"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Plural:"
-msgstr "Πληθυντικός:"
+#~ msgid "Plural:"
+#~ msgstr "Πληθυντικός:"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty messages are not shown for the default language."
-msgstr "Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα."
+#~ msgid "Empty messages are not shown for the default language."
+#~ msgstr "Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα."
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Flagged messages"
-msgstr "Σημειωθέντα μηνύματα"
+#~ msgid "Flagged messages"
+#~ msgstr "Σημειωθέντα μηνύματα"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Translation"
-msgstr "Μετάφραση"
+#~ msgid "Translation"
+#~ msgstr "Μετάφραση"
 

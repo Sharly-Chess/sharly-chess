@@ -5751,73 +5751,45 @@ msgstr "Turnier"
 msgid "Filter the tournaments."
 msgstr "Filtern Sie die Turniere."
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Return to documentation summary"
-msgstr "Zurück zur Dokumentationsübersicht"
+#~ msgid "Return to documentation summary"
+#~ msgstr "Zurück zur Dokumentationsübersicht"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "English translation *** TRANSLATE !"
-msgstr "Englische Übersetzung"
+#~ msgid "English translation *** TRANSLATE !"
+#~ msgstr "Englische Übersetzung"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "View file {file}"
-msgstr "Datei anzeigen {file}"
+#~ msgid "View file {file}"
+#~ msgstr "Datei anzeigen {file}"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Summary"
-msgstr "Zusammenfassung"
+#~ msgid "Summary"
+#~ msgstr "Zusammenfassung"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty mandatory messages"
-msgstr "obligatorische Nachrichten entleeren"
+#~ msgid "Empty mandatory messages"
+#~ msgstr "obligatorische Nachrichten entleeren"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty messages"
-msgstr "Leere Nachrichten"
+#~ msgid "Empty messages"
+#~ msgstr "Leere Nachrichten"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Message flagged [{flag}]"
-msgstr "Nachricht markiert [{flag}]"
+#~ msgid "Message flagged [{flag}]"
+#~ msgstr "Nachricht markiert [{flag}]"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Message ID"
-msgstr "Nachrichten-ID"
+#~ msgid "Message ID"
+#~ msgstr "Nachrichten-ID"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Locations"
-msgstr "Standorte"
+#~ msgid "Locations"
+#~ msgstr "Standorte"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Singular:"
-msgstr "Singulär:"
+#~ msgid "Singular:"
+#~ msgstr "Singulär:"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Plural:"
-msgstr "Plural:"
+#~ msgid "Plural:"
+#~ msgstr "Plural:"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Empty messages are not shown for the default language."
-msgstr "Leere Nachrichten werden für die Standardsprache nicht angezeigt."
+#~ msgid "Empty messages are not shown for the default language."
+#~ msgstr "Leere Nachrichten werden für die Standardsprache nicht angezeigt."
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Flagged messages"
-msgstr "Gekennzeichnete Nachrichten"
+#~ msgid "Flagged messages"
+#~ msgstr "Gekennzeichnete Nachrichten"
 
-#: utils/i18n/i18n_update.py
-#, ai_translation
-msgid "Translation"
-msgstr "Übersetzung"
+#~ msgid "Translation"
+#~ msgstr "Übersetzung"
 
