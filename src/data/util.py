@@ -257,7 +257,11 @@ class Result(IntEnum):
 
     @property
     def is_bye(self) -> bool:
-        return self in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE)
+        return self in (
+            Result.ZERO_POINT_BYE,
+            Result.HALF_POINT_BYE,
+            Result.FULL_POINT_BYE,
+            Result.PAIRING_ALLOCATED_BYE)
 
     @classmethod
     def user_imputable_results(cls) -> tuple[Self, ...]:
