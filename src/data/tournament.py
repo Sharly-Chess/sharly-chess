@@ -667,14 +667,23 @@ class Tournament:
                     else:
                         self._boards.append(Board(black_player=player))
             else:
-                self._unpaired_players.append(player)
+                if player.pairings[self._current_round].exempt:
+                    self._boards.append(Board(white_player=player))
+                else:
+                   self._unpaired_players.append(player)
+                   
         self._boards = sorted(self._boards, reverse=True)
         for index, board in enumerate(self._boards, start=1):
             board.id = index
-            number: int = board.white_player.fixed or board.black_player.fixed or index
+            number: int = (
+                board.white_player.fixed or 
+                (board.black_player.fixed if board.black_player else None) or 
+                index
+            )
             board.number = number
             board.white_player.set_board(index, number, BoardColor.WHITE)
-            board.black_player.set_board(index, number, BoardColor.BLACK)
+            if board.black_player is not None:
+                board.black_player.set_board(index, number, BoardColor.BLACK)
             board.result = board.white_player.pairings[self._current_round].result
             if self.handicap:
                 strong_player: Player
