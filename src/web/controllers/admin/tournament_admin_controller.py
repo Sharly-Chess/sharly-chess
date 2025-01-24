@@ -334,14 +334,12 @@ class TournamentAdminController(AbstractEventAdminController):
     )
     async def admin_tournament_generate_pairings(
         self, request: HTMXRequest, event_uniq_id: str, tournament_id: int
-    ) -> ClientRedirect:
+    ) -> Template | ClientRedirect:
         context = TournamentAdminWebContext(request, event_uniq_id, None, tournament_id, None)
         tournament = context.admin_tournament
         generate_pairings(tournament)
-        return ClientRedirect(context.request.app.route_reverse(
-            'admin-event-tab',
-            event_uniq_id=event_uniq_id,
-            admin_event_tab='tournaments'))
+        tournament.read_papi(True)
+        return self._admin_event_tournaments_render(request, event_uniq_id)
 
     def _admin_tournament_update(
             self, request: HTMXRequest,

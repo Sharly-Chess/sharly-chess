@@ -489,10 +489,10 @@ class Tournament:
             fields[result.bbp_field] = f'{result.point_value:>4}'
         return fields
 
-    def read_papi(self):
+    def read_papi(self, update: bool = False):
         """Fetch tournament information from the Papi database, as well
         as the player information."""
-        if self._papi_read:
+        if self._papi_read and not update:
             return
         if self.file_exists:
             with PapiDatabase(self.file) as papi_database:
