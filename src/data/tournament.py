@@ -434,7 +434,11 @@ class Tournament:
             numplayers=len(self.players_by_id),
             chiefarbiter=self.arbiter,
             players=[
-                player.to_trf(self._player_id_to_trf_id)
+                player.to_trf(
+                    self._player_id_to_trf_id,
+                    self.current_round + 1
+                    if trf_type == TrfType.PAIRING
+                    else self.rounds)
                 for id_, player in self.players_by_trf_id.items()],
             xx_fields=(
                 self._trf_xx_fields(first_round_pairing)
@@ -451,14 +455,20 @@ class Tournament:
         raise KeyError(f"Id of unknown player: {player_id}")
 
     def _trf_xx_fields(self, first_round_pairing: BoardColor):
+        next_round = self.current_round + 1
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
             'XXC': first_round_pairing.to_trf_first_round_pairing,
+            'XXZ': ' '.join([
+                str(trf_id) for trf_id, player
+                in self.players_by_trf_id.items()
+                if next_round in player.pairings
+                and player.pairings[next_round].result.is_bye]),
         }
         for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, round_nb)
-                for round_nb in range(1, self._current_round + 1)
+                for round_nb in range(1, next_round)
             ]
             if sum(vpoints_history) > 0:
                 fields[f'XXA {trf_id:>4}'] = ' '.join(
@@ -479,10 +489,10 @@ class Tournament:
             fields[result.bbp_field] = f'{result.point_value:>4}'
         return fields
 
-    def read_papi(self):
+    def read_papi(self, update: bool = False):
         """Fetch tournament information from the Papi database, as well
         as the player information."""
-        if self._papi_read:
+        if self._papi_read and not update:
             return
         if self.file_exists:
             with PapiDatabase(self.file) as papi_database:
@@ -532,7 +542,7 @@ class Tournament:
             for player in self._players_by_id.values():
                 if player.ref_id != 1:
                     pairing: Pairing = player.pairings[round_]
-                    if pairing.color in ('W', 'B', ):
+                    if pairing.color in (BoardColor.WHITE, BoardColor.BLACK, ):
                         round_infos[round_]['pairings_found'] = True
                         paired_rounds.append(round_)
                     if pairing.result == Result.NO_RESULT and pairing.opponent_id is not None:
@@ -859,6 +869,15 @@ class Tournament:
         """Updates a player."""
         with PapiDatabase(self.file, write=True) as papi_database:
             papi_database.update_player(player)
+            papi_database.commit()
+
+    def update_round_pairings(self, round_nb: int):
+        """Updates the pairings of all players for a round."""
+        with PapiDatabase(self.file, write=True) as papi_database:
+            for player in self.players_by_id.values():
+                if round_nb in player.pairings:
+                    papi_database.update_player_pairing(
+                        player, round_nb, player.pairings[round_nb])
             papi_database.commit()
 
     def open_check_in(self):

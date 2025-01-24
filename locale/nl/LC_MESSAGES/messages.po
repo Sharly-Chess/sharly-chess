@@ -4903,6 +4903,15 @@ msgid "Edit the properties of the tournament."
 msgstr "Bewerk de eigenschappen van het toernooi."
 
 #: src/web/templates/admin_tournament_card.html
+msgid "Generate pairings for the next round."
+msgstr ""
+
+#: src/web/templates/admin_tournament_card.html
+#, ai_translation, fuzzy
+msgid "Pair"
+msgstr "met een gewicht van niet meer dan 150 g/m2"
+
+#: src/web/templates/admin_tournament_card.html
 #, ai_translation, fuzzy
 msgid "Export"
 msgstr "Poort"

@@ -154,6 +154,19 @@ class PapiDatabase(AccessDatabase):
         field_sets = (f"`{f}` = ?" for f in fields)
         self._execute(f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?', tuple(params))
 
+    def update_player_pairing(self, player: Player, round_nb: int, pairing: Pairing):
+        field_sets = [f'`Rd{round_nb:0>2}{field}` = ?' for field in ('Cl', 'Adv', 'Res')]
+        opponent_id = (
+            Player.player_papi_id_from_papi_web_id(pairing.opponent_id)
+            if pairing.opponent_id else None)
+        result = (
+            pairing.result.to_papi_value if pairing.result
+            else Result.NO_RESULT.to_papi_value)
+        self._execute(
+            f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
+            (pairing.color_papi_value, opponent_id, result, player.ref_id))
+
+
     def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.
         The tournament_id is used to make the players' id unique for an event. """

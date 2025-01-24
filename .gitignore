@@ -15,6 +15,7 @@ __pycache__/
 /test/
 /export-test/
 /utils/i18n/models
+/resources/
 
 *.egg-info/
 
