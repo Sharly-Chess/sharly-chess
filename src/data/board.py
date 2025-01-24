@@ -25,6 +25,10 @@ class Board:
     def id(self) -> int | None:
         return self.board_id
 
+    @property
+    def exempt(self) -> bool:
+        return self.result == Result.PAIRING_ALLOCATED_BYE
+    
     @id.setter
     def id(self, new_id):
         self.board_id = new_id
@@ -39,12 +43,10 @@ class Board:
             return NotImplemented
         if self.board_id is not None and other.board_id is not None:
             return self.board_id < other.board_id
-        assert self.black_player is not None, "The black player is not defined."
-        assert other.black_player is not None, "The black player is not defined."
-        if self.black_player.ref_id == 1:
+        if self.black_player is None:
             # The pairing allocated bye board is last
             return True
-        elif other.black_player.ref_id == 1:
+        elif other.black_player is None:
             # The pairing allocated bye is last
             return False
         # Here we have no board id, so we need to compare
@@ -90,7 +92,7 @@ class Board:
         assert self.black_player is not None, "The black player is not defined."
         assert other.black_player is not None, "The black player is not defined."
         # There is only one pairing allocated bye
-        if self.black_player.ref_id == 1 or self.white_player.ref_id == 1:
+        if self.black_player is None:
             return False
         self_player_1: Player
         self_player_2: Player

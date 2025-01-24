@@ -29,7 +29,7 @@
                                 </thead>
                                 <tbody>
                                 {% for board in boards %}
-                                    {% with wp=board.white_player, bp=board.black_player, editable=screen.type == 'input' and (not board.result_str or (admin_auth and board.black_player.id != 1)) %}
+                                    {% with wp=board.white_player, bp=board.black_player, editable=screen.type == 'input' and (not board.result_str or (admin_auth and not board.exempt)) %}
                                     <tr
                                         id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
                                         class="
