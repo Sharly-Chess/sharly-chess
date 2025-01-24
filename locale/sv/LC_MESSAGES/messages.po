@@ -1406,24 +1406,6 @@ msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdat
 msgid "Downloading the FIDE database..."
 msgstr "Laddar ner FIDE- databas..."
 
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
-msgstr "Tillagd spelare [{fide_id} {name}] genom att ignorera titeln [{title}]."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
-msgstr "Tillagd spelare [{fide_id} {name}] genom att lägga till [{gap}] tecken i fältet [{field}]."
-
-# Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
-# ignored: [{line}]).] and [Fel vid rad [{line_no}] (spelare ignorerad):
-# [{line}]]
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
-msgstr "Fel på rad [{line_no}]: [{ex}] (spelare ignorerade: [{line}])."
-
 #: src/ffe/action_selector.py
 #, ai_translation
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
@@ -5750,46 +5732,4 @@ msgstr "Turnering"
 #, ai_translation
 msgid "Filter the tournaments."
 msgstr "Filtrera turneringarna."
-
-#~ msgid "Return to documentation summary"
-#~ msgstr "Återgå till sammanfattningen av dokumentationen"
-
-#~ msgid "English translation *** TRANSLATE !"
-#~ msgstr "Engelsk översättning"
-
-#~ msgid "View file {file}"
-#~ msgstr "Visa fil {file}"
-
-#~ msgid "Summary"
-#~ msgstr "Sammanfattning"
-
-#~ msgid "Empty mandatory messages"
-#~ msgstr "Töm obligatoriska meddelanden"
-
-#~ msgid "Empty messages"
-#~ msgstr "Tomma meddelanden"
-
-#~ msgid "Message flagged [{flag}]"
-#~ msgstr "Meddelande flaggat [{flag}]"
-
-#~ msgid "Message ID"
-#~ msgstr "Meddelande- id"
-
-#~ msgid "Locations"
-#~ msgstr "Platser"
-
-#~ msgid "Singular:"
-#~ msgstr "Singular:"
-
-#~ msgid "Plural:"
-#~ msgstr "- Vad är det för fel på dig?"
-
-#~ msgid "Empty messages are not shown for the default language."
-#~ msgstr "Tomma brev visas inte för standardspråket."
-
-#~ msgid "Flagged messages"
-#~ msgstr "Flaggade meddelanden"
-
-#~ msgid "Translation"
-#~ msgstr "Översättning"
 

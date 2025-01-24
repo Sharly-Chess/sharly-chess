@@ -1,4 +1,5 @@
 import os.path
+from xml.etree import ElementTree
 import zipfile
 from contextlib import suppress
 from datetime import datetime
@@ -6,6 +7,7 @@ from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError, IntegrityError
 from time import time
+from types import FunctionType
 from typing import Iterator, Any
 
 from requests import Response, get
@@ -14,7 +16,7 @@ from requests.exceptions import ConnectionError
 from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger, input_interactive, print_interactive_info, print_interactive_error, \
-    print_interactive_success, print_interactive_warning
+    print_interactive_success
 from common.papi_web_config import PapiWebConfig
 from data.player import Player
 from data.util import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType, PlayerFFELicence
@@ -56,8 +58,12 @@ class FideDatabase(SQLiteDatabase):
                     return True
             else:
                 return True
+        return self.create()
+
+    def create(self) -> bool:
+        """Create the FIDE database, returns True if the database is available after the call, False otherwise."""
         print_interactive_info(_('Downloading the FIDE database...'))
-        fide_database_url: str = 'https://ratings.fide.com/download/players_list_legacy.zip'
+        fide_database_url: str = 'https://ratings.fide.com/download/players_list_xml_legacy.zip'
         local_zip_file: Path = TMP_DIR / os.path.basename(fide_database_url)
         with suppress(FileNotFoundError):
             local_zip_file.unlink()
@@ -74,84 +80,53 @@ class FideDatabase(SQLiteDatabase):
         if not local_zip_file.exists():
             print_interactive_error(_('No data received from [{url}].').format(url=fide_database_url))
             return True
-        local_txt_file = TMP_DIR / 'players_list.txt'
+        local_xml_file: Path = TMP_DIR / 'players_list_xml.xml'
         with suppress(FileNotFoundError):
-            local_txt_file.unlink()
+            local_xml_file.unlink()
         with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
             zip_ref.extractall(TMP_DIR)
-        if not local_txt_file.exists():
+        if not local_xml_file.exists():
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
         print_interactive_info(_('Storing data...'))
+        tree = ElementTree.parse(local_xml_file)
+        root = tree.getroot()
         try:
             with open(PapiWebConfig.database_sql_path / 'create_fide.sql', encoding='utf-8') as f:
-                self.create(f.read())
+                self._create(f.read())
+            fields: dict[str, tuple[str, FunctionType | None]] = {
+                'fide_id': ('fideid', lambda s: int(s.strip())),
+                'name': ('name', None),
+                'federation': ('country', lambda s: s.upper()),
+                'gender': ('sex', lambda s: PlayerGender.from_fide_value(s)),
+                # exception for 1001710 Vreeken, Corry
+                'fide_title': ('title', lambda s: PlayerTitle.from_fide_value('' if s == 'WH' else s)),
+                'standard_rating': ('rating', int),
+                'rapid_rating': ('rapid_rating', int),
+                'blitz_rating': ('blitz_rating', int),
+                'year_of_birth': ('birthday', lambda s: int(s) if s else 0),
+            }
+            players_number: int = 0
             self.write = True
             with self:
-                players_number: int = 0
-                with open(local_txt_file, 'r') as file:
-                    fields: dict[str, int] = {
-                        'fide_id': (15, lambda s: int(s.strip())),
-                        'name': (61, str),
-                        'federation': (4, lambda s: s.upper()),
-                        'gender': (4, lambda s: PlayerGender.from_fide_value(s)),
-                        'fide_title': (5, lambda s: PlayerTitle.from_fide_value(s)),
-                        'woman_title': (5, None),
-                        'other_title': (15, None),
-                        'standard_rating': (6, int),
-                        'standard_games': (4, None),
-                        'standard_k_factor': (3, None),
-                        'rapid_rating': (6, int),
-                        'rapid_games': (4, None),
-                        'rapid_k_factor': (3, None),
-                        'blitz_rating': (6, int),
-                        'blitz_games': (4, None),
-                        'blitz_k_factor': (3, None),
-                        'year_of_birth': (6, int),
-                        'flag': (4, None),
-                    }
-                    line_normal_length: int = 0
-                    for line_no, line in enumerate(file, start=1):
-                        if line_no == 1:
-                            line_normal_length = len(line)
-                            continue
-                        try:
-                            data: dict[str, Any] = {}
-                            orig_line: str = line
-                            # if the line length is more than the expected length, we assume that the too-big field
-                            # is other_title (see FIDE ID 3101959)
-                            gap: int = len(line) - line_normal_length
-                            for field_name, (field_size, field_type) in fields.items():
-                                real_field_size: int = field_size + (gap if field_name == 'other_title' else 0)
-                                if field_type:
-                                    title: str = 'WH'
-                                    if field_name in ['fide_title'] and title in line[:real_field_size]:
-                                        data[field_name] = ''
-                                        print_interactive_warning(
-                                            _('Added player [{fide_id} {name}] by ignoring title [{title}].').format(
-                                                fide_id=data["fide_id"], name=data["name"].strip(), title=title))
-                                    else:
-                                        data[field_name] = field_type(line[:real_field_size].strip())
-                                line = line[real_field_size:]
-                            if ',' in data['name']:
-                                name_parts: list[str] = data['name'].split(',', maxsplit=2)
-                                data['last_name'] = name_parts[0]
-                                data['first_name'] = name_parts[1]
-                                data['last_name'], data['first_name'] = data['name'].split(',', maxsplit=1)
-                            else:
-                                data['last_name'] = data['name']
-                                data['first_name'] = None
-                            if gap:
-                                print_interactive_warning(
-                                    _('Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}].').format(
-                                        fide_id=data["fide_id"], name=data["name"].strip(), gap=gap, field='other_title'))
-                            del data['name']
-                            query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?", ] * len(data))})'
-                            self._execute(query, tuple(data.values()))
-                            players_number += 1
-                        except ValueError as ex:
-                            print_interactive_warning(
-                                _('Error at line [{line_no}]: [{ex}] (player ignored: [{line}]).').format(line_no=line_no, ex=ex, line=orig_line.strip()))
+                for player_item in root.findall('./player'):
+                    data: dict[str, Any] = {}
+                    for field_name, (field_xml_tag, field_function) in fields.items():
+                        data[field_name] = player_item.find(field_xml_tag).text or ''
+                        if field_function:
+                            data[field_name] = field_function(data[field_name])
+                    if ',' in data['name']:
+                        name_parts: list[str] = data['name'].split(',', maxsplit=2)
+                        data['last_name'] = name_parts[0]
+                        data['first_name'] = name_parts[1]
+                        data['last_name'], data['first_name'] = data['name'].split(',', maxsplit=1)
+                    else:
+                        data['last_name'] = data['name']
+                        data['first_name'] = None
+                    del data['name']
+                    query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?", ] * len(data))})'
+                    self._execute(query, tuple(data.values()))
+                    players_number += 1
                 self.commit()
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(_('Error while creating the database: {ex}.').format(ex=ex))
@@ -185,7 +160,8 @@ class FideDatabase(SQLiteDatabase):
             id=0,
             first_name=row['first_name'],
             last_name=row['last_name'],
-            date_of_birth=datetime.strptime(f"{row['year_of_birth']}-01-01", '%Y-%m-%d').date() if row['year_of_birth'] else None,
+            date_of_birth=datetime.strptime(
+                f"{row['year_of_birth']}-01-01", '%Y-%m-%d').date() if row['year_of_birth'] else None,
             gender=PlayerGender(row['gender']),
             mail='',
             phone='',

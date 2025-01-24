@@ -1387,24 +1387,6 @@ msgstr "La base de datos FIDE [{file}] es obsoleta ([{days}] días], ¿quieres a
 msgid "Downloading the FIDE database..."
 msgstr "Descargando la base de datos FIDE..."
 
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
-msgstr "Jugador añadido [{fide_id} {name}] ignorando el título [{title}]."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
-msgstr "Jugador añadido [{fide_id} {name}] añadiendo [{gap}] caracteres al campo [{field}]."
-
-# Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
-# ignored: [{line}]).] and [Error en la línea [{line_no}] (jugador ignorado):
-# [{line}]]
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
-msgstr "Error en la línea [{line_no}]: [{ex}] (jugador ignorado: [{line}])."
-
 #: src/ffe/action_selector.py
 #, ai_translation
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
@@ -5731,46 +5713,4 @@ msgstr "Torneo"
 #, ai_translation
 msgid "Filter the tournaments."
 msgstr "Filtrar los torneos."
-
-#~ msgid "Return to documentation summary"
-#~ msgstr "Volver al resumen de la documentación"
-
-#~ msgid "English translation *** TRANSLATE !"
-#~ msgstr "Traducción al inglés"
-
-#~ msgid "View file {file}"
-#~ msgstr "Ver archivo {file}"
-
-#~ msgid "Summary"
-#~ msgstr "Resumen"
-
-#~ msgid "Empty mandatory messages"
-#~ msgstr "Mensajes obligatorios vacíos"
-
-#~ msgid "Empty messages"
-#~ msgstr "Mensajes vacíos"
-
-#~ msgid "Message flagged [{flag}]"
-#~ msgstr "Mensaje marcado [{flag}]"
-
-#~ msgid "Message ID"
-#~ msgstr "ID del mensaje"
-
-#~ msgid "Locations"
-#~ msgstr "Ubicaciones"
-
-#~ msgid "Singular:"
-#~ msgstr "Singular:"
-
-#~ msgid "Plural:"
-#~ msgstr "Plural:"
-
-#~ msgid "Empty messages are not shown for the default language."
-#~ msgstr "Los mensajes vacíos no se muestran para el idioma predeterminado."
-
-#~ msgid "Flagged messages"
-#~ msgstr "Mensajes marcados"
-
-#~ msgid "Translation"
-#~ msgstr "Traducción"
 
