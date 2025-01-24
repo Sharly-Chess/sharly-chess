@@ -121,7 +121,7 @@ class EventDatabase(SQLiteDatabase):
             event_stop = time.mktime(datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple())
             with open(PapiWebConfig.database_sql_path / 'create_event.sql', encoding='utf-8') as f:
                 papi_web_version: Version = PapiWebConfig.version
-                super().create(f.read().format(
+                self._create(f.read().format(
                     version=f'{papi_web_version.major}.{papi_web_version.minor}.{papi_web_version.micro}',
                     name=self.uniq_id, start=event_start, stop=event_stop, now=time.time()))
             logger.info('Database [%s] has been created.', self.file)

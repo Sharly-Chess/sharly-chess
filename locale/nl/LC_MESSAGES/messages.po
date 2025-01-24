@@ -1406,24 +1406,6 @@ msgstr "De FIDE-database [{file}] is verouderd ([{days}] dagen], wilt u deze upd
 msgid "Downloading the FIDE database..."
 msgstr "FIDE-database wordt gedownload..."
 
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
-msgstr "Toegevoegd speler [{fide_id} {name}] door het negeren van titel [{title}]."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
-msgstr "Toegevoegd speler [{fide_id} {name}] door toe te voegen [{gap}] tekens aan veld [{field}]."
-
-# Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
-# ignored: [{line}]).] and [Fout op regel [{line_no}] (speler genegeerd):
-# [{line}]]
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
-msgstr "Fout op regel [{line_no}]: [{ex}] (speler genegeerd: [{line}])."
-
 #: src/ffe/action_selector.py
 #, ai_translation
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
@@ -5750,46 +5732,4 @@ msgstr "Toernooi"
 #, ai_translation
 msgid "Filter the tournaments."
 msgstr "Filter de toernooien."
-
-#~ msgid "Return to documentation summary"
-#~ msgstr "Terug naar documentatiesamenvatting"
-
-#~ msgid "English translation *** TRANSLATE !"
-#~ msgstr "Engelse vertaling"
-
-#~ msgid "View file {file}"
-#~ msgstr "Bestand bekijken {file}"
-
-#~ msgid "Summary"
-#~ msgstr "Samenvatting"
-
-#~ msgid "Empty mandatory messages"
-#~ msgstr "Lege verplichte berichten"
-
-#~ msgid "Empty messages"
-#~ msgstr "Lege berichten"
-
-#~ msgid "Message flagged [{flag}]"
-#~ msgstr "Bericht gemarkeerd [{flag}]"
-
-#~ msgid "Message ID"
-#~ msgstr "Bericht-ID"
-
-#~ msgid "Locations"
-#~ msgstr "Locaties"
-
-#~ msgid "Singular:"
-#~ msgstr "Enkelvoud:"
-
-#~ msgid "Plural:"
-#~ msgstr "Meervoud:"
-
-#~ msgid "Empty messages are not shown for the default language."
-#~ msgstr "Lege berichten worden niet getoond voor de standaardtaal."
-
-#~ msgid "Flagged messages"
-#~ msgstr "Gemarkeerde berichten"
-
-#~ msgid "Translation"
-#~ msgstr "Vertaling"
 

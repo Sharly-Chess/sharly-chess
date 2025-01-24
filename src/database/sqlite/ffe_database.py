@@ -88,7 +88,7 @@ class FfeDatabase(SQLiteDatabase):
         print_interactive_info(_('Storing data...'))
         try:
             with open(PapiWebConfig.database_sql_path / 'create_ffe.sql', encoding='utf-8') as f:
-                self.create(f.read())
+                self._create(f.read())
             with FfeAccessDatabase(local_mdb_file) as ffe_access_database:
                 self.write = True
                 with self:

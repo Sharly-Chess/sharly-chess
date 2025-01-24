@@ -1122,18 +1122,6 @@ msgstr "La base de données FIDE [{file}] est osbolète ({days} jours), voulez-v
 msgid "Downloading the FIDE database..."
 msgstr "Téléchargement des la base de données de la FIDE..."
 
-#: src/database/sqlite/fide_database.py
-msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
-msgstr "Ajout du·de la joueur·euse [{fide_id} {name}] en ignorant le titre [{title}]."
-
-#: src/database/sqlite/fide_database.py
-msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
-msgstr "Ajout du·de la joueur·euse [{fide_id} {name}] en ajoutant [{gap}] caractères au champ [{field}]."
-
-#: src/database/sqlite/fide_database.py
-msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
-msgstr "Erreur à la ligne [{line_no}] : [{ex}] (joueur·euse ignoré·e : [{line}])."
-
 #: src/ffe/action_selector.py
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr "L'identifiant FFE non défini pour le tournoi [{tournament_uniq_id}]."

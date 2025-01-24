@@ -1408,24 +1408,6 @@ msgstr "Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμ
 msgid "Downloading the FIDE database..."
 msgstr "Λήψη βάσης δεδομένων FIDE..."
 
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Added player [{fide_id} {name}] by ignoring title [{title}]."
-msgstr "Προστέθηκε παίκτης [{fide_id} {name}] αγνοώντας τον τίτλο [{title}]."
-
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Added player [{fide_id} {name}] by adding [{gap}] chars to field [{field}]."
-msgstr "Προστέθηκε παίκτης [{fide_id} {name}] με την προσθήκη [{gap}] chars στο πεδίο [{field}]."
-
-# Error: tokens differ between [Error at line [{line_no}]: [{ex}] (player
-# ignored: [{line}]).] and [Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο
-# παίκτης): [{line}]]
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Error at line [{line_no}]: [{ex}] (player ignored: [{line}])."
-msgstr "Σφάλμα στη γραμμή [{line_no}]: [{ex}] (ο παίκτης αγνόησε: [{line}])."
-
 #: src/ffe/action_selector.py
 #, ai_translation
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
@@ -5752,46 +5734,4 @@ msgstr "Τουρνουά"
 #, ai_translation
 msgid "Filter the tournaments."
 msgstr "Φίλτρο τα τουρνουά."
-
-#~ msgid "Return to documentation summary"
-#~ msgstr "Επιστρέφω στην περίληψη τεκμηρίωσης"
-
-#~ msgid "English translation *** TRANSLATE !"
-#~ msgstr "Αγγλική μετάφραση"
-
-#~ msgid "View file {file}"
-#~ msgstr "Δείτε το αρχείο {file}"
-
-#~ msgid "Summary"
-#~ msgstr "Περίληψη"
-
-#~ msgid "Empty mandatory messages"
-#~ msgstr "Κενά υποχρεωτικά μηνύματα"
-
-#~ msgid "Empty messages"
-#~ msgstr "Κενά μηνύματα"
-
-#~ msgid "Message flagged [{flag}]"
-#~ msgstr "Μήνυμα που σημαδεύτηκε [{flag}]"
-
-#~ msgid "Message ID"
-#~ msgstr "ID μηνύματος"
-
-#~ msgid "Locations"
-#~ msgstr "Τοποθεσίες"
-
-#~ msgid "Singular:"
-#~ msgstr "Μοναδικός:"
-
-#~ msgid "Plural:"
-#~ msgstr "Πληθυντικός:"
-
-#~ msgid "Empty messages are not shown for the default language."
-#~ msgstr "Τα άδεια μηνύματα δεν εμφανίζονται για την προεπιλεγμένη γλώσσα."
-
-#~ msgid "Flagged messages"
-#~ msgstr "Σημειωθέντα μηνύματα"
-
-#~ msgid "Translation"
-#~ msgstr "Μετάφραση"
 

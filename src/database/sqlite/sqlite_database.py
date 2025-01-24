@@ -26,7 +26,11 @@ class SQLiteDatabase:
         """Checks if the database file exists."""
         return self.file.exists()
 
-    def create(self, script: str):
+    def delete(self):
+        """Deletes the database if it exists."""
+        self.file.unlink(missing_ok=True)
+
+    def _create(self, script: str):
         database: Connection | None = None
         try:
             database = connect(database=self.file, detect_types=1, uri=True)
