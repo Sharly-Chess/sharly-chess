@@ -1,4 +1,4 @@
-{% extends 'user_base.html' %}
+{% extends 'common/base.html' %}
 
 {% block user_header_back_button %}
     {% if user_event.start > now %}
@@ -92,7 +92,7 @@
                                                 card_background_url=rotator.event.background_url,
                                                 card_background_color=rotator.event.background_color
                                             %}
-                                                {% include 'user_rotator_card.html' %}
+                                                {% include 'event/rotator_card.html' %}
                                             {% endwith %}
                                         {% endfor %}
                                     {% else %}
@@ -109,7 +109,7 @@
                                                 card_background_url=screen.background_url,
                                                 card_background_color=screen.background_color
                                             %}
-                                                {% include 'user_screen_card.html' %}
+                                                {% include 'event/screen_card.html' %}
                                             {% endwith %}
                                         {% endfor %}
                                     {% else %}

@@ -1,6 +1,6 @@
-{% from 'macros.j2' import tooltip_attributes, screen_type_icon, rotator_icon, tooltip_script, background_script, copyright_script %}
+{% from '../../common/macros.j2' import tooltip_attributes, screen_type_icon, rotator_icon, tooltip_script, background_script, copyright_script %}
 
-{% extends 'base.html' %}
+{% extends '../../common/base.html' %}
 
 {% block header %}
     <div id="user-header" class="header user-header position-sticky top-0 mx-2 border-bottom border-dark">
@@ -32,9 +32,9 @@
                             url_for('user')
                         ) %}
                         {% with name='user_columns', value=user_columns %}
-                            {% include 'columns_number_dropdown.html' %}
+                            {% include '../../common/columns_number_dropdown.html' %}
                         {% endwith %}
-                        {% include 'locale_dropdown.html' %}
+                        {% include '../../common/locale_dropdown.html' %}
                     {% endwith %}
                 </div>
             </nav>

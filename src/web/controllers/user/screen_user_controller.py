@@ -181,7 +181,7 @@ class AbstractScreenUserController(AbstractUserController):
             web_context: ScreenOrRotatorUserWebContext,
     ) -> Template | ClientRedirect:
         return HTMXTemplate(
-            template_name="user_screen.html",
+            template_name="user/screen.html",
             context=web_context.template_context | {
                 'last_result_updated': SessionHandler.get_session_last_result_updated(web_context.request),
                 'last_illegal_move_updated': SessionHandler.get_session_user_last_illegal_move_updated(web_context.request),

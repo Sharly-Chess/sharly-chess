@@ -1,5 +1,5 @@
-{% extends 'cards_container.html' %}
-{% from 'macros.j2' import tooltip_attributes %}
+{% extends '../../common/cards_container.html' %}
+{% from '../../common/macros.j2' import tooltip_attributes %}
 
 {% block cards_container_title %}
     <i class="{{ event_icon_class }}"></i> {{ title }}
@@ -18,7 +18,7 @@
                     card_background_url=event.background_url,
                     card_background_color=event.background_color
                 %}
-                    {% include 'user_event_card.html' %}
+                    {% include 'event_card.html' %}
                 {% endwith %}
             {% endfor %}
         {% else %}

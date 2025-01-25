@@ -74,8 +74,8 @@
                                             </td>
                                         {% endif %}
                                         {% with player=wp %}{% with opponent=bp %}
-                                            {% include 'user_boards_screen_board_row_illegal_moves_cell.html' %}
-                                            {% include 'user_boards_screen_board_row_player_cell.html' %}
+                                            {% include 'board_row_illegal_moves_cell.html' %}
+                                            {% include 'board_row_player_cell.html' %}
                                         {% endwith %}{% endwith %}
                                         <td
                                             class="score bg-transparent text-center"
@@ -89,8 +89,8 @@
                                             {% if board.result_str %}{{ board.result_str }}{% else %}{{ _('#%(board_number)d', board_number=board.number) }}{% endif %}
                                         </td>
                                         {% with player=bp %}{% with opponent=wp %}
-                                            {% include 'user_boards_screen_board_row_illegal_moves_cell.html' %}
-                                            {% include 'user_boards_screen_board_row_player_cell.html' %}
+                                            {% include 'board_row_illegal_moves_cell.html' %}
+                                            {% include 'board_row_player_cell.html' %}
                                         {% endwith %}{% endwith %}
                                         {% if tournament.print_real_points %}
                                             <td
@@ -149,7 +149,7 @@
                                             <tbody>
                                             {% for player in players_by_name %}
                                                 <tr class="player-row">
-                                                    {% include 'user_boards_screen_player_row_player_cell.html' %}
+                                                    {% include 'player_row_player_cell.html' %}
                                                 </tr>
                                             {% endfor %}
                                             </tbody>

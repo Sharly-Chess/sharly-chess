@@ -151,7 +151,7 @@ class CheckInUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name="user_screen.html",
+            template_name="user/screen.html",
             context=web_context.template_context | {
             })
 
@@ -266,7 +266,7 @@ class ResultUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name="user_screen.html",
+            template_name="user/screen.html",
             context=web_context.template_context | {
             })
 
