@@ -2753,11 +2753,11 @@ msgstr "Création d'une famille d'écrans de saisie."
 
 #: src/web/templates/admin_family_modal.html
 msgid "Boards screen family creation"
-msgstr "Création d'une famille d'écrans d'appariements par échiquier'."
+msgstr "Création d'une famille d'écrans d'appariements par échiquier"
 
 #: src/web/templates/admin_family_modal.html
 msgid "Players screen family creation"
-msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique'."
+msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique"
 
 #: src/web/templates/admin_family_modal.html
 #, python-format
