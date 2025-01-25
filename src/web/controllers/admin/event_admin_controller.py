@@ -110,40 +110,40 @@ class AbstractEventAdminController(AbstractIndexAdminController):
         nav_tabs: dict[str, dict[str, str]] = {
             'config': {
                 'title': admin_event.uniq_id,
-                'template': 'admin_event_config.html',
+                'template': 'event/tab.html',
                 'icon_class': 'bi-gear-fill',
             },
             'tournaments': {
                 'title': _('Tournaments ({num})').format(num=len(admin_event.tournaments_by_id) or '-'),
-                'template': 'admin_tournaments.html',
+                'template': 'tournaments/tab.html',
             },
             'players': {
                 'title': _('Players ({num})').format(num=admin_event.players_number or '-'),
-                'template': 'admin_players.html',
+                'template': 'players/tab.html',
             },
             'screens': {
                 'title': _('Screens ({num})').format(num=len(admin_event.basic_screens_by_id) or '-'),
-                'template': 'admin_screens.html',
+                'template': 'screens/tab.html',
             },
             'families': {
                 'title': _('Families ({num})').format(num=len(admin_event.families_by_id) or '-'),
-                'template': 'admin_families.html',
+                'template': 'families/tab.html',
             },
             'rotators': {
                 'title': _('Rotators ({num})').format(num=len(admin_event.rotators_by_id) or '-'),
-                'template': 'admin_rotators.html',
+                'template': 'rotators/tab.html',
             },
             'timers': {
                 'title': _('Timers ({num})').format(num=len(admin_event.timers_by_id) or '-'),
-                'template': 'admin_timers.html',
+                'template': 'timers/tab.html',
             },
             'chessevents': {
                 'title': _('ChessEvent ({num})').format(num=len(admin_event.chessevents_by_id) or '-'),
-                'template': 'admin_chessevents.html',
+                'template': 'chessevents/tab.html',
             },
             'messages': {
                 'title': _('Messages ({num})').format(num=len(admin_event.messages) or '-'),
-                'template': 'admin_messages.html',
+                'template': 'messages/tab.html',
             },
         }
         if not web_context.admin_event_tab:
@@ -354,7 +354,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
             template_context: dict[str, Any],
     ) -> Template:
         return HTMXTemplate(
-            template_name="admin_event.html",
+            template_name="admin/event.html",
             context=template_context)
 
 

@@ -523,7 +523,7 @@ class AbstractIndexAdminController(AbstractAdminController):
         nav_tabs: dict[str, dict[str, Any]] = {
             'current_events': {
                 'title': _('Current events ({num})').format(num=len(event_loader.current_events) or '-'),
-                'template': 'admin_events.html',
+                'template': 'index/events_tab.html',
                 'events': event_loader.current_events,
                 'disabled': not event_loader.current_events,
                 'empty_str': _('No current events.'),
@@ -531,7 +531,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             },
             'coming_events': {
                 'title': _('Upcoming events ({num})').format(num=len(event_loader.coming_events) or '-'),
-                'template': 'admin_events.html',
+                'template': 'index/events_tab.html',
                 'events': event_loader.coming_events,
                 'disabled': not event_loader.coming_events,
                 'empty_str': _('No upcoming events.'),
@@ -539,7 +539,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             },
             'passed_events': {
                 'title': _('Passed events ({num})').format(num=len(event_loader.passed_events) or '-'),
-                'template': 'admin_events.html',
+                'template': 'index/events_tab.html',
                 'events': event_loader.passed_events,
                 'disabled': not event_loader.passed_events,
                 'empty_str': _('No passed events.'),
@@ -547,7 +547,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             },
             'archives': {
                 'title': _('Archived events ({num})').format(num=len(archive_loader.archives_sorted_by_date) or '-'),
-                'template': 'admin_archives.html',
+                'template': 'index/archives_tab.html',
                 'archives': archive_loader.archives_sorted_by_date,
                 'disabled': not archive_loader.archives_sorted_by_date,
                 'empty_str': _('No archived events.'),
@@ -555,7 +555,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             },
             'config': {
                 'title': _('Papi-web configuration'),
-                'template': 'admin_config.html',
+                'template': 'index/config_tab.html',
                 'icon_class': 'bi-gear-fill',
                 'disabled': False,
             },
@@ -596,7 +596,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return HTMXTemplate(
-            template_name="admin_index.html",
+            template_name="admin/index.html",
             context=context)
 
 
