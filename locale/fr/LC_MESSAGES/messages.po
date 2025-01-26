@@ -2453,7 +2453,7 @@ msgstr "Couleur de fond :"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-msgid "The background colour is used when the image dost fill the whole screen."
+msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran."
 
 #: src/web/templates/admin/event/event_modal.html

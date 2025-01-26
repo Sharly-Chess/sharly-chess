@@ -3021,7 +3021,7 @@ msgstr "Hintergrundfarbe:"
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
-msgid "The background colour is used when the image dost fill the whole screen."
+msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "Die Hintergrundfarbe wird verwendet, wenn das Bild den gesamten Bildschirm füllt."
 
 #: src/web/templates/admin/event/event_modal.html

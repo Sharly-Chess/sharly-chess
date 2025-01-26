@@ -3021,7 +3021,7 @@ msgstr "Achtergrondkleur:"
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
-msgid "The background colour is used when the image dost fill the whole screen."
+msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "De achtergrondkleur wordt gebruikt wanneer de afbeelding het hele scherm vult."
 
 #: src/web/templates/admin/event/event_modal.html
