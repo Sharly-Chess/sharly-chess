@@ -30,160 +30,71 @@
                     <h3 class="text-danger">
                         {{ _('Warning: the deletion of an event is permanent!') }}
                     </h3>
-                    {% with id='uniq-id', name='uniq_id' %}
-                        <div>
-                            <label for="{{ id }}" class="form-label">{{ _('Enter the event ID to confirm its deletion:') }}</label>
-                            <input
-                                    name="{{ name }}"
-                                    type="text" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('Enter here the event ID') }}"
-                                    value="" />
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endwith %}
+                    {{ text_input(
+                        name='uniq_id',
+                        label=_('Enter the event ID to confirm its deletion:'),
+                        placeholder=_('Enter here the event ID'),
+                        help_text=_('Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.'),
+                        data=data, errors=errors
+                    ) }}
                 {% else %}
                     <h3>
                        {{ _('Properties') }}
                     </h3>
                     <div class="row">
                         <div class="col-4">
-                            {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : france-jeunes"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The Unique ID, used for data storage and export.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='uniq_id',
+                                label=_('ID (unique):'),
+                                placeholder=_('E.g.: world-championship'),
+                                help_text=_('The Unique ID, used for data storage and export.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-4">
-                            {% with id='name', name='name' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Name:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : Championnat de France jeunes"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The name of the event, used for display and reports.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='name',
+                                label=_('Name:'),
+                                placeholder=_('E.g.: World championship'),
+                                help_text=_('The name of the event, used for display and reports.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-4">
-                            {% with id='public', name='public' %}
-                                <div>
-                                    <label
-                                            for="{{ id }}"
-                                            class="form-check-label"
-                                    >
-                                        {{ _('Visibility:') }}
-                                    </label>
-                                </div>
-                                <div class="form-check form-switch d-inline-block pe-3">
-                                    <input
-                                            name="{{ name }}"
-                                            class="form-check-input"
-                                            value="on"
-                                            type="checkbox"
-                                            id="{{ id }}"
-                                            {% if data[name] == 'on' %}checked{% endif %} />
-                                    {{ _('Public event') }}
-                                </div>
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('Only arbiters can see private events.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ switch_input(
+                                name='public',
+                                label=_('Visibility:'),
+                                placeholder=_('Public event'),
+                                help_text=_('Only arbiters can see private events.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-3">
-                            {% with id='start', name='start' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Start:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="datetime-local" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The start date and time of the event.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ datatime_input(
+                                name='start',
+                                label=_('Start:'),
+                                help_text=_('The start date and time of the event.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-3">
-                            {% with id='stop', name='stop' %}
-                                <label for="{{ id }}" class="form-label">{{ _('End:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="datetime-local" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The end date and time of the event.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ datatime_input(
+                                name='stop',
+                                label=_('End:'),
+                                help_text=_('The end date and time of the event.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-6">
-                            {% with id='path', name='path' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Default directory of the Papi files:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : C:\echecs\ligue\tournois"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=papi_web_config.default_papi_path) }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='path',
+                                label=_('Default directory of the Papi files:'),
+                                placeholder=_('E.g.: c:\chess\tournaments'),
+                                help_text=_('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=papi_web_config.default_papi_path),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                     <h3>
@@ -191,63 +102,25 @@
                     </h3>
                     <div class="row">
                         <div class="col-6">
-                            {% with id='update-password', name='update_password' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Password to enter results:') }}</label>
-                                <div class="input-group">
-                                    <input
-                                            name="{{ name }}"
-                                            type="password" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="{{ _('E.g.: my_password') }}"
-                                            value="{{ data[name] }}" />
-                                    <i
-                                            id="toggle-password"
-                                            class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
-                                </div>
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The password required on input screens to enter results (optional).') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                                <script>
-                                    $('#toggle-password').on('click', function(event) {
-                                        event.preventDefault();
-                                        hide = $('#{{ id }}').attr("type") == 'text'
-                                        $('#{{ id }}').attr('type', hide ? 'password' : 'text');
-                                        $('#toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
-                                        $('#toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
-                                    });
-                                </script>
-                            {% endwith %}
+                            {{ password_input(
+                                name='update_password',
+                                label=_('Password to enter results:'),
+                                placeholder=_('E.g.: my_password'),
+                                help_text=_('The password required on input screens to enter results (optional).'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-6">
-                            {% with id='record-illegal-moves', name='record_illegal_moves' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Illegal moves recording:') }}</label>
-                                <select
-                                        name="{{ name }}"
-                                        id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error" >
-                                    {% for value, text in record_illegal_moves_options.items() %}
-                                        <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>{{ text }}</option>
-                                    {% endfor %}
-                                </select>
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _(
-                                        'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.',
-                                        default=papi_web_config.default_record_illegal_moves_number
-                                    ) }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ select_input(
+                                name='record_illegal_moves',
+                                label=_('Illegal moves recording:'),
+                                help_text=_(
+                                    'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.',
+                                    default=papi_web_config.default_record_illegal_moves_number
+                                ),
+                                select_options=record_illegal_moves_options,
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                     <h3>
@@ -255,24 +128,13 @@
                     </h3>
                     <div class="row">
                         <div class="col-6">
-                            {% with id='rules', name='rules' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Rules file location:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="Exemple : C:\echecs\ligue\reglements\tournoi.pdf"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('A URL, or the path to the rules file on the server, in PDF format (optional).') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='rules',
+                                label=_('Rules file location:'),
+                                placeholder=_('E.g.: c:\chess\tournaments\my_tournament\rules.pdf'),
+                                help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional).'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                     <h3>
@@ -280,120 +142,44 @@
                     </h3>
                     <div class="row">
                         <div class="col-6">
-                            {% with
-                                id='background-image',
+                            {{ text_input(
                                 name='background_image',
-                                checkbox_id='background-image-checkbox',
-                                checkbox_name='background_image_checkbox'
-                            %}
-                                <div>
-                                    <label for="{{ id }}" class="form-label">{{ _('Background image:') }}</label>
-                                    <input
-                                            name="{{ checkbox_name }}"
-                                            type="checkbox" id="{{ checkbox_id }}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> {{ _('no background image') }}
-                                    <script>
-                                        $('#{{ checkbox_id }}').click(function() {
-                                            if ($(this).is(':checked')) {
-                                                $('#{{ id }}').val('');
-                                                $('#{{ id }}').css('display', 'none');
-                                                $('#{{ id }}-help').css('display', 'none');
-                                                $('#{{ id }}-error').css('display', 'none');
-                                                $('#background-image-picker-wrapper').css('display', 'none');
-                                                $('#background-image-test').css('background-image', '');
-                                            } else {
-                                                $('#{{ id }}').css('display', 'block');
-                                                $('#{{ id }}-help').css('display', 'block');
-                                                $('#{{ id }}-error').css('display', 'block');
-                                                $('#background-image-picker-wrapper').css('display', 'block');
-                                            }
-                                        });
-                                    </script>
-                                    <input
-                                            name="{{ name }}"
-                                            type="text" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="E.g.: https://my.club.us/tournament.jpg"
-                                            value="{{ data[name] }}"
-                                            style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
-                                    />
-                                    <div
-                                            id="{{ id }}-help"
-                                            class="form-text"
-                                            style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
-                                    >
-                                      {{ _('The URL or the path of the image to display (by default the Papi-web logo).') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div
-                                                id="{{ id }}-error"
-                                                class="form-text invalid-feedback"
-                                                style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
-                                        >
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
-                            {% with
-                                id='background-color',
+                                label=_('Background image:'),
+                                placeholder=_('E.g.: Please keep quiet until the end of the round!'),
+                                help_text=_('The URL or the path of the image to display (by default the Papi-web logo).'),
+                                default_checkbox=true,
+                                default_checkbox_text=_('no background image'),
+                                data=data, errors=errors
+                            ) }}
+                            <script>
+                                $('#background-image-checkbox').click(function() {
+                                    if ($(this).is(':checked')) {
+                                        $('#background-image-picker-wrapper').css('display', 'none');
+                                        $('#background-image-test').css('background-image', '');
+                                    } else {
+                                        $('#background-image-picker-wrapper').css('display', 'block');
+                                    }
+                                });
+                            </script>
+                            {{ color_input(
                                 name='background_color',
-                                checkbox_id='background-color-checkbox',
-                                checkbox_name='background_color_checkbox'
-                            %}
-                                <div>
-                                    <label for="{{ id }}" class="form-label">{{ _('Background colour:') }}</label>
-                                    <input
-                                            name="{{ checkbox_name }}"
-                                            type="checkbox" id="{{ checkbox_id }}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            {% if data[checkbox_name] == 'on' %}checked{% endif %} /> {{ _('by default') }}
-                                    <script>
-                                        $('#{{ checkbox_id }}').click(function() {
-                                            if ($(this).is(':checked')) {
-                                                $('#{{ id }}').val('{{ papi_web_config.default_background_color }}');
-                                                $('#{{ id }}').css('display', 'none');
-                                                $('#{{ id }}-help').css('display', 'none');
-                                                $('#background-image-test').css('background-color', '{{ papi_web_config.default_background_color }}');
-                                            } else {
-                                                $('#{{ id }}').css('display', 'block');
-                                                $('#{{ id }}-help').css('display', 'block');
-                                            }
-                                        });
-                                    </script>
-                                    <input
-                                            name="{{ name }}"
-                                            type="color" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            value="{{ papi_web_config.default_background_color if data[checkbox_name] == 'on' else data[name] }}"
-                                            style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
-                                    />
-                                    <script>
-                                        $('#{{ id }}').change(function() {
-                                            $('#background-image-test').css('background-color', $(this).val());
-                                        });
-                                    </script>
-                                    <div
-                                            id="{{ id }}-help"
-                                            class="form-text"
-                                            style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
-                                    >
-                                        {{ _('The background colour is used when the image does not fill the whole screen.') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div
-                                                id="{{ id }}-error"
-                                                class="form-text invalid-feedback"
-                                                style="display: {% if data[checkbox_name] == 'on' %}none{% else %}block{% endif %}"
-                                        >
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
+                                label=_('Background colour:'),
+                                help_text=_('The background colour is used when the image does not fill the whole screen.'),
+                                default_checkbox=true,
+                                default_color=papi_web_config.default_background_color,
+                                data=data, errors=errors
+                            ) }}
+                            <script>
+                                $('#background-color-checkbox').click(function() {
+                                    if ($(this).is(':checked')) {
+                                        $('#background-image-test').css('background-color', '{{ papi_web_config.default_background_color }}');
+                                    } else {
+                                    }
+                                });
+                                $('#background-color').change(function() {
+                                    $('#background-image-test').css('background-color', $(this).val());
+                                });
+                            </script>
                             <div id="background-image-test" style="
                                     width: 320px;
                                     height: 180px;
@@ -427,7 +213,6 @@
                                     }
                                 );
                                 $('#background-image-picker').on("changed.jstree", function (e, data) {
-                                    /* console.log(data.selected); */
                                 });
                             </script>
                         </div>
@@ -435,116 +220,62 @@
                     <h3>
                         {{ _('Timers') }}
                     </h3>
-                    {% with default_colors=papi_web_config.default_timer_colors %}
-                        {% include '../common/event_or_timer_modal/edit_timer_colors.html' %}
-                    {% endwith %}
-                    {% with default_delays=papi_web_config.default_timer_delays %}
-                        {% include '../common/event_or_timer_modal/edit_timer_delays.html' %}
-                    {% endwith %}
+                    <div class="row">
+                        {% for num in [1, 2, 3] %}
+                            <div class="col-4">
+                                {{ color_input(
+                                    name='color_'~num,
+                                    label=_('Colour #%(num)d:', num=num),
+                                    help_text=timer_color_texts[num],
+                                    default_checkbox=true,
+                                    default_color=papi_web_config.default_timer_colors[num],
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        {% for num in [1, 2, 3] %}
+                            {% with id='delay-'~num, name='delay_'~num %}
+                            <div class="col-4">
+                                {{ number_input(
+                                    name='delay_'~num,
+                                    label=_('Delay #%(num)d:', num=num),
+                                    placeholder=_('By default: %(minutes)d minutes', minutes=papi_web_config.default_timer_delays[num]),
+                                    help_text='',
+                                    default_checkbox=false,
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
                     <h3>
                         {{ _('Alert message') }}
                     </h3>
                     <div class="row">
                         <div class="col-3">
-                            {% with
-                                id='message-background-color',
+                            {{ color_input(
                                 name='message_background_color',
-                                checkbox_id='message-background-color-checkbox',
-                                checkbox_name='message_background_color_checkbox'
-                            %}
-                                <label for="{{ id }}" class="form-label">{{ _('Background colour:') }}</label>
-                                <input
-                                        name="{{ checkbox_name }}"
-                                        type="checkbox" id="{{ checkbox_id }}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        {% if data[checkbox_name] == 'on' %}checked{% endif %} /> par défaut
-                                <input
-                                        name="{{ name }}"
-                                        type="color" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        value="{{ papi_web_config.default_message_background_color if data[checkbox_name] == 'on' else data[name] }}"
-                                        {% if data[checkbox_name] == 'on' %}disabled{% endif %}/>
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ color_text }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                                <script>
-                                    $('#{{ checkbox_id }}').click(function() {
-                                        if ($(this).is(':checked')) {
-                                            $('#{{ id }}').val('{{ papi_web_config.default_message_background_color }}');
-                                            $('#{{ id }}').prop('disabled', true);
-                                        } else {
-                                            $('#{{ id }}').prop('disabled', false);
-                                        }
-                                    });
-                                </script>
-                            {% endwith %}
+                                label=_('Background colour:'),
+                                help_text=_('The background colour of the alert messages.'),
+                                default_checkbox=true,
+                                default_color=papi_web_config.default_message_background_color,
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-3">
-                            {% with
-                                id='message-color',
+                            {{ color_input(
                                 name='message_color',
-                                checkbox_id='message-color-checkbox',
-                                checkbox_name='message_color_checkbox'
-                            %}
-                                <label for="{{ id }}" class="form-label">{{ _('Text colour:') }}</label>
-                                <input
-                                        name="{{ checkbox_name }}"
-                                        type="checkbox" id="{{ checkbox_id }}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        {% if data[checkbox_name] == 'on' %}checked{% endif %} />
-                                {{ _('by default') }}
-                                <input
-                                        name="{{ name }}"
-                                        type="color" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        value="{{ papi_web_config.default_message_color if data[checkbox_name] == 'on' else data[name] }}"
-                                        {% if data[checkbox_name] == 'on' %}disabled{% endif %}/>
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ color_text }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                                <script>
-                                    $('#{{ checkbox_id }}').click(function() {
-                                        if ($(this).is(':checked')) {
-                                            $('#{{ id }}').val('{{ papi_web_config.default_message_color }}');
-                                            $('#{{ id }}').prop('disabled', true);
-                                        } else {
-                                            $('#{{ id }}').prop('disabled', false);
-                                        }
-                                    });
-                                </script>
-                            {% endwith %}
+                                label=_('Text colour:'),
+                                help_text=_('The text colour of the alert messages.'),
+                                default_checkbox=true,
+                                default_color=papi_web_config.default_message_color,
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-6">
-                            {% with id='message-text', name='message_text' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Text:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: Please keep quiet until the end of the round!') }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {% include '../common/modal/alert_message.html' %}
                         </div>
                     </div>
                 {% endif %}

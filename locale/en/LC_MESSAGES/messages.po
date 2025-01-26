@@ -2269,51 +2269,56 @@ msgid "Sort the players by tournament."
 msgstr ""
 
 #: src/web/templates/admin/common/macros.j2
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
-#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 msgid "by default"
 msgstr ""
 
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#, python-format
-msgid "Colour #%(num)d:"
-msgstr ""
-
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
-#, python-format
-msgid "Delay #%(num)d:"
-msgstr ""
-
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
-#, python-format
-msgid "By default: %(minutes)d minutes"
-msgstr ""
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
-msgid "Display of a screen exit button:"
-msgstr ""
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
-msgid "When not displaying the exit button, users can not accidentally exit input screens."
-msgstr ""
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
+#: src/web/templates/admin/common/modal/alert_message.html
 msgid "Alert message:"
 msgstr ""
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
+#: src/web/templates/admin/common/modal/alert_message.html
 #: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr ""
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
+#: src/web/templates/admin/common/modal/alert_message.html
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
+msgstr ""
+
+#: src/web/templates/admin/common/modal/exit_button.html
+msgid "Display of a screen exit button:"
+msgstr ""
+
+#: src/web/templates/admin/common/modal/exit_button.html
+msgid "When not displaying the exit button, users can not accidentally exit input screens."
+msgstr ""
+
+#: src/web/templates/admin/common/modal/show_unpaired.html
 msgid "Display of unpaired players:"
 msgstr ""
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
+#: src/web/templates/admin/common/modal/show_unpaired.html
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
+msgstr ""
+
+#: src/web/templates/admin/common/modal/timer_colors.html
+#: src/web/templates/admin/event/event_modal.html
+#, python-format
+msgid "Colour #%(num)d:"
+msgstr ""
+
+#: src/web/templates/admin/common/modal/timer_delays.html
+#: src/web/templates/admin/event/event_modal.html
+#, python-format
+msgid "Delay #%(num)d:"
+msgstr ""
+
+#: src/web/templates/admin/common/modal/timer_delays.html
+#: src/web/templates/admin/event/event_modal.html
+#, python-format
+msgid "By default: %(minutes)d minutes"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2347,6 +2352,10 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+msgid "E.g.: world-championship"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 msgid "The Unique ID, used for data storage and export."
 msgstr ""
 
@@ -2356,6 +2365,10 @@ msgstr ""
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Name:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "E.g.: World championship"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2399,6 +2412,10 @@ msgid "Default directory of the Papi files:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+msgid "E.g.: c:\\chess\tournaments"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 #, python-format
 msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
 msgstr ""
@@ -2433,6 +2450,12 @@ msgid "Rules file location:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+msgid ""
+"E.g.: c:\\chess\tournaments\\my_tournament\r"
+"ules.pdf"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr ""
 
@@ -2447,11 +2470,11 @@ msgid "Background image:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
-msgid "no background image"
+msgid "The URL or the path of the image to display (by default the Papi-web logo)."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
-msgid "The URL or the path of the image to display (by default the Papi-web logo)."
+msgid "no background image"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2479,15 +2502,15 @@ msgid "Alert message"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+msgid "The background colour of the alert messages."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 msgid "Text colour:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
-msgid "Text:"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
+msgid "The text colour of the alert messages."
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
@@ -4764,5 +4787,8 @@ msgid "vs"
 msgstr ""
 
 #~ msgid "Pairings"
+#~ msgstr ""
+
+#~ msgid "Text:"
 #~ msgstr ""
 

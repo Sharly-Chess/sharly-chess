@@ -2803,59 +2803,65 @@ msgid "Sort the players by tournament."
 msgstr "Sorteer de spelers op toernooi."
 
 #: src/web/templates/admin/common/macros.j2
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
-#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 #, ai_translation
 msgid "by default"
 msgstr "standaard"
 
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#, ai_translation, python-format
-msgid "Colour #%(num)d:"
-msgstr "Kleur #%(num)d:"
-
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
-#, ai_translation, python-format
-msgid "Delay #%(num)d:"
-msgstr "Vertraging #%(num)d:"
-
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
-#, ai_translation, fuzzy, python-format
-msgid "By default: %(minutes)d minutes"
-msgstr "Bijvoorbeeld: %(minutes)d (minuten)"
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
-#, ai_translation
-msgid "Display of a screen exit button:"
-msgstr "Weergave van een schermafsluitknop:"
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
-#, ai_translation
-msgid "When not displaying the exit button, users can not accidentally exit input screens."
-msgstr "Wanneer de exit-knop niet wordt weergegeven, kunnen gebruikers niet per ongeluk de invoerschermen verlaten."
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
+#: src/web/templates/admin/common/modal/alert_message.html
 #, ai_translation
 msgid "Alert message:"
 msgstr "Waarschuwingsbericht:"
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
+#: src/web/templates/admin/common/modal/alert_message.html
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "B.v.: Hou alsjeblieft je mond tot het einde van de ronde!"
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
+#: src/web/templates/admin/common/modal/alert_message.html
+#, ai_translation
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
+msgstr "Indien gedefinieerd wordt het waarschuwingsbericht weergegeven in een scrollende banner onderaan het scherm. Het waarschuwingsbericht gedefinieerd op gebeurtenisniveau kan worden overschreven op rotator, schermfamilie of schermniveau."
+
+#: src/web/templates/admin/common/modal/exit_button.html
+#, ai_translation
+msgid "Display of a screen exit button:"
+msgstr "Weergave van een schermafsluitknop:"
+
+#: src/web/templates/admin/common/modal/exit_button.html
+#, ai_translation
+msgid "When not displaying the exit button, users can not accidentally exit input screens."
+msgstr "Wanneer de exit-knop niet wordt weergegeven, kunnen gebruikers niet per ongeluk de invoerschermen verlaten."
+
+#: src/web/templates/admin/common/modal/show_unpaired.html
 #, ai_translation
 msgid "Display of unpaired players:"
 msgstr "Weergave van niet-gepaarde spelers:"
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
+#: src/web/templates/admin/common/modal/show_unpaired.html
 #, ai_translation
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
 msgstr "Wanneer niet-gepaarde spelers niet worden weergegeven, is er geen manier om de afwezige (nulpunt) spelers en de spelers met een halve punt bye te onderscheiden."
+
+#: src/web/templates/admin/common/modal/timer_colors.html
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, python-format
+msgid "Colour #%(num)d:"
+msgstr "Kleur #%(num)d:"
+
+#: src/web/templates/admin/common/modal/timer_delays.html
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, python-format
+msgid "Delay #%(num)d:"
+msgstr "Vertraging #%(num)d:"
+
+#: src/web/templates/admin/common/modal/timer_delays.html
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "By default: %(minutes)d minutes"
+msgstr "Bijvoorbeeld: %(minutes)d (minuten)"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -2894,6 +2900,11 @@ msgstr "Het herstellen van verwijderde gebeurtenissen is niet mogelijk van de we
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
+msgid "E.g.: world-championship"
+msgstr "Bijvoorbeeld: wereldkampioenschap"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
 msgid "The Unique ID, used for data storage and export."
 msgstr "De unieke ID, gebruikt voor gegevensopslag en -export."
 
@@ -2905,6 +2916,11 @@ msgstr "De unieke ID, gebruikt voor gegevensopslag en -export."
 #, ai_translation
 msgid "Name:"
 msgstr "Naam:"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "E.g.: World championship"
+msgstr "Bv.: Wereldkampioenschap"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -2956,6 +2972,11 @@ msgid "Default directory of the Papi files:"
 msgstr "Standaardmap van de Papi-bestanden:"
 
 #: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: c:\\chess\tournaments"
+msgstr "Bijvoorbeeld: c:\\chess\\toernooien\\papi"
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation, python-format
 msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
 msgstr "De standaardmap van de Papi-bestanden voor de toernooien (absoluut of relatief pad, standaard %(dir)s)."
@@ -2995,6 +3016,13 @@ msgid "Rules file location:"
 msgstr "Ligging van de regels van het bestand:"
 
 #: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid ""
+"E.g.: c:\\chess\tournaments\\my_tournament\r"
+"ules.pdf"
+msgstr "Bijvoorbeeld: c:\\chess\\toernooien\\main\\rules.pdf"
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr "Een URL, of het pad naar het regelsbestand op de server, in PDF-formaat (optioneel)."
@@ -3013,13 +3041,13 @@ msgstr "Achtergrondafbeelding:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
-msgid "no background image"
-msgstr "geen achtergrondafbeelding"
+msgid "The URL or the path of the image to display (by default the Papi-web logo)."
+msgstr "De URL of het pad van de te tonen afbeelding (standaard het Papi-weblogo)."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
-msgid "The URL or the path of the image to display (by default the Papi-web logo)."
-msgstr "De URL of het pad van de te tonen afbeelding (standaard het Papi-weblogo)."
+msgid "no background image"
+msgstr "geen achtergrondafbeelding"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -3050,6 +3078,13 @@ msgstr "Timers"
 msgid "Alert message"
 msgstr "Waarschuwingsbericht"
 
+# Error: tokens differ between [The background colour of the alert messages.]
+# and [Achtergrondkleur: %(color)s]
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "The background colour of the alert messages."
+msgstr "De achtergrondkleur van de waarschuwingsberichten."
+
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "Text colour:"
@@ -3057,13 +3092,8 @@ msgstr "Tekstkleur:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
-msgid "Text:"
-msgstr "Tekst:"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
-msgstr "Indien gedefinieerd wordt het waarschuwingsbericht weergegeven in een scrollende banner onderaan het scherm. Het waarschuwingsbericht gedefinieerd op gebeurtenisniveau kan worden overschreven op rotator, schermfamilie of schermniveau."
+msgid "The text colour of the alert messages."
+msgstr "De tekstkleur van de waarschuwingsberichten."
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -5152,14 +5182,14 @@ msgstr "Aanmaken van speler"
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, fuzzy, python-format
 msgid "Edition of timer [%(timer_uniq_id)s]"
-msgstr ""
+msgstr "Editie van de timer [%(timer_uniq_id)s]"
 
 # Error: tokens differ between [Deletion of timer [%(timer_uniq_id)s]] and
 # [Schrapping van rotator [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, fuzzy, python-format
 msgid "Deletion of timer [%(timer_uniq_id)s]"
-msgstr ""
+msgstr "Schrapping van timer [%(timer_uniq_id)s]"
 
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation
@@ -5172,8 +5202,9 @@ msgid "E.g.: timer"
 msgstr "Bijv.: timer"
 
 #: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation
 msgid "Colors and delays"
-msgstr ""
+msgstr "Kleuren en vertragingen"
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
@@ -5248,8 +5279,9 @@ msgid "Edit the properties of the tournament."
 msgstr "Bewerk de eigenschappen van het toernooi."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation
 msgid "Generate pairings for the next round."
-msgstr ""
+msgstr "Genereer parings voor de volgende ronde."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, fuzzy
@@ -5779,4 +5811,7 @@ msgstr "vs"
 
 #~ msgid "Pairings"
 #~ msgstr "met een gewicht van niet meer dan 150 g/m2"
+
+#~ msgid "Text:"
+#~ msgstr "Tekst:"
 

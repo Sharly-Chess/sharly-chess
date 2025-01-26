@@ -172,6 +172,7 @@
     data={},
     errors={},
     default_checkbox=false,
+    default_checkbox_text='',
     default_value='',
     select_options={}
 ) %}
@@ -185,17 +186,28 @@
             {% set value=data[name] %}
         {% endif %}
         <div>
-            <label for="{{ id }}" class="form-label">{{ label }}</label>
+            <label
+                    for="{{ id }}"
+                    class="{% if input_type == 'switch' %}form-label{% else %}form-check-label{% endif %}"
+            >
+                {{ label }}
+            </label>
             {% if default_checkbox %}
                 <input
+                        id="{{ default_checkbox_id }}"
                         name="{{ default_checkbox_name }}"
-                        type="checkbox" id="{{ default_checkbox_id }}"
+                        type="checkbox"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
                 />
-                {{ _('by default') }}
+                {{ default_checkbox_text or _('by default') }}
             {% endif %}
-            <div class="input-group">
+            <div
+                    class="
+                    input-group
+                    {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
+                    "
+            >
                 {% if input_type == 'select' %}
                     <select
                             name="{{ name }}"
@@ -208,6 +220,17 @@
                             </option>
                         {% endfor %}
                     </select>
+                {% elif input_type == 'switch' %}
+                    <input
+                            id="{{ id }}"
+                            name="{{ name }}"
+                            type="checkbox"
+                            class="form-check-input"
+                            value="on"
+                            aria-describedby="{{ id }}-help {{ id }}-error"
+                            {% if data[name] == 'on' %}checked{% endif %}
+                    />
+                    {{ placeholder }}
                 {% else %}
                     <input
                             name="{{ name }}"
@@ -270,6 +293,7 @@
     data={},
     errors={},
     default_checkbox=false,
+    default_checkbox_text='',
     default_value=''
 ) %}
     {{ _generic_input(
@@ -281,6 +305,7 @@
         data=data,
         errors=errors,
         default_checkbox=default_checkbox,
+        default_checkbox_text=default_checkbox_text,
         default_value=default_value
     ) }}
 {% endmacro %}
@@ -293,6 +318,7 @@
     data={},
     errors={},
     default_checkbox=false,
+    default_checkbox_text='',
     default_value=''
 ) %}
     {{ _generic_input(
@@ -304,6 +330,7 @@
         data=data,
         errors=errors,
         default_checkbox=default_checkbox,
+        default_checkbox_text=default_checkbox_text,
         default_value=default_value
     ) }}
 {% endmacro %}
@@ -335,6 +362,7 @@
     data={},
     errors={},
     default_checkbox=false,
+    default_checkbox_text='',
     default_color=''
 ) %}
     {{ _generic_input(
@@ -346,6 +374,7 @@
         data=data,
         errors=errors,
         default_checkbox=default_checkbox,
+        default_checkbox_text=default_checkbox_text,
         default_value=default_color
     ) }}
 {% endmacro %}
@@ -366,5 +395,42 @@
         data=data,
         errors=errors,
         select_options=select_options
+    ) }}
+{% endmacro %}
+
+{% macro switch_input(
+    name,
+    label='NO LABEL',
+    placeholder='NO PLACEHOLDER',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={}
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='switch',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+    ) }}
+{% endmacro %}
+
+{% macro datatime_input(
+    name,
+    label='NO LABEL',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={}
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='datetime-local',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
     ) }}
 {% endmacro %}
