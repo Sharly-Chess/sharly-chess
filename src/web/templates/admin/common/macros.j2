@@ -1,0 +1,171 @@
+{%
+    from '../../common/macros.j2' import
+    tooltip_attributes,
+    event_visibility_icon,
+    screen_type_icon,
+    rotator_icon,
+    tooltip_script,
+    background_script,
+    copyright_script
+%}
+
+{% macro screen_visibility_icon(screen, class) %}
+    <!-- screen_visibility_icon() -->
+    {{ visibility_icon('screen', screen.public, '', '', class) }}
+    <!-- end screen_visibility_icon() -->
+{% endmacro %}
+
+{% macro family_visibility_icon(family, class) %}
+    <!-- family_visibility_icon() -->
+    {{ visibility_icon('family', family.public, '', '', class) }}
+    <!-- end family_visibility_icon() -->
+{% endmacro %}
+
+{% macro rotator_visibility_icon(rotator, class) %}
+    <!-- rotator_visibility_icon() -->
+    {{ visibility_icon('rotator', rotator.public, '', '', class) }}
+    <!-- end rotator_visibility_icon() -->
+{% endmacro %}
+
+{% macro tournament_status_icon(tournament, class) %}
+    <!-- tournament_status_icon() -->
+    {% if not tournament.rounds %}
+        {% set _icon_class='bi-exclamation-triangle-fill text-danger' %}
+        {% set _tooltip_text='' %}
+    {% elif not tournament.started %}
+        {% set _icon_class='bi-pause-fill' %}
+        {% set _tooltip_text=_('The tournament is not started yet.') %}
+    {% elif tournament.playing %}
+        {% set _icon_class='bi-caret-right-square-fill' %}
+        {% set _tooltip_text=_('Round #%(round)d is running.', round=tournament.current_round) %}
+    {% elif not tournament.finished %}
+        {% set _icon_class='bi-pause-fill' %}
+        {% set _tooltip_text=_('Round #%(round)d is finished.', round=tournament.current_round) %}
+    {% else %}
+        {% set _icon_class='bi-check-circle-fill text-success' %}
+        {% set _tooltip_text=_('The tournament is finished.') %}
+    {% endif %}
+    <span
+            class="fw-bold {{ class }}"
+            {% if _tooltip_text %}{{ tooltip_attributes('info', _tooltip_text, 'top') }}{% endif %}
+        >
+        <i class="{{ _icon_class }}"></i>
+    </span>
+    <!-- end tournament_status_icon() -->
+{% endmacro %}
+
+{% macro ffe_licence(ffe_licence, class) %}
+    <!-- ffe_licence() -->
+    <span
+            class="player-ffe-lic ffe-lic-{{ ffe_licence.short_name }} ps-1 pe-1 {{ class }}"
+    >{{ ffe_licence.short_name }}</span>
+    <!-- end ffe_licence() -->
+{% endmacro %}
+
+{% macro player_history(player) %}
+    <!-- player_history() -->
+    {% for pairing in player.pairings.values() %}
+        {% if pairing.forfeit %}
+            {% set _text='f' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.not_paired %}
+            {% set _text='' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.playing %}
+            {% set _text='&nbsp;' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.exempt %}
+            {% set _text='x' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.loss %}
+            {% set _text='-' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.draw %}
+            {% set _text='=' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.gain %}
+            {% set _text='+' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.half_point_bye %}
+            {% set _text='=' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.full_point_bye %}
+            {% set _text='+' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.forfeit_loss or pairing.double_forfeit %}
+            {% set _text='<' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.forfeit_gain %}
+            {% set _text='>' %}
+            {% set _class='text-secondary' %}
+        {% else %}
+            {% set _text='?' %}
+            {% set _class='bg-danger text-white' %}
+        {% endif %}
+        <span
+                class="player-history text-center p-0 m-0  {{ _class }}"
+                {% if tooltip_placement %}
+                    {{ tooltip_attributes(_tooltip_level, _tooltip_text, tooltip_placement) }}
+                {% endif %}
+                style="display: inline-block; width: 1em"
+        >
+            {{ _text|safe }}
+        </span>
+    {% endfor %}
+    <!-- end player_history() -->
+{% endmacro %}
+
+{% macro admin_players_sort_link(url, icon, sort, admin_players_sort) %}
+    <!-- admin_players_sort_link() -->
+    {% if sort == 'alpha' %}
+        {% set _tooltip_text=_('Sort the players by name.') %}
+    {% elif sort == 'rating_desc' %}
+        {% set _tooltip_text=_('Sort the players by rating (most rated first).') %}
+    {% elif sort == 'rating_asc' %}
+        {% set _tooltip_text=_('Sort the players by rating (less rated first).') %}
+    {% elif sort == 'origin' %}
+        {% set _tooltip_text=_('Sort the players by origin (federation, league, club).') %}
+    {% elif sort == 'yob_desc' %}
+        {% set _tooltip_text=_('Sort the players by year of birth (youngest first).') %}
+    {% elif sort == 'yob_asc' %}
+        {% set _tooltip_text=_('Sort the players by year of birth (oldest first).') %}
+    {% elif sort == 'category_desc' %}
+        {% set _tooltip_text=_('Sort the players by category (oldest first).') %}
+    {% elif sort == 'category_asc' %}
+        {% set _tooltip_text=_('Sort the players by category (youngest first).') %}
+    {% elif sort == 'tournament' %}
+        {% set _tooltip_text=_('Sort the players by tournament.') %}
+    {% else %}
+        {% set _tooltip_text='Unknown sort [%(sort)s]'|format(sort=sort) %}
+    {% endif %}
+    <i
+            class="{{ icon }} {% if admin_players_sort != sort %}cursor-pointer{% else %}text-primary{%endif %}"
+            {% if admin_players_sort != sort %}
+                hx-get="{{ url }}"
+                hx-vals='{"admin_players_sort": "{{ sort }}"}'
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            {% endif %}
+            {{ tooltip_attributes('info', _tooltip_text, 'top') }}
+    ></i>
+    <!-- end admin_players_sort_link() -->
+{% endmacro %}
+
+{% macro gender_icon(gender) %}
+    <!-- gender_icon() -->
+    {% if gender.value == 0 %}
+        {% set _icon_class='-' %}
+    {% elif gender.value == 1 %}
+        {% set _icon_class='bi-person-standing-dress' %}
+    {% elif gender.value == 2 %}
+        {% set _icon_class='bi-person-standing' %}
+    {% else %}
+        {% set _icon_class='bi-question' %}
+    {% endif %}
+    {% if _icon_class %}<i class="{{ _icon_class }}"></i>{% endif %}
+    <!-- end gender_icon() -->
+{% endmacro %}
+
+
+
