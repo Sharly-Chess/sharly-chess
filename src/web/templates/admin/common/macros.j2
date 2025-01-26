@@ -174,7 +174,8 @@
     default_checkbox=false,
     default_checkbox_text='',
     default_value='',
-    select_options={}
+    select_options={},
+    number_min=0
 ) %}
     <!-- {{ input_type }}_input({{ name }}) -->
         {% set id=name|replace('_', '-') %}
@@ -237,8 +238,12 @@
                     {{ placeholder }}
                 {% else %}
                     <input
+                            id="{{ id }}"
                             name="{{ name }}"
-                            type="{{ input_type }}" id="{{ id }}"
+                            type="{{ input_type }}"
+                            {% if number_min %}
+                                min="{{ number_min }}"
+                            {% endif %}
                             class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
                             aria-describedby="{{ id }}-help {{ id }}-error"
                             placeholder="{{ placeholder }}"
@@ -323,7 +328,8 @@
     errors={},
     default_checkbox=false,
     default_checkbox_text='',
-    default_value=''
+    default_value='',
+    number_min=0
 ) %}
     {{ _generic_input(
         name=name,
@@ -335,7 +341,8 @@
         errors=errors,
         default_checkbox=default_checkbox,
         default_checkbox_text=default_checkbox_text,
-        default_value=default_value
+        default_value=default_value,
+        number_min=number_min
     ) }}
 {% endmacro %}
 

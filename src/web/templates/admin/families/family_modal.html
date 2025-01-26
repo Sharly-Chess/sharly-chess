@@ -109,7 +109,8 @@
                                     _('The number of the first board to select, optional (the first board by default).')
                                     if family_type in ['boards', 'input'] else
                                     _('The number of the first player to select, optional (the first player by alphabetical order by default).'),
-                                data=data, errors=errors
+                                data=data, errors=errors,
+                                number_min=1
                             ) }}
                         </div>
                         <div class="col-3">
@@ -121,7 +122,8 @@
                                     _('The number of the last board to select, optional (the last board by default).')
                                     if family_type in ['boards', 'input'] else
                                     _('The number of the last player to select, optional (the last player by alphabetical order by default).'),
-                                data=data, errors=errors
+                                data=data, errors=errors,
+                                number_min=1
                             ) }}
                         </div>
                         <div class="col-3">

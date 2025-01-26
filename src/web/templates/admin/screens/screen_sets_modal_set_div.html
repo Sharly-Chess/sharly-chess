@@ -12,48 +12,22 @@
                 </h3>
                 <div class="row">
                     <div class="col-5">
-                        {% with id='tournament-id', name='tournament_id' %}
-                            <label for="{{ id }}" class="form-label">{{ _('Tournament:') }}</label>
-                            <select
-                                    name="{{ name }}"
-                                    id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error" >
-                                {% for value, text in tournament_options.items() %}
-                                    <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
-                                        {{ text }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('The tournament of which you want to show the pairings, mandatory.') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {{ select_input(
+                            name='tournament_id',
+                            label=_('Tournament:'),
+                            help_text=_('The tournament of which you want to show the pairings, mandatory.'),
+                            select_options=tournament_options,
+                            data=data, errors=errors
+                        ) }}
                     </div>
                     <div class="col-5">
-                        {% with id='name', name='name' %}
-                            <label for="{{ id }}" class="form-label">{{ _('Name:') }}</label>
-                            <input
-                                    name="{{ name }}"
-                                    type="text" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('E.g.: Boards %%f to %%l') if admin_screen.type in ['boards', 'input'] else _('E.g.: Players %%f to %%l') }}"
-                                    value="{{ data[name] }}" />
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('The name of the screen set (the name of the first set of a screen is by default the name of the screen).') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {{ text_input(
+                            name='name',
+                            label=_('Name:'),
+                            placeholder=_('E.g.: Boards %%f to %%l') if admin_screen.type in ['boards', 'input'] else _('E.g.: Players %%f to %%l'),
+                            help_text=_('The name of the screen set (the name of the first set of a screen is by default the name of the screen).'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
                     <div class="col-2 text-end">
                         <button
@@ -86,85 +60,40 @@
                     </h3>
                     <div class="row">
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
-                            {% with id='first', name='first' %}
-                                <label for="{{ id }}" class="form-label">
-                                    {% if admin_screen.type in ['boards', 'input'] %}
-                                        {{ _('First board:') }}
-                                    {% else %}
-                                        {{ _('First player:') }}
-                                    {% endif %}
-                                </label>
-                                <input
-                                        name="{{ name }}"
-                                        type="number" id="{{ id }}" min="1"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: %(num)d', num=15) }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {% if admin_screen.type in ['boards', 'input'] %}
-                                        {{ _('The number of the first board to select, optional (the first board by default).') }}
-                                    {% else %}
-                                        {{ _('The number of the first player to select, optional (the first player by alphabetical order by default).') }}
-                                    {% endif %}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ number_input(
+                                name='first',
+                                label=_('First board:') if admin_screen.type in ['boards', 'input'] else _('First player:'),
+                                placeholder=_('E.g.: %(num)d', num=15),
+                                help_text=
+                                    _('The number of the first board to select, optional (the first board by default).')
+                                    if admin_screen.type in ['boards', 'input'] else
+                                    _('The number of the first player to select, optional (the first player by alphabetical order by default).'),
+                                data=data, errors=errors,
+                                number_min=1
+                            ) }}
                         </div>
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
-                            {% with id='last', name='last' %}
-                                <label for="{{ id }}" class="form-label">
-                                    {% if admin_screen.type in ['boards', 'input'] %}
-                                        {{ _('Last board:') }}
-                                    {% else %}
-                                        {{ _('Last player:') }}
-                                    {% endif %}
-                                </label>
-                                <input
-                                        name="{{ name }}"
-                                        type="number" id="{{ id }}" min="1"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: %(num)d', num=40) }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {% if admin_screen.type in ['boards', 'input'] %}
-                                        {{ _('The number of the last board to select, optional (the last board by default).') }}
-                                    {% else %}
-                                        {{ _('The number of the last player to select, optional (the last player by alphabetical order by default).') }}
-                                    {% endif %}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ number_input(
+                                name='last',
+                                label=_('Last board:') if admin_screen.type in ['boards', 'input'] else _('Last player:'),
+                                placeholder=_('E.g.: %(num)d', num=40),
+                                help_text=
+                                    _('The number of the last board to select, optional (the last board by default).')
+                                    if admin_screen.type in ['boards', 'input'] else
+                                    _('The number of the last player to select, optional (the last player by alphabetical order by default).'),
+                                data=data, errors=errors,
+                                number_min=1
+                            ) }}
                         </div>
                         {% if admin_screen.type in ['boards', 'input'] %}
                             <div class="col-4">
-                                {% with id='fixed-boards-str', name='fixed_boards_str' %}
-                                    <label for="{{ id }}" class="form-label">{{ _('Fixed boards:') }}</label>
-                                    <input
-                                            name="{{ name }}"
-                                            type="text" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="{{ _('E.g.: %(string)s', string='501, 502') }}"
-                                            value="{{ data[name] }}" />
-                                    <div id="{{ id }}-help" class="form-text">
-                                        {{ _('Comma-separated board numbers ; if this field is set, other fields are omitted.') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                {% endwith %}
+                                {{ text_input(
+                                    name='fixed_boards_str',
+                                    label=_('Fixed boards:'),
+                                    placeholder=_('E.g.: %(string)s', string='501, 502'),
+                                    help_text=_('Comma-separated board numbers ; if this field is set, other fields are omitted.'),
+                                    data=data, errors=errors
+                                ) }}
                             </div>
                         {% endif %}
                     </div>
