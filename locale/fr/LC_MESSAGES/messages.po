@@ -2210,6 +2210,60 @@ msgstr "Créer une connexion à ChessEvent"
 msgid "No ChessEvent connections."
 msgstr "Pas de connexion à ChessEvent."
 
+#: src/web/templates/admin/common/macros.j2
+msgid "The tournament is not started yet."
+msgstr "Le tournoi n'est pas encore commencé."
+
+#: src/web/templates/admin/common/macros.j2
+#, python-format
+msgid "Round #%(round)d is running."
+msgstr "La ronde %(round)d est en cours."
+
+#: src/web/templates/admin/common/macros.j2
+#, python-format
+msgid "Round #%(round)d is finished."
+msgstr "La ronde %(round)d est terminée."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "The tournament is finished."
+msgstr "Le tournoi est terminé."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by name."
+msgstr "Trier les joueur·euses par tournoi."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by rating (most rated first)."
+msgstr "Trier les joueur·euses par classement (mieux classé·es en premier)."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by rating (less rated first)."
+msgstr "Trier les joueur·euses par classement (moins bien classé·es en premier)."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by origin (federation, league, club)."
+msgstr "Trier les joueur·euses par origine (fédération, ligue, club)."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by year of birth (youngest first)."
+msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en premier)."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by year of birth (oldest first)."
+msgstr "Trier les joueur·euses par année de naissance (plus âgé·es en premier)."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by category (oldest first)."
+msgstr "Trier les joueur·euses par catégorie (plus âgé·es en premier)."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by category (youngest first)."
+msgstr "Trier les joueur·euses par category (moins âgé·es en premier)."
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by tournament."
+msgstr "Trier les joueur·euses par tournoi."
+
 #: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
 #, python-format
 msgid "Colour #%(num)d:"
@@ -4176,12 +4230,34 @@ msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s est remplacé par le temps passé depuis l'horaire."
 
 #: src/web/templates/admin/timers/timer_modal.html
+msgid "Timer creation"
+msgstr "Création d'un chronomètre"
+
+# Error: tokens differ between [Edition of timer [%(timer_uniq_id)s]] and
+# [Édition de l'écran rotatif [%(rotator_uniq_id)s]]
+#: src/web/templates/admin/timers/timer_modal.html
+#, python-format
+msgid "Edition of timer [%(timer_uniq_id)s]"
+msgstr "Édition du chronomètre [%(timer_uniq_id)s]"
+
+# Error: tokens differ between [Deletion of timer [%(timer_uniq_id)s]] and
+# [Suppression de l'écran rotatif [%(rotator_uniq_id)s]]
+#: src/web/templates/admin/timers/timer_modal.html
+#, python-format
+msgid "Deletion of timer [%(timer_uniq_id)s]"
+msgstr "Suppression du chronomètre [%(timer_uniq_id)s]"
+
+#: src/web/templates/admin/timers/timer_modal.html
 msgid "Warning: the deletion of a timer is permanent!"
 msgstr "Attention : la suppression d'un chronomètre est définitive !"
 
 #: src/web/templates/admin/timers/timer_modal.html
 msgid "E.g.: timer"
 msgstr "Exemple : chronometre"
+
+#: src/web/templates/admin/timers/timer_modal.html
+msgid "Colors and delays"
+msgstr "Couleurs et délais"
 
 #: src/web/templates/admin/tournaments/tab.html
 msgid "Tournaments"
@@ -4489,24 +4565,6 @@ msgid "This rotator is private (not visible by the users)."
 msgstr "Cet écran rotatif est privé (non visible des utilisateur·ices)."
 
 #: src/web/templates/common/macros.j2
-msgid "The tournament is not started yet."
-msgstr "Le tournoi n'est pas encore commencé."
-
-#: src/web/templates/common/macros.j2
-#, python-format
-msgid "Round #%(round)d is running."
-msgstr "La ronde %(round)d est en cours."
-
-#: src/web/templates/common/macros.j2
-#, python-format
-msgid "Round #%(round)d is finished."
-msgstr "La ronde %(round)d est terminée."
-
-#: src/web/templates/common/macros.j2
-msgid "The tournament is finished."
-msgstr "Le tournoi est terminé."
-
-#: src/web/templates/common/macros.j2
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
 
@@ -4529,42 +4587,6 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 #: src/web/templates/common/macros.j2
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusieurs écrans."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by name."
-msgstr "Trier les joueur·euses par tournoi."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by rating (most rated first)."
-msgstr "Trier les joueur·euses par classement (mieux classé·es en premier)."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by rating (less rated first)."
-msgstr "Trier les joueur·euses par classement (moins bien classé·es en premier)."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by origin (federation, league, club)."
-msgstr "Trier les joueur·euses par origine (fédération, ligue, club)."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by year of birth (youngest first)."
-msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en premier)."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by year of birth (oldest first)."
-msgstr "Trier les joueur·euses par année de naissance (plus âgé·es en premier)."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by category (oldest first)."
-msgstr "Trier les joueur·euses par catégorie (plus âgé·es en premier)."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by category (youngest first)."
-msgstr "Trier les joueur·euses par category (moins âgé·es en premier)."
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by tournament."
-msgstr "Trier les joueur·euses par tournoi."
 
 #: src/web/templates/user/event.html
 msgid "Go back to the events page."

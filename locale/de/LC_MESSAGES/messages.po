@@ -2732,6 +2732,71 @@ msgstr "Erstellen einer ChessEvent-Verbindung"
 msgid "No ChessEvent connections."
 msgstr "Keine ChessEvent-Verbindungen."
 
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "The tournament is not started yet."
+msgstr "Das Turnier ist noch nicht gestartet."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation, fuzzy, python-format
+msgid "Round #%(round)d is running."
+msgstr "Runde %(round)d läuft."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation, python-format
+msgid "Round #%(round)d is finished."
+msgstr "Runde #%(round)d ist beendet."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "The tournament is finished."
+msgstr "Das Turnier ist beendet."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by name."
+msgstr "Sortieren Sie die Spieler nach Namen."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by rating (most rated first)."
+msgstr "Sortieren Sie die Spieler nach Bewertung (am meisten zuerst bewertet)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by rating (less rated first)."
+msgstr "Sortieren Sie die Spieler nach Bewertung (weniger bewertet zuerst)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by origin (federation, league, club)."
+msgstr "Sortieren Sie die Spieler nach Herkunft (Federation, Liga, Verein)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by year of birth (youngest first)."
+msgstr "Sortieren Sie die Spieler nach Geburtsjahr (jüngste zuerst)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by year of birth (oldest first)."
+msgstr "Sortieren Sie die Spieler nach Geburtsjahr (älteste zuerst)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by category (oldest first)."
+msgstr "Sortieren Sie die Spieler nach Kategorie (älteste zuerst)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by category (youngest first)."
+msgstr "Sortieren Sie die Spieler nach Kategorie (jüngste zuerst)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by tournament."
+msgstr "Sortieren Sie die Spieler nach Turnieren."
+
 #: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
 #, ai_translation, python-format
 msgid "Colour #%(num)d:"
@@ -5068,6 +5133,25 @@ msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s wird durch die seit der Stunde vergangene Zeit ersetzt."
 
 #: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy
+msgid "Timer creation"
+msgstr "Spieler-Erstellung"
+
+# Error: tokens differ between [Edition of timer [%(timer_uniq_id)s]] and
+# [Ausgabe des Rotators [%(rotator_uniq_id)s]]
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "Edition of timer [%(timer_uniq_id)s]"
+msgstr ""
+
+# Error: tokens differ between [Deletion of timer [%(timer_uniq_id)s]] and
+# [Löschung des Rotators [%(rotator_uniq_id)s]]
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "Deletion of timer [%(timer_uniq_id)s]"
+msgstr ""
+
+#: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation
 msgid "Warning: the deletion of a timer is permanent!"
 msgstr "Warnung: Das Löschen eines Timers ist dauerhaft!"
@@ -5076,6 +5160,10 @@ msgstr "Warnung: Das Löschen eines Timers ist dauerhaft!"
 #, ai_translation
 msgid "E.g.: timer"
 msgstr "Z.B.: Timer"
+
+#: src/web/templates/admin/timers/timer_modal.html
+msgid "Colors and delays"
+msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
@@ -5445,26 +5533,6 @@ msgstr "Dieser Rotator ist privat (von den Benutzern nicht sichtbar)."
 
 #: src/web/templates/common/macros.j2
 #, ai_translation
-msgid "The tournament is not started yet."
-msgstr "Das Turnier ist noch nicht gestartet."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation, fuzzy, python-format
-msgid "Round #%(round)d is running."
-msgstr "Runde %(round)d läuft."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation, python-format
-msgid "Round #%(round)d is finished."
-msgstr "Runde #%(round)d ist beendet."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "The tournament is finished."
-msgstr "Das Turnier ist beendet."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
 msgid "Boards screens show pairings by board number."
 msgstr "Boards Bildschirme zeigen Paarungen nach Boardnummer."
 
@@ -5492,51 +5560,6 @@ msgstr "Bildbildschirme zeigen ein Bild (lokal oder entfernt)."
 #, ai_translation
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator rotiert automatisch zwischen mehreren Bildschirmen."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by name."
-msgstr "Sortieren Sie die Spieler nach Namen."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by rating (most rated first)."
-msgstr "Sortieren Sie die Spieler nach Bewertung (am meisten zuerst bewertet)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by rating (less rated first)."
-msgstr "Sortieren Sie die Spieler nach Bewertung (weniger bewertet zuerst)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by origin (federation, league, club)."
-msgstr "Sortieren Sie die Spieler nach Herkunft (Federation, Liga, Verein)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by year of birth (youngest first)."
-msgstr "Sortieren Sie die Spieler nach Geburtsjahr (jüngste zuerst)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by year of birth (oldest first)."
-msgstr "Sortieren Sie die Spieler nach Geburtsjahr (älteste zuerst)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by category (oldest first)."
-msgstr "Sortieren Sie die Spieler nach Kategorie (älteste zuerst)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by category (youngest first)."
-msgstr "Sortieren Sie die Spieler nach Kategorie (jüngste zuerst)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by tournament."
-msgstr "Sortieren Sie die Spieler nach Turnieren."
 
 #: src/web/templates/user/event.html
 #, ai_translation

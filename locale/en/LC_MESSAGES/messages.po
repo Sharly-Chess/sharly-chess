@@ -2210,6 +2210,60 @@ msgstr ""
 msgid "No ChessEvent connections."
 msgstr ""
 
+#: src/web/templates/admin/common/macros.j2
+msgid "The tournament is not started yet."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+#, python-format
+msgid "Round #%(round)d is running."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+#, python-format
+msgid "Round #%(round)d is finished."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "The tournament is finished."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by name."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by rating (most rated first)."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by rating (less rated first)."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by origin (federation, league, club)."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by year of birth (youngest first)."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by year of birth (oldest first)."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by category (oldest first)."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by category (youngest first)."
+msgstr ""
+
+#: src/web/templates/admin/common/macros.j2
+msgid "Sort the players by tournament."
+msgstr ""
+
 #: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
 #, python-format
 msgid "Colour #%(num)d:"
@@ -4174,11 +4228,29 @@ msgid "%%s is replaced by the time elapsed since the hour."
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_modal.html
+msgid "Timer creation"
+msgstr ""
+
+#: src/web/templates/admin/timers/timer_modal.html
+#, python-format
+msgid "Edition of timer [%(timer_uniq_id)s]"
+msgstr ""
+
+#: src/web/templates/admin/timers/timer_modal.html
+#, python-format
+msgid "Deletion of timer [%(timer_uniq_id)s]"
+msgstr ""
+
+#: src/web/templates/admin/timers/timer_modal.html
 msgid "Warning: the deletion of a timer is permanent!"
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_modal.html
 msgid "E.g.: timer"
+msgstr ""
+
+#: src/web/templates/admin/timers/timer_modal.html
+msgid "Colors and delays"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html
@@ -4487,24 +4559,6 @@ msgid "This rotator is private (not visible by the users)."
 msgstr ""
 
 #: src/web/templates/common/macros.j2
-msgid "The tournament is not started yet."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-#, python-format
-msgid "Round #%(round)d is running."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-#, python-format
-msgid "Round #%(round)d is finished."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "The tournament is finished."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
 msgid "Boards screens show pairings by board number."
 msgstr ""
 
@@ -4526,42 +4580,6 @@ msgstr ""
 
 #: src/web/templates/common/macros.j2
 msgid "Rotator automatically rotate between multiple screens."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by name."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by rating (most rated first)."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by rating (less rated first)."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by origin (federation, league, club)."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by year of birth (youngest first)."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by year of birth (oldest first)."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by category (oldest first)."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by category (youngest first)."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-msgid "Sort the players by tournament."
 msgstr ""
 
 #: src/web/templates/user/event.html
