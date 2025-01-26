@@ -48,7 +48,7 @@
                                 name='uniq_id',
                                 label=_('ID (unique):'),
                                 placeholder=_('E.g.: chessevent'),
-                                help=_('The Unique ID, used to reference the ChessEvent connection.'),
+                                help_text=_('The Unique ID, used to reference the ChessEvent connection.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -62,7 +62,7 @@
                                 name='user_id',
                                 label=_('Chessevent ID:'),
                                 placeholder=_('E.g.: %(string)s', string='Z00000'),
-                                help=_('the ID used to connect to the ChessEvent platform.'),
+                                help_text=_('the ID used to connect to the ChessEvent platform.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -71,7 +71,7 @@
                                 name='password',
                                 label=_('Password:'),
                                 placeholder=_('E.g.: my_password'),
-                                help=_('The password used to connect to the ChessEvent platform.'),
+                                help_text=_('The password used to connect to the ChessEvent platform.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -80,7 +80,7 @@
                                 name='event_id',
                                 label=_('ChessEvent event:'),
                                 placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
-                                help=_('The name of the event on the ChessEvent password.'),
+                                help_text=_('The name of the event on the ChessEvent password.'),
                                 data=data, errors=errors
                             ) }}
                         </div>

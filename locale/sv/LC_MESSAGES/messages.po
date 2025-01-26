@@ -2597,6 +2597,11 @@ msgid "ID (unique):"
 msgstr "Identitet (unik):"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: chessevent"
+msgstr "Chessevent ID:"
+
+#: src/web/templates/admin/chessevents/chessevent_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the ChessEvent connection."
 msgstr "Det unika ID, som används för att referera till ChessEvent-anslutningen."
@@ -2797,12 +2802,7 @@ msgstr "Sortera spelarna efter kategori (ungast först)."
 msgid "Sort the players by tournament."
 msgstr "Sortera spelarna efter turnering."
 
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#, ai_translation, python-format
-msgid "Colour #%(num)d:"
-msgstr "Färg # %(num)d:"
-
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
+#: src/web/templates/admin/common/macros.j2
 #: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2811,10 +2811,20 @@ msgstr "Färg # %(num)d:"
 msgid "by default"
 msgstr "Som standard"
 
+#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
+#, ai_translation, python-format
+msgid "Colour #%(num)d:"
+msgstr "Färg # %(num)d:"
+
 #: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
 #, ai_translation, python-format
 msgid "Delay #%(num)d:"
 msgstr "Försening nr %(num)d:"
+
+#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
+#, ai_translation, fuzzy, python-format
+msgid "By default: %(minutes)d minutes"
+msgstr "T.ex.: %(minutes)d (minuter)"
 
 #: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
 #, ai_translation

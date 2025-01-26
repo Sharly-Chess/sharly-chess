@@ -2597,6 +2597,11 @@ msgid "ID (unique):"
 msgstr "ID (unico):"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: chessevent"
+msgstr "ID di Chessevent:"
+
+#: src/web/templates/admin/chessevents/chessevent_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the ChessEvent connection."
 msgstr "L'ID univoco, usato per fare riferimento alla connessione ChessEvent."
@@ -2797,12 +2802,7 @@ msgstr "Ordina i giocatori per categoria (prima i più giovani)."
 msgid "Sort the players by tournament."
 msgstr "Ordina i giocatori per torneo."
 
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#, ai_translation, python-format
-msgid "Colour #%(num)d:"
-msgstr "Colore #%(num)d:"
-
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
+#: src/web/templates/admin/common/macros.j2
 #: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2811,10 +2811,20 @@ msgstr "Colore #%(num)d:"
 msgid "by default"
 msgstr "per impostazione predefinita"
 
+#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
+#, ai_translation, python-format
+msgid "Colour #%(num)d:"
+msgstr "Colore #%(num)d:"
+
 #: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
 #, ai_translation, python-format
 msgid "Delay #%(num)d:"
 msgstr "Ritardo #%(num)d:"
+
+#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
+#, ai_translation, fuzzy, python-format
+msgid "By default: %(minutes)d minutes"
+msgstr "Ad esempio: %(minutes)d (minuti)"
 
 #: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
 #, ai_translation

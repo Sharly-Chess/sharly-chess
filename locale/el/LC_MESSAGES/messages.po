@@ -2599,6 +2599,11 @@ msgid "ID (unique):"
 msgstr "ID (μοναδική):"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: chessevent"
+msgstr "Ταυτότητα σκακιού:"
+
+#: src/web/templates/admin/chessevents/chessevent_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the ChessEvent connection."
 msgstr "Η Μοναδική ταυτότητα, που χρησιμοποιείται για την αναφορά της σύνδεσης σκακιού."
@@ -2799,13 +2804,8 @@ msgstr "Ταξινόμηση των παικτών ανά κατηγορία (μ
 msgid "Sort the players by tournament."
 msgstr "Ταξινόμηση των παικτών από το τουρνουά."
 
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#, ai_translation, python-format
-msgid "Colour #%(num)d:"
-msgstr "Χρώμα #%(num)d:"
-
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/macros.j2
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
@@ -2813,38 +2813,48 @@ msgstr "Χρώμα #%(num)d:"
 msgid "by default"
 msgstr "εξ ορισμού"
 
+#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
+#, ai_translation, python-format
+msgid "Colour #%(num)d:"
+msgstr "Χρώμα #%(num)d:"
+
 #: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
 #, ai_translation, python-format
 msgid "Delay #%(num)d:"
 msgstr "Καθυστέρηση #%(num)d:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/input_exit_button.html
+#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
+#, ai_translation, fuzzy, python-format
+msgid "By default: %(minutes)d minutes"
+msgstr "Π.χ.: %(minutes)d (λεπτά)"
+
+#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
 #, ai_translation
 msgid "Display of a screen exit button:"
 msgstr "Εμφάνιση ενός κουμπιού εξόδου οθόνης:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/input_exit_button.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
 #, ai_translation
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Όταν δεν εμφανίζεται το κουμπί εξόδου, οι χρήστες δεν μπορούν κατά λάθος να βγουν από τις οθόνες εισόδου."
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #, ai_translation
 msgid "Alert message:"
 msgstr "Μήνυμα ειδοποίησης:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "Π.χ.: Παρακαλώ κάντε ησυχία μέχρι το τέλος του γύρου!"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/players_show_unpaired.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
 #, ai_translation
 msgid "Display of unpaired players:"
 msgstr "Εμφάνιση μη ζευγαρωμένων παικτών:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/players_show_unpaired.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
 #, ai_translation
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
 msgstr "Όταν οι παίκτες που δεν είναι ζευγάρι δεν εμφανίζονται, δεν υπάρχει τρόπος να ξεχωρίσετε τους παίκτες χωρίς (μηδενικό σημείο) και τους παίκτες με μισό σημείο αντίο)."
@@ -3022,8 +3032,8 @@ msgstr "Χρώμα φόντου:"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
-msgid "The background colour is used when the image dost fill the whole screen."
+#, ai_translation, fuzzy
+msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "Το χρώμα φόντου χρησιμοποιείται όταν η εικόνα γεμίζει ολόκληρη την οθόνη."
 
 #: src/web/templates/admin/event/event_modal.html
