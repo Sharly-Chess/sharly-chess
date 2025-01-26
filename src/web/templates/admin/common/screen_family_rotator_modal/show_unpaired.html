@@ -1,22 +1,7 @@
-{% with id='players-show-unpaired', name='players_show_unpaired' %}
-    <label for="{{ id }}" class="form-label">{{ _('Display of unpaired players:') }}</label>
-    <select
-            name="{{ name }}"
-            id="{{ id }}"
-            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-            aria-describedby="{{ id }}-help {{ id }}-error" >
-        {% for value, text in players_show_unpaired_options.items() %}
-            <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
-                {{ text }}
-            </option>
-        {% endfor %}
-    </select>
-    <div id="{{ id }}-help" class="form-text">
-      {{ _('When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye).') }}
-    </div>
-    {% if name in errors %}
-        <div id="{{ id }}-error" class="form-text invalid-feedback">
-            {{ errors[name] }}
-        </div>
-    {% endif %}
-{% endwith %}
+{{ select_input(
+    name='players_show_unpaired',
+    label=_('Display of unpaired players:'),
+    help_text=_('When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye).'),
+    select_options=players_show_unpaired_options,
+    data=data, errors=errors
+) }}

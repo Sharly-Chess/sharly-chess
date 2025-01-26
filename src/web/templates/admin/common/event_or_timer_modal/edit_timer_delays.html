@@ -2,7 +2,7 @@
     {% for num in [1, 2, 3] %}
         {% with id='delay-'~num, name='delay_'~num %}
         <div class="col-4">
-            {{ text_input(
+            {{ number_input(
                 name='delay_'~num,
                 label=_('Delay #%(num)d:', num=num),
                 placeholder=_('By default: %(minutes)d minutes', minutes=default_delays[num]),

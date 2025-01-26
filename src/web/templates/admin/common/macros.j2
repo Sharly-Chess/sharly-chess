@@ -1,12 +1,7 @@
 {%
     from '../../common/macros.j2' import
     tooltip_attributes,
-    event_visibility_icon,
-    screen_type_icon,
-    rotator_icon,
-    tooltip_script,
-    background_script,
-    copyright_script
+    visibility_icon
 %}
 
 {% macro screen_visibility_icon(screen, class) %}
@@ -177,7 +172,8 @@
     data={},
     errors={},
     default_checkbox=false,
-    default_value=''
+    default_value='',
+    select_options={}
 ) %}
     <!-- {{ input_type }}_input({{ name }}) -->
         {% set id=name|replace('_', '-') %}
@@ -200,19 +196,33 @@
                 {{ _('by default') }}
             {% endif %}
             <div class="input-group">
-                <input
-                        name="{{ name }}"
-                        type="{{ input_type }}" id="{{ id }}"
-                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                        aria-describedby="{{ id }}-help {{ id }}-error"
-                        placeholder="{{ placeholder }}"
-                        value="{{ value }}"
-                        {% if default_checkbox and data[default_checkbox_name] == 'on' %}disabled{% endif %}
-                />
-                {% if input_type == 'password' %}
-                    <i
-                            id="{{ id }}-toggle-password"
-                            class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
+                {% if input_type == 'select' %}
+                    <select
+                            name="{{ name }}"
+                            id="{{ id }}"
+                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                            aria-describedby="{{ id }}-help {{ id }}-error" >
+                        {% for value, text in select_options.items() %}
+                            <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
+                                {{ text }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <input
+                            name="{{ name }}"
+                            type="{{ input_type }}" id="{{ id }}"
+                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                            aria-describedby="{{ id }}-help {{ id }}-error"
+                            placeholder="{{ placeholder }}"
+                            value="{{ value }}"
+                            {% if default_checkbox and data[default_checkbox_name] == 'on' %}disabled{% endif %}
+                    />
+                    {% if input_type == 'password' %}
+                        <i
+                                id="{{ id }}-toggle-password"
+                                class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
+                    {% endif %}
                 {% endif %}
             </div>
             {% if help_text %}
@@ -237,7 +247,7 @@
                 });
             </script>
         {% endif %}
-        {% if input_type == 'color' and default_checkbox %}
+        {% if default_checkbox %}
             <script>
                 $('#{{ default_checkbox_id }}').click(function() {
                     if ($(this).is(':checked')) {
@@ -275,6 +285,29 @@
     ) }}
 {% endmacro %}
 
+{% macro number_input(
+    name,
+    label='NO LABEL',
+    placeholder='',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    default_checkbox=false,
+    default_value=''
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='number',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        default_checkbox=default_checkbox,
+        default_value=default_value
+    ) }}
+{% endmacro %}
+
 {% macro password_input(
     name,
     label='NO LABEL',
@@ -291,7 +324,6 @@
         help_text=help_text,
         data=data,
         errors=errors,
-        default_checkbox=false
     ) }}
 {% endmacro %}
 
@@ -315,5 +347,24 @@
         errors=errors,
         default_checkbox=default_checkbox,
         default_value=default_color
+    ) }}
+{% endmacro %}
+
+{% macro select_input(
+    name,
+    label='NO LABEL',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    select_options={'': 'NO OPTIONS'}
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='select',
+        label=label,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        select_options=select_options
     ) }}
 {% endmacro %}

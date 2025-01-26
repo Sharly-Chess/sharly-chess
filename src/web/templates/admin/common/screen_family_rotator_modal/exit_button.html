@@ -1,22 +1,7 @@
-{% with id='input-exit-button', name='input_exit_button' %}
-    <label for="{{ id }}" class="form-label">{{ _('Display of a screen exit button:') }}</label>
-    <select
-            name="{{ name }}"
-            id="{{ id }}"
-            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-            aria-describedby="{{ id }}-help {{ id }}-error" >
-        {% for value, text in input_exit_button_options.items() %}
-            <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
-                {{ text }}
-            </option>
-        {% endfor %}
-    </select>
-    <div id="{{ id }}-help" class="form-text">
-      {{ _('When not displaying the exit button, users can not accidentally exit input screens.') }}
-    </div>
-    {% if name in errors %}
-        <div id="{{ id }}-error" class="form-text invalid-feedback">
-            {{ errors[name] }}
-        </div>
-    {% endif %}
-{% endwith %}
+{{ select_input(
+    name='input_exit_button',
+    label=_('Display of a screen exit button:'),
+    help_text=_('When not displaying the exit button, users can not accidentally exit input screens.'),
+    select_options=input_exit_button_options,
+    data=data, errors=errors
+) }}
