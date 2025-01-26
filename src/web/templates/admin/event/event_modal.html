@@ -131,7 +131,7 @@
                             {{ text_input(
                                 name='rules',
                                 label=_('Rules file location:'),
-                                placeholder=_('E.g.: c:\chess\tournaments\my_tournament\rules.pdf'),
+                                placeholder=_('E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf'),
                                 help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional).'),
                                 data=data, errors=errors
                             ) }}
@@ -243,7 +243,6 @@
                                     label=_('Delay #%(num)d:', num=num),
                                     placeholder=_('By default: %(minutes)d minutes', minutes=papi_web_config.default_timer_delays[num]),
                                     help_text='',
-                                    default_checkbox=false,
                                     data=data, errors=errors
                                 ) }}
                             </div>
@@ -275,7 +274,11 @@
                             ) }}
                         </div>
                         <div class="col-6">
-                            {% include '../common/modal/alert_message.html' %}
+                            {% with
+                                message_help_text=_('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.')
+                            %}
+                                {% include '../common/modal/alert_message.html' %}
+                            {% endwith %}
                         </div>
                     </div>
                 {% endif %}

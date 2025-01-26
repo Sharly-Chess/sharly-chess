@@ -2284,6 +2284,7 @@ msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "Exemple : Merci aux joueur·euses de bien vouloir se mettre en place !"
 
 #: src/web/templates/admin/common/modal/alert_message.html
+#: src/web/templates/admin/event/event_modal.html
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans. Ce message peut être surchargé par les écrans rotatifs, les écrans et les familles d'écrans."
 
@@ -2384,6 +2385,7 @@ msgstr "Visibilité :"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/families/family_modal.html
 msgid "Public event"
 msgstr "Évènement public"
 
@@ -2450,9 +2452,7 @@ msgid "Rules file location:"
 msgstr "Emplacement du règlement :"
 
 #: src/web/templates/admin/event/event_modal.html
-msgid ""
-"E.g.: c:\\chess\tournaments\\my_tournament\r"
-"ules.pdf"
+msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
 msgstr "Exemple : c:\\echecs\\tournois\\mon_tournoi\\reglement.pdf"
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2460,6 +2460,7 @@ msgid "A URL, or the path to the rules file on the server, in PDF format (option
 msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facultatif)."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "Display"
@@ -2756,10 +2757,6 @@ msgid "Properties (pairings by player)"
 msgstr "Propriétés (appariements par ordre alphabétique)"
 
 #: src/web/templates/admin/families/family_modal.html
-msgid "Public screen family"
-msgstr "Famille d'écrans publique"
-
-#: src/web/templates/admin/families/family_modal.html
 msgid "Only arbiters can see private screen families."
 msgstr "Seuls les arbitres peuvent voir les écrans des familles privées."
 
@@ -2855,8 +2852,12 @@ msgid "On a given number of screens:"
 msgstr "Sur un nombre fixe d'écrans"
 
 #: src/web/templates/admin/families/family_modal.html
-msgid "E.g.: 4 (split on 4 screens)"
-msgstr "Exemple : 4 (distribution sur 4 écrans)"
+msgid "E.g.: 4 (split the boards on 4 screens)"
+msgstr "Exemple : 4 (distribution des échiquiers sur 4 écrans)"
+
+#: src/web/templates/admin/families/family_modal.html
+msgid "E.g.: 4 (split the players on 4 screens)"
+msgstr "Exemple : 4 (distribution des joueur·euses sur 4 écrans)"
 
 #: src/web/templates/admin/families/family_modal.html
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
@@ -2869,6 +2870,14 @@ msgstr "Le nombre d'écrans sur lesquels les joueur·euses seront réparti·es, 
 #: src/web/templates/admin/families/family_modal.html
 msgid "On fixed size screens:"
 msgstr "ur des écrans de taille fixe "
+
+#: src/web/templates/admin/families/family_modal.html
+msgid "E.g.: 20 (place 20 boards on each screen)"
+msgstr "Exemple : 20 (placer 20 échiquiers sur chaque écran)"
+
+#: src/web/templates/admin/families/family_modal.html
+msgid "E.g.: 20 (place 20 players on each screen)"
+msgstr "Exemple : 20 (placer 20 joueur·euses sur chaque écran)"
 
 #: src/web/templates/admin/families/family_modal.html
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
@@ -4797,4 +4806,7 @@ msgstr "contre"
 
 #~ msgid "Text:"
 #~ msgstr "Texte :"
+
+#~ msgid "Public screen family"
+#~ msgstr "Famille d'écrans publique"
 

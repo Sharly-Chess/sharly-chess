@@ -2821,6 +2821,7 @@ msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "T.ex.: Var tyst till slutet av ronden!"
 
 #: src/web/templates/admin/common/modal/alert_message.html
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr "När det definieras visas varningsmeddelandet i en rullningsbanner längst ner på skärmarna. Varningsmeddelandet som definieras på händelsenivå kan överskridas på rotator, skärmfamilj eller skärmnivå."
@@ -2937,6 +2938,7 @@ msgstr "Synlighet:"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/families/family_modal.html
 #, ai_translation
 msgid "Public event"
 msgstr "Offentligt evenemang"
@@ -3017,9 +3019,7 @@ msgstr "Regler filplats:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation, fuzzy
-msgid ""
-"E.g.: c:\\chess\tournaments\\my_tournament\r"
-"ules.pdf"
+msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
 msgstr "T.ex.: c:\\chess\\ tournaments\\main\\ rules.pdf"
 
 #: src/web/templates/admin/event/event_modal.html
@@ -3028,6 +3028,7 @@ msgid "A URL, or the path to the rules file on the server, in PDF format (option
 msgstr "En webbadress, eller sökvägen till regelfilen på servern, i PDF-format (valfritt)."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
@@ -3376,11 +3377,6 @@ msgstr "Egenskaper (parningar av spelare)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
-msgid "Public screen family"
-msgstr "Allmänbildsfamilj"
-
-#: src/web/templates/admin/families/family_modal.html
-#, ai_translation
 msgid "Only arbiters can see private screen families."
 msgstr "Endast skiljedomare kan se privata skärmfamiljer."
 
@@ -3491,8 +3487,13 @@ msgid "On a given number of screens:"
 msgstr "På ett visst antal skärmar:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation
-msgid "E.g.: 4 (split on 4 screens)"
+#, ai_translation, fuzzy
+msgid "E.g.: 4 (split the boards on 4 screens)"
+msgstr "T.ex.: 4 (splitta på 4 skärmar)"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 4 (split the players on 4 screens)"
 msgstr "T.ex.: 4 (splitta på 4 skärmar)"
 
 #: src/web/templates/admin/families/family_modal.html
@@ -3509,6 +3510,16 @@ msgstr "Antalet skärmar där spelarna kommer att distribueras, valfritt (antale
 #, ai_translation
 msgid "On fixed size screens:"
 msgstr "På skärmar med fast storlek:"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 20 (place 20 boards on each screen)"
+msgstr "T.ex.: 4 (splitta på 4 skärmar)"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 20 (place 20 players on each screen)"
+msgstr "T.ex.: 4 (splitta på 4 skärmar)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -5814,4 +5825,7 @@ msgstr "vs"
 
 #~ msgid "Text:"
 #~ msgstr "Text:"
+
+#~ msgid "Public screen family"
+#~ msgstr "Allmänbildsfamilj"
 

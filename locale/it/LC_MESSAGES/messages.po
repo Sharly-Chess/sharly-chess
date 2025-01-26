@@ -2821,6 +2821,7 @@ msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "E.g.: Si prega di stare zitti fino alla fine del giro!"
 
 #: src/web/templates/admin/common/modal/alert_message.html
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr "Quando definito, il messaggio di avviso viene visualizzato in un banner di scorrimento nella parte inferiore delle schermate. Il messaggio di avviso definito a livello di evento può essere superato a rotazione, famiglia di schermo o livello di schermo."
@@ -2937,6 +2938,7 @@ msgstr "Visibilità:"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/families/family_modal.html
 #, ai_translation
 msgid "Public event"
 msgstr "Evento pubblico"
@@ -3017,9 +3019,7 @@ msgstr "Posizione file regole:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation, fuzzy
-msgid ""
-"E.g.: c:\\chess\tournaments\\my_tournament\r"
-"ules.pdf"
+msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
 msgstr "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
 
 #: src/web/templates/admin/event/event_modal.html
@@ -3028,6 +3028,7 @@ msgid "A URL, or the path to the rules file on the server, in PDF format (option
 msgstr "Un URL, o il percorso del file regole sul server, in formato PDF (opzionale)."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
@@ -3376,11 +3377,6 @@ msgstr "Proprietà (pailing per giocatore)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
-msgid "Public screen family"
-msgstr "Famiglia dello schermo pubblico"
-
-#: src/web/templates/admin/families/family_modal.html
-#, ai_translation
 msgid "Only arbiters can see private screen families."
 msgstr "Solo gli arbitri possono vedere le famiglie private dello schermo."
 
@@ -3491,8 +3487,13 @@ msgid "On a given number of screens:"
 msgstr "Su un certo numero di schermi:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation
-msgid "E.g.: 4 (split on 4 screens)"
+#, ai_translation, fuzzy
+msgid "E.g.: 4 (split the boards on 4 screens)"
+msgstr "Ad esempio: 4 (split su 4 schermi)"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 4 (split the players on 4 screens)"
 msgstr "Ad esempio: 4 (split su 4 schermi)"
 
 #: src/web/templates/admin/families/family_modal.html
@@ -3509,6 +3510,16 @@ msgstr "Il numero di schermi su cui i giocatori saranno distribuiti, opzionale (
 #, ai_translation
 msgid "On fixed size screens:"
 msgstr "Su schermi di dimensioni fisse:"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 20 (place 20 boards on each screen)"
+msgstr "Ad esempio: 4 (split su 4 schermi)"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 20 (place 20 players on each screen)"
+msgstr "Ad esempio: 4 (split su 4 schermi)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -5814,4 +5825,7 @@ msgstr "vs"
 
 #~ msgid "Text:"
 #~ msgstr "Testo:"
+
+#~ msgid "Public screen family"
+#~ msgstr "Famiglia dello schermo pubblico"
 

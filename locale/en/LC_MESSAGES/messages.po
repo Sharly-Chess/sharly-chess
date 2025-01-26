@@ -2284,6 +2284,7 @@ msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr ""
 
 #: src/web/templates/admin/common/modal/alert_message.html
+#: src/web/templates/admin/event/event_modal.html
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr ""
 
@@ -2384,6 +2385,7 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/families/family_modal.html
 msgid "Public event"
 msgstr ""
 
@@ -2450,9 +2452,7 @@ msgid "Rules file location:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
-msgid ""
-"E.g.: c:\\chess\tournaments\\my_tournament\r"
-"ules.pdf"
+msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2460,6 +2460,7 @@ msgid "A URL, or the path to the rules file on the server, in PDF format (option
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "Display"
@@ -2756,10 +2757,6 @@ msgid "Properties (pairings by player)"
 msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
-msgid "Public screen family"
-msgstr ""
-
-#: src/web/templates/admin/families/family_modal.html
 msgid "Only arbiters can see private screen families."
 msgstr ""
 
@@ -2855,7 +2852,11 @@ msgid "On a given number of screens:"
 msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
-msgid "E.g.: 4 (split on 4 screens)"
+msgid "E.g.: 4 (split the boards on 4 screens)"
+msgstr ""
+
+#: src/web/templates/admin/families/family_modal.html
+msgid "E.g.: 4 (split the players on 4 screens)"
 msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
@@ -2868,6 +2869,14 @@ msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 msgid "On fixed size screens:"
+msgstr ""
+
+#: src/web/templates/admin/families/family_modal.html
+msgid "E.g.: 20 (place 20 boards on each screen)"
+msgstr ""
+
+#: src/web/templates/admin/families/family_modal.html
+msgid "E.g.: 20 (place 20 players on each screen)"
 msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
@@ -4790,5 +4799,16 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Text:"
+#~ msgstr ""
+
+#~ msgid "Public screen family"
+#~ msgstr ""
+
+#~ msgid "E.g.: 4 (split on 4 screens)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "E.g.: c:\\chess\tournaments\\my_tournament\r"
+#~ "ules.pdf"
 #~ msgstr ""
 
