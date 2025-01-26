@@ -1,7 +1,6 @@
 import os
 import posixpath
 import typing as t
-from os import urandom
 from pathlib import Path
 from typing import Sequence
 
@@ -9,12 +8,13 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
-from litestar.middleware.session.client_side import CookieBackendConfig
+from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.static_files import create_static_files_router
+from litestar.stores.file import FileStore
 from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 
-from common import BASE_DIR
+from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
 from web.controllers.admin.chessevent_admin_controller import ChessEventAdminController
 from web.controllers.admin.event_admin_controller import EventAdminController
@@ -151,9 +151,13 @@ template_config: TemplateConfig = TemplateConfig(
     # engine_callback=register_template_callables,
 )
 
-# add the Jinja i18n extension and register the gettext callables
-jinja_engine: JinjaTemplateEngine = template_config.engine_instance
+sessions_dir: Path = TMP_DIR / 'sessions'
+sessions_dir.mkdir(parents=True, exist_ok=True)
+
+stores: dict[str, FileStore] = {
+    'sessions': FileStore(path=sessions_dir)
+}
 
 middlewares: Sequence[Middleware] = [
-    CookieBackendConfig(secret=urandom(16)).middleware,
+    ServerSideSessionConfig().middleware,
 ]
