@@ -213,7 +213,11 @@
                             name="{{ name }}"
                             id="{{ id }}"
                             class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                            aria-describedby="{{ id }}-help {{ id }}-error" >
+                            aria-describedby="{{ id }}-help {{ id }}-error"
+                            {% if select_options|length <= 1 %}
+                                disabled
+                            {% endif %}
+                    >
                         {% for value, text in select_options.items() %}
                             <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
                                 {{ text }}
