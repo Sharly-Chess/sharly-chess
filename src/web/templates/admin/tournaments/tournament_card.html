@@ -1,0 +1,196 @@
+{% extends '../common/card.html' %}
+
+{% from '../../common/macros.j2' import tooltip_attributes, tournament_status_icon %}
+
+{% block card_header %}
+    {{ tournament_status_icon(tournament) }} {{ tournament.uniq_id }}
+{% endblock %}
+
+{% block card_title %}
+    {{ tournament.name }}
+{% endblock %}
+
+{% block card_text %}
+    <div class="">
+        {% if not tournament.file_exists %}
+            {% set text=_('The Papi file for the tournament does not exist (%(papi_file)s).', papi_file=tournament.file) %}
+            {% set type='error' %}
+        {% elif not tournament.rounds %}
+            {% set text=_('The Papi file for the tournament exists but could not be read (%(papi_file)s).', papi_file=tournament.file) %}
+            {% set type='error' %}
+        {% else %}
+            {% set text=_('The Papi file for the tournament was successfully read (%(papi_file)s).', papi_file=tournament.file) %}
+            {% set type='info' %}
+        {% endif %}
+        <span
+                class="me-2 text-nowrap"
+                {{ tooltip_attributes(type, text, 'top') }}
+        >
+            {% if not tournament.file_exists or not tournament.rounds %}
+                <i class="bi-file-earmark-excel-fill text-danger"></i>
+            {% else %}
+                <i class="bi-file-check-fill text-success"></i>
+            {% endif %}
+            {{ tournament.filename }}
+        </span>
+    </div>
+    <div class="text-start">
+        {% if tournament.ffe_id %}
+            FFE :
+            {{ tournament.ffe_id }}
+        {% else %}
+            <i class="bi-x">-</i>
+        {% endif %}
+    </div>
+    <div class="text-start">
+        <span
+                class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
+                {% if tournament.rounds %}
+                    {{ tooltip_attributes('info', _('Players found in the Papi_file : %(num)d', num=tournament.players_by_id|length), 'top') }}
+                {% endif %}
+        >
+            <i class="bi-people-fill"></i>
+            {% if tournament.rounds %}
+                {{ tournament.players_by_id|length }}
+            {% else %}
+                <i class="bi-question text-secondary"></i>
+            {% endif %}
+        </span>
+        <span
+                class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
+        >
+            {{ tournament_status_icon(tournament) }}
+            {% if tournament.rounds %}
+                {{ tournament.current_round }}/{{ tournament.rounds }}
+            {% else %}
+                <i class="bi-question"></i>
+            {% endif %}
+        </span>
+        <span
+                class="me-2 text-nowrap"
+                {{ tooltip_attributes(
+                    'info',
+                    _('ChessEvent connection [%(chessevent_uniq_id)s] is used.', chessevent_uniq_id=tournament.chessevent.uniq_id)
+                    if tournament.chessevent else
+                    _('No ChessEvent connection is used.'),
+                    'top') }}
+        >
+            <i class="
+                    {% if tournament.chessevent %}
+                        bi-cloud-download-fill
+                    {% else %}
+                        bi-cloud-download text-secondary
+                    {% endif %}"
+            ></i>
+        </span>
+        {% if not tournament.record_illegal_moves %}
+            {% set text=_('Illegal moves are not recorded.') %}
+        {% else %}
+            {% set text=ngettext('At most %(num)d illegal move is recorded.', 'At most %(num)d illegal moves are recorded.', tournament.record_illegal_moves) %}
+        {% endif %}
+        <span
+                class="me-2 text-nowrap"
+                {{ tooltip_attributes(type, text, 'top') }}
+        >
+            {% if not tournament.record_illegal_moves %}
+                <i class="bi-flag text-secondary"></i>
+            {% else %}
+                {% for i in range(tournament.record_illegal_moves) %}
+                    <i class="bi-flag-fill"></i>
+                {% endfor %}
+            {% endif %}
+        </span>
+    </div>
+    <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
+        {% if tournament.rules %}
+            {{ _('Rules file set') }}
+        {% else %}
+            {{ _('No rules file set') }}
+        {% endif %}
+    </div>
+    <div class="text-start">
+        {% if tournament.pairing %}
+            {{ tournament.pairing }}
+        {% endif %}
+    </div>
+    <div class="text-start">
+        {% if tournament.rating %}
+            {{ tournament.rating }}
+        {% endif %}
+    </div>
+    <div class="text-start">
+        <i class="bi-pencil-fill"></i>
+        {{ tournament.last_update_str }}
+    </div>
+{% endblock %}
+
+{% block card_buttons_left %}
+    <span {{ tooltip_attributes('info', _('Edit the properties of the tournament.'), 'top') }}>
+        <button
+                class="btn btn-sm btn-primary p-1 text-nowrap"
+                hx-get="{{ url_for('admin-tournament-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+        >
+            <i class="bi-pencil-fill"></i>
+            {{ _('Edit') }}
+        </button>
+    </span>
+
+    {% if not tournament.finished and not tournament.playing %}
+        <span {{ tooltip_attributes('info', _('Generate pairings for the next round.'), 'top') }}>
+            <button
+                    class="btn btn-sm btn-primary p-1 text-nowrap"
+                    hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+            >
+                <i class="bi-shuffle"></i>
+                {{ _('Pair') }}
+            </button>
+    </span>
+    {% endif %}
+
+    <div class="dropdown d-inline">
+        <button class="btn btn-sm btn-primary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi-download"></i> {{ _('Export') }}
+        </button>
+        <ul class="dropdown-menu locale">
+            <li
+                    class="dropdown-item text-start cursor-pointer"
+                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=RATING', '_blank')">
+                {{ _('Export to TRF16 (rating)') }}
+            </li>
+            <li
+                    class="dropdown-item text-start cursor-pointer"
+                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=PAIRING', '_blank')">
+                {{ _('Export to TRF(bx) (pairing)') }}
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block card_buttons_right %}
+    <span {{ tooltip_attributes('info', _('Clone the tournament.'), 'top') }}>
+        <button
+                class="btn btn-sm btn-primary p-1 text-nowrap"
+                hx-get="{{ url_for('admin-tournament-modal', action='clone', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait" >
+            <i class="bi-copy"></i>
+        </button>
+    </span>
+    <span {{ tooltip_attributes('info', _('Delete the tournament.'), 'top') }}>
+        <button
+                class="btn btn-sm btn-danger p-1 text-nowrap"
+                hx-get="{{ url_for('admin-tournament-modal', action='delete', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait" >
+            <i class="bi-trash-fill"></i>
+        </button>
+    </span>
+{% endblock %}

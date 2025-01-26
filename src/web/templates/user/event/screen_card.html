@@ -1,0 +1,95 @@
+{% extends '../common/card.html' %}
+{% from '../../common/macros.j2' import tooltip_attributes, screen_visibility_icon, screen_type_icon %}
+
+{% block card_header %}
+    {% if admin_auth %}
+        {{ screen_visibility_icon(screen) }}
+    {% endif %}
+    {{ screen.uniq_id }}
+{% endblock %}
+
+{% block card_title %}
+    {{ screen_type_icon(screen.type, true) }}
+    {{ screen.name }}
+{% endblock %}
+
+{% block card_text %}
+    {% if screen.type in ['input', 'boards', 'players', 'results'] %}
+        <div>
+            {{ _('Columns:') }}
+            {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+        </div>
+        <div class="{% if not screen.menu_link %}text-secondary{% endif %}">
+            {{ _('Menu label:') }}
+            {% if screen.menu_link %}{{ screen.menu_label }}{% else %}<span class="fst-italic">-</span>{% endif %}
+        </div>
+        <div class="{% if not screen.menu %}text-secondary{% endif %}">
+            {{ _('Menu:') }}
+            {% if screen.menu %}{{ screen.menu }}{% else %}<span class="fst-italic">-</span>{% endif %}
+        </div>
+        <div class="{% if not screen.timer %}text-secondary{% endif %}">
+            {{ _('Timer:') }}
+            {% if screen.timer %}
+                <i class="bi-clock-fill"></i> {% if user_event.timers_by_id|length > 1 %}{{ screen.timer.uniq_id }}{% endif %}
+            {% else %}
+                <span class="fst-italic">-</span>
+            {% endif %}
+        </div>
+    {% endif %}
+    {% if screen.type == 'players' %}
+        <div>
+            {% if screen.players_show_unpaired %}
+                {{ _('Unpaired players: displayed') }}
+            {% else %}
+                {{ _('Unpaired players: hidden') }}
+            {% endif %}
+            {% if screen.stored_screen.players_show_unpaired is none %}({{ _('by default') }}){% endif %}
+        </div>
+    {% endif %}
+    {% if screen.type == 'results' %}
+        <div>
+            {% if screen.results_limit %}
+                {{ _('Maximum number of results: %(num)d', num=screen.results_limit) }}
+            {% else %}
+                {{ _('Maximum number of results: unlimited') }}
+            {% endif %}
+        </div>
+    {% endif %}
+    {% if screen.type == 'image' %}
+        <div>
+            {{ _('Image:') }}
+            {% if screen.stored_screen.background_image %}
+                {{ screen.stored_screen.background_image }}
+            {% else %}
+                <span class="fst-italic text-danger">-</span>
+            {% endif %}
+        </div>
+        <div>
+            {{ _('Background colour:') }}
+            {% if screen.stored_screen.background_color %}
+                {{ screen.stored_screen.background_color }}
+            {% else %}
+                <span class="fst-italic">-</span>
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="mb-2">
+        {% if screen.type in ['boards', 'input', 'players'] %}
+            {% for screen_set in screen.screen_sets_sorted_by_order %}
+                <div>
+                    {% if screen_set.tournament %}
+                        {{ screen_set.tournament.name }}
+                        ({{ screen_set.numbers_str }})
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% elif screen.type == 'results' %}
+            {% if screen.results_tournament_ids %}
+                {{ screen.results_tournament_names }}
+            {% else %}
+                {{ _('All the tournaments') }}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}
+

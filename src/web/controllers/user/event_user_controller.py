@@ -134,7 +134,7 @@ class EventUserController(AbstractUserController):
                     and nav_tabs[web_context.user_event_tab]['disabled']:
                 web_context.user_event_tab = list(nav_tabs.keys())[(nav_index + 1) % len(nav_tabs)]
         return HTMXTemplate(
-            template_name="user_event.html",
+            template_name="user/event.html",
             context=web_context.template_context | {
                 'messages': Message.messages(web_context.request),
                 'user_columns': SessionHandler.get_session_user_columns(web_context.request),

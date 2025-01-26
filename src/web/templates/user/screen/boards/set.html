@@ -1,0 +1,166 @@
+{% with tournament=screen_set.tournament %}
+    <div
+            class="boards-screen-set"
+    >
+        {% if tournament.current_round %}
+            <div class="boards-set">
+                <h2 class="set-title text-center">
+                    {% if tournament.current_round %}
+                        {{ screen_set.name_for_boards }}
+                    {% else %}
+                        {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_players, round=tournament.current_round) }}
+                    {% endif %}
+                </h2>
+                <div class="row screen-set-row mx-0 w-100">
+                    {% for boards in screen_set.boards_lists %}
+                        <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
+                            <table class="table table-striped table-sm bg-light">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col" class="board-number">Ech</th>
+                                        <th scope="col" class="points">Pts</th>
+                                        {% if tournament.print_real_points %}<th scope="col" class="points">&nbsp;</th>{% endif %}
+                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
+                                        <th scope="col" class="score">Score</th>
+                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
+                                        {% if tournament.print_real_points %}<th scope="col" class="points">&nbsp;</th>{% endif %}
+                                        <th scope="col" class="points">Pts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for board in boards %}
+                                    {% with wp=board.white_player, bp=board.black_player, editable=screen.type == 'input' and (not board.result_str or (admin_auth and not board.exempt)) %}
+                                    <tr
+                                        id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
+                                        class="
+                                            board-row
+                                            {% if editable %}editable{% endif %}
+                                            {% if admin_auth %}admin{% endif %}
+                                            {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
+                                            {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
+                                        >
+                                        <th
+                                            scope="row"
+                                            class="board-number bg-transparent text-end"
+                                            {% if editable %}
+                                                hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
+                                                preload
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                            {% endif %}
+                                        >{{ board.number }}.</th>
+                                        <td
+                                            class="points bg-transparent text-center"
+                                            {% if editable %}
+                                                hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
+                                                preload
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                            {% endif %}
+                                        >
+                                            {{ wp.vpoints_str }}
+                                        </td>
+                                        {% if tournament.print_real_points %}
+                                            <td
+                                                class="points bg-transparent text-center"
+                                                {% if editable %}
+                                                    hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
+                                                    preload
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                {% endif %}
+                                            >
+                                                [{{ wp.points_str }}]
+                                            </td>
+                                        {% endif %}
+                                        {% with player=wp %}{% with opponent=bp %}
+                                            {% include 'board_row_illegal_moves_cell.html' %}
+                                            {% include 'board_row_player_cell.html' %}
+                                        {% endwith %}{% endwith %}
+                                        <td
+                                            class="score bg-transparent text-center"
+                                            {% if editable %}
+                                                hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
+                                                preload
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                            {% endif %}
+                                        >
+                                            {% if board.result_str %}{{ board.result_str }}{% else %}{{ _('#%(board_number)d', board_number=board.number) }}{% endif %}
+                                        </td>
+                                        {% with player=bp %}{% with opponent=wp %}
+                                            {% include 'board_row_illegal_moves_cell.html' %}
+                                            {% include 'board_row_player_cell.html' %}
+                                        {% endwith %}{% endwith %}
+                                        {% if tournament.print_real_points %}
+                                            <td
+                                                class="points bg-transparent text-center"
+                                                {% if editable %}
+                                                    hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
+                                                    preload
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                {% endif %}
+                                            >
+                                                {% if bp.ref_id != 1 %}
+                                                    [{{ bp.points_str }}]
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                        <td
+                                            class="points bg-transparent text-center"
+                                            {% if editable %}
+                                                hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
+                                                preload
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                            {% endif %}
+                                        >
+                                            {% if bp.ref_id != 1 %}
+                                                {{ bp.vpoints_str }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endwith %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="players-set">
+                <h2 class="set-title text-center">
+                    {{ _('%(set_name)s (check-in)', set_name=screen_set.name_for_boards) }}
+                </h2>
+                <div class="row screen-set-row mx-0 w-100">
+                    {% for players_by_name_tuple in screen_set.players_by_name_tuple_lists %}
+                        <div class="col screen-set-col">
+                            <div class="row screen-set-tuple-row w-100 px-0">
+                                {% for players_by_name in players_by_name_tuple %}
+                                    <div class="col screen-set-tuple-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
+                                        <table class="table table-striped table-sm bg-light">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th scope="col" class="player">{{ _('Player / Elo') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for player in players_by_name %}
+                                                <tr class="player-row">
+                                                    {% include 'player_row_player_cell.html' %}
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endwith %}

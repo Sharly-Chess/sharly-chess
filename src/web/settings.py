@@ -1,8 +1,11 @@
+import os
+import posixpath
+import typing as t
 from os import urandom
 from pathlib import Path
 from typing import Sequence
 
-from jinja2 import Environment
+from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
@@ -30,7 +33,6 @@ from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.tournament_user_controller import CheckInUserController, IllegalMoveUserController, \
     ResultUserController, DownloadUserController
 
-template_dir: Path = BASE_DIR / 'src/web/templates'
 static_files_base_dir = BASE_DIR / 'src/web/static'
 
 static_files_folders = [
@@ -80,18 +82,77 @@ route_handlers: Sequence[ControllerRouterHandler] = [
 #         template_callable=template_test_function,
 #     )
 
+class FileSystemLoaderWithRelativePath(FileSystemLoader):
+    """override super().get_source() to allow .. in the template."""
+
+    def get_source(
+            self,
+            environment: Environment,
+            template: str,
+    ) -> t.Tuple[str, str, t.Callable[[], bool]]:
+        # pieces = self.split_template_path(template)
+        pieces: list[str] = template.split("/")
+
+        for searchpath in self.searchpath:
+            # Use posixpath even on Windows to avoid "drive:" or UNC
+            # segments breaking out of the search directory.
+            filename = posixpath.join(searchpath, *pieces)
+            if os.path.isfile(filename):
+                break
+        else:
+            plural = "path" if len(self.searchpath) == 1 else "paths"
+            paths_str = ", ".join(repr(p) for p in self.searchpath)
+            raise TemplateNotFound(
+                template,
+                f"{template!r} not found in search {plural}: {paths_str}",
+            )
+
+        with open(filename, encoding=self.encoding) as f:
+            contents = f.read()
+
+        mtime = os.path.getmtime(filename)
+
+        def uptodate() -> bool:
+            try:
+                return os.path.getmtime(filename) == mtime
+            except OSError:
+                return False
+
+        # Use normpath to convert Windows altsep to sep.
+        return contents, os.path.normpath(filename), uptodate
+
+
+template_dir: Path = BASE_DIR / 'src/web/templates'
+
+class PapiWebEnvironment(Environment):
+    """Override to:
+    - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
+    - use a loader that accepts relative path with ..
+    - load the gettext methods"""
+    def __init__(
+            self,
+            directory: Path,
+    ) -> None:
+        template_loader: FileSystemLoader = FileSystemLoaderWithRelativePath(searchpath=[directory])
+        super().__init__(loader=template_loader, autoescape=True, )
+        self.add_extension('jinja2.ext.i18n')
+        self.install_gettext_callables(gettext=gettext, ngettext=ngettext, newstyle=True)
+
+    def join_path(self, template: str, parent: str) -> str:
+        return str(Path(parent).parent / template)
+
+template_engine: JinjaTemplateEngine = JinjaTemplateEngine(
+    engine_instance=PapiWebEnvironment(template_dir),
+)
+
 # create the Jinja config that will be passed to the Litestar app
 template_config: TemplateConfig = TemplateConfig(
-    directory=template_dir,
-    engine=JinjaTemplateEngine,
+    engine=template_engine,
     # engine_callback=register_template_callables,
 )
 
 # add the Jinja i18n extension and register the gettext callables
 jinja_engine: JinjaTemplateEngine = template_config.engine_instance
-jinja_env: Environment = jinja_engine.engine
-jinja_env.add_extension('jinja2.ext.i18n')
-jinja_env.install_gettext_callables(gettext=gettext, ngettext=ngettext, newstyle=True)
 
 middlewares: Sequence[Middleware] = [
     CookieBackendConfig(secret=urandom(16)).middleware,
