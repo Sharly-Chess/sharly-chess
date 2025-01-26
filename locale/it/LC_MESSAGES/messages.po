@@ -215,6 +215,31 @@ msgstr "Scegli l'evento:"
 msgid "Your choice: "
 msgstr "A te la scelta:"
 
+# Error: tokens differ between [Downloading FIDE database...] and
+# [Scaricamento non riuscito con codice [{code}].]
+#: src/common/bbp_pairings.py
+#, ai_translation, fuzzy
+msgid "Downloading BBP Pairings..."
+msgstr "Scaricamento database FIDE..."
+
+#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "URL [{url}] ha risposto codice [{code}]."
+
+#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}]: {ex}."
+msgstr "Lettura non riuscita [{url}]: [{ex}]."
+
+#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "No data received from [{url}]."
+msgstr "Nessun dato ricevuto da [{url}]."
+
 #: src/common/config_reader.py
 #, ai_translation
 msgid "Configuration file [{file}] not found."
@@ -1341,21 +1366,6 @@ msgid "Downloading the FFE database..."
 msgstr "Scaricamento database FIDE..."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Could not download [{url}], error code [{code}]."
-msgstr "URL [{url}] ha risposto codice [{code}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Could not download [{url}]: {ex}."
-msgstr "Lettura non riuscita [{url}]: [{ex}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "No data received from [{url}]."
-msgstr "Nessun dato ricevuto da [{url}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "Could not unzip data."
 msgstr "Impossibile decomprimere i dati."
@@ -1670,6 +1680,10 @@ msgstr "Errore durante l'aggiornamento del database FIDE."
 #, ai_translation, fuzzy
 msgid "Error while updating the FFE database."
 msgstr "Errore durante l'aggiornamento del database FIDE."
+
+#: src/web/server_engine.py
+msgid "Error while installing BBP Pairings."
+msgstr ""
 
 #: src/web/server_engine.py
 #, ai_translation

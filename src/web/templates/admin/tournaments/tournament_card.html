@@ -136,7 +136,7 @@
         </button>
     </span>
 
-    {% if not tournament.finished and not tournament.playing %}
+    {% if tournament.pairings_generation_allowed %}
         <span {{ tooltip_attributes('info', _('Generate pairings for the next round.'), 'top') }}>
             <button
                     class="btn btn-sm btn-primary p-1 text-nowrap"
