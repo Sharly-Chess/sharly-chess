@@ -2803,7 +2803,7 @@ msgid "Colour #%(num)d:"
 msgstr "Färg # %(num)d:"
 
 #: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
@@ -2816,33 +2816,33 @@ msgstr "Som standard"
 msgid "Delay #%(num)d:"
 msgstr "Försening nr %(num)d:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/input_exit_button.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
 #, ai_translation
 msgid "Display of a screen exit button:"
 msgstr "Visa en skärmutgångsknapp:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/input_exit_button.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
 #, ai_translation
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "När du inte visar utgångsknappen, kan användare inte av misstag avsluta inmatningsskärmar."
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #, ai_translation
 msgid "Alert message:"
 msgstr "Varningsmeddelande:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "T.ex.: Var tyst till slutet av ronden!"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/players_show_unpaired.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
 #, ai_translation
 msgid "Display of unpaired players:"
 msgstr "Display av oparade spelare:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/players_show_unpaired.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
 #, ai_translation
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
 msgstr "När oparade spelare inte visas, finns det inget sätt att skilja de frånvarande (noll poäng) spelare och spelarna med en halv poäng bye)."

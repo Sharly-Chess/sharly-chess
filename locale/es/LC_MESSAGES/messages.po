@@ -2784,7 +2784,7 @@ msgid "Colour #%(num)d:"
 msgstr ""
 
 #: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
@@ -2797,33 +2797,33 @@ msgstr "por defecto"
 msgid "Delay #%(num)d:"
 msgstr ""
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/input_exit_button.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
 #, ai_translation
 msgid "Display of a screen exit button:"
 msgstr "Visualización de un botón de salida de pantalla:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/input_exit_button.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
 #, ai_translation
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Cuando no se muestra el botón de salida, los usuarios no pueden salir accidentalmente de las pantallas de entrada."
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #, ai_translation
 msgid "Alert message:"
 msgstr "Mensaje de alerta:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/message.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "E.g.: ¡Por favor, guarde silencio hasta el final de la ronda!"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/players_show_unpaired.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
 #, ai_translation
 msgid "Display of unpaired players:"
 msgstr "Visualización de jugadores no emparejados:"
 
-#: src/web/templates/admin/common/screen_or_family_or_rotator_modal/players_show_unpaired.html
+#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
 #, ai_translation
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
 msgstr "Cuando los jugadores no emparejados no se muestran, no hay manera de distinguir los jugadores ausentes (punto cero) y los jugadores con un medio punto de adiós)."

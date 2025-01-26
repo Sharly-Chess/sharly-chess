@@ -441,27 +441,27 @@
                         {% if family_type == 'input' %}
                             <div class="row">
                                 <div class="col-6">
-                                    {% include '../common/screen_or_family_or_rotator_modal/input_exit_button.html' %}
+                                    {% include '../common/screen_family_rotator_modal/exit_button.html' %}
                                 </div>
                                 <div class="col-6">
-                                    {% include '../common/screen_or_family_or_rotator_modal/message.html' %}
+                                    {% include '../common/screen_family_rotator_modal/message.html' %}
                                 </div>
                             </div>
                         {% endif %}
                         {% if family_type == 'boards' %}
                             <div class="row">
                                 <div class="col-6">
-                                    {% include '../common/screen_or_family_or_rotator_modal/message.html' %}
+                                    {% include '../common/screen_family_rotator_modal/message.html' %}
                                 </div>
                             </div>
                         {% endif %}
                         {% if family_type == 'players' %}
                             <div class="row">
                                 <div class="col-6">
-                                    {% include '../common/screen_or_family_or_rotator_modal/players_show_unpaired.html' %}
+                                    {% include '../common/screen_family_rotator_modal/show_unpaired.html' %}
                                 </div>
                                 <div class="col-6">
-                                    {% include '../common/screen_or_family_or_rotator_modal/message.html' %}
+                                    {% include '../common/screen_family_rotator_modal/message.html' %}
                                 </div>
                             </div>
                         {% endif %}
