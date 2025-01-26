@@ -168,4 +168,56 @@
 {% endmacro %}
 
 
+{% macro input(name, input_type, label, placeholder, help, data, errors) %}
+    <!-- {{ input_type }}_input({{ name }}) -->
+        {% set id=name|replace('_', '-') %}
+        <div>
+            <label for="{{ id }}" class="form-label">{{ label }}</label>
+            <div class="input-group">
+                <input
+                        name="{{ name }}"
+                        type="{{ input_type }}" id="{{ id }}"
+                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        placeholder="{{ placeholder }}"
+                        value="{{ data[name] }}" />
+                {% if input_type == 'password' %}
+                    <i
+                            id="{{ id }}-toggle-password"
+                            class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
+                {% endif %}
+            </div>
+            <div id="{{ id }}-help" class="form-text">
+                {{ help }}
+            </div>
+            {% if name in errors %}
+                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                    {{ errors[name] }}
+                </div>
+            {% endif %}
+        </div>
+        {% if input_type == 'password' %}
+            <script>
+                $('#{{ id }}-toggle-password').on('click', function(event) {
+                    event.preventDefault();
+                    hide = $('#{{ id }}').attr("type") == 'text'
+                    $('#{{ id }}').attr('type', hide ? 'password' : 'text');
+                    $('#{{ id }}-toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
+                    $('#{{ id }}-toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
+                });
+            </script>
+        {% endif %}
+    <!-- end {{ input_type }}_input({{ name }}) -->
+{% endmacro %}
 
+{% macro text_input(name, label, placeholder, help, data, errors) %}
+    {{ input(name, 'text', label, placeholder, help, data, errors) }}
+{% endmacro %}
+
+{% macro password_input(name, label, placeholder, help, data, errors) %}
+    {{ input(name, 'password', label, placeholder, help, data, errors) }}
+{% endmacro %}
+
+{% macro number_input(name, label, placeholder, help, data, errors) %}
+    {{ input(number, 'password', label, placeholder, help, data, errors) }}
+{% endmacro %}
