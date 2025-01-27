@@ -38,35 +38,47 @@
                     </h3>
                     <div class="row">
                         <div class="col">
-                            {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: timer') }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  _('The Unique ID, used to reference the timer.')
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='uniq_id',
+                                label=_('ID (unique):'),
+                                placeholder=_('E.g.: timer'),
+                                help_text=_('The Unique ID, used to reference the timer.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                     <h3>
                         {{ _('Colors and delays') }}
                     </h3>
-                    {% with default_colors=admin_event.timer_colors %}
-                        {% include '../common/modal/timer_colors.html' %}
-                    {% endwith %}
-                    {% with default_delays=admin_event.timer_delays %}
-                        {% include '../common/modal/timer_delays.html' %}
-                    {% endwith %}
+                    <div class="row">
+                        {% for num in [1, 2, 3] %}
+                            <div class="col-4">
+                                {{ color_input(
+                                    name='color_'~num,
+                                    label=_('Colour #%(num)d:', num=num),
+                                    help_text=timer_color_texts[num],
+                                    default_checkbox=true,
+                                    default_color=admin_event.timer_colors[num],
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        {% for num in [1, 2, 3] %}
+                            {% with id='delay-'~num, name='delay_'~num %}
+                            <div class="col-4">
+                                {{ number_input(
+                                    name='delay_'~num,
+                                    label=_('Delay #%(num)d:', num=num),
+                                    placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
+                                    help_text='',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
                 {% endif %}
             </div>
             <div class="modal-footer d-block">

@@ -515,3 +515,25 @@ disabled: if set to true, the field will be disabled
         disabled=disabled,
     ) }}
 {% endmacro %}
+
+{% macro time_input(
+    name,
+    label='NO LABEL',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='time',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}

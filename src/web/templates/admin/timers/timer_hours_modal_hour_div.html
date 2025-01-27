@@ -9,64 +9,31 @@
             <div class="admin-timer-hour-div edit border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %} px-1 mb-1">
                 <div class="row">
                     <div class="col-3">
-                        {% with id='date-str', name='date_str' %}
-                            <label for="{{ id }}" class="form-label">{{ _('Date:') }}</label>
-                            <input
-                                    name="{{ name }}"
-                                    type="date" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('Format: YYYY-MM-DD') }}"
-                                    value="{{ data[name] }}" />
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('Mandatory for the first hour, optional for next hours.') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {{ date_input(
+                            name='date_str',
+                            label=_('Date:'),
+                            help_text=_('Mandatory for the first hour, optional for next hours.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
                     <div class="col-2">
-                        {% with id='time-str', name='time_str' %}
-                            <label for="{{ id }}" class="form-label">{{ _('Hour:') }}</label>
-                            <input
-                                    name="{{ name }}"
-                                    type="time" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('Format: HH-MM') }}"
-                                    value="{{ data[name] }}" />
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('Mandatory for all the hours.') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {{ time_input(
+                            name='time_str',
+                            label=_('Hour:'),
+                            help_text=_('E.g.: Start of check-in'),
+                            disabled=action == 'delete',
+                            error=action == 'delete',
+                            data=data, errors=errors
+                        ) }}
                     </div>
                     <div class="col-5">
-                        {% with id='uniq-id', name='uniq_id' %}
-                            <label for="{{ id }}" class="form-label">{{ _('Round number or text:') }}</label>
-                            <input
-                                    name="{{ name }}"
-                                    type="text" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('E.g.: Start of check-in') }}"
-                                    value="{{ data[name] }}" />
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('Texts before and after the hour below are optional for round numbers, mandatory otherwise.') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {{ text_input(
+                            name='uniq_id',
+                            label=_('Round number or text:'),
+                            placeholder=_('E.g.: Start of check-in'),
+                            help_text=_('Texts before and after the hour below are optional for round numbers, mandatory otherwise.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
                     <div class="col-2 text-end">
                         <button
@@ -91,44 +58,22 @@
                 </div>
                 <div class="row">
                     <div class="col-5">
-                        {% with id='text-before', name='text_before' %}
-                            <label for="{{ id }}" class="form-label">{{ _('Text before the hour:') }}</label>
-                            <input
-                                    name="{{ name }}"
-                                    type="text" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('E.g.: Start of check-in in %%s') }}"
-                                    value="{{ data[name] }}" />
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('%%s is replaced by the time left before the hour.') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {{ text_input(
+                            name='text_before',
+                            label=_('Text before the hour:'),
+                            placeholder=_('E.g.: Check-in started for %%s'),
+                            help_text=_('%%s is replaced by the time left before the hour.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
                     <div class="col-5">
-                        {% with id='text-after', name='text_after' %}
-                            <label for="{{ id }}" class="form-label">{{ _('Text after the hour:') }}</label>
-                            <input
-                                    name="{{ name }}"
-                                    type="text" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('E.g.: Check-in started for %%s') }}"
-                                    value="{{ data[name] }}" />
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('%%s is replaced by the time elapsed since the hour.') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {{ text_input(
+                            name='text_after',
+                            label=_('Text after the hour:'),
+                            placeholder=_('E.g.: Start of check-in in %%s'),
+                            help_text=_('%%s is replaced by the time elapsed since the hour.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
                 </div>
             </div>
