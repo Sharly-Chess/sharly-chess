@@ -46,110 +46,53 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-                    {% with id='uniq-id', name='uniq_id' %}
-                        <div>
-                            <label for="{{ id }}" class="form-label">{{ _('Enter the tournament ID to confirm its deletion:') }}</label>
-                            <input
-                                    name="{{ name }}"
-                                    type="text" id="{{ id }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    placeholder="{{ _('Enter here the tournament ID') }}"
-                                    value="" />
-                            <div id="{{ id }}-help" class="form-text">
-                                {{ _('The Papi-web tournament are deleted but the Papi file is still available on the filesystem.') }}
-                            </div>
-                            {% if name in errors %}
-                                <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                    {{ errors[name] }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endwith %}
+                    {{ text_input(
+                        name='uniq_id',
+                        label=_('Enter the tournament ID to confirm its deletion:'),
+                        placeholder=_('Enter here the tournament ID'),
+                        help_text=_('The Papi-web tournament are deleted but the Papi file is still available on the filesystem.'),
+                        data=data, errors=errors
+                    ) }}
                 {% else %}
                     <h3>
                         {{ _('Properties') }}
                     </h3>
                     <div class="row">
                         <div class="col-3">
-                            {% with id='uniq-id', name='uniq_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: main') }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The Unique ID, used to reference the tournament.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='uniq_id',
+                                label=_('ID (unique):'),
+                                placeholder=_('E.g.: main'),
+                                help_text=_('The Unique ID, used to reference the tournament.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-3">
-                            {% with id='name', name='name' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Name:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: Main tournament') }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The name of the tournament, used for display.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='name',
+                                label=_('Name:'),
+                                placeholder=_('E.g.: Main tournament'),
+                                help_text=_('The name of the tournament, used for display.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-3">
-                            {% with id='path', name='path' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Directory of the Papi file:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: c:\\chess\\tournaments\\papi') }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The directory of the Papi file, by default %(dir)s.', dir=admin_event.path) }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='path',
+                                label=_('Directory of the Papi file:'),
+                                placeholder=_('E.g.: c:\\chess\\tournaments\\papi'),
+                                help_text=_('The directory of the Papi file, by default %(dir)s.', dir=admin_event.path),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-3">
-                            {% with id='filename', name='filename' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Name of the Papi file (with no extension):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: main') }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament).') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='filename',
+                                label=_('Name of the Papi file (with no extension):'),
+                                placeholder=_('E.g.: main'),
+                                help_text=_('The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament).'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                     <h3>
@@ -157,104 +100,41 @@
                     </h3>
                     <div class="row">
                         <div class="col-3">
-                            {% with id='ffe-id', name='ffe_id' %}
-                                <label for="{{ id }}" class="form-label">{{ _('FFE qualification number (optional):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="number" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: %(num)d', num=68991) }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The qualification number given by the French Federation is an integer, it is used to connect to the FFE website.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ number_input(
+                                name='ffe_id',
+                                label=_('FFE qualification number (optional):'),
+                                placeholder=_('E.g.: %(num)d', num=68991),
+                                help_text=_('The qualification number given by the French Federation is an integer, it is used to connect to the FFE website.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-3">
-                            {% with id='ffe-password', name='ffe_password' %}
-                                <label for="{{ id }}" class="form-label">{{ _('FFE password:') }}</label>
-                                <div class="input-group">
-                                    <input
-                                            name="{{ name }}"
-                                            type="password" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="{{ _('E.g.: %(string)s', string='KYNPRTZMHX') }}"
-                                            value="{{ data[name] }}" />
-                                    <i
-                                            id="toggle-password"
-                                            class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
-                                </div>
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The password is made of 10 uppercase letters, it is used to connect to the FFE website.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                                <script>
-                                    $('#toggle-password').on('click', function(event) {
-                                        event.preventDefault();
-                                        hide = $('#{{ id }}').attr("type") == 'text'
-                                        $('#{{ id }}').attr('type', hide ? 'password' : 'text');
-                                        $('#toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
-                                        $('#toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
-                                    });
-                                </script>
-                            {% endwith %}
+                            {{ password_input(
+                                name='ffe_password',
+                                label=_('FFE password:'),
+                                placeholder=_('E.g.: %(string)s', string='KYNPRTZMHX'),
+                                help_text=_('The password is made of 10 uppercase letters, it is used to connect to the FFE website.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         {% if admin_event.chessevents_by_id %}
                             <div class="col-3">
-                                {% with id='chessevent-id', name='chessevent_id' %}
-                                    <label for="{{ id }}" class="form-label">{{ _('ChessEvent connection:') }}</label>
-                                    <select
-                                            name="{{ name }}"
-                                            id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                    >
-                                        {% for value, text in chessevent_options.items() %}
-                                            <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
-                                                {{ text }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                    <div id="{{ id }}-help" class="form-text">
-                                      {{ _('The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform.') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                {% endwith %}
+                                {{ select_input(
+                                    name='chessevent_id',
+                                    label=_('ChessEvent connection:'),
+                                    help_text=_('The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform.'),
+                                    select_options=chessevent_options,
+                                    data=data, errors=errors
+                                ) }}
                             </div>
                             <div class="col-3">
-                                {% with id='chessevent-tournament-name', name='chessevent_tournament_name' %}
-                                    <label for="{{ id }}" class="form-label">{{ _('Name of the ChessEvent tournament:') }}</label>
-                                    <input
-                                            name="{{ name }}"
-                                            type="text" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="{{ _('E.g.: Main tournament') }}"
-                                            value="{{ data[name] }}" />
-                                    <div id="{{ id }}-help" class="form-text">
-                                      {{ _('The name of the tournament on the ChessEvent platform.') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                {% endwith %}
+                                {{ text_input(
+                                    name='chessevent_tournament_name',
+                                    label=_('Name of the ChessEvent tournament:'),
+                                    placeholder=_('E.g.: main'),
+                                    help_text=_('The name of the tournament on the ChessEvent platform.'),
+                                    data=data, errors=errors
+                                ) }}
                             </div>
                     {% else %}
                         <div class="col-6">
@@ -266,154 +146,75 @@
                     </h3>
                     <div class="row">
                         <div class="col-3">
-                            {% with id='time-control-initial-time', name='time_control_initial_time' %}
-                                <label for="{{ id }}" class="form-label">{{('Initial time (optional):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5) }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The initial time in seconds (may be empty if an increment is set).') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ number_input(
+                                name='time_control_initial_time',
+                                label=_('FFE qualification number (optional):'),
+                                placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5),
+                                help_text=_('The initial time in seconds (may be empty if an increment is set).'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-3">
-                            {% with id='time-control-increment', name='time_control_increment' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Increment (optional):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: %(num)d', num=3) }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The number of seconds added to the players\' clock at each move.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ number_input(
+                                name='time_control_increment',
+                                label=_('Increment (optional):'),
+                                placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5),
+                                help_text=_('The number of seconds added to the players\' clock at each move.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-2">
-                            {% with id='time-control-handicap-penalty-value', name='time_control_handicap_penalty_value' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Penalty (handicap):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: %(seconds)d (seconds)', seconds=30) }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ number_input(
+                                name='time_control_handicap_penalty_value',
+                                label=_('Penalty (handicap):'),
+                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
+                                help_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-2">
-                            {% with id='time-control-handicap-penalty-step', name='time_control_handicap_penalty_step' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Elo step (handicap):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: 50 (Elo)') }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ number_input(
+                                name='time_control_handicap_penalty_step',
+                                label=_('Elo step (handicap):'),
+                                placeholder=_('E.g.: 50 (Elo)'),
+                                help_text=_('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-2">
-                            {% with id='time-control-handicap-min-time', name='time_control_handicap_min_time' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Minimal time (handicap):') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: %(seconds)d (seconds)', seconds=60) }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                  {{ _('The minimum time, whatever the ranking difference between the two players.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endwith %}
+                            {{ number_input(
+                                name='time_control_handicap_min_time',
+                                label=_('Minimal time (handicap):'),
+                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=60),
+                                help_text=_('The minimum time, whatever the ranking difference between the two players.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                     </div>
                     <h3>
                         {{ _('Rules') }}
                     </h3>
                     <div class="row">
                         <div class="col-6">
-                            {% with id='rules', name='rules' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Rules file location:') }}</label>
-                                <input
-                                        name="{{ name }}"
-                                        type="text" id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        placeholder="{{ _('E.g.: c:\\chess\\tournaments\\main\\rules.pdf') }}"
-                                        value="{{ data[name] }}" />
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event).') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ text_input(
+                                name='rules',
+                                label=_('Rules file location:'),
+                                placeholder=_('E.g.: c:\\chess\\tournaments\\main\\rules.pdf'),
+                                help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event).'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-6">
-                            {% with id='record-illegal-moves', name='record_illegal_moves' %}
-                                <label for="{{ id }}" class="form-label">{{ _('Illegal moves recording:') }}</label>
-                                <select
-                                        name="{{ name }}"
-                                        id="{{ id }}"
-                                        class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error" >
-                                    {% for value, text in record_illegal_moves_options.items() %}
-                                        <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>{{ text }}</option>
-                                    {% endfor %}
-                                </select>
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _(
-                                        'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d).',
-                                        default=admin_event.record_illegal_moves
-                                    ) }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            {% endwith %}
+                            {{ select_input(
+                                name='record_illegal_moves',
+                                label=_('Illegal moves recording:'),
+                                help_text=_(
+                                    'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d).',
+                                    default=admin_event.record_illegal_moves
+                                ),
+                                select_options=record_illegal_moves_options,
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                 {% endif %}
