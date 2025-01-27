@@ -162,6 +162,21 @@
     <!-- end gender_icon() -->
 {% endmacro %}
 
+{#
+name: used by the query parameter
+input_type: see *_input() below
+label: the form label of the field
+placeholder: the text inside text inputs when empty, also used as the text for the switches
+help_text: the text printed below the input
+data, errors: used to pre-fill the inputs and error messages (data[name] and errors[name] are used for this field)
+error: if true, sets the field as "on error", event if errors[name] is not set
+default_checkbox: if true, a checkbox is printed with the default message "by default", with query name <name>_checkbox
+default_checkbox_text: another message to replace "by default"
+default_value: the value to be set when the default checkbox is checked
+select_options: a dict[str, str], keys are the select values and values are the select texts
+number_min: the minimum value for numbers
+disabled: if set to true, the field will be disabled
+#}
 
 {% macro _generic_input(
     name,
@@ -171,11 +186,13 @@
     help_text='NO HELP TEXT',
     data={},
     errors={},
+    error=false,
     default_checkbox=false,
     default_checkbox_text='',
     default_value='',
     select_options={},
-    number_min=0
+    number_min=0,
+    disabled=false
 ) %}
     <!-- {{ input_type }}_input({{ name }}) -->
         {% set id=name|replace('_', '-') %}
@@ -189,7 +206,7 @@
         <div>
             <label
                     for="{{ id }}"
-                    class="{% if input_type == 'switch' %}form-label{% else %}form-check-label{% endif %}"
+                    class="form-check-label"
             >
                 {{ label }}
             </label>
@@ -213,9 +230,9 @@
                     <select
                             name="{{ name }}"
                             id="{{ id }}"
-                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                            class="form-control {% if error or (name in errors) %}is-invalid{% else %}is-valid{% endif %}"
                             aria-describedby="{{ id }}-help {{ id }}-error"
-                            {% if select_options|length <= 1 %}
+                            {% if disabled or select_options|length <= 1 %}
                                 disabled
                             {% endif %}
                     >
@@ -234,6 +251,9 @@
                             value="on"
                             aria-describedby="{{ id }}-help {{ id }}-error"
                             {% if data[name] == 'on' %}checked{% endif %}
+                            {% if disabled %}
+                                disabled
+                            {% endif %}
                     />
                     {{ placeholder }}
                 {% else %}
@@ -244,11 +264,11 @@
                             {% if number_min %}
                                 min="{{ number_min }}"
                             {% endif %}
-                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                            class="form-control {% if error or (name in errors) %}is-invalid{% else %}is-valid{% endif %}"
                             aria-describedby="{{ id }}-help {{ id }}-error"
                             placeholder="{{ placeholder }}"
                             value="{{ value }}"
-                            {% if default_checkbox and data[default_checkbox_name] == 'on' %}disabled{% endif %}
+                            {% if disabled or (default_checkbox and data[default_checkbox_name] == 'on') %}disabled{% endif %}
                     />
                     {% if input_type == 'password' %}
                         <i
@@ -301,9 +321,11 @@
     help_text='NO HELP TEXT',
     data={},
     errors={},
+    error=false,
     default_checkbox=false,
     default_checkbox_text='',
-    default_value=''
+    default_value='',
+    disabled=false
 ) %}
     {{ _generic_input(
         name=name,
@@ -313,9 +335,11 @@
         help_text=help_text,
         data=data,
         errors=errors,
+        error=error,
         default_checkbox=default_checkbox,
         default_checkbox_text=default_checkbox_text,
-        default_value=default_value
+        default_value=default_value,
+        disabled=disabled,
     ) }}
 {% endmacro %}
 
@@ -326,10 +350,12 @@
     help_text='NO HELP TEXT',
     data={},
     errors={},
+    error=false,
     default_checkbox=false,
     default_checkbox_text='',
     default_value='',
-    number_min=0
+    number_min=0,
+    disabled=false
 ) %}
     {{ _generic_input(
         name=name,
@@ -339,10 +365,12 @@
         help_text=help_text,
         data=data,
         errors=errors,
+        error=error,
         default_checkbox=default_checkbox,
         default_checkbox_text=default_checkbox_text,
         default_value=default_value,
-        number_min=number_min
+        number_min=number_min,
+        disabled=disabled,
     ) }}
 {% endmacro %}
 
@@ -352,7 +380,9 @@
     placeholder='',
     help_text='NO HELP TEXT',
     data={},
-    errors={}
+    errors={},
+    error=false,
+    disabled=false
 ) %}
     {{ _generic_input(
         name=name,
@@ -362,6 +392,8 @@
         help_text=help_text,
         data=data,
         errors=errors,
+        error=error,
+        disabled=disabled,
     ) }}
 {% endmacro %}
 
@@ -372,9 +404,11 @@
     help_text='NO HELP TEXT',
     data={},
     errors={},
+    error=false,
     default_checkbox=false,
     default_checkbox_text='',
-    default_color=''
+    default_color='',
+    disabled=false
 ) %}
     {{ _generic_input(
         name=name,
@@ -384,9 +418,11 @@
         help_text=help_text,
         data=data,
         errors=errors,
+        error=error,
         default_checkbox=default_checkbox,
         default_checkbox_text=default_checkbox_text,
-        default_value=default_color
+        default_value=default_color,
+        disabled=disabled,
     ) }}
 {% endmacro %}
 
@@ -396,7 +432,9 @@
     help_text='NO HELP TEXT',
     data={},
     errors={},
-    select_options={'': 'NO OPTIONS'}
+    error=false,
+    select_options={'': 'NO OPTIONS'},
+    disabled=false
 ) %}
     {{ _generic_input(
         name=name,
@@ -405,7 +443,9 @@
         help_text=help_text,
         data=data,
         errors=errors,
-        select_options=select_options
+        error=error,
+        select_options=select_options,
+        disabled=disabled,
     ) }}
 {% endmacro %}
 
@@ -415,7 +455,9 @@
     placeholder='NO PLACEHOLDER',
     help_text='NO HELP TEXT',
     data={},
-    errors={}
+    errors={},
+    error=false,
+    disabled=false
 ) %}
     {{ _generic_input(
         name=name,
@@ -425,15 +467,19 @@
         help_text=help_text,
         data=data,
         errors=errors,
+        error=error,
+        disabled=disabled,
     ) }}
 {% endmacro %}
 
-{% macro datatime_input(
+{% macro datetime_input(
     name,
     label='NO LABEL',
     help_text='NO HELP TEXT',
     data={},
-    errors={}
+    errors={},
+    error=false,
+    disabled=false
 ) %}
     {{ _generic_input(
         name=name,
@@ -443,5 +489,29 @@
         help_text=help_text,
         data=data,
         errors=errors,
+        error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro date_input(
+    name,
+    label='NO LABEL',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='date',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
     ) }}
 {% endmacro %}
