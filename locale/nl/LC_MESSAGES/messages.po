@@ -2803,7 +2803,6 @@ msgid "Sort the players by tournament."
 msgstr "Sorteer de spelers op toernooi."
 
 #: src/web/templates/admin/common/macros.j2
-#: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 #, ai_translation
 msgid "by default"
@@ -2815,7 +2814,6 @@ msgid "Alert message:"
 msgstr "Waarschuwingsbericht:"
 
 #: src/web/templates/admin/common/modal/alert_message.html
-#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "B.v.: Hou alsjeblieft je mond tot het einde van de ronde!"
@@ -2848,18 +2846,21 @@ msgstr "Wanneer niet-gepaarde spelers niet worden weergegeven, is er geen manier
 
 #: src/web/templates/admin/common/modal/timer_colors.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "Colour #%(num)d:"
 msgstr "Kleur #%(num)d:"
 
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "Delay #%(num)d:"
 msgstr "Vertraging #%(num)d:"
 
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, fuzzy, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr "Bijvoorbeeld: %(minutes)d (minuten)"
@@ -2911,6 +2912,7 @@ msgstr "De unieke ID, gebruikt voor gegevensopslag en -export."
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -2938,7 +2940,6 @@ msgstr "Zichtbaarheid:"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/families/family_modal.html
 #, ai_translation
 msgid "Public event"
 msgstr "Publieke gebeurtenis"
@@ -3036,6 +3037,7 @@ msgid "Display"
 msgstr "Weergave"
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "Background image:"
 msgstr "Achtergrondafbeelding:"
@@ -3046,6 +3048,7 @@ msgid "The URL or the path of the image to display (by default the Papi-web logo
 msgstr "De URL of het pad van de te tonen afbeelding (standaard het Papi-weblogo)."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "no background image"
 msgstr "geen achtergrondafbeelding"
@@ -3377,6 +3380,11 @@ msgstr "Eigenschappen (paarden per speler)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
+msgid "Public family"
+msgstr "Openbare familie"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation
 msgid "Only arbiters can see private screen families."
 msgstr "Alleen arbiters kunnen privé-schermfamilies zien."
 
@@ -3568,6 +3576,7 @@ msgid "Links displayed on the screen menu:"
 msgstr "Links weergegeven in het schermmenu:"
 
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Bijvoorbeeld: @boards, @family, een ander scherm"
@@ -4076,11 +4085,6 @@ msgstr "Identiteit"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Last name:"
-msgstr "Achternaam:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "E.g.: DOE"
 msgstr "B.v.: DOE"
 
@@ -4233,6 +4237,11 @@ msgstr "Contact en registratie"
 #, ai_translation
 msgid "Email:"
 msgstr "E-mail:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "E.g.: john.doe@chess.com"
+msgstr "Bijvoorbeeld: john.doe@chess.com"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4543,6 +4552,11 @@ msgid "Only arbiters can view private rotators."
 msgstr "Alleen arbiters kunnen privé rotators bekijken."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: my-rotator"
+msgstr "Bijv.: my_password"
+
+#: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the rotator."
 msgstr "Het unieke ID, gebruikt om naar de rotator te verwijzen."
@@ -4798,11 +4812,6 @@ msgstr "De timer die op het scherm wordt weergegeven."
 
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
-msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-msgstr "Bijvoorbeeld: @boards, fixed-boards, toernooi-a-*"
-
-#: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr "Dit veld geeft u de schermen aan waarvan de links op het schermmenu worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @boards (alle boards), @input (alle invoerschermen), @players (alle spelersschermen) en de wildcard * kunnen worden gebruikt. Als dit veld leeg blijft, zal er geen menu op het scherm worden weergegeven."
 
@@ -4860,12 +4869,6 @@ msgstr "Toernooien getoond:"
 #, ai_translation
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Wanneer geen toernooi is geselecteerd, worden de resultaten van alle toernooien weergegeven."
-
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/user/event/screen_card.html
-#, ai_translation
-msgid "Image:"
-msgstr "Afbeelding:"
 
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
@@ -5115,11 +5118,6 @@ msgstr "Datum:"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
-msgid "Format: YYYY-MM-DD"
-msgstr "Formaat: JJJJ-MM-DD"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#, ai_translation
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Verplicht voor het eerste uur, optioneel voor volgende uren."
 
@@ -5130,23 +5128,13 @@ msgstr "Uur:"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
-msgid "Format: HH-MM"
-msgstr "Formaat: HH-MM"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#, ai_translation
-msgid "Mandatory for all the hours."
-msgstr "Verplicht voor alle uren."
+msgid "E.g.: Start of check-in"
+msgstr "B.v.: Begin van de check-in"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
 msgid "Round number or text:"
 msgstr "Rondenummer of -tekst:"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#, ai_translation
-msgid "E.g.: Start of check-in"
-msgstr "B.v.: Begin van de check-in"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
@@ -5160,8 +5148,8 @@ msgstr "Tekst voor het uur:"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation, python-format
-msgid "E.g.: Start of check-in in %%s"
-msgstr "Bijvoorbeeld: Begin van het inchecken in %%s"
+msgid "E.g.: Check-in started for %%s"
+msgstr "Bijvoorbeeld: Check-in gestart voor %%s"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation, python-format
@@ -5175,8 +5163,8 @@ msgstr "Tekst na het uur:"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation, python-format
-msgid "E.g.: Check-in started for %%s"
-msgstr "Bijvoorbeeld: Check-in gestart voor %%s"
+msgid "E.g.: Start of check-in in %%s"
+msgstr "Bijvoorbeeld: Begin van het inchecken in %%s"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation, python-format
@@ -5211,6 +5199,11 @@ msgstr "Waarschuwing: het verwijderen van een timer is permanent!"
 #, ai_translation
 msgid "E.g.: timer"
 msgstr "Bijv.: timer"
+
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy
+msgid "The Unique ID, used to reference the timer."
+msgstr "Het unieke ID, gebruikt om naar de rotator te verwijzen."
 
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation
@@ -5734,6 +5727,11 @@ msgstr "Maximum aantal resultaten: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Maximum aantal resultaten: onbeperkt"
 
+#: src/web/templates/user/event/screen_card.html
+#, ai_translation
+msgid "Image:"
+msgstr "Afbeelding:"
+
 #: src/web/templates/user/screen/results.html
 #, ai_translation
 msgid "Tournament"
@@ -5828,4 +5826,19 @@ msgstr "vs"
 
 #~ msgid "Public screen family"
 #~ msgstr "Publiek schermfamilie"
+
+#~ msgid "Last name:"
+#~ msgstr "Achternaam:"
+
+#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
+#~ msgstr "Bijvoorbeeld: @boards, fixed-boards, toernooi-a-*"
+
+#~ msgid "Format: YYYY-MM-DD"
+#~ msgstr "Formaat: JJJJ-MM-DD"
+
+#~ msgid "Format: HH-MM"
+#~ msgstr "Formaat: HH-MM"
+
+#~ msgid "Mandatory for all the hours."
+#~ msgstr "Verplicht voor alle uren."
 

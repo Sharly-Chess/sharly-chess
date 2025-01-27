@@ -2269,7 +2269,6 @@ msgid "Sort the players by tournament."
 msgstr "Trier les joueur·euses par tournoi."
 
 #: src/web/templates/admin/common/macros.j2
-#: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 msgid "by default"
 msgstr "par défaut"
@@ -2279,7 +2278,6 @@ msgid "Alert message:"
 msgstr "Message d'alerte :"
 
 #: src/web/templates/admin/common/modal/alert_message.html
-#: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "Exemple : Merci aux joueur·euses de bien vouloir se mettre en place !"
 
@@ -2306,18 +2304,21 @@ msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il 
 
 #: src/web/templates/admin/common/modal/timer_colors.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Colour #%(num)d:"
 msgstr "Couleur n°%(num)d :"
 
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr "Délai n°%(num)d :"
 
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr "Par défaut : %(minutes)d (minutes)"
@@ -2362,6 +2363,7 @@ msgstr "L'identifiant unique, utilisé pour le stockage des données et les fich
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -2385,7 +2387,6 @@ msgstr "Visibilité :"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/families/family_modal.html
 msgid "Public event"
 msgstr "Évènement public"
 
@@ -2467,6 +2468,7 @@ msgid "Display"
 msgstr "Affichage"
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 msgid "Background image:"
 msgstr "Image de fond :"
 
@@ -2475,6 +2477,7 @@ msgid "The URL or the path of the image to display (by default the Papi-web logo
 msgstr "L'URL ou le chemin de l'image à afficher (par défaut le logo de Papi-web)."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 msgid "no background image"
 msgstr "pas d'image de fond"
 
@@ -2757,6 +2760,10 @@ msgid "Properties (pairings by player)"
 msgstr "Propriétés (appariements par ordre alphabétique)"
 
 #: src/web/templates/admin/families/family_modal.html
+msgid "Public family"
+msgstr "Famille publique"
+
+#: src/web/templates/admin/families/family_modal.html
 msgid "Only arbiters can see private screen families."
 msgstr "Seuls les arbitres peuvent voir les écrans des familles privées."
 
@@ -2918,6 +2925,7 @@ msgid "Links displayed on the screen menu:"
 msgstr "Liens affichés sur le menu de l'écran :"
 
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Exemple : @boards, @family, un-autre-ecran"
 
@@ -3142,8 +3150,6 @@ msgstr "Pointage"
 msgid "Tournament [%(tournament_uniq_id)s] is finished."
 msgstr "Le tournoi [%(tournament_uniq_id)s] est terminé."
 
-# Error: tokens differ between [Tournament [%(tournament_uniq_id)s] is
-# playing.] and [Le tournoi [{tournament_uniq_id}] est démarré.]
 #: src/web/templates/admin/players/check_in_tournaments.html
 #: src/web/templates/admin/players/tab.html
 #, python-format
@@ -3348,10 +3354,6 @@ msgid "Identity"
 msgstr "Identité"
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Last name:"
-msgstr "Nom (de famille) :"
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "E.g.: DOE"
 msgstr "Exemple : DUPONT"
 
@@ -3474,6 +3476,10 @@ msgstr "Contact et inscription"
 #: src/web/templates/admin/players/player_modal.html
 msgid "Email:"
 msgstr "Mél :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "E.g.: john.doe@chess.com"
+msgstr "Exemple : pierre.dupont@chess.com"
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's email."
@@ -3735,6 +3741,10 @@ msgid "Only arbiters can view private rotators."
 msgstr "Seuls les arbitres peuvent voir les écrans rotatifs privés."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
+msgid "E.g.: my-rotator"
+msgstr "Exemple : mon-ecran-rotatif"
+
+#: src/web/templates/admin/rotators/rotator_modal.html
 msgid "The Unique ID, used to reference the rotator."
 msgstr "L'identifiant unique, utilisé pour référencer l'écran rotatif'."
 
@@ -3949,10 +3959,6 @@ msgid "The timer displayed on the screen."
 msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 
 #: src/web/templates/admin/screens/screen_modal.html
-msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-msgstr "E.g.: @boards, ecrans-fixes, tournoi-a-*"
-
-#: src/web/templates/admin/screens/screen_modal.html
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'es 'écran."
 
@@ -4001,11 +4007,6 @@ msgstr "Tournois affichés :"
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
-
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/user/event/screen_card.html
-msgid "Image:"
-msgstr "Image :"
 
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "E.g.: https://my.club.us/tournament.jpg"
@@ -4211,10 +4212,6 @@ msgid "Date:"
 msgstr "Date :"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-msgid "Format: YYYY-MM-DD"
-msgstr "Format : AAAA-MM-JJ"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
 
@@ -4223,20 +4220,12 @@ msgid "Hour:"
 msgstr "Horaire :"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-msgid "Format: HH-MM"
-msgstr "Format: HH-MM"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-msgid "Mandatory for all the hours."
-msgstr "Obligatoire pour tous les horaires."
+msgid "E.g.: Start of check-in"
+msgstr "Exemple : Début du pointage :"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 msgid "Round number or text:"
 msgstr "Numéro de ronde ou texte :"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-msgid "E.g.: Start of check-in"
-msgstr "Exemple : Début du pointage :"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
@@ -4248,8 +4237,8 @@ msgstr "Texte avant l'horaire :"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, python-format
-msgid "E.g.: Start of check-in in %%s"
-msgstr "Exemple : Début du pointage dans %%s"
+msgid "E.g.: Check-in started for %%s"
+msgstr "Exemple : Pointage commencé depuis %%s"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, python-format
@@ -4262,8 +4251,8 @@ msgstr "Texte après l'horaire :"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, python-format
-msgid "E.g.: Check-in started for %%s"
-msgstr "Exemple : Pointage commencé depuis %%s"
+msgid "E.g.: Start of check-in in %%s"
+msgstr "Exemple : Début du pointage dans %%s"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, python-format
@@ -4274,15 +4263,11 @@ msgstr "%%s est remplacé par le temps passé depuis l'horaire."
 msgid "Timer creation"
 msgstr "Création d'un chronomètre"
 
-# Error: tokens differ between [Edition of timer [%(timer_uniq_id)s]] and
-# [Édition de l'écran rotatif [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Edition of timer [%(timer_uniq_id)s]"
 msgstr "Édition du chronomètre [%(timer_uniq_id)s]"
 
-# Error: tokens differ between [Deletion of timer [%(timer_uniq_id)s]] and
-# [Suppression de l'écran rotatif [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Deletion of timer [%(timer_uniq_id)s]"
@@ -4295,6 +4280,10 @@ msgstr "Attention : la suppression d'un chronomètre est définitive !"
 #: src/web/templates/admin/timers/timer_modal.html
 msgid "E.g.: timer"
 msgstr "Exemple : chronometre"
+
+#: src/web/templates/admin/timers/timer_modal.html
+msgid "The Unique ID, used to reference the timer."
+msgstr "L'identifiant unique, utilisé pour référencer le chronomètre'."
 
 #: src/web/templates/admin/timers/timer_modal.html
 msgid "Colors and delays"
@@ -4728,6 +4717,10 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
+#: src/web/templates/user/event/screen_card.html
+msgid "Image:"
+msgstr "Image :"
+
 #: src/web/templates/user/screen/results.html
 msgid "Tournament"
 msgstr "Tournoi"
@@ -4809,4 +4802,19 @@ msgstr "contre"
 
 #~ msgid "Public screen family"
 #~ msgstr "Famille d'écrans publique"
+
+#~ msgid "Last name:"
+#~ msgstr "Nom (de famille) :"
+
+#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
+#~ msgstr "E.g.: @boards, ecrans-fixes, tournoi-a-*"
+
+#~ msgid "Format: YYYY-MM-DD"
+#~ msgstr "Format : AAAA-MM-JJ"
+
+#~ msgid "Format: HH-MM"
+#~ msgstr "Format: HH-MM"
+
+#~ msgid "Mandatory for all the hours."
+#~ msgstr "Obligatoire pour tous les horaires."
 

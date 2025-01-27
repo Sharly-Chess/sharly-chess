@@ -2269,7 +2269,6 @@ msgid "Sort the players by tournament."
 msgstr ""
 
 #: src/web/templates/admin/common/macros.j2
-#: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 msgid "by default"
 msgstr ""
@@ -2279,7 +2278,6 @@ msgid "Alert message:"
 msgstr ""
 
 #: src/web/templates/admin/common/modal/alert_message.html
-#: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr ""
 
@@ -2306,18 +2304,21 @@ msgstr ""
 
 #: src/web/templates/admin/common/modal/timer_colors.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Colour #%(num)d:"
 msgstr ""
 
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr ""
 
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr ""
@@ -2362,6 +2363,7 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -2385,7 +2387,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/families/family_modal.html
 msgid "Public event"
 msgstr ""
 
@@ -2467,6 +2468,7 @@ msgid "Display"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 msgid "Background image:"
 msgstr ""
 
@@ -2475,6 +2477,7 @@ msgid "The URL or the path of the image to display (by default the Papi-web logo
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 msgid "no background image"
 msgstr ""
 
@@ -2757,6 +2760,10 @@ msgid "Properties (pairings by player)"
 msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
+msgid "Public family"
+msgstr ""
+
+#: src/web/templates/admin/families/family_modal.html
 msgid "Only arbiters can see private screen families."
 msgstr ""
 
@@ -2918,6 +2925,7 @@ msgid "Links displayed on the screen menu:"
 msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 msgid "E.g.: @boards, @family, another-screen"
 msgstr ""
 
@@ -3346,10 +3354,6 @@ msgid "Identity"
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Last name:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "E.g.: DOE"
 msgstr ""
 
@@ -3471,6 +3475,10 @@ msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Email:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "E.g.: john.doe@chess.com"
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
@@ -3733,6 +3741,10 @@ msgid "Only arbiters can view private rotators."
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
+msgid "E.g.: my-rotator"
+msgstr ""
+
+#: src/web/templates/admin/rotators/rotator_modal.html
 msgid "The Unique ID, used to reference the rotator."
 msgstr ""
 
@@ -3947,10 +3959,6 @@ msgid "The timer displayed on the screen."
 msgstr ""
 
 #: src/web/templates/admin/screens/screen_modal.html
-msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-msgstr ""
-
-#: src/web/templates/admin/screens/screen_modal.html
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr ""
 
@@ -3998,11 +4006,6 @@ msgstr ""
 
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
-msgstr ""
-
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/user/event/screen_card.html
-msgid "Image:"
 msgstr ""
 
 #: src/web/templates/admin/screens/screen_modal.html
@@ -4209,10 +4212,6 @@ msgid "Date:"
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-msgid "Format: YYYY-MM-DD"
-msgstr ""
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr ""
 
@@ -4221,19 +4220,11 @@ msgid "Hour:"
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-msgid "Format: HH-MM"
-msgstr ""
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-msgid "Mandatory for all the hours."
+msgid "E.g.: Start of check-in"
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 msgid "Round number or text:"
-msgstr ""
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-msgid "E.g.: Start of check-in"
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
@@ -4246,7 +4237,7 @@ msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, python-format
-msgid "E.g.: Start of check-in in %%s"
+msgid "E.g.: Check-in started for %%s"
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
@@ -4260,7 +4251,7 @@ msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, python-format
-msgid "E.g.: Check-in started for %%s"
+msgid "E.g.: Start of check-in in %%s"
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
@@ -4288,6 +4279,10 @@ msgstr ""
 
 #: src/web/templates/admin/timers/timer_modal.html
 msgid "E.g.: timer"
+msgstr ""
+
+#: src/web/templates/admin/timers/timer_modal.html
+msgid "The Unique ID, used to reference the timer."
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_modal.html
@@ -4722,6 +4717,10 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
+#: src/web/templates/user/event/screen_card.html
+msgid "Image:"
+msgstr ""
+
 #: src/web/templates/user/screen/results.html
 msgid "Tournament"
 msgstr ""
@@ -4810,5 +4809,20 @@ msgstr ""
 #~ msgid ""
 #~ "E.g.: c:\\chess\tournaments\\my_tournament\r"
 #~ "ules.pdf"
+#~ msgstr ""
+
+#~ msgid "Last name:"
+#~ msgstr ""
+
+#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
+#~ msgstr ""
+
+#~ msgid "Format: YYYY-MM-DD"
+#~ msgstr ""
+
+#~ msgid "Format: HH-MM"
+#~ msgstr ""
+
+#~ msgid "Mandatory for all the hours."
 #~ msgstr ""
 
