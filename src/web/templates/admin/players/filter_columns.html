@@ -1,10 +1,11 @@
 <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
     <span class="dropdown-center" >
         <button class="btn btn-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-        ><i
-                class="bi-layout-three-columns"
+        ><span
                 {{ tooltip_attributes('info', _('Choose the columns displayed.'), 'top') }}
-        ></i> {{ _('Columns') }}</button>
+            ><i
+                class="bi-layout-three-columns"
+        ></i> {{ _('Columns') }}</span></button>
         <ul class="dropdown-menu players-filter-columns p-0">
             {% with name='admin_players_filter_columns' %}
                 {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
