@@ -116,7 +116,9 @@ def build_exe():
         file for file in LOCALE_DIR.glob('**/*.mo')
         if file.is_file()
     ]
-    files += [BbpPairings().executable_path]
+    bbp = BbpPairings()
+    bbp.check_installed()
+    files += [bbp.executable_path]
     for file in files:
         pyinstaller_params.append(f'--add-data={file};{file.parent.relative_to(BASE_DIR)}')
     files: list[Path] = []

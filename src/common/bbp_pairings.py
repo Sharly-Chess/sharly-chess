@@ -6,6 +6,7 @@ from typing import TextIO
 import trf
 
 from common import TMP_DIR, BASE_DIR
+from common.i18n import _
 from data.pairing import Pairing
 from data.tournament import Tournament
 from data.util import TrfType, Result, BoardColor
@@ -19,17 +20,19 @@ class BbpPairings:
     LINUX_BUILD = "x86_64-pc-linux.tar.gz"
 
     @property
-    def is_installed(self) -> bool:
-        return self.executable_path.exists()
-
-    @property
     def executable_path(self) -> Path:
         return BASE_DIR / 'resources' / f'bbpPairings-{self.VERSION}' / 'bbpPairings.exe'
 
+    def check_installed(self):
+        """Check if BBP Pairings is installed, raise if it is not."""
+        if not self.executable_path.exists():
+            raise FileNotFoundError(_(
+                'BBP pairings not installed. To install, run: '
+                'python utils/install/bbp_pairings_install.py'))
+
     def generate_pairings(self, tournament: Tournament):
         """Generate the pairings of a tournament's next round"""
-        if not self.is_installed:
-            raise FileNotFoundError('BBP Pairings is not installed.')
+        self.check_installed()
         if tournament.finished or tournament.playing:
             raise ValueError(
                 'Impossible to generate pairings '

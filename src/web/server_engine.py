@@ -51,10 +51,7 @@ class ServerEngine(Engine):
             print_interactive_error(_('Error while updating the FIDE database.'))
         if not FfeDatabase().check():
             print_interactive_error(_('Error while updating the FFE database.'))
-        if not BbpPairings().is_installed:
-            print_interactive_error(_(
-                'BBP pairings not installed. To install, run: '
-                'python utils/install/bbp_pairings_install.py'))
+        BbpPairings().check_installed()
         if self.__port_in_use(papi_web_config.web_port):
             print_interactive_error(
                 _('Port [{port}] already in use, can not start Papi-web server.').format(port=papi_web_config.web_port))

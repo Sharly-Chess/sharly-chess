@@ -1671,7 +1671,7 @@ msgstr "Fout bij het bijwerken van de FIDE-database."
 msgid "Error while updating the FFE database."
 msgstr "Fout bij het bijwerken van de FIDE-database."
 
-#: src/web/server_engine.py
+#: src/web/server_engine.py utils/export/export.py
 msgid "BBP pairings not installed. To install, run: python utils/install/bbp_pairings_install.py"
 msgstr ""
 
