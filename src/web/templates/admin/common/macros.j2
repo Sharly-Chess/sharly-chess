@@ -4,6 +4,12 @@
     visibility_icon
 %}
 
+{% macro family_visibility_icon(family, class) %}
+    <!-- family_visibility_icon() -->
+    {{ visibility_icon('family', family.public, '', '', class) }}
+    <!-- end family_visibility_icon() -->
+{% endmacro %}
+
 {% macro tournament_status_icon(tournament, class) %}
     <!-- tournament_status_icon() -->
     {% if not tournament.rounds %}
