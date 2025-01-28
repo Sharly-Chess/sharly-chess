@@ -2,7 +2,7 @@
 
 {% block admin_header_back_button %}
     <button
-            class="btn btn-link fs-5 fw-bold px-1 py-0"
+            class="btn btn-link fs-3 fw-bold px-1 py-0"
             hx-get="{{ url_for('index') }}"
             preload
             hx-target="body"
@@ -18,20 +18,20 @@
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% with active=(admin_tab == nav_id) %}
             <button
-                    class="nav-link {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} border-dark {%if active %}active{%else%}bg-body-secondary{% endif %} fw-bold px-2 py-0 ms-1"
-                    id="nav-{{ nav_id }}-tab"
-                    hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
-                    preload
-                    hx-target="body"
-                    type="button"
-                    role="tab"
-                    hx-indicator="#please-wait"
-                    {% if nav_tab.disabled %}
-                        disabled
-                    {% endif %}
+                class="nav-link {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %} fw-bold px-2 py-0 ms-1"
+                id="nav-{{ nav_id }}-tab"
+                hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
+                preload
+                hx-target="body"
+                type="button"
+                role="tab"
+                hx-indicator="#please-wait"
+                {% if nav_tab.disabled %}
+                    disabled
+                {% endif %}
             >
                 {% if nav_tab.icon_class %}
-                    <i class="{{ nav_tab.icon_class }}"></i>
+                    <i class="{{ nav_tab.icon_class }} pe-1"></i>
                 {% endif %}
                 {{ nav_tab.title }}
             </button>

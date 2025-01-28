@@ -20,7 +20,7 @@
         {% else %}
             {% set _tooltip_text=tooltip_public_text or '???' %}
         {% endif %}
-        {% set _icon_class='bi-unlock-fill text-success' %}
+        {% set _icon_class='bi-eye-fill text-success' %}
     {% else %}
         {% if object_type == 'event' %}
             {% set _tooltip_text=tooltip_private_text or _('This event is private (by default, screens are not visible by the users).') %}
@@ -33,7 +33,7 @@
         {% else %}
             {% set _tooltip_text=tooltip_private_text or '???' %}
         {% endif %}
-        {% set _icon_class='bi-lock-fill text-danger' %}
+        {% set _icon_class='bi-eye-slash-fill text-danger' %}
     {% endif %}
     <span
             class="fw-bold {{ class }}"
