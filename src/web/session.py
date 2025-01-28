@@ -124,17 +124,6 @@ class SessionHandler:
         return request.session.get(
             cls.ADMIN_SCREENS_SCREEN_TYPES_KEY, ['boards', 'input', 'players', 'results', 'image'])
 
-    ADMIN_COLUMNS_KEY: str = 'admin_columns'
-
-    @classmethod
-    def set_session_admin_columns(cls, request: HTMXRequest, columns: int):
-        assert columns in PapiWebConfig.allowed_columns
-        request.session[cls.ADMIN_COLUMNS_KEY]: int = columns
-
-    @classmethod
-    def get_session_admin_columns(cls, request: HTMXRequest) -> int:
-        return request.session.get(cls.ADMIN_COLUMNS_KEY, PapiWebConfig.default_columns)
-
     USER_COLUMNS_KEY: str = 'user_columns'
 
     @classmethod

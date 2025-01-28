@@ -160,8 +160,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
         template_context: dict[str, Any] = web_context.template_context | {
             'messages': Message.messages(web_context.request),
             'logging_levels': logging_levels,
-            'nav_tabs': nav_tabs,
-            'admin_columns': SessionHandler.get_session_admin_columns(web_context.request),
+            'nav_tabs': nav_tabs
         }
         match web_context.admin_event_tab:
             case 'config':
@@ -409,7 +408,6 @@ class EventAdminController(AbstractEventAdminController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             admin_event_tab: str | None = None,
-            admin_columns: int | None = None,
             locale: str | None = None,
             modal: str | None = None,
             action: str | None = None,
@@ -417,7 +415,6 @@ class EventAdminController(AbstractEventAdminController):
             errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         self.set_locale(request, locale)
-        self.set_admin_columns(request, admin_columns)
         return self._admin_event_tab_render(
             request, admin_event_tab=admin_event_tab, event_uniq_id=event_uniq_id, modal=modal, action=action,
             data=data, errors=errors)
@@ -430,14 +427,12 @@ class EventAdminController(AbstractEventAdminController):
     async def htmx_admin_event(
             self, request: HTMXRequest,
             event_uniq_id: str,
-            admin_columns: int | None,
             locale: str | None,
     ) -> Template | ClientRedirect:
         return self._admin_event(
             request,
             event_uniq_id=event_uniq_id,
             admin_event_tab=None,
-            admin_columns=admin_columns,
             locale=locale,
         )
 
@@ -450,7 +445,6 @@ class EventAdminController(AbstractEventAdminController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             admin_event_tab: str,
-            admin_columns: int | None,
             locale: str | None,
             admin_screens_show_family_screens: bool | None,
             admin_screens_show_details: bool | None,
@@ -591,7 +585,6 @@ class EventAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             admin_event_tab=admin_event_tab,
-            admin_columns=admin_columns,
             locale=locale,
         )
 
