@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+{% from 'macros.j2' import
+    tooltip_attributes,
+    event_visibility_icon,
+    screen_type_icon,
+    rotator_icon,
+    tooltip_script,
+    background_script,
+    copyright_script
+%}
 <html>
     <head>
         {% if not request.htmx %}

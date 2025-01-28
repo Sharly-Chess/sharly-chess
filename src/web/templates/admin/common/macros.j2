@@ -1,0 +1,539 @@
+{%
+    from '../../common/macros.j2' import
+    tooltip_attributes,
+    visibility_icon
+%}
+
+{% macro screen_visibility_icon(screen, class) %}
+    <!-- screen_visibility_icon() -->
+    {{ visibility_icon('screen', screen.public, '', '', class) }}
+    <!-- end screen_visibility_icon() -->
+{% endmacro %}
+
+{% macro family_visibility_icon(family, class) %}
+    <!-- family_visibility_icon() -->
+    {{ visibility_icon('family', family.public, '', '', class) }}
+    <!-- end family_visibility_icon() -->
+{% endmacro %}
+
+{% macro rotator_visibility_icon(rotator, class) %}
+    <!-- rotator_visibility_icon() -->
+    {{ visibility_icon('rotator', rotator.public, '', '', class) }}
+    <!-- end rotator_visibility_icon() -->
+{% endmacro %}
+
+{% macro tournament_status_icon(tournament, class) %}
+    <!-- tournament_status_icon() -->
+    {% if not tournament.rounds %}
+        {% set _icon_class='bi-exclamation-triangle-fill text-danger' %}
+        {% set _tooltip_text='' %}
+    {% elif not tournament.started %}
+        {% set _icon_class='bi-pause-fill' %}
+        {% set _tooltip_text=_('The tournament is not started yet.') %}
+    {% elif tournament.playing %}
+        {% set _icon_class='bi-caret-right-square-fill' %}
+        {% set _tooltip_text=_('Round #%(round)d is running.', round=tournament.current_round) %}
+    {% elif not tournament.finished %}
+        {% set _icon_class='bi-pause-fill' %}
+        {% set _tooltip_text=_('Round #%(round)d is finished.', round=tournament.current_round) %}
+    {% else %}
+        {% set _icon_class='bi-check-circle-fill text-success' %}
+        {% set _tooltip_text=_('The tournament is finished.') %}
+    {% endif %}
+    <span
+            class="fw-bold {{ class }}"
+            {% if _tooltip_text %}{{ tooltip_attributes('info', _tooltip_text, 'top') }}{% endif %}
+        >
+        <i class="{{ _icon_class }}"></i>
+    </span>
+    <!-- end tournament_status_icon() -->
+{% endmacro %}
+
+{% macro ffe_licence(ffe_licence, class) %}
+    <!-- ffe_licence() -->
+    <span
+            class="player-ffe-lic ffe-lic-{{ ffe_licence.short_name }} ps-1 pe-1 {{ class }}"
+    >{{ ffe_licence.short_name }}</span>
+    <!-- end ffe_licence() -->
+{% endmacro %}
+
+{% macro player_history(player) %}
+    <!-- player_history() -->
+    {% for pairing in player.pairings.values() %}
+        {% if pairing.forfeit %}
+            {% set _text='f' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.not_paired %}
+            {% set _text='' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.playing %}
+            {% set _text='&nbsp;' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.exempt %}
+            {% set _text='x' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.loss %}
+            {% set _text='-' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.draw %}
+            {% set _text='=' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.gain %}
+            {% set _text='+' %}
+            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+        {% elif pairing.half_point_bye %}
+            {% set _text='=' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.full_point_bye %}
+            {% set _text='+' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.forfeit_loss or pairing.double_forfeit %}
+            {% set _text='<' %}
+            {% set _class='text-secondary' %}
+        {% elif pairing.forfeit_gain %}
+            {% set _text='>' %}
+            {% set _class='text-secondary' %}
+        {% else %}
+            {% set _text='?' %}
+            {% set _class='bg-danger text-white' %}
+        {% endif %}
+        <span
+                class="player-history text-center p-0 m-0  {{ _class }}"
+                {% if tooltip_placement %}
+                    {{ tooltip_attributes(_tooltip_level, _tooltip_text, tooltip_placement) }}
+                {% endif %}
+                style="display: inline-block; width: 1em"
+        >
+            {{ _text|safe }}
+        </span>
+    {% endfor %}
+    <!-- end player_history() -->
+{% endmacro %}
+
+{% macro admin_players_sort_link(url, icon, sort, admin_players_sort) %}
+    <!-- admin_players_sort_link() -->
+    {% if sort == 'alpha' %}
+        {% set _tooltip_text=_('Sort the players by name.') %}
+    {% elif sort == 'rating_desc' %}
+        {% set _tooltip_text=_('Sort the players by rating (most rated first).') %}
+    {% elif sort == 'rating_asc' %}
+        {% set _tooltip_text=_('Sort the players by rating (less rated first).') %}
+    {% elif sort == 'origin' %}
+        {% set _tooltip_text=_('Sort the players by origin (federation, league, club).') %}
+    {% elif sort == 'yob_desc' %}
+        {% set _tooltip_text=_('Sort the players by year of birth (youngest first).') %}
+    {% elif sort == 'yob_asc' %}
+        {% set _tooltip_text=_('Sort the players by year of birth (oldest first).') %}
+    {% elif sort == 'category_desc' %}
+        {% set _tooltip_text=_('Sort the players by category (oldest first).') %}
+    {% elif sort == 'category_asc' %}
+        {% set _tooltip_text=_('Sort the players by category (youngest first).') %}
+    {% elif sort == 'tournament' %}
+        {% set _tooltip_text=_('Sort the players by tournament.') %}
+    {% else %}
+        {% set _tooltip_text='Unknown sort [%(sort)s]'|format(sort=sort) %}
+    {% endif %}
+    <i
+            class="{{ icon }} {% if admin_players_sort != sort %}cursor-pointer{% else %}text-primary{%endif %}"
+            {% if admin_players_sort != sort %}
+                hx-get="{{ url }}"
+                hx-vals='{"admin_players_sort": "{{ sort }}"}'
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            {% endif %}
+            {{ tooltip_attributes('info', _tooltip_text, 'top') }}
+    ></i>
+    <!-- end admin_players_sort_link() -->
+{% endmacro %}
+
+{% macro gender_icon(gender) %}
+    <!-- gender_icon() -->
+    {% if gender.value == 0 %}
+        {% set _icon_class='-' %}
+    {% elif gender.value == 1 %}
+        {% set _icon_class='bi-person-standing-dress' %}
+    {% elif gender.value == 2 %}
+        {% set _icon_class='bi-person-standing' %}
+    {% else %}
+        {% set _icon_class='bi-question' %}
+    {% endif %}
+    {% if _icon_class %}<i class="{{ _icon_class }}"></i>{% endif %}
+    <!-- end gender_icon() -->
+{% endmacro %}
+
+{#
+name: used by the query parameter
+input_type: see *_input() below
+label: the form label of the field
+placeholder: the text inside text inputs when empty, also used as the text for the switches
+help_text: the text printed below the input
+data, errors: used to pre-fill the inputs and error messages (data[name] and errors[name] are used for this field)
+error: if true, sets the field as "on error", event if errors[name] is not set
+default_checkbox: if true, a checkbox is printed with the default message "by default", with query name <name>_checkbox
+default_checkbox_text: another message to replace "by default"
+default_value: the value to be set when the default checkbox is checked
+select_options: a dict[str, str], keys are the select values and values are the select texts
+number_min: the minimum value for numbers
+disabled: if set to true, the field will be disabled
+#}
+
+{% macro _generic_input(
+    name,
+    input_type,
+    label='NO LABEL',
+    placeholder='',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    default_checkbox=false,
+    default_checkbox_text='',
+    default_value='',
+    select_options={},
+    number_min=0,
+    disabled=false
+) %}
+    <!-- {{ input_type }}_input({{ name }}) -->
+        {% set id=name|replace('_', '-') %}
+        {% set default_checkbox_name=name~'_checkbox' %}
+        {% set default_checkbox_id=default_checkbox_name|replace('_', '-') %}
+        {% if default_checkbox and data[default_checkbox_name] == 'on' %}
+            {% set value=default_value %}
+        {% else %}
+            {% set value=data[name] %}
+        {% endif %}
+        <div>
+            <label
+                    for="{{ id }}"
+                    class="form-check-label"
+            >
+                {{ label }}
+            </label>
+            {% if default_checkbox %}
+                <input
+                        id="{{ default_checkbox_id }}"
+                        name="{{ default_checkbox_name }}"
+                        type="checkbox"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
+                />
+                {{ default_checkbox_text or _('by default') }}
+            {% endif %}
+            <div
+                    class="
+                    input-group
+                    {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
+                    "
+            >
+                {% if input_type == 'select' %}
+                    <select
+                            name="{{ name }}"
+                            id="{{ id }}"
+                            class="form-control {% if error or (name in errors) %}is-invalid{% else %}is-valid{% endif %}"
+                            aria-describedby="{{ id }}-help {{ id }}-error"
+                            {% if disabled or select_options|length <= 1 %}
+                                disabled
+                            {% endif %}
+                    >
+                        {% for value, text in select_options.items() %}
+                            <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
+                                {{ text }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% elif input_type == 'switch' %}
+                    <input
+                            id="{{ id }}"
+                            name="{{ name }}"
+                            type="checkbox"
+                            class="form-check-input"
+                            value="on"
+                            aria-describedby="{{ id }}-help {{ id }}-error"
+                            {% if data[name] == 'on' %}checked{% endif %}
+                            {% if disabled %}
+                                disabled
+                            {% endif %}
+                    />
+                    {{ placeholder }}
+                {% else %}
+                    <input
+                            id="{{ id }}"
+                            name="{{ name }}"
+                            type="{{ input_type }}"
+                            {% if number_min %}
+                                min="{{ number_min }}"
+                            {% endif %}
+                            class="form-control {% if error or (name in errors) %}is-invalid{% else %}is-valid{% endif %}"
+                            aria-describedby="{{ id }}-help {{ id }}-error"
+                            placeholder="{{ placeholder }}"
+                            value="{{ value }}"
+                            {% if disabled or (default_checkbox and data[default_checkbox_name] == 'on') %}disabled{% endif %}
+                    />
+                    {% if input_type == 'password' %}
+                        <i
+                                id="{{ id }}-toggle-password"
+                                class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% if help_text %}
+                <div id="{{ id }}-help" class="form-text">
+                    {{ help_text }}
+                </div>
+            {% endif %}
+            {% if name in errors %}
+                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                    {{ errors[name] }}
+                </div>
+            {% endif %}
+        </div>
+        {% if input_type == 'password' %}
+            <script>
+                $('#{{ id }}-toggle-password').on('click', function(event) {
+                    event.preventDefault();
+                    hide = $('#{{ id }}').attr("type") == 'text'
+                    $('#{{ id }}').attr('type', hide ? 'password' : 'text');
+                    $('#{{ id }}-toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
+                    $('#{{ id }}-toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
+                });
+            </script>
+        {% endif %}
+        {% if default_checkbox %}
+            <script>
+                $('#{{ default_checkbox_id }}').click(function() {
+                    if ($(this).is(':checked')) {
+                        $('#{{ id }}').val('{{ default_value }}');
+                        $('#{{ id }}').prop('disabled', true);
+                    } else {
+                        $('#{{ id }}').prop('disabled', false);
+                    }
+                });
+            </script>
+        {% endif %}
+    <!-- end {{ input_type }}_input({{ name }}) -->
+{% endmacro %}
+
+{% macro text_input(
+    name,
+    label='NO LABEL',
+    placeholder='',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    default_checkbox=false,
+    default_checkbox_text='',
+    default_value='',
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='text',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        default_checkbox=default_checkbox,
+        default_checkbox_text=default_checkbox_text,
+        default_value=default_value,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro number_input(
+    name,
+    label='NO LABEL',
+    placeholder='',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    default_checkbox=false,
+    default_checkbox_text='',
+    default_value='',
+    number_min=0,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='number',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        default_checkbox=default_checkbox,
+        default_checkbox_text=default_checkbox_text,
+        default_value=default_value,
+        number_min=number_min,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro password_input(
+    name,
+    label='NO LABEL',
+    placeholder='',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='password',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro color_input(
+    name,
+    label='NO LABEL',
+    placeholder='',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    default_checkbox=false,
+    default_checkbox_text='',
+    default_color='',
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='color',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        default_checkbox=default_checkbox,
+        default_checkbox_text=default_checkbox_text,
+        default_value=default_color,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro select_input(
+    name,
+    label='NO LABEL',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    select_options={'': 'NO OPTIONS'},
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='select',
+        label=label,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        select_options=select_options,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro switch_input(
+    name,
+    label='NO LABEL',
+    placeholder='NO PLACEHOLDER',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='switch',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro datetime_input(
+    name,
+    label='NO LABEL',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='datetime-local',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro date_input(
+    name,
+    label='NO LABEL',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='date',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro time_input(
+    name,
+    label='NO LABEL',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='time',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}

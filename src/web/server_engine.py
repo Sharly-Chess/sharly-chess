@@ -15,7 +15,7 @@ from common.logger import get_logger, print_interactive_info, print_interactive_
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.ffe_database import FfeDatabase
 from database.sqlite.fide_database import FideDatabase
-from web.settings import route_handlers, template_config, middlewares
+from web.settings import route_handlers, template_config, middlewares, stores
 
 logger: Logger = get_logger()
 
@@ -62,6 +62,7 @@ class ServerEngine(Engine):
             route_handlers=route_handlers,
             template_config=template_config,
             middleware=middlewares,
+            stores=stores,
         )
         # This code is intended to check the uniformity of the paths and names used for the application URLs
         # url_map: defaultdict[str, list[str]] = defaultdict(list[str])

@@ -37,10 +37,18 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-lint = ["ruff", "validate-pyproject", "pipdeptree"]
-
-translate = [
-  "torch", "sentencepiece", "sacremoses"
+lint = [
+  "ruff",
+  "validate-pyproject",
+  "pipdeptree"
 ]
 
-export = ["PyInstaller"]
+translate = [
+  "torch",
+  "sentencepiece",
+  "sacremoses"
+]
+
+export = [
+  "PyInstaller"
+]

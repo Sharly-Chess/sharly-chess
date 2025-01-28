@@ -78,6 +78,7 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 | FRAYSSE Sébastien   | AFO2  | BRE   | 29  | Échiquier Quimpérois                          |
 | GRANCHER Étienne    | AFO1  | NOR   | 76  | Le Fou du Roi Montivilliers                   |
 | GUINET Kevin        |       | PDL   | 72  | L'Échiquier Fertois                           |
+| GUINEFOLLEAU Marc   | AFO1  | CVL   | 18  | De Plaimpied dans les Echecs                  |
 | JOLY Christian      | AFO1  | ARA   | 42  | Échiquier Sportif de St Étienne               |
 | LABORDE Stéphane    | AFO1  | OCC   | 66  | Perpignan - Les rois de la Tet                |
 | LAPEYRE Pierre      | AFE2  | NAQ   | 33  | Échiquier Bordelais                           |

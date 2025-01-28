@@ -2578,6 +2578,11 @@ msgid "ID (unique):"
 msgstr "ID (único):"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: chessevent"
+msgstr "Chessevent ID:"
+
+#: src/web/templates/admin/chessevents/chessevent_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the ChessEvent connection."
 msgstr "El ID Único, utilizado para hacer referencia a la conexión ChessEvent."
@@ -2713,55 +2718,133 @@ msgstr "Crear una conexión ChessEvent"
 msgid "No ChessEvent connections."
 msgstr "Sin conexiones ChessEvent."
 
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "The tournament is not started yet."
+msgstr "El torneo aún no ha comenzado."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation, fuzzy, python-format
+msgid "Round #%(round)d is running."
+msgstr "Round %(round)d se está ejecutando."
+
+#: src/web/templates/admin/common/macros.j2
 #, python-format
-msgid "Colour #%(num)d:"
+msgid "Round #%(round)d is finished."
 msgstr ""
 
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_colors.html
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "The tournament is finished."
+msgstr "El torneo ha terminado."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by name."
+msgstr "Ordenar a los jugadores por su nombre."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by rating (most rated first)."
+msgstr "Ordenar a los jugadores por calificación (primero la más valorada)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by rating (less rated first)."
+msgstr "Ordenar a los jugadores por calificación (menos valorado primero)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by origin (federation, league, club)."
+msgstr "Ordenar los jugadores por origen (federación, liga, club)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by year of birth (youngest first)."
+msgstr "Ordenar a los jugadores por año de nacimiento (el más joven primero)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by year of birth (oldest first)."
+msgstr "Ordenar a los jugadores por año de nacimiento (el más antiguo primero)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by category (oldest first)."
+msgstr "Ordenar los jugadores por categoría (el más antiguo primero)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by category (youngest first)."
+msgstr "Ordenar los jugadores por categoría (el más joven primero)."
+
+#: src/web/templates/admin/common/macros.j2
+#, ai_translation
+msgid "Sort the players by tournament."
+msgstr "Ordenar a los jugadores por torneo."
+
+#: src/web/templates/admin/common/macros.j2
 #: src/web/templates/user/event/screen_card.html
 #, ai_translation
 msgid "by default"
 msgstr "por defecto"
 
-#: src/web/templates/admin/common/event_or_timer_modal/edit_timer_delays.html
-#, python-format
-msgid "Delay #%(num)d:"
-msgstr ""
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
-#, ai_translation
-msgid "Display of a screen exit button:"
-msgstr "Visualización de un botón de salida de pantalla:"
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/exit_button.html
-#, ai_translation
-msgid "When not displaying the exit button, users can not accidentally exit input screens."
-msgstr "Cuando no se muestra el botón de salida, los usuarios no pueden salir accidentalmente de las pantallas de entrada."
-
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
+#: src/web/templates/admin/common/modal/alert_message.html
 #, ai_translation
 msgid "Alert message:"
 msgstr "Mensaje de alerta:"
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/message.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/common/modal/alert_message.html
 #, ai_translation
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "E.g.: ¡Por favor, guarde silencio hasta el final de la ronda!"
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
+#: src/web/templates/admin/common/modal/alert_message.html
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
+msgstr "Cuando se define, el mensaje de alerta se muestra en un banner de desplazamiento en la parte inferior de las pantallas. El mensaje de alerta definido a nivel de evento puede ser anulado en el rotador, la familia de pantalla o el nivel de pantalla."
+
+#: src/web/templates/admin/common/modal/exit_button.html
+#, ai_translation
+msgid "Display of a screen exit button:"
+msgstr "Visualización de un botón de salida de pantalla:"
+
+#: src/web/templates/admin/common/modal/exit_button.html
+#, ai_translation
+msgid "When not displaying the exit button, users can not accidentally exit input screens."
+msgstr "Cuando no se muestra el botón de salida, los usuarios no pueden salir accidentalmente de las pantallas de entrada."
+
+#: src/web/templates/admin/common/modal/show_unpaired.html
 #, ai_translation
 msgid "Display of unpaired players:"
 msgstr "Visualización de jugadores no emparejados:"
 
-#: src/web/templates/admin/common/screen_family_rotator_modal/show_unpaired.html
+#: src/web/templates/admin/common/modal/show_unpaired.html
 #, ai_translation
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
 msgstr "Cuando los jugadores no emparejados no se muestran, no hay manera de distinguir los jugadores ausentes (punto cero) y los jugadores con un medio punto de adiós)."
+
+#: src/web/templates/admin/common/modal/timer_colors.html
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#, python-format
+msgid "Colour #%(num)d:"
+msgstr ""
+
+#: src/web/templates/admin/common/modal/timer_delays.html
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#, python-format
+msgid "Delay #%(num)d:"
+msgstr ""
+
+#: src/web/templates/admin/common/modal/timer_delays.html
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "By default: %(minutes)d minutes"
+msgstr "Por ejemplo: %(minutes)d (minutos)"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -2800,17 +2883,28 @@ msgstr "Recuperar eventos borrados no es posible desde la interfaz web (sin emba
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
+msgid "E.g.: world-championship"
+msgstr "Por ejemplo: campeona mundial"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
 msgid "The Unique ID, used for data storage and export."
 msgstr "El identificador único, utilizado para el almacenamiento y la exportación de datos."
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
 msgid "Name:"
 msgstr "Nombre:"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "E.g.: World championship"
+msgstr "Por ejemplo: Campeonato mundial"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -2862,6 +2956,11 @@ msgid "Default directory of the Papi files:"
 msgstr "Directorio predeterminado de los archivos Papi:"
 
 #: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: c:\\chess\tournaments"
+msgstr "Por ejemplo: c:\\chess\\tournaments\\papi"
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation, python-format
 msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
 msgstr "El directorio predeterminado de los archivos Papi para los torneos (ruta absoluta o relativa, por defecto %(dir)s)."
@@ -2901,11 +3000,17 @@ msgid "Rules file location:"
 msgstr "Ubicación del archivo de reglas:"
 
 #: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
+msgstr "Por ejemplo: c:\\chess\\tournaments\\main\\rules.pdf"
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr "Una URL, o la ruta al archivo de reglas en el servidor, en formato PDF (opcional)."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
@@ -2913,19 +3018,21 @@ msgid "Display"
 msgstr "Visor"
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "Background image:"
 msgstr "Imagen de fondo:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
-msgid "no background image"
-msgstr "sin imagen de fondo"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
 msgid "The URL or the path of the image to display (by default the Papi-web logo)."
 msgstr "La URL o la ruta de la imagen a mostrar (por defecto el logotipo Papi-web)."
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#, ai_translation
+msgid "no background image"
+msgstr "sin imagen de fondo"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2937,7 +3044,7 @@ msgstr "Color del fondo:"
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
-msgid "The background colour is used when the image dost fill the whole screen."
+msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "El color de fondo se utiliza cuando la imagen llena toda la pantalla."
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2956,6 +3063,13 @@ msgstr "Temporizadores"
 msgid "Alert message"
 msgstr "Mensaje de alerta"
 
+# Error: tokens differ between [The background colour of the alert messages.]
+# and [Color del fondo: %(color)s]
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "The background colour of the alert messages."
+msgstr "El color de fondo de los mensajes de alerta."
+
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "Text colour:"
@@ -2963,13 +3077,8 @@ msgstr "Color del texto:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
-msgid "Text:"
-msgstr "Texto:"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
-msgstr "Cuando se define, el mensaje de alerta se muestra en un banner de desplazamiento en la parte inferior de las pantallas. El mensaje de alerta definido a nivel de evento puede ser anulado en el rotador, la familia de pantalla o el nivel de pantalla."
+msgid "The text colour of the alert messages."
+msgstr "El color del texto de los mensajes de alerta."
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -3252,8 +3361,8 @@ msgstr "Propiedades (combinaciones por jugador)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
-msgid "Public screen family"
-msgstr "Familia de pantalla pública"
+msgid "Public family"
+msgstr "Familia pública"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3367,8 +3476,13 @@ msgid "On a given number of screens:"
 msgstr "En un número dado de pantallas:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation
-msgid "E.g.: 4 (split on 4 screens)"
+#, ai_translation, fuzzy
+msgid "E.g.: 4 (split the boards on 4 screens)"
+msgstr "Por ejemplo: 4 (dividir en 4 pantallas)"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 4 (split the players on 4 screens)"
 msgstr "Por ejemplo: 4 (dividir en 4 pantallas)"
 
 #: src/web/templates/admin/families/family_modal.html
@@ -3385,6 +3499,16 @@ msgstr "El número de pantallas en las que se distribuirán los reproductores, o
 #, ai_translation
 msgid "On fixed size screens:"
 msgstr "En pantallas de tamaño fijo:"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 20 (place 20 boards on each screen)"
+msgstr "Por ejemplo: 4 (dividir en 4 pantallas)"
+
+#: src/web/templates/admin/families/family_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: 20 (place 20 players on each screen)"
+msgstr "Por ejemplo: 4 (dividir en 4 pantallas)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3433,6 +3557,7 @@ msgid "Links displayed on the screen menu:"
 msgstr "Enlaces mostrados en el menú de la pantalla:"
 
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Por ejemplo: @boards, @family, other-screen"
@@ -3941,11 +4066,6 @@ msgstr "Identidad"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Last name:"
-msgstr "Apellido:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "E.g.: DOE"
 msgstr "Por ejemplo: DOE"
 
@@ -4098,6 +4218,11 @@ msgstr "Contacto e inscripción"
 #, ai_translation
 msgid "Email:"
 msgstr "Correo electrónico:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "E.g.: john.doe@chess.com"
+msgstr "Por ejemplo: john.doe@chess.com"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4408,6 +4533,11 @@ msgid "Only arbiters can view private rotators."
 msgstr "Sólo los árbitros pueden ver rotores privados."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: my-rotator"
+msgstr "Por ejemplo: my_password"
+
+#: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the rotator."
 msgstr "El identificador único, utilizado para hacer referencia al rotador."
@@ -4663,11 +4793,6 @@ msgstr "El temporizador mostrado en la pantalla."
 
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
-msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-msgstr "Por ejemplo: @boards, tableros fijos, torneo-a-*"
-
-#: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr "Este campo le permite especificar las pantallas cuyos enlaces se mostrarán en el menú de la pantalla. Los identificadores de pantalla deben estar separados por comas, se pueden usar las palabras clave @boards (todas las pantallas), @input (todas las pantallas de entrada), @players (todas las pantallas de reproductores) así como el comodín *. Si este campo queda vacío, no se mostrará ningún menú en la pantalla."
 
@@ -4725,12 +4850,6 @@ msgstr "Torneos mostrados:"
 #, ai_translation
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Cuando no se selecciona el torneo, se muestran los resultados de todos los torneos."
-
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/user/event/screen_card.html
-#, ai_translation
-msgid "Image:"
-msgstr "Imagen:"
 
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
@@ -4980,11 +5099,6 @@ msgstr "Fecha:"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
-msgid "Format: YYYY-MM-DD"
-msgstr "Formato: AAAA-MM-DD"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#, ai_translation
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatorio para la primera hora, opcional para las próximas horas."
 
@@ -4995,23 +5109,13 @@ msgstr "Hora:"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
-msgid "Format: HH-MM"
-msgstr "Formato: HH-MM"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#, ai_translation
-msgid "Mandatory for all the hours."
-msgstr "Obligatorio para todas las horas."
+msgid "E.g.: Start of check-in"
+msgstr "Por ejemplo: Inicio del check-in"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
 msgid "Round number or text:"
 msgstr "Número redondo o texto:"
-
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#, ai_translation
-msgid "E.g.: Start of check-in"
-msgstr "Por ejemplo: Inicio del check-in"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
@@ -5025,8 +5129,8 @@ msgstr "Texto antes de la hora:"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation, python-format
-msgid "E.g.: Start of check-in in %%s"
-msgstr "Por ejemplo: Inicio del check-in en %%s"
+msgid "E.g.: Check-in started for %%s"
+msgstr "Por ejemplo: Inicio del check-in para %%s"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation, python-format
@@ -5040,13 +5144,32 @@ msgstr "Texto después de la hora:"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation, python-format
-msgid "E.g.: Check-in started for %%s"
-msgstr "Por ejemplo: Inicio del check-in para %%s"
+msgid "E.g.: Start of check-in in %%s"
+msgstr "Por ejemplo: Inicio del check-in en %%s"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s se sustituye por el tiempo transcurrido desde la hora."
+
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy
+msgid "Timer creation"
+msgstr "Creación de reproductores"
+
+# Error: tokens differ between [Edition of timer [%(timer_uniq_id)s]] and
+# [Edición del rotador [%(rotator_uniq_id)s]]
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "Edition of timer [%(timer_uniq_id)s]"
+msgstr "Edición del temporizador [%(timer_uniq_id)s]"
+
+# Error: tokens differ between [Deletion of timer [%(timer_uniq_id)s]] and
+# [Eliminación del rotador [%(rotator_uniq_id)s]]
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy, python-format
+msgid "Deletion of timer [%(timer_uniq_id)s]"
+msgstr "Supresión del temporizador [%(timer_uniq_id)s]"
 
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation
@@ -5057,6 +5180,16 @@ msgstr "Advertencia: ¡la eliminación de un temporizador es permanente!"
 #, ai_translation
 msgid "E.g.: timer"
 msgstr "Por ejemplo: temporizador"
+
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation, fuzzy
+msgid "The Unique ID, used to reference the timer."
+msgstr "El identificador único, utilizado para hacer referencia al rotador."
+
+#: src/web/templates/admin/timers/timer_modal.html
+#, ai_translation
+msgid "Colors and delays"
+msgstr "Colores y retrasos"
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
@@ -5131,8 +5264,9 @@ msgid "Edit the properties of the tournament."
 msgstr "Edite las propiedades del torneo."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation
 msgid "Generate pairings for the next round."
-msgstr ""
+msgstr "Generar emparejamientos para la siguiente ronda."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, fuzzy
@@ -5426,26 +5560,6 @@ msgstr "Este rotador es privado (no visible por los usuarios)."
 
 #: src/web/templates/common/macros.j2
 #, ai_translation
-msgid "The tournament is not started yet."
-msgstr "El torneo aún no ha comenzado."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation, fuzzy, python-format
-msgid "Round #%(round)d is running."
-msgstr "Round %(round)d se está ejecutando."
-
-#: src/web/templates/common/macros.j2
-#, python-format
-msgid "Round #%(round)d is finished."
-msgstr ""
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "The tournament is finished."
-msgstr "El torneo ha terminado."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
 msgid "Boards screens show pairings by board number."
 msgstr "Las pantallas de tableros muestran emparejamientos por número de tablero."
 
@@ -5473,51 +5587,6 @@ msgstr "Las pantallas de imagen muestran una imagen (local o remota)."
 #, ai_translation
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "El rotador gira automáticamente entre múltiples pantallas."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by name."
-msgstr "Ordenar a los jugadores por su nombre."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by rating (most rated first)."
-msgstr "Ordenar a los jugadores por calificación (primero la más valorada)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by rating (less rated first)."
-msgstr "Ordenar a los jugadores por calificación (menos valorado primero)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by origin (federation, league, club)."
-msgstr "Ordenar los jugadores por origen (federación, liga, club)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by year of birth (youngest first)."
-msgstr "Ordenar a los jugadores por año de nacimiento (el más joven primero)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by year of birth (oldest first)."
-msgstr "Ordenar a los jugadores por año de nacimiento (el más antiguo primero)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by category (oldest first)."
-msgstr "Ordenar los jugadores por categoría (el más antiguo primero)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by category (youngest first)."
-msgstr "Ordenar los jugadores por categoría (el más joven primero)."
-
-#: src/web/templates/common/macros.j2
-#, ai_translation
-msgid "Sort the players by tournament."
-msgstr "Ordenar a los jugadores por torneo."
 
 #: src/web/templates/user/event.html
 #, ai_translation
@@ -5639,6 +5708,11 @@ msgstr "Número máximo de resultados: %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Número máximo de resultados: ilimitado"
 
+#: src/web/templates/user/event/screen_card.html
+#, ai_translation
+msgid "Image:"
+msgstr "Imagen:"
+
 #: src/web/templates/user/screen/results.html
 #, ai_translation
 msgid "Tournament"
@@ -5727,4 +5801,25 @@ msgstr "vs."
 
 #~ msgid "Pairings"
 #~ msgstr "Maridajes"
+
+#~ msgid "Text:"
+#~ msgstr "Texto:"
+
+#~ msgid "Public screen family"
+#~ msgstr "Familia de pantalla pública"
+
+#~ msgid "Last name:"
+#~ msgstr "Apellido:"
+
+#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
+#~ msgstr "Por ejemplo: @boards, tableros fijos, torneo-a-*"
+
+#~ msgid "Format: YYYY-MM-DD"
+#~ msgstr "Formato: AAAA-MM-DD"
+
+#~ msgid "Format: HH-MM"
+#~ msgstr "Formato: HH-MM"
+
+#~ msgid "Mandatory for all the hours."
+#~ msgstr "Obligatorio para todas las horas."
 

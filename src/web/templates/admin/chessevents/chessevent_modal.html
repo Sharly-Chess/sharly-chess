@@ -44,26 +44,13 @@
                     </h3>
                     <div class="row">
                         <div class="col-4">
-                            {% with id='uniq-id', name='uniq_id' %}
-                                <div>
-                                    <label for="{{ id }}" class="form-label">{{ _('ID (unique):') }}</label>
-                                    <input
-                                            name="{{ name }}"
-                                            type="text" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="Exemple : domloup-fide"
-                                            value="{{ data[name] }}" />
-                                    <div id="{{ id }}-help" class="form-text">
-                                        {{ _('The Unique ID, used to reference the ChessEvent connection.') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
+                            {{ text_input(
+                                name='uniq_id',
+                                label=_('ID (unique):'),
+                                placeholder=_('E.g.: chessevent'),
+                                help_text=_('The Unique ID, used to reference the ChessEvent connection.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                     <h3>
@@ -71,84 +58,31 @@
                     </h3>
                     <div class="row">
                         <div class="col-4">
-                            {% with id='user-id', name='user_id' %}
-                                <div>
-                                    <label for="{{ id }}" class="form-label">{{ _('Chessevent ID:') }}</label>
-                                    <input
-                                            name="{{ name }}"
-                                            type="text" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="{{ _('E.g.: %(string)s', string='Z00000') }}"
-                                            value="{{ data[name] }}" />
-                                    <div id="{{ id }}-help" class="form-text">
-                                        {{ _('the ID used to connect to the ChessEvent platform.') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
+                            {{ text_input(
+                                name='user_id',
+                                label=_('Chessevent ID:'),
+                                placeholder=_('E.g.: %(string)s', string='Z00000'),
+                                help_text=_('the ID used to connect to the ChessEvent platform.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-4">
-                            {% with id='password', name='password' %}
-                                <div>
-                                    <label for="{{ id }}" class="form-label">{{ _('Password:') }}</label>
-                                    <div class="input-group">
-                                        <input
-                                                name="{{ name }}"
-                                                type="password" id="{{ id }}"
-                                                class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                                aria-describedby="{{ id }}-help {{ id }}-error"
-                                                placeholder="{{ _('E.g.: my_password') }}"
-                                                value="{{ data[name] }}" />
-                                        <i
-                                                id="toggle-password"
-                                                class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
-                                    </div>
-                                    <div id="{{ id }}-help" class="form-text">
-                                        {{ _('The password used to connect to the ChessEvent platform.') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                <script>
-                                    $('#toggle-password').on('click', function(event) {
-                                        event.preventDefault();
-                                        hide = $('#{{ id }}').attr("type") == 'text'
-                                        $('#{{ id }}').attr('type', hide ? 'password' : 'text');
-                                        $('#toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
-                                        $('#toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
-                                    });
-                                </script>
-                            {% endwith %}
+                            {{ password_input(
+                                name='password',
+                                label=_('Password:'),
+                                placeholder=_('E.g.: my_password'),
+                                help_text=_('The password used to connect to the ChessEvent platform.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         <div class="col-4">
-                            {% with id='event-id', name='event_id' %}
-                                <div>
-                                    <label for="{{ id }}" class="form-label">{{ _('ChessEvent event:') }}</label>
-                                    <input
-                                            name="{{ name }}"
-                                            type="text" id="{{ id }}"
-                                            class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                            aria-describedby="{{ id }}-help {{ id }}-error"
-                                            placeholder="Exemple : BRE_35_domloupfide36"
-                                            value="{{ data[name] }}" />
-                                    <div id="{{ id }}-help" class="form-text">
-                                        {{ _('The name of the event on the ChessEvent password.') }}
-                                    </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
+                            {{ text_input(
+                                name='event_id',
+                                label=_('ChessEvent event:'),
+                                placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
+                                help_text=_('The name of the event on the ChessEvent password.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     </div>
                 {% endif %}
@@ -159,7 +93,6 @@
                         <button
                                 type="submit"
                                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %} text-nowrap"
-                                data-bs-dismiss="modal"
                         >
                             <i class="bi-floppy-fill"></i>
                             {% if action in ['create', 'clone', ] %}

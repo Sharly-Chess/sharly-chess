@@ -1,0 +1,14 @@
+<div class="row">
+    {% for num in [1, 2, 3] %}
+        <div class="col-4">
+            {{ color_input(
+                name='color_'~num,
+                label=_('Colour #%(num)d:', num=num),
+                help_text=timer_color_texts[num],
+                default_checkbox=true,
+                default_color=default_colors[num],
+                data=data, errors=errors
+            ) }}
+        </div>
+    {% endfor %}
+</div>

@@ -10,10 +10,12 @@
 - [ ] Prise en charge de la méthode HEAD pour les afficheurs dynamiques (PA)
 - [ ] Ajouter une barre de recherche sur les écrans de résultats pour les arbitres (SP)
 - [ ] Ajouter un tableau de bord avec l'avancement des tournois des évènements (NDP)
+- [ ] Ajouter la possibilité d'afficher l'historique des joueur·euses de plusieurs manières : Papi, TRF, ... (SP)
 - [ ] ~~Ajouter la possibilité de changer le nom d'un⋅e participant⋅e pour l'affichage des appariements (SP > 2.4.20)~~
 - [X] ~~Pointage de tou·tes les joueur·euses de l'évènement sur un même écran (TA > 2.4.20)~~
 - [X] ~~Mettre un bouton de création d'écran par type d'écran (DR > 2.4.19)~~
-- [X] ~~Ajouter des messages d'alerte sur les écrans publics (TA)~~
+- [X] ~~Mettre en place un système multilingue pour les tournois internationaux (PA > 2.4.19)~~
+- [X] ~~Ajouter des messages d'alerte sur les écrans publics (TA > 2.4.16)~~
 - [X] ~~Ajouter la possibilité de cacher le bouton de sortie des écrans de saisie (TA > 2.4.4)~~
 - [X] ~~Limiter le temps d'affichage des résultats sur les écrans de résultats (SP > 2.4.2)~~
 - [X] ~~Ajouter la possibilité de supprimer des résultats depuis les écrans de type `results` (SP > 2.4.2)~~
@@ -28,4 +30,3 @@
 
 - [X] ~~Poser une ou plusieurs licences sur le code de Papi-web (PA/SP > 2.4.0)~~
 - [X] ~~Remplacement des fichiers de configuration INI par une interface web (PA > 2.4.0)~~
-- [ ] Mettre en place un système multilingue pour les tournois internationaux

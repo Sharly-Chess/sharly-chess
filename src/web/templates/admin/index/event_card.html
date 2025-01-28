@@ -1,7 +1,5 @@
 {% extends '../common/card.html' %}
 
-{% from '../../common/macros.j2' import tooltip_attributes, event_visibility_icon %}
-
 {% block card_header %}
     {{ event_visibility_icon(event) }}
     {% if event.formatted_start_date == event.formatted_stop_date %}

@@ -1,6 +1,16 @@
 {% extends '../../common/base.html' %}
 
-{% from '../../common/macros.j2' import tooltip_attributes, tooltip_script, background_script %}
+{% from 'macros.j2' import
+    screen_visibility_icon,
+    family_visibility_icon,
+    rotator_visibility_icon,
+    tournament_status_icon,
+    ffe_licence,
+    player_history,
+    admin_players_sort_link,
+    gender_icon,
+    text_input, password_input, number_input, color_input, select_input, switch_input, datetime_input, date_input, time_input
+%}
 
 {% block header %}
     <div id="admin-header" class="header admin-header position-sticky top-0 mx-2 border-bottom border-dark">
