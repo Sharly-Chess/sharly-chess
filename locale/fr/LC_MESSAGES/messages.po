@@ -1337,8 +1337,8 @@ msgid "Error while updating the FFE database."
 msgstr "Erreur pendant la mise à jour de la base de données FFE."
 
 #: src/web/server_engine.py utils/export/export.py
-msgid "BBP pairings not installed. To install, run: python utils/install/bbp_pairings_install.py"
-msgstr "BBP pairings n'est pas installé. Pour l'installer, exécuter: python utils/install/bbp_pairings_install.py"
+msgid "BBP pairings not installed. To install, run: python utils/install/install_bbp_pairings.py"
+msgstr "BBP pairings n'est pas installé. Pour l'installer, exécuter: python utils/install/install_bbp_pairings.py"
 
 #: src/web/server_engine.py
 msgid "Port [{port}] already in use, can not start Papi-web server."

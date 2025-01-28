@@ -28,7 +28,7 @@ class BbpPairings:
         if not self.executable_path.exists():
             raise FileNotFoundError(_(
                 'BBP pairings not installed. To install, run: '
-                'python utils/install/bbp_pairings_install.py'))
+                'python utils/install/install_bbp_pairings.py'))
 
     def generate_pairings(self, tournament: Tournament):
         """Generate the pairings of a tournament's next round"""

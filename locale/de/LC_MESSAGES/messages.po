@@ -1672,7 +1672,7 @@ msgid "Error while updating the FFE database."
 msgstr "Fehler beim Aktualisieren der FIDE-Datenbank."
 
 #: src/web/server_engine.py utils/export/export.py
-msgid "BBP pairings not installed. To install, run: python utils/install/bbp_pairings_install.py"
+msgid "BBP pairings not installed. To install, run: python utils/install/install_bbp_pairings.py"
 msgstr ""
 
 #: src/web/server_engine.py
