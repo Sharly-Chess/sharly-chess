@@ -156,14 +156,14 @@ class EventLoader:
         return sorted([
             event for event in self.events_by_id.values()
             if event.start < time.time() < event.stop
-        ], key=lambda event: (-event.stop, -event.start, event.name))
+        ], key=lambda event: (event.stop, event.start, event.name))
 
     @cached_property
     def coming_events(self) -> list[Event]:
         return sorted([
             event for event in self.events_by_id.values()
             if time.time() < event.start
-        ], key=lambda event: (-event.stop, -event.start, event.name))
+        ], key=lambda event: (event.stop, event.start, event.name))
 
     @cached_property
     def public_events(self) -> list[Event]:
