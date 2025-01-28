@@ -173,25 +173,6 @@ msgstr "Veuillez choisir l'évènement :"
 msgid "Your choice: "
 msgstr "Votre choix : "
 
-#: src/common/bbp_pairings.py
-msgid "Downloading BBP Pairings..."
-msgstr "Téléchargement de BBP Pairings..."
-
-#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
-#: src/database/sqlite/fide_database.py
-msgid "Could not download [{url}], error code [{code}]."
-msgstr "Impossible de télécharger [{url}], code d'erreur [{code}]."
-
-#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
-#: src/database/sqlite/fide_database.py
-msgid "Could not download [{url}]: {ex}."
-msgstr "Impossible de lire [{url}] : {ex}."
-
-#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
-#: src/database/sqlite/fide_database.py
-msgid "No data received from [{url}]."
-msgstr "Aucune donnée reçue de [{url}]."
-
 #: src/common/config_reader.py
 msgid "Configuration file [{file}] not found."
 msgstr "Fichier de configuration [{file}] non trouvé."
@@ -1097,6 +1078,18 @@ msgid "Downloading the FFE database..."
 msgstr "Téléchargement de la base de données de la FFE..."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "Impossible de télécharger [{url}], code d'erreur [{code}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "Could not download [{url}]: {ex}."
+msgstr "Impossible de lire [{url}] : {ex}."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "No data received from [{url}]."
+msgstr "Aucune donnée reçue de [{url}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 msgid "Could not unzip data."
 msgstr "Impossible de décompresser les données."
 
@@ -1343,9 +1336,9 @@ msgstr "Erreur pendant la mise à jour de la base de données FIDE."
 msgid "Error while updating the FFE database."
 msgstr "Erreur pendant la mise à jour de la base de données FFE."
 
-#: src/web/server_engine.py
-msgid "Error while installing BBP Pairings."
-msgstr "Erreur pendant l'installation de BBP Pairings."
+#: src/web/server_engine.py utils/export/export.py
+msgid "BBP pairings not installed. To install, run: python utils/install/bbp_pairings_install.py"
+msgstr "BBP pairings n'est pas installé. Pour l'installer, exécuter: python utils/install/bbp_pairings_install.py"
 
 #: src/web/server_engine.py
 msgid "Port [{port}] already in use, can not start Papi-web server."

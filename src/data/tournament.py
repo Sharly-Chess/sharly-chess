@@ -238,12 +238,7 @@ class Tournament:
 
     @property
     def pairings_generation_allowed(self) -> bool:
-        from common.bbp_pairings import BbpPairings
-
-        return (
-            BbpPairings().is_installed
-            and not self.finished
-            and not self.playing)
+        return not self.finished and not self.playing
 
     @property
     def handicap(self) -> bool:

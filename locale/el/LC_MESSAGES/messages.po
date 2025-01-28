@@ -215,31 +215,6 @@ msgstr "Παρακαλώ επιλέξτε την εκδήλωση:"
 msgid "Your choice: "
 msgstr "Η επιλογή σας:"
 
-# Error: tokens differ between [Downloading FIDE database...] and [Η λήψη
-# απέτυχε με τον κωδικό [{code}].]
-#: src/common/bbp_pairings.py
-#, ai_translation, fuzzy
-msgid "Downloading BBP Pairings..."
-msgstr "Λήψη βάσης δεδομένων FIDE..."
-
-#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Could not download [{url}], error code [{code}]."
-msgstr "Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}]."
-
-#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
-#: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Could not download [{url}]: {ex}."
-msgstr "Απέτυχε να διαβάσει [{url}]: [{ex}]."
-
-#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
-#: src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "No data received from [{url}]."
-msgstr "Δεν ελήφθησαν στοιχεία από [{url}]."
-
 #: src/common/config_reader.py
 #, ai_translation
 msgid "Configuration file [{file}] not found."
@@ -1367,6 +1342,21 @@ msgid "Downloading the FFE database..."
 msgstr "Λήψη βάσης δεδομένων FIDE..."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}]: {ex}."
+msgstr "Απέτυχε να διαβάσει [{url}]: [{ex}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "No data received from [{url}]."
+msgstr "Δεν ελήφθησαν στοιχεία από [{url}]."
+
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "Could not unzip data."
 msgstr "Αδύνατη η αποσύνδεση δεδομένων."
@@ -1683,8 +1673,8 @@ msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδ
 msgid "Error while updating the FFE database."
 msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE."
 
-#: src/web/server_engine.py
-msgid "Error while installing BBP Pairings."
+#: src/web/server_engine.py utils/export/export.py
+msgid "BBP pairings not installed. To install, run: python utils/install/bbp_pairings_install.py"
 msgstr ""
 
 #: src/web/server_engine.py
