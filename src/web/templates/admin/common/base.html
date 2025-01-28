@@ -16,11 +16,11 @@
         style="background-color: var(--bs-body-bg);"
     >
         <div hx-ext="bs-tabs" class="bs-tabs py-2">
-            <div class="d-flex align-items-center gap-2">
+            <nav class="d-flex align-items-center gap-2">
                 <!-- block admin_header_back_button -->
-                    {% block admin_header_back_button %}
-                        ADMIN_HEADER_BACK_BUTTON
-                    {% endblock admin_header_back_button %}
+                {% block admin_header_back_button %}
+                    ADMIN_HEADER_BACK_BUTTON
+                {% endblock admin_header_back_button %}
                 <!-- end block admin_header_back_button -->
                 <div
                     class="nav nav-underline flex-grow-1"
@@ -44,9 +44,8 @@
                     url_for('admin')
                 ) %}
                 {% include '../../common/locale_dropdown.html' %}
-                </div> 
-            {% endwith %}
-            </nav>
+                {% endwith %}
+            </nav> 
         </div>
     </div>
 {% endblock header %}

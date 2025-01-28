@@ -1,16 +1,24 @@
 {% extends '../../common/base.html' %}
 
 {% block header %}
-    <div id="user-header" class="header user-header position-sticky top-0 mx-2 border-bottom border-dark">
-        <div hx-ext="bs-tabs" class="bs-tabs">
-            <nav>
-                <div class="nav nav-tabs mt-1" id="nav-tab" role="tablist">
-                    <!-- end block user_header_back_button -->
-                    {% block user_header_back_button %}
-                        USER_HEADER_BACK_BUTTON
-                    {% endblock user_header_back_button %}
-                    <!-- end block user_header_back_button -->
-                    <!-- end block user_header_refresher -->
+    <div
+        id="user-header"
+        class="header user-header position-sticky top-0 mx-2 border-bottom border-dark"
+    >
+        <div hx-ext="bs-tabs" class="bs-tabs py-2">
+            <nav class="d-flex align-items-center gap-2">
+                 <!-- block user_header_back_button -->
+                {% block user_header_back_button %}
+                    USER_HEADER_BACK_BUTTON
+                {% endblock user_header_back_button %}
+                <!-- end block user_header_back_button -->
+                <div
+                    class="nav nav-underline flex-grow-1"
+                    style="--bs-nav-underline-gap: 0.5rem;"
+                    id="nav-tab"
+                    role="tablist"
+                >
+                    <!-- block user_header_refresher -->
                     {% block user_header_refresher %}
                         USER_HEADER_REFRESHER
                     {% endblock user_header_refresher %}
@@ -20,21 +28,18 @@
                         USER_HEADER_NAV
                     {% endblock user_header_nav %}
                     <!-- end block user_header_nav -->
-                    {% with url=(
-                            url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab)
-                            if user_event_tab else
-                            url_for('user-event', event_uniq_id=user_event.uniq_id)
-                        ) if user_event else (
-                            url_for('user-tab', user_tab=user_tab)
-                            if user_tab else
-                            url_for('user')
-                        ) %}
-                        {% with name='user_columns', value=user_columns %}
-                            {% include '../../common/columns_number_dropdown.html' %}
-                        {% endwith %}
-                        {% include '../../common/locale_dropdown.html' %}
-                    {% endwith %}
                 </div>
+                {% with url=(
+                        url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab)
+                        if user_event_tab else
+                        url_for('user-event', event_uniq_id=user_event.uniq_id)
+                    ) if user_event else (
+                        url_for('user-tab', user_tab=user_tab)
+                        if user_event_tab else
+                        url_for('user')
+                    ) %}
+                    {% include '../../common/locale_dropdown.html' %}
+                {% endwith %}
             </nav>
         </div>
         {{ copyright_script(show=true) }}
