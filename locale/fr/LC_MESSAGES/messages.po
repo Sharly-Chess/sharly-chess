@@ -3207,6 +3207,14 @@ msgstr "Fermer le pointage"
 msgid "Download the players."
 msgstr "Télécharger les joueur·euses."
 
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Télécharger les informations des joueur·euses (format XLSX)."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Télécharger les vCard des joueur·euses (format VCF)."
+
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."

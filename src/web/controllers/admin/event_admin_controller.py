@@ -4,6 +4,7 @@ from string import capwords
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
+import xlsxwriter
 from litestar import get, patch, delete, post, Response
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
@@ -12,7 +13,7 @@ from litestar.params import Body
 from litestar.response import Template, Redirect, File
 from litestar.status_codes import HTTP_200_OK
 
-from common import unicode_normalize, TMP_DIR
+from common import unicode_normalize
 from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
@@ -20,7 +21,7 @@ from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
-from data.util import PlayerGender, PlayerFFELicence, PlayerCategory
+from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, TournamentRating
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
 from web.controllers.admin.index_admin_controller import AdminWebContext, AbstractIndexAdminController
@@ -713,38 +714,88 @@ class EventAdminController(AbstractEventAdminController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             download_format: str | None = None,
-            players: list[int] | None = None,
-    ) -> Template | ClientRedirect | Response[bytes]:
+            player_ids: list[int] | None = None,
+    ) -> Template | ClientRedirect | Response[str]:
         web_context: EventAdminWebContext = EventAdminWebContext(
             request, event_uniq_id=event_uniq_id, admin_event_tab=None, data=None)
         if web_context.error:
             return web_context.error
+        players: list[Player] = [
+            web_context.admin_event.players_by_id[player_id] for player_id in player_ids if player_id
+        ]
+        if not len(players):
+            players = web_context.admin_event.players_sorted_by_name
         match download_format:
             case 'vcf':
                 data: str = ''
-                for player_id in players:
-                    if player_id:
-                        player = web_context.admin_event.players_by_id[player_id]
-                        if player.mail or player.phone:
-                            data += 'BEGIN:VCARD\n'
-                            data += 'VERSION: 3.0\n'
-                            if player.first_name:
-                                data += f'N:{capwords(player.last_name)};{player.first_name}\n'
-                                data += f'FN:{capwords(player.first_name)} {player.last_name}\n'
-                            else:
-                                data += f'N:{capwords(player.last_name)}\n'
-                                data += f'FN:{capwords(player.first_name)}\n'
-                            data += f'ORG:{player.league} - {player.club}\n'
-                            data += f'item1.TEL:{player.phone}\n'
-                            data += f'item1.X - ABLabel:\n'
-                            data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
-                            data += f'item2.X - ABLabel:\n'
-                            data += f'CATEGORIES: {_("Échecs")}\n'
-                            data += 'END: VCARD\n\n'
-                temp_file = NamedTemporaryFile(delete=False, mode="w", suffix=".vcf")
-                print(temp_file.name)
-                with temp_file as file:
-                    file.write(data)
-                    return File(path=temp_file.name, filename=f'{web_context.admin_event.uniq_id}.vcf')
+                for player in players:
+                    if player.mail or player.phone:
+                        data += 'BEGIN:VCARD\n'
+                        data += 'VERSION: 3.0\n'
+                        if player.first_name:
+                            data += f'N:{capwords(player.last_name)};{player.first_name}\n'
+                            data += f'FN:{capwords(player.first_name)} {player.last_name}\n'
+                        else:
+                            data += f'N:{capwords(player.last_name)}\n'
+                            data += f'FN:{capwords(player.first_name)}\n'
+                        data += f'ORG:{player.league} - {player.club}\n'
+                        data += f'item1.TEL:{player.phone}\n'
+                        data += f'item1.X - ABLabel:\n'
+                        data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
+                        data += f'item2.X - ABLabel:\n'
+                        data += f'CATEGORIES: {_("Échecs")}\n'
+                        data += 'END: VCARD\n\n'
+                return Response(
+                    content=data,
+                    media_type='text/x-vcard',
+                    headers={
+                        "Content-Disposition": f'attachment;{web_context.admin_event.uniq_id}.vcf',
+                    })
+            case 'xlsx':
+                temp_file = NamedTemporaryFile(delete=False, mode="wb", suffix=".xlsx")
+                workbook = xlsxwriter.Workbook(temp_file)
+                columns: list[dict[str, str]] = [
+                    {'header': 'last_name', },
+                    {'header': 'first_name', },
+                    {'header': 'yob', },
+                    {'header': 'mail', },
+                    {'header': 'phone', },
+                    {'header': 'gender', },
+                    {'header': 'fide_id', },
+                    {'header': 'ffe_id', },
+                    {'header': 'ffe_licence_number', },
+                    {'header': 'ffe_licence', },
+                    {'header': 'tournament', },
+                    {'header': 'federation', },
+                    {'header': 'league', },
+                    {'header': 'club', },
+                    {'header': 'St', },
+                    {'header': 'S', },
+                    {'header': 'Ra', },
+                    {'header': 'R', },
+                    {'header': 'Bl', },
+                    {'header': 'B', },
+                ]
+                worksheet = workbook.add_worksheet()
+                data: list[list[str | int | float]] = [
+                ]
+                for player in players:
+                    data.append([
+                        player.last_name, player.first_name, player.year_of_birth, player.mail, player.phone,
+                        player.gender.short_name, player.fide_id,
+                        player.ffe_id, player.ffe_licence_number, player.ffe_licence.short_name,
+                        player.tournament.uniq_id,
+                        player.federation, player.league, player.club,
+                        player.ratings[TournamentRating.STANDARD], player.rating_types[TournamentRating.STANDARD].short_name,
+                        player.ratings[TournamentRating.RAPID], player.rating_types[TournamentRating.RAPID].short_name,
+                        player.ratings[TournamentRating.BLITZ], player.rating_types[TournamentRating.BLITZ].short_name,
+                    ])
+                worksheet.add_table(0, 0, len(data), len(columns)-1, options={
+                    'columns': columns,
+                    'data': data,
+                })
+                worksheet.autofit()
+                workbook.close()
+                return File(path=temp_file.name, filename=f'{web_context.admin_event.uniq_id}.xlsx')
             case _:
                 raise ValueError(f'download_format={download_format}')

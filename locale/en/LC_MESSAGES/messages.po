@@ -3207,6 +3207,14 @@ msgstr ""
 msgid "Download the players."
 msgstr ""
 
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (XLSX format)."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr ""
+
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."
 msgstr ""
@@ -4828,5 +4836,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Mandatory for all the hours."
+#~ msgstr ""
+
+#~ msgid "Download the information of the selected players (XLSX format)"
+#~ msgstr ""
+
+#~ msgid "Download the vCards of the selected players (VCF format)"
 #~ msgstr ""
 

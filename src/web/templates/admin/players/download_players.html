@@ -14,18 +14,36 @@
             </span>
         </button>
         <ul class="dropdown-menu players-download-players p-0">
-            {% with name='players' %}
+            {% with name='player_ids' %}
                 {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
                 <input type="hidden" name="{{ name }}" value="0" />
                 <li class="dropdown-item title text-nowrap">
-                    <input
-                        type="checkbox"
-                        onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
-                    />
-                    <button type="submit" name="download_format" value="vcf" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
-                        <i class="bi-check-lg"></i>
-                        VCF
-                    </button>
+                    <div class="row">
+                        <div class="col text-start">
+                            <input
+                                type="checkbox"
+                                onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                            />
+                        </div>
+                        <div class="col text-end">
+                            <span
+                                    {{ tooltip_attributes('top', _('Download the information of the selected players (XLSX format).'), 'left') }}
+                            >
+                                <button type="submit" name="download_format" value="xlsx" class="btn py-0" data-bs-dismiss="modal" >
+                                    <i class="bi-download"></i>
+                                    XLSX
+                                </button>
+                            </span>
+                            <span
+                                    {{ tooltip_attributes('top', _('Download the vCards of the selected players (VCF format).'), 'left') }}
+                            >
+                                <button type="submit" name="download_format" value="vcf" class="btn py-0" data-bs-dismiss="modal" >
+                                    <i class="bi-download"></i>
+                                    VCF
+                                </button>
+                            </span>
+                        </div>
+                    </div>
                 </li>
                 <li class="dropdown-divider m-0"></li>
                 {% for player in admin_event.players_sorted_by_name %}
