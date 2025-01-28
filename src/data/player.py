@@ -1,10 +1,11 @@
 import base64
 from contextlib import suppress
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
 from typing import TYPE_CHECKING, Self, Callable
+
 from trf import Player as TrfPlayer
 
 if TYPE_CHECKING:

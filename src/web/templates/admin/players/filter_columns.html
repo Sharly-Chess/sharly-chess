@@ -31,7 +31,7 @@
                             value="{{ column }}"
                             {% if column in ['name', 'rating', ] or column in admin_players_filter_columns %}checked{% endif %}
                             {% if column in ['name', 'rating', ] %}disabled{% endif %}
-                            class="{% if column not in ['name', 'rating', ] %}{{ name }}{% endif %} {{ name}}_{{ column }}"
+                            class="{% if column not in ['name', 'rating', ] %}{{ name }}{% endif %} {{ name }}_{{ column }}"
                         />
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
                             {% if column == 'mail' %}

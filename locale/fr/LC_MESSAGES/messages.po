@@ -3203,6 +3203,10 @@ msgstr "Marquer forfait pour la ronde à venir."
 msgid "Close the check-in"
 msgstr "Fermer le pointage"
 
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the players."
+msgstr "Télécharger les joueur·euses."
+
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."

@@ -1,16 +1,18 @@
 import logging
 from logging import Logger
+from string import capwords
+from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
-from litestar import get, patch, delete, post
+from litestar import get, patch, delete, post, Response
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect
+from litestar.response import Template, Redirect, File
 from litestar.status_codes import HTTP_200_OK
 
-from common import unicode_normalize
+from common import unicode_normalize, TMP_DIR
 from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
@@ -702,3 +704,47 @@ class EventAdminController(AbstractEventAdminController):
             event_uniq_id: str,
     ) -> Template | ClientRedirect:
         return self._admin_event_update(request, data=data, action='update', event_uniq_id=event_uniq_id)
+
+    @get(
+        path='/admin/download-event-players/{event_uniq_id:str}',
+        name='admin-download-event-players'
+    )
+    async def htmx_admin_event_download_players(
+            self, request: HTMXRequest,
+            event_uniq_id: str,
+            download_format: str | None = None,
+            players: list[int] | None = None,
+    ) -> Template | ClientRedirect | Response[bytes]:
+        web_context: EventAdminWebContext = EventAdminWebContext(
+            request, event_uniq_id=event_uniq_id, admin_event_tab=None, data=None)
+        if web_context.error:
+            return web_context.error
+        match download_format:
+            case 'vcf':
+                data: str = ''
+                for player_id in players:
+                    if player_id:
+                        player = web_context.admin_event.players_by_id[player_id]
+                        if player.mail or player.phone:
+                            data += 'BEGIN:VCARD\n'
+                            data += 'VERSION: 3.0\n'
+                            if player.first_name:
+                                data += f'N:{capwords(player.last_name)};{player.first_name}\n'
+                                data += f'FN:{capwords(player.first_name)} {player.last_name}\n'
+                            else:
+                                data += f'N:{capwords(player.last_name)}\n'
+                                data += f'FN:{capwords(player.first_name)}\n'
+                            data += f'ORG:{player.league} - {player.club}\n'
+                            data += f'item1.TEL:{player.phone}\n'
+                            data += f'item1.X - ABLabel:\n'
+                            data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
+                            data += f'item2.X - ABLabel:\n'
+                            data += f'CATEGORIES: {_("Échecs")}\n'
+                            data += 'END: VCARD\n\n'
+                temp_file = NamedTemporaryFile(delete=False, mode="w", suffix=".vcf")
+                print(temp_file.name)
+                with temp_file as file:
+                    file.write(data)
+                    return File(path=temp_file.name, filename=f'{web_context.admin_event.uniq_id}.vcf')
+            case _:
+                raise ValueError(f'download_format={download_format}')

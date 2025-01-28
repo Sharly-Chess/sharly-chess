@@ -3203,6 +3203,10 @@ msgstr ""
 msgid "Close the check-in"
 msgstr ""
 
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the players."
+msgstr ""
+
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."
 msgstr ""

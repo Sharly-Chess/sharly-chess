@@ -3898,6 +3898,11 @@ msgstr "Markera som förverkad för den kommande omgången"
 msgid "Close the check-in"
 msgstr "Stäng incheckningen"
 
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the players."
+msgstr "alla spelare"
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
