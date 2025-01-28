@@ -9,6 +9,7 @@
     rotator_visibility_icon,
     tooltip_script,
     background_script,
+    theme_script,
     copyright_script
 %}
 <html>
@@ -42,8 +43,8 @@
         {% endif %}
     </head>
     <body
-            hx-ext="multi-swap,preload"
-            hx-swap="transition:true"
+        hx-ext="multi-swap,preload"
+        hx-swap="transition:true"
     >
         <div id="messages" class="w-50 position-fixed top-0 end-0 m-2 z-2">
             {% include 'messages.html' %}
@@ -75,7 +76,7 @@
                 Papi-web {{ papi_web_config.version }} - {{ papi_web_config.copyright }} - {{ papi_web_config.url }}
             </div>
         </div>
-	    <div id="please-wait-wrapper">
+        <div id="please-wait-wrapper">
             <div
                     id="please-wait"
                     class="please-wait htmx-indicator position-fixed top-50 start-50 translate-middle"
@@ -96,6 +97,7 @@
         </div>
         {{ tooltip_script() }}
         {{ background_script(background_info) }}
+        {{ theme_script(theme) }}
         <script>
             $('body').css('padding-right', '0');
         </script>

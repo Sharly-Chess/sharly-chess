@@ -62,6 +62,10 @@ class AdminWebContext(WebContext):
         return PapiWebConfig.admin_background_color
 
     @property
+    def theme(self) -> str:
+        return 'dark'
+    
+    @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_tab': self.admin_tab,

@@ -154,9 +154,7 @@
                         {% if screen.type == screen_type %}
                             {% set ns.screen_found=true %}
                             {% with
-                                card_class='bg-light' if not screen.family else 'bg-secondary-subtle text-secondary',
-                                card_background_url=screen.background_url,
-                                card_background_color=screen.background_color
+                                card_class='' if not screen.family else 'bg-secondary-subtle text-secondary'
                             %}
                                 {% include 'screen_card.html' %}
                             {% endwith %}

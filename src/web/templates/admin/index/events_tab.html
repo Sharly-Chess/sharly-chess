@@ -35,9 +35,7 @@
             {% for event in nav_tab.events %}
                 {% with
                     card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                    card_class=('bg-light' if event.public else 'bg-danger-subtle') if admin_auth else 'bg-light',
-                    card_background_url=event.background_url,
-                    card_background_color=event.background_color
+                    card_class='bg-danger-subtle' if not event.public and admin_auth else ''
                 %}
                     {% include 'event_card.html' %}
                 {% endwith %}

@@ -131,6 +131,7 @@
 
 {% macro background_script(background_info) %}
     <!-- background_script() -->
+    <!-- This is needed since it's not possible to change body attributes using HTMX -->
     <script>
         var background_info = {{ background_info | tojson }};
         var background_fingerprint = btoa(JSON.stringify(background_info));
@@ -152,6 +153,19 @@
                     );
                 },
             });
+        }
+    </script>
+    <!-- end background_script() -->
+{% endmacro %}
+
+{% macro theme_script(theme) %}
+    <!-- theme_script() -->
+    <!-- This is needed since it's not possible to change body attributes using HTMX -->
+    <script>
+        var new_theme = "{{ theme }}";
+        var current_theme = $('body').attr('data-bs-theme');
+        if (current_theme != new_theme) {
+            $('body').attr('data-bs-theme', new_theme);
         }
     </script>
     <!-- end background_script() -->

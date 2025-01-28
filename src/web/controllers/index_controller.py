@@ -73,6 +73,14 @@ class WebContext:
             'image': self.background_image,
             'color': self.background_color,
         }
+    
+    @property
+    def theme(self) -> str:
+        """
+        Override this method to change the theme
+        :return:
+        """
+        return 'light'
 
     @staticmethod
     def form_data_to_str(data: dict[str, str], field: str, empty_value: str | None = None) -> str | None:
@@ -296,6 +304,7 @@ class WebContext:
             'papi_web_config': papi_web_config,
             'admin_auth': self.admin_auth,
             'background_info': self.background_info,
+            'theme': self.theme,
             'locale_infos': locale_infos,
             'locale': SessionHandler.get_session_locale(self.request),
         }

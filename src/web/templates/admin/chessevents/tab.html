@@ -35,9 +35,7 @@
     <div class="row">
         {% if admin_event.chessevents_by_uniq_id %}
             {% for chessevent in admin_event.chessevents_by_uniq_id.values() %}
-                {% with card_class='bg-light' %}
-                    {% include 'chessevent_card.html' %}
-                {% endwith %}
+                {% include 'chessevent_card.html' %}
             {% endfor %}
         {% else %}
             <div class="col-12 mb-3">

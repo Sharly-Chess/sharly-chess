@@ -1,12 +1,12 @@
 <div class="col-lg-{{ 12 // admin_columns }} mb-3 d-flex align-items-stretch">
     <div
-            class="card {% if card_url %}btn{% endif %} p-1 w-100 {{ card_class }}"
-            {% if card_url %}
-                hx-get="{{ card_url }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
-            {% endif %}
+        class="card {% if card_url %}btn{% endif %} p-1 w-100 {{ card_class }}"
+        {% if card_url %}
+            hx-get="{{ card_url }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+        {% endif %}
     >
         <div class="card-header fw-bold text-center">
             {% block card_header %}
@@ -14,15 +14,7 @@
             {% endblock %}
         </div>
         <div
-                class="card-body p-2 d-flex flex-column"
-                style="
-                    {% if card_background_url %}
-                        background-image: url('{{ card_background_url }}');
-                    {% endif %}
-                    {% if card_background_color %}
-                        background-color: {{ card_background_color }};
-                    {% endif %}
-                    "
+            class="card-body p-2 d-flex flex-column"
         >
             <div class="card-title text-start fs-4 fw-bold">
                 {% block card_title %}

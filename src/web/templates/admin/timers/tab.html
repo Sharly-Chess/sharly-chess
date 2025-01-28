@@ -35,9 +35,7 @@
     <div class="row">
         {% if admin_event.timers_by_uniq_id %}
             {% for timer in admin_event.timers_by_uniq_id.values() %}
-                {% with card_class='bg-light' %}
-                    {% include 'timer_card.html' %}
-                {% endwith %}
+                {% include 'timer_card.html' %}
             {% endfor %}
         {% else %}
             <div class="col-12 mb-3">
