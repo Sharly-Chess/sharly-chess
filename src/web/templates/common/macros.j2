@@ -80,6 +80,12 @@
     <!-- end screen_type_icon() -->
 {% endmacro %}
 
+{% macro screen_visibility_icon(screen, class) %}
+    <!-- screen_visibility_icon() -->
+    {{ visibility_icon('screen', screen.public, '', '', class) }}
+    <!-- end screen_visibility_icon() -->
+{% endmacro %}
+
 {% macro rotator_icon() %}
     <!-- rotator_icon() -->
     <span
@@ -89,6 +95,20 @@
         <i class="bi-repeat"></i>
     </span>
     <!-- end rotator_icon() -->
+{% endmacro %}
+
+{% macro rotator_visibility_icon(rotator, class) %}
+    <!-- rotator_visibility_icon() -->
+    {{ visibility_icon('rotator', rotator.public, '', '', class) }}
+    <!-- end rotator_visibility_icon() -->
+{% endmacro %}
+
+{% macro ffe_licence(ffe_licence, class) %}
+    <!-- ffe_licence() -->
+    <span
+            class="player-ffe-lic ffe-lic-{{ ffe_licence.short_name }} ps-1 pe-1 {{ class }}"
+    >{{ ffe_licence.short_name }}</span>
+    <!-- end ffe_licence() -->
 {% endmacro %}
 
 {% macro tooltip_script() %}
