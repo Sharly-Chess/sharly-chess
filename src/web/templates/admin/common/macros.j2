@@ -4,24 +4,6 @@
     visibility_icon
 %}
 
-{% macro screen_visibility_icon(screen, class) %}
-    <!-- screen_visibility_icon() -->
-    {{ visibility_icon('screen', screen.public, '', '', class) }}
-    <!-- end screen_visibility_icon() -->
-{% endmacro %}
-
-{% macro family_visibility_icon(family, class) %}
-    <!-- family_visibility_icon() -->
-    {{ visibility_icon('family', family.public, '', '', class) }}
-    <!-- end family_visibility_icon() -->
-{% endmacro %}
-
-{% macro rotator_visibility_icon(rotator, class) %}
-    <!-- rotator_visibility_icon() -->
-    {{ visibility_icon('rotator', rotator.public, '', '', class) }}
-    <!-- end rotator_visibility_icon() -->
-{% endmacro %}
-
 {% macro tournament_status_icon(tournament, class) %}
     <!-- tournament_status_icon() -->
     {% if not tournament.rounds %}
@@ -47,14 +29,6 @@
         <i class="{{ _icon_class }}"></i>
     </span>
     <!-- end tournament_status_icon() -->
-{% endmacro %}
-
-{% macro ffe_licence(ffe_licence, class) %}
-    <!-- ffe_licence() -->
-    <span
-            class="player-ffe-lic ffe-lic-{{ ffe_licence.short_name }} ps-1 pe-1 {{ class }}"
-    >{{ ffe_licence.short_name }}</span>
-    <!-- end ffe_licence() -->
 {% endmacro %}
 
 {% macro player_history(player) %}
