@@ -215,6 +215,31 @@ msgstr "Kies het evenement:"
 msgid "Your choice: "
 msgstr "Jouw keuze:"
 
+# Error: tokens differ between [Downloading FIDE database...] and [Downloaden
+# is mislukt met code [{code}].]
+#: src/common/bbp_pairings.py
+#, ai_translation, fuzzy
+msgid "Downloading BBP Pairings..."
+msgstr "FIDE-database wordt gedownload..."
+
+#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "URL [{url}] reageerde op code [{code}]."
+
+#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
+#, ai_translation, fuzzy
+msgid "Could not download [{url}]: {ex}."
+msgstr "Lezen van [{url}] is mislukt: [{ex}]."
+
+#: src/common/bbp_pairings.py src/database/sqlite/ffe_database.py
+#: src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "No data received from [{url}]."
+msgstr "Geen gegevens ontvangen van [{url}]."
+
 #: src/common/config_reader.py
 #, ai_translation
 msgid "Configuration file [{file}] not found."
@@ -1341,21 +1366,6 @@ msgid "Downloading the FFE database..."
 msgstr "FIDE-database wordt gedownload..."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Could not download [{url}], error code [{code}]."
-msgstr "URL [{url}] reageerde op code [{code}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
-msgid "Could not download [{url}]: {ex}."
-msgstr "Lezen van [{url}] is mislukt: [{ex}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "No data received from [{url}]."
-msgstr "Geen gegevens ontvangen van [{url}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "Could not unzip data."
 msgstr "Kon de data niet losmaken."
@@ -1671,8 +1681,8 @@ msgstr "Fout bij het bijwerken van de FIDE-database."
 msgid "Error while updating the FFE database."
 msgstr "Fout bij het bijwerken van de FIDE-database."
 
-#: src/web/server_engine.py utils/export/export.py
-msgid "BBP pairings not installed. To install, run: python utils/install/bbp_pairings_install.py"
+#: src/web/server_engine.py
+msgid "Error while installing BBP Pairings."
 msgstr ""
 
 #: src/web/server_engine.py
