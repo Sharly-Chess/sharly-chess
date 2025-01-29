@@ -87,6 +87,8 @@
         {% include 'timers/timer_hours_modal.html' %}
     {% elif modal == 'chessevent' %}
         {% include 'chessevents/chessevent_modal.html' %}
+    {% elif modal == 'close_check_in' %}
+        {% include 'players/close_check_in_modal.html' %}
     {% elif modal %}
         {% include modal ~ '_modal_not_found.html' %}
     {% endif %}
