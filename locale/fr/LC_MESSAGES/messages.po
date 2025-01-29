@@ -1004,7 +1004,7 @@ msgstr "Grand Maître International"
 
 #: src/data/util.py
 msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
-msgstr "WCM"
+msgstr "CMF"
 
 #: src/data/util.py
 msgid "CM *** SHORT NAME FOR Candidate Master"
@@ -1012,7 +1012,7 @@ msgstr "CM"
 
 #: src/data/util.py
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
-msgstr "GMF"
+msgstr "MFF"
 
 #: src/data/util.py
 msgid "FM *** SHORT NAME FOR Fide Master"
