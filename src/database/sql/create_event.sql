@@ -77,7 +77,7 @@ CREATE TABLE `tournament` (
     `chessevent_tournament_name` TEXT,
     `record_illegal_moves` INTEGER,
     `rules` TEXT,
-    `check_in_open` INTEGER NOT NULL,
+    `check_in_open` INTEGER NOT NULL DEFAULT 0,
     `last_update` FLOAT NOT NULL,
     `last_illegal_move_update` FLOAT NOT NULL DEFAULT 0.0,
     `last_result_update` FLOAT NOT NULL DEFAULT 0.0,
