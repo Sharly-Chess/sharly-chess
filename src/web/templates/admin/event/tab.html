@@ -25,7 +25,7 @@
             {{ _('Clone') }}
         </button>
         <button
-            class="btn btn-danger text-nowrap ms-1"
+            class="btn btn-outline-danger text-nowrap ms-1"
             hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
             preload
             hx-target="body"
@@ -133,27 +133,22 @@
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Default timer configuration') }}</th>
             <td class="text-nowrap">
-                <div style="background-color: {{ admin_event.timer_colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[1]) }}</div>
-                <div style="background-color: {{ admin_event.timer_colors[2] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[2]) }}</div>
-                <div style="background-color: {{ admin_event.timer_colors[3] }}" class="px-2">{{ _('%(minutes)d minutes after', minutes=admin_event.timer_delays[3]) }}</div>
+                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[1] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[1]) }}</div></div>
+                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[2] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[2]) }}</div></div>
+                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[3] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes after', minutes=admin_event.timer_delays[3]) }}</div></div>
             </td>
             <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Alert message') }}</th>
             <td class="">
-                <div
-                        class="px-2 alert-message event-alert-message"
-                        style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-                >
-                    {% if admin_event.message_text %}
-                        {{ admin_event.message_text }}
-                    {% else %}
-                        <span class="fst-italic">
-                            {{ _('No alert message') }}
-                        </span>
-                    {% endif %}
-                </div>
+                {% if admin_event.message_text %}
+                    {{ admin_event.message_text }}
+                {% else %}
+                    <span class="fst-italic">
+                        {{ _('No alert message') }}
+                    </span>
+                {% endif %}
             </td>
             <td></td>
         </tr>

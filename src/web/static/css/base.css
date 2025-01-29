@@ -198,3 +198,12 @@ body {
 [data-bs-theme=dark] .papi-web-tooltip-info {
     --bs-tooltip-color: black;
 }
+
+[data-bs-theme=dark] .modal-dialog h4 {
+    color: var(--bs-primary);
+}
+
+[data-bs-theme=dark] .form-check-input:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
