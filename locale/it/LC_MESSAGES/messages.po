@@ -1671,10 +1671,6 @@ msgstr "Errore durante l'aggiornamento del database FIDE."
 msgid "Error while updating the FFE database."
 msgstr "Errore durante l'aggiornamento del database FIDE."
 
-#: src/web/server_engine.py utils/export/export.py
-msgid "BBP pairings not installed. To install, run: python utils/install/install_bbp_pairings.py"
-msgstr ""
-
 #: src/web/server_engine.py
 #, ai_translation
 msgid "Port [{port}] already in use, can not start Papi-web server."

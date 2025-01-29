@@ -20,19 +20,15 @@ class BbpPairings:
     LINUX_BUILD = "x86_64-pc-linux.tar.gz"
 
     @property
+    def is_installed(self) -> bool:
+        return self.executable_path.exists()
+
+    @property
     def executable_path(self) -> Path:
         return BASE_DIR / 'resources' / f'bbpPairings-{self.VERSION}' / 'bbpPairings.exe'
 
-    def check_installed(self):
-        """Check if BBP Pairings is installed, raise if it is not."""
-        if not self.executable_path.exists():
-            raise FileNotFoundError(_(
-                'BBP pairings not installed. To install, run: '
-                'python utils/install/install_bbp_pairings.py'))
-
     def generate_pairings(self, tournament: Tournament):
         """Generate the pairings of a tournament's next round"""
-        self.check_installed()
         if tournament.finished or tournament.playing:
             raise ValueError(
                 'Impossible to generate pairings '

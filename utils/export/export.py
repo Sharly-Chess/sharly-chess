@@ -116,9 +116,7 @@ def build_exe():
         file for file in LOCALE_DIR.glob('**/*.mo')
         if file.is_file()
     ]
-    bbp = BbpPairings()
-    bbp.check_installed()
-    files += [bbp.executable_path]
+    files += [BbpPairings().executable_path]
     for file in files:
         pyinstaller_params.append(f'--add-data={file};{file.parent.relative_to(BASE_DIR)}')
     files: list[Path] = []
@@ -252,6 +250,11 @@ def update_pyproject():
 
 def main():
     clean(clean_zip=True)
+    if not BbpPairings().is_installed:
+        print_interactive_error(
+            'BBP Pairings not installed. To install, run: '
+            'python utils/install/install_bbp_pairings.py')
+        return
     if not I18nUpdater(locales).check_trusted_locales():
         if (input_interactive(
                 'Translations are not perfect for trusted locales, do you want to continue (y/N):'
