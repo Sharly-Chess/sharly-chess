@@ -35,7 +35,7 @@
                         url_for('user-event', event_uniq_id=user_event.uniq_id)
                     ) if user_event else (
                         url_for('user-tab', user_tab=user_tab)
-                        if user_event_tab else
+                        if user_tab else
                         url_for('user')
                     ) %}
                     {% include '../../common/locale_dropdown.html' %}
