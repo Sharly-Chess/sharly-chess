@@ -1,33 +1,36 @@
-<div class="row mb-2">
-    <div class="col-auto fs-3 fw-bold">
+<div class="d-flex mb-2 align-items-center flex-wrap gap-1">
+    <div class="flex-grow-1 fs-4 fw-bold">
         {{ event_visibility_icon(admin_event, '') }}
         {{ admin_event.name }}
     </div>
-    <div class="col text-end fs-3">
+    <div class="d-flex gap-1 ms-auto">
         <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait">
+            class="btn btn-outline-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
             <i class="bi-pencil-fill"></i>
             {{ _('Edit') }}
         </button>
         <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait">
+            class="btn btn-outline-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
             <i class="bi-copy"></i>
             {{ _('Clone') }}
         </button>
         <button
-                class="btn btn-danger text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait">
+            class="btn btn-danger text-nowrap ms-1"
+            hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
             <i class="bi-trash-fill"></i>
             {{ _('Delete') }}
         </button>

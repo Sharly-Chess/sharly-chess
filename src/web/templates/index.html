@@ -74,31 +74,31 @@
                     </tbody>
                 </table>
                 <button
-                        hx-get="{{ url_for('user') }}"
-                        preload
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        class="btn btn-primary btn-lg p-4 w-100"
-                        {{ tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
+                    hx-get="{{ url_for('user') }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="btn btn-primary btn-lg p-4 w-100"
+                    {{ tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
                 >
                     {{ _('Events (public access)') }}
                 </button>
                 <div
-                        {% if admin_auth %}
-                            {{ tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
-                        {% else %}
-                            {{ tooltip_attributes('error', _('Access to the arbiter interface is not allowed from this client.'), 'right') }}
-                        {% endif %}
+                    {% if admin_auth %}
+                        {{ tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
+                    {% else %}
+                        {{ tooltip_attributes('error', _('Access to the arbiter interface is not allowed from this client.'), 'right') }}
+                    {% endif %}
                 >
                     <button
-                            hx-get="{{ url_for('admin') }}"
-                            preload
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            class="btn btn-danger btn-lg p-1 w-100"
-                            {% if not admin_auth %}
-                                disabled
-                            {% endif %}
+                        hx-get="{{ url_for('admin') }}"
+                        preload
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        class="btn btn-danger btn-lg p-1 w-100"
+                        {% if not admin_auth %}
+                            disabled
+                        {% endif %}
                     >
                         {{ _('Arbiter interface (private access)') }}
                     </button>

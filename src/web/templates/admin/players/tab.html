@@ -1,18 +1,18 @@
 {% with url=url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') %}
-    <div class="row mb-2">
-        <div class="col-auto fs-3 fw-bold">
+    <div class="d-flex mb-2 align-items-center flex-wrap gap-1">
+        <div class="flex-grow-1 fs-4 fw-bold">
             {{ admin_event.name }} - {{ _('Players') }}
         </div>
-        <div class="col text-end">
+        <div class="d-flex gap-1 ms-auto">
             {% include 'check_in_tournaments.html' %}
             {% include 'filter_columns.html' %}
             <span {{ tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
                 <button
-                        class="btn btn-primary text-nowrap ms-1"
-                        hx-get="{{ url }}"
-                        preload
-                        hx-target="body"
-                        hx-indicator="#please-wait"
+                    class="btn btn-outline-primary text-nowrap ms-1"
+                    hx-get="{{ url }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
                 >
                     <i class="bi-arrow-clockwise"></i>
                 </button>
@@ -29,14 +29,14 @@
                     {% endif %}
             >
                 <button
-                        class="btn btn-primary text-nowrap ms-1"
-                        hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                        preload
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        {% if not admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
-                            disabled
-                        {% endif %}
+                    class="btn btn-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {% if not admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                        disabled
+                    {% endif %}
                 >
                     <i class="bi-plus-square-fill"></i>
                     {{ _('Create a player') }}

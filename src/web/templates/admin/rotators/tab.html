@@ -12,45 +12,47 @@
                 {{ tooltip_attributes('info', _('Enable/disable the details of the rotators on the cards below.'), 'top') }}
         >
             <input
-                    hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
+                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
+                hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                hx-target="body"
+                hx-indicator="#please-wait"
+                class="form-check-input"
+                type="checkbox"
+                id="{{ id }}"
+                {% if show %}checked{% endif %}
+            />
+            <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
     <span {{ tooltip_attributes('info', 'Refresh this page.', 'top') }}>
         <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
+            class="btn btn-outline-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
         >
             <i class="bi-arrow-clockwise"></i>
         </button>
     </span>
     <span
-            {{ tooltip_attributes(
-                'info',
-                _('Add a rotator to the event.')
-                if admin_event.screens_by_uniq_id else
-                _('You must create a screen or a family of screens before creating a rotator.'),
-                'top')
-            }}
+        {{ tooltip_attributes(
+            'info',
+            _('Add a rotator to the event.')
+            if admin_event.screens_by_uniq_id else
+            _('You must create a screen or a family of screens before creating a rotator.'),
+            'top')
+        }}
     >
         <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
-                {% if not admin_event.screens_by_uniq_id %}
-                    disabled
-                {% endif %}
+            class="btn btn-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+            {% if not admin_event.screens_by_uniq_id %}
+                disabled
+            {% endif %}
         >
             <i class="bi-plus-square-fill"></i>
             {{ _('Create a rotator') }}

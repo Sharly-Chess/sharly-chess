@@ -8,67 +8,72 @@
 {% block cards_container_right_buttons %}
     {% with id='admin-screens-show-family-screens', name='admin_screens_show_family_screens', show=admin_screens_show_family_screens %}
         <div
-                class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
+            class="form-check form-switch d-inline-block pe-3 mt-2"
+            {{ tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
         >
             <input
-                    hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Families') }}</label>
+                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+                hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                hx-target="body"
+                hx-indicator="#please-wait"
+                class="form-check-input"
+                type="checkbox"
+                id="{{ id }}"
+                {% if show %}checked{% endif %}
+            />
+            <label for="{{ id }}" class="form-check-label"> {{ _('Families') }}</label>
         </div>
     {% endwith %}
     {% with id='admin-screens-show-details', name='admin_screens_show_details', show=admin_screens_show_details %}
         <div
-                class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ tooltip_attributes('info', _('Enable/disable the details of the screens on the cards below.'), 'top') }}
+            class="form-check form-switch d-inline-block pe-3 mt-2"
+            {{ tooltip_attributes('info', _('Enable/disable the details of the screens on the cards below.'), 'top') }}
         >
             <input
-                    hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
+                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+                hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                hx-target="body"
+                hx-indicator="#please-wait"
+                class="form-check-input"
+                type="checkbox"
+                id="{{ id }}"
+                {% if show %}checked{% endif %}
+            />
+            <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
     <span class="pe-3" {{ tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
         <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
+            class="btn btn-outline-primary text-nowrap"
+            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
         >
             <i class="bi-arrow-clockwise"></i>
         </button>
     </span>
     <span
-            class="dropdown-end pe-0"
-            {% if not admin_event.tournaments_by_id %}
-                {{ tooltip_attributes(
-                    'info',
-                    _('You must create a tournament before creating screens.'),
-                    'left'
-                ) }}
-            {% endif %}
+        class="dropdown-end pe-0"
+        {% if not admin_event.tournaments_by_id %}
+            {{ tooltip_attributes(
+                'info',
+                _('You must create a tournament before creating screens.'),
+                'left'
+            ) }}
+        {% endif %}
     >
         <button
-                class="btn btn-primary dropdown-toggle mx-auto"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                {% if not admin_event.tournaments_by_id %}
-                    disabled
-                {% endif %}
+            class="btn btn-primary dropdown-toggle mx-auto"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            {% if not admin_event.tournaments_by_id %}
+                disabled
+            {% endif %}
         >
-            <i class="bi-plus-square"></i> {{ _('Create a screen') }}
+            <i class="bi-plus-square"></i>
+            {{ _('Create a screen') }}
         </button>
         <ul class="dropdown-menu">
             {% for screen_type, screen_data in {

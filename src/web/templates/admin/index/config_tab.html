@@ -6,11 +6,12 @@
     <div class="col text-end">
         <span {{ tooltip_attributes('info', _('Add an event.'), 'top') }}>
             <button
-                    class="btn btn-primary text-nowrap"
-                    hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-                    hx-target="body"
-                    preload
-                    hx-indicator="#please-wait">
+                class="btn btn-primary text-nowrap"
+                hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
+                hx-target="body"
+                preload
+                hx-indicator="#please-wait"
+            >
                 <i class="bi-plus-square-fill"></i>
                 {{ _('Create an event') }}
             </button>

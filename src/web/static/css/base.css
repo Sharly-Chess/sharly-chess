@@ -88,3 +88,113 @@ body {
 .player-federation-flag {
     height: 1em;
 }
+
+[data-bs-theme=dark] {
+    --bs-primary: #d7c9aa;
+    --pw-dark-text: #212529;
+
+    /* Copy/pasted from the BS docs for easier editing */
+    color-scheme: dark;
+    --bs-body-color: #dee2e6;
+    --bs-body-color-rgb: 222, 226, 230;
+    --bs-body-bg: #212529;
+    --bs-body-bg-rgb: 33, 37, 41;
+    --bs-emphasis-color: #fff;
+    --bs-emphasis-color-rgb: 255, 255, 255;
+    --bs-secondary-color: rgba(222, 226, 230, 0.75);
+    --bs-secondary-color-rgb: 222, 226, 230;
+    --bs-secondary-bg: #343a40;
+    --bs-secondary-bg-rgb: 52, 58, 64;
+    --bs-tertiary-color: rgba(222, 226, 230, 0.5);
+    --bs-tertiary-color-rgb: 222, 226, 230;
+    --bs-tertiary-bg: #2b3035;
+    --bs-tertiary-bg-rgb: 43, 48, 53;
+    --bs-primary-text-emphasis: #6ea8fe;
+    --bs-secondary-text-emphasis: #a7acb1;
+    --bs-success-text-emphasis: #75b798;
+    --bs-info-text-emphasis: #6edff6;
+    --bs-warning-text-emphasis: #ffda6a;
+    --bs-danger-text-emphasis: #ea868f;
+    --bs-light-text-emphasis: #f8f9fa;
+    --bs-dark-text-emphasis: #dee2e6;
+    --bs-primary-bg-subtle: #031633;
+    --bs-secondary-bg-subtle: #161719;
+    --bs-success-bg-subtle: #051b11;
+    --bs-info-bg-subtle: #032830;
+    --bs-warning-bg-subtle: #332701;
+    --bs-danger-bg-subtle: #2c0b0e;
+    --bs-light-bg-subtle: #343a40;
+    --bs-dark-bg-subtle: #1a1d20;
+    --bs-primary-border-subtle: #084298;
+    --bs-secondary-border-subtle: #41464b;
+    --bs-success-border-subtle: #0f5132;
+    --bs-info-border-subtle: #087990;
+    --bs-warning-border-subtle: #997404;
+    --bs-danger-border-subtle: #842029;
+    --bs-light-border-subtle: #495057;
+    --bs-dark-border-subtle: #343a40;
+    --bs-heading-color: inherit;
+    --bs-link-color: #e5dbc6;
+    --bs-link-hover-color: #e9e1cf;
+    --bs-link-color-rgb: 229, 219, 198;
+    --bs-link-hover-color-rgb: 233, 225, 207;
+    --bs-code-color: #e685b5;
+    --bs-highlight-color: #dee2e6;
+    --bs-highlight-bg: #664d03;
+    --bs-border-color: #495057;
+    --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+    --bs-form-valid-color: #75b798;
+    --bs-form-valid-border-color: #75b798;
+    --bs-form-invalid-color: #ea868f;
+    --bs-form-invalid-border-color: #ea868f;
+}
+
+[data-bs-theme=dark] .btn-primary {
+    --bs-btn-color: var(--pw-dark-text);
+    --bs-btn-bg: var(--bs-primary);
+    --bs-btn-border-color: #d7c9aa;
+    --bs-btn-hover-color: var(--pw-dark-text);
+    --bs-btn-hover-bg: var(--bs-link-hover-color);
+    --bs-btn-hover-border-color: var(--bs-link-hover-color);
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: var(--pw-dark-text);;
+    --bs-btn-active-bg: var(--bs-link-hover-color);
+    --bs-btn-active-border-color: var(--bs-link-hover-color);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: var(--pw-dark-text);
+    --bs-btn-disabled-bg: #9d9e98;
+    --bs-btn-disabled-border-color: #9d9e98;
+}
+
+[data-bs-theme=dark] .btn-outline-primary {
+    --bs-btn-color: var(--bs-link-color);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-color: var(--pw-dark-text);
+    --bs-btn-hover-bg: var(--bs-primary);
+    --bs-btn-hover-border-color: var(--bs-primary);
+    --bs-btn-focus-shadow-rgb: 13, 110, 253;
+    --bs-btn-active-color: var(--pw-dark-text);;
+    --bs-btn-active-bg: var(--bs-link-hover-color);
+    --bs-btn-active-border-color: var(--bs-link-hover-color);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #9d9e98;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #9d9e98;
+    --bs-gradient: none;
+}
+
+[data-bs-theme=dark] .card {
+    --bs-card-bg: #313334;
+}
+
+[data-bs-theme=dark] .card.btn:hover {
+    --bs-btn-hover-bg: #36393d;
+}
+
+[data-bs-theme=dark] .papi-web-tooltip-info {
+    --bs-tooltip-bg: #9d9e9e;
+}
+
+[data-bs-theme=dark] .papi-web-tooltip-info {
+    --bs-tooltip-color: black;
+}
