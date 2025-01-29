@@ -26,22 +26,21 @@
                             />
                         </div>
                         <div class="col text-end">
-                            <span
-                                    {{ tooltip_attributes('top', _('Download the information of the selected players (XLSX format).'), 'left') }}
-                            >
-                                <button type="submit" name="download_format" value="xlsx" class="btn py-0" data-bs-dismiss="modal" >
-                                    <i class="bi-download"></i>
-                                    XLSX
-                                </button>
-                            </span>
-                            <span
-                                    {{ tooltip_attributes('top', _('Download the vCards of the selected players (VCF format).'), 'left') }}
-                            >
-                                <button type="submit" name="download_format" value="vcf" class="btn py-0" data-bs-dismiss="modal" >
-                                    <i class="bi-download"></i>
-                                    VCF
-                                </button>
-                            </span>
+                            {% for format, tooltip_text in {
+                                'vcf': _('Download the vCards of the selected players (VCF format).'),
+                                'csv': _('Download the information of the selected players (CSV format).'),
+                                'ods': _('Download the information of the selected players (ODS format).'),
+                                'xlsx': _('Download the information of the selected players (XLSX format).'),
+                            } %}
+                                <span
+                                        {{ tooltip_attributes('top', tooltip_text, 'top') }}
+                                >
+                                    <button type="submit" name="download_format" value="{{ format }}" class="btn py-0" data-bs-dismiss="modal" >
+                                        <i class="bi-download"></i>
+                                        CSV
+                                    </button>
+                                </span>
+                            {% endfor %}
                         </div>
                     </div>
                 </li>

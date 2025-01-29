@@ -1,3 +1,4 @@
+import csv
 import logging
 from logging import Logger
 from string import capwords
@@ -7,11 +8,13 @@ from typing import Annotated, Any
 import xlsxwriter
 from litestar import get, patch, delete, post, Response
 from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
+from litestar.contrib.htmx.response import HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect, File
 from litestar.status_codes import HTTP_200_OK
+from litestar_htmx import ClientRedirect
+from pyexcel_ods3 import save_data
 
 from common import unicode_normalize
 from common.exception import PapiWebException
@@ -706,6 +709,126 @@ class EventAdminController(AbstractEventAdminController):
     ) -> Template | ClientRedirect:
         return self._admin_event_update(request, data=data, action='update', event_uniq_id=event_uniq_id)
 
+    @staticmethod
+    def download_players_as_vcf(
+            event_uniq_id: str,
+            players: list[Player],
+    ) -> Response[str]:
+        """Returns a file with all the vCards of the players."""
+        data: str = ''
+        for player in players:
+            if player.mail or player.phone:
+                data += 'BEGIN:VCARD\n'
+                data += 'VERSION: 3.0\n'
+                if player.first_name:
+                    data += f'N:{capwords(player.last_name)};{player.first_name}\n'
+                    data += f'FN:{capwords(player.first_name)} {player.last_name}\n'
+                else:
+                    data += f'N:{capwords(player.last_name)}\n'
+                    data += f'FN:{capwords(player.first_name)}\n'
+                data += f'ORG:{player.league} - {player.club}\n'
+                data += f'item1.TEL:{player.phone}\n'
+                data += f'item1.X - ABLabel:\n'
+                data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
+                data += f'item2.X - ABLabel:\n'
+                data += f'CATEGORIES: {_("Échecs")}\n'
+                data += 'END: VCARD\n\n'
+        return Response(
+            content=data,
+            media_type='text/x-vcard',
+            headers={
+                "Content-Disposition": f'attachment;{event_uniq_id}.vcf',
+            })
+
+    @staticmethod
+    def get_players_datasheet_columns(
+    ) -> list[str]:
+        """Returns the names of the columns used in the datasheets that can be downloaded."""
+        return [
+            'last_name',
+            'first_name',
+            'yob',
+            'mail',
+            'phone',
+            'gender',
+            'fide_id',
+            'ffe_id',
+            'ffe_licence_number',
+            'ffe_licence',
+            'tournament',
+            'federation',
+            'league',
+            'club',
+            'St',
+            'S',
+            'Ra',
+            'R',
+            'Bl',
+            'B',
+        ]
+
+    @staticmethod
+    def get_players_datasheet_data(
+            players: list[Player],
+    ) -> list[list[str | int | float]]:
+        """Returns the data of the datasheets that can be downloaded."""
+        return [
+            [
+                player.last_name, player.first_name, player.year_of_birth, player.mail, player.phone,
+                player.gender.short_name, player.fide_id,
+                player.ffe_id, player.ffe_licence_number, player.ffe_licence.short_name,
+                player.tournament.uniq_id,
+                player.federation, player.league, player.club,
+                player.ratings[TournamentRating.STANDARD], player.rating_types[TournamentRating.STANDARD].short_name,
+                player.ratings[TournamentRating.RAPID], player.rating_types[TournamentRating.RAPID].short_name,
+                player.ratings[TournamentRating.BLITZ], player.rating_types[TournamentRating.BLITZ].short_name,
+            ] for player in players
+        ]
+
+    @classmethod
+    def download_players_as_xlsx(
+            cls,
+            event_uniq_id: str,
+            players: list[Player],
+    ) -> File:
+        """Returns a file with all the information of the players in an XLSX format."""
+        temp_file = NamedTemporaryFile(delete=False, mode="wb", suffix=".xlsx")
+        workbook = xlsxwriter.Workbook(temp_file)
+        worksheet = workbook.add_worksheet()
+        columns = cls.get_players_datasheet_columns()
+        data = cls.get_players_datasheet_data(players)
+        worksheet.add_table(0, 0, len(data), len(columns)-1, options={
+            'columns': [{'header': column}  for column in columns],
+            'data': data,
+        })
+        worksheet.autofit()
+        workbook.close()
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.xlsx')
+
+    @classmethod
+    def download_players_as_csv(
+            cls,
+            event_uniq_id: str,
+            players: list[Player],
+    ) -> File:
+        """Returns a file with all the information of the players in a CSV format (comma-separated)."""
+        temp_file = NamedTemporaryFile(delete=False, mode="w", suffix=".csv", newline='')
+        writer = csv.writer(temp_file)
+        writer.writerow(cls.get_players_datasheet_columns())
+        writer.writerows(cls.get_players_datasheet_data(players))
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.csv')
+
+    @classmethod
+    def download_players_as_ods(
+            cls,
+            event_uniq_id: str,
+            players: list[Player],
+    ) -> File:
+        """Returns a file with all the information of the players in an ODS format."""
+        temp_file = NamedTemporaryFile(delete=False, mode="w", suffix=".ods")
+        save_data(temp_file, cls.get_players_datasheet_columns() + cls.get_players_datasheet_data(players))
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.ods')
+
     @get(
         path='/admin/download-event-players/{event_uniq_id:str}',
         name='admin-download-event-players'
@@ -715,7 +838,7 @@ class EventAdminController(AbstractEventAdminController):
             event_uniq_id: str,
             download_format: str | None = None,
             player_ids: list[int] | None = None,
-    ) -> Template | ClientRedirect | Response[str]:
+    ) -> ClientRedirect | Response[str] | File:
         web_context: EventAdminWebContext = EventAdminWebContext(
             request, event_uniq_id=event_uniq_id, admin_event_tab=None, data=None)
         if web_context.error:
@@ -727,75 +850,12 @@ class EventAdminController(AbstractEventAdminController):
             players = web_context.admin_event.players_sorted_by_name
         match download_format:
             case 'vcf':
-                data: str = ''
-                for player in players:
-                    if player.mail or player.phone:
-                        data += 'BEGIN:VCARD\n'
-                        data += 'VERSION: 3.0\n'
-                        if player.first_name:
-                            data += f'N:{capwords(player.last_name)};{player.first_name}\n'
-                            data += f'FN:{capwords(player.first_name)} {player.last_name}\n'
-                        else:
-                            data += f'N:{capwords(player.last_name)}\n'
-                            data += f'FN:{capwords(player.first_name)}\n'
-                        data += f'ORG:{player.league} - {player.club}\n'
-                        data += f'item1.TEL:{player.phone}\n'
-                        data += f'item1.X - ABLabel:\n'
-                        data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
-                        data += f'item2.X - ABLabel:\n'
-                        data += f'CATEGORIES: {_("Échecs")}\n'
-                        data += 'END: VCARD\n\n'
-                return Response(
-                    content=data,
-                    media_type='text/x-vcard',
-                    headers={
-                        "Content-Disposition": f'attachment;{web_context.admin_event.uniq_id}.vcf',
-                    })
+                return self.download_players_as_vcf(web_context.admin_event.uniq_id, players)
+            case 'csv':
+                return self.download_players_as_csv(web_context.admin_event.uniq_id, players)
             case 'xlsx':
-                temp_file = NamedTemporaryFile(delete=False, mode="wb", suffix=".xlsx")
-                workbook = xlsxwriter.Workbook(temp_file)
-                columns: list[dict[str, str]] = [
-                    {'header': 'last_name', },
-                    {'header': 'first_name', },
-                    {'header': 'yob', },
-                    {'header': 'mail', },
-                    {'header': 'phone', },
-                    {'header': 'gender', },
-                    {'header': 'fide_id', },
-                    {'header': 'ffe_id', },
-                    {'header': 'ffe_licence_number', },
-                    {'header': 'ffe_licence', },
-                    {'header': 'tournament', },
-                    {'header': 'federation', },
-                    {'header': 'league', },
-                    {'header': 'club', },
-                    {'header': 'St', },
-                    {'header': 'S', },
-                    {'header': 'Ra', },
-                    {'header': 'R', },
-                    {'header': 'Bl', },
-                    {'header': 'B', },
-                ]
-                worksheet = workbook.add_worksheet()
-                data: list[list[str | int | float]] = [
-                ]
-                for player in players:
-                    data.append([
-                        player.last_name, player.first_name, player.year_of_birth, player.mail, player.phone,
-                        player.gender.short_name, player.fide_id,
-                        player.ffe_id, player.ffe_licence_number, player.ffe_licence.short_name,
-                        player.tournament.uniq_id,
-                        player.federation, player.league, player.club,
-                        player.ratings[TournamentRating.STANDARD], player.rating_types[TournamentRating.STANDARD].short_name,
-                        player.ratings[TournamentRating.RAPID], player.rating_types[TournamentRating.RAPID].short_name,
-                        player.ratings[TournamentRating.BLITZ], player.rating_types[TournamentRating.BLITZ].short_name,
-                    ])
-                worksheet.add_table(0, 0, len(data), len(columns)-1, options={
-                    'columns': columns,
-                    'data': data,
-                })
-                worksheet.autofit()
-                workbook.close()
-                return File(path=temp_file.name, filename=f'{web_context.admin_event.uniq_id}.xlsx')
+                return self.download_players_as_xlsx(web_context.admin_event.uniq_id, players)
+            case 'ods':
+                return self.download_players_as_ods(web_context.admin_event.uniq_id, players)
             case _:
                 raise ValueError(f'download_format={download_format}')
