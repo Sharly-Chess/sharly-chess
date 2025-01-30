@@ -34,17 +34,6 @@
                     {% endblock admin_header_nav %}
                     <!-- end block admin_header_nav -->
                 </div>
-                {% with url=(
-                    url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab=admin_event_tab)
-                    if admin_event_tab else
-                    url_for('admin-event', admin_uniq_id=admin_event.uniq_id)
-                ) if admin_event else (
-                    url_for('admin-tab', admin_tab=admin_tab)
-                    if admin_tab else
-                    url_for('admin')
-                ) %}
-                {% include '../../common/locale_dropdown.html' %}
-                {% endwith %}
             </nav> 
         </div>
     </div>
