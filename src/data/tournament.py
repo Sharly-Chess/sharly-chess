@@ -237,6 +237,10 @@ class Tournament:
         return self.file_exists
 
     @property
+    def pairings_generation_allowed(self) -> bool:
+        return not self.finished and not self.playing
+
+    @property
     def handicap(self) -> bool:
         return bool(self.time_control_handicap_penalty_value)
 

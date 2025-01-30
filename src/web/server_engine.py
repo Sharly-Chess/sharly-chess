@@ -9,9 +9,11 @@ import uvicorn
 from litestar import Litestar
 from litestar.contrib.htmx.request import HTMXRequest
 
+from common import DEVEL_ENV
+from common.bbp_pairings import BbpPairings
 from common.engine import Engine
 from common.i18n import _, set_locale
-from common.logger import get_logger, print_interactive_info, print_interactive_error
+from common.logger import get_logger, print_interactive_info, print_interactive_error, print_interactive_warning
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.ffe_database import FfeDatabase
 from database.sqlite.fide_database import FideDatabase
@@ -50,6 +52,13 @@ class ServerEngine(Engine):
             print_interactive_error(_('Error while updating the FIDE database.'))
         if not FfeDatabase().check():
             print_interactive_error(_('Error while updating the FFE database.'))
+        if not BbpPairings().is_installed:
+            if DEVEL_ENV:
+                print_interactive_warning(
+                    'BBP Pairings not installed. To install, run: '
+                    'python utils/install/install_bbp_pairings.py')
+            else:
+                raise FileNotFoundError('BBP Pairings not installed.')
         if self.__port_in_use(papi_web_config.web_port):
             print_interactive_error(
                 _('Port [{port}] already in use, can not start Papi-web server.').format(port=papi_web_config.web_port))

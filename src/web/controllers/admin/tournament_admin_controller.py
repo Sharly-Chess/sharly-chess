@@ -12,7 +12,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
-from common.bbp_pairings import generate_pairings
+from common.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
@@ -337,7 +337,7 @@ class TournamentAdminController(AbstractEventAdminController):
     ) -> Template | ClientRedirect:
         context = TournamentAdminWebContext(request, event_uniq_id, None, tournament_id, None)
         tournament = context.admin_tournament
-        generate_pairings(tournament)
+        BbpPairings().generate_pairings(tournament)
         tournament.read_papi(True)
         return self._admin_event_tournaments_render(request, event_uniq_id)
 
