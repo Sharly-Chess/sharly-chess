@@ -5811,18 +5811,3 @@ msgstr "Διοικητικό Συμβούλιο #%(board_number)d με %(color)s
 msgid "vs"
 msgstr "vs"
 
-#~ msgid "Download the players."
-#~ msgstr "Κατεβάστε τους παίκτες."
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Κατεβάστε το vCards των επιλεγμένων παικτών (VCF format)."
-
-#~ msgid "Download the information of the selected players (CSV format)."
-#~ msgstr "Κατεβάστε τις πληροφορίες των επιλεγμένων παικτών (μορφή CSV)."
-
-#~ msgid "Download the information of the selected players (ODS format)."
-#~ msgstr "Κατεβάστε τις πληροφορίες των επιλεγμένων παικτών (μορφή ODS)."
-
-#~ msgid "Download the information of the selected players (XLSX format)."
-#~ msgstr "Κατεβάστε τις πληροφορίες των επιλεγμένων παικτών (μορφή XLSX)."
-

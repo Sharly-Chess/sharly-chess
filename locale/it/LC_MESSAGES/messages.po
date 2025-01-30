@@ -5813,18 +5813,3 @@ msgstr "Tavola #%(board_number)d con %(color)s"
 msgid "vs"
 msgstr "vs"
 
-#~ msgid "Download the players."
-#~ msgstr "Scarica i giocatori."
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Scarica le vCard dei giocatori selezionati (formato VCF)."
-
-#~ msgid "Download the information of the selected players (CSV format)."
-#~ msgstr "Scarica le informazioni dei giocatori selezionati (formato CSV)."
-
-#~ msgid "Download the information of the selected players (ODS format)."
-#~ msgstr "Scarica le informazioni dei giocatori selezionati (formato ODS)."
-
-#~ msgid "Download the information of the selected players (XLSX format)."
-#~ msgstr "Scarica le informazioni dei giocatori selezionati (formato XLSX)."
-

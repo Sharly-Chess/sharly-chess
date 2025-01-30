@@ -5797,18 +5797,3 @@ msgstr "Bord #%(board_number)d met %(color)s"
 msgid "vs"
 msgstr "vs"
 
-#~ msgid "Download the players."
-#~ msgstr "Download de spelers."
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Download de vCards van de geselecteerde spelers (VCF-formaat)."
-
-#~ msgid "Download the information of the selected players (CSV format)."
-#~ msgstr "Download de informatie van de geselecteerde spelers (CSV-formaat)."
-
-#~ msgid "Download the information of the selected players (ODS format)."
-#~ msgstr "Download de informatie van de geselecteerde spelers (ODS-formaat)."
-
-#~ msgid "Download the information of the selected players (XLSX format)."
-#~ msgstr "Download de informatie van de geselecteerde spelers (XLSX-formaat)."
-

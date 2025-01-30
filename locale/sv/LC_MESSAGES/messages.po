@@ -5836,18 +5836,3 @@ msgstr "Styrelsen #%(board_number)d med %(color)s"
 msgid "vs"
 msgstr "vs"
 
-#~ msgid "Download the players."
-#~ msgstr "Ladda ner spelarna."
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Ladda ner vCards för de valda spelarna (VCF-format)."
-
-#~ msgid "Download the information of the selected players (CSV format)."
-#~ msgstr "Ladda ner informationen för de utvalda spelarna (CSV-format)."
-
-#~ msgid "Download the information of the selected players (ODS format)."
-#~ msgstr "Ladda ner informationen om de utvalda spelarna (ODS-format)."
-
-#~ msgid "Download the information of the selected players (XLSX format)."
-#~ msgstr "Ladda ner informationen för de valda spelarna (XLSX-format)."
-

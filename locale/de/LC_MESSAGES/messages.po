@@ -5863,18 +5863,3 @@ msgstr "Vorstand #%(board_number)d mit %(color)s"
 msgid "vs"
 msgstr "vs."
 
-#~ msgid "Download the players."
-#~ msgstr "Laden Sie die Spieler herunter."
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Laden Sie die vCards der ausgewählten Spieler (VCF-Format) herunter."
-
-#~ msgid "Download the information of the selected players (CSV format)."
-#~ msgstr "Laden Sie die Informationen der ausgewählten Player (CSV-Format) herunter."
-
-#~ msgid "Download the information of the selected players (ODS format)."
-#~ msgstr "Laden Sie die Informationen der ausgewählten Player (ODS-Format) herunter."
-
-#~ msgid "Download the information of the selected players (XLSX format)."
-#~ msgstr "Laden Sie die Informationen der ausgewählten Player herunter (XLSX-Format)."
-

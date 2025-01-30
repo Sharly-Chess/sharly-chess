@@ -5778,18 +5778,3 @@ msgstr ""
 msgid "vs"
 msgstr "vs."
 
-#~ msgid "Download the players."
-#~ msgstr "Descarga los jugadores."
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Descargue las vCards de los reproductores seleccionados (formato VCF)."
-
-#~ msgid "Download the information of the selected players (CSV format)."
-#~ msgstr "Descargue la información de los reproductores seleccionados (formato CSV)."
-
-#~ msgid "Download the information of the selected players (ODS format)."
-#~ msgstr "Descargue la información de los reproductores seleccionados (formato ODS)."
-
-#~ msgid "Download the information of the selected players (XLSX format)."
-#~ msgstr "Descargue la información de los reproductores seleccionados (formato XLSX)."
-
