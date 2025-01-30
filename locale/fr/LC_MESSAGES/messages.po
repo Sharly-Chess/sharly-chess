@@ -4818,3 +4818,18 @@ msgstr "contre"
 #~ msgid "Mandatory for all the hours."
 #~ msgstr "Obligatoire pour tous les horaires."
 
+#~ msgid "Download the players."
+#~ msgstr "Télécharger les joueur·euses."
+
+#~ msgid "Download the vCards of the selected players (VCF format)."
+#~ msgstr "Télécharger les vCards des joueur·euses (format VCF)."
+
+#~ msgid "Download the information of the selected players (CSV format)."
+#~ msgstr "Télécharger les informations des joueur·euses (format CSV)."
+
+#~ msgid "Download the information of the selected players (ODS format)."
+#~ msgstr "Télécharger les informations des joueur·euses (format ODS)."
+
+#~ msgid "Download the information of the selected players (XLSX format)."
+#~ msgstr "Télécharger les informations des joueur·euses (format XLSX)."
+

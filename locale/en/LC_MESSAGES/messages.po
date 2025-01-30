@@ -4826,3 +4826,24 @@ msgstr ""
 #~ msgid "Mandatory for all the hours."
 #~ msgstr ""
 
+#~ msgid "Download the information of the selected players (XLSX format)"
+#~ msgstr ""
+
+#~ msgid "Download the vCards of the selected players (VCF format)"
+#~ msgstr ""
+
+#~ msgid "Download the players."
+#~ msgstr ""
+
+#~ msgid "Download the vCards of the selected players (VCF format)."
+#~ msgstr ""
+
+#~ msgid "Download the information of the selected players (CSV format)."
+#~ msgstr ""
+
+#~ msgid "Download the information of the selected players (ODS format)."
+#~ msgstr ""
+
+#~ msgid "Download the information of the selected players (XLSX format)."
+#~ msgstr ""
+
