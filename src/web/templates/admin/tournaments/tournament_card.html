@@ -9,116 +9,118 @@
 {% endblock %}
 
 {% block card_text %}
-    <div class="">
-        {% if not tournament.file_exists %}
-            {% set text=_('The Papi file for the tournament does not exist (%(papi_file)s).', papi_file=tournament.file) %}
-            {% set type='error' %}
-        {% elif not tournament.rounds %}
-            {% set text=_('The Papi file for the tournament exists but could not be read (%(papi_file)s).', papi_file=tournament.file) %}
-            {% set type='error' %}
-        {% else %}
-            {% set text=_('The Papi file for the tournament was successfully read (%(papi_file)s).', papi_file=tournament.file) %}
-            {% set type='info' %}
-        {% endif %}
-        <span
-                class="me-2 text-nowrap"
-                {{ tooltip_attributes(type, text, 'top') }}
-        >
-            {% if not tournament.file_exists or not tournament.rounds %}
-                <i class="bi-file-earmark-excel-fill text-danger"></i>
+    <div class="d-flex flex-column gap-1">
+        <div class="">
+            {% if not tournament.file_exists %}
+                {% set text=_('The Papi file for the tournament does not exist (%(papi_file)s).', papi_file=tournament.file) %}
+                {% set type='error' %}
+            {% elif not tournament.rounds %}
+                {% set text=_('The Papi file for the tournament exists but could not be read (%(papi_file)s).', papi_file=tournament.file) %}
+                {% set type='error' %}
             {% else %}
-                <i class="bi-file-check-fill text-success"></i>
+                {% set text=_('The Papi file for the tournament was successfully read (%(papi_file)s).', papi_file=tournament.file) %}
+                {% set type='info' %}
             {% endif %}
-            {{ tournament.filename }}
-        </span>
-    </div>
-    <div class="text-start">
-        {% if tournament.ffe_id %}
-            FFE :
-            {{ tournament.ffe_id }}
-        {% else %}
-            <i class="bi-x">-</i>
-        {% endif %}
-    </div>
-    <div class="text-start">
-        <span
-                class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
-                {% if tournament.rounds %}
-                    {{ tooltip_attributes('info', _('Players found in the Papi_file : %(num)d', num=tournament.players_by_id|length), 'top') }}
+            <span
+                    class="me-2 text-nowrap"
+                    {{ tooltip_attributes(type, text, 'top') }}
+            >
+                {% if not tournament.file_exists or not tournament.rounds %}
+                    <i class="bi-file-earmark-excel-fill text-danger"></i>
+                {% else %}
+                    <i class="bi-file-check-fill text-success"></i>
                 {% endif %}
-        >
-            <i class="bi-people-fill"></i>
-            {% if tournament.rounds %}
-                {{ tournament.players_by_id|length }}
+                {{ tournament.filename }}
+            </span>
+        </div>
+        <div class="text-start">
+            {% if tournament.ffe_id %}
+                FFE :
+                {{ tournament.ffe_id }}
             {% else %}
-                <i class="bi-question text-secondary"></i>
+                <i class="bi-x">-</i>
             {% endif %}
-        </span>
-        <span
-                class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
-        >
-            {{ tournament_status_icon(tournament) }}
-            {% if tournament.rounds %}
-                {{ tournament.current_round }}/{{ tournament.rounds }}
-            {% else %}
-                <i class="bi-question"></i>
-            {% endif %}
-        </span>
-        <span
-                class="me-2 text-nowrap"
-                {{ tooltip_attributes(
-                    'info',
-                    _('ChessEvent connection [%(chessevent_uniq_id)s] is used.', chessevent_uniq_id=tournament.chessevent.uniq_id)
-                    if tournament.chessevent else
-                    _('No ChessEvent connection is used.'),
-                    'top') }}
-        >
-            <i class="
-                    {% if tournament.chessevent %}
-                        bi-cloud-download-fill
-                    {% else %}
-                        bi-cloud-download text-secondary
-                    {% endif %}"
-            ></i>
-        </span>
-        {% if not tournament.record_illegal_moves %}
-            {% set text=_('Illegal moves are not recorded.') %}
-        {% else %}
-            {% set text=ngettext('At most %(num)d illegal move is recorded.', 'At most %(num)d illegal moves are recorded.', tournament.record_illegal_moves) %}
-        {% endif %}
-        <span
-                class="me-2 text-nowrap"
-                {{ tooltip_attributes(type, text, 'top') }}
-        >
+        </div>
+        <div class="text-start">
+            <span
+                    class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
+                    {% if tournament.rounds %}
+                        {{ tooltip_attributes('info', _('Players found in the Papi_file : %(num)d', num=tournament.players_by_id|length), 'top') }}
+                    {% endif %}
+            >
+                <i class="bi-people-fill"></i>
+                {% if tournament.rounds %}
+                    {{ tournament.players_by_id|length }}
+                {% else %}
+                    <i class="bi-question text-secondary"></i>
+                {% endif %}
+            </span>
+            <span
+                    class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
+            >
+                {{ tournament_status_icon(tournament) }}
+                {% if tournament.rounds %}
+                    {{ tournament.current_round }}/{{ tournament.rounds }}
+                {% else %}
+                    <i class="bi-question"></i>
+                {% endif %}
+            </span>
+            <span
+                    class="me-2 text-nowrap"
+                    {{ tooltip_attributes(
+                        'info',
+                        _('ChessEvent connection [%(chessevent_uniq_id)s] is used.', chessevent_uniq_id=tournament.chessevent.uniq_id)
+                        if tournament.chessevent else
+                        _('No ChessEvent connection is used.'),
+                        'top') }}
+            >
+                <i class="
+                        {% if tournament.chessevent %}
+                            bi-cloud-download-fill
+                        {% else %}
+                            bi-cloud-download text-secondary
+                        {% endif %}"
+                ></i>
+            </span>
             {% if not tournament.record_illegal_moves %}
-                <i class="bi-flag text-secondary"></i>
+                {% set text=_('Illegal moves are not recorded.') %}
             {% else %}
-                {% for i in range(tournament.record_illegal_moves) %}
-                    <i class="bi-flag-fill"></i>
-                {% endfor %}
+                {% set text=ngettext('At most %(num)d illegal move is recorded.', 'At most %(num)d illegal moves are recorded.', tournament.record_illegal_moves) %}
             {% endif %}
-        </span>
-    </div>
-    <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
-        {% if tournament.rules %}
-            {{ _('Rules file set') }}
-        {% else %}
-            {{ _('No rules file set') }}
-        {% endif %}
-    </div>
-    <div class="text-start">
-        {% if tournament.pairing %}
-            {{ tournament.pairing }}
-        {% endif %}
-    </div>
-    <div class="text-start">
-        {% if tournament.rating %}
-            {{ tournament.rating }}
-        {% endif %}
-    </div>
-    <div class="text-start">
-        <i class="bi-pencil-fill"></i>
-        {{ tournament.last_update_str }}
+            <span
+                    class="me-2 text-nowrap"
+                    {{ tooltip_attributes(type, text, 'top') }}
+            >
+                {% if not tournament.record_illegal_moves %}
+                    <i class="bi-flag text-secondary"></i>
+                {% else %}
+                    {% for i in range(tournament.record_illegal_moves) %}
+                        <i class="bi-flag-fill"></i>
+                    {% endfor %}
+                {% endif %}
+            </span>
+        </div>
+        <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
+            {% if tournament.rules %}
+                {{ _('Rules file set') }}
+            {% else %}
+                {{ _('No rules file set') }}
+            {% endif %}
+        </div>
+        <div class="text-start">
+            {% if tournament.pairing %}
+                {{ tournament.pairing }}
+            {% endif %}
+        </div>
+        <div class="text-start">
+            {% if tournament.rating %}
+                {{ tournament.rating }}
+            {% endif %}
+        </div>
+        <div class="text-start">
+            <i class="bi-pencil-fill"></i>
+            {{ tournament.last_update_str }}
+        </div>
     </div>
 {% endblock %}
 
@@ -207,7 +209,7 @@
     </span>
     <span {{ tooltip_attributes('info', _('Delete the tournament.'), 'top') }}>
         <button
-            class="btn btn-sm btn-danger p-1 text-nowrap"
+            class="btn btn-sm btn-outline-danger p-1 text-nowrap"
             hx-get="{{ url_for('admin-tournament-modal', action='delete', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             preload
             hx-target="body"

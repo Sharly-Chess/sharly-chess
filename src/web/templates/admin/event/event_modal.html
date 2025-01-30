@@ -233,9 +233,9 @@
                     <h4 class="mt-3">
                         {{ _('Timers') }}
                     </h4>
-                    {% for num in [1, 2, 3] %}
-                        <div class="row">
-                            <div class="col-12 col-md-6 mb-3">
+                    <div class="row">
+                        {% for num in [1, 2, 3] %}
+                            <div class="col-12 col-md-6 col-xxl-2 mb-3">
                                 {{ color_input(
                                     name='color_'~num,
                                     label=_('Colour #%(num)d:', num=num),
@@ -246,7 +246,7 @@
                                 ) }}
                             </div>
 
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6 col-xxl-2 mb-3">
                                 {% with id='delay-'~num, name='delay_'~num %}
                                     {{ number_input(
                                         name='delay_'~num,
@@ -257,8 +257,9 @@
                                     ) }}
                                 {% endwith %}
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
+                    
 
                     <h4 class="mt-3">
                         {{ _('Alert message') }}

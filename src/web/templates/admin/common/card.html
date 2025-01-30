@@ -26,18 +26,16 @@
                     CARD_TEXT
                 {% endblock %}
             </div>
-            <div class="card-buttons mb-1 mt-auto align-self-start w-100">
-                <div class="row">
-                    <div class="col-9 text-start">
-                        {% block card_buttons_left %}
-                            CARD_BUTTON_LEFT
-                        {% endblock %}
-                    </div>
-                    <div class="col-3 text-end text-nowrap">
-                        {% block card_buttons_right %}
-                            CARD_BUTTON_RIGHT
-                        {% endblock %}
-                    </div>
+            <div class="d-flex card-buttons mt-auto pt-3 align-self-start w-100 gap-3">
+                <div class="flex-grow-1 d-flex gap-2">
+                    {% block card_buttons_left %}
+                        CARD_BUTTON_LEFT
+                    {% endblock %}
+                </div>
+                <div class="d-flex gap-2">
+                    {% block card_buttons_right %}
+                        CARD_BUTTON_RIGHT
+                    {% endblock %}
                 </div>
             </div>
         </div>
