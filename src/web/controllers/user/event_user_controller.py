@@ -54,8 +54,8 @@ class EventUserWebContext(UserWebContext):
         pass
 
     @property
-    def background_image(self) -> str:
-        return ''
+    def background_image(self) -> str | None:
+        return None
 
     @property
     def background_color(self) -> str:

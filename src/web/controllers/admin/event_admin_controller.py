@@ -52,13 +52,6 @@ class EventAdminWebContext(AdminWebContext):
         pass
 
     @property
-    def background_image(self) -> str:
-        if self.admin_event:
-            return self.admin_event.background_image
-        else:
-            return super().background_image
-
-    @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_event_tab': self.admin_event_tab,

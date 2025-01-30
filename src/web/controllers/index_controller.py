@@ -45,7 +45,7 @@ class WebContext:
         set_locale(SessionHandler.get_session_locale(request))
 
     @property
-    def background_image(self) -> str:
+    def background_image(self) -> str | None:
         """
         Override this method to make the background image different from the default.
         :return:
@@ -61,7 +61,7 @@ class WebContext:
         return PapiWebConfig.default_background_color
 
     @property
-    def background_info(self) -> dict[str, str]:
+    def background_info(self) -> dict[str, str | None]:
         """
         The information return by this method is passed to the template engine to make the client call the /background
         URL if the image and colours are not already loaded on the page.

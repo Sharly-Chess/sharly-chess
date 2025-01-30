@@ -83,7 +83,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         return False
 
     @property
-    def background_image(self) -> str:
+    def background_image(self) -> str | None:
         return self.screen.background_image
 
     @property
