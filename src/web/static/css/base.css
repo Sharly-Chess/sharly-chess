@@ -190,12 +190,26 @@ body {
     --bs-btn-hover-bg: #36393d;
 }
 
+[data-bs-theme=dark] .dropdown-menu {
+    --bs-dropdown-bg: #515b5c;
+    --bs-dropdown-link-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-color: var(--pw-dark-text);
+    --bs-dropdown-link-hover-bg: var(--bs-primary);
+    --bs-dropdown-link-active-color: var(--pw-dark-text);
+    --bs-dropdown-link-active-bg: var(--bs-primary);
+    --bs-dropdown-link-disabled-color: var(--bs-tertiary-color);
+}
+
 [data-bs-theme=dark] .papi-web-tooltip-info {
     --bs-tooltip-bg: #9d9e9e;
 }
 
 [data-bs-theme=dark] .papi-web-tooltip-info {
     --bs-tooltip-color: black;
+}
+
+[data-bs-theme=dark] .modal {
+    --bs-modal-bg: #313334;
 }
 
 [data-bs-theme=dark] .modal-dialog h4 {
