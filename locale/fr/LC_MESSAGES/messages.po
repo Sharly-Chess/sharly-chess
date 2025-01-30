@@ -231,11 +231,11 @@ msgid "- Version {version}: no events"
 msgstr "- Version {version}: aucun évènement"
 
 #: src/common/engine.py
-msgid "No event found in previously installed versions."
+msgid "No events found in previously installed versions."
 msgstr "Aucun évènement trouvé dans les version précédemment installées."
 
 #: src/common/engine.py
-msgid "No previously installed version found."
+msgid "No previously installed versions found."
 msgstr "Pas de version précédente trouvée."
 
 #: src/common/engine.py
@@ -375,13 +375,8 @@ msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "La nouvelle version [{version}] a été installée dans [{dir}]."
 
 #: src/common/papi_web_config.py
-msgid "Option not set, by default [{default}]."
-msgstr "Option non définie, par défaut [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-msgid "Invalid value [{value}]."
-msgstr "Valeur [{value}] non valide."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "Option obsolète, veuillez positionner la variable d'environnement [{var}=1] à la place."
 
 #: src/common/papi_web_config.py
 msgid "Locale [{locale}] not found."
@@ -404,12 +399,21 @@ msgid "Invalid log level [{level}], by default [{default}]."
 msgstr "Niveau de log [{level}] non valide, par défaut [{default}]."
 
 #: src/common/papi_web_config.py
+msgid "Option not set, by default [{default}]."
+msgstr "Option non définie, par défaut [{default}]."
+
+#: src/common/papi_web_config.py
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Hôte [{host}] non valide, par défaut [{default}]."
 
 #: src/common/papi_web_config.py
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Port [{port}] non valide, par défaut [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Invalid value [{value}]."
+msgstr "Valeur [{value}] non valide."
 
 #: src/common/papi_web_config.py
 msgid "Invalid delay [{delay}], by default [{default}]"

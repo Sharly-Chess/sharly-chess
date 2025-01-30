@@ -17,7 +17,7 @@ from litestar.params import Body
 from litestar.response import Redirect, Template
 from phonenumbers.phonenumberutil import NumberParseException
 
-from common import RGB, check_rgb_str
+from common import RGB, check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
 from common.i18n import set_locale, locale_localized_name, locale_flag_url, trusted_locales, _, get_locale
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
@@ -291,6 +291,8 @@ class WebContext:
                 'experimental': locale not in trusted_locales,
             }
         return {
+            'devel_env': DEVEL_ENV,
+            'experimental_features': EXPERIMENTAL_FEATURES,
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'papi_web_config': papi_web_config,

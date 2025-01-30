@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 import time
@@ -14,10 +15,9 @@ from common.logger import get_logger
 """True when the program is running in a development environment, False if running as an EXE file."""
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
-
-def devel_env() -> bool:
-    """Returns True when the program is running in a development environment, False if running as an EXE file."""
-    return not getattr(sys, 'frozen', False)
+"""True when experimental features are enabled (relying on an environment variable), False otherwise."""
+EXPERIMENTAL_FEATURES_ENV_VAR: str = 'PAPI_WEB_EXPERIMENTAL'
+EXPERIMENTAL_FEATURES: bool = os.environ.get(EXPERIMENTAL_FEATURES_ENV_VAR, '').upper() in ['ON', 'TRUE', '1', ]
 
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])

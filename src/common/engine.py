@@ -93,9 +93,9 @@ class Engine:
                     else:
                         print_interactive_info(_('- Version {version}: no events').format(version=version))
                 if not previous_databases:
-                    logger.info(_('No event found in previously installed versions.'))
+                    print_interactive_info(_('No events found in previously installed versions.'))
             else:
-                logger.info(_('No previously installed version found.'))
+                print_interactive_info(_('No previously installed versions found.'))
             recovered_version: Version | None = None
             if previous_databases:
                 # keep the versions with databases only

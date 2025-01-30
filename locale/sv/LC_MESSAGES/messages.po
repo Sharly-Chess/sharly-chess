@@ -288,13 +288,13 @@ msgstr "- Version {version}: inga händelser"
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No event found in previously installed versions."
-msgstr "Ingen händelse hittades i tidigare installerade versioner."
+msgid "No events found in previously installed versions."
+msgstr "Inga händelser hittades i tidigare installerade versioner."
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No previously installed version found."
-msgstr "Ingen tidigare installerad version hittades."
+msgid "No previously installed versions found."
+msgstr "Inga tidigare installerade versioner hittades."
 
 #: src/common/engine.py
 #, ai_translation
@@ -468,14 +468,8 @@ msgstr "Ny version [{version}] har installerats i [{dir}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Alternativet är inte fastställt, som standard [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Ogiltigt värde [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "Alternativet är deprecated, ange miljövariabel [{var}=1] istället."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -504,6 +498,11 @@ msgstr "Ogiltig loggnivå [{level}], som standard [{default}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Alternativet är inte fastställt, som standard [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Ogiltig värdkonfiguration [{host}], som standard [{default}]."
 
@@ -511,6 +510,12 @@ msgstr "Ogiltig värdkonfiguration [{host}], som standard [{default}]."
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ogiltig port [{port}], som standard [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Ogiltigt värde [{value}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -1065,15 +1070,11 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
-# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
-# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
-# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
-# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1110,12 +1111,6 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
-# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
@@ -1126,9 +1121,6 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
-# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
-# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
-# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -3285,8 +3277,6 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
-# Error: translation [Ingen känd frekvens:] is much too long compared to
-# initial [no]
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -3739,8 +3729,6 @@ msgstr "Starta webbläsaren vid serverstart"
 msgid "Yes"
 msgstr "Ja, det är jag."
 
-# Error: translation [Ej tillämpligt] is much too long compared to initial
-# [No]
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
 #: src/web/templates/admin/index/config_tab.html
@@ -4575,8 +4563,6 @@ msgstr "T.ex. min-rotator"
 msgid "The Unique ID, used to reference the rotator."
 msgstr "Det unika ID, som används för att referera rotatorn."
 
-# Error: translation [För en driftspänning av mer än 1000 V men högst 1000 V]
-# is much too long compared to initial [Parameters]
 # Error: translation [För en driftspänning av mer än 1000 V men högst 1000 V]
 # is much too long compared to initial [Parameters]
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -5751,8 +5737,6 @@ msgstr "Bild:"
 msgid "Tournament"
 msgstr "Turnering"
 
-# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
-# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html

@@ -12,6 +12,13 @@ Simply checkout from https://github.com/papi-web-org/papi-web and play ;-)
 
 ![](images/dev-server.jpg)
 
+Set environment variable ``PAPI_WEB_EXPERIMENTAL`` to ``1`` to enable expérimental features:
+
+![](images/dev-server-experimental.jpg)
+
+> [!WARNING]
+> USE EXPERIMENTAL FEATURES AT YOUR OWN RISKS!
+
 ### Lancement de l'interface avec le serveur fédéral
 
 ![](images/dev-ffe.jpg)

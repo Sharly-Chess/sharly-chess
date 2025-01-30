@@ -136,7 +136,7 @@
         </button>
     </span>
 
-    {% if not hide_pairing and tournament.pairings_generation_allowed %}
+    {% if experimental_features and tournament.pairings_generation_allowed %}
         <span {{ tooltip_attributes('info', _('Generate pairings for the next round.'), 'top') }}>
             <button
                     class="btn btn-sm btn-primary p-1 text-nowrap"
@@ -151,7 +151,7 @@
         </span>
     {% endif %}
 
-    {% if not hide_trf_export %}
+    {% if experimental_features %}
         <div class="dropdown d-inline">
             <button class="btn btn-sm btn-primary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi-download"></i> {{ _('Export') }}
