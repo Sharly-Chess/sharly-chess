@@ -34,18 +34,18 @@ msgid "Tournaments: {tournament_names}"
 msgstr "Toernooien: {tournament_names}"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "C *** THE LETTER TO ANSWER CREATE"
 msgstr "C"
 
 #: src/chessevent/action_selector.py src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "U *** THE LETTER TO ANSWER UPLOAD"
 msgstr "U"
 
 #: src/chessevent/action_selector.py src/chessevent/event_selector.py
 #: src/common/engine.py src/ffe/action_selector.py src/ffe/event_selector.py
-#, ai_translation
+#, fuzzy
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
@@ -76,12 +76,12 @@ msgid "Action: {action}"
 msgstr "Actie: {action}"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
@@ -257,12 +257,12 @@ msgstr "Papi-web-versie wordt gecontroleerd..."
 
 #: src/common/engine.py src/database/sqlite/ffe_database.py
 #: src/database/sqlite/fide_database.py
-#, ai_translation
+#, fuzzy
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
 
 #: src/common/engine.py
-#, ai_translation
+#, fuzzy
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
@@ -823,24 +823,24 @@ msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr "spelers van #{first} tot #{last}, op {parts} schermen"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Unpaired *** FEMALE"
-msgstr "Ongepaard"
+msgstr "Unpaired"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Unpaired *** MALE"
-msgstr "Ongepaard"
+msgstr "Unpaired"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Exempt *** FEMALE"
-msgstr "Vrijgesteld"
+msgstr "Exempt"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Exempt *** MALE"
-msgstr "Vrijgesteld"
+msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
@@ -1015,34 +1015,34 @@ msgid "Blitz rating"
 msgstr "Blitz rating"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Female *** NAME FOR GENDER FEMALE"
-msgstr "Vrouwen"
+msgstr "Female"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Male *** NAME FOR GENDER MALE"
-msgstr "Mannelijk"
+msgstr "Male"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "M *** SHORT NAME FOR GENDER MALE"
-msgstr "G"
+msgstr "M"
 
 #: src/data/util.py
 #, ai_translation
@@ -1170,32 +1170,32 @@ msgid "Over 65"
 msgstr "Meer dan 65"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
-msgstr "Geschat"
+msgstr "Estimated"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
-msgstr "Nationaal"
+msgstr "National"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "FIDE"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
@@ -1205,14 +1205,14 @@ msgid "No title"
 msgstr "Geen titel"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Woman Candidate Master"
-msgstr "Vrouw Fide Meester"
+msgstr "Vrouw Kandidaat Meester"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Candidate Master"
-msgstr "Fide Master"
+msgstr "Kandidaat-meester"
 
 #: src/data/util.py
 #, ai_translation
@@ -1245,44 +1245,44 @@ msgid "Grand Master"
 msgstr "Grootmeester"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, fuzzy
 msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
-msgstr "WFM"
+msgstr "WCM"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, fuzzy
 msgid "CM *** SHORT NAME FOR Candidate Master"
-msgstr "FM"
+msgstr "CM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
 msgstr "WFM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "WGM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "GM *** SHORT NAME FOR Grand Master"
-msgstr "GG"
+msgstr "GM"
 
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
@@ -1321,34 +1321,29 @@ msgid "Parings by player"
 msgstr "Parings by player"
 
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr "De FIDE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?"
+msgstr "De FFE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?"
 
-# Error: tokens differ between [The FIDE database [{file}] is obsolete
-# ([{days}] days], do you want to update it (Y/n)? ] and [De FIDE-database
-# [{file}] is meer dan één dag oud, wilt u deze updaten (Y/n)?]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr "De FIDE-database [{file}] is verouderd ([{days}] dagen], wilt u deze updaten (Y/n)?"
+msgstr "De FFE-database [{file}] is verouderd ([{days}] dagen], wilt u het bijwerken (Y/n)?"
 
-# Error: tokens differ between [Downloading FIDE database...] and [Downloaden
-# is mislukt met code [{code}].]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Downloading the FFE database..."
-msgstr "FIDE-database wordt gedownload..."
+msgstr "Downloaden van de FFE-database..."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Could not download [{url}], error code [{code}]."
-msgstr "URL [{url}] reageerde op code [{code}]."
+msgstr "Kon niet downloaden [{url}], foutcode [{code}]."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Could not download [{url}]: {ex}."
-msgstr "Lezen van [{url}] is mislukt: [{ex}]."
+msgstr "Kon niet downloaden [{url}]: {ex}."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 #, ai_translation
@@ -1365,23 +1360,18 @@ msgstr "Kon de data niet losmaken."
 msgid "Storing data..."
 msgstr "Gegevens worden opgeslagen..."
 
-# Error: tokens differ between [Error reading the following row (player
-# ignored): [{row}].] and [Fout op regel [{line_no}] (speler genegeerd):
-# [{line}]]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Fout bij lezen van de volgende rij (speler genegeerd): [{row}]."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error while creating the database: {ex}."
-msgstr "Hernoemen van de database is mislukt: {ex}."
+msgstr "Fout bij het aanmaken van de database: {ex}."
 
-# Error: tokens differ between [{number} players written.] and [screens van
-# {number} spelers van #{first} tot einde]
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "{number} players written."
 msgstr "{number} spelers geschreven."
 
@@ -1390,20 +1380,15 @@ msgstr "{number} spelers geschreven."
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "De FIDE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?"
 
-# Error: tokens differ between [The FIDE database [{file}] is obsolete
-# ([{days}] days], do you want to update it (Y/n)? ] and [De FIDE-database
-# [{file}] is meer dan één dag oud, wilt u deze updaten (Y/n)?]
 #: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
 msgstr "De FIDE-database [{file}] is verouderd ([{days}] dagen], wilt u deze updaten (Y/n)?"
 
-# Error: tokens differ between [Downloading FIDE database...] and [Downloaden
-# is mislukt met code [{code}].]
 #: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Downloading the FIDE database..."
-msgstr "FIDE-database wordt gedownload..."
+msgstr "De FIDE-database downloaden..."
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1446,22 +1431,22 @@ msgid "Tournaments: {tournament_ffe_ids}"
 msgstr "Toernooien: {tournament_ffe_ids}"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "T *** THE LETTER TO ANSWER TEST"
 msgstr "T"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "F *** THE LETTER TO ANSWER FEES"
 msgstr "F"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
 
@@ -1667,9 +1652,9 @@ msgid "Error while updating the FIDE database."
 msgstr "Fout bij het bijwerken van de FIDE-database."
 
 #: src/web/server_engine.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error while updating the FFE database."
-msgstr "Fout bij het bijwerken van de FIDE-database."
+msgstr "Fout bij het bijwerken van de FFE-database."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -2597,9 +2582,9 @@ msgid "ID (unique):"
 msgstr "ID (uniek):"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: chessevent"
-msgstr "Chessevent ID:"
+msgstr "B.v.: chessevent"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
 #, ai_translation
@@ -2743,9 +2728,9 @@ msgid "The tournament is not started yet."
 msgstr "Het toernooi is nog niet begonnen."
 
 #: src/web/templates/admin/common/macros.j2
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Round #%(round)d is running."
-msgstr "Ronde %(round)d loopt."
+msgstr "Ronde #%(round)d loopt."
 
 #: src/web/templates/admin/common/macros.j2
 #, ai_translation, python-format
@@ -2861,9 +2846,9 @@ msgstr "Vertraging #%(num)d:"
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "By default: %(minutes)d minutes"
-msgstr "Bijvoorbeeld: %(minutes)d (minuten)"
+msgstr "Standaard: %(minutes)d minuten"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -2975,9 +2960,9 @@ msgid "Default directory of the Papi files:"
 msgstr "Standaardmap van de Papi-bestanden:"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: c:\\chess\tournaments"
-msgstr "Bijvoorbeeld: c:\\chess\\toernooien\\papi"
+msgstr "B.v.: c:\\chess ournaments"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation, python-format
@@ -3019,9 +3004,9 @@ msgid "Rules file location:"
 msgstr "Ligging van de regels van het bestand:"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr "Bijvoorbeeld: c:\\chess\\toernooien\\main\\rules.pdf"
+msgstr "Bijvoorbeeld: c:\\chess\\toernooien\\my_toernooi\\rules.pdf"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3064,7 +3049,7 @@ msgstr "Achtergrondkleur:"
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "The background colour is used when the image does not fill the whole screen."
-msgstr "De achtergrondkleur wordt gebruikt wanneer de afbeelding het hele scherm vult."
+msgstr "De achtergrondkleur wordt gebruikt wanneer de afbeelding het hele scherm niet vult."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3082,10 +3067,8 @@ msgstr "Timers"
 msgid "Alert message"
 msgstr "Waarschuwingsbericht"
 
-# Error: tokens differ between [The background colour of the alert messages.]
-# and [Achtergrondkleur: %(color)s]
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The background colour of the alert messages."
 msgstr "De achtergrondkleur van de waarschuwingsberichten."
 
@@ -3495,14 +3478,14 @@ msgid "On a given number of screens:"
 msgstr "Op een bepaald aantal schermen:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 4 (split the boards on 4 screens)"
-msgstr "Bijvoorbeeld: 4 (gesplitst op 4 schermen)"
+msgstr "Bijv.: 4 (gedeeld op 4 schermen)"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 4 (split the players on 4 screens)"
-msgstr "Bijvoorbeeld: 4 (gesplitst op 4 schermen)"
+msgstr "Bijvoorbeeld: 4 (gedeeld op 4 schermen)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3520,14 +3503,14 @@ msgid "On fixed size screens:"
 msgstr "Op schermen met vaste grootte:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 20 (place 20 boards on each screen)"
-msgstr "Bijvoorbeeld: 4 (gesplitst op 4 schermen)"
+msgstr "Bijvoorbeeld: 20 (plaats 20 planken op elk scherm)"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 20 (place 20 players on each screen)"
-msgstr "Bijvoorbeeld: 4 (gesplitst op 4 schermen)"
+msgstr "Bijvoorbeeld: 20 (plaats 20 spelers op elk scherm)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3939,94 +3922,94 @@ msgid "Columns"
 msgstr "Kolommen"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
-msgstr "Post"
+msgstr "Mail"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
-msgstr "Telefoon"
+msgstr "Phone"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
-msgstr "Naam"
+msgstr "Name"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
-msgstr "Waardering"
+msgstr "Rating"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Federatie"
+msgstr "Federation"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
 msgstr "League"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
 msgstr "Club"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
-msgstr "Geboortejaar"
+msgstr "Year of birth"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
-msgstr "Categorie"
+msgstr "Category"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
-msgstr "Geslacht"
+msgstr "Gender"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
-msgstr "Vaste plank"
+msgstr "Fixed board"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
 msgstr "FIDE"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
 msgstr "Owed/paid"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
-msgstr "Toernooi"
+msgstr "Tournament"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
-msgstr "Opmerking"
+msgstr "Comment"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "History *** HISTORY FOR PLAYERS COLUMNS"
-msgstr "Geschiedenis"
+msgstr "History"
 
 #: src/web/templates/admin/players/filter_federations.html
 #, ai_translation
@@ -4049,9 +4032,9 @@ msgid "Filter the leagues."
 msgstr "Filter de competities."
 
 #: src/web/templates/admin/players/filter_tournaments.html
-#, ai_translation
+#, fuzzy
 msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
-msgstr "Toernooi"
+msgstr "Tournament"
 
 #: src/web/templates/admin/players/filter_tournaments.html
 #, ai_translation
@@ -4335,29 +4318,29 @@ msgid "Clear all the filters."
 msgstr "Ruim alle filters op."
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
-msgstr "Naam"
+msgstr "Name"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-msgstr "Oorsprong"
+msgstr "Origin"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-msgstr "Kat"
+msgstr "Cat"
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -4370,24 +4353,24 @@ msgid "The phone numbers."
 msgstr "De telefoonnummers."
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "FIDE"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
-msgstr "Auwedunit synonyms for matching user input"
+msgstr "Owed"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
-msgstr "Betaald"
+msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
@@ -4552,9 +4535,9 @@ msgid "Only arbiters can view private rotators."
 msgstr "Alleen arbiters kunnen privé rotators bekijken."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: my-rotator"
-msgstr "Bijv.: my_password"
+msgstr "Bijv.: mijnrotator"
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
@@ -5172,21 +5155,17 @@ msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s wordt vervangen door de sinds het uur verstreken tijd."
 
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Timer creation"
-msgstr "Aanmaken van speler"
+msgstr "Timer aanmaken"
 
-# Error: tokens differ between [Edition of timer [%(timer_uniq_id)s]] and
-# [Edition of rotator [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Edition of timer [%(timer_uniq_id)s]"
 msgstr "Editie van de timer [%(timer_uniq_id)s]"
 
-# Error: tokens differ between [Deletion of timer [%(timer_uniq_id)s]] and
-# [Schrapping van rotator [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Deletion of timer [%(timer_uniq_id)s]"
 msgstr "Schrapping van timer [%(timer_uniq_id)s]"
 
@@ -5201,9 +5180,9 @@ msgid "E.g.: timer"
 msgstr "Bijv.: timer"
 
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The Unique ID, used to reference the timer."
-msgstr "Het unieke ID, gebruikt om naar de rotator te verwijzen."
+msgstr "Het unieke ID, gebruikt om naar de timer te verwijzen."
 
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation
@@ -5288,14 +5267,14 @@ msgid "Generate pairings for the next round."
 msgstr "Genereer parings voor de volgende ronde."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Pair"
-msgstr "met een gewicht van niet meer dan 150 g/m2"
+msgstr "Paar"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Export"
-msgstr "Poort"
+msgstr "Exporteren"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -5817,28 +5796,4 @@ msgstr "Bord #%(board_number)d met %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs"
-
-#~ msgid "Pairings"
-#~ msgstr "met een gewicht van niet meer dan 150 g/m2"
-
-#~ msgid "Text:"
-#~ msgstr "Tekst:"
-
-#~ msgid "Public screen family"
-#~ msgstr "Publiek schermfamilie"
-
-#~ msgid "Last name:"
-#~ msgstr "Achternaam:"
-
-#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-#~ msgstr "Bijvoorbeeld: @boards, fixed-boards, toernooi-a-*"
-
-#~ msgid "Format: YYYY-MM-DD"
-#~ msgstr "Formaat: JJJJ-MM-DD"
-
-#~ msgid "Format: HH-MM"
-#~ msgstr "Formaat: HH-MM"
-
-#~ msgid "Mandatory for all the hours."
-#~ msgstr "Verplicht voor alle uren."
 
