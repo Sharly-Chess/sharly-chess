@@ -1,9 +1,9 @@
 <div class="d-flex mb-2 align-items-center flex-wrap gap-1">
-    <div class="flex-grow-1 fs-4 fw-bold">
+    {% call() admin_section_title() %}
         {{ event_visibility_icon(admin_event, '') }}
         {{ admin_event.name }}
-    </div>
-    <div class="d-flex gap-1 ms-auto">
+    {% endcall %}
+    <div class="d-flex flex-grow-1 gap-1 ms-auto justify-content-end">
         <button
             class="btn btn-outline-primary text-nowrap ms-1"
             hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"

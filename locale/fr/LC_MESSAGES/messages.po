@@ -2747,7 +2747,7 @@ msgstr "Attention : la suppression d'une famille d'écrans est définitive !"
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "Properties (results entry)"
-msgstr "propriétés (saisie des résultats)"
+msgstr "Propriétés (saisie des résultats)"
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_modal.html

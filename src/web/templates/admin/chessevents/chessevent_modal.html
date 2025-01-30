@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-centered admin-chessevent-edit-modal d-block w-90 mw-100">
+<div class="modal-dialog modal-dialog-centered admin-chessevent-edit-modal d-block">
     <form
             {% if action in ['create', 'clone', ] %}
                 hx-post="{{ url_for('admin-chessevent-create', event_uniq_id=admin_event.uniq_id) }}"

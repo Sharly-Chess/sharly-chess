@@ -31,12 +31,6 @@ body {
 .w-49 {
     width: 49%; !important;
 }
-.w-80 {
-    width: 80%; !important;
-}
-.w-90 {
-    width: 90%; !important;
-}
 .w-1 {
     width: 1%; !important;
 }
@@ -89,8 +83,13 @@ body {
     height: 1em;
 }
 
+.modal {
+    --bs-modal-width: min(90vw, 1000px);
+}
+
 [data-bs-theme=dark] {
     --bs-primary: #d7c9aa;
+    --bs-primary-rgb: 215, 201, 170;
     --pw-dark-text: #212529;
 
     /* Copy/pasted from the BS docs for easier editing */

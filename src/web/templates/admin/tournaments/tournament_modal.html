@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-centered admin-tournament-edit-modal d-block w-90 mw-100">
+<div class="modal-dialog modal-dialog-centered admin-tournament-edit-modal d-block">
     <form
         {% if action in ['create', 'clone', ] %}
             hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
@@ -59,7 +59,7 @@
                         {{ _('Properties') }}
                     </h4>
                     <div class="row">
-                        <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
@@ -68,7 +68,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ text_input(
                                 name='name',
                                 label=_('Name:'),
@@ -77,7 +77,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ text_input(
                                 name='path',
                                 label=_('Directory of the Papi file:'),
@@ -86,7 +86,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ text_input(
                                 name='filename',
                                 label=_('Name of the Papi file (with no extension):'),
@@ -101,7 +101,7 @@
                         {{ _('Connections (FFE and ChessEvent)') }}
                     </h4>
                     <div class="row">
-                        <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ number_input(
                                 name='ffe_id',
                                 label=_('FFE qualification number (optional):'),
@@ -110,7 +110,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ password_input(
                                 name='ffe_password',
                                 label=_('FFE password:'),
@@ -120,7 +120,7 @@
                             ) }}
                         </div>
                         {% if admin_event.chessevents_by_id %}
-                            <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                            <div class="col-12 col-md-6 mb-3">
                                 {{ select_input(
                                     name='chessevent_id',
                                     label=_('ChessEvent connection:'),
@@ -129,7 +129,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                            <div class="col-12 col-md-6 mb-3">
                                 {{ text_input(
                                     name='chessevent_tournament_name',
                                     label=_('Name of the ChessEvent tournament:'),
@@ -148,7 +148,7 @@
                         {{ _('Time control') }}
                     </h4>
                     <div class="row">
-                        <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ number_input(
                                 name='time_control_initial_time',
                                 label=_('Initial time (optional):'),
@@ -157,7 +157,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xxl-3 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ number_input(
                                 name='time_control_increment',
                                 label=_('Increment (optional):'),
@@ -166,7 +166,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-4 col-xxl-2 mb-3">
+                        <div class="col-12 col-md-4 mb-3">
                             {{ number_input(
                                 name='time_control_handicap_penalty_value',
                                 label=_('Penalty (handicap):'),
@@ -175,7 +175,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-4 col-xxl-2 mb-3">
+                        <div class="col-12 col-md-4 mb-3">
                             {{ number_input(
                                 name='time_control_handicap_penalty_step',
                                 label=_('Elo step (handicap):'),
@@ -184,7 +184,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-4 col-xxl-2 mb-3">
+                        <div class="col-12 col-md-4 mb-3">
                             {{ number_input(
                                 name='time_control_handicap_min_time',
                                 label=_('Minimal time (handicap):'),

@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block w-90 mw-100">
+<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block">
     <form
         {% if action == 'create' %}
             hx-post="{{ url_for('admin-tab-' ~ action ~ '-event', admin_tab=admin_tab) }}"
@@ -43,6 +43,15 @@
                        {{ _('Properties') }}
                     </h4>
                     <div class="row">
+                        <div class="col-12 col-lg-4 mb-3">
+                            {{ switch_input(
+                                name='public',
+                                label=_('Visibility:'),
+                                placeholder=_('Public event'),
+                                help_text=_('Only arbiters can see private events.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                         <div class="col-12 col-md-6 col-lg-4 mb-3">
                             {{ text_input(
                                 name='uniq_id',
@@ -58,15 +67,6 @@
                                 label=_('Name:'),
                                 placeholder=_('E.g.: World championship'),
                                 help_text=_('The name of the event, used for display and reports.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-4 mb-3">
-                            {{ switch_input(
-                                name='public',
-                                label=_('Visibility:'),
-                                placeholder=_('Public event'),
-                                help_text=_('Only arbiters can see private events.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -235,7 +235,7 @@
                     </h4>
                     <div class="row">
                         {% for num in [1, 2, 3] %}
-                            <div class="col-12 col-md-6 col-xxl-2 mb-3">
+                            <div class="col-12 col-md-6 mb-3">
                                 {{ color_input(
                                     name='color_'~num,
                                     label=_('Colour #%(num)d:', num=num),
@@ -246,7 +246,7 @@
                                 ) }}
                             </div>
 
-                            <div class="col-12 col-md-6 col-xxl-2 mb-3">
+                            <div class="col-12 col-md-6 mb-3">
                                 {% with id='delay-'~num, name='delay_'~num %}
                                     {{ number_input(
                                         name='delay_'~num,

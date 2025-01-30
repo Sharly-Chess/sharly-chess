@@ -4,6 +4,15 @@
     visibility_icon
 %}
 
+{% macro admin_section_title() %}
+    <div
+        class="fs-4 bg-primary pt-1 pb-1 mt-3 mb-4 text-dark pe-4 position-relative"
+        style="border-radius: 0 1000px 1000px 0; padding-left: 2rem; left: -1.5rem;"
+    >
+        {{ caller() }}
+    </div>
+{% endmacro %}
+
 {% macro family_visibility_icon(family, class) %}
     <!-- family_visibility_icon() -->
     {{ visibility_icon('family', family.public, '', '', class) }}
