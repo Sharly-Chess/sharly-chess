@@ -9,25 +9,27 @@
 {% endblock %}
 
 {% block card_text %}
-    <div style="background-color: {{ timer.colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=timer.delays[1]) }}</div>
-    <div style="background-color: {{ timer.colors[2] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=timer.delays[2]) }}</div>
-    <div style="background-color: {{ timer.colors[3] }}" class="px-2">{{ _('%(minutes)d minutes after', minutes=timer.delays[3]) }}</div>
-    <hr/>
-    {% if timer.timer_hours_by_id|length > 0 %}
-        {% for timer_hour in timer.timer_hours_sorted_by_order %}
-            <div class="mb-2 {% if timer_hour.error %}text-danger{% endif %}">
-                {% if timer_hour.error %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
-                {% if timer_hour.date_str %}{{ timer_hour.date_str }} {% endif %}
-                {% if timer_hour.time_str %}{{ timer_hour.time_str }}{% else %}???{% endif %}
-                {% if timer_hour.round %}{{ _('Round #%(round)d', round=timer_hour.round) }}{% else %}{{ timer_hour.uniq_id }}{% endif %}
+    <div class="d-flex flex-column gap-1">
+        <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ timer.colors[1] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=timer.delays[1]) }}</div></div>
+        <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ timer.colors[2] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=timer.delays[2]) }}</div></div>
+        <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ timer.colors[3] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=timer.delays[3]) }}</div></div>           
+        <hr/>
+        {% if timer.timer_hours_by_id|length > 0 %}
+            {% for timer_hour in timer.timer_hours_sorted_by_order %}
+                <div class="{% if timer_hour.error %}text-danger{% endif %}">
+                    {% if timer_hour.error %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
+                    {% if timer_hour.date_str %}{{ timer_hour.date_str }} {% endif %}
+                    {% if timer_hour.time_str %}{{ timer_hour.time_str }}{% else %}???{% endif %}
+                    {% if timer_hour.round %}{{ _('Round #%(round)d', round=timer_hour.round) }}{% else %}{{ timer_hour.uniq_id }}{% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class=" mb-2 text-danger">
+                <i class="bi-exclamation-triangle-fill pe-1"></i>
+                {{ _('No hours.') }}
             </div>
-        {% endfor %}
-    {% else %}
-        <div class=" mb-2 text-danger">
-            <i class="bi-exclamation-triangle-fill pe-1"></i>
-            {{ _('No hours.') }}
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>  
 {% endblock %}
 
 {% block card_buttons_left %}
@@ -71,7 +73,7 @@
     </span>
     <span {{ tooltip_attributes('info', _('Delete the timer.'), 'top') }}>
         <button
-            class="btn btn-sm btn-danger"
+            class="btn btn-sm btn-outline-danger"
             hx-get="{{ url_for('admin-timer-modal', action='delete', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
             preload
             hx-target="body"
