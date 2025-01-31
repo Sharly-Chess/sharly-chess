@@ -656,6 +656,10 @@ class Event:
         if not self._silent:
             logger.debug(event_message.formatted_text)
 
+    @property
+    def infos(self) -> list[str]:
+        return [message.text for message in self.messages if message.level == logging.INFO]
+
     def add_info(
             self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
             family: Family | None = None, timer: Timer | None = None, timer_hour: TimerHour | None = None,
@@ -666,6 +670,10 @@ class Event:
             timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
         if not self._silent:
             logger.info(event_message.formatted_text)
+
+    @property
+    def warnings(self) -> list[str]:
+        return [message.text for message in self.messages if message.level == logging.WARNING]
 
     def add_warning(
             self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
@@ -679,8 +687,8 @@ class Event:
             logger.info(event_message.formatted_text)
 
     @property
-    def errors(self) -> bool:
-        return any(message.level in [logging.ERROR, logging.CRITICAL, ] for message in self.messages)
+    def errors(self) -> list[str]:
+        return [message.text for message in self.messages if message.level == logging.ERROR]
 
     def add_error(
             self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
@@ -692,6 +700,10 @@ class Event:
             timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
         if not self._silent:
             logger.info(event_message.formatted_text)
+
+    @property
+    def criticals(self) -> list[str]:
+        return [message.text for message in self.messages if message.level == logging.CRITICAL]
 
     def add_critical(
             self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
