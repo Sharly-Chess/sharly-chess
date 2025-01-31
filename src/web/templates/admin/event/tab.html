@@ -1,4 +1,7 @@
-<div class="d-flex mb-2 align-items-center flex-wrap gap-1">
+<div
+    class="d-flex mb-2 align-items-center flex-wrap gap-1"
+    style="max-width: calc(var(--vw, 100vw) - 4rem);"
+>
     {% call() section_title() %}
         {{ event_visibility_icon(admin_event, '') }}
         {{ admin_event.name }}

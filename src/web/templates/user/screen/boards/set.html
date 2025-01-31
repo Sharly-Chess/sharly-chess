@@ -11,7 +11,7 @@
                         {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_players, round=tournament.current_round) }}
                     {% endif %}
                 </h2>
-                <div class="row screen-set-row mx-0 w-100">
+                <div class="row screen-set-row mx-0">
                     {% for boards in screen_set.boards_lists %}
                         <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
                             <table class="table table-striped table-sm bg-light">
@@ -134,10 +134,10 @@
                 <h2 class="set-title text-center">
                     {{ _('%(set_name)s (check-in)', set_name=screen_set.name_for_boards) }}
                 </h2>
-                <div class="row screen-set-row mx-0 w-100">
+                <div class="row screen-set-row mx-0">
                     {% for players_by_name_tuple in screen_set.players_by_name_tuple_lists %}
                         <div class="col screen-set-col">
-                            <div class="row screen-set-tuple-row w-100 px-0">
+                            <div class="row screen-set-tuple-row px-0">
                                 {% for players_by_name in players_by_name_tuple %}
                                     <div class="col screen-set-tuple-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
                                         <table class="table table-striped table-sm bg-light">
