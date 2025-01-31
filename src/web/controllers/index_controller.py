@@ -291,8 +291,8 @@ class WebContext:
                 'experimental': locale not in trusted_locales,
             }
         return {
-            'devel_env': DEVEL_ENV,
-            'experimental_features': EXPERIMENTAL_FEATURES,
+            'DEVEL_ENV': DEVEL_ENV,
+            'EXPERIMENTAL_FEATURES': EXPERIMENTAL_FEATURES,
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'papi_web_config': papi_web_config,
