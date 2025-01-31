@@ -1725,11 +1725,6 @@ msgstr "ChessEvent ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
-msgid "Messages ({num})"
-msgstr "Mensajes ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Falló el cambio de nombre de la base de datos: {ex}."
 
@@ -2867,6 +2862,25 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr "Recuperar eventos borrados no es posible desde la interfaz web (sin embargo, los eventos se archivan y se pueden recuperar del sistema de archivos."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#, ai_translation
+msgid "Visibility:"
+msgstr "Visibilidad:"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "Public event"
+msgstr "Acto público"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Only arbiters can see private events."
+msgstr "Sólo los árbitros pueden ver eventos privados."
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: world-championship"
 msgstr "Por ejemplo: campeona mundial"
@@ -2895,25 +2909,6 @@ msgstr "Por ejemplo: Campeonato mundial"
 #, ai_translation
 msgid "The name of the event, used for display and reports."
 msgstr "El nombre del evento, utilizado para la visualización y los informes."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
-msgid "Visibility:"
-msgstr "Visibilidad:"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Public event"
-msgstr "Acto público"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Only arbiters can see private events."
-msgstr "Sólo los árbitros pueden ver eventos privados."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3020,6 +3015,11 @@ msgid "no background image"
 msgstr "sin imagen de fondo"
 
 #: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Choose a custom image:"
+msgstr "Elija una imagen personalizada:"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 #, ai_translation
@@ -3031,11 +3031,6 @@ msgstr "Color del fondo:"
 #, ai_translation
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "El color de fondo se utiliza cuando la imagen no llena toda la pantalla."
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Choose a custom image:"
-msgstr "Elija una imagen personalizada:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3768,21 +3763,6 @@ msgstr "Avisos: %(num)d"
 #, ai_translation, python-format
 msgid "Informations: %(num)d"
 msgstr "Información: %(num)d"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Level"
-msgstr "Nivel"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Message"
-msgstr "Mensaje"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "No messages."
-msgstr "Sin mensajes."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
 #, ai_translation
@@ -5418,6 +5398,11 @@ msgid "Time control"
 msgstr "Control del tiempo"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, fuzzy
+msgid "Initial time (optional):"
+msgstr "Incremento (opcional):"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr "Por ejemplo: %(seconds)d (%(minutes)d minutos)"
@@ -5491,11 +5476,6 @@ msgstr "El número máximo de movimientos ilegales que se pueden registrar por r
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Crear y añadir pantallas predeterminadas"
-
-#: src/web/templates/common/columns_number_dropdown.html
-#, ai_translation
-msgid "Change the number of columns."
-msgstr "Cambiar el número de columnas."
 
 #: src/web/templates/common/macros.j2
 #, ai_translation
@@ -5777,4 +5757,19 @@ msgstr ""
 #, ai_translation
 msgid "vs"
 msgstr "vs."
+
+#~ msgid "Messages ({num})"
+#~ msgstr "Mensajes ({num})"
+
+#~ msgid "Level"
+#~ msgstr "Nivel"
+
+#~ msgid "Message"
+#~ msgstr "Mensaje"
+
+#~ msgid "No messages."
+#~ msgstr "Sin mensajes."
+
+#~ msgid "Change the number of columns."
+#~ msgstr "Cambiar el número de columnas."
 

@@ -1406,10 +1406,6 @@ msgid "ChessEvent ({num})"
 msgstr "ChessEvent ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
-msgid "Messages ({num})"
-msgstr "Messages ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
 msgid "Renaming the database failed: {ex}."
 msgstr "Le renommage de la base de données a échoué : {ex}"
 
@@ -2354,6 +2350,22 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr "La récupération des données supprimées n'est pas possible sur l'interface web (les données sont néanmoins archivées et peuvent être récupérées sur le système de fichiers)."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Visibility:"
+msgstr "Visibilité :"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+msgid "Public event"
+msgstr "Évènement public"
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Only arbiters can see private events."
+msgstr "Seuls les arbitres peuvent voir les évènements privés."
+
+#: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: world-championship"
 msgstr "Exemple : championnat-du-monde"
 
@@ -2377,22 +2389,6 @@ msgstr "Exemple: Championnat du monde"
 #: src/web/templates/admin/event/event_modal.html
 msgid "The name of the event, used for display and reports."
 msgstr "Le nom de l'évènement, utilisé pour l'affichage et dans les rapports."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-msgid "Visibility:"
-msgstr "Visibilité :"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-msgid "Public event"
-msgstr "Évènement public"
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Only arbiters can see private events."
-msgstr "Seuls les arbitres peuvent voir les évènements privés."
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "Start:"
@@ -2482,6 +2478,10 @@ msgid "no background image"
 msgstr "pas d'image de fond"
 
 #: src/web/templates/admin/event/event_modal.html
+msgid "Choose a custom image:"
+msgstr "Choisissez une image personnalisée :"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 msgid "Background colour:"
@@ -2491,10 +2491,6 @@ msgstr "Couleur de fond :"
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran."
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Choose a custom image:"
-msgstr "Choisissez une image personnalisée :"
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "Timers"
@@ -3122,18 +3118,6 @@ msgstr "Avertissements : %(num)d"
 #, python-format
 msgid "Informations: %(num)d"
 msgstr "Informations : %(num)d"
-
-#: src/web/templates/admin/messages/tab.html
-msgid "Level"
-msgstr "Niveau"
-
-#: src/web/templates/admin/messages/tab.html
-msgid "Message"
-msgstr "Message"
-
-#: src/web/templates/admin/messages/tab.html
-msgid "No messages."
-msgstr "Aucun message."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
 msgid "Open/close check-in."
@@ -4497,6 +4481,10 @@ msgid "Time control"
 msgstr "Cadence"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Initial time (optional):"
+msgstr "Temps initial (facultatif) :"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr "Exemple : %(seconds)d (%(minutes)d minutes)"
@@ -4557,10 +4545,6 @@ msgstr "Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"
 msgstr "Créer et ajouter les écrans par défaut"
-
-#: src/web/templates/common/columns_number_dropdown.html
-msgid "Change the number of columns."
-msgstr "Changer le nombre de colonnes."
 
 #: src/web/templates/common/macros.j2
 msgid "This event is public (by default, screens are visible by the users)."
