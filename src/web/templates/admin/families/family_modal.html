@@ -39,11 +39,11 @@
             </div>
             <div class="modal-body">
                 {% if action == 'delete' %}
-                    <h3 class="text-danger">
+                    <h4 class="text-danger">
                         {{ _('Warning: the deletion of a screen family is permanent!') }}
-                    </h3>
+                    </h4>
                 {% else %}
-                    <h3>
+                    <h4>
                         {% if family_type == 'input' %}
                             {{ _('Properties (results entry)') }}
                         {% elif family_type == 'boards' %}
@@ -53,9 +53,9 @@
                         {% else %}
                             ?
                         {% endif %}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ switch_input(
                                 name='public',
                                 label=_('Visibility:'),
@@ -64,7 +64,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
@@ -73,7 +73,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ text_input(
                                 name='name',
                                 label=_('Name:'),
@@ -82,7 +82,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
@@ -92,15 +92,16 @@
                             ) }}
                         </div>
                     </div>
-                    <h3>
+
+                    <h4 class="mt-4">
                         {% if family_type in ['boards', 'input'] %}
                             {{ _('Board selection (by number)') }}
                         {% else %} {# family_type == 'players' #}
                             {{ _('Player selection (by alphabetical order)') }}
                         {% endif %}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ number_input(
                                 name='first',
                                 label=_('First board:') if family_type in ['boards', 'input'] else _('First player:'),
@@ -113,7 +114,7 @@
                                 number_min=1
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ number_input(
                                 name='last',
                                 label=_('Last board:') if family_type in ['boards', 'input'] else _('Last player:'),
@@ -126,7 +127,7 @@
                                 number_min=1
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ number_input(
                                 name='parts',
                                 label=_('On a given number of screens:'),
@@ -141,7 +142,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ number_input(
                                 name='number',
                                 label=_('On fixed size screens:'),
@@ -157,11 +158,12 @@
                             ) }}
                         </div>
                     </div>
-                    <h3>
+
+                    <h4 class="mt-4">
                         {{ _('Layout') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ select_input(
                                 name='timer_id',
                                 label=_('Timer:'),
@@ -170,7 +172,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ number_input(
                                 name='columns',
                                 label=_('Columns:'),
@@ -180,11 +182,12 @@
                             ) }}
                         </div>
                     </div>
-                    <h3>
+
+                    <h4 class="mt-4">
                         {{ _('Menus') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-5">
+                        <div class="col-12 col-xl-5 mb-3">
                             {{ text_input(
                                 name='menu',
                                 label=_('Links displayed on the screen menu:'),
@@ -193,7 +196,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 col-xl-3 mb-3">
                             {{ switch_input(
                                 name='menu_link',
                                 label=_('Links to this screen:'),
@@ -202,7 +205,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-4">
+                        <div class="col-12 col-md-6 col-xl-4 mb-3">
                             {{ text_input(
                                 name='menu_text',
                                 label=_('Menu link label:'),
@@ -222,35 +225,36 @@
                             });
                         </script>
                     </div>
-                    <h3>
+
+                    <h4>
                         {{ _('Display') }}
-                    </h3>
+                    </h4>
                     {% with
                         message_help_text=_('When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).')
                     %}
                         {% if family_type == 'input' %}
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/exit_button.html' %}
                                 </div>
-                                <div class="col-6">
+                                <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/alert_message.html' %}
                                 </div>
                             </div>
                         {% endif %}
                         {% if family_type == 'boards' %}
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-12 mb-3">
                                     {% include '../common/modal/alert_message.html' %}
                                 </div>
                             </div>
                         {% endif %}
                         {% if family_type == 'players' %}
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/show_unpaired.html' %}
                                 </div>
-                                <div class="col-6">
+                                <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/alert_message.html' %}
                                 </div>
                             </div>
@@ -265,7 +269,7 @@
                                 type="submit"
                                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                         >
-                            <i class="bi-floppy-fill"></i>
+                            <i class="bi-floppy-fill pe-1"></i>
                             {% if action in ['create', 'clone', ] %}
                                 {{ _('Create') }}
                             {% elif action == 'update' %}
@@ -286,7 +290,7 @@
                                 hx-trigger="click, keyup[key=='Escape'] from:body"
                                 hx-indicator="#please-wait"
                         >
-                            <i class="bi-x-circle-fill"></i>
+                            <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
                         </button>
                     </div>

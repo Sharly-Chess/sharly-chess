@@ -87,6 +87,10 @@ body {
     --bs-modal-width: min(90vw, 1000px);
 }
 
+.modal * + h4 {
+    margin-top: 1.5rem
+}
+
 [data-bs-theme=dark] {
     --bs-primary: #d7c9aa;
     --bs-primary-rgb: 215, 201, 170;
