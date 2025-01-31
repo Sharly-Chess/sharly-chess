@@ -1,7 +1,7 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    <span class="pe-1">{{ family_visibility_icon(family, '') }}</span>{{ family.name }}
+    {{ family_visibility_icon(family, 'pe-1') }}{{ family.name }}
 {% endblock %}
 
 {% block card_title %}
@@ -122,7 +122,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            <i class="bi-pencil-fill"></i>
+            <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
         </button>
     </span>

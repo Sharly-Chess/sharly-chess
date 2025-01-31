@@ -1,7 +1,7 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ rotator_visibility_icon(rotator, '') }} {{ rotator.uniq_id }}
+    {{ rotator_visibility_icon(rotator, 'pe-1') }}{{ rotator.uniq_id }}
 {% endblock %}
 
 {% block card_title %}
@@ -9,35 +9,36 @@
 {% endblock %}
 
 {% block card_text %}
-    {% if admin_rotators_show_details %}
-        <div>
-            {{ _('Rotation delay: %(seconds)d sec.', seconds=rotator.delay) }}
-            {%if rotator.stored_rotator.delay is none %}
-                <span class="fst-italic">
-                    {{ _('(by default)') }}
-                </span>
-            {%endif %}
-        </div>
-        {% if rotator.message_text %}
-            <div
-                    class="px-2 alert-message rotator-alert-message"
-                    style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-            >
-                {{ rotator.message_text }}
-                {% if rotator.message_default %}
-                    <span class="fst-italic">
+    <div class="d-flex flex-column gap-1">
+        {% if admin_rotators_show_details %}
+            <div>
+                {{ _('Rotation delay: %(seconds)d sec.', seconds=rotator.delay) }}
+                {%if rotator.stored_rotator.delay is none %}
+                    <span class="fst-italic pe-1">
                         {{ _('(by default)') }}
                     </span>
-                {% endif %}
+                {%endif %}
             </div>
-        {% else %}
-            <div class="fst-italic">
-                {{ _('No alert message') }}
-                {% if rotator.message_default %}{{ _('(by default)') }}{% endif %}
-            </div>
+            {% if rotator.message_text %}
+                <div
+                    class="px-2 alert-message rotator-alert-message"
+                    style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+                >
+                    {{ rotator.message_text }}
+                    {% if rotator.message_default %}
+                        <span class="fst-italic pe-1">
+                            {{ _('(by default)') }}
+                        </span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="fst-italic">
+                    {{ _('No alert message') }}
+                    {% if rotator.message_default %}{{ _('(by default)') }}{% endif %}
+                </div>
+            {% endif %}
         {% endif %}
-    {% endif %}
-    <div class="mb-2">
+
         {% if not rotator.families and not rotator.screens %}
             {{ _('No screen neither family to rotate.') }}
         {% else %}
@@ -48,7 +49,7 @@
                 {{ _('Screens:') }}
                 {% for screen in rotator.screens %}
                     <div>
-                        {{ screen_visibility_icon(screen, '') }} {{ screen_type_icon(screen.type, true) }} {{ screen.name }}
+                        {{ screen_visibility_icon(screen, 'pe-1') }}{{ screen_type_icon(screen.type, true) }} {{ screen.name }}
                     </div>
                 {% endfor %}
             {% endif %}
@@ -59,8 +60,10 @@
                 {{ _('Screen families:') }}
                 {% for family in rotator.families %}
                     <div>
-                        {{ family_visibility_icon(family, '') }}
-                        {{ screen_type_icon(family.type, true) }}
+                        <span class="pe-1">
+                            {{ family_visibility_icon(family, 'pe-1') }}
+                            {{ screen_type_icon(family.type, true) }}
+                        </span>
                         {{ family.uniq_id }}
                         {{ family.name }}
                         {% if family.screens_by_uniq_id %}
@@ -88,7 +91,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            <i class="bi-pencil-fill"></i>
+            <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
         </button>
     </span>
@@ -107,7 +110,7 @@
     </span>
     <span {{ tooltip_attributes('info', _('Delete the rotator.'), 'top') }}>
         <button
-            class="btn btn-sm btn-danger"
+            class="btn btn-sm btn-outline-danger"
             hx-get="{{ url_for('admin-rotator-modal', action='delete', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
             preload
             hx-target="body"

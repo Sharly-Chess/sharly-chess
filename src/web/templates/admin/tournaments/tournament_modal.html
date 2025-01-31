@@ -230,7 +230,7 @@
                                 type="submit"
                                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                         >
-                            <i class="bi-floppy-fill"></i>
+                            <i class="bi-floppy-fill pe-1"></i>
                             {% if action in ['create', 'clone', ] %}
                                 {{ _('Create') }}
                             {% elif action == 'update' %}
@@ -248,7 +248,7 @@
                                     class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                             >
                                 <i class="bi-floppy-fill"></i>
-                                <i class="bi-plus-square-fill"></i>
+                                <i class="bi-plus-square-fill pe-1"></i>
                                 {{ _('Create and add default screens') }}
                             </button>
                         {% endif %}
@@ -262,7 +262,7 @@
                                 hx-trigger="click, keyup[key=='Escape'] from:body"
                                 hx-indicator="#please-wait"
                         >
-                            <i class="bi-x-circle-fill"></i>
+                            <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
                         </button>
                     </div>

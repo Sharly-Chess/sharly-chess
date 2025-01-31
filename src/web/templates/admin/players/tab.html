@@ -41,7 +41,7 @@
                         disabled
                     {% endif %}
                 >
-                    <i class="bi-plus-square"></i>
+                    <i class="bi-plus-square pe-1"></i>
                     {{ _('Create a player') }}
                 </button>
             </span>
@@ -64,7 +64,7 @@
                     </th>
                     {% if 'check_in' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
-                            <i class="bi-circle"></i><i class="bi-check-circle"></i>
+                            <i class="bi-circle"></i><i class="bi-check-circle pe-1"></i>
                             {% include 'filter_check_ins.html' %}
                         </th>
                     {% endif %}
@@ -165,7 +165,7 @@
                     {% endif %}
                     {% if 'gender' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
-                            <i class="bi-person-standing-dress"></i><i class="bi-person-standing"></i>{%- include 'filter_genders.html' %}
+                            <i class="bi-person-standing-dress"></i><i class="bi-person-standing pe-1"></i>{%- include 'filter_genders.html' %}
                         </th>
                     {% endif %}
                     {% if 'gender' in admin_players_filter_columns %}
@@ -422,7 +422,7 @@
                                             hx-indicator="#please-wait"
                                             {{ tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
                                         >
-                                            <i class="bi-pencil-fill"></i> {{ _('Edit') }}
+                                            <i class="bi-pencil-fill pe-1"></i>{{ _('Edit') }}
                                         </li>
                                         {% if not player.has_real_pairings %}
                                             <li
@@ -432,7 +432,7 @@
                                                     hx-indicator="#please-wait"
                                                     {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
                                             >
-                                                <i class="bi-trash-fill"></i> {{ _('Delete') }}
+                                                <i class="bi-trash-fill pe-1"></i>{{ _('Delete') }}
                                             </li>
                                         {% endif %}
                                     </ul>

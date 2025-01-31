@@ -5,7 +5,7 @@
             <span
                 {{ tooltip_attributes('info', _('Choose the columns displayed.'), 'top') }}
             >
-                <i class="bi-layout-three-columns"></i>
+                <i class="bi-layout-three-columns pe-1"></i>
                 {{ _('Columns') }}
             </span>
         </button>
@@ -20,7 +20,7 @@
                         onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
                     />
                     <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
-                        <i class="bi-check-lg"></i>
+                        <i class="bi-check-lg pe-1"></i>
                         {{ _('OK') }}
                     </button>
                 </li>
@@ -38,25 +38,25 @@
                         />
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
                             {% if column == 'mail' %}
-                                <i class="bi-envelope-check"></i> {{ _('Mail *** MAIL FOR PLAYERS COLUMNS') }}
+                                <i class="bi-envelope-check pe-1"></i>{{ _('Mail *** MAIL FOR PLAYERS COLUMNS') }}
                             {% elif column == 'phone' %}
-                                <i class="bi-telephone"></i> {{ _('Phone *** PHONE FOR PLAYERS COLUMNS') }}
+                                <i class="bi-telephone pe-1"></i>{{ _('Phone *** PHONE FOR PLAYERS COLUMNS') }}
                             {% elif column == 'name' %}
-                                <i class="bi-sort-alpha-down"></i> {{ _('Name *** NAME FOR PLAYERS COLUMNS') }}
+                                <i class="bi-sort-alpha-down pe-1"></i>{{ _('Name *** NAME FOR PLAYERS COLUMNS') }}
                             {% elif column == 'rating' %}
-                                <i class="bi-sort-numeric-down"></i> {{ _('Rating *** RATING FOR PLAYERS COLUMNS') }}
+                                <i class="bi-sort-numeric-down pe-1"></i>{{ _('Rating *** RATING FOR PLAYERS COLUMNS') }}
                             {% elif column == 'federation' %}
-                                <i class="bi-house"></i> {{ _('Federation *** FEDERATION FOR PLAYERS COLUMNS') }}
+                                <i class="bi-house pe-1"></i>{{ _('Federation *** FEDERATION FOR PLAYERS COLUMNS') }}
                             {% elif column == 'league' %}
-                                <i class="bi-house"></i> {{ _('League *** LEAGUE FOR PLAYERS COLUMNS') }}
+                                <i class="bi-house pe-1"></i>{{ _('League *** LEAGUE FOR PLAYERS COLUMNS') }}
                             {% elif column == 'club' %}
-                                <i class="bi-house"></i> {{ _('Club *** CLUB FOR PLAYERS COLUMNS') }}
+                                <i class="bi-house pe-1"></i>{{ _('Club *** CLUB FOR PLAYERS COLUMNS') }}
                             {% elif column == 'yob' %}
-                                <i class="bi-calendar"></i> {{ _('Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS') }}
+                                <i class="bi-calendar pe-1"></i>{{ _('Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS') }}
                             {% elif column == 'category' %}
-                                <i class="bi-tag"></i> {{ _('Category *** CATEGORY FOR PLAYERS COLUMNS') }}
+                                <i class="bi-tag pe-1"></i>{{ _('Category *** CATEGORY FOR PLAYERS COLUMNS') }}
                             {% elif column == 'gender' %}
-                                <i class="bi-person-standing-dress"></i><i class="bi-person-standing"></i> {{ _('Gender *** GENDER FOR PLAYERS COLUMNS') }}
+                                <i class="bi-person-standing-dress pe-1"></i><i class="bi-person-standing pe-1"></i>{{ _('Gender *** GENDER FOR PLAYERS COLUMNS') }}
                             {% elif column == 'fixed' %}
                                 {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}<img
                                     src="{{ url_for('static', file_path='/images/disabled-black.svg') }}"
@@ -77,15 +77,15 @@
                                         class="p-0"
                                 /> {{ _('FFE *** FFE FOR PLAYERS COLUMNS') }}
                             {% elif column == 'check_in' %}
-                                <i class="bi-check-circle"></i> {{ _('Check-in *** CHECK-IN FOR PLAYERS COLUMNS') }}
+                                <i class="bi-check-circle pe-1"></i>{{ _('Check-in *** CHECK-IN FOR PLAYERS COLUMNS') }}
                             {% elif column == 'owed_paid' %}
-                                <i class="bi-currency-exchange"></i> {{ _('Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS') }}
+                                <i class="bi-currency-exchange pe-1"></i>{{ _('Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS') }}
                             {% elif column == 'tournament' %}
-                                <i class="bi-people"></i> {{ _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS') }}
+                                <i class="bi-people pe-1"></i>{{ _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS') }}
                             {% elif column == 'comment' %}
-                                <i class="bi-chat"></i> {{ _('Comment *** COMMENT FOR PLAYERS COLUMNS') }}
+                                <i class="bi-chat pe-1"></i>{{ _('Comment *** COMMENT FOR PLAYERS COLUMNS') }}
                             {% elif column == 'history' %}
-                                <i class="bi-0-square"></i><i class="bi-1-square-fill"></i> {{ _('History *** HISTORY FOR PLAYERS COLUMNS') }}
+                                <i class="bi-0-square"></i><i class="bi-1-square-fill pe-1"></i>{{ _('History *** HISTORY FOR PLAYERS COLUMNS') }}
                             {% else %}
                                 ???
                             {% endif %}

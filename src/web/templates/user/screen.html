@@ -4,12 +4,13 @@
     <div id="user-screen-header" class="header user-header user-screen-header">
         {% if screen.type != 'input' or screen.input_exit_button %}
             <button
-                    id="user-screen-exit-button"
-                    class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-1"
-                    hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab) }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait">
+                id="user-screen-exit-button"
+                class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-1"
+                hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 <i class="bi-x-circle-fill"></i>
             </button>
         {% endif %}

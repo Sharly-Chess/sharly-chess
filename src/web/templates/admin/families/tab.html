@@ -1,7 +1,7 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ event_visibility_icon(admin_event, '') }}
+    {{ event_visibility_icon(admin_event, 'pe-1') }}
     {{ admin_event.name }} - {{ _('Screen families') }}
 {% endblock %}
 
@@ -52,7 +52,7 @@
                     disabled
                 {% endif %}
         >
-            <i class="bi-plus-square"></i>
+            <i class="bi-plus-square pe-1"></i>
             {{ _('Create a screen family') }}
         </button>
         <ul class="dropdown-menu">

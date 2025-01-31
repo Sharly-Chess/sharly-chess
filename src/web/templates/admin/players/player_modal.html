@@ -334,7 +334,7 @@
                                 type="submit"
                                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                         >
-                            <i class="bi-floppy-fill"></i>
+                            <i class="bi-floppy-fill pe-1"></i>
                             {% if action == 'create' %}
                                 {{ _('Create') }}
                             {% elif action == 'update' %}
@@ -355,7 +355,7 @@
                                 hx-trigger="click, keyup[key=='Escape'] from:body"
                                 hx-indicator="#please-wait"
                         >
-                            <i class="bi-x-circle-fill"></i>
+                            <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
                         </button>
                     </div>

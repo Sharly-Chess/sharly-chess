@@ -71,11 +71,11 @@
                     </div>
                     <h3>
                         {{ _('Selection') }}
-                        (<i class="bi-pencil-fill"></i>&nbsp;{{ _('results entry') }},
-                        <i class="bi-card-list"></i>&nbsp;{{ _('pairings by board') }},
-                        <i class="bi-people-fill"></i>&nbsp;{{ _('pairings by player') }},
-                        <i class="bi-trophy-fill"></i>&nbsp;{{ _('last results') }},
-                        <i class="bi-image"></i>&nbsp;{{ _('image') }})
+                        (<i class="bi-pencil-fill pe-1"></i>&nbsp;{{ _('results entry') }},
+                        <i class="bi-card-list pe-1"></i>&nbsp;{{ _('pairings by board') }},
+                        <i class="bi-people-fill pe-1"></i>&nbsp;{{ _('pairings by player') }},
+                        <i class="bi-trophy-fill pe-1"></i>&nbsp;{{ _('last results') }},
+                        <i class="bi-image pe-1"></i>&nbsp;{{ _('image') }})
                     </h3>
                     <div class="row">
                         <div class="col-6">
@@ -170,7 +170,7 @@
                                 type="submit"
                                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                         >
-                            <i class="bi-floppy-fill"></i>
+                            <i class="bi-floppy-fill pe-1"></i>
                            {% if action in ['create', 'clone', ] %}
                                 {{ _('Create') }}
                             {% elif action == 'update' %}

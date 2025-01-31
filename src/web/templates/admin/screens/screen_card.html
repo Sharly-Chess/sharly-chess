@@ -1,7 +1,7 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    <span class="pe-1">{{ screen_visibility_icon(screen, '') }}</span>{{ screen.name }}
+    {{ screen_visibility_icon(screen, 'pe-1') }}{{ screen.name }}
 {% endblock %}
 
 {% block card_title %}
@@ -158,7 +158,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <i class="bi-pencil-fill"></i>
+                <i class="bi-pencil-fill pe-1"></i>
                 {{ _('Edit') }}
             </button>
         </span>
@@ -180,7 +180,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <i class="bi-collection-fill"></i>
+                <i class="bi-collection-fill pe-1"></i>
                 {% if screen.type in ['boards', 'input'] %}
                     {{ _('Boards') }}
                 {% else %}

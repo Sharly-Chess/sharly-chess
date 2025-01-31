@@ -86,7 +86,6 @@ body {
 .modal {
     --bs-modal-width: min(90vw, 1000px);
 }
-
 .modal * + h4 {
     margin-top: 1.5rem
 }

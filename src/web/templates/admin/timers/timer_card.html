@@ -24,8 +24,8 @@
         {% endfor %}
     {% else %}
         <div class=" mb-2 text-danger">
-            <i class="bi-exclamation-triangle-fill"></i>
-                {{ _('No hours.') }}
+            <i class="bi-exclamation-triangle-fill pe-1"></i>
+            {{ _('No hours.') }}
         </div>
     {% endif %}
 {% endblock %}
@@ -39,7 +39,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            <i class="bi-pencil-fill"></i>
+            <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
         </button>
     </span>
@@ -51,7 +51,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            <i class="bi-collection-fill"></i>
+            <i class="bi-collection-fill pe-1"></i>
             {{ _('Hours') }}
         </button>
     </span>

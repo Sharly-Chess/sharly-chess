@@ -22,13 +22,13 @@
                 {% set type='info' %}
             {% endif %}
             <span
-                    class="me-2 text-nowrap"
-                    {{ tooltip_attributes(type, text, 'top') }}
+                class="me-2 text-nowrap"
+                {{ tooltip_attributes(type, text, 'top') }}
             >
                 {% if not tournament.file_exists or not tournament.rounds %}
-                    <i class="bi-file-earmark-excel-fill text-danger"></i>
+                    <i class="bi-file-earmark-excel-fill text-danger pe-1"></i>
                 {% else %}
-                    <i class="bi-file-check-fill text-success"></i>
+                    <i class="bi-file-check-fill text-success pe-1"></i>
                 {% endif %}
                 {{ tournament.filename }}
             </span>
@@ -48,7 +48,7 @@
                         {{ tooltip_attributes('info', _('Players found in the Papi_file : %(num)d', num=tournament.players_by_id|length), 'top') }}
                     {% endif %}
             >
-                <i class="bi-people-fill"></i>
+                <i class="bi-people-fill pe-1"></i>
                 {% if tournament.rounds %}
                     {{ tournament.players_by_id|length }}
                 {% else %}
@@ -56,7 +56,7 @@
                 {% endif %}
             </span>
             <span
-                    class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
+                class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
             >
                 {{ tournament_status_icon(tournament) }}
                 {% if tournament.rounds %}
@@ -66,20 +66,20 @@
                 {% endif %}
             </span>
             <span
-                    class="me-2 text-nowrap"
-                    {{ tooltip_attributes(
-                        'info',
-                        _('ChessEvent connection [%(chessevent_uniq_id)s] is used.', chessevent_uniq_id=tournament.chessevent.uniq_id)
-                        if tournament.chessevent else
-                        _('No ChessEvent connection is used.'),
-                        'top') }}
+                class="me-2 text-nowrap"
+                {{ tooltip_attributes(
+                    'info',
+                    _('ChessEvent connection [%(chessevent_uniq_id)s] is used.', chessevent_uniq_id=tournament.chessevent.uniq_id)
+                    if tournament.chessevent else
+                    _('No ChessEvent connection is used.'),
+                    'top') }}
             >
                 <i class="
-                        {% if tournament.chessevent %}
-                            bi-cloud-download-fill
-                        {% else %}
-                            bi-cloud-download text-secondary
-                        {% endif %}"
+                    {% if tournament.chessevent %}
+                        bi-cloud-download-fill
+                    {% else %}
+                        bi-cloud-download text-secondary
+                    {% endif %}"
                 ></i>
             </span>
             {% if not tournament.record_illegal_moves %}
@@ -88,8 +88,8 @@
                 {% set text=ngettext('At most %(num)d illegal move is recorded.', 'At most %(num)d illegal moves are recorded.', tournament.record_illegal_moves) %}
             {% endif %}
             <span
-                    class="me-2 text-nowrap"
-                    {{ tooltip_attributes(type, text, 'top') }}
+                class="me-2 text-nowrap"
+                {{ tooltip_attributes(type, text, 'top') }}
             >
                 {% if not tournament.record_illegal_moves %}
                     <i class="bi-flag text-secondary"></i>
@@ -118,7 +118,7 @@
             {% endif %}
         </div>
         <div class="text-start">
-            <i class="bi-pencil-fill"></i>
+            <i class="bi-pencil-fill pe-1"></i>
             {{ tournament.last_update_str }}
         </div>
     </div>
@@ -133,7 +133,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            <i class="bi-pencil-fill"></i>
+            <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
         </button>
     </span>
@@ -147,7 +147,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <i class="bi-shuffle"></i>
+                <i class="bi-shuffle pe-1"></i>
                 {{ _('Pair') }}
             </button>
         </span>
@@ -156,7 +156,7 @@
     {% if not hide_trf_export %}
         <div class="dropdown d-inline">
             <button class="btn btn-sm btn-outline-primary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi-download"></i> {{ _('Export') }}
+                <i class="bi-download pe-1"></i>{{ _('Export') }}
             </button>
             <ul class="dropdown-menu locale">
                 <li

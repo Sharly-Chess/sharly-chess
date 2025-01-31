@@ -31,21 +31,23 @@
                     </div>
                     <div class="col-2 text-end">
                         <button
-                                class="btn btn-sm btn-primary text-nowrap mb-1"
-                                hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait">
-                            <i class="bi-floppy-fill"></i>
+                            class="btn btn-sm btn-primary text-nowrap mb-1"
+                            hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
+                            <i class="bi-floppy-fill pe-1"></i>
                             {{ _('Update') }}
                         </button>
                         <button
-                                class="btn btn-sm btn-secondary text-nowrap mb-1"
-                                hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-                                preload
-                                hx-target="body"
-                                hx-trigger="click, keyup[key=='Escape'] from:body"
-                                hx-indicator="#please-wait">
-                            <i class="bi-x-circle-fill"></i>
+                            class="btn btn-sm btn-secondary text-nowrap mb-1"
+                            hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                            preload
+                            hx-target="body"
+                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                            hx-indicator="#please-wait"
+                        >
+                            <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
                         </button>
                     </div>
@@ -135,28 +137,30 @@
                             <i class="bi-arrows-move"></i>
                         {% endif %}
                         <button
-                                class="btn btn-sm btn-primary text-nowrap"
-                                hx-get="{{ url_for('admin-screen-sets-set-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                                preload
-                                hx-target="body"
-                                hx-indicator="#please-wait">
+                            class="btn btn-sm btn-primary text-nowrap"
+                            hx-get="{{ url_for('admin-screen-sets-set-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
+                            preload
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
                             <i class="bi-pencil-fill"></i>
                         </button>
                         <button
-                                class="btn btn-sm btn-primary text-nowrap"
-                                hx-post="{{ url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait">
+                            class="btn btn-sm btn-primary text-nowrap"
+                            hx-post="{{ url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
                             <i class="bi-copy"></i>
                         </button>
                         <button
-                                class="btn btn-sm btn-danger text-nowrap"
-                                hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                {% if admin_screen.screen_sets_sorted_by_order|length <= 1 %}
-                                    disabled
-                                {% endif %}
+                            class="btn btn-sm btn-danger text-nowrap"
+                            hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            {% if admin_screen.screen_sets_sorted_by_order|length <= 1 %}
+                                disabled
+                            {% endif %}
                         >
                             <i class="bi-trash-fill"></i>
                         </button>

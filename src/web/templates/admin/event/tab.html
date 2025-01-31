@@ -3,7 +3,7 @@
     style="max-width: calc(var(--vw, 100vw) - 4rem);"
 >
     {% call() section_title() %}
-        {{ event_visibility_icon(admin_event, '') }}
+        {{ event_visibility_icon(admin_event, 'pe-1') }}
         {{ admin_event.name }}
     {% endcall %}
     <div class="d-flex flex-grow-1 gap-1 ms-auto justify-content-end">
@@ -14,7 +14,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            <i class="bi-pencil-fill"></i>
+            <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
         </button>
         <button
@@ -24,7 +24,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            <i class="bi-copy"></i>
+            <i class="bi-copy pe-1"></i>
             {{ _('Clone') }}
         </button>
         <button
@@ -34,7 +34,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            <i class="bi-trash-fill"></i>
+            <i class="bi-trash-fill pe-1"></i>
             {{ _('Delete') }}
         </button>
     </div>
@@ -66,7 +66,7 @@
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
             <td class="">
-                {{ event_visibility_icon(admin_event, '') }}
+                {{ event_visibility_icon(admin_event, 'pe-1') }}
                 {{ _('Public event') if admin_event.public else _('Private event') }}
             </td>
             <td></td>

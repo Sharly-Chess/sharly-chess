@@ -41,7 +41,7 @@
                                 hx-patch="{{ url_for('admin-timer-hour-update', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait">
-                            <i class="bi-floppy-fill"></i>
+                            <i class="bi-floppy-fill pe-1"></i>
                             {{ _('Update') }}
                         </button>
                         <button
@@ -51,7 +51,7 @@
                                 hx-target="body"
                                 hx-trigger="click, keyup[key=='Escape'] from:body"
                                 hx-indicator="#please-wait">
-                            <i class="bi-x-circle-fill"></i>
+                            <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
                         </button>
                     </div>
@@ -95,28 +95,30 @@
                             <i class="bi-arrows-move"></i>
                         {% endif %}
                         <button
-                                class="btn btn-sm btn-primary text-nowrap"
-                                hx-get="{{ url_for('admin-timer-hours-hour-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                                preload
-                                hx-target="body"
-                                hx-indicator="#please-wait">
+                            class="btn btn-sm btn-primary text-nowrap"
+                            hx-get="{{ url_for('admin-timer-hours-hour-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
+                            preload
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
                             <i class="bi-pencil-fill"></i>
                         </button>
                         <button
-                                class="btn btn-sm btn-primary text-nowrap"
-                                hx-post="{{ url_for('admin-timer-hour-clone', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait">
+                            class="btn btn-sm btn-primary text-nowrap"
+                            hx-post="{{ url_for('admin-timer-hour-clone', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
                             <i class="bi-copy"></i>
                         </button>
                         <button
-                                class="btn btn-sm btn-danger text-nowrap"
-                                hx-delete="{{ url_for('admin-timer-hour-delete', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                {% if admin_timer.timer_hours_sorted_by_order|length <= 1 %}
-                                    disabled
-                                {% endif %}
+                            class="btn btn-sm btn-danger text-nowrap"
+                            hx-delete="{{ url_for('admin-timer-hour-delete', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            {% if admin_timer.timer_hours_sorted_by_order|length <= 1 %}
+                                disabled
+                            {% endif %}
                         >
                             <i class="bi-trash-fill"></i>
                         </button>

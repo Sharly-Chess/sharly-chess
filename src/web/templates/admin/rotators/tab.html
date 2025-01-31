@@ -1,15 +1,15 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ event_visibility_icon(admin_event, '') }}
+    {{ event_visibility_icon(admin_event, 'pe-1') }}
     {{ admin_event.name }} - {{ _('Rotators') }}
 {% endblock %}
 
 {% block cards_container_right_buttons %}
     {% with id='show-details-on-rotator-list', name='admin_rotators_show_details', show=admin_rotators_show_details %}
         <div
-                class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ tooltip_attributes('info', _('Enable/disable the details of the rotators on the cards below.'), 'top') }}
+            class="form-check form-switch d-inline-block pe-3 mt-2"
+            {{ tooltip_attributes('info', _('Enable/disable the details of the rotators on the cards below.'), 'top') }}
         >
             <input
                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
@@ -54,7 +54,7 @@
                 disabled
             {% endif %}
         >
-            <i class="bi-plus-square-fill"></i>
+            <i class="bi-plus-square-fill pe-1"></i>
             {{ _('Create a rotator') }}
         </button>
     </span>
