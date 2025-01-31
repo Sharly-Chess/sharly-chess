@@ -1,7 +1,6 @@
 {% extends '../../common/base.html' %}
 
 {% from 'macros.j2' import
-    admin_section_title,
     family_visibility_icon,
     tournament_status_icon,
     player_history,
@@ -13,10 +12,10 @@
 {% block header %}
     <div
         id="admin-header"
-        class="header admin-header position-sticky top-0 mx-3 border-bottom"
+        class="header admin-header position-sticky top-0 border-bottom"
         style="background-color: var(--bs-body-bg);"
     >
-        <div hx-ext="bs-tabs" class="bs-tabs py-2">
+        <div hx-ext="bs-tabs" class="bs-tabs mx-3 py-2">
             <nav class="d-flex align-items-center gap-2">
                 <!-- block admin_header_back_button -->
                 {% block admin_header_back_button %}
