@@ -5,18 +5,19 @@
 {% endblock %}
 
 {% block card_title %}
-    {{ chessevent.uniq_id }}
 {% endblock %}
 
 {% block card_text %}
-    <div>
-        {{ _('Chessevent ID: %(chessevent_user_id)s', chessevent_user_id=chessevent.user_id) }}
-    </div>
-    <div>
-        {{ _('ChessEvent password: %(chessevent_password)s', chessevent_password=chessevent.shadowed_password) }}
-    </div>
-    <div>
-        {{ _('ChessEvent event: %(chessevent_event)s', chessevent_event=chessevent.event_id) }}
+    <div class="d-flex flex-column gap-1">
+        <div>
+            {{ _('Chessevent ID: %(chessevent_user_id)s', chessevent_user_id=chessevent.user_id) }}
+        </div>
+        <div>
+            {{ _('ChessEvent password: %(chessevent_password)s', chessevent_password=chessevent.shadowed_password) }}
+        </div>
+        <div>
+            {{ _('ChessEvent event: %(chessevent_event)s', chessevent_event=chessevent.event_id) }}
+        </div>
     </div>
 {% endblock %}
 
@@ -48,7 +49,7 @@
     </span>
     <span {{ tooltip_attributes('info', _('Delete the ChessEvent connection.'), 'top') }}>
         <button
-            class="btn btn-sm btn-danger"
+            class="btn btn-sm btn-outline-danger"
             hx-get="{{ url_for('admin-chessevent-modal', action='delete', event_uniq_id=admin_event.uniq_id, chessevent_id=chessevent.id) }}"
             preload
             hx-target="body"

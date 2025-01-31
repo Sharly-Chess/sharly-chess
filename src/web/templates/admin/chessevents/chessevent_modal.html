@@ -1,16 +1,17 @@
 <div class="modal-dialog modal-dialog-centered admin-chessevent-edit-modal d-block">
     <form
-            {% if action in ['create', 'clone', ] %}
-                hx-post="{{ url_for('admin-chessevent-create', event_uniq_id=admin_event.uniq_id) }}"
-            {% elif action == 'update' %}
-                hx-patch="{{ url_for('admin-chessevent-' ~ action, event_uniq_id=admin_event.uniq_id, chessevent_id=admin_chessevent.id) }}"
-            {% elif action == 'delete' %}
-                hx-delete="{{ url_for('admin-chessevent-' ~ action, event_uniq_id=admin_event.uniq_id, chessevent_id=admin_chessevent.id) }}"
-            {% else %}
-                hx-get="{{ url_for('unknown-action-' ~ action) }}"
-            {% endif %}
-            hx-target="body"
-            hx-indicator="#please-wait">
+        {% if action in ['create', 'clone', ] %}
+            hx-post="{{ url_for('admin-chessevent-create', event_uniq_id=admin_event.uniq_id) }}"
+        {% elif action == 'update' %}
+            hx-patch="{{ url_for('admin-chessevent-' ~ action, event_uniq_id=admin_event.uniq_id, chessevent_id=admin_chessevent.id) }}"
+        {% elif action == 'delete' %}
+            hx-delete="{{ url_for('admin-chessevent-' ~ action, event_uniq_id=admin_event.uniq_id, chessevent_id=admin_chessevent.id) }}"
+        {% else %}
+            hx-get="{{ url_for('unknown-action-' ~ action) }}"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">
@@ -27,9 +28,9 @@
             </div>
             <div class="modal-body">
                 {% if action == 'delete' %}
-                    <h3 class="text-danger">
+                    <h4 class="text-danger">
                         {{ _('Warning: the deletion of a ChessEvent connection is permanent!') }}
-                    </h3>
+                    </h4>
                     {% if admin_chessevent.dependent_tournaments %}
                         <p>{{ _('The following tournaments will not be connected to ChessEvent anymore:') }}</p>
                         <ul>
@@ -39,11 +40,11 @@
                         </ul>
                     {% endif %}
                 {% else %}
-                    <h3>
+                    <h4>
                         {{ _('Properties') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-12 mb-3">
                             {{ text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
@@ -53,11 +54,12 @@
                             ) }}
                         </div>
                     </div>
-                    <h3>
+
+                    <h4 class="mt-3">
                         {{ _('Connection to the ChessEvent platform') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ text_input(
                                 name='user_id',
                                 label=_('Chessevent ID:'),
@@ -66,7 +68,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-4">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ password_input(
                                 name='password',
                                 label=_('Password:'),
@@ -75,7 +77,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-4">
+                        <div class="col-12 mb-3">
                             {{ text_input(
                                 name='event_id',
                                 label=_('ChessEvent event:'),
