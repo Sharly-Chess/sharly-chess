@@ -259,7 +259,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 template_context |= {
                     'admin_players': players,
                     'admin_players_columns': [
-                        'check_in', 'name', 'rating', 'federation', 'league', 'club', 'yob', 'category', 'mail',
+                        'name', 'check_in', 'rating', 'federation', 'league', 'club', 'yob', 'category', 'mail',
                         'phone', 'gender', 'fixed', 'fide', 'ffe', 'owed_paid', 'tournament', 'comment', 'history',
                     ],
                     'admin_players_sort': SessionHandler.get_session_admin_players_sort(web_context.request),
