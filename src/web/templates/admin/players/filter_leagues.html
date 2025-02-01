@@ -23,7 +23,7 @@
                 </li>
                 <li class="dropdown-divider m-0"></li>
                 {% for league_tuple in admin_players_leagues %}
-                    <li class="dropdown-item text-nowrap">
+                    <li class="dropdown-item d-flex align-items-center gap-2">
                         <input
                             type="checkbox"
                             id="{{ name }}-{{ loop.index }}"
@@ -35,8 +35,8 @@
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
                             <span class="player-federation_flag">
                                 <img
-                                        class="player-federation-flag ms-1 ps-1 pe-1"
-                                        src="{{ url_for('static', file_path='/images/federations/' ~ league_tuple.federation ~ '.svg') }}"
+                                    class="player-federation-flag pe-1"
+                                    src="{{ url_for('static', file_path='/images/federations/' ~ league_tuple.federation ~ '.svg') }}"
                                 />
                             </span>
                             {{ league_tuple.league }} ({{ admin_event.league_counts[league_tuple] }})

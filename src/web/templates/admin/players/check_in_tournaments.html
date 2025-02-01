@@ -15,7 +15,7 @@
             {% with id='admin-players-set-tournament-check-ins' %}
                 {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
                     <li
-                        class="dropdown-item text-nowrap my-0"
+                        class="dropdown-item text-nowrap my-0 d-inline-flex align-items-center gap-2"
                         {% if tournament.finished %}
                             {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% elif tournament.playing %}
@@ -26,7 +26,7 @@
                             {{ tooltip_attributes('info', _('Open check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% endif %}
                     >
-                        <div class="form-check form-switch d-inline-block my-0 pe-2">
+                        <div class="form-check form-switch d-inline-block my-0">
                             <input
                                     {% if not tournament.finished and not tournament.playing %}
                                         {% if tournament.check_in_open %}
@@ -45,7 +45,7 @@
                             />
                         </div>
                         <label
-                                for="{{ id }}-{{ loop.index }}" class="form-label my-0"
+                            for="{{ id }}-{{ loop.index }}" class="form-label my-0"
                         >
                             {{ tournament.name }}
                         </label>

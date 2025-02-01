@@ -40,7 +40,7 @@
                             'number': admin_event.check_in_counts[true],
                         },
                     }.items() %}
-                        <li class="dropdown-item text-nowrap">
+                        <li class="dropdown-item text-nowrap d-flex align-items-center gap-2">
                             <input
                                 type="checkbox"
                                 id="{{ name }}-{{ loop.index }}"
@@ -50,7 +50,7 @@
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                <i class="{{ check_in_data['class'] }}"></i> {{ check_in_data['text'] }} ({{ check_in_data['number'] }})
+                                <i class="{{ check_in_data['class'] }} pe-1"></i>{{ check_in_data['text'] }} ({{ check_in_data['number'] }})
                             </label>
                         </li>
                     {% endfor %}
