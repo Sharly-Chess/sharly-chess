@@ -268,3 +268,21 @@ body {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
 }
+
+[data-bs-theme=dark] table.prominent {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+[data-bs-theme=dark] table.prominent thead th {
+    background-color: var(--bs-primary);
+    color: var(--pw-dark-text);
+    padding: 5px;
+    border-bottom: 7px solid var(--bs-body-bg);
+    vertical-align: middle;
+}
+
+
+[data-bs-theme=dark] table.prominent thead td {
+    padding: 5px;
+}

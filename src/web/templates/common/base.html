@@ -49,6 +49,11 @@
                     let vh = document.documentElement.clientHeight;
                     document.documentElement.style.setProperty('--vw', `${vw}px`);
                     document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+                    {#  We store the (dynamic) header height, useful for sticking things under it #}
+                    
+                    let headerHeight = document.getElementById('header-wrapper')?.offsetHeight ?? 0;
+                    document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
                   }
                   
                   setSize();
