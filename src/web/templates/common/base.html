@@ -49,6 +49,11 @@
                     let vh = document.documentElement.clientHeight;
                     document.documentElement.style.setProperty('--vw', `${vw}px`);
                     document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+                    {#  We store the (dynamic) header height, useful for sticking things under it #}
+                    
+                    let headerHeight = document.getElementById('header-wrapper')?.offsetHeight ?? 0;
+                    document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
                   }
                   
                   setSize();
@@ -77,8 +82,8 @@
         >
             <div
                 id="header-wrapper"
-                class="header-wrapper top-0 start-0 position-sticky z-3"
-                style="width: var(--vw, 100vw);"
+                class="header-wrapper top-0 start-0 position-sticky"
+                style="width: var(--vw, 100vw); z-index: 4;"
             >
                 {% block header %}
                     HEADER

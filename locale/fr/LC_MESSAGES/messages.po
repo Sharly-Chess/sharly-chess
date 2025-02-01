@@ -1366,10 +1366,6 @@ msgid "Timers ({num})"
 msgstr "Chronomètres ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
-msgid "Messages ({num})"
-msgstr "Messages ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
 msgid "Renaming the database failed: {ex}."
 msgstr "Le renommage de la base de données a échoué : {ex}"
 
@@ -2143,6 +2139,22 @@ msgstr "Seuls les arbitres peuvent voir les évènements privés."
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "ID (unique):"
 msgstr "Identifiant (unique) :"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Visibility:"
+msgstr "Visibilité :"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+msgid "Public event"
+msgstr "Évènement public"
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Only arbiters can see private events."
+msgstr "Seuls les arbitres peuvent voir les évènements privés."
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: world-championship"
@@ -3049,7 +3061,6 @@ msgstr "Aucun avertissement"
 msgid "Informations: %(num)d"
 msgstr "Informations : %(num)d"
 
-# Error: tokens differ between [No informations] and [Informations : %(num)d]
 #: src/web/templates/admin/index/event_card.html
 msgid "No informations"
 msgstr "Aucun message d'information"
@@ -3314,7 +3325,7 @@ msgstr "Le prénom du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Date of birth:"
-msgstr "Date de naissance :"
+msgstr "Date naiss. :"
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's birth date."
@@ -3361,6 +3372,30 @@ msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
 
 #: src/web/templates/admin/players/player_modal.html
+msgid "Licence number:"
+msgstr "Numéro de licence :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's licence number."
+msgstr "Le numéro de licence du·de la joueur·euse."
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Licence:"
+msgstr "Licence :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's licence."
+msgstr "La licence du·de la joueur·euse."
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FFE Uniq ID:"
+msgstr "Identifiant unique FFE :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "L'identifiant unique pour la fédération française (ne pas modifier)."
+
+#: src/web/templates/admin/players/player_modal.html
 msgid "League:"
 msgstr "Ligue :"
 
@@ -3379,30 +3414,6 @@ msgstr "Exemple : Mon club favori !"
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's club."
 msgstr "Le club du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence:"
-msgstr "Licence :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence."
-msgstr "La licence du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence number:"
-msgstr "Numéro de licence :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence number."
-msgstr "Le numéro de licence du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "FFE Uniq ID:"
-msgstr "Identifiant unique FFE :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "L'identifiant unique pour la fédération française (ne pas modifier)."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Contact and registration"
@@ -3429,14 +3440,6 @@ msgid "The player's phone number."
 msgstr "Le numéro de téléphone du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Comment:"
-msgstr "Commentaire :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "Owed:"
 msgstr "Dû :"
 
@@ -3453,12 +3456,12 @@ msgid "The price the player already paid."
 msgstr "Le montant déjà payé."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Fixed board:"
-msgstr "Échiquier fixe :"
+msgid "Comment:"
+msgstr "Commentaire :"
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Le numéro d'échiquier qui sera toujours assigné au·à la joueur·euse (pour les personnes en situation de handicap)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -4255,8 +4258,6 @@ msgstr "Le fichier Papi du tournoi existe pas n'a pas pu être lu (%(papi_file)s
 msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr "Le fichier Papi du tournoi a été lu avec succès (%(papi_file)s)."
 
-# Error: tokens differ between [FFE qualification: %(ffe_id)s] and [Numéro
-# d'homologation FFE (facultatif) :]
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
 msgid "FFE qualification: %(ffe_id)s"
@@ -4747,112 +4748,4 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr "contre"
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
-#~ msgstr "Connexion à ChessEvent [{chessevent_uniq_id}] : {text}"
-
-#~ msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Des erreurs ont été trouvées sur l'évènement ; les connexions à ChessEvent, chronomètres, tournois, écrans, familles et écrans rotatifs ne seront pas chargés."
-
-#~ msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Des erreurs ont été trouvées sur les connexions à ChessEvent ; les chronomètres, tournois, écrans, familles et écrans rotatifs ne seront pas chargés."
-
-#~ msgid "ChessEvent connection [{uniq_id}] already exists."
-#~ msgstr "La connexion à ChessEvent [{uniq_id}] existe déjà."
-
-#~ msgid "Please enter the ID used to connect to the ChessEvent platform."
-#~ msgstr "Veuillez entrer l'identifiant de connexion à la plateforme ChessEvent."
-
-#~ msgid "Please enter the password used to connect to the ChessEvent platform."
-#~ msgstr "Veuillez entrer le mot de passe de connexion à la plateforme ChessEvent."
-
-#~ msgid "Please enter the ID of the event on the ChessEvent platform."
-#~ msgstr "Veuillez entrer l'identifiant de l'évènement sur la plateforme ChessEvent."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
-#~ msgstr "La connexion à ChessEvent [{chessevent_uniq_id}] a été créée."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
-#~ msgstr "La connexion à ChessEvent [{chessevent_uniq_id}] a été modifiée."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
-#~ msgstr "La connexion à ChessEvent [{chessevent_uniq_id}] a été supprimée."
-
-#~ msgid "ChessEvent ({num})"
-#~ msgstr "ChessEvent ({num})"
-
-#~ msgid "No ChessEvent connection"
-#~ msgstr "Pas de connexion à ChessEvent"
-
-#~ msgid "ChessEvent password: %(chessevent_password)s"
-#~ msgstr "Mot de passe ChessEvent : %(chessevent_password)s"
-
-#~ msgid "ChessEvent event: %(chessevent_event)s"
-#~ msgstr "Évènement ChessEvent : %(chessevent_event)s"
-
-#~ msgid "Edit the properties of the ChessEvent connection."
-#~ msgstr "Éditer les propriétés de la connexion à ChessEvent."
-
-#~ msgid "Clone the ChessEvent connection."
-#~ msgstr "Dupliquer la de connexion à ChessEvent."
-
-#~ msgid "Delete the ChessEvent connection."
-#~ msgstr "Supprimer la connexion à ChessEvent."
-
-#~ msgid "ChessEvent connection creation"
-#~ msgstr "Création d'une connexion à ChessEvent"
-
-#~ msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
-#~ msgstr "Édition de la connexion à ChessEvent [%(chessevent_uniq_id)s]"
-
-#~ msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
-#~ msgstr "Suppression de la connexion à ChessEvent [%(chessevent_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of a ChessEvent connection is permanent!"
-#~ msgstr "Attention : la suppression d'une connexion à ChessEvent est définitive !"
-
-#~ msgid "The following tournaments will not be connected to ChessEvent anymore:"
-#~ msgstr "Les tournois suivants ne seront plus connectés à ChessEvent :"
-
-#~ msgid "E.g.: chessevent"
-#~ msgstr "Exemple : chessevent"
-
-#~ msgid "The Unique ID, used to reference the ChessEvent connection."
-#~ msgstr "L'identifiant unique, utilisé pour référencer la connexion à ChessEvent'."
-
-#~ msgid "Password:"
-#~ msgstr "Mot de passe :"
-
-#~ msgid "Add a ChessEvent connection to the event."
-#~ msgstr "Ajouter une connexion à ChessEvent à l'évènement."
-
-#~ msgid "Create a ChessEvent connection"
-#~ msgstr "Créer une connexion à ChessEvent"
-
-#~ msgid "No ChessEvent connections."
-#~ msgstr "Pas de connexion à ChessEvent."
-
-#~ msgid "Start"
-#~ msgstr "Début"
-
-#~ msgid "End"
-#~ msgstr "Fin"
-
-#~ msgid "ChessEvent connections: %(num)d"
-#~ msgstr "Connexions ChessEvent : %(num)d"
-
-#~ msgid "ChessEvent connection:"
-#~ msgstr "Connexion à ChessEvent"
-
-#~ msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
-#~ msgstr "La connexion à ChessEvent permet la récupération des inscriptions depuis la plateforme ChessEvent."
-
-#~ msgid "Change the number of columns."
-#~ msgstr "Changer le nombre de colonnes."
-
-#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
-#~ msgstr "La connexion à ChessEvent [%(chessevent_uniq_id)s] est utilisée."
-
-#~ msgid "No ChessEvent connection is used."
-#~ msgstr "Pas de connexion à ChessEvent configurée."
 

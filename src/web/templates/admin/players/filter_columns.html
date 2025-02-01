@@ -1,6 +1,11 @@
 <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
     <span class="dropdown-center" >
-        <button class="btn btn-outline-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+        <button
+            class="btn btn-outline-primary dropdown-toggle text-nowrap ms-1"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            data-bs-auto-close="outside"
         >
             <span
                 {{ tooltip_attributes('info', _('Choose the columns displayed.'), 'top') }}
@@ -26,7 +31,7 @@
                 </li>
                 <li class="dropdown-divider m-0"></li>
                 {% for column in admin_players_columns %}
-                    <li class="dropdown-item text-nowrap">
+                    <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
                         <input
                             type="checkbox"
                             id="{{ name }}-{{ loop.index }}"
@@ -56,7 +61,7 @@
                             {% elif column == 'category' %}
                                 <i class="bi-tag pe-1"></i>{{ _('Category *** CATEGORY FOR PLAYERS COLUMNS') }}
                             {% elif column == 'gender' %}
-                                <i class="bi-person-standing-dress pe-1"></i><i class="bi-person-standing pe-1"></i>{{ _('Gender *** GENDER FOR PLAYERS COLUMNS') }}
+                                <i class="bi-person-standing-dress"></i><i class="bi-person-standing pe-1"></i>{{ _('Gender *** GENDER FOR PLAYERS COLUMNS') }}
                             {% elif column == 'fixed' %}
                                 {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}<img
                                     src="{{ url_for('static', file_path='/images/disabled-black.svg') }}"

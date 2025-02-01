@@ -3,7 +3,7 @@
     {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'tournament', admin_players_sort) }}
     <span class="dropdown-center" >
         <button
-                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
         ><i
                 class="bi-funnel {% if admin_players_filter_tournaments|length not in [0, (admin_event.players_tournaments|length)] %}text-primary{% endif %}"
                 {{ tooltip_attributes('info', _('Filter the tournaments.'), 'top') }}
@@ -25,7 +25,7 @@
                 </li>
                 <li class="dropdown-divider m-0"></li>
                 {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
-                    <li class="dropdown-item text-nowrap">
+                    <li class="dropdown-item d-flex align-items-center gap-2">
                         <input
                             type="checkbox"
                             id="{{ name }}-{{ loop.index }}"

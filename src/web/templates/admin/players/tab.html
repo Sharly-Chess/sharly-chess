@@ -1,11 +1,13 @@
 {% with url=url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') %}
     <div
-        class="d-flex mb-2 align-items-center flex-wrap gap-1"
-        style="max-width: calc(var(--vw, 100vw) - 4rem);"
+        class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
+        style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
     >
-        <div class="flex-grow-1 fs-4 fw-bold">
+        {% call() section_title() %}
+            <i class="bi-gear-fill pe-1"></i>
             {{ admin_event.name }} - {{ _('Players') }}
-        </div>
+        {% endcall %}
+        <div class="flex-grow-1"></div>
         <div class="d-flex gap-1 ms-auto">
             {% include 'check_in_tournaments.html' %}
             {% include 'filter_columns.html' %}
@@ -21,15 +23,15 @@
                 </button>
             </span>
             <span
-                    {% if admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
-                        {{ tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
-                    {% elif admin_event.tournaments_with_file_sorted_by_uniq_id %}
-                        {{ tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
-                    {% elif admin_event.tournaments_by_id %}
-                        {{ tooltip_attributes('warning', _('No Papi file for the tournaments of the event, players can not be added.'), 'top') }}
-                    {% else %}
-                        {{ tooltip_attributes('warning', _('Add a tournament before adding players.'), 'top') }}
-                    {% endif %}
+                {% if admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                    {{ tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
+                {% elif admin_event.tournaments_with_file_sorted_by_uniq_id %}
+                    {{ tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
+                {% elif admin_event.tournaments_by_id %}
+                    {{ tooltip_attributes('warning', _('No Papi file for the tournaments of the event, players can not be added.'), 'top') }}
+                {% else %}
+                    {{ tooltip_attributes('warning', _('Add a tournament before adding players.'), 'top') }}
+                {% endif %}
             >
                 <button
                     class="btn btn-primary text-nowrap ms-1"
@@ -49,164 +51,216 @@
     </div>
 
     <section class="pt-1 pb-1 shadow-sm">
-        <table class="table table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center">
-            <thead class="table-dark position-sticky top-0 z-2">
+        <table
+            class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+        >
+            <thead
+                class="position-sticky z-2"
+                style="top: var(--header-height);"
+            >
                 <tr>
                     <th scope="col" class="text-nowrap text-start w-1">
-                        <i
-                                class="bi-x-circle btn btn-dark py-0 ps-1 pe-0 m-0"
+                        <div class="d-flex align-items-center">
+                            <i
+                                class="bi-x-circle btn text-dark py-0 ps-1 pe-0 m-0"
                                 hx-get="{{ url }}"
                                 hx-vals='{"admin_players_clear_filters": "1"}'
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 {{ tooltip_attributes('info', _('Clear all the filters.'), 'top') }}
-                        ></i>
+                            ></i>
+                        </div>
                     </th>
                     {% if 'check_in' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
-                            <i class="bi-circle"></i><i class="bi-check-circle pe-1"></i>
-                            {% include 'filter_check_ins.html' %}
+                            <div class="d-flex align-items-center">
+                                <i class="bi-circle"></i>
+                                <i class="bi-check-circle pe-1"></i>
+                                {% include 'filter_check_ins.html' %}
+                            </div>
                         </th>
                     {% endif %}
                     <th scope="col" class="text-nowrap">
                         {# Players' title #}
                     </th>
-                    <th scope="col" class="text-nowrap">
-                        {{ _('Name *** NAME COLUMN HEADER FOR PLAYERS') }}
-                        {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'alpha', admin_players_sort) }}
-                        <input
+                    <th
+                        scope="col"
+                        class="text-nowrap position-sticky start-0 z-2 px-3"
+                        style="border-right: 2px solid var(--bs-body-bg);"
+                    >
+                        <div class="d-flex align-items-center gap-1">
+                            {{ _('Name *** NAME COLUMN HEADER FOR PLAYERS') }}
+                            {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'alpha', admin_players_sort) }}
+                            <input
                                 type="text"
                                 name="admin_players_filter_name"
-                                class="admin-players-filter-name p-0"
+                                class="admin-players-filter-name py-0 px-1"
                                 hx-get="{{ url }}"
                                 hx-swap="multi:#players-table-body,#players-table-counters"
                                 hx-trigger="keyup changed delay:0.2s"
                                 hx-indicator="#please-wait"
                                 value="{{ admin_players_filter_name }}"
-                        />
-                        <i
-                                class="bi-x-circle btn btn-dark p-0 m-0"
+                            />
+                            <i
+                                class="bi-x-circle btn text-dark p-0 m-0"
                                 hx-get="{{ url }}"
                                 hx-vals='{"admin_players_filter_name": ""}'
                                 hx-target="body"
                                 hx-indicator="#please-wait"
-                        ></i>
+                            ></i>
+                        </div>
                     </th>
                     <th scope="col" class="text-nowrap text-center">
-                        {{ _('Elo *** ELO COLUMN HEADER FOR PLAYERS') }}
-                        {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'rating_desc', admin_players_sort) }}
-                        {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'rating_asc', admin_players_sort) }}
+                        <div class="d-flex align-items-center gap-1">
+                            {{ _('Elo *** ELO COLUMN HEADER FOR PLAYERS') }}
+                            {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'rating_desc', admin_players_sort) }}
+                            {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'rating_asc', admin_players_sort) }}
+                        </div>
                     </th>
                     {% if 'federation' in admin_players_filter_columns or 'league' in admin_players_filter_columns or 'club' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-start" colspan="{{
                             (1 if 'federation' in admin_players_filter_columns else 0) + (1 if 'league' in admin_players_filter_columns else 0) + (1 if 'club' in admin_players_filter_columns else 0)
                         }}">
-                            {{ _('Origin *** ORIGIN COLUMN HEADER FOR PLAYERS') }}
-                            {% if admin_players_clubs|length > 1 %}
-                                {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'origin', admin_players_sort) }}
-                            {% endif %}
-                            {% if admin_players_federations|length > 1 %}
-                                {% include 'filter_federations.html' %}
-                            {% endif %}
-                            {% if admin_players_leagues|length > 1 %}
-                                {% include 'filter_leagues.html' %}
-                            {% endif %}
-                            {% if admin_players_clubs|length > 1 %}
-                                {% include 'filter_clubs.html' %}
-                            {% endif %}
-                            <input
+                            <div class="d-flex align-items-center gap-1">
+                                {{ _('Origin *** ORIGIN COLUMN HEADER FOR PLAYERS') }}
+                                {% if admin_players_clubs|length > 1 %}
+                                    {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'origin', admin_players_sort) }}
+                                {% endif %}
+                                {% if admin_players_federations|length > 1 %}
+                                    {% include 'filter_federations.html' %}
+                                {% endif %}
+                                {% if admin_players_leagues|length > 1 %}
+                                    {% include 'filter_leagues.html' %}
+                                {% endif %}
+                                {% if admin_players_clubs|length > 1 %}
+                                    {% include 'filter_clubs.html' %}
+                                {% endif %}
+                                <input
                                     type="text"
                                     name="admin_players_filter_origin"
-                                    class="admin-players-filter-origin p-0"
+                                    class="admin-players-filter-origin py-0 px-1"
                                     hx-get="{{ url }}"
                                     hx-swap="multi:#players-table-body,#players-table-counters"
                                     hx-trigger="keyup changed delay:0.2s"
                                     preload
                                     hx-indicator="#please-wait"
                                     value="{{ admin_players_filter_origin }}"
-                            />
-                            <i
-                                    class="bi-x-circle btn btn-dark p-0 m-0"
+                                />
+                                <i
+                                    class="bi-x-circle btn text-dark p-0 m-0"
                                     hx-get="{{ url }}"
                                     hx-vals='{"admin_players_filter_origin": ""}'
                                     hx-target="body"
                                     hx-indicator="#please-wait"
-                            ></i>
+                                ></i>
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'yob' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
-                            {{ _('YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS') }}
-                            {% if admin_players_yobs|length > 1 %}
-                                {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'yob_desc', admin_players_sort) }}
-                                {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'yob_asc', admin_players_sort) }}
-                            {% endif %}
+                            <div class="d-flex align-items-center">
+                                {{ _('YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS') }}
+                                {% if admin_players_yobs|length > 1 %}
+                                    {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'yob_desc', admin_players_sort) }}
+                                    {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'yob_asc', admin_players_sort) }}
+                                {% endif %}
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'category' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
-                            {{ _('Cat *** CATEGORY COLUMN HEADER FOR PLAYERS') }}
-                            {% if admin_players_categories|length > 1 %}
-                                {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'category_desc', admin_players_sort) }}
-                                {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'category_asc', admin_players_sort) }}
-                            {% endif %}
-                            {% include 'filter_categories.html' %}
+                            <div class="d-flex align-items-center">
+                                {{ _('Cat *** CATEGORY COLUMN HEADER FOR PLAYERS') }}
+                                {% if admin_players_categories|length > 1 %}
+                                    {{ admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'category_desc', admin_players_sort) }}
+                                    {{ admin_players_sort_link(url, 'bi-sort-numeric-down', 'category_asc', admin_players_sort) }}
+                                {% endif %}
+                                {% include 'filter_categories.html' %}
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'mail' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-start w-1">
-                            <i class="bi-envelope-check" {{ tooltip_attributes('info', _('The mail addresses.'), 'top') }} ></i>
+                            <div class="d-flex align-items-center">
+                                <i class="bi-envelope-check" {{ tooltip_attributes('info', _('The mail addresses.'), 'top') }} ></i>
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'phone' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-start w-1">
-                            <i class="bi-telephone" {{ tooltip_attributes('info', _('The phone numbers.'), 'top') }} ></i>
+                            <div class="d-flex align-items-center">
+                                <i class="bi-telephone" {{ tooltip_attributes('info', _('The phone numbers.'), 'top') }} ></i>
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'gender' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
-                            <i class="bi-person-standing-dress"></i><i class="bi-person-standing pe-1"></i>{%- include 'filter_genders.html' %}
+                            <div class="d-flex align-items-center">
+                                <i class="bi-person-standing-dress"></i>
+                                <i class="bi-person-standing pe-1"></i>
+                                {%- include 'filter_genders.html' %}
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'gender' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
-                            {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}<img
-                                    src="{{ url_for('static', file_path='/images/disabled-white.svg') }}"
-                                    style="height: 1.2em"
+                            <div class="d-flex align-items-center">
+                                {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}
+                                <img
+                                    src="{{ url_for('static', file_path='/images/disabled-black.svg') }}"
+                                    style="height: 1rem"
                                     class="p-0"
-                            />
+                                />
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'fide' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center w-1">
-                            {{ _('FIDE *** FIDE COLUMN HEADER FOR PLAYERS') }}
+                            <div class="d-flex align-items-center">
+                                {{ _('FIDE *** FIDE COLUMN HEADER FOR PLAYERS') }}
+                            </div> 
                         </th>
                     {% endif %}
                     {% if 'ffe' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center w-1">
-                            {{ _('FFE *** FFE COLUMN HEADER FOR PLAYERS') }}
-                            {% include 'filter_ffe_licences.html' %}
+                            <div class="d-flex align-items-center">
+                                {{ _('FFE *** FFE COLUMN HEADER FOR PLAYERS') }}
+                                {% include 'filter_ffe_licences.html' %}
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'owed_paid' in admin_players_filter_columns %}
-                        <th scope="col" class="text-nowrap text-end">{{ _('Owed *** OWED COLUMN HEADER FOR PLAYERS') }}</th>
-                        <th scope="col" class="text-nowrap text-end">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</th>
+                        <th scope="col" class="text-nowrap text-end"><div class="d-flex align-items-center">{{ _('Owed *** OWED COLUMN HEADER FOR PLAYERS') }}</div></th>
+                        <th scope="col" class="text-nowrap text-end"><div class="d-flex align-items-center">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</div></th>
                     {% endif %}
                     {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
                         <th scope="col" class="text-nowrap text-center">
-                            {% include 'filter_tournaments.html' %}
+                            <div class="d-flex align-items-center">
+                                {% include 'filter_tournaments.html' %}
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'comment' in admin_players_filter_columns %}
-                        <th scope="col" class="text-nowrap"><i class="bi-chat"></i></th>
+                        <th scope="col" class="text-nowrap">
+                            <div class="d-flex align-items-center">
+                                <i class="bi-chat"></i>
+                            </div>
+                        </th>
                     {% endif %}
                     {% if 'history' in admin_players_filter_columns %}
-                        <th scope="col" class="text-nowrap"><i class="bi-0-square"></i><i class="bi-1-square-fill"></i></th>
+                        <th scope="col" class="text-nowrap">
+                            <div class="d-flex align-items-center">
+                                <i class="bi-0-square"></i>
+                                <i class="bi-1-square-fill"></i>
+                            </div>
+                        </th>
                     {% endif %}
                     <th scope="col" class="text-nowrap text-end w-1">
-                        <span id="players-table-counters" class="pe-1">
-                            {{ admin_players|length }}/{{admin_event.players_number}}
-                        </span>
+                        <div class="d-flex align-items-center">
+                            <span id="players-table-counters" class="pe-1">
+                                {{ admin_players|length }}/{{admin_event.players_number}}
+                            </span>
+                        </div>  
                     </th>
                 </tr>
             </thead>
@@ -245,13 +299,16 @@
                                             hx-target="body"
                                             hx-indicator="#please-wait"
                                         {% endif %}
-                                    "></i>
+                                    ></i>
                                 </td>
                             {% endif %}
                             <td class="text-end">
                                 {{ player.title.short_name }}
                             </td>
-                            <td class="text-nowrap">
+                            <td
+                                class="text-nowrap position-sticky start-0 px-3"
+                                style="border-right: 2px solid #454748;"
+                            >
                                 {{ player.last_name }} {{ player.first_name }}
                             </td>
                             <td class="text-nowrap text-center">
@@ -261,9 +318,9 @@
                                 <td class="text-nowrap text-start w-1">
                                     <span class="">
                                         <img
-                                                class="player-federation-flag ms-1 ps-1 pe-1"
-                                                src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
-                                                {{ tooltip_attributes('info', player.federation, 'left') }}
+                                            class="player-federation-flag pe-1"
+                                            src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
+                                            {{ tooltip_attributes('info', player.federation, 'left') }}
                                         />
                                     </span>
                                 </td>
@@ -274,7 +331,7 @@
                                 </td>
                             {% endif %}
                             {% if 'club' in admin_players_filter_columns %}
-                                <td class="text-nowrap text-start w-1" style="max-width: 15em; overflow: hidden">
+                                <td class="text-nowrap text-start w-1" style="max-width: 15em; overflow: hidden; text-overflow: ellipsis;">
                                     {{ player.club }}
                                 </td>
                             {% endif %}
@@ -291,26 +348,26 @@
                             {% if 'mail' in admin_players_filter_columns %}
                                 <td class="text-nowrap">
                                     <i
-                                            class="{% if player.mail %}bi-envelope-check text-body cursor-pointer{% else %}bi-envelope text-secondary{% endif %}"
-                                            {% if player.mail %}
-                                                {{ tooltip_attributes('info', _('Mail: %(mail)s (click to copy to the clipboard).', mail=player.mail), 'right') }}
-                                            {% else %}
-                                                {{ tooltip_attributes('warning', _('No mail defined.'), 'right') }}
-                                            {% endif %}
-                                            onclick="navigator.clipboard.writeText('{{ player.mail }}')"
+                                        class="{% if player.mail %}bi-envelope-check text-body cursor-pointer{% else %}bi-envelope text-secondary{% endif %}"
+                                        {% if player.mail %}
+                                            {{ tooltip_attributes('info', _('Mail: %(mail)s (click to copy to the clipboard).', mail=player.mail), 'right') }}
+                                        {% else %}
+                                            {{ tooltip_attributes('warning', _('No mail defined.'), 'right') }}
+                                        {% endif %}
+                                        onclick="navigator.clipboard.writeText('{{ player.mail }}')"
                                     ></i>
                                 </td>
                             {% endif %}
                             {% if 'phone' in admin_players_filter_columns %}
                                 <td class="text-nowrap">
                                     <i
-                                            class="bi-telephone {% if player.phone %}text-body cursor-pointer{% else %}text-secondary{% endif %}"
-                                            {% if player.phone %}
-                                                {{ tooltip_attributes('info', _('Phone: %(phone)s (click to copy to the clipboard).', phone=player.phone), 'right') }}
-                                            {% else %}
-                                                {{ tooltip_attributes('warning', _('No phone defined.'), 'right') }}
-                                            {% endif %}
-                                            onclick="navigator.clipboard.writeText('{{ player.phone }}')"
+                                        class="bi-telephone {% if player.phone %}text-body cursor-pointer{% else %}text-secondary{% endif %}"
+                                        {% if player.phone %}
+                                            {{ tooltip_attributes('info', _('Phone: %(phone)s (click to copy to the clipboard).', phone=player.phone), 'right') }}
+                                        {% else %}
+                                            {{ tooltip_attributes('warning', _('No phone defined.'), 'right') }}
+                                        {% endif %}
+                                        onclick="navigator.clipboard.writeText('{{ player.phone }}')"
                                     ></i>
                                 </td>
                             {% endif %}
@@ -328,32 +385,32 @@
                             {% if 'fide' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center w-1">
                                     <img
-                                            src="{{ url_for('static', file_path='/images/federations/fide.svg') }}"
-                                            style="height: 1.2em"
-                                            class="p-0 {% if player.fide_id %}cursor-pointer{% else %}fide-id-none{% endif %}"
-                                            {% if player.fide_id %}
-                                                {{ tooltip_attributes('info', _('FIDE ID: %(fide_id)s (click to copy to the clipboard).', fide_id=player.fide_id), 'left') }}
-                                                onclick="navigator.clipboard.writeText('{{ player.fide_id }}')"
-                                            {% else %}
-                                                {{ tooltip_attributes('warning', _('No FIDE ID.'), 'left') }}
-                                            {% endif %}
+                                        src="{{ url_for('static', file_path='/images/federations/fide.svg') }}"
+                                        style="height: 1.2em"
+                                        class="p-0 {% if player.fide_id %}cursor-pointer{% else %}fide-id-none{% endif %}"
+                                        {% if player.fide_id %}
+                                            {{ tooltip_attributes('info', _('FIDE ID: %(fide_id)s (click to copy to the clipboard).', fide_id=player.fide_id), 'left') }}
+                                            onclick="navigator.clipboard.writeText('{{ player.fide_id }}')"
+                                        {% else %}
+                                            {{ tooltip_attributes('warning', _('No FIDE ID.'), 'left') }}
+                                        {% endif %}
                                     />
                                 </td>
                             {% endif %}
                             {% if 'ffe' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center w-1">
                                     <span
-                                            {% if player.ffe_licence.value == 0 %}
-                                                {{ tooltip_attributes('error', player.ffe_licence.name, 'right') }}
-                                            {% elif player.ffe_licence.value == 1 %}
-                                                {{ tooltip_attributes('warning', player.ffe_licence.name, 'right') }}
-                                            {% elif player.ffe_licence.value in [2, 3] %}
-                                                {{ tooltip_attributes('info', _('FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).', ffe_licence_number=player.ffe_licence_number), 'right') }}
-                                                class="cursor-pointer"
-                                                onclick="navigator.clipboard.writeText('{{ player.ffe_licence_number }}')"
-                                            {% else %}
-                                                {{ tooltip_attributes('error', _('Unknown FFE Licence type [%(ffe_licence)s].', ffe_licence=player.ffe_licence), 'right') }}
-                                            {% endif %}
+                                        {% if player.ffe_licence.value == 0 %}
+                                            {{ tooltip_attributes('error', player.ffe_licence.name, 'right') }}
+                                        {% elif player.ffe_licence.value == 1 %}
+                                            {{ tooltip_attributes('warning', player.ffe_licence.name, 'right') }}
+                                        {% elif player.ffe_licence.value in [2, 3] %}
+                                            {{ tooltip_attributes('info', _('FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).', ffe_licence_number=player.ffe_licence_number), 'right') }}
+                                            class="cursor-pointer"
+                                            onclick="navigator.clipboard.writeText('{{ player.ffe_licence_number }}')"
+                                        {% else %}
+                                            {{ tooltip_attributes('error', _('Unknown FFE Licence type [%(ffe_licence)s].', ffe_licence=player.ffe_licence), 'right') }}
+                                        {% endif %}
                                     >
                                         {{ ffe_licence(player.ffe_licence) }}
                                     </span>
@@ -368,12 +425,17 @@
                                 </td>
                             {% endif %}
                             {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
-                                <td class="text-nowrap text-center">
+                                <td class="text-nowrap text-start">
                                     {% if player.has_real_pairings or admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id|length == 1 %}
                                         {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
                                     {% else %}
                                         <span class="dropdown">
-                                            <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                                            <button
+                                                class="btn btn-secondary dropdown-toggle mx-0 px-2 py-0 w-100 d-inline-flex align-items-center justify-content-between"
+                                                type="button"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                            >
                                                 {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
                                             </button>
                                             <ul class="dropdown-menu players-set-player-tournament p-0" {{ tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }} >
@@ -381,7 +443,7 @@
                                                     {% if tournament.file_exists %}
                                                         {% set enable=player.tournament_id != tournament.id %}
                                                         <li
-                                                            class="dropdown-item btn {% if not enable %}disabled{% endif %} text-center py-0"
+                                                            class="dropdown-item btn {% if not enable %}disabled{% endif %} text-start"
                                                             {% if enable %}
                                                                 hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
                                                                 hx-target="body"
@@ -416,7 +478,7 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end players-player-actions p-0" >
                                         <li
-                                            class="dropdown-item btn py-0 px-1"
+                                            class="dropdown-item btn text-start"
                                             hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                             hx-target="body"
                                             hx-indicator="#please-wait"
@@ -426,7 +488,7 @@
                                         </li>
                                         {% if not player.has_real_pairings %}
                                             <li
-                                                class="dropdown-item btn py-0 px-1 text-danger {% if player.has_real_pairings %}disabled{% endif %}"
+                                                class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
                                                     hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                                     hx-target="body"
                                                     hx-indicator="#please-wait"

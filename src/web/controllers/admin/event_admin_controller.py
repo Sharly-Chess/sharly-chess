@@ -130,22 +130,9 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 'title': _('Timers ({num})').format(num=len(admin_event.timers_by_id) or '-'),
                 'template': 'timers/tab.html',
             },
-            'messages': {
-                'title': _('Messages ({num})').format(num=len(admin_event.messages) or '-'),
-                'template': 'messages/tab.html',
-            },
         }
         if not web_context.admin_event_tab:
             web_context.admin_event_tab = list(nav_tabs.keys())[0]
-        if admin_event.criticals:
-            nav_tabs['messages']['class'] = logging_levels[logging.CRITICAL]['class']
-            nav_tabs['messages']['icon_class'] = logging_levels[logging.CRITICAL]['icon_class']
-        elif admin_event.errors:
-            nav_tabs['messages']['class'] = logging_levels[logging.ERROR]['class']
-            nav_tabs['messages']['icon_class'] = logging_levels[logging.ERROR]['icon_class']
-        elif admin_event.warnings:
-            nav_tabs['messages']['class'] = logging_levels[logging.WARNING]['class']
-            nav_tabs['messages']['icon_class'] = logging_levels[logging.WARNING]['icon_class']
         template_context: dict[str, Any] = web_context.template_context | {
             'messages': Message.messages(web_context.request),
             'logging_levels': logging_levels,
@@ -328,11 +315,6 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 }
             case 'timers':
                 pass
-            case 'messages':
-                template_context |= {
-                    'admin_messages_min_logging_level': SessionHandler.get_session_admin_messages_min_logging_level(
-                        web_context.request),
-                }
             case _:
                 raise ValueError(f'admin_event_tab={web_context.admin_event_tab}')
         return template_context
@@ -443,7 +425,6 @@ class EventAdminController(AbstractEventAdminController):
             admin_screens_show_players: bool | None,
             admin_screens_show_results: bool | None,
             admin_screens_show_image: bool | None,
-            admin_messages_min_logging_level: int | None,
             admin_players_sort: str | None = None,
             admin_players_filter_columns: list[str] | None = None,
             admin_players_filter_federations: list[str] | None = None,
@@ -557,14 +538,6 @@ class EventAdminController(AbstractEventAdminController):
                     SessionHandler.set_session_admin_rotators_show_details(request, admin_rotators_show_details)
             case 'timers':
                 pass
-            case 'messages':
-                if admin_messages_min_logging_level is not None:
-                    try:
-                        SessionHandler.set_session_admin_messages_min_logging_level(
-                            request, admin_messages_min_logging_level)
-                    except ValueError:
-                        return AbstractController.redirect_error(
-                            request, f'Invalid log level [{admin_messages_min_logging_level}].')
             case _:
                 raise ValueError(f'admin_event_tab={admin_event_tab}')
         return self._admin_event(

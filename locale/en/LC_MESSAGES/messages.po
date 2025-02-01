@@ -1366,10 +1366,6 @@ msgid "Timers ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
-msgid "Messages ({num})"
-msgstr ""
-
-#: src/web/controllers/admin/event_admin_controller.py
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
@@ -2112,11 +2108,23 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Properties"
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Visibility:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+msgid "Public event"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Only arbiters can see private events."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "E.g.: world-championship"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2137,15 +2145,11 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "ID (unique):"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "E.g.: world-championship"
+msgid "Name:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2322,6 +2326,10 @@ msgstr ""
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "The background colour is used when the image does not fill the whole screen."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Choose a custom image:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -3341,6 +3349,10 @@ msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's FIDE title."
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Federation:"
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
@@ -4744,13 +4756,4 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
-
-#~ msgid "The name of the event on the ChessEvent platform (default the ChessEvent defined for the Papi-web event of the tournament)."
-#~ msgstr ""
-
-#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
-#~ msgstr ""
-
-#~ msgid "No ChessEvent connection is used."
-#~ msgstr ""
 

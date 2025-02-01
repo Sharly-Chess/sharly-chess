@@ -1,7 +1,7 @@
 <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
     <span class="dropdown-center" >
         <button
-                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
         ><i
                 class="bi-funnel {% if admin_players_filter_clubs|length not in [0, (admin_players_clubs|length)] %}text-primary{% endif %}"
                 {{ tooltip_attributes('info', _('Filter the clubs.'), 'top') }}
@@ -23,7 +23,7 @@
                 </li>
                 <li class="dropdown-divider m-0"></li>
                 {% for club_tuple in admin_players_clubs %}
-                    <li class="dropdown-item text-nowrap">
+                    <li class="dropdown-item d-flex align-items-center gap-2">
                         <input
                             type="checkbox"
                             id="{{ name }}-{{ loop.index }}"
@@ -35,7 +35,7 @@
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
                             <span class="player-federation_flag">
                                 <img
-                                        class="player-federation-flag ms-1 ps-1 pe-1"
+                                        class="player-federation-flag pe-1"
                                         src="{{ url_for('static', file_path='/images/federations/' ~ club_tuple.federation ~ '.svg') }}"
                                 />
                             </span>

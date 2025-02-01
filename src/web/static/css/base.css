@@ -55,6 +55,9 @@ body {
 .index-locale-flag {
     height: 1em;
 }
+.dropdown-menu {
+    overflow: hidden;
+}
 .dropdown-menu.locale,
 .dropdown-menu.columns-number {
     min-width: 0;
@@ -88,6 +91,50 @@ body {
 }
 .modal * + h4 {
     margin-top: 1.5rem
+}
+
+/* Dynamic select overrides */
+.dynamic-select-wrapper {
+    width: 100%;
+}
+
+.modal-content .dynamic-select .dynamic-select-header {
+    width: 100%;
+    height: 2.375rem;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.modal-content .dynamic-select .dynamic-select-options {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    padding: 0;
+}
+
+.modal-content .dynamic-select .dynamic-select-options .dynamic-select-option {
+    height: 2rem;
+    color: var(--bs-body-color);
+    border-radius: 0;
+    padding: 5px 12px;
+}
+
+.modal-content .dynamic-select .dynamic-select-options .dynamic-select-option:active,
+.modal-content .dynamic-select .dynamic-select-options .dynamic-select-option:hover {
+    background-color: var(--bs-body-color);
+    color: var(--bs-body-bg);
 }
 
 [data-bs-theme=dark] {
@@ -205,10 +252,8 @@ body {
 
 [data-bs-theme=dark] .papi-web-tooltip-info {
     --bs-tooltip-bg: #9d9e9e;
-}
-
-[data-bs-theme=dark] .papi-web-tooltip-info {
     --bs-tooltip-color: black;
+    --bs-tooltip-opacity: 1;
 }
 
 [data-bs-theme=dark] .modal {
@@ -222,4 +267,22 @@ body {
 [data-bs-theme=dark] .form-check-input:checked {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
+}
+
+[data-bs-theme=dark] table.prominent {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+[data-bs-theme=dark] table.prominent thead th {
+    background-color: var(--bs-primary);
+    color: var(--pw-dark-text);
+    padding: 5px;
+    border-bottom: 7px solid var(--bs-body-bg);
+    vertical-align: middle;
+}
+
+
+[data-bs-theme=dark] table.prominent thead td {
+    padding: 5px;
 }

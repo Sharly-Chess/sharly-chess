@@ -1,6 +1,6 @@
 <div
     class="d-flex mb-2 align-items-center flex-wrap gap-1"
-    style="max-width: calc(var(--vw, 100vw) - 4rem);"
+    style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
 >
     {% call() section_title() %}
         {{ event_visibility_icon(admin_event, 'pe-1') }}
@@ -171,5 +171,14 @@
             <th scope="row" class="text-nowrap">{{ _('Last update') }}</th>
             <td class="text-nowrap">{{ admin_event.last_update_str }}</td>
         </tr>
+        {% for message in admin_event.messages %}
+            <tr>
+                <td scope="row" colspan="2" class="text-nowrap {{ logging_levels[message.level].class }}">
+                    <i class="{{ logging_levels[message.level].icon_class }}"></i>
+                    {{ logging_levels[message.level].name }}
+                    {{ message.formatted_text }}
+                </td>
+            </tr>
+        {% endfor %}
     </tbody>
 </table>

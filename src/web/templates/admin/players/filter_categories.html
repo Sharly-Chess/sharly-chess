@@ -2,7 +2,7 @@
     <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
         <span class="dropdown-center" >
             <button
-                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
             ><i
                     class="bi-funnel {% if admin_players_filter_categories|length not in [0, (admin_players_categories|length)] %}text-primary{% endif %}"
                     {{ tooltip_attributes('info', _('Filter the categories.'), 'top') }}
@@ -24,7 +24,7 @@
                     </li>
                     <li class="dropdown-divider m-0"></li>
                     {% for category in admin_players_categories %}
-                        <li class="dropdown-item text-nowrap">
+                        <li class="dropdown-item text-nowrap d-flex align-items-center gap-2">
                             <input
                                 type="checkbox"
                                 id="{{ name }}-{{ loop.index }}"

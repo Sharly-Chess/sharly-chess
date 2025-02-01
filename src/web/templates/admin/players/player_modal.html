@@ -1,16 +1,17 @@
 <div class="modal-dialog modal-dialog-centered admin-player-edit-modal d-block">
     <form
-            {% if action == 'create' %}
-                hx-post="{{ url_for('admin-player-create', event_uniq_id=admin_event.uniq_id) }}"
-            {% elif action == 'update' %}
-                hx-patch="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
-            {% elif action == 'delete' %}
-                hx-delete="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
-            {% else %}
-                hx-get="{{ url_for('unknown-action-' ~ action) }}"
-            {% endif %}
-            hx-target="body"
-            hx-indicator="#please-wait">
+        {% if action == 'create' %}
+            hx-post="{{ url_for('admin-player-create', event_uniq_id=admin_event.uniq_id) }}"
+        {% elif action == 'update' %}
+            hx-patch="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+        {% elif action == 'delete' %}
+            hx-delete="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+        {% else %}
+            hx-get="{{ url_for('unknown-action-' ~ action) }}"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">
@@ -27,15 +28,16 @@
             </div>
             <div class="modal-body">
                 {% if action == 'delete' %}
-                    <h3 class="text-danger">
+                    <h4 class="text-danger">
                         {{ _('Warning: the deletion of a player is permanent!') }}
-                    </h3>
+                    </h4>
                 {% endif %}
-                <h3>
+
+                <h4>
                     {{ _('Identity') }}
-                </h3>
+                </h4>
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
                         {{ text_input(
                             name='last_name',
                             label=_('Name:'),
@@ -46,7 +48,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-3">
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
                         {{ text_input(
                             name='first_name',
                             label=_('First name:'),
@@ -57,7 +59,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2">
+                    <div class="col-12 col-md-6 col-lg-2 mb-3">
                         {{ date_input(
                             name='date_of_birth',
                             label=_('Date of birth:'),
@@ -67,7 +69,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2">
+                    <div class="col-12 col-md-6 col-lg-2 mb-3">
                         {{ select_input(
                             name='gender',
                             label=_('Gender:'),
@@ -78,7 +80,13 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2">
+                </div>
+
+                <h4 class="mt-3">
+                    {{ _('Tournament') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-sm-8 mb-3">
                         {{ select_input(
                             name='tournament_id',
                             label=_('Tournament:'),
@@ -89,13 +97,26 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+
+                    <div class="col-12 col-sm-4 mb-3">
+                        {{ number_input(
+                            name='fixed',
+                            label=_('Fixed board:'),
+                            help_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
+                            disabled=true,
+                            error=action == 'delete',
+                            number_min=1,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
-                <h3>
-                    {{ _('FIDE ratings, title and fédération') }}
-                </h3>
+
+                <h4>
+                    {{ _('Ratings') }}
+                </h4>
                 <div class="row">
                     {% for tournament_rating, tournament_rating_strings in tournament_ratings_strings.items() %}
-                        <div class="col-2">
+                        <div class="col-12 col-sm-4 mb-3">
                             {# can not use *_input() here because of a specific pattern for rating type/value #}
                             {%
                                 with
@@ -103,19 +124,19 @@
                                     id=name|replace('_', '-'),
                                     name2='rating_type_' ~ tournament_rating.value
                             %}
-                                <label for="{{ id }}" class="form-check-label d-block">{{ tournament_rating_strings['label'] }}</label>
+                                <label for="{{ id }}" class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
                                 <input
                                         name="{{ name }}"
                                         type="number" id="{{ id }}"
-                                        class="form-control d-inline w-49 {% if name in errors or action == 'delete' %}is-invalid{% else %}is-valid{% endif %}"
+                                        class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
                                         value="{{ data[name] }}"
                                         {% if action == 'delete' %}disabled{% endif %}
                                 />
                                 <select
-                                        name="{{ name2 }}"
-                                        class="form-control d-inline w-49 {% if name in errors or action == 'delete' %}is-invalid{% else %}is-valid{% endif %}"
-                                        {% if action == 'delete' %}disabled{% endif %}
+                                    name="{{ name2 }}"
+                                    class="mt-2 form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                    {% if action == 'delete' %}disabled{% endif %}
                                 >
                                     {% for value, text in rating_type_options.items() %}
                                         <option value="{{ value }}" {% if value == data[name2] %}selected{%endif %} {% if not value %}class="fst-italic"{% endif %}>
@@ -136,7 +157,24 @@
                             {% endwith %}
                         </div>
                     {% endfor %}
-                    <div class="col-2">
+                </div>
+
+                <h4>
+                    {{ _('FIDE') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-sm-4 mb-3">
+                        {{ number_input(
+                            name='fide_id',
+                            label=_('FIDE ID:'),
+                            help_text=_('The player\'s FIDE ID (do not change).') if action != 'delete' else '',
+                            disabled=true,
+                            error=action == 'delete',
+                            number_min=1,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-sm-4 mb-3">
                         {{ select_input(
                             name='title',
                             label=_('FIDE Title:'),
@@ -147,26 +185,26 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2">
+                    <div class="col-12 col-sm-4 mb-3">
                         {# can not use select_input() here because of dynamic-select #}
                         {% with id='federation', name='federation' %}
                             <div>
-                                <label for="{{ id }}" class="form-check-label d-block">{{ _('Federation:') }}</label>
+                                <label for="{{ id }}" class="mb-1 form-check-label d-block">{{ _('Federation:') }}</label>
                                 <div class="input-group">
                                     <select
-                                            name="{{ name }}"
-                                            class="form-control {% if name in errors or action == 'delete' %}is-invalid{% else %}is-valid{% endif %}"
-                                            {% if action == 'delete' %}
-                                                disabled
-                                            {% else %}
-                                                data-dynamic-select
-                                            {% endif %}
+                                        name="{{ name }}"
+                                        class="form-control {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                        {% if action == 'delete' %}
+                                            disabled
+                                        {% else %}
+                                            data-dynamic-select
+                                        {% endif %}
                                     >
                                         {% for federation_id, federation_name in federations.items() %}
                                             <option
-                                                    value="{{ federation_id }}"
-                                                    {% if federation_id == data[name] %}selected{%endif %}
-                                                    data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
+                                                value="{{ federation_id }}"
+                                                {% if federation_id == data[name] %}selected{%endif %}
+                                                data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
                                             >
                                                 {{ federation_id }} - {{ federation_name }}
                                             </option>
@@ -186,56 +224,13 @@
                             </div>
                         {% endwith %}
                     </div>
-                    <div class="col-2">
-                        {{ number_input(
-                            name='fide_id',
-                            label=_('FIDE ID:'),
-                            help_text=_('The player\'s FIDE ID (do not change).') if action != 'delete' else '',
-                            disabled=true,
-                            error=action == 'delete',
-                            number_min=1,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
                 <div>
-                <h3>
+
+                <h4 class="mt-3">
                     {{ _('French Chess Federation') }}
-                </h3>
+                </h4>
                 <div class="row">
-                    <div class="col-2">
-                        {{ select_input(
-                            name='title',
-                            label=_('League:'),
-                            help_text=_('The player\'s league.') if action != 'delete' else '',
-                            select_options=papi_web_config.ffe_leagues,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-4">
-                        {{ text_input(
-                            name='club',
-                            label=_('Club:'),
-                            placeholder=_('E.g.: My favourite club!'),
-                            help_text=_('The player\'s club.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-2">
-                        {{ select_input(
-                            name='ffe_licence',
-                            label=_('Licence:'),
-                            help_text=_('The player\'s licence.') if action != 'delete' else '',
-                            select_options=licence_options,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-2">
+                    <div class="col-12 col-sm-4 mb-3">
                         {{ text_input(
                             name='ffe_licence_number',
                             label=_('Licence number:'),
@@ -246,7 +241,18 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2">
+                    <div class="col-12 col-sm-4 mb-3">
+                        {{ select_input(
+                            name='ffe_licence',
+                            label=_('Licence:'),
+                            help_text=_('The player\'s licence.') if action != 'delete' else '',
+                            select_options=licence_options,
+                            disabled=action == 'delete',
+                            error=action == 'delete',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-sm-4 mb-3">
                         {{ number_input(
                             name='ffe_id',
                             label=_('FFE Uniq ID:'),
@@ -257,12 +263,37 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                </div> 
+                </div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ select_input(
+                            name='league',
+                            label=_('League:'),
+                            help_text=_('The player\'s league.') if action != 'delete' else '',
+                            select_options=papi_web_config.ffe_leagues,
+                            disabled=action == 'delete',
+                            error=action == 'delete',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ text_input(
+                            name='club',
+                            label=_('Club:'),
+                            placeholder=_('E.g.: My favourite club!'),
+                            help_text=_('The player\'s club.') if action != 'delete' else '',
+                            disabled=action == 'delete',
+                            error=action == 'delete',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 <div>
-                <h3>
+
+                <h4 class="mt-3">
                     {{ _('Contact and registration') }}
-                </h3>
+                </h4>
                 <div class="row">
-                    <div class="col-2">
+                    <div class="col-12 col-md-6 mb-3">
                         {{ text_input(
                             name='mail',
                             label=_('Email:'),
@@ -273,7 +304,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2">
+                    <div class="col-12 col-md-6 mb-3">
                         {{ text_input(
                             name='phone',
                             label=_('Phone number:'),
@@ -284,17 +315,9 @@
                         ) }}
                         {# TODO add an example depending on the federation placeholder=_('E.g.: %(phone_number)s', phone_number=admin_event.phone_number_example), #}
                     </div>
-                    <div class="col-2">
-                        {{ text_input(
-                            name='comment',
-                            label=_('Comment:'),
-                            help_text=_('Any comment on the player (comments are visible only by the arbiters).') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-2">
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-lg-3 mb-3">
                         {{ number_input(
                             name='owed',
                             label=_('Owed:'),
@@ -304,7 +327,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2">
+                    <div class="col-12 col-sm-6 col-lg-3 mb-3">
                         {{ number_input(
                             name='paid',
                             label=_('Paid:'),
@@ -314,17 +337,17 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2">
-                        {{ number_input(
-                            name='fixed',
-                            label=_('Fixed board:'),
-                            help_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
-                            disabled=true,
+                    <div class="col-12 col-lg-6 mb-3">
+                        {{ text_input(
+                            name='comment',
+                            label=_('Comment:'),
+                            help_text=_('Any comment on the player (comments are visible only by the arbiters).') if action != 'delete' else '',
+                            disabled=action == 'delete',
                             error=action == 'delete',
-                            number_min=1,
                             data=data, errors=errors
                         ) }}
                     </div>
+                    
                 </div>
             </div>
             <div class="modal-footer d-block">
