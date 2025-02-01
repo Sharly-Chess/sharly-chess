@@ -1063,11 +1063,22 @@ msgstr "FFE-Lizenz A (Wettbewerb)"
 # ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
 # DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
+# Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U10]
 # Error: translation [U10
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U10]
@@ -1080,12 +1091,28 @@ msgstr ""
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
 # is much too long compared to initial [U12]
+# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
+# is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
 msgstr ""
 
 # Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
+# is much too long compared to initial [U14]
+# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
 # is much too long compared to initial [U14]
@@ -1097,6 +1124,9 @@ msgstr ""
 # Error: translation [U16
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U16]
+# Error: translation [U16
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1105,11 +1135,17 @@ msgstr ""
 # Error: translation [U18
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U18]
+# Error: translation [U18
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U18]
 #: src/data/util.py
 #, ai_translation
 msgid "U18"
 msgstr ""
 
+# Error: translation [U20
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U20]
 # Error: translation [U20
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U20]
@@ -1532,6 +1568,7 @@ msgid "Initializing a session to [{url}]..."
 msgstr "Initialisieren einer Sitzung auf [{url}]..."
 
 # Error: translation [In Ordnung.] is much too long compared to initial [OK]
+# Error: translation [In Ordnung.] is much too long compared to initial [OK]
 #: src/ffe/ffe_session.py
 #: src/web/templates/admin/players/filter_categories.html
 #: src/web/templates/admin/players/filter_check_ins.html
@@ -1716,11 +1753,6 @@ msgstr "Drehmaschinen ({num})"
 #, ai_translation
 msgid "Timers ({num})"
 msgstr "Zeitmesser ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
-msgid "Messages ({num})"
-msgstr "Nachrichten ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -3078,6 +3110,7 @@ msgid "%(minutes)d minutes before"
 msgstr "%(minutes)d Minuten vor"
 
 #: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/timers/timer_card.html
 #, ai_translation, python-format
 msgid "%(minutes)d minutes after"
 msgstr "%(minutes)d Minuten nach"
@@ -3745,21 +3778,6 @@ msgstr "Keine Informationen"
 msgid "Refresh this page."
 msgstr "Aktualisieren Sie diese Seite."
 
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Level"
-msgstr "Ebene"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Message"
-msgstr "Nachricht"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "No messages."
-msgstr "Keine Nachrichten."
-
 #: src/web/templates/admin/players/check_in_tournaments.html
 #, ai_translation
 msgid "Open/close check-in."
@@ -4069,14 +4087,45 @@ msgid "The player's gender."
 msgstr "Das Geschlecht des Spielers."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Turnier"
+
+#: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "The player's tournament."
 msgstr "Das Turnier des Spielers."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ratings, title and fédération"
-msgstr "FIDE-Ratings, Titel und Fédération"
+msgid "Fixed board:"
+msgstr "Festplatte:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Die Brettnummer wird dem Spieler immer zugewiesen (für Behinderte)."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "Ratings"
+msgstr "Maßnahmen:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "FIDE"
+msgstr "FIDE-ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "FIDE-ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's FIDE ID (do not change)."
+msgstr "Die FIDE-ID des Spielers (ändern Sie sich nicht)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4095,18 +4144,38 @@ msgstr "Der Spielerverband."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ID:"
-msgstr "FIDE-ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's FIDE ID (do not change)."
-msgstr "Die FIDE-ID des Spielers (ändern Sie sich nicht)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "French Chess Federation"
 msgstr "Französischer Schachverband"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Lizenznummer:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "Die Lizenznummer des Spielers."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Lizenz:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "Die Lizenz des Spielers."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "FFE Uniq-ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "Die Uniq-ID des Spielers für den französischen Verband (ändern Sie sich nicht)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4132,36 +4201,6 @@ msgstr "Z.B.: Mein Lieblingsclub!"
 #, ai_translation
 msgid "The player's club."
 msgstr "Der Club des Spielers."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence:"
-msgstr "Lizenz:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence."
-msgstr "Die Lizenz des Spielers."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence number:"
-msgstr "Lizenznummer:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence number."
-msgstr "Die Lizenznummer des Spielers."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "FFE Uniq ID:"
-msgstr "FFE Uniq-ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "Die Uniq-ID des Spielers für den französischen Verband (ändern Sie sich nicht)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4193,16 +4232,8 @@ msgstr "Telefonnummer:"
 msgid "The player's phone number."
 msgstr "Die Telefonnummer des Spielers."
 
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Comment:"
-msgstr "Bemerkung:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "Jeder Kommentar zum Spieler (Kommentare sind nur von den Schiedsrichtern sichtbar)."
-
+# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
+# compared to initial [Owed:]
 # Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
 # compared to initial [Owed:]
 #: src/web/templates/admin/players/player_modal.html
@@ -4227,13 +4258,13 @@ msgstr "Der Preis, den der Spieler bereits bezahlt hat."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Fixed board:"
-msgstr "Festplatte:"
+msgid "Comment:"
+msgstr "Bemerkung:"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Die Brettnummer wird dem Spieler immer zugewiesen (für Behinderte)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Jeder Kommentar zum Spieler (Kommentare sind nur von den Schiedsrichtern sichtbar)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -5689,11 +5720,6 @@ msgstr "Bild:"
 
 #: src/web/templates/user/screen/results.html
 #, ai_translation
-msgid "Tournament"
-msgstr "Turnier"
-
-#: src/web/templates/user/screen/results.html
-#, ai_translation
 msgid "Rnd.Boa"
 msgstr "Rnd.Boa"
 
@@ -5880,4 +5906,19 @@ msgstr "vs."
 
 #~ msgid "No ChessEvent connection is used."
 #~ msgstr "Es wird keine ChessEvent-Verbindung verwendet."
+
+#~ msgid "Messages ({num})"
+#~ msgstr "Nachrichten ({num})"
+
+#~ msgid "Level"
+#~ msgstr "Ebene"
+
+#~ msgid "Message"
+#~ msgstr "Nachricht"
+
+#~ msgid "No messages."
+#~ msgstr "Keine Nachrichten."
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "FIDE-Ratings, Titel und Fédération"
 

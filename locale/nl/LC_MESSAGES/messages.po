@@ -1694,11 +1694,6 @@ msgstr "Timers ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
-msgid "Messages ({num})"
-msgstr "Berichten ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Hernoemen van de database is mislukt: {ex}."
 
@@ -3053,6 +3048,7 @@ msgid "%(minutes)d minutes before"
 msgstr "%(minutes)d minuten voor"
 
 #: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/timers/timer_card.html
 #, ai_translation, python-format
 msgid "%(minutes)d minutes after"
 msgstr "%(minutes)d minuten na"
@@ -3709,7 +3705,7 @@ msgstr "Informatie: %(num)d"
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, fuzzy
 msgid "No informations"
-msgstr ""
+msgstr "Geen informatie"
 
 #: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/players/tab.html
@@ -3719,21 +3715,6 @@ msgstr ""
 #, ai_translation
 msgid "Refresh this page."
 msgstr "Vernieuw deze pagina."
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Level"
-msgstr "Niveau"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Message"
-msgstr "Bericht"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "No messages."
-msgstr "Geen berichten."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
 #, ai_translation
@@ -4044,14 +4025,45 @@ msgid "The player's gender."
 msgstr "Het geslacht van de speler."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Toernooi"
+
+#: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "The player's tournament."
 msgstr "Het toernooi van de speler."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ratings, title and fédération"
-msgstr "FIDE ratings, titel en fédération"
+msgid "Fixed board:"
+msgstr "Vaste plank:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Het bordnummer waaraan de speler altijd zal worden toegewezen (gebruik het voor mindervaliden)."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "Ratings"
+msgstr "Acties:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "FIDE"
+msgstr "FIDE ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "FIDE ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's FIDE ID (do not change)."
+msgstr "FIDE-ID van de speler (wijzig niet)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4070,18 +4082,38 @@ msgstr "De spelerfederatie."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ID:"
-msgstr "FIDE ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's FIDE ID (do not change)."
-msgstr "FIDE-ID van de speler (wijzig niet)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "French Chess Federation"
 msgstr "Franse Schaakbond"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Licentienummer:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "Het licentienummer van de speler."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Licentie:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "De licentie van de speler."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "FFE Uniq ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "De Uniq ID van de speler voor de Franse federatie (wijzig niet)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4107,36 +4139,6 @@ msgstr "Bv.: Mijn favoriete club!"
 #, ai_translation
 msgid "The player's club."
 msgstr "De club van de speler."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence:"
-msgstr "Licentie:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence."
-msgstr "De licentie van de speler."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence number:"
-msgstr "Licentienummer:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence number."
-msgstr "Het licentienummer van de speler."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "FFE Uniq ID:"
-msgstr "FFE Uniq ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "De Uniq ID van de speler voor de Franse federatie (wijzig niet)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4170,16 +4172,6 @@ msgstr "Het telefoonnummer van de speler."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Comment:"
-msgstr "Opmerking:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "Enig commentaar op de speler (opmerkingen zijn alleen zichtbaar door de arbiters)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "Owed:"
 msgstr "Owed:"
 
@@ -4200,13 +4192,13 @@ msgstr "De prijs die de speler al betaalde."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Fixed board:"
-msgstr "Vaste plank:"
+msgid "Comment:"
+msgstr "Opmerking:"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Het bordnummer waaraan de speler altijd zal worden toegewezen (gebruik het voor mindervaliden)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Enig commentaar op de speler (opmerkingen zijn alleen zichtbaar door de arbiters)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -5662,11 +5654,6 @@ msgstr "Afbeelding:"
 
 #: src/web/templates/user/screen/results.html
 #, ai_translation
-msgid "Tournament"
-msgstr "Toernooi"
-
-#: src/web/templates/user/screen/results.html
-#, ai_translation
 msgid "Rnd.Boa"
 msgstr "Rnd.Boa"
 
@@ -5853,4 +5840,19 @@ msgstr "vs"
 
 #~ msgid "No ChessEvent connection is used."
 #~ msgstr "Er wordt geen ChessEvent-verbinding gebruikt."
+
+#~ msgid "Messages ({num})"
+#~ msgstr "Berichten ({num})"
+
+#~ msgid "Level"
+#~ msgstr "Niveau"
+
+#~ msgid "Message"
+#~ msgstr "Bericht"
+
+#~ msgid "No messages."
+#~ msgstr "Geen berichten."
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "FIDE ratings, titel en fédération"
 

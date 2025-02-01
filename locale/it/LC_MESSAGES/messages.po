@@ -1071,6 +1071,8 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
+# Error: translation [U12City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
@@ -1083,6 +1085,8 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
+# Error: translation [U16City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1093,6 +1097,8 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
+# Error: translation [U20City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #: src/data/util.py
@@ -1697,11 +1703,6 @@ msgstr "Rotatori ({num})"
 #, ai_translation
 msgid "Timers ({num})"
 msgstr "Timer ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
-msgid "Messages ({num})"
-msgstr "Messaggi ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -3059,6 +3060,7 @@ msgid "%(minutes)d minutes before"
 msgstr "%(minutes)d minuti prima"
 
 #: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/timers/timer_card.html
 #, ai_translation, python-format
 msgid "%(minutes)d minutes after"
 msgstr "%(minutes)d minuti dopo"
@@ -3726,21 +3728,6 @@ msgstr "Nessuna informazione"
 msgid "Refresh this page."
 msgstr "Aggiorna questa pagina."
 
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Level"
-msgstr "Livello"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Message"
-msgstr "Messaggio"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "No messages."
-msgstr "Niente messaggi."
-
 #: src/web/templates/admin/players/check_in_tournaments.html
 #, ai_translation
 msgid "Open/close check-in."
@@ -4050,14 +4037,45 @@ msgid "The player's gender."
 msgstr "Il sesso del giocatore."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Torneo"
+
+#: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "The player's tournament."
 msgstr "Il torneo del giocatore."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ratings, title and fédération"
-msgstr "Voti FIDE, titolo e fédération"
+msgid "Fixed board:"
+msgstr "Tabellone fisso:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Il numero del tabellone a cui il giocatore sarà sempre assegnato (utilizzarlo per le persone disabili)."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "Ratings"
+msgstr "Azioni:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "FIDE"
+msgstr "ID FIDE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "ID FIDE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's FIDE ID (do not change)."
+msgstr "ID FIDE del giocatore (non cambiare)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4076,18 +4094,38 @@ msgstr "La federazione del giocatore."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ID:"
-msgstr "ID FIDE:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's FIDE ID (do not change)."
-msgstr "ID FIDE del giocatore (non cambiare)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "French Chess Federation"
 msgstr "Federazione francese degli scacchi"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Numero della licenza:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "Il numero di licenza del giocatore."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Licenza:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "La patente del giocatore."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "ID FFE Uniq:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "L'ID Uniq del giocatore per la federazione francese (non cambia)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4113,36 +4151,6 @@ msgstr "Il mio club preferito!"
 #, ai_translation
 msgid "The player's club."
 msgstr "Il club del giocatore."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence:"
-msgstr "Licenza:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence."
-msgstr "La patente del giocatore."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence number:"
-msgstr "Numero della licenza:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence number."
-msgstr "Il numero di licenza del giocatore."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "FFE Uniq ID:"
-msgstr "ID FFE Uniq:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "L'ID Uniq del giocatore per la federazione francese (non cambia)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4176,16 +4184,6 @@ msgstr "Il numero di telefono del giocatore."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Comment:"
-msgstr "Commento:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "Qualsiasi commento sul giocatore (i commenti sono visibili solo dagli arbitri)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "Owed:"
 msgstr "Owed:"
 
@@ -4206,13 +4204,13 @@ msgstr "Il prezzo che il giocatore ha già pagato."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Fixed board:"
-msgstr "Tabellone fisso:"
+msgid "Comment:"
+msgstr "Commento:"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Il numero del tabellone a cui il giocatore sarà sempre assegnato (utilizzarlo per le persone disabili)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Qualsiasi commento sul giocatore (i commenti sono visibili solo dagli arbitri)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -5666,11 +5664,8 @@ msgstr "Numero massimo di risultati: illimitato"
 msgid "Image:"
 msgstr "Immagine:"
 
-#: src/web/templates/user/screen/results.html
-#, ai_translation
-msgid "Tournament"
-msgstr "Torneo"
-
+# Error: translation [Rnd.BoaCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Rnd.Boa]
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
@@ -5861,4 +5856,19 @@ msgstr "vs"
 
 #~ msgid "No ChessEvent connection is used."
 #~ msgstr "Non viene utilizzata alcuna connessione a ChessEvent."
+
+#~ msgid "Messages ({num})"
+#~ msgstr "Messaggi ({num})"
+
+#~ msgid "Level"
+#~ msgstr "Livello"
+
+#~ msgid "Message"
+#~ msgstr "Messaggio"
+
+#~ msgid "No messages."
+#~ msgstr "Niente messaggi."
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "Voti FIDE, titolo e fédération"
 
