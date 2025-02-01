@@ -34,18 +34,18 @@ msgid "Tournaments: {tournament_names}"
 msgstr "Τουρνουά: {tournament_names}"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "C *** THE LETTER TO ANSWER CREATE"
-msgstr "Γ"
+msgstr "C"
 
 #: src/chessevent/action_selector.py src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "U *** THE LETTER TO ANSWER UPLOAD"
-msgstr "Χ"
+msgstr "U"
 
 #: src/chessevent/action_selector.py src/chessevent/event_selector.py
 #: src/common/engine.py src/ffe/action_selector.py src/ffe/event_selector.py
-#, ai_translation
+#, fuzzy
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
@@ -76,14 +76,14 @@ msgid "Action: {action}"
 msgstr "Δράση: {action}"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
-msgstr "Γ"
+msgstr "C"
 
 #: src/chessevent/action_selector.py
 #, ai_translation
@@ -257,12 +257,12 @@ msgstr "Ελέγχω την έκδοση Papi-web..."
 
 #: src/common/engine.py src/database/sqlite/ffe_database.py
 #: src/database/sqlite/fide_database.py
-#, ai_translation
+#, fuzzy
 msgid "Y *** THE LETTER TO ANSWER YES"
-msgstr "Υ"
+msgstr "Y"
 
 #: src/common/engine.py
-#, ai_translation
+#, fuzzy
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
@@ -823,24 +823,24 @@ msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr "παίκτες από #{first} έως #{last}, στις οθόνες {parts}"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Unpaired *** FEMALE"
-msgstr "Μη ζευγάρι"
+msgstr "Unpaired"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Unpaired *** MALE"
-msgstr "Μη ζευγάρι"
+msgstr "Unpaired"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Exempt *** FEMALE"
-msgstr "Απομάκρυνση"
+msgstr "Exempt"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Exempt *** MALE"
-msgstr "Απομάκρυνση"
+msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
@@ -1015,34 +1015,34 @@ msgid "Blitz rating"
 msgstr "Βαθμολογία Blitz"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Female *** NAME FOR GENDER FEMALE"
-msgstr "Θήλεις"
+msgstr "Female"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Male *** NAME FOR GENDER MALE"
-msgstr "Άρρενες"
+msgstr "Male"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "M *** SHORT NAME FOR GENDER MALE"
-msgstr "ςδ"
+msgstr "M"
 
 #: src/data/util.py
 #, ai_translation
@@ -1170,32 +1170,32 @@ msgid "Over 65"
 msgstr "άνω των 65"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
-msgstr "Υπολογιζόμενη"
+msgstr "Estimated"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
-msgstr "Εθνικές"
+msgstr "National"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
-msgstr "ΦΙΝΤΕConstellation name (optional, probably does not need a translation)"
+msgstr "FIDE"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
-msgstr "Ε"
+msgstr "E"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
@@ -1205,14 +1205,14 @@ msgid "No title"
 msgstr "Χωρίς τίτλο"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Woman Candidate Master"
-msgstr "Γυναικείος Δάσκαλος Πίστης"
+msgstr "Γυναικείος Υποψήφιος Δάσκαλος"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Candidate Master"
-msgstr "Δάσκαλος Fide"
+msgstr "Δάσκαλος υποψήφιος"
 
 #: src/data/util.py
 #, ai_translation
@@ -1245,42 +1245,42 @@ msgid "Grand Master"
 msgstr "Μεγαλειότατε."
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, fuzzy
 msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
-msgstr "WFM"
+msgstr "WCM"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, fuzzy
 msgid "CM *** SHORT NAME FOR Candidate Master"
-msgstr "FMunit synonyms for matching user input"
+msgstr "CM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
 msgstr "WFM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "FM *** SHORT NAME FOR Fide Master"
-msgstr "FMunit synonyms for matching user input"
+msgstr "FM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WIM *** SHORT NAME FOR Woman International Master"
-msgstr "ΓΟΥΙΜConstellation name (optional, probably does not need a translation)"
+msgstr "WIM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "WGM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
@@ -1321,35 +1321,29 @@ msgid "Parings by player"
 msgstr "Αποστολές από τον παίκτη"
 
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr "Η βάση δεδομένων FIDE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);"
+msgstr "Η βάση δεδομένων FFE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);"
 
-# Error: tokens differ between [The FIDE database [{file}] is obsolete
-# ([{days}] days], do you want to update it (Y/n)? ] and [Η βάση δεδομένων
-# FIDE [{file}] είναι πάνω από μία ημέρα παλιά, θέλετε να την ενημερώσετε
-# (Y/n);]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr "Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);"
+msgstr "Η βάση δεδομένων FFE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);"
 
-# Error: tokens differ between [Downloading FIDE database...] and [Η λήψη
-# απέτυχε με τον κωδικό [{code}].]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Downloading the FFE database..."
-msgstr "Λήψη βάσης δεδομένων FIDE..."
+msgstr "Κατεβάζω τη βάση δεδομένων του FFE..."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Could not download [{url}], error code [{code}]."
-msgstr "Η διεύθυνση URL [{url}] ανταποκρίθηκε στον κωδικό [{code}]."
+msgstr "Αδύνατη η λήψη [{url}], κωδικός σφάλματος [{code}]."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Could not download [{url}]: {ex}."
-msgstr "Απέτυχε να διαβάσει [{url}]: [{ex}]."
+msgstr "Αδύνατη η λήψη [{url}]: {ex}."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 #, ai_translation
@@ -1366,23 +1360,18 @@ msgstr "Αδύνατη η αποσύνδεση δεδομένων."
 msgid "Storing data..."
 msgstr "Αποθήκευση δεδομένων..."
 
-# Error: tokens differ between [Error reading the following row (player
-# ignored): [{row}].] and [Σφάλμα στη γραμμή [{line_no}] (αγνοείται ο
-# παίκτης): [{line}]]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Σφάλμα ανάγνωσης της ακόλουθης σειράς (αγνοείται ο παίκτης): [{row}]."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error while creating the database: {ex}."
-msgstr "Η ανανέωση της βάσης δεδομένων απέτυχε: {ex}."
+msgstr "Σφάλμα κατά τη δημιουργία της βάσης δεδομένων: {ex}."
 
-# Error: tokens differ between [{number} players written.] and [οθόνες του
-# {number} παίκτες από #{first} έως τέλος]
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "{number} players written."
 msgstr "{number} παίκτες που γράφτηκαν."
 
@@ -1391,21 +1380,15 @@ msgstr "{number} παίκτες που γράφτηκαν."
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "Η βάση δεδομένων FIDE [{file}] δεν βρέθηκε, θέλετε να τη δημιουργήσετε (Y/n);"
 
-# Error: tokens differ between [The FIDE database [{file}] is obsolete
-# ([{days}] days], do you want to update it (Y/n)? ] and [Η βάση δεδομένων
-# FIDE [{file}] είναι πάνω από μία ημέρα παλιά, θέλετε να την ενημερώσετε
-# (Y/n);]
 #: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
 msgstr "Η βάση δεδομένων FIDE [{file}] είναι ξεπερασμένη ([{days}] ημέρες], θέλετε να την ενημερώσετε (Y/n);"
 
-# Error: tokens differ between [Downloading FIDE database...] and [Η λήψη
-# απέτυχε με τον κωδικό [{code}].]
 #: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Downloading the FIDE database..."
-msgstr "Λήψη βάσης δεδομένων FIDE..."
+msgstr "Κατεβάζοντας τη βάση δεδομένων της FIDE..."
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1448,24 +1431,24 @@ msgid "Tournaments: {tournament_ffe_ids}"
 msgstr "Τουρνουά: {tournament_ffe_ids}"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "T *** THE LETTER TO ANSWER TEST"
-msgstr "Τ"
+msgstr "T"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "F *** THE LETTER TO ANSWER FEES"
 msgstr "F"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "R *** THE LETTER TO ANSWER RULES"
-msgstr "Ρ"
+msgstr "R"
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1669,9 +1652,9 @@ msgid "Error while updating the FIDE database."
 msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE."
 
 #: src/web/server_engine.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error while updating the FFE database."
-msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FIDE."
+msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FFE."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -2599,9 +2582,9 @@ msgid "ID (unique):"
 msgstr "ID (μοναδική):"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: chessevent"
-msgstr "Ταυτότητα σκακιού:"
+msgstr "Π.χ.: σκάκι"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
 #, ai_translation
@@ -2745,9 +2728,9 @@ msgid "The tournament is not started yet."
 msgstr "Το τουρνουά δεν έχει ξεκινήσει ακόμα."
 
 #: src/web/templates/admin/common/macros.j2
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Round #%(round)d is running."
-msgstr "Ο γύρος %(round)d τρέχει."
+msgstr "Ο γύρος #%(round)d τρέχει."
 
 #: src/web/templates/admin/common/macros.j2
 #, ai_translation, python-format
@@ -2863,9 +2846,9 @@ msgstr "Καθυστέρηση #%(num)d:"
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "By default: %(minutes)d minutes"
-msgstr "Π.χ.: %(minutes)d (λεπτά)"
+msgstr "Από προεπιλογή: %(minutes)d λεπτά"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -2977,9 +2960,9 @@ msgid "Default directory of the Papi files:"
 msgstr "Προκαθορισμένος κατάλογος των αρχείων Papi:"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: c:\\chess\tournaments"
-msgstr "Π.χ.: c:\\chess\\ tournaments\\papi"
+msgstr "Π.χ.: c:\\hes tournaments"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation, python-format
@@ -3021,9 +3004,9 @@ msgid "Rules file location:"
 msgstr "Θέση αρχείου κανόνων:"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr "Π.χ.: c:\\chess\\ tournaments\\main\\rules.pdf"
+msgstr "Π.χ.: c:\\chess\\ tournaments\\my_τουρνουά\\κανόνες.pdf"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3064,9 +3047,9 @@ msgstr "Χρώμα φόντου:"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The background colour is used when the image does not fill the whole screen."
-msgstr "Το χρώμα φόντου χρησιμοποιείται όταν η εικόνα γεμίζει ολόκληρη την οθόνη."
+msgstr "Το χρώμα φόντου χρησιμοποιείται όταν η εικόνα δεν γεμίζει ολόκληρη την οθόνη."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3084,10 +3067,8 @@ msgstr "Χρονοδιακόπτες"
 msgid "Alert message"
 msgstr "Μήνυμα ειδοποίησης"
 
-# Error: tokens differ between [The background colour of the alert messages.]
-# and [Χρώμα φόντου: %(color)s]
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The background colour of the alert messages."
 msgstr "Το χρώμα φόντου των μηνυμάτων συναγερμού."
 
@@ -3101,10 +3082,14 @@ msgstr "Χρώμα κειμένου:"
 msgid "The text colour of the alert messages."
 msgstr "Το χρώμα κειμένου των μηνυμάτων συναγερμού."
 
+# Error: translation [ΚλώνοςCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Clone]
+# Error: translation [ΚλώνοςCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Clone]
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
 msgid "Clone"
-msgstr "ΚλώνοςCity name (optional, probably does not need a translation)"
+msgstr ""
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -3497,14 +3482,14 @@ msgid "On a given number of screens:"
 msgstr "Σε έναν δεδομένο αριθμό οθονών:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 4 (split the boards on 4 screens)"
-msgstr "Π.χ.: 4 (διαιρεμένο σε 4 οθόνες)"
+msgstr "Π.χ.: 4 (διαιρεμένες σανίδες σε 4 οθόνες)"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 4 (split the players on 4 screens)"
-msgstr "Π.χ.: 4 (διαιρεμένο σε 4 οθόνες)"
+msgstr "Π.χ.: 4 (χωρίστε τους παίκτες σε 4 οθόνες)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3522,14 +3507,14 @@ msgid "On fixed size screens:"
 msgstr "Στις οθόνες σταθερού μεγέθους:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 20 (place 20 boards on each screen)"
-msgstr "Π.χ.: 4 (διαιρεμένο σε 4 οθόνες)"
+msgstr "Π.χ.: 20 (θέση 20 σανίδες σε κάθε οθόνη)"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 20 (place 20 players on each screen)"
-msgstr "Π.χ.: 4 (διαιρεμένο σε 4 οθόνες)"
+msgstr "Π.χ.: 20 (θέση 20 παικτών σε κάθε οθόνη)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3565,11 +3550,15 @@ msgstr "Ο χρονοδιακόπτης εμφανίζεται στις οθόν
 msgid "The number of columns used to display data."
 msgstr "Ο αριθμός των στηλών που χρησιμοποιούνται για την εμφάνιση δεδομένων."
 
+# Error: translation [ΜενούCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Menus]
+# Error: translation [ΜενούCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Menus]
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "Menus"
-msgstr "ΜενούCity name (optional, probably does not need a translation)"
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -3966,94 +3955,94 @@ msgid "Columns"
 msgstr "Στήλες"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
-msgstr "Ταχυδρομείο"
+msgstr "Mail"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
-msgstr "Τηλέφωνο"
+msgstr "Phone"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
-msgstr "Όνομα"
+msgstr "Name"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
-msgstr "Βαθμολογία"
+msgstr "Rating"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Ομοσπονδία"
+msgstr "Federation"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-msgstr "Πρωτάθλημα"
+msgstr "League"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
-msgstr "ΚλαμπCity name (optional, probably does not need a translation)"
+msgstr "Club"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
-msgstr "Έτος γέννησης"
+msgstr "Year of birth"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
-msgstr "Κατηγορία"
+msgstr "Category"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
-msgstr "Φύλο"
+msgstr "Gender"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
-msgstr "Σταθερό πλακίδιο"
+msgstr "Fixed board"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
-msgstr "ΦΙΝΤΕConstellation name (optional, probably does not need a translation)"
+msgstr "FIDE"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
-msgstr "Χοιρινό/πληρωμένο"
+msgstr "Owed/paid"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
-msgstr "Τουρνουά"
+msgstr "Tournament"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
-msgstr "Σχόλιο"
+msgstr "Comment"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "History *** HISTORY FOR PLAYERS COLUMNS"
-msgstr "Ιστορία"
+msgstr "History"
 
 #: src/web/templates/admin/players/filter_federations.html
 #, ai_translation
@@ -4076,9 +4065,9 @@ msgid "Filter the leagues."
 msgstr "Φίλτρο τα πρωταθλήματα."
 
 #: src/web/templates/admin/players/filter_tournaments.html
-#, ai_translation
+#, fuzzy
 msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
-msgstr "Τουρνουά"
+msgstr "Tournament"
 
 #: src/web/templates/admin/players/filter_tournaments.html
 #, ai_translation
@@ -4295,10 +4284,16 @@ msgstr "Σχόλιο:"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Κάθε σχόλιο για τον παίκτη (τα σχόλια είναι ορατά μόνο από τους arbiters)."
 
+# Error: translation [Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ,
+# ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!] is much
+# too long compared to initial [Owed:]
+# Error: translation [Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ,
+# ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!] is much
+# too long compared to initial [Owed:]
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "Owed:"
-msgstr "Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!"
+msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4362,29 +4357,29 @@ msgid "Clear all the filters."
 msgstr "Καθαρίστε όλα τα φίλτρα."
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
-msgstr "Όνομα"
+msgstr "Name"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
-msgstr "ΈλοCity name (optional, probably does not need a translation)"
+msgstr "Elo"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-msgstr "Καταγωγή"
+msgstr "Origin"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
-msgstr "YOBCity name (optional, probably does not need a translation)"
+msgstr "YOB"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-msgstr "Γάτα"
+msgstr "Cat"
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -4397,24 +4392,24 @@ msgid "The phone numbers."
 msgstr "Τα νούμερα των τηλεφώνων."
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
-msgstr "ΦΙΝΤΕConstellation name (optional, probably does not need a translation)"
+msgstr "FIDE"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
-msgstr "ΆουτςCity name (optional, probably does not need a translation)"
+msgstr "Owed"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
-msgstr "Πληρωμή"
+msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
@@ -4579,9 +4574,9 @@ msgid "Only arbiters can view private rotators."
 msgstr "Μόνο οι άρμπιτερ μπορούν να δουν ιδιωτικούς περιστροφείς."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: my-rotator"
-msgstr "Π.χ.: my_password"
+msgstr "Π.χ.: my-rotator"
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
@@ -5199,21 +5194,17 @@ msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s αντικαθίσταται από τον χρόνο που έχει παρέλθει από την ώρα."
 
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Timer creation"
-msgstr "Δημιουργία παικτών"
+msgstr "Δημιουργία χρονοδιακόπτη"
 
-# Error: tokens differ between [Edition of timer [%(timer_uniq_id)s]] and
-# [Έκδοση του περιστροφέα [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Edition of timer [%(timer_uniq_id)s]"
 msgstr "Έκδοση του χρονοδιακόπτη [%(timer_uniq_id)s]"
 
-# Error: tokens differ between [Deletion of timer [%(timer_uniq_id)s]] and
-# [Διαγραφή του περιστροφέα [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Deletion of timer [%(timer_uniq_id)s]"
 msgstr "Διαγραφή του χρονοδιακόπτη [%(timer_uniq_id)s]"
 
@@ -5228,9 +5219,9 @@ msgid "E.g.: timer"
 msgstr "Π.χ.: χρονοδιακόπτης"
 
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The Unique ID, used to reference the timer."
-msgstr "Η Μοναδική Ταυτότητα, που χρησιμοποιείται για την αναφορά του περιστροφέα."
+msgstr "Η Μοναδική Ταυτότητα, που χρησιμοποιείται για την αναφορά του χρονοδιακόπτη."
 
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation
@@ -5315,14 +5306,14 @@ msgid "Generate pairings for the next round."
 msgstr "Δημιουργήστε ζευγαρώματα για τον επόμενο γύρο."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Pair"
-msgstr "Ζευγάρωμα"
+msgstr "Ζεύγος"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Export"
-msgstr "Λιμένας"
+msgstr "Εξαγωγή"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -5844,28 +5835,4 @@ msgstr "Διοικητικό Συμβούλιο #%(board_number)d με %(color)s
 #, ai_translation
 msgid "vs"
 msgstr "vs"
-
-#~ msgid "Pairings"
-#~ msgstr "Ζευγάρωμα"
-
-#~ msgid "Text:"
-#~ msgstr "Κείμενο:"
-
-#~ msgid "Public screen family"
-#~ msgstr "Οικογένεια δημόσιας οθόνης"
-
-#~ msgid "Last name:"
-#~ msgstr "Επώνυμο:"
-
-#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-#~ msgstr "Π.χ.: @boards, fixed-boards, tournament-a-*"
-
-#~ msgid "Format: YYYY-MM-DD"
-#~ msgstr "Μορφότυπος: YYYY-MM-DD"
-
-#~ msgid "Format: HH-MM"
-#~ msgstr "Μορφότυπος: HH-MM"
-
-#~ msgid "Mandatory for all the hours."
-#~ msgstr "Υποχρεωτική για όλες τις ώρες."
 

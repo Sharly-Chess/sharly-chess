@@ -41,13 +41,14 @@ class LocaleInfo:
             self,
             id: str,
             locale_dir: Path,
-            doc_dir: Path,
+            trusted: bool,
     ):
         self.id: str = id
         self.default: bool = id == default_locale
         self.locale_dir: Path = locale_dir
         self.po_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.po'
         self.mo_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.mo'
+        self.trusted: bool = trusted
         self.messages: dict[str, Message] = {}
         self.error_messages: dict[str, Message] = {}
         self.empty_optional_messages: dict[str, Message] = {}
@@ -102,8 +103,10 @@ class LocaleInfo:
         print_interactive_info(f'- {self.mo_file}...')
         run_babel_command(
             'compile',
-            [
+            ([
                 '--use-fuzzy',
+            ] if self.trusted else [
+            ]) + [
                 f'--directory={self.locale_dir}',
                 f'--locale={self.id}',
             ],
@@ -164,6 +167,24 @@ class LocaleInfo:
                     break
         return not error
 
+    @staticmethod
+    def check_message_length(msg: Message) -> bool:
+        error: bool = False
+        if isinstance(msg.id, str):
+            if len(msg.string) > 5 * len(msg.id):
+                msg.user_comments.append(f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]')
+                msg.string = ''
+                error = True
+        else:
+            for i in reversed(range(len(msg.id))):
+                if len(msg.string[i]) > 5 * len(msg.id[i]):
+                    msg.user_comments.append(
+                        f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]')
+                    msg.string = tuple(['', ] * len(msg.id))
+                    error = True
+                    break
+        return not error
+
     def control(self):
         # Read the catalog.
         print_interactive_info(f'- Reading {self.po_file}...')
@@ -188,6 +209,9 @@ class LocaleInfo:
                         self.empty_optional_messages[msg.id] = msg
                         continue
                 if not self.compare_message_tokens(msg):
+                    self.error_messages[msg.id] = msg
+                    continue
+                if not self.check_message_length(msg):
                     self.error_messages[msg.id] = msg
                     continue
                 for flag in msg.flags:
@@ -235,10 +259,12 @@ class I18nUpdater:
 
     def __init__(
             self,
-            locales: list[str],
+            trusted_locales: list[str],
+            untrusted_locales: list[str],
     ):
         """ The path of the i18n files (this script should be run from the dev root). """
-        self.locales: list[str] = locales
+        self.trusted_locales: list[str] = trusted_locales
+        self.untrusted_locales: list[str] = untrusted_locales
         self.locale_dir: Path = Path('locale')
         self.pot_file: Path = self.locale_dir / 'messages.pot'
         self.doc_dir: Path = Path('docs')
@@ -247,8 +273,10 @@ class I18nUpdater:
         print_interactive_info(f'Extracting i18n strings to {self.pot_file}...')
         self.extract()
         self.locale_infos: dict[str, LocaleInfo] = OrderedDict()
-        for locale in self.locales:
-            self.locale_infos[locale] = LocaleInfo(locale, self.locale_dir, self.doc_dir)
+        for locale in self.trusted_locales:
+            self.locale_infos[locale] = LocaleInfo(locale, self.locale_dir, trusted=True)
+        for locale in self.untrusted_locales:
+            self.locale_infos[locale] = LocaleInfo(locale, self.locale_dir, trusted=False)
         print_interactive_info('Updating PO files...')
         for locale_info in self.locale_infos.values():
             if locale_info.update_and_compile(self.pot_file):
@@ -396,9 +424,9 @@ class I18nUpdater:
 
 if __name__ == '__main__':
     """ PO and MO files are automatically created from this list; to add a new locale, add it to the list. """
-    updater = I18nUpdater([
-        'en', 'fr',
-        'de', 'el', 'es', 'it', 'nl', 'sv',
-    ])
+    updater = I18nUpdater(
+        trusted_locales=['en', 'fr', ],
+        untrusted_locales=['de', 'el', 'es', 'it', 'nl', 'sv', ],
+    )
     if not updater.new_locales:
         updater.check_trusted_locales()

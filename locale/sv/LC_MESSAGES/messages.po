@@ -34,20 +34,20 @@ msgid "Tournaments: {tournament_names}"
 msgstr "Turneringar: {tournament_names}"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "C *** THE LETTER TO ANSWER CREATE"
-msgstr "För produkter som inte är avsedda att användas som livsmedel ska följande villkor vara uppfyllda:"
+msgstr "C"
 
 #: src/chessevent/action_selector.py src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "U *** THE LETTER TO ANSWER UPLOAD"
-msgstr "U Ordförande"
+msgstr "U"
 
 #: src/chessevent/action_selector.py src/chessevent/event_selector.py
 #: src/common/engine.py src/ffe/action_selector.py src/ffe/event_selector.py
-#, ai_translation
+#, fuzzy
 msgid "Q *** THE LETTER TO ANSWER QUIT"
-msgstr "Q Uppskattningsvis."
+msgstr "Q"
 
 #: src/chessevent/action_selector.py
 #, ai_translation
@@ -76,14 +76,14 @@ msgid "Action: {action}"
 msgstr "Åtgärd: {action}"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "1 *** THE LETTER TO ANSWER ONCE"
-msgstr "I detta avsnitt ska följande punkt läggas till:"
+msgstr "1"
 
 #: src/chessevent/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
-msgstr "För produkter som inte är avsedda att användas som livsmedel ska följande villkor vara uppfyllda:"
+msgstr "C"
 
 #: src/chessevent/action_selector.py
 #, ai_translation
@@ -257,14 +257,14 @@ msgstr "Kontrollerar papi- webbversion..."
 
 #: src/common/engine.py src/database/sqlite/ffe_database.py
 #: src/database/sqlite/fide_database.py
-#, ai_translation
+#, fuzzy
 msgid "Y *** THE LETTER TO ANSWER YES"
-msgstr "Y Ordförande"
+msgstr "Y"
 
 #: src/common/engine.py
-#, ai_translation
+#, fuzzy
 msgid "N *** THE LETTER TO ANSWER NO"
-msgstr "Ej tillämpligt"
+msgstr "N"
 
 #: src/common/engine.py
 #, ai_translation
@@ -823,24 +823,24 @@ msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr "spelare från #{first} till #{last}, på {parts} skärmar"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Unpaired *** FEMALE"
-msgstr "Ouppklarade"
+msgstr "Unpaired"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Unpaired *** MALE"
-msgstr "Ouppklarade"
+msgstr "Unpaired"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Exempt *** FEMALE"
-msgstr "Undantag"
+msgstr "Exempt"
 
 #: src/data/player.py
-#, ai_translation
+#, fuzzy
 msgid "Exempt *** MALE"
-msgstr "Undantag"
+msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
@@ -1015,34 +1015,34 @@ msgid "Blitz rating"
 msgstr "Blitz-betyg"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "- *** NAME FOR GENDER NONE"
-msgstr "- Vad är det?"
+msgstr "-"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Female *** NAME FOR GENDER FEMALE"
-msgstr "Kvinna"
+msgstr "Female"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Male *** NAME FOR GENDER MALE"
-msgstr "Män"
+msgstr "Male"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "- *** SHORT NAME FOR GENDER NONE"
-msgstr "- Vad är det?"
+msgstr "-"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
-msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
+msgstr "F"
 
 #: src/data/util.py src/web/templates/admin/players/filter_genders.html
-#, ai_translation
+#, fuzzy
 msgid "M *** SHORT NAME FOR GENDER MALE"
-msgstr "Ordförande"
+msgstr "M"
 
 #: src/data/util.py
 #, ai_translation
@@ -1064,15 +1064,23 @@ msgstr "FFE-tillstånd B (leisure)"
 msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
+# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
+# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
-msgstr "U8 Ordförande"
+msgstr ""
 
+# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
+# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
+# long compared to initial [U10]
+# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
+# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
+# long compared to initial [U10]
 #: src/data/util.py
 #, ai_translation
 msgid "U10"
-msgstr "U10 Tillverkning vid vilken värdet av allt använt material inte överstiger 50 % av produktens pris fritt fabrik"
+msgstr ""
 
 #: src/data/util.py
 #, ai_translation
@@ -1099,20 +1107,35 @@ msgstr "U18 Ordförande"
 msgid "U20"
 msgstr "U20 Ordförande"
 
+# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
+# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
-msgstr "20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2"
+msgstr ""
 
 #: src/data/util.py
 #, ai_translation
 msgid "50+"
 msgstr "50+"
 
+# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
+# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
+# schablonmetoden] is much too long compared to initial [65+]
+# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
+# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
+# schablonmetoden] is much too long compared to initial [65+]
 #: src/data/util.py
 #, ai_translation
 msgid "65+"
-msgstr "Försäkringstekniska avsättningar beräknade som helhet – bruttosoliditetsgradens exponeringsvärde – exponeringar enligt schablonmetoden"
+msgstr ""
 
 #: src/data/util.py
 #, ai_translation
@@ -1170,34 +1193,34 @@ msgid "Over 65"
 msgstr "Över 65"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
-msgstr "Beräknad"
+msgstr "Estimated"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
-msgstr "Nationellt"
+msgstr "National"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
-msgstr "FIDUCERA"
+msgstr "FIDE"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
-msgstr "Ursprunglig hänvisning till den nationella lagstiftningen:"
+msgstr "E"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
-msgstr "Ej tillämpligt"
+msgstr "N"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
-msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
+msgstr "F"
 
 #: src/data/util.py
 #, ai_translation
@@ -1205,14 +1228,14 @@ msgid "No title"
 msgstr "Ingen titel"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Woman Candidate Master"
-msgstr "Kvinnlig mästare"
+msgstr "Kvinnlig kandidatmästare"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Candidate Master"
-msgstr "Fide Master Ordförande"
+msgstr "Kandidatmästare"
 
 #: src/data/util.py
 #, ai_translation
@@ -1245,44 +1268,44 @@ msgid "Grand Master"
 msgstr "Stormästare"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, fuzzy
 msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
-msgstr "WFM"
+msgstr "WCM"
 
 #: src/data/util.py
-#, ai_translation, fuzzy
+#, fuzzy
 msgid "CM *** SHORT NAME FOR Candidate Master"
-msgstr "FM Ordförande"
+msgstr "CM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WFM *** SHORT NAME FOR Woman Fide Master"
 msgstr "WFM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "FM *** SHORT NAME FOR Fide Master"
-msgstr "FM Ordförande"
+msgstr "FM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WIM *** SHORT NAME FOR Woman International Master"
-msgstr "WIM Ordförande"
+msgstr "WIM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "WGM"
 
 #: src/data/util.py
-#, ai_translation
+#, fuzzy
 msgid "GM *** SHORT NAME FOR Grand Master"
-msgstr "Genetiskt modifierade organismer"
+msgstr "GM"
 
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
@@ -1321,34 +1344,29 @@ msgid "Parings by player"
 msgstr "Parningar per spelare"
 
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
+msgstr "FFE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
 
-# Error: tokens differ between [The FIDE database [{file}] is obsolete
-# ([{days}] days], do you want to update it (Y/n)? ] and [FIDE-databasen
-# [{file}] är mer än en dag gammal, vill du uppdatera den (Y/n)?]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
+msgstr "FFE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
 
-# Error: tokens differ between [Downloading FIDE database...] and [Nedladdning
-# misslyckades med koden [{code}].]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Downloading the FFE database..."
-msgstr "Laddar ner FIDE- databas..."
+msgstr "Laddar ner FFE- databasen..."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Could not download [{url}], error code [{code}]."
-msgstr "URL [{url}] svarade kod [{code}]."
+msgstr "Kunde inte ladda ner [{url}], felkod [{code}]."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Could not download [{url}]: {ex}."
-msgstr "Läste inte [{url}]: [{ex}]."
+msgstr "Kunde inte ladda ner [{url}]: {ex}."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 #, ai_translation
@@ -1365,23 +1383,18 @@ msgstr "Kunde inte packa upp data."
 msgid "Storing data..."
 msgstr "Lagra data..."
 
-# Error: tokens differ between [Error reading the following row (player
-# ignored): [{row}].] and [Fel vid rad [{line_no}] (spelare ignorerad):
-# [{line}]]
 #: src/database/sqlite/ffe_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Fel vid läsning av följande rad (spelare ignorerad): [{row}]."
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error while creating the database: {ex}."
-msgstr "Byte av databas misslyckades: {ex}."
+msgstr "Fel när databasen skapades: {ex}."
 
-# Error: tokens differ between [{number} players written.] and [screens of
-# {number} spelare från #{first} till slutet]
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "{number} players written."
 msgstr "{number} Skrivna spelare."
 
@@ -1390,20 +1403,15 @@ msgstr "{number} Skrivna spelare."
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
 
-# Error: tokens differ between [The FIDE database [{file}] is obsolete
-# ([{days}] days], do you want to update it (Y/n)? ] and [FIDE-databasen
-# [{file}] är mer än en dag gammal, vill du uppdatera den (Y/n)?]
 #: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
 msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
 
-# Error: tokens differ between [Downloading FIDE database...] and [Nedladdning
-# misslyckades med koden [{code}].]
 #: src/database/sqlite/fide_database.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Downloading the FIDE database..."
-msgstr "Laddar ner FIDE- databas..."
+msgstr "Laddar ner FIDE- databasen..."
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1446,24 +1454,24 @@ msgid "Tournaments: {tournament_ffe_ids}"
 msgstr "Turneringar: {tournament_ffe_ids}"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "T *** THE LETTER TO ANSWER TEST"
-msgstr "Ursprunglig hänvisning till den nationella lagstiftningen:"
+msgstr "T"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "F *** THE LETTER TO ANSWER FEES"
-msgstr "I bilaga I till förordning (EU) nr 1307/2013 ska punkt 1 ersättas med följande:"
+msgstr "F"
 
 #: src/ffe/action_selector.py
-#, ai_translation
+#, fuzzy
 msgid "R *** THE LETTER TO ANSWER RULES"
-msgstr "Obligatoriskt (\"R\")"
+msgstr "R"
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1667,9 +1675,9 @@ msgid "Error while updating the FIDE database."
 msgstr "Fel vid uppdatering av FIDE- databasen."
 
 #: src/web/server_engine.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Error while updating the FFE database."
-msgstr "Fel vid uppdatering av FIDE- databasen."
+msgstr "Fel vid uppdatering av FFE- databasen."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -2597,9 +2605,9 @@ msgid "ID (unique):"
 msgstr "Identitet (unik):"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: chessevent"
-msgstr "Chessevent ID:"
+msgstr "T.ex. schackevenemang"
 
 #: src/web/templates/admin/chessevents/chessevent_modal.html
 #, ai_translation
@@ -2743,9 +2751,9 @@ msgid "The tournament is not started yet."
 msgstr "Turneringen är inte igång än."
 
 #: src/web/templates/admin/common/macros.j2
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Round #%(round)d is running."
-msgstr "Runda %(round)d är igång."
+msgstr "Runda #%(round)d är igång."
 
 #: src/web/templates/admin/common/macros.j2
 #, ai_translation, python-format
@@ -2861,9 +2869,9 @@ msgstr "Försening nr %(num)d:"
 #: src/web/templates/admin/common/modal/timer_delays.html
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "By default: %(minutes)d minutes"
-msgstr "T.ex.: %(minutes)d (minuter)"
+msgstr "Som standard: %(minutes)d minuter"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -2975,9 +2983,9 @@ msgid "Default directory of the Papi files:"
 msgstr "Förvald katalog för Papi-filerna:"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: c:\\chess\tournaments"
-msgstr "T.ex.: c:\\chess\\ tournaments\\papi"
+msgstr "T.ex.: c: \\chess vornaments"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation, python-format
@@ -3019,9 +3027,9 @@ msgid "Rules file location:"
 msgstr "Regler filplats:"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr "T.ex.: c:\\chess\\ tournaments\\main\\ rules.pdf"
+msgstr "T.ex.: c:\\chess\\ tournaments\\ my_ tournament\\ rules.pdf"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3064,7 +3072,7 @@ msgstr "Bakgrundsfärg:"
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "The background colour is used when the image does not fill the whole screen."
-msgstr "Bakgrundsfärgen används när bildens dost fyller hela skärmen."
+msgstr "Bakgrundsfärgen används när bilden inte fyller hela skärmen."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3082,10 +3090,8 @@ msgstr "Tidtagare"
 msgid "Alert message"
 msgstr "Varningsmeddelande"
 
-# Error: tokens differ between [The background colour of the alert messages.]
-# and [Bakgrundsfärg: %(color)s]
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The background colour of the alert messages."
 msgstr "Varningsmeddelandenas bakgrundsfärg."
 
@@ -3277,11 +3283,15 @@ msgstr "Utgångsknapp:"
 msgid "yes"
 msgstr "Ja, det är jag."
 
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
 msgid "no"
-msgstr "Ingen känd frekvens:"
+msgstr ""
 
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -3495,14 +3505,14 @@ msgid "On a given number of screens:"
 msgstr "På ett visst antal skärmar:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 4 (split the boards on 4 screens)"
-msgstr "T.ex.: 4 (splitta på 4 skärmar)"
+msgstr "T.ex.: 4 (splitta brädorna på 4 skärmar)"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 4 (split the players on 4 screens)"
-msgstr "T.ex.: 4 (splitta på 4 skärmar)"
+msgstr "T.ex.: 4 (dela spelarna på 4 skärmar)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3520,14 +3530,14 @@ msgid "On fixed size screens:"
 msgstr "På skärmar med fast storlek:"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 20 (place 20 boards on each screen)"
-msgstr "T.ex.: 4 (splitta på 4 skärmar)"
+msgstr "T.ex.: 20 (plats 20 brädor på varje skärm)"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: 20 (place 20 players on each screen)"
-msgstr "T.ex.: 4 (splitta på 4 skärmar)"
+msgstr "T.ex.: 20 (plats 20 spelare på varje skärm)"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3729,10 +3739,14 @@ msgstr "Starta webbläsaren vid serverstart"
 msgid "Yes"
 msgstr "Ja, det är jag."
 
+# Error: translation [Ej tillämpligt] is much too long compared to initial
+# [No]
+# Error: translation [Ej tillämpligt] is much too long compared to initial
+# [No]
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "No"
-msgstr "Ej tillämpligt"
+msgstr ""
 
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation, python-format
@@ -3964,94 +3978,94 @@ msgid "Columns"
 msgstr "Kolumner"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
-msgstr "Brev"
+msgstr "Mail"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
-msgstr "Tfn"
+msgstr "Phone"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
-msgstr "Beteckning"
+msgstr "Name"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
-msgstr "Betyg"
+msgstr "Rating"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Förbund"
+msgstr "Federation"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-msgstr "Förbundet"
+msgstr "League"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
-msgstr "Klubb"
+msgstr "Club"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
-msgstr "Födelseår"
+msgstr "Year of birth"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
-msgstr "Denna förordning träder i kraft den tjugonde dagen efter det att den har offentliggjorts i Europeiska unionens officiella tidning."
+msgstr "Category"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
-msgstr "Kön"
+msgstr "Gender"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
-msgstr "Fast bräde"
+msgstr "Fixed board"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
-msgstr "FIDUCERA"
+msgstr "FIDE"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
-msgstr "FFE Ordförande"
+msgstr "FFE"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
-msgstr "Incheckning"
+msgstr "Check-in"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
-msgstr "Betald/utbetald"
+msgstr "Owed/paid"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
-msgstr "Turnering"
+msgstr "Tournament"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
-msgstr "Anmärkningar"
+msgstr "Comment"
 
 #: src/web/templates/admin/players/filter_columns.html
-#, ai_translation
+#, fuzzy
 msgid "History *** HISTORY FOR PLAYERS COLUMNS"
-msgstr "Bakgrund"
+msgstr "History"
 
 #: src/web/templates/admin/players/filter_federations.html
 #, ai_translation
@@ -4074,9 +4088,9 @@ msgid "Filter the leagues."
 msgstr "Filtrera ligorna."
 
 #: src/web/templates/admin/players/filter_tournaments.html
-#, ai_translation
+#, fuzzy
 msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
-msgstr "Turnering"
+msgstr "Tournament"
 
 #: src/web/templates/admin/players/filter_tournaments.html
 #, ai_translation
@@ -4360,29 +4374,29 @@ msgid "Clear all the filters."
 msgstr "Rensa alla filter."
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
-msgstr "Beteckning"
+msgstr "Name"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
-msgstr "Elo Ordförande"
+msgstr "Elo"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-msgstr "Ursprung"
+msgstr "Origin"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
-msgstr "HUVUDBYGGNAD"
+msgstr "YOB"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-msgstr "Katt"
+msgstr "Cat"
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -4395,24 +4409,24 @@ msgid "The phone numbers."
 msgstr "Telefonnumren."
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
-msgstr "FIDUCERA"
+msgstr "FIDE"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE Ordförande"
+msgstr "FFE"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
-msgstr "På grund av detta"
+msgstr "Owed"
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation
+#, fuzzy
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
-msgstr "Betald"
+msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
@@ -4577,19 +4591,23 @@ msgid "Only arbiters can view private rotators."
 msgstr "Endast skiljedomare kan se privata rotatorer."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: my-rotator"
-msgstr "T.ex.: mitt lösenord"
+msgstr "T.ex. min-rotator"
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
 msgid "The Unique ID, used to reference the rotator."
 msgstr "Det unika ID, som används för att referera rotatorn."
 
+# Error: translation [För en driftspänning av mer än 1000 V men högst 1000 V]
+# is much too long compared to initial [Parameters]
+# Error: translation [För en driftspänning av mer än 1000 V men högst 1000 V]
+# is much too long compared to initial [Parameters]
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
 msgid "Parameters"
-msgstr "För en driftspänning av mer än 1000 V men högst 1000 V"
+msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
@@ -5197,21 +5215,17 @@ msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s ersätts med den tid som förflutit sedan timmen."
 
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Timer creation"
-msgstr "Skapande av spelare"
+msgstr "Tidtagning"
 
-# Error: tokens differ between [Edition of timer [%(timer_uniq_id)s]] and
-# [Upplaga av rotator [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Edition of timer [%(timer_uniq_id)s]"
 msgstr "Upplaga av timer [%(timer_uniq_id)s]"
 
-# Error: tokens differ between [Deletion of timer [%(timer_uniq_id)s]] and
-# [Borttagning av rotator [%(rotator_uniq_id)s]]
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Deletion of timer [%(timer_uniq_id)s]"
 msgstr "Radering av timer [%(timer_uniq_id)s]"
 
@@ -5226,9 +5240,9 @@ msgid "E.g.: timer"
 msgstr "T.ex. timer"
 
 #: src/web/templates/admin/timers/timer_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The Unique ID, used to reference the timer."
-msgstr "Det unika ID, som används för att referera rotatorn."
+msgstr "Det unika ID, som används för att referera timern."
 
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation
@@ -5313,14 +5327,14 @@ msgid "Generate pairings for the next round."
 msgstr "Generera parningar för nästa omgång."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Pair"
 msgstr "Paraplyer"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Export"
-msgstr "Hamn"
+msgstr "Exportera"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -5762,10 +5776,14 @@ msgstr "Bild:"
 msgid "Tournament"
 msgstr "Turnering"
 
+# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
+# much too long compared to initial [Rnd.Boa]
+# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
+# much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
 #, ai_translation
 msgid "Rnd.Boa"
-msgstr "Styckningsdelar av höns av arten Gallus domesticus"
+msgstr ""
 
 #: src/web/templates/user/screen/results.html
 #, ai_translation
@@ -5842,28 +5860,4 @@ msgstr "Styrelsen #%(board_number)d med %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs"
-
-#~ msgid "Pairings"
-#~ msgstr "Paraplyer"
-
-#~ msgid "Text:"
-#~ msgstr "Text:"
-
-#~ msgid "Public screen family"
-#~ msgstr "Allmänbildsfamilj"
-
-#~ msgid "Last name:"
-#~ msgstr "Efternamn:"
-
-#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-#~ msgstr "T.ex.: @ boards, fasta boards, turnering-a-*"
-
-#~ msgid "Format: YYYY-MM-DD"
-#~ msgstr "Format: ÅÅÅÅÅ-MM-DD"
-
-#~ msgid "Format: HH-MM"
-#~ msgstr "Format: HH-MM"
-
-#~ msgid "Mandatory for all the hours."
-#~ msgstr "Obligatoriskt för alla timmar."
 

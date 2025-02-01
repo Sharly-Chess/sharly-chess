@@ -2,15 +2,13 @@
 
 # Papi-web - ChangeLog
 
-## Version 2.4.20 - 19 janvier 2025
-- Ajout de la possibilité de pointer depuis les pages d'arbitrage
-- Ajout de la possibilité d'ouvrir/fermer le pointage à chaque ronde
-- Ajout de la possibilité de changer un·e joueur·euse de tournoi
-- Correction du calcul des points virtuels en Système Accéléré Dégressif 
-
-## Version 2.4.19 - 12 janvier 2025
+## Version 2.5.0 - Février 2025
 - Passage en multilingue anglais et français
-- Ajout de l'onglet Joueur·euses
+- Refonte de l'interface d'arbitrage
+- Ajout de l'onglet d'arbitrage « Joueur·euses » (ajout/suppression, importation FFE/FIDE (TODO), pointage, changement de tournoi...)
+- Ajout d'une fédération sur les évènements (TODO)
+- Correction du calcul des points virtuels en Système Accéléré Dégressif 
+- Correction d'un bug de mise en ligne des tournois sur le site FFE
 
 ## Version 2.4.18 - 23 décembre 2024
 - Ajout de la possibilité d'ajouter des écrans par défaut à la création d'un tournoi

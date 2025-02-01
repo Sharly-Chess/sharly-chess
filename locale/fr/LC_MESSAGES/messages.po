@@ -4814,27 +4814,3 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 msgid "vs"
 msgstr "contre"
 
-#~ msgid "Pairings"
-#~ msgstr "Appariements"
-
-#~ msgid "Text:"
-#~ msgstr "Texte :"
-
-#~ msgid "Public screen family"
-#~ msgstr "Famille d'écrans publique"
-
-#~ msgid "Last name:"
-#~ msgstr "Nom (de famille) :"
-
-#~ msgid "E.g.: @boards, fixed-boards, tournament-a-*"
-#~ msgstr "E.g.: @boards, ecrans-fixes, tournoi-a-*"
-
-#~ msgid "Format: YYYY-MM-DD"
-#~ msgstr "Format : AAAA-MM-JJ"
-
-#~ msgid "Format: HH-MM"
-#~ msgstr "Format: HH-MM"
-
-#~ msgid "Mandatory for all the hours."
-#~ msgstr "Obligatoire pour tous les horaires."
-

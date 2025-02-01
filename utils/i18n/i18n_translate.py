@@ -30,7 +30,6 @@ class I18nTranslator:
         self.catalog: Catalog | None = None
         self.model: MarianMTModel | None = None
         self.tokenizer: MarianTokenizer | None = None
-        self.flag: str = 'ai_translation'
 
     def load_catalog(self) -> bool:
         print_interactive_info(f'Loading catalog...')
@@ -39,9 +38,6 @@ class I18nTranslator:
             self.catalog: Catalog = read_po(f)
         print_interactive_success(f'Loaded {len(self.catalog._messages)} messages.')
         return True
-        #except Exception as ex:
-        #    print_interactive_error(f'{ex}')
-        #    return False
 
     def download_file(self, filename: str) -> bool:
         self.model_dir.mkdir(parents=True, exist_ok=True)
@@ -154,12 +150,13 @@ class I18nTranslator:
             translated_string_with_tokens = ''
         return translated_string_with_tokens
 
-    def flag_message(self, message: Message):
+    @staticmethod
+    def flag_message(message: Message, flag: str):
         """ Flags a message to indicate that it has not been translated by a human. """
-        if self.flag not in message.flags:
+        if flag not in message.flags:
             if not message.flags:
                 message.flags = set()
-            message.flags.add(self.flag)
+            message.flags.add(flag)
 
     def translate_message(
             self,
@@ -168,19 +165,23 @@ class I18nTranslator:
     ) -> bool:
         """ Translates a message, returns True on success, False on error. """
         if isinstance(message.id, str):
-            message.string = self.translate_string(message.id, percent)
-            if message.string:
-                self.flag_message(message)
-                return True
+            if (index := message.id.find(' ***')) != -1:
+                message.string = message.id[:index]
+                self.flag_message(message, 'fuzzy')
             else:
-                return False
+                message.string = self.translate_string(message.id, percent)
+                if message.string:
+                    self.flag_message(message, 'ai_translation')
+                    return True
+                else:
+                    return False
         else:
             message.string = (
                 self.translate_string(message.id[0], percent),
                 self.translate_string(message.id[1], percent),
             )
             if message.string[0] and message.string[1]:
-                self.flag_message(message)
+                self.flag_message(message, 'ai_translation')
                 return True
             else:
                 return False

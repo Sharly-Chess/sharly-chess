@@ -16,7 +16,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import ClientRedirect
 from pyexcel_ods3 import save_data
 
-from common import unicode_normalize
+from common import unicode_normalize, DEVEL_ENV
 from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
@@ -173,7 +173,10 @@ class AbstractEventAdminController(AbstractIndexAdminController):
             case 'config':
                 pass
             case 'tournaments':
-                pass
+                template_context |= {
+                    'hide_pairing': not DEVEL_ENV,
+                    'hide_trf_export': not DEVEL_ENV,
+                }
             case 'players':
                 # The federations that will be shown on the federation select list
                 players_federations: list[FederationTuple] = sorted({
