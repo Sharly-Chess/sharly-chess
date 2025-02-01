@@ -31,8 +31,8 @@ class ChessEventPlayer:
         self.ffe_club: str = ''
         self.email: str = ''
         self.phone: str = ''
-        self.fee: str = ''
-        self.paid: str = ''
+        self.fee: float = 0.0
+        self.paid: float = 0.0
         self.check_in: bool = False
         self.board: int = 0
         self.skipped_rounds: dict[int, float] = {}
@@ -50,7 +50,7 @@ class ChessEventPlayer:
                 self.gender = PlayerGender(int(chessevent_player_info[key]))
             self.birth = float(chessevent_player_info[key := 'birth'])
             self.ffe_id = int(chessevent_player_info[key := 'ffe_id'])
-            self.ffe_license = PlayerFFELicence(int(chessevent_player_info[key := 'ffe_license']))
+            self.ffe_license = PlayerFFELicence.from_chessevent_value(int(chessevent_player_info[key := 'ffe_license']))
             self.ffe_license_number = str(chessevent_player_info[key := 'ffe_license_number'])
             self.ffe_league = str(chessevent_player_info[key := 'ffe_league'])
             key = 'ffe_club_id'
