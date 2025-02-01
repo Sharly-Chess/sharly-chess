@@ -1,7 +1,7 @@
 {% with url=url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') %}
     <div
         class="d-flex mb-2 align-items-center flex-wrap gap-1"
-        style="max-width: calc(var(--vw, 100vw) - 4rem);"
+        style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
     >
         {% call() section_title() %}
             <i class="bi-gear-fill pe-1"></i>
@@ -375,7 +375,12 @@
                                         {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
                                     {% else %}
                                         <span class="dropdown">
-                                            <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                                            <button
+                                                class="btn btn-secondary dropdown-toggle mx-0 px-2 py-0 w-100 d-inline-flex align-items-center justify-content-between"
+                                                type="button"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                            >
                                                 {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
                                             </button>
                                             <ul class="dropdown-menu players-set-player-tournament p-0" {{ tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }} >
@@ -383,7 +388,7 @@
                                                     {% if tournament.file_exists %}
                                                         {% set enable=player.tournament_id != tournament.id %}
                                                         <li
-                                                            class="dropdown-item btn {% if not enable %}disabled{% endif %} text-center py-0"
+                                                            class="dropdown-item btn {% if not enable %}disabled{% endif %} text-start"
                                                             {% if enable %}
                                                                 hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
                                                                 hx-target="body"
