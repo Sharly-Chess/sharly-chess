@@ -18,6 +18,10 @@ CREATE TABLE `info` (
     `message_text` TEXT,
     `message_color` TEXT,
     `message_background_color` TEXT,
+    `federation` TEXT,
+    `chessevent_user_id` TEXT,
+    `chessevent_password` TEXT,
+    `chessevent_event_id` TEXT,
     `last_update` FLOAT NOT NULL
 );
 
@@ -73,7 +77,9 @@ CREATE TABLE `tournament` (
     `time_control_handicap_penalty_step` INTEGER,
     `time_control_handicap_penalty_value` INTEGER,
     `time_control_handicap_min_time` INTEGER,
-    `chessevent_id` INTEGER,
+    `chessevent_user_id` TEXT,
+    `chessevent_password` TEXT,
+    `chessevent_event_id` TEXT,
     `chessevent_tournament_name` TEXT,
     `record_illegal_moves` INTEGER,
     `rules` TEXT,
@@ -86,8 +92,7 @@ CREATE TABLE `tournament` (
     `last_ffe_rules_upload` FLOAT NOT NULL DEFAULT 0.0,
     `last_chessevent_download_md5` TEXT,
     PRIMARY KEY(`id` AUTOINCREMENT),
-    UNIQUE(`uniq_id`),
-    FOREIGN KEY (`chessevent_id`) REFERENCES `chessevent`(`id`)
+    UNIQUE(`uniq_id`)
 );
 
 CREATE TABLE `illegal_move` (

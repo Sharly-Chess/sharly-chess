@@ -33,13 +33,33 @@
                 {{ tournament.filename }}
             </span>
         </div>
-        <div class="text-start">
+        <div class="text-start {% if not tournament.ffe_id %}text-secondary{% endif %}">
+            <img
+                    src="{{ url_for('static', file_path='/images/federations/ffe.png') }}"
+                    style="height: 1.2em"
+                    class="p-0"
+            />
             {% if tournament.ffe_id %}
-                FFE :
-                {{ tournament.ffe_id }}
+                {{ _('FFE qualification: %(ffe_id)s', ffe_id=tournament.ffe_id) }}
             {% else %}
-                <i class="bi-x">-</i>
+                {{ _('No FFE qualification') }}
             {% endif %}
+        </div>
+         <div class="text-start {% if not tournament.chessevent_user_id or not tournament.chessevent_event_id or not tournament.chessevent_tournament_name %}text-secondary{% endif %}">
+             <i class="bi-download pe-1" ></i>
+             {% if tournament.chessevent_user_id and tournament.chessevent_event_id and tournament.chessevent_tournament_name %}
+                 {{ _(
+                     'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s',
+                     chessevent_user_id=tournament.chessevent_user_id,
+                     chessevent_event_id=tournament.chessevent_event_id,
+                     chessevent_tournament_name=tournament.chessevent_tournament_name) }}
+             {% elif not tournament.chessevent_user_id %}
+                 {{ _('No ChessEvent identifier defined') }}
+             {% elif not tournament.chessevent_event_id %}
+                 {{ _('No ChessEvent event defined') }}
+             {% else %}
+                 {{ _('No ChessEvent tournament defined') }}
+             {% endif %}
         </div>
         <div class="text-start">
             <span
@@ -64,23 +84,6 @@
                 {% else %}
                     <i class="bi-question"></i>
                 {% endif %}
-            </span>
-            <span
-                class="me-2 text-nowrap"
-                {{ tooltip_attributes(
-                    'info',
-                    _('ChessEvent connection [%(chessevent_uniq_id)s] is used.', chessevent_uniq_id=tournament.chessevent.uniq_id)
-                    if tournament.chessevent else
-                    _('No ChessEvent connection is used.'),
-                    'top') }}
-            >
-                <i class="
-                    {% if tournament.chessevent %}
-                        bi-cloud-download-fill
-                    {% else %}
-                        bi-cloud-download text-secondary
-                    {% endif %}"
-                ></i>
             </span>
             {% if not tournament.record_illegal_moves %}
                 {% set text=_('Illegal moves are not recorded.') %}

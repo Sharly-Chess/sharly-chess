@@ -456,10 +456,6 @@ msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
 #: src/data/event.py
-msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
-msgstr ""
-
-#: src/data/event.py
 msgid "Family [{family_uniq_id}]: {text}"
 msgstr ""
 
@@ -484,7 +480,7 @@ msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr ""
 
 #: src/data/event.py
-msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
+msgid "Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded."
 msgstr ""
 
 #: src/data/event.py
@@ -517,10 +513,6 @@ msgstr ""
 
 #: src/data/event.py
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
-msgstr ""
-
-#: src/data/event.py
-msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
 msgstr ""
 
 #: src/data/event.py
@@ -800,6 +792,10 @@ msgstr ""
 
 #: src/data/tournament.py
 msgid "ChessEvent connection not defined."
+msgstr ""
+
+#: src/data/tournament.py
+msgid "ChessEvent event not set."
 msgstr ""
 
 #: src/data/tournament.py
@@ -1344,38 +1340,6 @@ msgstr ""
 msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
-#: src/web/controllers/admin/chessevent_admin_controller.py
-msgid "Please enter the ID of ChessEvent connection."
-msgstr ""
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-msgid "ChessEvent connection [{uniq_id}] already exists."
-msgstr ""
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-msgid "Please enter the ID used to connect to the ChessEvent platform."
-msgstr ""
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-msgid "Please enter the password used to connect to the ChessEvent platform."
-msgstr ""
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-msgid "Please enter the ID of the event on the ChessEvent platform."
-msgstr ""
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
-msgstr ""
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
-msgstr ""
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
-msgstr ""
-
 #: src/web/controllers/admin/event_admin_controller.py
 msgid "Tournaments ({num})"
 msgstr ""
@@ -1399,10 +1363,6 @@ msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
 msgid "Timers ({num})"
-msgstr ""
-
-#: src/web/controllers/admin/event_admin_controller.py
-msgid "ChessEvent ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
@@ -1603,6 +1563,10 @@ msgstr ""
 #: src/web/controllers/admin/index_admin_controller.py
 #: src/web/controllers/admin/timer_admin_controller.py
 msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Please enter a password for the ChessEvent connection."
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py
@@ -1897,10 +1861,6 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
-msgid "No ChessEvent connection"
-msgstr ""
-
-#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "tournament"
 msgstr ""
 
@@ -2010,208 +1970,6 @@ msgstr ""
 
 #: src/web/templates/admin/index.html src/web/templates/user/index.html
 msgid "Go back to the home page."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, python-format
-msgid "Chessevent ID: %(chessevent_user_id)s"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, python-format
-msgid "ChessEvent password: %(chessevent_password)s"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, python-format
-msgid "ChessEvent event: %(chessevent_event)s"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-msgid "Edit the properties of the ChessEvent connection."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/families/family_card.html
-#: src/web/templates/admin/players/tab.html
-#: src/web/templates/admin/rotators/rotator_card.html
-#: src/web/templates/admin/screens/screen_card.html
-#: src/web/templates/admin/timers/timer_card.html
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "Edit"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-msgid "Clone the ChessEvent connection."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-msgid "Delete the ChessEvent connection."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "ChessEvent connection creation"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, python-format
-msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, python-format
-msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "Warning: the deletion of a ChessEvent connection is permanent!"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "The following tournaments will not be connected to ChessEvent anymore:"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Properties"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "ID (unique):"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "E.g.: chessevent"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "The Unique ID, used to reference the ChessEvent connection."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "Connection to the ChessEvent platform"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "Chessevent ID:"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
-msgid "E.g.: %(string)s"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "the ID used to connect to the ChessEvent platform."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "Password:"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-msgid "E.g.: my_password"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "The password used to connect to the ChessEvent platform."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "ChessEvent event:"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-msgid "The name of the event on the ChessEvent password."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Create"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Update"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/players/tab.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Delete"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/close_check_in_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Cancel"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/tab.html
-#: src/web/templates/admin/index/events_tab.html
-#: src/web/templates/admin/players/tab.html
-#: src/web/templates/admin/screens/tab.html
-#: src/web/templates/admin/timers/tab.html
-#: src/web/templates/admin/tournaments/tab.html
-msgid "Refresh this page."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/tab.html
-msgid "Add a ChessEvent connection to the event."
-msgstr ""
-
-#: src/web/templates/admin/chessevents/tab.html
-msgid "Create a ChessEvent connection"
-msgstr ""
-
-#: src/web/templates/admin/chessevents/tab.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "No ChessEvent connections."
 msgstr ""
 
 #: src/web/templates/admin/common/macros.j2
@@ -2354,11 +2112,53 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Properties"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Visibility:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+msgid "Public event"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Only arbiters can see private events."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "ID (unique):"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: world-championship"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "The Unique ID, used for data storage and export."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/players/player_modal.html
+msgid "Federation:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "The federation that organizes the event."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2376,22 +2176,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "The name of the event, used for display and reports."
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-msgid "Visibility:"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-msgid "Public event"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Only arbiters can see private events."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2421,6 +2205,50 @@ msgstr ""
 #: src/web/templates/admin/event/event_modal.html
 #, python-format
 msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Connection to the ChessEvent platform"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Chessevent ID:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "E.g.: %(string)s"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "ChessEvent Password:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "E.g.: my_password"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "ChessEvent event:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2482,6 +2310,10 @@ msgid "no background image"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+msgid "Choose a custom image:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 msgid "Background colour:"
@@ -2490,10 +2322,6 @@ msgstr ""
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "The background colour is used when the image does not fill the whole screen."
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Choose a custom image:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2517,6 +2345,64 @@ msgstr ""
 msgid "The text colour of the alert messages."
 msgstr ""
 
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Create"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Update"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/tab.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Delete"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/close_check_in_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Cancel"
+msgstr ""
+
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/families/family_card.html
+#: src/web/templates/admin/players/tab.html
+#: src/web/templates/admin/rotators/rotator_card.html
+#: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/timers/timer_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
+msgid "Edit"
+msgstr ""
+
 #: src/web/templates/admin/event/tab.html
 msgid "Clone"
 msgstr ""
@@ -2530,11 +2416,11 @@ msgid "Unique ID"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
-msgid "Start"
+msgid "Date"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
-msgid "End"
+msgid "Federation"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
@@ -2554,6 +2440,22 @@ msgstr ""
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
 msgid "(by default)"
+msgstr ""
+
+#: src/web/templates/admin/event/tab.html
+msgid "ChessEvent"
+msgstr ""
+
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/index/event_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
+msgid "No ChessEvent identifier defined"
+msgstr ""
+
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/index/event_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
+msgid "No ChessEvent event defined"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
@@ -2588,7 +2490,6 @@ msgid "%(minutes)d minutes before"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
 #, python-format
 msgid "%(minutes)d minutes after"
 msgstr ""
@@ -2698,6 +2599,7 @@ msgid "Players from #%(first)s to #%(last)s"
 msgstr ""
 
 #: src/web/templates/admin/families/family_card.html
+#: src/web/templates/admin/index/event_card.html
 msgid "No screens"
 msgstr ""
 
@@ -3084,13 +2986,21 @@ msgid "Tournaments: %(num)d"
 msgstr ""
 
 #: src/web/templates/admin/index/event_card.html
+msgid "No tournaments"
+msgstr ""
+
+#: src/web/templates/admin/index/event_card.html
 #, python-format
-msgid "ChessEvent connections: %(num)d"
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
 msgstr ""
 
 #: src/web/templates/admin/index/event_card.html
 #, python-format
 msgid "Timers: %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/index/event_card.html
+msgid "No timers"
 msgstr ""
 
 #: src/web/templates/admin/index/event_card.html
@@ -3100,7 +3010,11 @@ msgstr ""
 
 #: src/web/templates/admin/index/event_card.html
 #, python-format
-msgid "Families: %(num)d"
+msgid "Screen families: %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/index/event_card.html
+msgid "No screen families"
 msgstr ""
 
 #: src/web/templates/admin/index/event_card.html
@@ -3109,8 +3023,16 @@ msgid "Rotators: %(num)d"
 msgstr ""
 
 #: src/web/templates/admin/index/event_card.html
+msgid "No rotators"
+msgstr ""
+
+#: src/web/templates/admin/index/event_card.html
 #, python-format
 msgid "Errors: %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/index/event_card.html
+msgid "No errors"
 msgstr ""
 
 #: src/web/templates/admin/index/event_card.html
@@ -3119,8 +3041,24 @@ msgid "Warnings: %(num)d"
 msgstr ""
 
 #: src/web/templates/admin/index/event_card.html
+msgid "No warnings"
+msgstr ""
+
+#: src/web/templates/admin/index/event_card.html
 #, python-format
 msgid "Informations: %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/index/event_card.html
+msgid "No informations"
+msgstr ""
+
+#: src/web/templates/admin/index/events_tab.html
+#: src/web/templates/admin/players/tab.html
+#: src/web/templates/admin/screens/tab.html
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/tournaments/tab.html
+msgid "Refresh this page."
 msgstr ""
 
 #: src/web/templates/admin/messages/tab.html
@@ -3403,10 +3341,6 @@ msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's FIDE title."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Federation:"
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
@@ -4322,16 +4256,25 @@ msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
-msgid "Players found in the Papi_file : %(num)d"
+msgid "FFE qualification: %(ffe_id)s"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+msgid "No FFE qualification"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
-msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-msgid "No ChessEvent connection is used."
+msgid "No ChessEvent tournament defined"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "Players found in the Papi_file : %(num)d"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
@@ -4477,15 +4420,23 @@ msgid "The password is made of 10 uppercase letters, it is used to connect to th
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "ChessEvent connection:"
+msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
+msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament)."
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Name of the ChessEvent tournament:"
+msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "ChessEvent tournament:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "E.g.: Tournoi A"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -4494,6 +4445,10 @@ msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Time control"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Initial time (optional):"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -4556,10 +4511,6 @@ msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"
-msgstr ""
-
-#: src/web/templates/common/columns_number_dropdown.html
-msgid "Change the number of columns."
 msgstr ""
 
 #: src/web/templates/common/macros.j2
@@ -4793,4 +4744,13 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
+
+#~ msgid "The name of the event on the ChessEvent platform (default the ChessEvent defined for the Papi-web event of the tournament)."
+#~ msgstr ""
+
+#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
+#~ msgstr ""
+
+#~ msgid "No ChessEvent connection is used."
+#~ msgstr ""
 

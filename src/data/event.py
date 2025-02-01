@@ -14,7 +14,6 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.chessevent import ChessEvent
 from data.family import Family
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
 from data.rotator import Rotator
@@ -35,7 +34,6 @@ silent_event_uniq_ids: list[str] = []
 class EventMessage:
     level: int
     text: str
-    chessevent: ChessEvent | None
     tournament: Tournament | None
     family: Family | None
     timer: Timer | None
@@ -52,9 +50,6 @@ class EventMessage:
         if self.tournament:
             return _('Tournament [{tournament_uniq_id}]: {text}').format(
                 tournament_uniq_id=self.tournament.uniq_id, text=self.text)
-        if self.chessevent:
-            return _('ChessEvent connection [{chessevent_uniq_id}]: {text}').format(
-                chessevent_uniq_id=self.chessevent.uniq_id, text=self.text)
         elif self.family:
             return _('Family [{family_uniq_id}]: {text}').format(
                 family_uniq_id=self.family.uniq_id, text=self.text)
@@ -86,7 +81,7 @@ class Event:
         event_last_load_date_by_uniq_id[self.uniq_id] = time.time()
         if self.errors:
             self.add_warning(
-                _('Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded.'))
+                _('Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded.'))
             return
 
     @property
@@ -356,6 +351,18 @@ class Event:
     def message_background_color(self) -> str:
         return self.stored_event.message_background_color or PapiWebConfig.default_message_background_color
 
+    @property
+    def chessevent_user_id(self) -> str | None:
+        return self.stored_event.chessevent_user_id
+
+    @property
+    def chessevent_password(self) -> str | None:
+        return self.stored_event.chessevent_password
+
+    @property
+    def chessevent_event_id(self) -> str | None:
+        return self.stored_event.chessevent_event_id
+
     @cached_property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
         return sorted(self.screens_by_uniq_id.values(), key=lambda screen: screen.uniq_id)
@@ -433,30 +440,6 @@ class Event:
     @cached_property
     def last_update_str(self) -> str | None:
         return format_timestamp_date_time(self.last_update)
-
-    @cached_property
-    def chessevents_by_id(self) -> dict[int, ChessEvent]:
-        if self.errors:
-            return {}
-        chessevents_by_id: dict[int, ChessEvent] = {
-            stored_chessevent.id: ChessEvent(self, stored_chessevent)
-            for stored_chessevent in self.stored_event.stored_chessevents
-        }
-        if self.errors:
-            self.add_warning(_('Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded.'))
-        return chessevents_by_id
-
-    @cached_property
-    def chessevents_by_uniq_id(self) -> dict[str, ChessEvent]:
-        return {
-            chessevent.uniq_id: chessevent
-            for chessevent in self.chessevents_by_id.values()
-        }
-
-    def get_unused_chessevent_uniq_id(self, base_uniq_id: str) -> str:
-        """ Returns the first unused chessevent uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
-        return self._get_unused_item_uniq_id(base_uniq_id, self.chessevents_by_uniq_id)
 
     @cached_property
     def timers_by_id(self) -> dict[int, Timer]:
@@ -635,24 +618,24 @@ class Event:
         return self._get_unused_item_uniq_id(base_uniq_id, self.rotators_by_uniq_id)
 
     def _add_message(
-            self, level: int, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
-            family: Family | None = None, timer: Timer | None = None, timer_hour: TimerHour | None = None,
-            screen: Screen | None = None, screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+            self, level: int, text: str, tournament: Tournament | None = None, family: Family | None = None,
+            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
+            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
     ) -> EventMessage:
         event_message: EventMessage = EventMessage(
-            level, text, tournament=tournament, chessevent=chessevent, family=family, timer=timer,
-            timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
+            level, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour, screen=screen,
+            screen_set=screen_set, rotator=rotator)
         self.messages.append(event_message)
         return event_message
 
     def add_debug(
-            self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
-            family: Family | None = None, timer: Timer | None = None, timer_hour: TimerHour | None = None,
-            screen: Screen | None = None, screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
+            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
+            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
     ):
         event_message: EventMessage = self._add_message(
-            logging.DEBUG, text, tournament=tournament, chessevent=chessevent, family=family, timer=timer,
-            timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.DEBUG, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour,
+            screen=screen, screen_set=screen_set, rotator=rotator)
         if not self._silent:
             logger.debug(event_message.formatted_text)
 
@@ -661,12 +644,12 @@ class Event:
         return [message.text for message in self.messages if message.level == logging.INFO]
 
     def add_info(
-            self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
-            family: Family | None = None, timer: Timer | None = None, timer_hour: TimerHour | None = None,
-            screen: Screen | None = None, screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
+            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
+            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
     ):
         event_message: EventMessage = self._add_message(
-            logging.INFO, text, tournament=tournament, chessevent=chessevent, family=family, timer=timer,
+            logging.INFO, text, tournament=tournament, family=family, timer=timer,
             timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
         if not self._silent:
             logger.info(event_message.formatted_text)
@@ -676,13 +659,13 @@ class Event:
         return [message.text for message in self.messages if message.level == logging.WARNING]
 
     def add_warning(
-            self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
-            family: Family | None = None, timer: Timer | None = None, timer_hour: TimerHour | None = None,
-            screen: Screen | None = None, screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
+            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
+            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
     ):
         event_message: EventMessage = self._add_message(
-            logging.WARNING, text, tournament=tournament, chessevent=chessevent, family=family, timer=timer,
-            timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.WARNING, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour,
+            screen=screen, screen_set=screen_set, rotator=rotator)
         if not self._silent:
             logger.info(event_message.formatted_text)
 
@@ -691,13 +674,13 @@ class Event:
         return [message.text for message in self.messages if message.level == logging.ERROR]
 
     def add_error(
-            self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
-            family: Family | None = None, timer: Timer | None = None, timer_hour: TimerHour | None = None,
-            screen: Screen | None = None, screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
+            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
+            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
     ):
         event_message: EventMessage = self._add_message(
-            logging.ERROR, text, tournament=tournament, chessevent=chessevent, family=family, timer=timer,
-            timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.ERROR, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour,
+            screen=screen, screen_set=screen_set, rotator=rotator)
         if not self._silent:
             logger.info(event_message.formatted_text)
 
@@ -706,14 +689,14 @@ class Event:
         return [message.text for message in self.messages if message.level == logging.CRITICAL]
 
     def add_critical(
-            self, text: str, tournament: Tournament | None = None, chessevent: ChessEvent | None = None,
-            family: Family | None = None, timer: Timer | None = None, timer_hour: TimerHour | None = None,
-            screen: Screen | None = None, screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
+            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
+            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
     ):
         """Adds a debug-level message and logs it"""
         event_message: EventMessage = self._add_message(
-            logging.CRITICAL, text, tournament=tournament, chessevent=chessevent, family=family, timer=timer,
-            timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.CRITICAL, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour,
+            screen=screen, screen_set=screen_set, rotator=rotator)
         if not self._silent:
             logger.info(event_message.formatted_text)
 

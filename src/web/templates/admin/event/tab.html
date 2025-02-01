@@ -44,24 +44,30 @@
     <thead class="position-sticky top-0 z-2">
         <tr>
             <th scope="col" class="text-nowrap" colspan="2">{{ _('Customization') }}</th>
-            <th scope="col" class=""></th>
        </tr>
     </thead>
     <tbody>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Unique ID') }}</th>
             <td class="text-nowrap">{{ admin_event.uniq_id }}</td>
-            <td></td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">{{ _('Start') }}</th>
-            <td class="">{{ admin_event.formatted_start_date_time }}</td>
-            <td></td>
+            <th scope="row" class="text-nowrap">{{ _('Date') }}</th>
+            <td class="">{{ admin_event.formatted_start_date_time }} - {{ admin_event.formatted_stop_date_time }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">{{ _('End') }}</th>
-            <td class="">{{ admin_event.formatted_stop_date_time }}</td>
-            <td></td>
+            <th scope="row" class="text-nowrap">{{ _('Federation') }}</th>
+            <td class="">
+                <span class="player-federation_flag">
+                    <img
+                            class="player-federation-flag ms-1 ps-1 pe-1"
+                            src="{{ url_for('static', file_path='/images/federations/' ~ admin_event.federation ~ '.svg') }}"
+                    />
+                    {{ admin_event.federation }}
+                    -
+                    {{ papi_web_config.federations[admin_event.federation] }}
+                </span>
+            </td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
@@ -69,7 +75,6 @@
                 {{ event_visibility_icon(admin_event, 'pe-1') }}
                 {{ _('Public event') if admin_event.public else _('Private event') }}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Default directory of the Papi files') }}</th>
@@ -81,7 +86,20 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">{{ _('ChessEvent') }}</th>
+            <td class="{% if not admin_event.chessevent_user_id or not admin_event.chessevent_event_id %}fst-italic{% endif %}">
+                {% if admin_event.chessevent_user_id and admin_event.chessevent_event_id %}
+                    {{ admin_event.chessevent_user_id }}
+                    /
+                    {{ admin_event.chessevent_event_id }}
+                {% elif not admin_event.chessevent_user_id %}
+                    {{ _('No ChessEvent identifier defined') }}
+                {% else %}
+                    {{ _('No ChessEvent event defined') }}
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Background image and colour') }}</th>
@@ -89,7 +107,6 @@
                 <div style="width: 160px; height: 90px; background-image: url('{{ admin_event.background_url }}'); background-color: {{ admin_event.background_color }}; background-repeat: no-repeat; background-size: contain; background-position: center center;">
                 </div>
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Password to enter results') }}</th>
@@ -102,7 +119,6 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Maximum number of illegal moves') }}</th>
@@ -118,7 +134,6 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Rules') }}</th>
@@ -131,7 +146,6 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Default timer configuration') }}</th>
@@ -140,7 +154,6 @@
                 <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[2] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[2]) }}</div></div>
                 <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[3] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes after', minutes=admin_event.timer_delays[3]) }}</div></div>
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Alert message') }}</th>
@@ -153,12 +166,10 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Last update') }}</th>
             <td class="text-nowrap">{{ admin_event.last_update_str }}</td>
-            <td></td>
         </tr>
     </tbody>
 </table>

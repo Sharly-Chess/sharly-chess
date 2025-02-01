@@ -1,4 +1,5 @@
 name: "Championnat de France rapide 2023"
+federation: "FRA"
 start: "2023-06-25 00:00"
 stop: "2023-06-25 23:59"
 background_image: "FRA/FRA.png"

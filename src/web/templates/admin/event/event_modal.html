@@ -62,6 +62,47 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 mb-3">
+                            {# can not use select_input() here because of dynamic-select #}
+                            {% with id='federation', name='federation' %}
+                                <div>
+                                    <div class="d-flex align-items-center">
+                                        <label for="uniq-id" class="form-check-label flex-grow-1 mb-1">
+                                            {{ _('Federation:') }}
+                                        </label>
+                                    </div>
+                                    <div class="input-group">
+                                        <select
+                                                name="{{ name }}"
+                                                class="form-control {% if name in errors or action == 'delete' %}is-invalid{% else %}is-valid{% endif %}"
+                                                {% if action == 'delete' %}
+                                                    disabled
+                                                {% else %}
+                                                    data-dynamic-select
+                                                {% endif %}
+                                        >
+                                            {% for federation_id, federation_name in federations.items() %}
+                                                <option
+                                                        value="{{ federation_id }}"
+                                                        {% if federation_id == data[name] %}selected{%endif %}
+                                                        data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
+                                                >
+                                                    {{ federation_id }} - {{ federation_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div id="{{ id }}-help" class="form-text">
+                                            {{ _('The federation that organizes the event.') }}
+                                        </div>
+                                        {% if name in errors %}
+                                            <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                                {{ errors[name] }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
                             {{ text_input(
                                 name='name',
                                 label=_('Name:'),
@@ -94,6 +135,39 @@
                                 label=_('Default directory of the Papi files:'),
                                 placeholder=_('E.g.: c:\chess\tournaments'),
                                 help_text=_('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=papi_web_config.default_papi_path),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+
+                    <h4>
+                        {{ _('Connection to the ChessEvent platform') }}
+                    </h4>
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ text_input(
+                                name='chessevent_user_id',
+                                label=_('Chessevent ID:'),
+                                placeholder=_('E.g.: %(string)s', string='Z00000'),
+                                help_text=_('The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments).'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ password_input(
+                                name='chessevent_password',
+                                label=_('ChessEvent Password:'),
+                                placeholder=_('E.g.: my_password'),
+                                help_text=_('The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments).'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 mb-3">
+                            {{ text_input(
+                                name='chessevent_event_id',
+                                label=_('ChessEvent event:'),
+                                placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
+                                help_text=_('The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments).'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -259,7 +333,6 @@
                             </div>
                         {% endfor %}
                     </div>
-                    
 
                     <h4>
                         {{ _('Alert message') }}
@@ -338,4 +411,5 @@
 </div>
 <script>
     (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
+    document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
 </script>

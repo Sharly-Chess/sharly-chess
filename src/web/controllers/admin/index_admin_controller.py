@@ -238,6 +238,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                     case _:
                         raise ValueError(f'action=[{action}]')
         name: str | None = None
+        federation: str | None = None
         start: float | None = None
         stop: float | None = None
         public: bool | None = None
@@ -253,23 +254,31 @@ class AbstractIndexAdminController(AbstractAdminController):
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
+        chessevent_user_id: str | None = None
+        chessevent_password: str | None = None
+        chessevent_event_id: str | None = None
         match action:
             case 'clone' | 'update' | 'create':
-                name: str | None = WebContext.form_data_to_str(data, 'name')
+                name: str | None = WebContext.form_data_to_str(data, field := 'name')
                 if not name:
-                    errors['name'] = _('Please enter the name of the event.')
-                start_str: str | None = WebContext.form_data_to_str(data, 'start')
+                    errors[field] = _('Please enter the name of the event.')
+                federation: str | None = WebContext.form_data_to_str(data, field := 'federation')
+                if not federation in PapiWebConfig.federations:
+                    # should never happen, not translated.
+                    errors[field] = f'Invalid federation value [{data[field]}].'
+                    data[field] = ''
+                start_str: str | None = WebContext.form_data_to_str(data, field := 'start')
                 if not start_str:
-                    errors['start'] = _('Please enter the start date of the event.')
+                    errors[field] = _('Please enter the start date of the event.')
                 else:
                     start = time.mktime(datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple())
-                stop_str: str | None = WebContext.form_data_to_str(data, 'stop')
+                stop_str: str | None = WebContext.form_data_to_str(data, field := 'stop')
                 if not stop_str:
-                    errors['stop'] = _('Please enter the end date of the event.')
+                    errors[field] = _('Please enter the end date of the event.')
                 else:
                     stop = time.mktime(datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple())
                 if 'start' not in errors and 'stop' not in errors and start > stop:
-                    errors['stop'] = _('Please enter a date after the start date.')
+                    errors[field] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
                 path: str | None = WebContext.form_data_to_str(data, 'path')
                 update_password = WebContext.form_data_to_str(data, 'update_password')
@@ -330,6 +339,11 @@ class AbstractIndexAdminController(AbstractAdminController):
                     except ValueError:
                         errors[field] = _('Invalid color [{color}] ([#RRGGBB] expected).').format(color={data[field]})
                 pass
+                chessevent_user_id = WebContext.form_data_to_str(data, 'chessevent_user_id')
+                chessevent_password = WebContext.form_data_to_str(data, field := 'chessevent_password')
+                if chessevent_user_id and not chessevent_password:
+                    errors[field] = _('Please enter a password for the ChessEvent connection.')
+                chessevent_event_id = WebContext.form_data_to_str(data, 'chessevent_event_id')
             case 'delete':
                 pass
             case _:
@@ -337,6 +351,7 @@ class AbstractIndexAdminController(AbstractAdminController):
         return StoredEvent(
             uniq_id=uniq_id,
             name=name,
+            federation=federation,
             start=start,
             stop=stop,
             public=public,
@@ -352,6 +367,9 @@ class AbstractIndexAdminController(AbstractAdminController):
             message_text=message_text,
             message_color=message_color,
             message_background_color=message_background_color,
+            chessevent_user_id=chessevent_user_id,
+            chessevent_password=chessevent_password,
+            chessevent_event_id=chessevent_event_id,
             errors=errors,
         )
 
@@ -443,6 +461,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
         public: bool | None = None
+        federation: str | None = None
         hide_background_image: bool | None = None
         background_image: str | None = None
         background_color: str | None = None
@@ -455,9 +474,13 @@ class AbstractIndexAdminController(AbstractAdminController):
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
+        chessevent_user_id: str | None = None
+        chessevent_password: str | None = None
+        chessevent_event_id: str | None = None
         match action:
             case 'update' | 'clone':
                 public = admin_event.stored_event.public
+                federation = admin_event.stored_event.federation
                 hide_background_image = admin_event.stored_event.hide_background_image
                 background_image = admin_event.stored_event.background_image
                 background_color = admin_event.stored_event.background_color
@@ -470,6 +493,9 @@ class AbstractIndexAdminController(AbstractAdminController):
                 message_text = admin_event.stored_event.message_text
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
+                chessevent_user_id = admin_event.stored_event.chessevent_user_id
+                chessevent_password = admin_event.stored_event.chessevent_password
+                chessevent_event_id = admin_event.stored_event.chessevent_event_id
             case 'create':
                 public = False
                 hide_background_image = PapiWebConfig.default_hide_background_image
@@ -481,6 +507,7 @@ class AbstractIndexAdminController(AbstractAdminController):
            'uniq_id': WebContext.value_to_form_data(uniq_id),
            'name': WebContext.value_to_form_data(name),
            'public': WebContext.value_to_form_data(public),
+           'federation': WebContext.value_to_form_data(federation),
            'start': WebContext.value_to_datetime_form_data(start),
            'stop': WebContext.value_to_datetime_form_data(stop),
            'background_image_checkbox': WebContext.value_to_form_data(hide_background_image),
@@ -497,7 +524,10 @@ class AbstractIndexAdminController(AbstractAdminController):
            'message_background_color_checkbox': WebContext.value_to_form_data(
                message_background_color is None),
            'message_background_color': WebContext.value_to_form_data(message_background_color),
-       } | {
+           'chessevent_user_id': WebContext.value_to_form_data(chessevent_user_id),
+           'chessevent_password': WebContext.value_to_form_data(chessevent_password),
+           'chessevent_event_id': WebContext.value_to_form_data(chessevent_event_id),
+        } | {
            f'color_{i}': WebContext.value_to_form_data(colors[i]) for i in range(1, 4)
        } | {
            f'color_{i}_checkbox': WebContext.value_to_form_data(colors[i] is None) for i in
@@ -579,6 +609,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 if errors is None:
                     errors = {}
                 context |= {
+                    'federations': PapiWebConfig.federations,
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         PapiWebConfig.default_record_illegal_moves_number),
                     'timer_color_texts': cls._get_timer_color_texts(PapiWebConfig.default_timer_delays),

@@ -1,19 +1,14 @@
 name: "10e open international de Liffré"
+federation: "FRA"
 start: "2024-10-19 00:00"
 stop: "2024-10-25 23:59"
 background_image: "FRA/BRE/35/F35046.png"
 background_color: "#d8d8d8"
 update_password: "mot_de_passe"
 record_illegal_moves: 0
-chessevents:
-  liffre-10:
-    user_id: "pascal"
-    password: "Find it!"
-    event_id: "BRE_35_OIL2024"
-  liffre-10-blitz:
-    user_id: "pascal"
-    password: "Find it!"
-    event_id: "BRE_35_OILBlitzLiffre2024"
+chessevent_user_id: "pascal"
+chessevent_password: "Find it!"
+chessevent_event_id: "BRE_35_OIL2024"
 timers:
   principal:
     hours:
@@ -85,21 +80,21 @@ tournaments:
     name: "Tournoi A"
     ffe_id: 63050
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "liffre-10"
     chessevent_tournament_name: "A"
   b:
     filename: "liffre-10-b"
     name: "Tournoi B"
     ffe_id: 63051
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "liffre-10"
     chessevent_tournament_name: "B"
   blitz:
     filename: "liffre-10-blitz"
     name: "Tournoi de blitz"
     ffe_id: 64615
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "liffre-10-blitz"
+    chessevent_user_id: "pascal"
+    chessevent_password: "Find it!"
+    chessevent_event_id: "BRE_35_OILBlitzLiffre2024"
     chessevent_tournament_name: "BLITZ"
 screens:
 families:

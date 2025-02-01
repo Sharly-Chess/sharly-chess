@@ -31,16 +31,6 @@ class StoredTimer:
 
 
 @dataclass
-class StoredChessEvent:
-    id: int | None
-    uniq_id: str
-    user_id: str
-    password: str
-    event_id: str
-    errors: dict[str, str] = field(default_factory=dict[str, str])
-
-
-@dataclass
 class StoredTournament:
     id: int | None
     uniq_id: str
@@ -54,7 +44,9 @@ class StoredTournament:
     time_control_handicap_penalty_step: int | None
     time_control_handicap_penalty_value: int | None
     time_control_handicap_min_time: int | None
-    chessevent_id: int | None
+    chessevent_user_id: str | None
+    chessevent_password: str | None
+    chessevent_event_id: str | None
     chessevent_tournament_name: str | None
     record_illegal_moves: int | None
     rules: str | None
@@ -152,6 +144,7 @@ class StoredRotator:
 class StoredEvent:
     uniq_id: str
     name: str
+    federation: str
     start: float
     stop: float
     public: bool = False
@@ -168,20 +161,16 @@ class StoredEvent:
     message_text: str | None = None
     message_color: str | None = None
     message_background_color: str | None = None
+    chessevent_user_id: str | None = None
+    chessevent_password: str | None = None
+    chessevent_event_id: str | None = None
     last_update: float = 0.0
-    stored_chessevents: list[StoredChessEvent] = field(default_factory=list[StoredChessEvent])
     stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])
     stored_tournaments: list[StoredTournament] = field(default_factory=list[StoredTournament])
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])
     errors: dict[str, str] = field(default_factory=dict[str, str])
-
-    @property
-    def federation(self) -> str:
-        """Returns the federation of the event (used by TRF exports)."""
-        # TODO Store the federation of the event in the database from version 2.4.21, for the moment assume that all the events are organized in FRA ;-)
-        return 'FRA'
 
 
 @dataclass

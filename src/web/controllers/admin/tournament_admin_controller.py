@@ -100,7 +100,9 @@ class TournamentAdminController(AbstractEventAdminController):
         time_control_handicap_penalty_value: int | None = None
         time_control_handicap_penalty_step: int | None = None
         time_control_handicap_min_time: int | None = None
-        chessevent_id: int | None = None
+        chessevent_user_id: str | None = None
+        chessevent_password: str | None = None
+        chessevent_event_id: str | None = None
         chessevent_tournament_name: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
@@ -127,7 +129,9 @@ class TournamentAdminController(AbstractEventAdminController):
                     data, 'time_control_handicap_penalty_step')
                 time_control_handicap_min_time = WebContext.form_data_to_int(
                     data, 'time_control_handicap_min_time')
-                chessevent_id = WebContext.form_data_to_int(data, 'chessevent_id')
+                chessevent_user_id = WebContext.form_data_to_str(data, 'chessevent_user_id')
+                chessevent_password = WebContext.form_data_to_str(data, 'chessevent_password')
+                chessevent_event_id = WebContext.form_data_to_str(data, 'chessevent_event_id')
                 chessevent_tournament_name = WebContext.form_data_to_str(data, 'chessevent_tournament_name')
                 record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(data, errors)
                 rules = cls._admin_validate_rules_update_data(data, errors)
@@ -148,23 +152,15 @@ class TournamentAdminController(AbstractEventAdminController):
             time_control_handicap_penalty_value=time_control_handicap_penalty_value,
             time_control_handicap_penalty_step=time_control_handicap_penalty_step,
             time_control_handicap_min_time=time_control_handicap_min_time,
-            chessevent_id=chessevent_id,
+            chessevent_user_id=chessevent_user_id,
+            chessevent_password=chessevent_password,
+            chessevent_event_id=chessevent_event_id,
             chessevent_tournament_name=chessevent_tournament_name,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
             check_in_open=check_in_open,
             errors=errors,
         )
-
-    @staticmethod
-    def _get_chessevent_options(admin_event: Event) -> dict[str, str]:
-        options: dict[str, str] = {
-            '': _('No ChessEvent connection'),
-        }
-        for chessevent in admin_event.chessevents_by_id.values():
-            options[str(chessevent.id)] = (f' {chessevent.uniq_id} ({chessevent.user_id}'
-                                           f'/{chessevent.shadowed_password}/{chessevent.event_id})')
-        return options
 
     @classmethod
     def _admin_event_tournaments_render(
@@ -215,7 +211,9 @@ class TournamentAdminController(AbstractEventAdminController):
                     time_control_handicap_penalty_value: int | None = None
                     time_control_handicap_penalty_step: int | None = None
                     time_control_handicap_min_time: int | None = None
-                    chessevent_id: int | None = None
+                    chessevent_user_id: str | None = None
+                    chessevent_password: str | None = None
+                    chessevent_event_id: str | None = None
                     chessevent_tournament_name: str | None = None
                     record_illegal_moves: int | None = None
                     rules: str | None = None
@@ -230,7 +228,9 @@ class TournamentAdminController(AbstractEventAdminController):
                                 admin_tournament.stored_tournament.time_control_handicap_penalty_step
                             time_control_handicap_min_time = \
                                 admin_tournament.stored_tournament.time_control_handicap_min_time
-                            chessevent_id = admin_tournament.stored_tournament.chessevent_id
+                            chessevent_user_id = admin_tournament.stored_tournament.chessevent_user_id
+                            chessevent_password = admin_tournament.stored_tournament.chessevent_password
+                            chessevent_event_id = admin_tournament.stored_tournament.chessevent_event_id
                             chessevent_tournament_name = admin_tournament.stored_tournament.chessevent_tournament_name
                             record_illegal_moves = admin_tournament.stored_tournament.record_illegal_moves
                             rules = admin_tournament.stored_tournament.rules
@@ -259,7 +259,9 @@ class TournamentAdminController(AbstractEventAdminController):
                         'time_control_handicap_penalty_step': WebContext.value_to_form_data(
                             time_control_handicap_penalty_step),
                         'time_control_handicap_min_time': WebContext.value_to_form_data(time_control_handicap_min_time),
-                        'chessevent_id': WebContext.value_to_form_data(chessevent_id),
+                        'chessevent_user_id': WebContext.value_to_form_data(chessevent_user_id),
+                        'chessevent_password': WebContext.value_to_form_data(chessevent_password),
+                        'chessevent_event_id': WebContext.value_to_form_data(chessevent_event_id),
                         'chessevent_tournament_name': WebContext.value_to_form_data(chessevent_tournament_name),
                         'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
                         'rules': WebContext.value_to_form_data(rules),
@@ -272,7 +274,6 @@ class TournamentAdminController(AbstractEventAdminController):
                 if errors is None:
                     errors = {}
                 template_context |= {
-                    'chessevent_options': cls._get_chessevent_options(admin_event),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves),
                     'modal': modal,
@@ -369,7 +370,7 @@ class TournamentAdminController(AbstractEventAdminController):
                 case 'create' | 'clone':
                     stored_tournament = event_database.add_stored_tournament(stored_tournament)
                     if 'add_screens' in data:
-                        for (type, menu, name) in [
+                        for (type_, menu, name) in [
                             ('input', '@input', _('Results entry'), ),
                             ('boards', '@boards', _('Pairings by board'), ),
                             ('players', '@players', _('Pairings by player'), ),
@@ -377,8 +378,8 @@ class TournamentAdminController(AbstractEventAdminController):
                             stored_screen: StoredScreen = event_database.add_stored_screen(StoredScreen(
                                 id=None,
                                 uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
-                                    f'{stored_tournament.uniq_id}-{type}'),
-                                type=type,
+                                    f'{stored_tournament.uniq_id}-{type_}'),
+                                type=type_,
                                 public=True,
                                 name=name,
                                 columns=1,

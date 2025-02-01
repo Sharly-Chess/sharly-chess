@@ -20,8 +20,8 @@ from data.board import Board
 from data.result import Result as DataResult
 from data.util import Result as UtilResult
 from database.sqlite.sqlite_database import SQLiteDatabase
-from database.store import StoredTournament, StoredEvent, StoredChessEvent, StoredTimer, StoredTimerHour, \
-    StoredFamily, StoredIllegalMove, StoredResult, StoredRotator, StoredScreenSet, StoredScreen
+from database.store import StoredTournament, StoredEvent, StoredTimer, StoredTimerHour, StoredFamily, \
+    StoredIllegalMove, StoredResult, StoredRotator, StoredScreenSet, StoredScreen
 
 logger: Logger = get_logger()
 
@@ -131,11 +131,12 @@ class EventDatabase(SQLiteDatabase):
                     event_dict = yaml.safe_load(yml_file.read_text(encoding='utf-8'))
                     self._check_populate_dict(
                         yml_file, '', event_dict,
-                        mandatory_fields=['name', ],
+                        mandatory_fields=['name', 'federation', ],
                         optional_fields=['start', 'stop', 'path', 'hide_background_image', 'background_image',
                                          'background_color', 'public', 'update_password', 'record_illegal_moves',
-                                         'rules', 'chessevents', 'tournaments', 'timers', 'screens', 'families',
-                                         'rotators', 'timer_colors', 'timer_delays', ],
+                                         'rules', 'chessevent_user_id', 'chessevent_password', 'chessevent_event_id',
+                                         'tournaments', 'timers', 'screens', 'families', 'rotators', 'timer_colors',
+                                         'timer_delays', ],
                         empty_allowed=False)
                     timer_delays: dict[int, int] | None = None
                     if 'timer_delays' in event_dict:
@@ -160,6 +161,7 @@ class EventDatabase(SQLiteDatabase):
                     event_database.update_stored_event(StoredEvent(
                         uniq_id=self.uniq_id,
                         name=event_dict['name'],
+                        federation=event_dict['federation'],
                         start=event_start,
                         stop=event_stop,
                         path=event_dict.get('path', None),
@@ -173,22 +175,10 @@ class EventDatabase(SQLiteDatabase):
                         timer_colors=timer_colors,
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
+                        chessevent_user_id=event_dict.get('chessevent_user_id', None),
+                        chessevent_password=event_dict.get('chessevent_password', None),
+                        chessevent_event_id=event_dict.get('chessevent_event_id', None),
                     ))
-                    chessevent_ids_by_uniq_id: dict[str, int] = {}
-                    if 'chessevents' in event_dict:
-                        self._check_populate_dict(yml_file, '/chessevents', event_dict['chessevents'])
-                        for chessevent_uniq_id, chessevent_dict in event_dict['chessevents'].items():
-                            self._check_populate_dict(
-                                yml_file, f'/chessevents/{chessevent_uniq_id}', chessevent_dict,
-                                mandatory_fields=['user_id', 'password', 'event_id', ])
-                            stored_chessevent: StoredChessEvent = event_database.add_stored_chessevent(StoredChessEvent(
-                                id=None,
-                                uniq_id=chessevent_uniq_id,
-                                user_id=chessevent_dict.get('user_id', None),
-                                password=chessevent_dict.get('password', None),
-                                event_id=chessevent_dict.get('event_id', None),
-                            ))
-                            chessevent_ids_by_uniq_id[chessevent_uniq_id] = stored_chessevent.id
                     timer_ids_by_uniq_id: dict[str, int] = {}
                     if 'timers' in event_dict and event_dict['timers'] is not None:
                         self._check_populate_dict(yml_file, '/timers', event_dict['timers'])
@@ -242,12 +232,10 @@ class EventDatabase(SQLiteDatabase):
                                     'filename', 'ffe_id', 'ffe_password', 'time_control_initial_time',
                                     'time_control_increment', 'time_control_handicap_penalty_value',
                                     'time_control_handicap_penalty_step', 'time_control_handicap_min_time',
-                                    'chessevent_uniq_id', 'chessevent_tournament_name', 'time_control_initial_time',
+                                    'chessevent_user_id', 'chessevent_password', 'chessevent_event_id',
+                                    'chessevent_tournament_name', 'time_control_initial_time',
                                     'time_control_increment', 'time_control_handicap_penalty_value',
                                     'time_control_handicap_penalty_step', 'time_control_handicap_min_time', ])
-                            chessevent_uniq_id: str = tournament_dict.get('chessevent_uniq_id', None)
-                            chessevent_id: int = chessevent_ids_by_uniq_id[
-                                chessevent_uniq_id] if chessevent_uniq_id else None
                             stored_tournament: StoredTournament = event_database.add_stored_tournament(StoredTournament(
                                 id=None,
                                 uniq_id=tournament_uniq_id,
@@ -264,7 +252,9 @@ class EventDatabase(SQLiteDatabase):
                                     'time_control_handicap_penalty_step', None),
                                 time_control_handicap_min_time=tournament_dict.get(
                                     'time_control_handicap_min_time', None),
-                                chessevent_id=chessevent_id,
+                                chessevent_user_id=tournament_dict.get('chessevent_user_id', None),
+                                chessevent_password=tournament_dict.get('chessevent_password', None),
+                                chessevent_event_id=tournament_dict.get('chessevent_event_id', None),
                                 chessevent_tournament_name=tournament_dict.get('chessevent_tournament_name', None),
                                 record_illegal_moves=None,
                                 rules=None,
@@ -285,7 +275,7 @@ class EventDatabase(SQLiteDatabase):
                             assert screen_dict, f'{yml_file.name}: dictionary screens.{screen_uniq_id} is empty'
                             timer_uniq_id: str | None = screen_dict.get('timer_uniq_id', None)
                             timer_id: int = timer_ids_by_uniq_id[timer_uniq_id] if timer_uniq_id else None
-                            type: str = screen_dict.get('type', None)
+                            type_: str = screen_dict.get('type', None)
                             input_exit_button: bool | None = None
                             players_show_unpaired: bool | None = None
                             results_limit: int | None = None
@@ -293,7 +283,7 @@ class EventDatabase(SQLiteDatabase):
                             results_tournament_ids: list[int] | None = None
                             background_image: str | None = None
                             background_color: str | None = None
-                            match type:
+                            match type_:
                                 case 'boards':
                                     pass
                                 case 'input':
@@ -321,7 +311,7 @@ class EventDatabase(SQLiteDatabase):
                             menu_link: bool | None = None
                             menu_text: str | None = None
                             menu: str | None = None
-                            match type:
+                            match type_:
                                 case 'boards' | 'input' | 'players' | 'results':
                                     menu_link: bool = screen_dict.get('menu_link', True)
                                     menu_text: str = screen_dict.get('menu_text', '')
@@ -335,7 +325,7 @@ class EventDatabase(SQLiteDatabase):
                                 id=None,
                                 uniq_id=screen_uniq_id,
                                 name=screen_dict.get('name', None),
-                                type=type,
+                                type=type_,
                                 public=screen_dict.get('public', True),
                                 columns=screen_dict.get('columns', None),
                                 menu_link=menu_link,
@@ -384,13 +374,13 @@ class EventDatabase(SQLiteDatabase):
                                                  'menu', 'first', 'last', 'parts', 'number', ])
                             timer_uniq_id: str | None = family_dict.get('timer_uniq_id', None)
                             timer_id: int = timer_ids_by_uniq_id[timer_uniq_id] if timer_uniq_id else None
-                            type: str = family_dict.get('type', None)
+                            type_: str = family_dict.get('type', None)
                             tournament_uniq_id: str = family_dict.get('tournament_uniq_id', None)
                             tournament_id: int = tournament_ids_by_uniq_id[
                                 tournament_uniq_id] if tournament_uniq_id else None
                             input_exit_button: bool | None = None
                             players_show_unpaired: bool | None = None
-                            match type:
+                            match type_:
                                 case 'boards':
                                     pass
                                 case 'input':
@@ -398,20 +388,20 @@ class EventDatabase(SQLiteDatabase):
                                 case 'players':
                                     players_show_unpaired = family_dict.get('players_show_unpaired', False)
                                 case _:
-                                    raise ValueError(f'type={type}')
-                            match type:
+                                    raise ValueError(f'type={type_}')
+                            match type_:
                                 case 'boards' | 'input' | 'players':
                                     menu_link: bool = family_dict.get('menu_link', True)
                                     menu_text: str = family_dict.get('menu_text', '')
                                     menu: str = family_dict.get('menu', '')
                                 case _:
-                                    raise ValueError(f'type={type}')
+                                    raise ValueError(f'type={type_}')
                             stored_family: StoredFamily = event_database.add_stored_family(StoredFamily(
                                 id=None,
                                 uniq_id=family_uniq_id,
                                 name=family_dict.get('name', None),
                                 tournament_id=tournament_id,
-                                type=type,
+                                type=type_,
                                 public=family_dict.get('public', True),
                                 columns=family_dict.get('columns', None),
                                 menu_link=menu_link,
@@ -537,6 +527,8 @@ class EventDatabase(SQLiteDatabase):
             uniq_id=self.uniq_id,
             version=row['version'],
             name=row['name'],
+            # needed to open event databases when version < 2.4.21 before checking the version
+            federation=row.get('federation', 'NON'),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
@@ -556,6 +548,10 @@ class EventDatabase(SQLiteDatabase):
             message_text=row.get('message_text', None),
             message_color=row.get('message_color', None),
             message_background_color=row.get('message_background_color', None),
+            # needed to open event databases when version < 2.4.21 before checking the version
+            chessevent_user_id=row.get('chessevent_user_id', None),
+            chessevent_password=row.get('chessevent_password', None),
+            chessevent_event_id=row.get('chessevent_event_id', None),
             last_update=row['last_update'],
         )
 
@@ -570,7 +566,6 @@ class EventDatabase(SQLiteDatabase):
 
     def load_stored_event(self) -> StoredEvent:
         stored_event: StoredEvent = self._get_stored_event()
-        stored_event.stored_chessevents = list(self.load_stored_chessevents())
         stored_event.stored_tournaments = list(self.load_stored_tournaments())
         stored_event.stored_timers = list(self.load_stored_timers())
         stored_event.stored_families = list(self.load_stored_families())
@@ -664,13 +659,149 @@ class EventDatabase(SQLiteDatabase):
                     self.set_version(target_version)
                     self.commit()
                     logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
-                # TODO uncomment this for version 2.4.21
-                #case '2.4.20':
-                    #target_version = Version('2.4.21')
-                    #self._execute('DROP TABLE `skipped_round`')
-                    #self.set_version(target_version)
-                    #self.commit()
-                    #logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
+                case '2.4.20':
+                    target_version = Version('2.4.21')
+                    # No need to store the rounds skipped by the users since pairing information is stored
+                    # at player-level after the ChessEvent import. IF EXISTS is used because the table is not
+                    # created since 2.4.20
+                    self._execute('DROP TABLE IF EXISTS `skipped_round`')
+                    self._execute('ALTER TABLE `info` ADD `federation` TEXT NOT NULL DEFAULT \'NON\'')
+                    # Assume that the events before 2.4.21 were all in France
+                    self._execute('UPDATE `info` SET `federation` = ?', ('FRA', ))
+                    # Add ChessEvent information at event-level and tournament-level
+                    self._execute('ALTER TABLE `info` ADD `chessevent_user_id` TEXT')
+                    self._execute('ALTER TABLE `info` ADD `chessevent_password` TEXT')
+                    self._execute('ALTER TABLE `info` ADD `chessevent_event_id` TEXT')
+                    self._execute('ALTER TABLE `tournament` ADD `chessevent_user_id` TEXT')
+                    self._execute('ALTER TABLE `tournament` ADD `chessevent_password` TEXT')
+                    self._execute('ALTER TABLE `tournament` ADD `chessevent_event_id` TEXT')
+                    # Read all the ChessEvent connections
+                    self._execute('SELECT * FROM `chessevent` ORDER BY `id`')
+                    chessevent_connections: dict[int, dict[str, Any]] = {
+                        row['id']: {
+                            'chessevent_user_id': row['user_id'],
+                            'chessevent_password': row['password'],
+                            'chessevent_event_id': row['event_id'],
+                        }
+                        for row in self._fetchall()
+                    }
+                    if len(chessevent_connections) == 1:
+                        # Set the ChessEvent connection as the event default ChessEvent connection
+                        event_chessevent_connection: dict[str, Any] = list(chessevent_connections.values())[0]
+                        self._execute(
+                            f'UPDATE `info` SET {", ".join(f"`{field}` = ?" for field in event_chessevent_connection)}',
+                            tuple(event_chessevent_connection.values()))
+                    else:
+                        # Read the tournaments and set the ChessEvent information of the tournament
+                        self._execute(
+                            'SELECT `id`, `chessevent_id` FROM `tournament` WHERE `chessevent_id` IS NOT NULL')
+                        for row in self._fetchall():
+                            chessevent_connection: dict[str, Any] = chessevent_connections[row['chessevent_id']]
+                            self._execute(
+                                f'UPDATE `tournament` SET {", ".join(f"`{field}` = ?" for field in chessevent_connection)} WHERE `id` = ?',
+                                tuple(list(chessevent_connection.values()) + [row['id']]))
+                    # Simply running ALTER TABLE `tournament` DROP COLUMN `chessevent_id` fails with sqlite3.OperationalError:
+                    # error in table tournament after drop column: unknown column "chessevent_id" in foreign key definition
+                    # Since there is no simple way in SQlite to remove a constraint (https://sqlite.org/lang_altertable.html part 7),
+                    # copy the table and rename:
+                    self._execute('PRAGMA foreign_keys=off')
+                    # self._execute('BEGIN TRANSACTION')
+                    self._execute('ALTER TABLE `tournament` RENAME TO `tournament_copy`')
+                    self._execute(
+                        'CREATE TABLE `tournament` ('
+                        '    `id` INTEGER NOT NULL,'
+                        '    `uniq_id` TEXT NOT NULL,'
+                        '    `name` TEXT NOT NULL,'
+                        '    `path` TEXT,'
+                        '    `filename` TEXT,'
+                        '    `ffe_id` INTEGER,'
+                        '    `ffe_password` TEXT,'
+                        '    `time_control_initial_time` INTEGER,'
+                        '    `time_control_increment` INTEGER,'
+                        '    `time_control_handicap_penalty_step` INTEGER,'
+                        '    `time_control_handicap_penalty_value` INTEGER,'
+                        '    `time_control_handicap_min_time` INTEGER,'
+                        '    `chessevent_user_id` TEXT,'
+                        '    `chessevent_password` TEXT,'
+                        '    `chessevent_event_id` TEXT,'
+                        '    `chessevent_tournament_name` TEXT,'
+                        '    `record_illegal_moves` INTEGER,'
+                        '    `rules` TEXT,'
+                        '    `check_in_open` INTEGER NOT NULL DEFAULT 0,'
+                        '    `last_update` FLOAT NOT NULL,'
+                        '    `last_illegal_move_update` FLOAT NOT NULL DEFAULT 0.0,'
+                        '    `last_result_update` FLOAT NOT NULL DEFAULT 0.0,'
+                        '    `last_check_in_update` FLOAT NOT NULL DEFAULT 0.0,'
+                        '    `last_ffe_upload` FLOAT NOT NULL DEFAULT 0.0,'
+                        '    `last_ffe_rules_upload` FLOAT NOT NULL DEFAULT 0.0,'
+                        '    `last_chessevent_download_md5` TEXT,'
+                        '    PRIMARY KEY(`id` AUTOINCREMENT),'
+                        '    UNIQUE(`uniq_id`)'
+                        ')')
+                    self._execute(
+                        'INSERT INTO `tournament`('
+                        '    `id`, '
+                        '    `uniq_id`, '
+                        '    `name`, '
+                        '    `path`, '
+                        '    `filename`, '
+                        '    `ffe_id`, '
+                        '    `ffe_password`,'
+                        '    `time_control_initial_time`, '
+                        '    `time_control_increment`, '
+                        '    `time_control_handicap_penalty_step`, '
+                        '    `time_control_handicap_penalty_value`, '
+                        '    `time_control_handicap_min_time`, '
+                        '    `chessevent_user_id`, '
+                        '    `chessevent_password`, '
+                        '    `chessevent_event_id`, '
+                        '    `chessevent_tournament_name`, '
+                        '    `record_illegal_moves`, '
+                        '    `rules`, '
+                        '    `check_in_open`, '
+                        '    `last_update`, '
+                        '    `last_illegal_move_update`, '
+                        '    `last_result_update`, '
+                        '    `last_check_in_update`, '
+                        '    `last_ffe_upload`, '
+                        '    `last_ffe_rules_upload`, '
+                        '    `last_chessevent_download_md5`'
+                        ') SELECT'
+                        '    `id`, '
+                        '    `uniq_id`, '
+                        '    `name`, '
+                        '    `path`, '
+                        '    `filename`, '
+                        '    `ffe_id`, '
+                        '    `ffe_password`,'
+                        '    `time_control_initial_time`,'
+                        '    `time_control_increment`,'
+                        '    `time_control_handicap_penalty_step`,'
+                        '    `time_control_handicap_penalty_value`,'
+                        '    `time_control_handicap_min_time`,'
+                        '    NULL,'
+                        '    NULL,'
+                        '    NULL,'
+                        '    `chessevent_tournament_name`,'
+                        '    `record_illegal_moves`,'
+                        '    `rules`,'
+                        '    `check_in_open`,'
+                        '    `last_update`,'
+                        '    `last_illegal_move_update`,'
+                        '    `last_result_update`,'
+                        '    `last_check_in_update`,'
+                        '    `last_ffe_upload`,'
+                        '    `last_ffe_rules_upload`,'
+                        '    `last_chessevent_download_md5`'
+                        'FROM `tournament_copy`')
+                    # self._execute('COMMIT')
+                    self._execute('DROP TABLE `tournament_copy`')
+                    self._execute('PRAGMA foreign_keys=on')
+                    # Eventually drop the now useless chessevent table
+                    self._execute('DROP TABLE `chessevent`')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(f'Database %s has been upgraded to version %s.', self.file.name, target_version)
                 case _:
                     break
         if self.version == target_version:
@@ -697,100 +828,25 @@ class EventDatabase(SQLiteDatabase):
         """Updates the event database with the information in the provided
         `stored_event`."""
         fields: list[str] = [
-            'name', 'start', 'stop', 'public', 'path', 'hide_background_image', 'background_image', 'background_color',
-            'update_password', 'record_illegal_moves', 'rules', 'timer_colors', 'timer_delays', 'message_text',
-            'message_color', 'message_background_color', 'last_update',
+            'name', 'start', 'stop', 'public', 'federation', 'path', 'hide_background_image', 'background_image',
+            'background_color', 'update_password', 'record_illegal_moves', 'rules', 'timer_colors', 'timer_delays',
+            'message_text', 'message_color', 'message_background_color', 'chessevent_user_id', 'chessevent_password',
+            'chessevent_event_id', 'last_update',
         ]
         params: tuple = (
-            stored_event.name, stored_event.start, stored_event.stop, stored_event.public, stored_event.path,
-            stored_event.hide_background_image, stored_event.background_image, stored_event.background_color,
-            stored_event.update_password, stored_event.record_illegal_moves, stored_event.rules,
-            self.dump_to_json_database_timer_colors(stored_event.timer_colors),
+            stored_event.name, stored_event.start, stored_event.stop, stored_event.public, stored_event.federation,
+            stored_event.path, stored_event.hide_background_image, stored_event.background_image,
+            stored_event.background_color, stored_event.update_password, stored_event.record_illegal_moves,
+            stored_event.rules, self.dump_to_json_database_timer_colors(stored_event.timer_colors),
             self.dump_to_json_database_timer_delays(stored_event.timer_delays), stored_event.message_text,
-            stored_event.message_color, stored_event.message_background_color, time.time(),
+            stored_event.message_color, stored_event.message_background_color, stored_event.chessevent_user_id,
+            stored_event.chessevent_password, stored_event.chessevent_event_id, time.time(),
         )
         field_sets = (f"`{f}` = ?" for f in fields)
         self._execute(
             f'UPDATE `info` SET {", ".join(field_sets)}',
             tuple(params))
         return self._get_stored_event()
-
-    """
-    ---------------------------------------------------------------------------------
-    StoredChessEvent
-    ---------------------------------------------------------------------------------
-    """
-
-    @staticmethod
-    def _row_to_stored_chessevent(row: dict[str, Any]) -> StoredChessEvent:
-        return StoredChessEvent(
-                id=row['id'],
-                uniq_id=row['uniq_id'],
-                user_id=row['user_id'],
-                password=row['password'],
-                event_id=row['event_id'],
-            )
-
-    def get_stored_chessevent(self, chessevent_id: int) -> StoredChessEvent | None:
-        self._execute(
-            'SELECT * FROM `chessevent` WHERE `id` = ?',
-            (chessevent_id,),
-        )
-        row: dict[str, Any]
-        if row := self._fetchone():
-            return self._row_to_stored_chessevent(row)
-        return None
-
-    def load_stored_chessevents(self) -> Iterator[StoredChessEvent]:
-        self._execute(
-            'SELECT * FROM `chessevent` ORDER BY `uniq_id`',
-            (),
-        )
-        yield from map(self._row_to_stored_chessevent, self._fetchall())
-
-    def _write_stored_chessevent(
-            self, stored_chessevent: StoredChessEvent,
-    ) -> StoredChessEvent:
-        fields: list[str] = ['uniq_id', 'user_id', 'password', 'event_id', ]
-        params: list = [
-            stored_chessevent.uniq_id, stored_chessevent.user_id, stored_chessevent.password,
-            stored_chessevent.event_id,
-        ]
-        if stored_chessevent.id is None:
-            protected_fields = [f"`{f}`" for f in fields]
-            self._execute(
-                f'INSERT INTO `chessevent`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(params))
-            stored_chessevent = self.get_stored_chessevent(self._last_inserted_id())
-        else:
-            field_sets = [f"`{f}` = ?" for f in fields]
-            params += [stored_chessevent.id]
-            self._execute(
-                f'UPDATE `chessevent` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(params))
-            stored_chessevent = self.get_stored_chessevent(stored_chessevent.id)
-        self.set_last_update()
-        return stored_chessevent
-
-    def add_stored_chessevent(
-            self, stored_chessevent: StoredChessEvent,
-    ) -> StoredChessEvent:
-        assert stored_chessevent.id is None, f'stored_chessevent.id={stored_chessevent.id}'
-        return self._write_stored_chessevent(stored_chessevent)
-
-    def update_stored_chessevent(
-            self, stored_chessevent: StoredChessEvent,
-    ) -> StoredChessEvent:
-        assert stored_chessevent.id is not None
-        return self._write_stored_chessevent(stored_chessevent)
-
-    def delete_stored_chessevent(self, chessevent_id: int):
-        self._execute(
-            'UPDATE `tournament` '
-            'SET `chessevent_id` = NULL, `chessevent_tournament_name` = NULL '
-            'WHERE `chessevent_id` = ?;', (chessevent_id,))
-        self._execute('DELETE FROM `chessevent` WHERE `id` = ?;', (chessevent_id,))
-        self.set_last_update()
 
     """
     ---------------------------------------------------------------------------------
@@ -909,13 +965,13 @@ class EventDatabase(SQLiteDatabase):
         stored_timer_hour = self.get_stored_timer_hour(timer_hour_id)
         stored_timer_hour.id = None
         if timer_id is None:
-            round: int = 0
+            round_: int = 0
             try:
-                round = int(stored_timer_hour.uniq_id)
+                round_ = int(stored_timer_hour.uniq_id)
             except ValueError:
                 pass
             stored_timer_hour.order = self.get_stored_timer_next_hour_order(stored_timer_hour.timer_id)
-            if round:
+            if round_:
                 stored_timer_hour.uniq_id = str(self.get_stored_timer_next_round(stored_timer_hour.timer_id))
             else:
                 self._execute(
@@ -978,8 +1034,8 @@ class EventDatabase(SQLiteDatabase):
             yield row['id']
 
     def load_stored_timers(self) -> Iterator[StoredTimer]:
-        for id in self.get_stored_timer_ids():
-            stored_timer: StoredTimer = self.get_stored_timer(id)
+        for stored_timer_id in self.get_stored_timer_ids():
+            stored_timer: StoredTimer = self.get_stored_timer(stored_timer_id)
             stored_timer.stored_timer_hours = list(self.load_stored_timer_hours(stored_timer.id))
             yield stored_timer
 
@@ -1053,7 +1109,10 @@ class EventDatabase(SQLiteDatabase):
             time_control_handicap_penalty_step=row['time_control_handicap_penalty_step'],
             time_control_handicap_penalty_value=row['time_control_handicap_penalty_value'],
             time_control_handicap_min_time=row['time_control_handicap_min_time'],
-            chessevent_id=row['chessevent_id'],
+            # needed to open event databases when version < 2.4.21 before checking the version
+            chessevent_user_id=row.get('chessevent_user_id', None),
+            chessevent_password=row.get('chessevent_password', None),
+            chessevent_event_id=row.get('chessevent_event_id', None),
             chessevent_tournament_name=row['chessevent_tournament_name'],
             record_illegal_moves=row['record_illegal_moves'],
             # needed to open event databases when version < 2.4.11 before checking the version
@@ -1094,17 +1153,18 @@ class EventDatabase(SQLiteDatabase):
         fields: list[str] = [
             'uniq_id', 'name', 'path', 'filename', 'ffe_id', 'ffe_password',
             'time_control_initial_time', 'time_control_increment', 'time_control_handicap_penalty_step',
-            'time_control_handicap_penalty_value', 'time_control_handicap_min_time', 'chessevent_id',
-            'chessevent_tournament_name', 'record_illegal_moves', 'rules', 'last_update', 'last_result_update',
-            'last_illegal_move_update', 'last_check_in_update', 'last_ffe_upload', 'last_ffe_rules_upload',
-            'last_chessevent_download_md5',
+            'time_control_handicap_penalty_value', 'time_control_handicap_min_time', 'chessevent_user_id',
+            'chessevent_password', 'chessevent_event_id', 'chessevent_tournament_name', 'record_illegal_moves',
+            'rules', 'last_update', 'last_result_update', 'last_illegal_move_update', 'last_check_in_update',
+            'last_ffe_upload', 'last_ffe_rules_upload', 'last_chessevent_download_md5',
         ]
         params: list = [
             stored_tournament.uniq_id, stored_tournament.name, stored_tournament.path, stored_tournament.filename,
             stored_tournament.ffe_id, stored_tournament.ffe_password, stored_tournament.time_control_initial_time,
             stored_tournament.time_control_increment, stored_tournament.time_control_handicap_penalty_step,
             stored_tournament.time_control_handicap_penalty_value, stored_tournament.time_control_handicap_min_time,
-            stored_tournament.chessevent_id, stored_tournament.chessevent_tournament_name,
+            stored_tournament.chessevent_user_id, stored_tournament.chessevent_password,
+            stored_tournament.chessevent_event_id, stored_tournament.chessevent_tournament_name,
             stored_tournament.record_illegal_moves, stored_tournament.rules, time.time(),
             stored_tournament.last_result_update, stored_tournament.last_illegal_move_update,
             stored_tournament.last_check_in_update, stored_tournament.last_ffe_upload,
@@ -1212,34 +1272,34 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_illegal_move(row)
         return None
 
-    def get_stored_illegal_moves(self, tournament_id: int, round: int) -> Counter[int]:
+    def get_stored_illegal_moves(self, tournament_id: int, round_: int) -> Counter[int]:
         self._execute(
             'SELECT `illegal_move`.* '
             'FROM `illegal_move` '
             'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`'
             'WHERE `tournament`.`id` = ? AND `round` = ?',
-            (tournament_id, round,),
+            (tournament_id, round_,),
         )
         illegal_moves: Counter[int] = Counter[int]()
         for row in self._fetchall():
             illegal_moves[int(row['player_id'])] += 1
         return illegal_moves
 
-    def add_stored_illegal_move(self, tournament_id: int, round: int, player_id: int) -> StoredIllegalMove:
+    def add_stored_illegal_move(self, tournament_id: int, round_: int, player_id: int) -> StoredIllegalMove:
         self._set_tournament_last_illegal_move_update(tournament_id)
         fields: list[str] = ['tournament_id', 'round', 'player_id', 'date', ]
-        params: list = [tournament_id, round, player_id, time.time()]
+        params: list = [tournament_id, round_, player_id, time.time()]
         protected_fields = [f"`{f}`" for f in fields]
         self._execute(
             f'INSERT INTO `illegal_move`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
             tuple(params))
         return self._get_stored_illegal_move(self._last_inserted_id())
 
-    def delete_stored_illegal_move(self, tournament_id: int, round: int, player_id: int) -> bool:
+    def delete_stored_illegal_move(self, tournament_id: int, round_: int, player_id: int) -> bool:
         self._set_tournament_last_illegal_move_update(tournament_id)
         self._execute(
             'SELECT `id` FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ? AND `player_id` = ? LIMIT 1',
-            (tournament_id, round, player_id, ),
+            (tournament_id, round_, player_id, ),
         )
         row: dict[str, Any] = self._fetchone()
         if not row:
@@ -1250,12 +1310,12 @@ class EventDatabase(SQLiteDatabase):
         )
         return True
 
-    def _delete_tournament_stored_illegal_moves(self, tournament_id: int, round: int = 0):
+    def _delete_tournament_stored_illegal_moves(self, tournament_id: int, round_: int = 0):
         self._set_tournament_last_illegal_move_update(tournament_id)
-        if round:
+        if round_:
             self._execute(
                 'DELETE FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ?',
-                (tournament_id, round, ),
+                (tournament_id, round_, ),
             )
         else:
             self._execute(
@@ -1291,7 +1351,7 @@ class EventDatabase(SQLiteDatabase):
             return self._row_to_stored_result(row)
         return None
 
-    def add_stored_result(self, tournament_id: int, round: int, board: Board, result: UtilResult):
+    def add_stored_result(self, tournament_id: int, round_: int, board: Board, result: UtilResult):
         self._set_tournament_last_result_update(tournament_id)
         self._execute(
             'INSERT INTO `result`('
@@ -1301,7 +1361,7 @@ class EventDatabase(SQLiteDatabase):
             ') VALUES(?, ?, ?, ?, ?, ?, ?)',
             (
                 tournament_id,
-                round,
+                round_,
                 board.id,
                 board.white_player.id,
                 board.black_player.id,
@@ -1310,11 +1370,11 @@ class EventDatabase(SQLiteDatabase):
             ),
         )
 
-    def delete_stored_result(self, tournament_id: int, round: int, board_id: int):
+    def delete_stored_result(self, tournament_id: int, round_: int, board_id: int):
         self._set_tournament_last_result_update(tournament_id)
         self._execute(
             'DELETE FROM `result` WHERE `tournament_id` = ? AND `round` = ? AND `board_id` = ?',
-            (tournament_id, round, board_id),
+            (tournament_id, round_, board_id),
         )
 
     def _delete_tournament_stored_results(self, tournament_id: int):

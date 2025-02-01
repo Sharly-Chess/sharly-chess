@@ -5,8 +5,9 @@
 ## Version 2.5.0 - Février 2025
 - Passage en multilingue anglais et français
 - Refonte de l'interface d'arbitrage
-- Ajout de l'onglet d'arbitrage « Joueur·euses » (ajout/suppression, importation FFE/FIDE (TODO), pointage, changement de tournoi...)
-- Ajout d'une fédération sur les évènements (TODO)
+- Ajout de l'onglet « Joueur·euses » (ajout/suppression, importation FFE/FIDE (TODO), pointage, changement de tournoi...)
+- Suppression de l'onglet « ChessEvent »
+- Ajout d'une fédération sur les évènements
 - Correction du calcul des points virtuels en Système Accéléré Dégressif 
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
 

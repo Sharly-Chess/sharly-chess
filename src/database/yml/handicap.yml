@@ -1,4 +1,5 @@
 name: "Évènement avec tournoi à handicap"
+federation: "FRA"
 public: true
 tournaments:
   T:
