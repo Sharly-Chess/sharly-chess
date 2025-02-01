@@ -1076,8 +1076,6 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
-# Error: translation [U12City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
@@ -1090,8 +1088,6 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
-# Error: translation [U16City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1102,8 +1098,6 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
-# Error: translation [U20City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #: src/data/util.py
@@ -1753,11 +1747,6 @@ msgstr "Timer ({num})"
 #, ai_translation
 msgid "ChessEvent ({num})"
 msgstr "Scacchiera ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
-msgid "Messages ({num})"
-msgstr "Messaggi ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -2898,6 +2887,25 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr "Recuperare gli eventi cancellati non è possibile dall'interfaccia web (comunque gli eventi sono archiviati e possono essere recuperati dal filesystem."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#, ai_translation
+msgid "Visibility:"
+msgstr "Visibilità:"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "Public event"
+msgstr "Evento pubblico"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Only arbiters can see private events."
+msgstr "Solo gli arbitri possono vedere eventi privati."
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: world-championship"
 msgstr "Ad es.: campionato mondiale"
@@ -2926,25 +2934,6 @@ msgstr "Es.: Campionato del mondo"
 #, ai_translation
 msgid "The name of the event, used for display and reports."
 msgstr "Il nome dell'evento, utilizzato per la visualizzazione e i report."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
-msgid "Visibility:"
-msgstr "Visibilità:"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Public event"
-msgstr "Evento pubblico"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Only arbiters can see private events."
-msgstr "Solo gli arbitri possono vedere eventi privati."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3051,6 +3040,11 @@ msgid "no background image"
 msgstr "nessuna immagine di sfondo"
 
 #: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Choose a custom image:"
+msgstr "Scegliere un'immagine personalizzata:"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 #, ai_translation
@@ -3062,11 +3056,6 @@ msgstr "Colore di sfondo:"
 #, ai_translation
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "Il colore di sfondo viene usato quando l'immagine non riempie l'intero schermo."
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Choose a custom image:"
-msgstr "Scegliere un'immagine personalizzata:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3799,21 +3788,6 @@ msgstr "Avvertenze: %(num)d"
 #, ai_translation, python-format
 msgid "Informations: %(num)d"
 msgstr "Informazioni: %(num)d"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Level"
-msgstr "Livello"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Message"
-msgstr "Messaggio"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "No messages."
-msgstr "Niente messaggi."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
 #, ai_translation
@@ -5449,6 +5423,11 @@ msgid "Time control"
 msgstr "Controllo del tempo"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, fuzzy
+msgid "Initial time (optional):"
+msgstr "Incremento (facoltativo):"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr "Ad esempio: %(seconds)d (%(minutes)d minuti)"
@@ -5522,11 +5501,6 @@ msgstr "Il numero massimo di mosse illegali che possono essere registrate per tu
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Crea e aggiungi schermate predefinite"
-
-#: src/web/templates/common/columns_number_dropdown.html
-#, ai_translation
-msgid "Change the number of columns."
-msgstr "Cambia il numero di colonne."
 
 #: src/web/templates/common/macros.j2
 #, ai_translation
@@ -5730,8 +5704,6 @@ msgstr "Torneo"
 
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
-# Error: translation [Rnd.BoaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
 #, ai_translation
 msgid "Rnd.Boa"
@@ -5812,4 +5784,19 @@ msgstr "Tavola #%(board_number)d con %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs"
+
+#~ msgid "Messages ({num})"
+#~ msgstr "Messaggi ({num})"
+
+#~ msgid "Level"
+#~ msgstr "Livello"
+
+#~ msgid "Message"
+#~ msgstr "Messaggio"
+
+#~ msgid "No messages."
+#~ msgstr "Niente messaggi."
+
+#~ msgid "Change the number of columns."
+#~ msgstr "Cambia il numero di colonne."
 
