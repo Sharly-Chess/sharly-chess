@@ -214,7 +214,7 @@ disabled: if set to true, the field will be disabled
                     <select
                         name="{{ name }}"
                         id="{{ id }}"
-                        class="form-control {% if error or (name in errors) %}is-invalid{% endif %}"
+                        class="form-select {% if error or (name in errors) %}is-invalid{% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if disabled or select_options|length <= 1 %}
                             disabled

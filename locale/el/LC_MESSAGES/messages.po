@@ -4096,14 +4096,45 @@ msgid "The player's gender."
 msgstr "Το φύλο του παίκτη."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Τουρνουά"
+
+#: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "The player's tournament."
 msgstr "Το τουρνουά του παίκτη."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ratings, title and fédération"
-msgstr "ratings, τίτλος και fédération"
+msgid "Fixed board:"
+msgstr "Σταθερή σανίδα:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Ο αριθμός του διοικητικού συμβουλίου στον οποίο θα ανατίθεται πάντα ο παίκτης (χρησιμοποιείστε τον για άτομα με ειδικές ανάγκες)."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "Ratings"
+msgstr "Ενέργειες:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "FIDE"
+msgstr "Ταυτότητα FIDE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "Ταυτότητα FIDE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's FIDE ID (do not change)."
+msgstr "Η ταυτότητα FIDE του παίκτη (μην αλλάξετε)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4127,18 +4158,38 @@ msgstr "Η ομοσπονδία του παίκτη."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ID:"
-msgstr "Ταυτότητα FIDE:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's FIDE ID (do not change)."
-msgstr "Η ταυτότητα FIDE του παίκτη (μην αλλάξετε)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "French Chess Federation"
 msgstr "Γαλλική Ομοσπονδία Σκακιού"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Αριθμός άδειας:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "Ο αριθμός της άδειας του παίκτη."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Άδεια:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "Η άδεια του παίκτη."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "FFE Uniq ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "Το Uniq ID του παίκτη για τη γαλλική ομοσπονδία (μην αλλάξετε)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4164,36 +4215,6 @@ msgstr "Το αγαπημένο μου κλαμπ!"
 #, ai_translation
 msgid "The player's club."
 msgstr "Το κλαμπ του παίκτη."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence:"
-msgstr "Άδεια:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence."
-msgstr "Η άδεια του παίκτη."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence number:"
-msgstr "Αριθμός άδειας:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence number."
-msgstr "Ο αριθμός της άδειας του παίκτη."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "FFE Uniq ID:"
-msgstr "FFE Uniq ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "Το Uniq ID του παίκτη για τη γαλλική ομοσπονδία (μην αλλάξετε)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4225,16 +4246,6 @@ msgstr "Αριθμός τηλεφώνου:"
 msgid "The player's phone number."
 msgstr "Το τηλέφωνο του παίκτη."
 
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Comment:"
-msgstr "Σχόλιο:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "Κάθε σχόλιο για τον παίκτη (τα σχόλια είναι ορατά μόνο από τους arbiters)."
-
 # Error: translation [Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ,
 # ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!] is much
 # too long compared to initial [Owed:]
@@ -4260,13 +4271,13 @@ msgstr "Το τίμημα που ήδη πλήρωσε ο παίκτης."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Fixed board:"
-msgstr "Σταθερή σανίδα:"
+msgid "Comment:"
+msgstr "Σχόλιο:"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Ο αριθμός του διοικητικού συμβουλίου στον οποίο θα ανατίθεται πάντα ο παίκτης (χρησιμοποιείστε τον για άτομα με ειδικές ανάγκες)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Κάθε σχόλιο για τον παίκτη (τα σχόλια είναι ορατά μόνο από τους arbiters)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -5700,11 +5711,6 @@ msgstr "Εικόνα:"
 
 #: src/web/templates/user/screen/results.html
 #, ai_translation
-msgid "Tournament"
-msgstr "Τουρνουά"
-
-#: src/web/templates/user/screen/results.html
-#, ai_translation
 msgid "Rnd.Boa"
 msgstr "Rnd. Boa"
 
@@ -5798,4 +5804,7 @@ msgstr "vs"
 
 #~ msgid "Change the number of columns."
 #~ msgstr "Αλλάξτε τον αριθμό των στηλών."
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "ratings, τίτλος και fédération"
 

@@ -3359,7 +3359,7 @@ msgstr "Le prénom du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Date of birth:"
-msgstr "Date de naissance :"
+msgstr "Date naiss. :"
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's birth date."
@@ -3374,12 +3374,37 @@ msgid "The player's gender."
 msgstr "Le genre du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Tournament"
+msgstr "Tournoi"
+
+#: src/web/templates/admin/players/player_modal.html
 msgid "The player's tournament."
 msgstr "Le tournoi du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "FIDE ratings, title and fédération"
-msgstr "Classements, titre et fédération FIDE"
+msgid "Fixed board:"
+msgstr "Échiquier fixe :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Le numéro d'échiquier qui sera toujours assigné au·à la joueur·euse (pour les personnes en situation de handicap)."
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Ratings"
+msgstr "ELO"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE"
+msgstr "FIDE"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE ID:"
+msgstr "Identifiant FIDE :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's FIDE ID (do not change)."
+msgstr "L'identifiant FIDE du·de la joueur·euse (ne pas modifier)."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "FIDE Title:"
@@ -3398,16 +3423,32 @@ msgid "The player's federation."
 msgstr "La fédération du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "FIDE ID:"
-msgstr "Identifiant FIDE :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's FIDE ID (do not change)."
-msgstr "L'identifiant FIDE du·de la joueur·euse (ne pas modifier)."
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Licence number:"
+msgstr "Numéro de licence :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's licence number."
+msgstr "Le numéro de licence du·de la joueur·euse."
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Licence:"
+msgstr "Licence :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's licence."
+msgstr "La licence du·de la joueur·euse."
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FFE Uniq ID:"
+msgstr "Identifiant unique FFE :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "L'identifiant unique pour la fédération française (ne pas modifier)."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "League:"
@@ -3428,30 +3469,6 @@ msgstr "Exemple : Mon club favori !"
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's club."
 msgstr "Le club du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence:"
-msgstr "Licence :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence."
-msgstr "La licence du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence number:"
-msgstr "Numéro de licence :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence number."
-msgstr "Le numéro de licence du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "FFE Uniq ID:"
-msgstr "Identifiant unique FFE :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "L'identifiant unique pour la fédération française (ne pas modifier)."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Contact and registration"
@@ -3478,14 +3495,6 @@ msgid "The player's phone number."
 msgstr "Le numéro de téléphone du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Comment:"
-msgstr "Commentaire :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "Owed:"
 msgstr "Dû :"
 
@@ -3502,12 +3511,12 @@ msgid "The price the player already paid."
 msgstr "Le montant déjà payé."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Fixed board:"
-msgstr "Échiquier fixe :"
+msgid "Comment:"
+msgstr "Commentaire :"
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Le numéro d'échiquier qui sera toujours assigné au·à la joueur·euse (pour les personnes en situation de handicap)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -4706,10 +4715,6 @@ msgid "Image:"
 msgstr "Image :"
 
 #: src/web/templates/user/screen/results.html
-msgid "Tournament"
-msgstr "Tournoi"
-
-#: src/web/templates/user/screen/results.html
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
 
@@ -4777,4 +4782,7 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr "contre"
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "Classements, titre et fédération FIDE"
 

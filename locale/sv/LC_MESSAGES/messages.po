@@ -4106,14 +4106,45 @@ msgid "The player's gender."
 msgstr "Spelarens kön."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Turnering"
+
+#: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "The player's tournament."
 msgstr "Spelarens turnering."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ratings, title and fédération"
-msgstr "FIDE-betyg, titel och fédération"
+msgid "Fixed board:"
+msgstr "Fast bräde:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Kortnumret spelaren alltid kommer att tilldelas (använd det för funktionshindrade)."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "Ratings"
+msgstr "Åtgärder:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "FIDE"
+msgstr "FIDG-ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "FIDG-ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's FIDE ID (do not change)."
+msgstr "Spelarens FIDE-ID (ändras inte)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4137,18 +4168,38 @@ msgstr "Spelarens förbund."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ID:"
-msgstr "FIDG-ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's FIDE ID (do not change)."
-msgstr "Spelarens FIDE-ID (ändras inte)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "French Chess Federation"
 msgstr "Franska schackförbundet"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Licensnummer:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "Spelarens licensnummer."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Körkort:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "Spelarens licens."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "FFE Uniq- ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "Spelarens Uniq ID för den franska federationen (ändra inte)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4174,36 +4225,6 @@ msgstr "T.ex. min favoritklubb!"
 #, ai_translation
 msgid "The player's club."
 msgstr "Spelarens klubb."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence:"
-msgstr "Körkort:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence."
-msgstr "Spelarens licens."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence number:"
-msgstr "Licensnummer:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence number."
-msgstr "Spelarens licensnummer."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "FFE Uniq ID:"
-msgstr "FFE Uniq- ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "Spelarens Uniq ID för den franska federationen (ändra inte)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4237,16 +4258,6 @@ msgstr "Spelarens telefonnummer."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Comment:"
-msgstr "Anmärkning:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "Owed:"
 msgstr "På grund av detta:"
 
@@ -4267,13 +4278,13 @@ msgstr "Priset spelaren redan betalat."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Fixed board:"
-msgstr "Fast bräde:"
+msgid "Comment:"
+msgstr "Anmärkning:"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Kortnumret spelaren alltid kommer att tilldelas (använd det för funktionshindrade)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -5707,11 +5718,6 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
-#: src/web/templates/user/screen/results.html
-#, ai_translation
-msgid "Tournament"
-msgstr "Turnering"
-
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
@@ -5809,4 +5815,7 @@ msgstr "vs"
 
 #~ msgid "Change the number of columns."
 #~ msgstr "Ändra antal kolumner."
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "FIDE-betyg, titel och fédération"
 
