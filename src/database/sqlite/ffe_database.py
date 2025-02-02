@@ -1,5 +1,4 @@
 import os.path
-import shutil
 import types
 import zipfile
 from contextlib import suppress
