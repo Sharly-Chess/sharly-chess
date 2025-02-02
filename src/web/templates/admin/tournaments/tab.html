@@ -1,31 +1,31 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ event_visibility_icon(admin_event, '') }}
+    {{ event_visibility_icon(admin_event, 'pe-1') }}
     {{ admin_event.name }} - {{ _('Tournaments') }}
 {% endblock %}
 
 {% block cards_container_right_buttons %}
     <span {{ tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
         <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='tournaments') }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
+            class="btn btn-outline-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='tournaments') }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
         >
             <i class="bi-arrow-clockwise"></i>
         </button>
     </span>
     <span {{ tooltip_attributes('info', _('Add a tournament to the event.'), 'top') }}>
         <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-tournament-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
+            class="btn btn-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-tournament-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
         >
-            <i class="bi-plus-square-fill"></i>
+            <i class="bi-plus-square pe-1"></i>
             {{ _('Create a tournament') }}
         </button>
     </span>
@@ -35,9 +35,7 @@
     <div class="row">
         {% if admin_event.tournaments_by_uniq_id %}
             {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
-                {% with card_class='bg-light' %}
-                    {% include 'tournament_card.html' %}
-                {% endwith %}
+                {% include 'tournament_card.html' %}
             {% endfor %}
         {% else %}
             <div class="col-12 mb-3">

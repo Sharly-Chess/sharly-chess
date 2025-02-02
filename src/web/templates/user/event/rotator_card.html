@@ -2,7 +2,7 @@
 
 {% block card_header %}
     {% if admin_auth %}
-        {{ rotator_visibility_icon(rotator) }}
+        {{ rotator_visibility_icon(rotator, 'pe-1') }}
     {% endif %}
     {{ rotator.uniq_id }}
 {% endblock %}

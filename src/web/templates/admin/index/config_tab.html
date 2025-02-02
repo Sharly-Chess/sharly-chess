@@ -1,24 +1,29 @@
-<div class="row mb-2">
-    <div class="col-auto fs-3 fw-bold">
-        <i class="bi-gear-fill"></i>
+<div 
+    class="d-flex mb-2 align-items-center flex-wrap gap-1"
+    style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
+>
+    {% call() section_title() %}
+        <i class="bi-gear-fill pe-1"></i>
         {{ _('Papi-web configuration') }}
-    </div>
-    <div class="col text-end">
+    {% endcall %}
+    <div class="flex-grow-1"></div>
+    <div class="d-flex gap-2 ms-auto align-items-center">
         <span {{ tooltip_attributes('info', _('Add an event.'), 'top') }}>
             <button
-                    class="btn btn-primary text-nowrap"
-                    hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-                    hx-target="body"
-                    preload
-                    hx-indicator="#please-wait">
-                <i class="bi-plus-square-fill"></i>
+                class="btn btn-primary text-nowrap"
+                hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
+                hx-target="body"
+                preload
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-plus-square-fill pe-1"></i>
                 {{ _('Create an event') }}
             </button>
         </span>
     </div>
 </div>
 
-<table class="table table-striped table-sm table-hover border-black w-auto bg-light mx-auto justify-content-center">
+<table class="table table-striped table-sm table-hover w-auto bg-light mx-auto justify-content-center">
     <thead class="table-dark position-sticky top-0 z-2">
         <tr>
             <th scope="col" class="text-nowrap">{{ _('Configuration') }}</th>

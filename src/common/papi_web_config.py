@@ -436,7 +436,7 @@ class PapiWebConfig(metaclass=Singleton):
     default_hide_background_image: bool = False
 
     """ The default event background image. """
-    default_background_image: str = '/static/images/papi-web-background.png'
+    default_background_image: str = ''
 
     """ The error background image. """
     error_background_image: str = '/static/images/papi-web-error.png'
@@ -445,7 +445,7 @@ class PapiWebConfig(metaclass=Singleton):
     default_background_color: str = '#e9ecef'
 
     """ The default background colour for arbiter pages. """
-    admin_background_color: str = '#dbcdff'
+    admin_background_color: str = ''
 
     """ The default background colour for user pages. """
     user_background_color: str = default_background_color

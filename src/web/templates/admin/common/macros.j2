@@ -184,37 +184,41 @@ disabled: if set to true, the field will be disabled
             {% set value=data[name] %}
         {% endif %}
         <div>
-            <label
+            <div class="d-flex align-items-center">
+                <label
                     for="{{ id }}"
-                    class="form-check-label"
-            >
-                {{ label }}
-            </label>
-            {% if default_checkbox %}
-                <input
+                    class="form-check-label flex-grow-1 mb-1"
+                >
+                    {{ label }}
+                </label>
+                {% if default_checkbox %}
+                    {{ default_checkbox_text or _('by default') }}
+                    <input
                         id="{{ default_checkbox_id }}"
                         name="{{ default_checkbox_name }}"
                         type="checkbox"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
-                />
-                {{ default_checkbox_text or _('by default') }}
-            {% endif %}
+                        class="ms-2"
+                    /> 
+                {% endif %}
+            </div>
+            
             <div
-                    class="
-                    input-group
-                    {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
-                    "
+                class="
+                input-group
+                {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
+                "
             >
                 {% if input_type == 'select' %}
                     <select
-                            name="{{ name }}"
-                            id="{{ id }}"
-                            class="form-control {% if error or (name in errors) %}is-invalid{% else %}is-valid{% endif %}"
-                            aria-describedby="{{ id }}-help {{ id }}-error"
-                            {% if disabled or select_options|length <= 1 %}
-                                disabled
-                            {% endif %}
+                        name="{{ name }}"
+                        id="{{ id }}"
+                        class="form-select {% if error or (name in errors) %}is-invalid{% endif %}"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        {% if disabled or select_options|length <= 1 %}
+                            disabled
+                        {% endif %}
                     >
                         {% for value, text in select_options.items() %}
                             <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
@@ -224,36 +228,37 @@ disabled: if set to true, the field will be disabled
                     </select>
                 {% elif input_type == 'switch' %}
                     <input
-                            id="{{ id }}"
-                            name="{{ name }}"
-                            type="checkbox"
-                            class="form-check-input"
-                            value="on"
-                            aria-describedby="{{ id }}-help {{ id }}-error"
-                            {% if data[name] == 'on' %}checked{% endif %}
-                            {% if disabled %}
-                                disabled
-                            {% endif %}
+                        id="{{ id }}"
+                        name="{{ name }}"
+                        type="checkbox"
+                        class="form-check-input"
+                        value="on"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        {% if data[name] == 'on' %}checked{% endif %}
+                        {% if disabled %}
+                            disabled
+                        {% endif %}
                     />
                     {{ placeholder }}
                 {% else %}
                     <input
-                            id="{{ id }}"
-                            name="{{ name }}"
-                            type="{{ input_type }}"
-                            {% if number_min %}
-                                min="{{ number_min }}"
-                            {% endif %}
-                            class="form-control {% if error or (name in errors) %}is-invalid{% else %}is-valid{% endif %}"
-                            aria-describedby="{{ id }}-help {{ id }}-error"
-                            placeholder="{{ placeholder }}"
-                            value="{{ value }}"
-                            {% if disabled or (default_checkbox and data[default_checkbox_name] == 'on') %}disabled{% endif %}
+                        id="{{ id }}"
+                        name="{{ name }}"
+                        type="{{ input_type }}"
+                        {% if number_min %}
+                            min="{{ number_min }}"
+                        {% endif %}
+                        class="form-control {% if error or (name in errors) %}is-invalid{% endif %}"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        placeholder="{{ placeholder }}"
+                        value="{{ value }}"
+                        {% if disabled or (default_checkbox and data[default_checkbox_name] == 'on') %}disabled{% endif %}
                     />
                     {% if input_type == 'password' %}
                         <i
-                                id="{{ id }}-toggle-password"
-                                class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
+                            id="{{ id }}-toggle-password"
+                            class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %}"
+                        ></i>
                     {% endif %}
                 {% endif %}
             </div>

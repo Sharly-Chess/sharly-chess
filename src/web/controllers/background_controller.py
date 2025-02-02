@@ -20,8 +20,6 @@ class BackgroundWebContext(WebContext):
             image: str,
     ):
         super().__init__(request)
-        if not color:
-            color = PapiWebConfig.default_background_color
         self.background: dict[str, str] = {
             'color': color,
         }

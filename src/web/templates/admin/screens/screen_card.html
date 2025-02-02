@@ -1,131 +1,132 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ screen_visibility_icon(screen, '') }} {{ screen.uniq_id }}
+    {{ screen_visibility_icon(screen, 'pe-1') }}{{ screen.name }}
 {% endblock %}
 
 {% block card_title %}
-    {{ screen_type_icon(screen.type, true) }} {{ screen.name }}
+    <span class="pe-1">{{ screen_type_icon(screen.type, true) }}</span>{{ screen.uniq_id }}
 {% endblock %}
 
 {% block card_text %}
-    {% if admins_screens_show_details %}
-        {% if screen.type in ['input', 'boards', 'players', 'results'] %}
-            <div>
-                {{ screen_type_icon(screen.type, true) }}
-                {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
-            </div>
-            <div>
-                {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
-            </div>
-            <div class="{% if not screen.menu_link %}text-secondary{% endif %}">
-                <i class="bi-hand-index"></i>
-                {% if screen.menu_link %}
-                    {{ _('Menu link label: %(menu_label)s', menu_label=screen.menu_label) }}
-                    {% if not screen.menu_text %}
+    <div class="d-flex flex-column gap-1">
+        {% if admin_screens_show_details %}
+            {% if screen.type in ['input', 'boards', 'players', 'results'] %}
+                <div>
+                    <span class="pe-1">{{ screen_type_icon(screen.type, true) }}</span>
+                    {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
+                </div>
+                <div>
+                    {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+                </div>
+                <div class="{% if not screen.menu_link %}text-secondary{% endif %}">
+                    <i class="bi-hand-index pe-1"></i>
+                    {% if screen.menu_link %}
+                        {{ _('Menu link label: %(menu_label)s', menu_label=screen.menu_label) }}
+                        {% if not screen.menu_text %}
+                            <span class="fst-italic">
+                                {{ _('(by default)') }}
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <span class="fst-italic">
+                            {{ _('Menu link label: none') }}
+                        </span>
+                    {% endif %}
+                </div>
+                <div class="{% if not screen.menu %}text-secondary{% endif %}">
+                    <i class="bi-three-dots pe-1"></i>
+                    {% if screen.menu %}{{ _('Menu: %(menu)s', menu=screen.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
+                </div>
+                <div class="{% if not screen.timer %}text-secondary{% endif %}">
+                    <i class="bi-clock-fill pe-1"></i>
+                    {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
+                </div>
+            {% endif %}
+            {% if screen.type == 'input' %}
+                <div>
+                    <i class="bi-x-circle pe-1"></i>
+                    {{ _('Exit button:') }}
+                    {% if screen.input_exit_button %}
+                        {{ _('yes') }}
+                    {% else %}
+                        {{ _('no') }}
+                    {% endif %}
+                    {% if screen.stored_screen.input_exit_button is none %}
+                        {{ _('(by default)') }}
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if screen.type == 'players' %}
+                <div>
+                    {% if screen.players_show_unpaired %}
+                        {{ _('Unpaired: displayed') }}
+                    {% else %}
+                        {{ _('Unpaired: hidden') }}
+                    {% endif %}
+                    {% if screen.stored_screen.players_show_unpaired is none %}
+                        {{ _('(by default)') }}
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if screen.type == 'results' %}
+                <div>
+                    {% if screen.results_limit %}
+                        {{ _('Max number: %(num)d', num=screen.results_limit) }}
+                    {% else %}
+                        {{ _('Max number: unlimited') }}
+                    {% endif %}
+                </div>
+                <div>
+                    {% if screen.results_max_age %}
+                        {{ ngettext('Max age: %(num)d minute', 'Max age: %(num)d minutes', screen.results_max_age) }}
+                    {% else %}
+                        {{ _('Max age: unlimited') }}
+                    {% endif %}
+                    {% if not screen.stored_screen.results_max_age %}
                         <span class="fst-italic">
                             {{ _('(by default)') }}
                         </span>
                     {% endif %}
-                {% else %}
-                    <span class="fst-italic">
-                        {{ _('Menu link label: none') }}
-                    </span>
-                {% endif %}
-            </div>
-            <div class="{% if not screen.menu %}text-secondary{% endif %}">
-                <i class="bi-three-dots"></i>
-                {% if screen.menu %}{{ _('Menu: %(menu)s', menu=screen.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
-            </div>
-            <div class="{% if not screen.timer %}text-secondary{% endif %}">
-                <i class="bi-clock-fill"></i>
-                {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
-            </div>
+                </div>
+            {% endif %}
+            {% if screen.type == 'image' %}
+                <i class="bi-image pe-1"></i>
+                <div>
+                    {% if screen.stored_screen.background_image %}
+                        {{ _('Image: %(image)s', image=screen.stored_screen.background_image) }}
+                    {% endif %}
+                </div>
+                <div>
+                    {{ _('Background colour: %(color)s', color=screen.background_color) }}
+                    {% if not screen.stored_screen.background_color %}
+                        <span class="fst-italic">
+                            {{ _('(by default)') }}
+                        </span>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if screen.message_text %}
+                <div
+                        class="px-2 alert-message screen-alert-message"
+                        style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+                >
+                    {{ screen.message_text }}
+                    {% if screen.message_default %}
+                        <span class="fst-italic">
+                            {{ _('(by default)') }}
+                        </span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="fst-italic">
+                    {{ _('No alert message') }}
+                    {% if screen.message_default %}{{ _('(by default)') }}{% endif %}
+                </div>
+            {% endif %}
+            <hr/>
         {% endif %}
-        {% if screen.type == 'input' %}
-            <div>
-                <i class="bi-x-circle"></i>
-                {{ _('Exit button:') }}
-                {% if screen.input_exit_button %}
-                    {{ _('yes') }}
-                {% else %}
-                    {{ _('no') }}
-                {% endif %}
-                {% if screen.stored_screen.input_exit_button is none %}
-                    {{ _('(by default)') }}
-                {% endif %}
-            </div>
-        {% endif %}
-        {% if screen.type == 'players' %}
-            <div>
-                {% if screen.players_show_unpaired %}
-                    {{ _('Unpaired: displayed') }}
-                {% else %}
-                    {{ _('Unpaired: hidden') }}
-                {% endif %}
-                {% if screen.stored_screen.players_show_unpaired is none %}
-                    {{ _('(by default)') }}
-                {% endif %}
-            </div>
-        {% endif %}
-        {% if screen.type == 'results' %}
-            <div>
-                {% if screen.results_limit %}
-                    {{ _('Max number: %(num)d', num=screen.results_limit) }}
-                {% else %}
-                    {{ _('Max number: unlimited') }}
-                {% endif %}
-            </div>
-            <div>
-                {% if screen.results_max_age %}
-                    {{ ngettext('Max age: %(num)d minute', 'Max age: %(num)d minutes', screen.results_max_age) }}
-                {% else %}
-                    {{ _('Max age: unlimited') }}
-                {% endif %}
-                {% if not screen.stored_screen.results_max_age %}
-                    <span class="fst-italic">
-                        {{ _('(by default)') }}
-                    </span>
-                {% endif %}
-            </div>
-        {% endif %}
-        {% if screen.type == 'image' %}
-            <i class="bi-image"></i>
-            <div>
-                {% if screen.stored_screen.background_image %}
-                    {{ _('Image: %(image)s', image=screen.stored_screen.background_image) }}
-                {% endif %}
-            </div>
-            <div>
-                {{ _('Background colour: %(color)s', color=screen.background_color) }}
-                {% if not screen.stored_screen.background_color %}
-                    <span class="fst-italic">
-                        {{ _('(by default)') }}
-                    </span>
-                {% endif %}
-            </div>
-        {% endif %}
-        {% if screen.message_text %}
-            <div
-                    class="px-2 alert-message screen-alert-message"
-                    style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-            >
-                {{ screen.message_text }}
-                {% if screen.message_default %}
-                    <span class="fst-italic">
-                        {{ _('(by default)') }}
-                    </span>
-                {% endif %}
-            </div>
-        {% else %}
-            <div class="fst-italic">
-                {{ _('No alert message') }}
-                {% if screen.message_default %}{{ _('(by default)') }}{% endif %}
-            </div>
-        {% endif %}
-        <hr/>
-    {% endif %}
-    <div class="mb-2">
+
         {% if screen.type in ['boards', 'input', 'players'] %}
             {% for screen_set in screen.screen_sets_sorted_by_order %}
                 <div>
@@ -142,40 +143,44 @@
             {% endif %}
         {% endif %}
     </div>
+
 {% endblock %}
 
 {% block card_buttons_left %}
     {% if not screen.family  %}
         <span
-                {{ tooltip_attributes('info', _('Edit the properties of the screen.'), 'top') }}
+            {{ tooltip_attributes('info', _('Edit the properties of the screen.'), 'top') }}
         >
             <button
-                    class="btn btn-sm btn-primary p-1"
-                    hx-get="{{ url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait" >
-                <i class="bi-pencil-fill"></i>
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-pencil-fill pe-1"></i>
                 {{ _('Edit') }}
             </button>
         </span>
     {% endif %}
     {% if not screen.family and screen.type in ['boards', 'input', 'players'] %}
         <span
-                {{ tooltip_attributes(
-                    'info',
-                    _('Edit the sets of boards displayed on the screen.')
-                    if screen.type in ['boards', 'input'] else
-                    _('Edit the sets of players displayed on the screen.'),
-                    'top')
-                }}>
+            {{ tooltip_attributes(
+                'info',
+                _('Edit the sets of boards displayed on the screen.')
+                if screen.type in ['boards', 'input'] else
+                _('Edit the sets of players displayed on the screen.'),
+                'top')
+            }}
+        >
             <button
-                    class="btn btn-sm btn-primary p-1"
-                    hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait" >
-                <i class="bi-collection-fill"></i>
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-collection-fill pe-1"></i>
                 {% if screen.type in ['boards', 'input'] %}
                     {{ _('Boards') }}
                 {% else %}
@@ -190,21 +195,23 @@
     {% if not screen.family %}
         <span {{ tooltip_attributes('info', 'Clone the screen.', 'top') }}>
             <button
-                    class="btn btn-sm btn-primary p-1"
-                    hx-get="{{ url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait" >
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 <i class="bi-copy"></i>
             </button>
         </span>
         <span {{ tooltip_attributes('info', 'Delete the screen.', 'top') }}>
             <button
-                    class="btn btn-sm btn-danger p-1"
-                    hx-get="{{ url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait" >
+                class="btn btn-sm btn-outline-danger"
+                hx-get="{{ url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 <i class="bi-trash-fill"></i>
             </button>
         </span>

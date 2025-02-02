@@ -1,11 +1,13 @@
 <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
     <span class="dropdown-center" >
         <button
-                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-        ><i
+            class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+        >
+            <i
                 class="bi-funnel {% if admin_players_filter_federations|length not in [0, (admin_players_federations|length)] %}text-primary{% endif %}"
                 {{ tooltip_attributes('info', _('Filter the federations.'), 'top') }}
-        ></i></button>
+            ></i>
+        </button>
         <ul class="dropdown-menu players-filter-federation p-0">
             {% with name='admin_players_filter_federations' %}
                 {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
@@ -17,13 +19,13 @@
                         onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
                     />
                     <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
-                        <i class="bi-check-lg"></i>
+                        <i class="bi-check-lg pe-1"></i>
                         {{ _('OK') }}
                     </button>
                 </li>
                 <li class="dropdown-divider m-0"></li>
                 {% for federation_tuple in admin_players_federations %}
-                    <li class="dropdown-item text-nowrap">
+                    <li class="dropdown-item d-flex align-items-center gap-2">
                         <input
                             type="checkbox"
                             id="{{ name }}-{{ loop.index }}"
@@ -35,9 +37,10 @@
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
                             <span class="player-federation_flag">
                                 <img
-                                        class="player-federation-flag ms-1 ps-1 pe-1"
-                                        src="{{ url_for('static', file_path='/images/federations/' ~ federation_tuple.federation ~ '.svg') }}"
-                                /> ({{ admin_event.federation_counts[federation_tuple] }})
+                                    class="player-federation-flag pe-1"
+                                    src="{{ url_for('static', file_path='/images/federations/' ~ federation_tuple.federation ~ '.svg') }}"
+                                />
+                                ({{ admin_event.federation_counts[federation_tuple] }})
                             </span>
                         </label>
                     </li>

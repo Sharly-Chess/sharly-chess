@@ -1,10 +1,14 @@
-<div class="row mb-2">
-    <div class="col-auto fs-3 fw-bold">
+<div
+    class="d-flex mb-2 align-items-center flex-wrap gap-1"
+    style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
+>
+    {% call() section_title() %}
         {% block cards_container_title %}
             BLOCK CARDS_CONTAINER_TITLE
         {% endblock %}
-    </div>
-    <div class="col text-end">
+    {% endcall %}
+    <div class="flex-grow-1"></div>
+    <div class="d-flex gap-2 ms-auto align-items-center">
         {% block cards_container_right_buttons %}
             BLOCK CARDS_CONTAINER_RIGHT_BUTTONS
         {% endblock %}

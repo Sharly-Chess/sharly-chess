@@ -2,7 +2,7 @@
     <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
         <span class="dropdown-center" >
             <button
-                class="btn btn-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
             ><i
                     class="bi-funnel {% if admin_players_filter_check_ins|length not in [0,2] %}text-primary{% endif %}"
                     {{ tooltip_attributes('info', _('Filter the check-in status.'), 'top') }}
@@ -18,7 +18,7 @@
                             onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
                         />
                         <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
-                            <i class="bi-check-lg"></i>
+                            <i class="bi-check-lg pe-1"></i>
                             {{ _('OK') }}
                         </button>
                     </li>
@@ -40,7 +40,7 @@
                             'number': admin_event.check_in_counts[true],
                         },
                     }.items() %}
-                        <li class="dropdown-item text-nowrap">
+                        <li class="dropdown-item text-nowrap d-flex align-items-center gap-2">
                             <input
                                 type="checkbox"
                                 id="{{ name }}-{{ loop.index }}"
@@ -50,7 +50,7 @@
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                <i class="{{ check_in_data['class'] }}"></i> {{ check_in_data['text'] }} ({{ check_in_data['number'] }})
+                                <i class="{{ check_in_data['class'] }} pe-1"></i>{{ check_in_data['text'] }} ({{ check_in_data['number'] }})
                             </label>
                         </li>
                     {% endfor %}

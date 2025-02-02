@@ -1,18 +1,19 @@
-<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block w-90 mw-100">
+<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block">
     <form
-            {% if action == 'create' %}
-                hx-post="{{ url_for('admin-tab-' ~ action ~ '-event', admin_tab=admin_tab) }}"
-            {% elif action == 'clone' %}
-                hx-post="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-            {% elif action == 'delete' %}
-                hx-delete="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-            {% elif action == 'update' %}
-                hx-patch="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-            {% else %}
-                hx-get="{{ url_for('unknown-action-' ~ action) }}"
-            {% endif %}
-            hx-target="body"
-            hx-indicator="#please-wait">
+        {% if action == 'create' %}
+            hx-post="{{ url_for('admin-tab-' ~ action ~ '-event', admin_tab=admin_tab) }}"
+        {% elif action == 'clone' %}
+            hx-post="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
+        {% elif action == 'delete' %}
+            hx-delete="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
+        {% elif action == 'update' %}
+            hx-patch="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
+        {% else %}
+            hx-get="{{ url_for('unknown-action-' ~ action) }}"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">
@@ -27,9 +28,9 @@
             </div>
             <div class="modal-body">
                 {% if action == 'delete' %}
-                    <h3 class="text-danger">
+                    <h4 class="text-danger">
                         {{ _('Warning: the deletion of an event is permanent!') }}
-                    </h3>
+                    </h4>
                     {{ text_input(
                         name='uniq_id',
                         label=_('Enter the event ID to confirm its deletion:'),
@@ -38,29 +39,11 @@
                         data=data, errors=errors
                     ) }}
                 {% else %}
-                    <h3>
+                    <h4>
                        {{ _('Properties') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-4">
-                            {{ text_input(
-                                name='uniq_id',
-                                label=_('ID (unique):'),
-                                placeholder=_('E.g.: world-championship'),
-                                help_text=_('The Unique ID, used for data storage and export.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-4">
-                            {{ text_input(
-                                name='name',
-                                label=_('Name:'),
-                                placeholder=_('E.g.: World championship'),
-                                help_text=_('The name of the event, used for display and reports.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-4">
+                        <div class="col-12 col-lg-4 mb-3">
                             {{ switch_input(
                                 name='public',
                                 label=_('Visibility:'),
@@ -69,9 +52,27 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
+                            {{ text_input(
+                                name='uniq_id',
+                                label=_('ID (unique):'),
+                                placeholder=_('E.g.: world-championship'),
+                                help_text=_('The Unique ID, used for data storage and export.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
+                            {{ text_input(
+                                name='name',
+                                label=_('Name:'),
+                                placeholder=_('E.g.: World championship'),
+                                help_text=_('The name of the event, used for display and reports.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 col-lg-3 mb-3">
                             {{ datetime_input(
                                 name='start',
                                 label=_('Start:'),
@@ -79,7 +80,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 col-lg-3 mb-3">
                             {{ datetime_input(
                                 name='stop',
                                 label=_('End:'),
@@ -87,7 +88,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 col-lg-6 mb-3">
                             {{ text_input(
                                 name='path',
                                 label=_('Default directory of the Papi files:'),
@@ -97,11 +98,12 @@
                             ) }}
                         </div>
                     </div>
-                    <h3>
+
+                    <h4>
                         {{ _('Results entry') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ password_input(
                                 name='update_password',
                                 label=_('Password to enter results:'),
@@ -110,7 +112,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ select_input(
                                 name='record_illegal_moves',
                                 label=_('Illegal moves recording:'),
@@ -123,11 +125,12 @@
                             ) }}
                         </div>
                     </div>
-                    <h3>
+
+                    <h4>
                         {{ _('Rules') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-12 mb-3">
                             {{ text_input(
                                 name='rules',
                                 label=_('Rules file location:'),
@@ -137,11 +140,13 @@
                             ) }}
                         </div>
                     </div>
-                    <h3>
+
+                    <h4>
                         {{ _('Display') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-12 col-md-6 mb-3">
+                            <div>
                             {{ text_input(
                                 name='background_image',
                                 label=_('Background image:'),
@@ -160,6 +165,32 @@
                                     }
                                 });
                             </script>
+                            </div>
+                            <div
+                                id="background-image-picker-wrapper"
+                                style="display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %}"
+                            >
+                                <label class="form-label">{{ _('Choose a custom image:') }}</label>
+                                <div
+                                    id="background-image-picker"
+                                >
+                                </div>
+                            </div>
+                            <script>
+                                $('#background-image-picker')
+                                .jstree(
+                                    {
+                                        'core' : {
+                                            'multiple': false,
+                                            'data' : {{ background_images_jstree_data | tojson }}
+                                        }
+                                    }
+                                );
+                                $('#background-image-picker').on("changed.jstree", function (e, data) {
+                                });
+                            </script>
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
                             {{ color_input(
                                 name='background_color',
                                 label=_('Background colour:'),
@@ -179,7 +210,14 @@
                                     $('#background-image-test').css('background-color', $(this).val());
                                 });
                             </script>
-                            <div id="background-image-test" style="
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div 
+                                id="background-image-test"
+                                style="
+                                    margin: 0 auto;
                                     width: 320px;
                                     height: 180px;
                                     background-image: url('{{ admin_event.background_url if admin_event else papi_web_config.default_background_image }}');
@@ -190,38 +228,14 @@
                             >
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div
-                                    id="background-image-picker-wrapper"
-                                    style="display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %}"
-                            >
-                                <label class="form-label">{{ _('Choose a custom image:') }}</label>
-                                <div
-                                        id="background-image-picker"
-                                >
-                                </div>
-                            </div>
-                            <script>
-                                $('#background-image-picker')
-                                .jstree(
-                                    {
-                                        'core' : {
-                                            'multiple': false,
-                                            'data' : {{ background_images_jstree_data | tojson }}
-                                        }
-                                    }
-                                );
-                                $('#background-image-picker').on("changed.jstree", function (e, data) {
-                                });
-                            </script>
-                        </div>
                     </div>
-                    <h3>
+
+                    <h4>
                         {{ _('Timers') }}
-                    </h3>
+                    </h4>
                     <div class="row">
                         {% for num in [1, 2, 3] %}
-                            <div class="col-4">
+                            <div class="col-12 col-md-6 mb-3">
                                 {{ color_input(
                                     name='color_'~num,
                                     label=_('Colour #%(num)d:', num=num),
@@ -231,28 +245,27 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                        {% endfor %}
-                    </div>
-                    <div class="row">
-                        {% for num in [1, 2, 3] %}
-                            {% with id='delay-'~num, name='delay_'~num %}
-                            <div class="col-4">
-                                {{ number_input(
-                                    name='delay_'~num,
-                                    label=_('Delay #%(num)d:', num=num),
-                                    placeholder=_('By default: %(minutes)d minutes', minutes=papi_web_config.default_timer_delays[num]),
-                                    help_text='',
-                                    data=data, errors=errors
-                                ) }}
+
+                            <div class="col-12 col-md-6 mb-3">
+                                {% with id='delay-'~num, name='delay_'~num %}
+                                    {{ number_input(
+                                        name='delay_'~num,
+                                        label=_('Delay #%(num)d:', num=num),
+                                        placeholder=_('By default: %(minutes)d minutes', minutes=papi_web_config.default_timer_delays[num]),
+                                        help_text='',
+                                        data=data, errors=errors
+                                    ) }}
+                                {% endwith %}
                             </div>
-                            {% endwith %}
                         {% endfor %}
                     </div>
-                    <h3>
+                    
+
+                    <h4>
                         {{ _('Alert message') }}
-                    </h3>
+                    </h4>
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 col-xl-3 mb-3">
                             {{ color_input(
                                 name='message_background_color',
                                 label=_('Background colour:'),
@@ -262,7 +275,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 col-md-6 col-xl-3 mb-3">
                             {{ color_input(
                                 name='message_color',
                                 label=_('Text colour:'),
@@ -272,7 +285,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 col-xl-6 mb-3">
                             {% with
                                 message_help_text=_('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.')
                             %}
@@ -282,14 +295,15 @@
                     </div>
                 {% endif %}
             </div>
+
             <div class="modal-footer d-block">
                 <div class="row">
                     <div class="col col-6 text-start">
                         <button
-                                type="submit"
-                                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                            type="submit"
+                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                         >
-                            <i class="bi-floppy-fill"></i>
+                            <i class="bi-floppy-fill pe-1"></i>
                             {% if action in ['create', 'clone', ] %}
                                 {{ _('Create') }}
                             {% elif action == 'update' %}

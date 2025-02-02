@@ -9,11 +9,11 @@
         {% set target_tab = 'current_events' %}
     {% endif %}
     <button
-            class="btn btn-link link-dark fs-5 fw-bold px-1 py-0"
-            hx-get="{{ url_for('admin-tab', admin_tab=target_tab) }}"
-            preload
-            hx-target="body"
-            hx-indicator="#please-wait"
+        class="btn btn-link fw-bold fs-3 px-0 py-0"
+        hx-get="{{ url_for('admin-tab', admin_tab=target_tab) }}"
+        preload
+        hx-target="body"
+        hx-indicator="#please-wait"
     >
         <i class="bi-arrow-left-circle-fill"></i>
     </button>
@@ -23,24 +23,24 @@
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% with active=(admin_event_tab == nav_id) %}
             <button
-                    class="nav-link {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% else %}link-dark{% endif %} border-dark {%if active %}active{%else%}bg-body-secondary{% endif %} fw-bold px-2 py-0 ms-1"
-                    id="nav-{{ nav_id }}-tab"
-                    hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab=nav_id) }}"
-                    preload
-                    hx-target="body"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-{{ nav_tab.name }}"
-                    type="button"
-                    role="tab"
-                    aria-controls="nav-{{ nav_id }}"
-                    aria-selected="true"
-                    hx-indicator="#please-wait"
-                    {% if nav_tab.disabled %}
-                        disabled
-                    {% endif %}
+                class="nav-link {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %} fw-bold px-2 py-0 ms-1"
+                id="nav-{{ nav_id }}-tab"
+                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab=nav_id) }}"
+                preload
+                hx-target="body"
+                data-bs-toggle="tab"
+                data-bs-target="#nav-{{ nav_tab.name }}"
+                type="button"
+                role="tab"
+                aria-controls="nav-{{ nav_id }}"
+                aria-selected="true"
+                hx-indicator="#please-wait"
+                {% if nav_tab.disabled %}
+                    disabled
+                {% endif %}
             >
                 {% if nav_tab.icon_class %}
-                    <i class="{{ nav_tab.icon_class }}"></i>
+                    <i class="{{ nav_tab.icon_class }} pe-1"></i>
                 {% endif %}
                 {{ nav_tab.title }}
             </button>
@@ -52,11 +52,11 @@
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% with active=(admin_event_tab == nav_id) %}
             <div
-                    class="tab-pane fade {% if active %}show active{% endif %}"
-                    id="nav-{{ nav_id }}"
-                    role="tabpanel"
-                    aria-labelledby="nav-{{ nav_id }}-tab"
-                    tabindex="0"
+                class="tab-pane fade {% if active %}show active{% endif %}"
+                id="nav-{{ nav_id }}"
+                role="tabpanel"
+                aria-labelledby="nav-{{ nav_id }}-tab"
+                tabindex="0"
             >
                 {% if active %}
                     {% include nav_tab.template %}
