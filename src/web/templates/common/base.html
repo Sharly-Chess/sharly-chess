@@ -11,7 +11,8 @@
     tooltip_script,
     background_script,
     theme_script,
-    copyright_script
+    copyright_script,
+    please_wait_div
 %}
 <html>
     <head>
@@ -116,10 +117,9 @@
         </div>
         </div>
         <div id="please-wait-wrapper">
-            <div
-                id="please-wait"
-                class="please-wait htmx-indicator position-fixed top-50 start-50 translate-middle"
-            ></div>
+            {% block please_wait %}
+                PLEASE_WAIT
+            {% endblock please_wait %}
         </div>
         <div id="modal-wrapper"
             class="modal modal-blur overflow-auto"

@@ -189,3 +189,12 @@
     </script>
     <!-- end copyright_script() -->
 {% endmacro %}
+
+{% macro please_wait_div(class) %}
+    <!-- please_wait_div() -->
+    <div
+        id="please-wait"
+        class="please-wait {{ class }} htmx-indicator position-fixed top-50 start-50 translate-middle"
+    ></div>
+    <!-- end please_wait_div() -->
+{% endmacro %}

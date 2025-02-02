@@ -13,11 +13,19 @@ body {
     height: 80px;
     width: 80px;
     background-color: transparent;
-    background-image: url("/static/images/papi-web.gif");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 100% auto;
     z-index: 2000;
+}
+.please-wait-home {
+    background-image: url("/static/images/papi-web-user.gif");
+}
+.please-wait-admin {
+    background-image: url("/static/images/papi-web-admin.gif");
+}
+.please-wait-user {
+    background-image: url("/static/images/papi-web-user.gif");
 }
 #messages {
     z-index: 1;

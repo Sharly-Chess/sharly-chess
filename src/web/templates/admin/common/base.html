@@ -49,6 +49,13 @@
     </div>
 {% endblock content %}
 
+{% block footer %}
+{% endblock footer %}
+
+{% block please_wait %}
+    {{ please_wait_div('please-wait-admin') }}
+{% endblock please_wait %}
+
 {% block modal %}
     <!-- block admin_modal -->
     {% block admin_modal %}
@@ -56,6 +63,3 @@
     {% endblock admin_modal %}
     <!-- end block admin_modal -->
 {% endblock modal %}
-
-{% block footer %}
-{% endblock footer %}

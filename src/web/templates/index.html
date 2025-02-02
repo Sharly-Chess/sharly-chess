@@ -2,6 +2,7 @@
 
 {% block header %}
 {% endblock header %}
+
 {% block content %}
     <div id="home-content" class="content home-content mt-5">
         <div style="max-width: 500px; margin: auto;">
@@ -109,3 +110,7 @@
 
 {% block footer %}
 {% endblock footer %}
+
+{% block please_wait %}
+    {{ please_wait_div('please-wait-home') }}
+{% endblock please_wait %}
