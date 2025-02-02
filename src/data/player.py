@@ -1,6 +1,6 @@
 import base64
 from contextlib import suppress
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger

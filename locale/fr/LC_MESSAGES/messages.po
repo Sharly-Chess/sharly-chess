@@ -231,11 +231,11 @@ msgid "- Version {version}: no events"
 msgstr "- Version {version}: aucun évènement"
 
 #: src/common/engine.py
-msgid "No event found in previously installed versions."
+msgid "No events found in previously installed versions."
 msgstr "Aucun évènement trouvé dans les version précédemment installées."
 
 #: src/common/engine.py
-msgid "No previously installed version found."
+msgid "No previously installed versions found."
 msgstr "Pas de version précédente trouvée."
 
 #: src/common/engine.py
@@ -375,13 +375,8 @@ msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "La nouvelle version [{version}] a été installée dans [{dir}]."
 
 #: src/common/papi_web_config.py
-msgid "Option not set, by default [{default}]."
-msgstr "Option non définie, par défaut [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-msgid "Invalid value [{value}]."
-msgstr "Valeur [{value}] non valide."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "Option obsolète, veuillez positionner la variable d'environnement [{var}=1] à la place."
 
 #: src/common/papi_web_config.py
 msgid "Locale [{locale}] not found."
@@ -404,12 +399,21 @@ msgid "Invalid log level [{level}], by default [{default}]."
 msgstr "Niveau de log [{level}] non valide, par défaut [{default}]."
 
 #: src/common/papi_web_config.py
+msgid "Option not set, by default [{default}]."
+msgstr "Option non définie, par défaut [{default}]."
+
+#: src/common/papi_web_config.py
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Hôte [{host}] non valide, par défaut [{default}]."
 
 #: src/common/papi_web_config.py
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Port [{port}] non valide, par défaut [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Invalid value [{value}]."
+msgstr "Valeur [{value}] non valide."
 
 #: src/common/papi_web_config.py
 msgid "Invalid delay [{delay}], by default [{default}]"
@@ -2141,6 +2145,22 @@ msgid "ID (unique):"
 msgstr "Identifiant (unique) :"
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Visibility:"
+msgstr "Visibilité :"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+msgid "Public event"
+msgstr "Évènement public"
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Only arbiters can see private events."
+msgstr "Seuls les arbitres peuvent voir les évènements privés."
+
+#: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: world-championship"
 msgstr "Exemple : championnat-du-monde"
 
@@ -3125,6 +3145,26 @@ msgstr "Marquer forfait pour la ronde à venir."
 #: src/web/templates/admin/players/close_check_in_modal.html
 msgid "Close the check-in"
 msgstr "Fermer le pointage"
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the players."
+msgstr "Télécharger les joueur·euses."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Télécharger les vCards des joueur·euses (format VCF)."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Télécharger les informations des joueur·euses (format CSV)."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Télécharger les informations des joueur·euses (format ODS)."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Télécharger les informations des joueur·euses (format XLSX)."
 
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."

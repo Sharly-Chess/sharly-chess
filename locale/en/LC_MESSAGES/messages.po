@@ -231,11 +231,11 @@ msgid "- Version {version}: no events"
 msgstr ""
 
 #: src/common/engine.py
-msgid "No event found in previously installed versions."
+msgid "No events found in previously installed versions."
 msgstr ""
 
 #: src/common/engine.py
-msgid "No previously installed version found."
+msgid "No previously installed versions found."
 msgstr ""
 
 #: src/common/engine.py
@@ -375,12 +375,7 @@ msgid "New version [{version}] has been installed in [{dir}]."
 msgstr ""
 
 #: src/common/papi_web_config.py
-msgid "Option not set, by default [{default}]."
-msgstr ""
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-msgid "Invalid value [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
 msgstr ""
 
 #: src/common/papi_web_config.py
@@ -404,11 +399,20 @@ msgid "Invalid log level [{level}], by default [{default}]."
 msgstr ""
 
 #: src/common/papi_web_config.py
+msgid "Option not set, by default [{default}]."
+msgstr ""
+
+#: src/common/papi_web_config.py
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr ""
 
 #: src/common/papi_web_config.py
 msgid "Invalid port [{port}], by default [{default}]."
+msgstr ""
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Invalid value [{value}]."
 msgstr ""
 
 #: src/common/papi_web_config.py
@@ -2108,6 +2112,22 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Visibility:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+msgid "Public event"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Only arbiters can see private events."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_modal.html
@@ -3124,6 +3144,26 @@ msgstr ""
 
 #: src/web/templates/admin/players/close_check_in_modal.html
 msgid "Close the check-in"
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the players."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (CSV format)."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (ODS format)."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (XLSX format)."
 msgstr ""
 
 #: src/web/templates/admin/players/filter_categories.html
@@ -4734,16 +4774,4 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
-
-#~ msgid "Level"
-#~ msgstr ""
-
-#~ msgid "Message"
-#~ msgstr ""
-
-#~ msgid "No messages."
-#~ msgstr ""
-
-#~ msgid "FIDE ratings, title and fédération"
-#~ msgstr ""
 

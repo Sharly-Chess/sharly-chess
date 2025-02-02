@@ -17,7 +17,7 @@ from litestar.params import Body
 from litestar.response import Redirect, Template
 from phonenumbers.phonenumberutil import NumberParseException
 
-from common import RGB, check_rgb_str, DEVEL_ENV
+from common import RGB, check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
 from common.i18n import set_locale, locale_localized_name, locale_flag_url, trusted_locales, _, get_locale
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
@@ -73,7 +73,7 @@ class WebContext:
             'image': self.background_image,
             'color': self.background_color,
         }
-    
+
     @property
     def theme(self) -> str:
         """
@@ -298,8 +298,9 @@ class WebContext:
                 'flag_url': locale_flag_url(locale),
                 'experimental': locale not in trusted_locales,
             }
-
         return {
+            'DEVEL_ENV': DEVEL_ENV,
+            'EXPERIMENTAL_FEATURES': EXPERIMENTAL_FEATURES,
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'papi_web_config': papi_web_config,
@@ -308,7 +309,6 @@ class WebContext:
             'theme': self.theme,
             'locale_infos': locale_infos,
             'locale': SessionHandler.get_session_locale(self.request),
-            'DEVEL_ENV': DEVEL_ENV
         }
 
 

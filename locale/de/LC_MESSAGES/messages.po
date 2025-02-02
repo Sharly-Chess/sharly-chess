@@ -288,13 +288,13 @@ msgstr "- Version {version}: keine Ereignisse"
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No event found in previously installed versions."
-msgstr "Kein Ereignis in zuvor installierten Versionen gefunden."
+msgid "No events found in previously installed versions."
+msgstr "In den zuvor installierten Versionen wurden keine Ereignisse gefunden."
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No previously installed version found."
-msgstr "Keine zuvor installierte Version gefunden."
+msgid "No previously installed versions found."
+msgstr "Keine zuvor installierten Versionen gefunden."
 
 #: src/common/engine.py
 #, ai_translation
@@ -468,14 +468,8 @@ msgstr "Neue Version [{version}] wurde in [{dir}] installiert."
 
 #: src/common/papi_web_config.py
 #, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Option nicht gesetzt, standardmäßig [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Ungültiger Wert [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "Option ist veraltet, stattdessen die Umgebungsvariable [{var}=1] gesetzt."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -504,6 +498,11 @@ msgstr "Ungültige Protokollebene [{level}], standardmäßig [{default}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Option nicht gesetzt, standardmäßig [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Ungültige Hostkonfiguration [{host}], standardmäßig [{default}]."
 
@@ -511,6 +510,12 @@ msgstr "Ungültige Hostkonfiguration [{host}], standardmäßig [{default}]."
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ungültiger Port [{port}], standardmäßig [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Ungültiger Wert [{value}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -1079,23 +1084,12 @@ msgstr ""
 # Error: translation [U10
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U10]
-# Error: translation [U10
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U10]
 #: src/data/util.py
 #, ai_translation
 msgid "U10"
 msgstr ""
 
 # Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
-# is much too long compared to initial [U12]
-# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
 # is much too long compared to initial [U12]
@@ -1108,14 +1102,6 @@ msgstr ""
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
 # is much too long compared to initial [U14]
-# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
-# is much too long compared to initial [U14]
 #: src/data/util.py
 #, ai_translation
 msgid "U14"
@@ -1124,17 +1110,11 @@ msgstr ""
 # Error: translation [U16
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U16]
-# Error: translation [U16
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
 msgstr ""
 
-# Error: translation [U18
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U18]
 # Error: translation [U18
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U18]
@@ -1567,7 +1547,6 @@ msgstr "Inhalt der URL [{url}] ist nicht gültig (input[id=[{id]] nicht gefunden
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisieren einer Sitzung auf [{url}]..."
 
-# Error: translation [In Ordnung.] is much too long compared to initial [OK]
 # Error: translation [In Ordnung.] is much too long compared to initial [OK]
 #: src/ffe/ffe_session.py
 #: src/web/templates/admin/players/filter_categories.html
@@ -2700,6 +2679,25 @@ msgstr "Nur Schiedsrichter können private Veranstaltungen sehen."
 #, ai_translation
 msgid "ID (unique):"
 msgstr "ID (einzigartig):"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#, ai_translation
+msgid "Visibility:"
+msgstr "Sichtbarkeit:"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "Public event"
+msgstr "Öffentliche Veranstaltung"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Only arbiters can see private events."
+msgstr "Nur Schiedsrichter können private Veranstaltungen sehen."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3856,6 +3854,31 @@ msgstr "Als Verlust für die kommende Runde markieren"
 msgid "Close the check-in"
 msgstr "Schließen Sie den Check-in"
 
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the players."
+msgstr "alle Spieler"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Laden Sie die vCards der ausgewählten Spieler herunter (VCF-Format)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Die Informationen der ausgewählten Player herunterladen (XLSX-Format)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Die Informationen der ausgewählten Player herunterladen (XLSX-Format)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Die Informationen der ausgewählten Player herunterladen (XLSX-Format)"
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4129,6 +4152,21 @@ msgstr "Die FIDE-ID des Spielers (ändern Sie sich nicht)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Die Brettnummer wird dem Spieler immer zugewiesen (für Behinderte)."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "Ratings"
+msgstr "Maßnahmen:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "FIDE"
+msgstr "FIDE-ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "FIDE Title:"
 msgstr "FIDE-Titel:"
 
@@ -4159,13 +4197,13 @@ msgstr "Die Lizenznummer des Spielers."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Licence:"
-msgstr "Lizenz:"
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "Die Uniq-ID des Spielers für den französischen Verband (ändern Sie sich nicht)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The player's licence."
-msgstr "Die Lizenz des Spielers."
+msgid "League:"
+msgstr "Liga:"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -5798,127 +5836,4 @@ msgstr "Vorstand #%(board_number)d mit %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
-#~ msgstr "ChessEvent-Verbindung [{chessevent_uniq_id}]: {text}"
-
-#~ msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Fehler wurden auf dem Event gefunden; ChessEvent-Verbindungen, Timer, Turniere, Bildschirme, Familien und Rotatoren werden nicht geladen."
-
-#~ msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Fehler wurden auf ChessEvent-Verbindungen gefunden; Timer, Turniere, Bildschirme, Familien und Rotatoren werden nicht geladen."
-
-#~ msgid "ChessEvent connection [{uniq_id}] already exists."
-#~ msgstr "ChessEvent-Verbindung [{uniq_id}] existiert bereits."
-
-#~ msgid "Please enter the ID used to connect to the ChessEvent platform."
-#~ msgstr "Bitte geben Sie die ID ein, die zur Verbindung zur ChessEvent-Plattform verwendet wurde."
-
-#~ msgid "Please enter the password used to connect to the ChessEvent platform."
-#~ msgstr "Bitte geben Sie das Passwort für die Verbindung zur ChessEvent-Plattform ein."
-
-#~ msgid "Please enter the ID of the event on the ChessEvent platform."
-#~ msgstr "Bitte geben Sie die ID des Ereignisses auf der ChessEvent-Plattform ein."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
-#~ msgstr "ChessEvent-Verbindung [{chessevent_uniq_id}] wurde erstellt."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
-#~ msgstr "ChessEvent-Verbindung [{chessevent_uniq_id}] wurde aktualisiert."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
-#~ msgstr "ChessEvent-Verbindung [{chessevent_uniq_id}] wurde gelöscht."
-
-#~ msgid "ChessEvent ({num})"
-#~ msgstr "Schachveranstaltung ({num})"
-
-#~ msgid "No ChessEvent connection"
-#~ msgstr "Keine ChessEvent-Verbindung"
-
-#~ msgid "ChessEvent password: %(chessevent_password)s"
-#~ msgstr "ChessEvent-Passwort: %(chessevent_password)s"
-
-#~ msgid "ChessEvent event: %(chessevent_event)s"
-#~ msgstr "ChessEvent: %(chessevent_event)s"
-
-#~ msgid "Edit the properties of the ChessEvent connection."
-#~ msgstr "Bearbeiten Sie die Eigenschaften der ChessEvent-Verbindung."
-
-#~ msgid "Clone the ChessEvent connection."
-#~ msgstr "Klonen Sie die ChessEvent-Verbindung."
-
-#~ msgid "Delete the ChessEvent connection."
-#~ msgstr "Löschen Sie die ChessEvent-Verbindung."
-
-#~ msgid "ChessEvent connection creation"
-#~ msgstr "Erstellung von ChessEvent-Verbindungen"
-
-#~ msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
-#~ msgstr "Ausgabe der ChessEvent-Verbindung [%(chessevent_uniq_id)s]"
-
-#~ msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
-#~ msgstr "Löschung der ChessEvent-Verbindung [%(chessevent_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of a ChessEvent connection is permanent!"
-#~ msgstr "Warnung: Das Löschen einer ChessEvent-Verbindung ist dauerhaft!"
-
-#~ msgid "The following tournaments will not be connected to ChessEvent anymore:"
-#~ msgstr "Die folgenden Turniere werden nicht mehr mit ChessEvent verbunden:"
-
-#~ msgid "E.g.: chessevent"
-#~ msgstr "Z.B.: Schachereignis"
-
-#~ msgid "The Unique ID, used to reference the ChessEvent connection."
-#~ msgstr "Die Unique ID, verwendet, um die ChessEvent-Verbindung zu verweisen."
-
-#~ msgid "Password:"
-#~ msgstr "Passwort:"
-
-#~ msgid "Add a ChessEvent connection to the event."
-#~ msgstr "Fügen Sie dem Event eine ChessEvent-Verbindung hinzu."
-
-#~ msgid "Create a ChessEvent connection"
-#~ msgstr "Erstellen einer ChessEvent-Verbindung"
-
-#~ msgid "No ChessEvent connections."
-#~ msgstr "Keine ChessEvent-Verbindungen."
-
-#~ msgid "Start"
-#~ msgstr "Starten"
-
-#~ msgid "End"
-#~ msgstr "Ende"
-
-#~ msgid "ChessEvent connections: %(num)d"
-#~ msgstr "ChessEvent-Verbindungen: %(num)d"
-
-#~ msgid "ChessEvent connection:"
-#~ msgstr "ChessEvent-Verbindung:"
-
-#~ msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
-#~ msgstr "Die ChessEvent-Verbindung ermöglicht das Abrufen von Registrierungen von der ChessEvent-Plattform."
-
-#~ msgid "Change the number of columns."
-#~ msgstr "Ändern Sie die Anzahl der Spalten."
-
-#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
-#~ msgstr "ChessEvent Verbindung [%(chessevent_uniq_id)s] wird verwendet."
-
-#~ msgid "No ChessEvent connection is used."
-#~ msgstr "Es wird keine ChessEvent-Verbindung verwendet."
-
-#~ msgid "Messages ({num})"
-#~ msgstr "Nachrichten ({num})"
-
-#~ msgid "Level"
-#~ msgstr "Ebene"
-
-#~ msgid "Message"
-#~ msgstr "Nachricht"
-
-#~ msgid "No messages."
-#~ msgstr "Keine Nachrichten."
-
-#~ msgid "FIDE ratings, title and fédération"
-#~ msgstr "FIDE-Ratings, Titel und Fédération"
 

@@ -210,6 +210,10 @@ class Event:
         }
 
     @cached_property
+    def players_sorted_by_name(self) -> list[Player]:
+        return sorted(self.players_by_id.values(), key=lambda player: (player.last_name, player.first_name))
+
+    @cached_property
     def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
         counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
         for tournament in self.tournaments_by_id.values():
