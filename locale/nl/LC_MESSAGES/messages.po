@@ -3861,6 +3861,31 @@ msgstr "Markeren als verbeurd voor de komende ronde"
 msgid "Close the check-in"
 msgstr "Sluit de check-in"
 
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the players."
+msgstr "alle spelers"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Download de vCards van de geselecteerde spelers (VCF-formaat)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Download de informatie van de geselecteerde spelers (XLSX-formaat)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Download de informatie van de geselecteerde spelers (XLSX-formaat)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Download de informatie van de geselecteerde spelers (XLSX-formaat)"
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."

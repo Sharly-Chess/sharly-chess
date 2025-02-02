@@ -9,7 +9,12 @@
         {% endcall %}
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-1 ms-auto">
-            {% include 'check_in_tournaments.html' %}
+            {% if admin_event.players_sorted_by_name %}
+                {% include 'download_players.html' %}
+            {% endif %}
+            {% if admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                {% include 'check_in_tournaments.html' %}
+            {% endif %}
             {% include 'filter_columns.html' %}
             <span {{ tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
                 <button

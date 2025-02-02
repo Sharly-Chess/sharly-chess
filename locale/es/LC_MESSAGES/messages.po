@@ -3842,6 +3842,31 @@ msgstr "Marcar como pérdida para la ronda venidera"
 msgid "Close the check-in"
 msgstr "Cierre el check-in"
 
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the players."
+msgstr "todos los jugadores"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Descargue las vCards de los reproductores seleccionados (formato VCF)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Descargue la información de los reproductores seleccionados (formato XLSX)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Descargue la información de los reproductores seleccionados (formato XLSX)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Descargue la información de los reproductores seleccionados (formato XLSX)"
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."

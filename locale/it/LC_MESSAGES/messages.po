@@ -3867,6 +3867,31 @@ msgstr "Segna come incamerato per il prossimo round"
 msgid "Close the check-in"
 msgstr "Chiudere il check-in"
 
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the players."
+msgstr "tutti i giocatori"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Scarica le vCard dei giocatori selezionati (formato VCF)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Scarica le informazioni dei giocatori selezionati (formato XLSX)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Scarica le informazioni dei giocatori selezionati (formato XLSX)"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Scarica le informazioni dei giocatori selezionati (formato XLSX)"
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."

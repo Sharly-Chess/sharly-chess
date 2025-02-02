@@ -3187,6 +3187,26 @@ msgstr ""
 msgid "Close the check-in"
 msgstr ""
 
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the players."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (CSV format)."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (ODS format)."
+msgstr ""
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (XLSX format)."
+msgstr ""
+
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."
 msgstr ""

@@ -3187,6 +3187,26 @@ msgstr "Marquer forfait pour la ronde à venir."
 msgid "Close the check-in"
 msgstr "Fermer le pointage"
 
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the players."
+msgstr "Télécharger les joueur·euses."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Télécharger les vCards des joueur·euses (format VCF)."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Télécharger les informations des joueur·euses (format CSV)."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Télécharger les informations des joueur·euses (format ODS)."
+
+#: src/web/templates/admin/players/download_players.html
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Télécharger les informations des joueur·euses (format XLSX)."
+
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."
