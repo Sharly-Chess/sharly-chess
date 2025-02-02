@@ -1118,9 +1118,6 @@ msgstr ""
 # Error: translation [U20
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U20]
-# Error: translation [U20
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U20]
 #: src/data/util.py
 #, ai_translation
 msgid "U20"
