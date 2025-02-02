@@ -29,11 +29,11 @@
                     {% for entry in menu_screens %}
                         {% if entry.menu_label is not none %}
                             <a
-                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if loop.first %}ms-0{% else %}ms-1{% endif %} {% if loop.last %}me-0{% else %}me-1{% endif %} {% if screen.uniq_id == entry.uniq_id %}selected{% endif %}"
-                                    hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.uniq_id) }}"
-                                    preload
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
+                                class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if loop.first %}ms-0{% else %}ms-1{% endif %} {% if loop.last %}me-0{% else %}me-1{% endif %} {% if screen.uniq_id == entry.uniq_id %}selected{% endif %}"
+                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.uniq_id) }}"
+                                preload
+                                hx-target="body"
+                                hx-indicator="#please-wait"
                             >{{ entry.menu_label }}</a>
                         {% endif %}
                     {% endfor %}
@@ -47,20 +47,20 @@
         {% if not board %}{# no refresher when the result modal is shown #}
             {% if rotator %}
                 <div
-                        class="rotator-refresher"
-                        hx-get="{{ url_for('user-rotator', event_uniq_id=user_event.uniq_id, rotator_id=rotator.id, rotator_screen_index=rotator_screen_index + 1) }}"
-                        hx-target="body"
-                        hx-trigger="every {{ rotator.delay }}s"
-                        hx-indicator="#please-wait"
+                    class="rotator-refresher"
+                    hx-get="{{ url_for('user-rotator', event_uniq_id=user_event.uniq_id, rotator_id=rotator.id, rotator_screen_index=rotator_screen_index + 1) }}"
+                    hx-target="body"
+                    hx-trigger="every {{ rotator.delay }}s"
+                    hx-indicator="#please-wait"
                 ></div>
             {% else %}
                 <div
-                        class="refresher screen-refresher"
-                        hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
-                        hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
-                        hx-target="body"
-                        hx-trigger="every {{ papi_web_config.user_screen_update_delay }}s queue:none"
-                        hx-indicator="#please-wait"
+                    class="refresher screen-refresher"
+                    hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
+                    hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
+                    hx-target="body"
+                    hx-trigger="every {{ papi_web_config.user_screen_update_delay }}s queue:none"
+                    hx-indicator="#please-wait"
                 ></div>
             {% endif %}
         {% endif %}
@@ -68,13 +68,13 @@
         {% if message_text %}
             <div class="alert-message-wrapper">
                 <div
-                        id="alert-message"
-                        class="row alert-message w-100 m-0 fw-bold position-fixed bottom-0 overflow-hidden"
-                        style="background-color: {{ screen.event.message_background_color }}; color: {{ screen.event.message_color }}"
+                    id="alert-message"
+                    class="row alert-message w-100 m-0 fw-bold position-fixed bottom-0 overflow-hidden"
+                    style="background-color: {{ screen.event.message_background_color }}; color: {{ screen.event.message_color }}"
                 >
                     <h2
-                            id="alert-message-text"
-                            class="col-12 alert-message-text text-start fw-bold"
+                        id="alert-message-text"
+                        class="col-12 alert-message-text text-start fw-bold"
                     >
                         {{ message_text }}
                     </h2>
@@ -111,8 +111,8 @@
             </div>
         {% elif screen.type == 'image' %}
             <div
-                    class="screen image-screen position-absolute top-0 bottom-0 start-0 end-0 border border-black"
-                    style="background-image: url('{{ screen.image }}');"
+                class="screen image-screen position-absolute top-0 bottom-0 start-0 end-0 border border-black"
+                style="background-image: url('{{ screen.image }}');"
             ></div>
         {% endif %}
     </div>

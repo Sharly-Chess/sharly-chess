@@ -442,7 +442,7 @@ class PapiWebConfig(metaclass=Singleton):
     error_background_image: str = '/static/images/papi-web-error.png'
 
     """ The default event background colour. """
-    default_background_color: str = '#e9ecef'
+    default_background_color: str = '#ffffff'
 
     """ The default background colour for arbiter pages. """
     admin_background_color: str = ''
