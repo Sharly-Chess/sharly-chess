@@ -50,7 +50,7 @@ class FfeDatabase(SQLiteDatabase):
                     file=self.file)).upper() or yes_answer) != yes_answer:
                 return False
         else:
-            age: int = int(self.file.lstat().st_mtime - time())
+            age: int = int(time() - self.file.lstat().st_mtime)
             if age > 2 * 24 * 60 * 60:
                 days: int = age // (24 * 60 * 60)
                 if (input_interactive(
@@ -86,6 +86,12 @@ class FfeDatabase(SQLiteDatabase):
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
         print_interactive_info(_('Storing data...'))
+        # if the file already exists, save it to restore it on error.
+        save: Path | None = None
+        if self.file.exists():
+            save = self.file.with_suffix('.save')
+            save.unlink(missing_ok=True)
+            self.file.rename(save)
         try:
             with open(PapiWebConfig.database_sql_path / 'create_ffe.sql', encoding='utf-8') as f:
                 self._create(f.read())
@@ -130,7 +136,10 @@ class FfeDatabase(SQLiteDatabase):
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(_('Error while creating the database: {ex}.').format(ex=ex))
             self.file.unlink(missing_ok=True)
+            if save:
+                save.rename(self.file)
             return False
+        save.unlink(missing_ok=True)
         print_interactive_success(_('{number} players written.').format(number=players_number))
         return True
 
