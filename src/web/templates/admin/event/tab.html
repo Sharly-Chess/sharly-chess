@@ -1,69 +1,70 @@
-<div class="row mb-2">
-    <div class="col-auto fs-3 fw-bold">
-        {{ event_visibility_icon(admin_event, '') }}
+<div
+    class="d-flex mb-2 align-items-center flex-wrap gap-1"
+    style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
+>
+    {% call() section_title() %}
+        {{ event_visibility_icon(admin_event, 'pe-1') }}
         {{ admin_event.name }}
-    </div>
-    <div class="col text-end fs-3">
+    {% endcall %}
+    <div class="d-flex flex-grow-1 gap-1 ms-auto justify-content-end">
         <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait">
-            <i class="bi-pencil-fill"></i>
+            class="btn btn-outline-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
         </button>
         <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait">
-            <i class="bi-copy"></i>
+            class="btn btn-outline-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            <i class="bi-copy pe-1"></i>
             {{ _('Clone') }}
         </button>
         <button
-                class="btn btn-danger text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait">
-            <i class="bi-trash-fill"></i>
+            class="btn btn-outline-danger text-nowrap ms-1"
+            hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            <i class="bi-trash-fill pe-1"></i>
             {{ _('Delete') }}
         </button>
     </div>
 </div>
 
-<table class="table border-black w-auto bg-light mx-auto justify-content-center">
-    <thead class="table-dark position-sticky top-0 z-2">
+<table class="table w-auto bg-light mx-auto justify-content-center">
+    <thead class="position-sticky top-0 z-2">
         <tr>
             <th scope="col" class="text-nowrap" colspan="2">{{ _('Customization') }}</th>
-            <th scope="col" class=""></th>
        </tr>
     </thead>
     <tbody>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Unique ID') }}</th>
             <td class="text-nowrap">{{ admin_event.uniq_id }}</td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Start') }}</th>
             <td class="">{{ admin_event.formatted_start_date_time }}</td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('End') }}</th>
             <td class="">{{ admin_event.formatted_stop_date_time }}</td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
             <td class="">
-                {{ event_visibility_icon(admin_event, '') }}
+                {{ event_visibility_icon(admin_event, 'pe-1') }}
                 {{ _('Public event') if admin_event.public else _('Private event') }}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Default directory of the Papi files') }}</th>
@@ -75,7 +76,6 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Background image and colour') }}</th>
@@ -83,7 +83,6 @@
                 <div style="width: 160px; height: 90px; background-image: url('{{ admin_event.background_url }}'); background-color: {{ admin_event.background_color }}; background-repeat: no-repeat; background-size: contain; background-position: center center;">
                 </div>
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Password to enter results') }}</th>
@@ -96,7 +95,6 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Maximum number of illegal moves') }}</th>
@@ -112,7 +110,6 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Rules') }}</th>
@@ -125,39 +122,39 @@
                     </span>
                 {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Default timer configuration') }}</th>
             <td class="text-nowrap">
-                <div style="background-color: {{ admin_event.timer_colors[1] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[1]) }}</div>
-                <div style="background-color: {{ admin_event.timer_colors[2] }}" class="px-2">{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[2]) }}</div>
-                <div style="background-color: {{ admin_event.timer_colors[3] }}" class="px-2">{{ _('%(minutes)d minutes after', minutes=admin_event.timer_delays[3]) }}</div>
+                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[1] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[1]) }}</div></div>
+                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[2] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[2]) }}</div></div>
+                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[3] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes after', minutes=admin_event.timer_delays[3]) }}</div></div>
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Alert message') }}</th>
             <td class="">
-                <div
-                        class="px-2 alert-message event-alert-message"
-                        style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-                >
-                    {% if admin_event.message_text %}
-                        {{ admin_event.message_text }}
-                    {% else %}
-                        <span class="fst-italic">
-                            {{ _('No alert message') }}
-                        </span>
-                    {% endif %}
-                </div>
+                {% if admin_event.message_text %}
+                    {{ admin_event.message_text }}
+                {% else %}
+                    <span class="fst-italic">
+                        {{ _('No alert message') }}
+                    </span>
+                {% endif %}
             </td>
-            <td></td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Last update') }}</th>
             <td class="text-nowrap">{{ admin_event.last_update_str }}</td>
-            <td></td>
         </tr>
+        {% for message in admin_event.messages %}
+            <tr>
+                <td scope="row" colspan="2" class="text-nowrap {{ logging_levels[message.level].class }}">
+                    <i class="{{ logging_levels[message.level].icon_class }}"></i>
+                    {{ logging_levels[message.level].name }}
+                    {{ message.formatted_text }}
+                </td>
+            </tr>
+        {% endfor %}
     </tbody>
 </table>

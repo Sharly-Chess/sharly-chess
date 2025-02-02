@@ -58,13 +58,6 @@ class EventAdminWebContext(AdminWebContext):
         pass
 
     @property
-    def background_image(self) -> str:
-        if self.admin_event:
-            return self.admin_event.background_image
-        else:
-            return super().background_image
-
-    @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_event_tab': self.admin_event_tab,
@@ -147,27 +140,13 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 'title': _('ChessEvent ({num})').format(num=len(admin_event.chessevents_by_id) or '-'),
                 'template': 'chessevents/tab.html',
             },
-            'messages': {
-                'title': _('Messages ({num})').format(num=len(admin_event.messages) or '-'),
-                'template': 'messages/tab.html',
-            },
         }
         if not web_context.admin_event_tab:
             web_context.admin_event_tab = list(nav_tabs.keys())[0]
-        if admin_event.criticals:
-            nav_tabs['messages']['class'] = logging_levels[logging.CRITICAL]['class']
-            nav_tabs['messages']['icon_class'] = logging_levels[logging.CRITICAL]['icon_class']
-        elif admin_event.errors:
-            nav_tabs['messages']['class'] = logging_levels[logging.ERROR]['class']
-            nav_tabs['messages']['icon_class'] = logging_levels[logging.ERROR]['icon_class']
-        elif admin_event.warnings:
-            nav_tabs['messages']['class'] = logging_levels[logging.WARNING]['class']
-            nav_tabs['messages']['icon_class'] = logging_levels[logging.WARNING]['icon_class']
         template_context: dict[str, Any] = web_context.template_context | {
             'messages': Message.messages(web_context.request),
             'logging_levels': logging_levels,
-            'nav_tabs': nav_tabs,
-            'admin_columns': SessionHandler.get_session_admin_columns(web_context.request),
+            'nav_tabs': nav_tabs
         }
         match web_context.admin_event_tab:
             case 'config':
@@ -348,11 +327,6 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 pass
             case 'chessevents':
                 pass
-            case 'messages':
-                template_context |= {
-                    'admin_messages_min_logging_level': SessionHandler.get_session_admin_messages_min_logging_level(
-                        web_context.request),
-                }
             case _:
                 raise ValueError(f'admin_event_tab={web_context.admin_event_tab}')
         return template_context
@@ -415,7 +389,6 @@ class EventAdminController(AbstractEventAdminController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             admin_event_tab: str | None = None,
-            admin_columns: int | None = None,
             locale: str | None = None,
             modal: str | None = None,
             action: str | None = None,
@@ -423,7 +396,6 @@ class EventAdminController(AbstractEventAdminController):
             errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         self.set_locale(request, locale)
-        self.set_admin_columns(request, admin_columns)
         return self._admin_event_tab_render(
             request, admin_event_tab=admin_event_tab, event_uniq_id=event_uniq_id, modal=modal, action=action,
             data=data, errors=errors)
@@ -436,14 +408,12 @@ class EventAdminController(AbstractEventAdminController):
     async def htmx_admin_event(
             self, request: HTMXRequest,
             event_uniq_id: str,
-            admin_columns: int | None,
             locale: str | None,
     ) -> Template | ClientRedirect:
         return self._admin_event(
             request,
             event_uniq_id=event_uniq_id,
             admin_event_tab=None,
-            admin_columns=admin_columns,
             locale=locale,
         )
 
@@ -456,7 +426,6 @@ class EventAdminController(AbstractEventAdminController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             admin_event_tab: str,
-            admin_columns: int | None,
             locale: str | None,
             admin_screens_show_family_screens: bool | None,
             admin_screens_show_details: bool | None,
@@ -467,7 +436,6 @@ class EventAdminController(AbstractEventAdminController):
             admin_screens_show_players: bool | None,
             admin_screens_show_results: bool | None,
             admin_screens_show_image: bool | None,
-            admin_messages_min_logging_level: int | None,
             admin_players_sort: str | None = None,
             admin_players_filter_columns: list[str] | None = None,
             admin_players_filter_federations: list[str] | None = None,
@@ -583,21 +551,12 @@ class EventAdminController(AbstractEventAdminController):
                 pass
             case 'timers':
                 pass
-            case 'messages':
-                if admin_messages_min_logging_level is not None:
-                    try:
-                        SessionHandler.set_session_admin_messages_min_logging_level(
-                            request, admin_messages_min_logging_level)
-                    except ValueError:
-                        return AbstractController.redirect_error(
-                            request, f'Invalid log level [{admin_messages_min_logging_level}].')
             case _:
                 raise ValueError(f'admin_event_tab={admin_event_tab}')
         return self._admin_event(
             request,
             event_uniq_id=event_uniq_id,
             admin_event_tab=admin_event_tab,
-            admin_columns=admin_columns,
             locale=locale,
         )
 

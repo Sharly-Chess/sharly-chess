@@ -4,12 +4,13 @@
     <div id="user-screen-header" class="header user-header user-screen-header">
         {% if screen.type != 'input' or screen.input_exit_button %}
             <button
-                    id="user-screen-exit-button"
-                    class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-1"
-                    hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab) }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait">
+                id="user-screen-exit-button"
+                class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-1"
+                hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 <i class="bi-x-circle-fill"></i>
             </button>
         {% endif %}
@@ -122,7 +123,7 @@
 
 {% block modal %}
     {% if login_needed %}
-        <div class="modal-dialog d-block w-90 mw-100">
+        <div class="modal-dialog d-block">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title" id="login-modal-label">{{ _('Please enter the password to enter results:') }}</h2>
@@ -168,7 +169,7 @@
     {% elif screen.type == 'input' %}
         {% if board %}
             {% with wp=board.white_player, bp=board.black_player %}
-                <div class="modal-dialog modal-dialog-centered input-screen-result-modal d-block w-90 mw-100">
+                <div class="modal-dialog modal-dialog-centered input-screen-result-modal d-block">
                     <div class="modal-content bg-secondary-subtle">
                         <div class="modal-header">
                           <div class="modal-title fs-4 fw-bold">{{ _('Enter the result') }}</div>
@@ -241,7 +242,7 @@
                 </script>
             {% endwith %}
         {% elif player %}
-            <div class="modal-dialog modal-dialog-centered input-screen-result-modal d-block w-90 mw-100">
+            <div class="modal-dialog modal-dialog-centered input-screen-result-modal d-block">
                 <div class="modal-content bg-secondary-subtle">
                     <div class="modal-header">
                         <div class="modal-title fs-4 fw-bold">{{ _('Check-in') }}</div>

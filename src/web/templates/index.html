@@ -2,18 +2,17 @@
 
 {% block header %}
 {% endblock header %}
-
 {% block content %}
-    <div id="home-content" class="content home-content">
-        <div class="row justify-content-center">
+    <div id="home-content" class="content home-content mt-5">
+        <div style="max-width: 500px; margin: auto;">
             <div class="d-grid gap-2 col-auto mx-auto">
                 <h1 class="text-center">{{ _('Welcome to Papi-web!') }}</h1>
                 <div
-                        class="row justify-content-md-center"
+                    class="row justify-content-md-center"
                 >
                     <div class="dropdown col-12 text-center">
                         <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi-translate"></i> {{ _('Language') }}
+                            <i class="bi-translate pe-1"></i>{{ _('Language') }}
                         </button>
                         <ul class="dropdown-menu locale">
                             {% for l, l_info in locale_infos.items() %}
@@ -74,31 +73,31 @@
                     </tbody>
                 </table>
                 <button
-                        hx-get="{{ url_for('user') }}"
-                        preload
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        class="btn btn-primary btn-lg p-4 w-100"
-                        {{ tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
+                    hx-get="{{ url_for('user') }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="btn btn-primary btn-lg p-4 w-100"
+                    {{ tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
                 >
                     {{ _('Events (public access)') }}
                 </button>
                 <div
-                        {% if admin_auth %}
-                            {{ tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
-                        {% else %}
-                            {{ tooltip_attributes('error', _('Access to the arbiter interface is not allowed from this client.'), 'right') }}
-                        {% endif %}
+                    {% if admin_auth %}
+                        {{ tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
+                    {% else %}
+                        {{ tooltip_attributes('error', _('Access to the arbiter interface is not allowed from this client.'), 'right') }}
+                    {% endif %}
                 >
                     <button
-                            hx-get="{{ url_for('admin') }}"
-                            preload
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            class="btn btn-danger btn-lg p-1 w-100"
-                            {% if not admin_auth %}
-                                disabled
-                            {% endif %}
+                        hx-get="{{ url_for('admin') }}"
+                        preload
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        class="btn btn-danger btn-lg p-1 w-100"
+                        {% if not admin_auth %}
+                            disabled
+                        {% endif %}
                     >
                         {{ _('Arbiter interface (private access)') }}
                     </button>

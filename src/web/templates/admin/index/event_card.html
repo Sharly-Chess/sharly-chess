@@ -1,88 +1,90 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ event_visibility_icon(event) }}
-    {% if event.formatted_start_date == event.formatted_stop_date %}
-         <span class="fw-bold">{{ event.formatted_start_date }}</span> {{ event.formatted_start_time }}-{{ event.formatted_stop_time }}
-    {% else %}
-         <span class="fw-bold">{{ event.formatted_start_date }} - {{ event.formatted_stop_date }}</span>
-    {% endif %}
-{% endblock %}
-
-{% block card_title %}
     {{ event.name }}
 {% endblock %}
 
+{% block card_title %}
+    {{ event_visibility_icon(event, 'pe-1') }}
+    {% if event.formatted_start_date == event.formatted_stop_date %}
+        <span class="fw-bold">{{ event.formatted_start_date }}</span> {{ event.formatted_start_time }}-{{ event.formatted_stop_time }}
+    {% else %}
+        <span class="fw-bold">{{ event.formatted_start_date }} - {{ event.formatted_stop_date }}</span>
+    {% endif %}
+{% endblock %}
+
 {% block card_text %}
-    <div>
-        <i class="bi-question-circle-fill" ></i>
-        {{ _(
-            'Unique ID: %(uniq_id)s',
-            uniq_id=event.uniq_id
-        ) }}
-    </div>
-    <div>
-        <i class="bi-people-fill" ></i>
-        {{ _(
-            'Tournaments: %(num)d',
-            num=event.tournaments_by_id|length
-        ) }}
-    </div>
-    <div>
-        <i class="bi-download" ></i>
-        {{ _(
-            'ChessEvent connections: %(num)d',
-            num=event.chessevents_by_id|length
-        ) }}
-    </div>
-    <div>
-        <i class="bi-clock-fill" ></i>
-        {{ _(
-            'Timers: %(num)d',
-            num=event.timers_by_id|length
-        ) }}
-    </div>
-    <div>
-        <i class="bi-fullscreen" ></i>
-        {{ _(
-            'Screens: %(num)d',
-            num=event.basic_screens_by_id|length
-        ) }}
-    </div>
-    <div>
-        <i class="bi-arrows-fullscreen" ></i>
-        {{ _(
-            'Families: %(num)d',
-            num=event.families_by_id|length
-        ) }}
-    </div>
-    <div>
-        <i class="bi-repeat" ></i>
-        {{ _(
-            'Rotators: %(num)d',
-            num=event.rotators_by_id|length
-        ) }}
-    </div>
-    <div>
-        <i class="bi-bug" ></i>
-        {{ _(
-            'Errors: %(num)d',
-            num=event.errors|length + event.criticals|length
-        ) }}
-    </div>
-    <div>
-        <i class="bi-exclamation-triangle" ></i>
-        {{ _(
-            'Warnings: %(num)d',
-            num=event.warnings|length
-        ) }}
-    </div>
-    <div>
-        <i class="bi-info-circle" ></i>
-        {{ _(
-            'Informations: %(num)d',
-            num=event.infos|length
-        ) }}
+    <div class="d-flex flex-column gap-1">
+        <div>
+            <i class="bi-question-circle-fill pe-1" ></i>
+            {{ _(
+                'Unique ID: %(uniq_id)s',
+                uniq_id=event.uniq_id
+            ) }}
+        </div>
+        <div>
+            <i class="bi-people-fill pe-1" ></i>
+            {{ _(
+                'Tournaments: %(num)d',
+                num=event.tournaments_by_id|length
+            ) }}
+        </div>
+        <div>
+            <i class="bi-download pe-1" ></i>
+            {{ _(
+                'ChessEvent connections: %(num)d',
+                num=event.chessevents_by_id|length
+            ) }}
+        </div>
+        <div>
+            <i class="bi-clock-fill pe-1" ></i>
+            {{ _(
+                'Timers: %(num)d',
+                num=event.timers_by_id|length
+            ) }}
+        </div>
+        <div>
+            <i class="bi-fullscreen pe-1" ></i>
+            {{ _(
+                'Screens: %(num)d',
+                num=event.basic_screens_by_id|length
+            ) }}
+        </div>
+        <div>
+            <i class="bi-arrows-fullscreen pe-1" ></i>
+            {{ _(
+                'Families: %(num)d',
+                num=event.families_by_id|length
+            ) }}
+        </div>
+        <div>
+            <i class="bi-repeat pe-1" ></i>
+            {{ _(
+                'Rotators: %(num)d',
+                num=event.rotators_by_id|length
+            ) }}
+        </div>
+        <div>
+            <i class="bi-bug pe-1" ></i>
+            {{ _(
+                'Errors: %(num)d',
+                num=event.errors|length + event.criticals|length
+            ) }}
+        </div>
+        <div>
+            <i class="bi-exclamation-triangle pe-1" ></i>
+            {{ _(
+                'Warnings: %(num)d',
+                num=event.warnings|length
+            ) }}
+        </div>
+        <div>
+            <i class="bi-info-circle pe-1" ></i>
+            {{ _(
+                'Informations: %(num)d',
+                num=event.infos|length
+            ) }}
+        </div>
     </div>
 {% endblock %}
 

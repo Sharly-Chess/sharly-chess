@@ -1065,15 +1065,11 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
-# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
-# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
-# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
-# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1110,12 +1106,6 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
-# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
@@ -1126,9 +1116,6 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
-# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
-# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
-# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -1764,11 +1751,6 @@ msgstr "Timers ({num})"
 #, ai_translation
 msgid "ChessEvent ({num})"
 msgstr "ChessEvent ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
-msgid "Messages ({num})"
-msgstr "Meddelanden ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -2909,6 +2891,25 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr "Återhämtning av raderade händelser är inte möjligt från webbgränssnittet (oavsett om händelserna arkiveras och kan återställas från filsystemet."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#, ai_translation
+msgid "Visibility:"
+msgstr "Synlighet:"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "Public event"
+msgstr "Offentligt evenemang"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Only arbiters can see private events."
+msgstr "Endast skiljedomare kan se privata evenemang."
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: world-championship"
 msgstr "T.ex. världsmästerskap"
@@ -2937,25 +2938,6 @@ msgstr "T.ex.: Världsmästerskap"
 #, ai_translation
 msgid "The name of the event, used for display and reports."
 msgstr "Händelsens namn, som används för visning och rapporter."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
-msgid "Visibility:"
-msgstr "Synlighet:"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Public event"
-msgstr "Offentligt evenemang"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Only arbiters can see private events."
-msgstr "Endast skiljedomare kan se privata evenemang."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3062,6 +3044,11 @@ msgid "no background image"
 msgstr "ingen bakgrundsbild"
 
 #: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Choose a custom image:"
+msgstr "Välj en egen bild:"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 #, ai_translation
@@ -3073,11 +3060,6 @@ msgstr "Bakgrundsfärg:"
 #, ai_translation
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "Bakgrundsfärgen används när bilden inte fyller hela skärmen."
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Choose a custom image:"
-msgstr "Välj en egen bild:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3283,8 +3265,6 @@ msgstr "Utgångsknapp:"
 msgid "yes"
 msgstr "Ja, det är jag."
 
-# Error: translation [Ingen känd frekvens:] is much too long compared to
-# initial [no]
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
 #: src/web/templates/admin/families/family_card.html
@@ -3741,8 +3721,6 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
-# Error: translation [Ej tillämpligt] is much too long compared to initial
-# [No]
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "No"
@@ -3818,21 +3796,6 @@ msgstr "Varningar: %(num)d"
 #, ai_translation, python-format
 msgid "Informations: %(num)d"
 msgstr "Information: %(num)d"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Level"
-msgstr "Nivå"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Message"
-msgstr "Meddelande"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "No messages."
-msgstr "Inga meddelanden."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
 #, ai_translation
@@ -4168,14 +4131,45 @@ msgid "The player's gender."
 msgstr "Spelarens kön."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Turnering"
+
+#: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "The player's tournament."
 msgstr "Spelarens turnering."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ratings, title and fédération"
-msgstr "FIDE-betyg, titel och fédération"
+msgid "Fixed board:"
+msgstr "Fast bräde:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Kortnumret spelaren alltid kommer att tilldelas (använd det för funktionshindrade)."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "Ratings"
+msgstr "Åtgärder:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "FIDE"
+msgstr "FIDG-ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "FIDG-ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's FIDE ID (do not change)."
+msgstr "Spelarens FIDE-ID (ändras inte)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4199,18 +4193,38 @@ msgstr "Spelarens förbund."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ID:"
-msgstr "FIDG-ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's FIDE ID (do not change)."
-msgstr "Spelarens FIDE-ID (ändras inte)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "French Chess Federation"
 msgstr "Franska schackförbundet"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Licensnummer:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "Spelarens licensnummer."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Körkort:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "Spelarens licens."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "FFE Uniq- ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "Spelarens Uniq ID för den franska federationen (ändra inte)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4236,36 +4250,6 @@ msgstr "T.ex. min favoritklubb!"
 #, ai_translation
 msgid "The player's club."
 msgstr "Spelarens klubb."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence:"
-msgstr "Körkort:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence."
-msgstr "Spelarens licens."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence number:"
-msgstr "Licensnummer:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence number."
-msgstr "Spelarens licensnummer."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "FFE Uniq ID:"
-msgstr "FFE Uniq- ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "Spelarens Uniq ID för den franska federationen (ändra inte)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4299,16 +4283,6 @@ msgstr "Spelarens telefonnummer."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Comment:"
-msgstr "Anmärkning:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "Owed:"
 msgstr "På grund av detta:"
 
@@ -4329,13 +4303,13 @@ msgstr "Priset spelaren redan betalat."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Fixed board:"
-msgstr "Fast bräde:"
+msgid "Comment:"
+msgstr "Anmärkning:"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Kortnumret spelaren alltid kommer att tilldelas (använd det för funktionshindrade)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -4600,8 +4574,6 @@ msgstr "T.ex. min-rotator"
 msgid "The Unique ID, used to reference the rotator."
 msgstr "Det unika ID, som används för att referera rotatorn."
 
-# Error: translation [För en driftspänning av mer än 1000 V men högst 1000 V]
-# is much too long compared to initial [Parameters]
 # Error: translation [För en driftspänning av mer än 1000 V men högst 1000 V]
 # is much too long compared to initial [Parameters]
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -5497,6 +5469,11 @@ msgid "Time control"
 msgstr "Tidskontroll"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, fuzzy
+msgid "Initial time (optional):"
+msgstr "Inkrement (frivillig uppgift):"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr "T.ex.: %(seconds)d (%(minutes)dminuter)"
@@ -5570,11 +5547,6 @@ msgstr "Det maximala antalet olagliga drag som kan spelas in per runda för en s
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Skapa och lägg till standardskärmar"
-
-#: src/web/templates/common/columns_number_dropdown.html
-#, ai_translation
-msgid "Change the number of columns."
-msgstr "Ändra antal kolumner."
 
 #: src/web/templates/common/macros.j2
 #, ai_translation
@@ -5771,13 +5743,6 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
-#: src/web/templates/user/screen/results.html
-#, ai_translation
-msgid "Tournament"
-msgstr "Turnering"
-
-# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
-# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
@@ -5860,4 +5825,22 @@ msgstr "Styrelsen #%(board_number)d med %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs"
+
+#~ msgid "Messages ({num})"
+#~ msgstr "Meddelanden ({num})"
+
+#~ msgid "Level"
+#~ msgstr "Nivå"
+
+#~ msgid "Message"
+#~ msgstr "Meddelande"
+
+#~ msgid "No messages."
+#~ msgstr "Inga meddelanden."
+
+#~ msgid "Change the number of columns."
+#~ msgstr "Ändra antal kolumner."
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "FIDE-betyg, titel och fédération"
 

@@ -1,3 +1,13 @@
+
+{% macro section_title() %}
+    <div
+        class="fs-4 bg-primary pt-1 pb-1 mt-3 mb-4 text-dark pe-4 position-relative"
+        style="border-radius: 0 1000px 1000px 0; padding-left: 2rem; left: -1.5rem;"
+    >
+        {{ caller() }}
+    </div>
+{% endmacro %}
+
 {% macro tooltip_attributes(tooltip_type, tooltip_text, tooltip_placement) %}
     data-bs-toggle="tooltip"
     data-bs-placement="{{ tooltip_placement or 'top' }}"
@@ -20,7 +30,7 @@
         {% else %}
             {% set _tooltip_text=tooltip_public_text or '???' %}
         {% endif %}
-        {% set _icon_class='bi-unlock-fill text-success' %}
+        {% set _icon_class='bi-eye-fill text-success' %}
     {% else %}
         {% if object_type == 'event' %}
             {% set _tooltip_text=tooltip_private_text or _('This event is private (by default, screens are not visible by the users).') %}
@@ -33,7 +43,7 @@
         {% else %}
             {% set _tooltip_text=tooltip_private_text or '???' %}
         {% endif %}
-        {% set _icon_class='bi-lock-fill text-danger' %}
+        {% set _icon_class='bi-eye-slash-fill text-danger' %}
     {% endif %}
     <span
             class="fw-bold {{ class }}"
@@ -89,9 +99,9 @@
 {% macro rotator_icon() %}
     <!-- rotator_icon() -->
     <span
-            class="fw-bold"
-            {{ tooltip_attributes('info', _('Rotator automatically rotate between multiple screens.'), 'top') }}
-        >
+        class="fw-bold"
+        {{ tooltip_attributes('info', _('Rotator automatically rotate between multiple screens.'), 'top') }}
+    >
         <i class="bi-repeat"></i>
     </span>
     <!-- end rotator_icon() -->
@@ -131,6 +141,7 @@
 
 {% macro background_script(background_info) %}
     <!-- background_script() -->
+    <!-- This is needed since it's not possible to change body attributes using HTMX -->
     <script>
         var background_info = {{ background_info | tojson }};
         var background_fingerprint = btoa(JSON.stringify(background_info));
@@ -152,6 +163,19 @@
                     );
                 },
             });
+        }
+    </script>
+    <!-- end background_script() -->
+{% endmacro %}
+
+{% macro theme_script(theme) %}
+    <!-- theme_script() -->
+    <!-- This is needed since it's not possible to change body attributes using HTMX -->
+    <script>
+        var new_theme = "{{ theme }}";
+        var current_theme = $('body').attr('data-bs-theme');
+        if (current_theme != new_theme) {
+            $('body').attr('data-bs-theme', new_theme);
         }
     </script>
     <!-- end background_script() -->

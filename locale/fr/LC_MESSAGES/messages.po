@@ -1406,10 +1406,6 @@ msgid "ChessEvent ({num})"
 msgstr "ChessEvent ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
-msgid "Messages ({num})"
-msgstr "Messages ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
 msgid "Renaming the database failed: {ex}."
 msgstr "Le renommage de la base de données a échoué : {ex}"
 
@@ -2354,6 +2350,22 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr "La récupération des données supprimées n'est pas possible sur l'interface web (les données sont néanmoins archivées et peuvent être récupérées sur le système de fichiers)."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Visibility:"
+msgstr "Visibilité :"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+msgid "Public event"
+msgstr "Évènement public"
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Only arbiters can see private events."
+msgstr "Seuls les arbitres peuvent voir les évènements privés."
+
+#: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: world-championship"
 msgstr "Exemple : championnat-du-monde"
 
@@ -2377,22 +2389,6 @@ msgstr "Exemple: Championnat du monde"
 #: src/web/templates/admin/event/event_modal.html
 msgid "The name of the event, used for display and reports."
 msgstr "Le nom de l'évènement, utilisé pour l'affichage et dans les rapports."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-msgid "Visibility:"
-msgstr "Visibilité :"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-msgid "Public event"
-msgstr "Évènement public"
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Only arbiters can see private events."
-msgstr "Seuls les arbitres peuvent voir les évènements privés."
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "Start:"
@@ -2482,6 +2478,10 @@ msgid "no background image"
 msgstr "pas d'image de fond"
 
 #: src/web/templates/admin/event/event_modal.html
+msgid "Choose a custom image:"
+msgstr "Choisissez une image personnalisée :"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 msgid "Background colour:"
@@ -2491,10 +2491,6 @@ msgstr "Couleur de fond :"
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran."
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Choose a custom image:"
-msgstr "Choisissez une image personnalisée :"
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "Timers"
@@ -2747,7 +2743,7 @@ msgstr "Attention : la suppression d'une famille d'écrans est définitive !"
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "Properties (results entry)"
-msgstr "propriétés (saisie des résultats)"
+msgstr "Propriétés (saisie des résultats)"
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -3123,18 +3119,6 @@ msgstr "Avertissements : %(num)d"
 msgid "Informations: %(num)d"
 msgstr "Informations : %(num)d"
 
-#: src/web/templates/admin/messages/tab.html
-msgid "Level"
-msgstr "Niveau"
-
-#: src/web/templates/admin/messages/tab.html
-msgid "Message"
-msgstr "Message"
-
-#: src/web/templates/admin/messages/tab.html
-msgid "No messages."
-msgstr "Aucun message."
-
 #: src/web/templates/admin/players/check_in_tournaments.html
 msgid "Open/close check-in."
 msgstr "Ouvrir/fermer le pointage."
@@ -3395,7 +3379,7 @@ msgstr "Le prénom du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Date of birth:"
-msgstr "Date de naissance :"
+msgstr "Date naiss. :"
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's birth date."
@@ -3410,12 +3394,37 @@ msgid "The player's gender."
 msgstr "Le genre du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Tournament"
+msgstr "Tournoi"
+
+#: src/web/templates/admin/players/player_modal.html
 msgid "The player's tournament."
 msgstr "Le tournoi du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "FIDE ratings, title and fédération"
-msgstr "Classements, titre et fédération FIDE"
+msgid "Fixed board:"
+msgstr "Échiquier fixe :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "Le numéro d'échiquier qui sera toujours assigné au·à la joueur·euse (pour les personnes en situation de handicap)."
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Ratings"
+msgstr "ELO"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE"
+msgstr "FIDE"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE ID:"
+msgstr "Identifiant FIDE :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's FIDE ID (do not change)."
+msgstr "L'identifiant FIDE du·de la joueur·euse (ne pas modifier)."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "FIDE Title:"
@@ -3434,16 +3443,32 @@ msgid "The player's federation."
 msgstr "La fédération du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "FIDE ID:"
-msgstr "Identifiant FIDE :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's FIDE ID (do not change)."
-msgstr "L'identifiant FIDE du·de la joueur·euse (ne pas modifier)."
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Licence number:"
+msgstr "Numéro de licence :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's licence number."
+msgstr "Le numéro de licence du·de la joueur·euse."
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Licence:"
+msgstr "Licence :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's licence."
+msgstr "La licence du·de la joueur·euse."
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FFE Uniq ID:"
+msgstr "Identifiant unique FFE :"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "L'identifiant unique pour la fédération française (ne pas modifier)."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "League:"
@@ -3464,30 +3489,6 @@ msgstr "Exemple : Mon club favori !"
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's club."
 msgstr "Le club du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence:"
-msgstr "Licence :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence."
-msgstr "La licence du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence number:"
-msgstr "Numéro de licence :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence number."
-msgstr "Le numéro de licence du·de la joueur·euse."
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "FFE Uniq ID:"
-msgstr "Identifiant unique FFE :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "L'identifiant unique pour la fédération française (ne pas modifier)."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Contact and registration"
@@ -3514,14 +3515,6 @@ msgid "The player's phone number."
 msgstr "Le numéro de téléphone du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Comment:"
-msgstr "Commentaire :"
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "Owed:"
 msgstr "Dû :"
 
@@ -3538,12 +3531,12 @@ msgid "The price the player already paid."
 msgstr "Le montant déjà payé."
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Fixed board:"
-msgstr "Échiquier fixe :"
+msgid "Comment:"
+msgstr "Commentaire :"
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Le numéro d'échiquier qui sera toujours assigné au·à la joueur·euse (pour les personnes en situation de handicap)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -4517,6 +4510,10 @@ msgid "Time control"
 msgstr "Cadence"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Initial time (optional):"
+msgstr "Temps initial (facultatif) :"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr "Exemple : %(seconds)d (%(minutes)d minutes)"
@@ -4577,10 +4574,6 @@ msgstr "Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"
 msgstr "Créer et ajouter les écrans par défaut"
-
-#: src/web/templates/common/columns_number_dropdown.html
-msgid "Change the number of columns."
-msgstr "Changer le nombre de colonnes."
 
 #: src/web/templates/common/macros.j2
 msgid "This event is public (by default, screens are visible by the users)."
@@ -4742,10 +4735,6 @@ msgid "Image:"
 msgstr "Image :"
 
 #: src/web/templates/user/screen/results.html
-msgid "Tournament"
-msgstr "Tournoi"
-
-#: src/web/templates/user/screen/results.html
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
 
@@ -4813,4 +4802,7 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr "contre"
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "Classements, titre et fédération FIDE"
 

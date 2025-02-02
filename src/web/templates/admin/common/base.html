@@ -10,42 +10,37 @@
 %}
 
 {% block header %}
-    <div id="admin-header" class="header admin-header position-sticky top-0 mx-2 border-bottom border-dark">
-        <div hx-ext="bs-tabs" class="bs-tabs">
-            <nav>
-                <div class="nav nav-tabs mt-1" id="nav-tab" role="tablist">
-                    <!-- block admin_header_back_button -->
-                    {% block admin_header_back_button %}
-                        ADMIN_HEADER_BACK_BUTTON
-                    {% endblock admin_header_back_button %}
-                    <!-- end block admin_header_back_button -->
+    <div
+        id="admin-header"
+        class="header admin-header border-bottom"
+        style="background-color: var(--bs-body-bg);"
+    >
+        <div hx-ext="bs-tabs" class="bs-tabs mx-3 py-2">
+            <nav class="d-flex align-items-center gap-2">
+                <!-- block admin_header_back_button -->
+                {% block admin_header_back_button %}
+                    ADMIN_HEADER_BACK_BUTTON
+                {% endblock admin_header_back_button %}
+                <!-- end block admin_header_back_button -->
+                <div
+                    class="nav nav-underline flex-grow-1"
+                    style="--bs-nav-underline-gap: 0.5rem;"
+                    id="nav-tab"
+                    role="tablist"
+                >
                     <!-- block admin_header_nav -->
                     {% block admin_header_nav %}
                         ADMIN_HEADER_NAV
                     {% endblock admin_header_nav %}
                     <!-- end block admin_header_nav -->
-                    {% with url=(
-                            url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab=admin_event_tab)
-                            if admin_event_tab else
-                            url_for('admin-event', admin_uniq_id=admin_event.uniq_id)
-                        ) if admin_event else (
-                            url_for('admin-tab', admin_tab=admin_tab)
-                            if admin_tab else
-                            url_for('admin')
-                        ) %}
-                        {% with name='admin_columns', value=admin_columns %}
-                            {% include '../../common/columns_number_dropdown.html' %}
-                        {% endwith %}
-                        {% include '../../common/locale_dropdown.html' %}
-                    {% endwith %}
                 </div>
-            </nav>
+            </nav> 
         </div>
     </div>
 {% endblock header %}
 
 {% block content %}
-    <div id="admin-content" class="content admin-content tab-content border border-dark mx-2 p-3">
+    <div id="admin-content" class="content admin-content tab-content mx-2 p-3">
         <!-- block admin_content -->
         {% block admin_content %}
             ADMIN_CONTENT

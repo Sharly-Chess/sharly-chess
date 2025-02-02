@@ -17,7 +17,7 @@ from litestar.params import Body
 from litestar.response import Redirect, Template
 from phonenumbers.phonenumberutil import NumberParseException
 
-from common import RGB, check_rgb_str
+from common import RGB, check_rgb_str, DEVEL_ENV
 from common.i18n import set_locale, locale_localized_name, locale_flag_url, trusted_locales, _, get_locale
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
@@ -45,7 +45,7 @@ class WebContext:
         set_locale(SessionHandler.get_session_locale(request))
 
     @property
-    def background_image(self) -> str:
+    def background_image(self) -> str | None:
         """
         Override this method to make the background image different from the default.
         :return:
@@ -61,7 +61,7 @@ class WebContext:
         return PapiWebConfig.default_background_color
 
     @property
-    def background_info(self) -> dict[str, str]:
+    def background_info(self) -> dict[str, str | None]:
         """
         The information return by this method is passed to the template engine to make the client call the /background
         URL if the image and colours are not already loaded on the page.
@@ -73,6 +73,14 @@ class WebContext:
             'image': self.background_image,
             'color': self.background_color,
         }
+    
+    @property
+    def theme(self) -> str:
+        """
+        Override this method to change the theme
+        :return:
+        """
+        return 'light'
 
     @staticmethod
     def form_data_to_str(data: dict[str, str], field: str, empty_value: str | None = None) -> str | None:
@@ -290,14 +298,17 @@ class WebContext:
                 'flag_url': locale_flag_url(locale),
                 'experimental': locale not in trusted_locales,
             }
+
         return {
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'papi_web_config': papi_web_config,
             'admin_auth': self.admin_auth,
             'background_info': self.background_info,
+            'theme': self.theme,
             'locale_infos': locale_infos,
             'locale': SessionHandler.get_session_locale(self.request),
+            'DEVEL_ENV': DEVEL_ENV
         }
 
 

@@ -3,12 +3,6 @@
 # EVENT
 ###########################################################
 */
-.dropdown-item:hover {
-    background-color: #ffff7f;
-}
-.dropdown-item.title:hover {
-    background-color: inherit;
-}
 
 .dropdown-menu.players-set-tournament-check-ins,
 .dropdown-menu.players-set-player-tournament,

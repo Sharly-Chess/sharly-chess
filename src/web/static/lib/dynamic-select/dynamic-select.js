@@ -71,6 +71,7 @@ class DynamicSelect {
             </div>
         `;
         let element = document.createElement('div');
+        element.className = 'dynamic-select-wrapper';
         element.innerHTML = template;
         return element;
     }

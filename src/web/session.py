@@ -124,38 +124,6 @@ class SessionHandler:
         return request.session.get(
             cls.ADMIN_SCREENS_SCREEN_TYPES_KEY, ['boards', 'input', 'players', 'results', 'image'])
 
-    ADMIN_COLUMNS_KEY: str = 'admin_columns'
-
-    @classmethod
-    def set_session_admin_columns(cls, request: HTMXRequest, columns: int):
-        assert columns in PapiWebConfig.allowed_columns
-        request.session[cls.ADMIN_COLUMNS_KEY]: int = columns
-
-    @classmethod
-    def get_session_admin_columns(cls, request: HTMXRequest) -> int:
-        return request.session.get(cls.ADMIN_COLUMNS_KEY, PapiWebConfig.default_columns)
-
-    USER_COLUMNS_KEY: str = 'user_columns'
-
-    @classmethod
-    def set_session_user_columns(cls, request: HTMXRequest, columns: int):
-        assert columns in PapiWebConfig.allowed_columns
-        request.session[cls.USER_COLUMNS_KEY]: int = columns
-
-    @classmethod
-    def get_session_user_columns(cls, request: HTMXRequest) -> int:
-        return request.session.get(cls.USER_COLUMNS_KEY, PapiWebConfig.default_columns)
-
-    ADMIN_MESSAGES_MIN_LOGGING_LEVEL_KEY: str = 'admin_messages_min_logging_level'
-
-    @classmethod
-    def set_session_admin_messages_min_logging_level(cls, request: HTMXRequest, min_logging_level: int):
-        request.session[cls.ADMIN_MESSAGES_MIN_LOGGING_LEVEL_KEY]: int = min_logging_level
-
-    @classmethod
-    def get_session_admin_messages_min_logging_level(cls, request: HTMXRequest) -> int:
-        return request.session.get(cls.ADMIN_MESSAGES_MIN_LOGGING_LEVEL_KEY, logging.INFO)
-
     LOCALE_KEY: str = 'locale'
 
     @classmethod

@@ -1406,10 +1406,6 @@ msgid "ChessEvent ({num})"
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
-msgid "Messages ({num})"
-msgstr ""
-
-#: src/web/controllers/admin/event_admin_controller.py
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
@@ -2354,6 +2350,22 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Visibility:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+msgid "Public event"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "Only arbiters can see private events."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: world-championship"
 msgstr ""
 
@@ -2376,22 +2388,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "The name of the event, used for display and reports."
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-msgid "Visibility:"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-msgid "Public event"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Only arbiters can see private events."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -2482,6 +2478,10 @@ msgid "no background image"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+msgid "Choose a custom image:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 msgid "Background colour:"
@@ -2490,10 +2490,6 @@ msgstr ""
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 msgid "The background colour is used when the image does not fill the whole screen."
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Choose a custom image:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -3123,18 +3119,6 @@ msgstr ""
 msgid "Informations: %(num)d"
 msgstr ""
 
-#: src/web/templates/admin/messages/tab.html
-msgid "Level"
-msgstr ""
-
-#: src/web/templates/admin/messages/tab.html
-msgid "Message"
-msgstr ""
-
-#: src/web/templates/admin/messages/tab.html
-msgid "No messages."
-msgstr ""
-
 #: src/web/templates/admin/players/check_in_tournaments.html
 msgid "Open/close check-in."
 msgstr ""
@@ -3410,11 +3394,36 @@ msgid "The player's gender."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Tournament"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
 msgid "The player's tournament."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "FIDE ratings, title and fédération"
+msgid "Fixed board:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Ratings"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE ID:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's FIDE ID (do not change)."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
@@ -3434,15 +3443,31 @@ msgid "The player's federation."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "FIDE ID:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's FIDE ID (do not change)."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "French Chess Federation"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Licence number:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's licence number."
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Licence:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's licence."
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FFE Uniq ID:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's Uniq ID for the French federation (do not change)."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
@@ -3463,30 +3488,6 @@ msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's club."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence number:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence number."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "FFE Uniq ID:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's Uniq ID for the French federation (do not change)."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
@@ -3514,14 +3515,6 @@ msgid "The player's phone number."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Comment:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "Owed:"
 msgstr ""
 
@@ -3538,11 +3531,11 @@ msgid "The price the player already paid."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "Fixed board:"
+msgid "Comment:"
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
 #: src/web/templates/admin/players/tab.html
@@ -4517,6 +4510,10 @@ msgid "Time control"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Initial time (optional):"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr ""
@@ -4576,10 +4573,6 @@ msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"
-msgstr ""
-
-#: src/web/templates/common/columns_number_dropdown.html
-msgid "Change the number of columns."
 msgstr ""
 
 #: src/web/templates/common/macros.j2
@@ -4742,10 +4735,6 @@ msgid "Image:"
 msgstr ""
 
 #: src/web/templates/user/screen/results.html
-msgid "Tournament"
-msgstr ""
-
-#: src/web/templates/user/screen/results.html
 msgid "Rnd.Boa"
 msgstr ""
 
@@ -4813,4 +4802,22 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
+
+#~ msgid "Messages ({num})"
+#~ msgstr ""
+
+#~ msgid "Level"
+#~ msgstr ""
+
+#~ msgid "Message"
+#~ msgstr ""
+
+#~ msgid "No messages."
+#~ msgstr ""
+
+#~ msgid "Change the number of columns."
+#~ msgstr ""
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr ""
 

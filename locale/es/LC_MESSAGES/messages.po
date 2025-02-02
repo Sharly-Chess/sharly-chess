@@ -1725,11 +1725,6 @@ msgstr "ChessEvent ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
-msgid "Messages ({num})"
-msgstr "Mensajes ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
 msgid "Renaming the database failed: {ex}."
 msgstr "Falló el cambio de nombre de la base de datos: {ex}."
 
@@ -2867,6 +2862,25 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr "Recuperar eventos borrados no es posible desde la interfaz web (sin embargo, los eventos se archivan y se pueden recuperar del sistema de archivos."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#, ai_translation
+msgid "Visibility:"
+msgstr "Visibilidad:"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "Public event"
+msgstr "Acto público"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Only arbiters can see private events."
+msgstr "Sólo los árbitros pueden ver eventos privados."
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: world-championship"
 msgstr "Por ejemplo: campeona mundial"
@@ -2895,25 +2909,6 @@ msgstr "Por ejemplo: Campeonato mundial"
 #, ai_translation
 msgid "The name of the event, used for display and reports."
 msgstr "El nombre del evento, utilizado para la visualización y los informes."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
-msgid "Visibility:"
-msgstr "Visibilidad:"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Public event"
-msgstr "Acto público"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Only arbiters can see private events."
-msgstr "Sólo los árbitros pueden ver eventos privados."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3020,6 +3015,11 @@ msgid "no background image"
 msgstr "sin imagen de fondo"
 
 #: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Choose a custom image:"
+msgstr "Elija una imagen personalizada:"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/user/event/screen_card.html
 #, ai_translation
@@ -3031,11 +3031,6 @@ msgstr "Color del fondo:"
 #, ai_translation
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "El color de fondo se utiliza cuando la imagen no llena toda la pantalla."
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Choose a custom image:"
-msgstr "Elija una imagen personalizada:"
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3769,21 +3764,6 @@ msgstr "Avisos: %(num)d"
 msgid "Informations: %(num)d"
 msgstr "Información: %(num)d"
 
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Level"
-msgstr "Nivel"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "Message"
-msgstr "Mensaje"
-
-#: src/web/templates/admin/messages/tab.html
-#, ai_translation
-msgid "No messages."
-msgstr "Sin mensajes."
-
 #: src/web/templates/admin/players/check_in_tournaments.html
 #, ai_translation
 msgid "Open/close check-in."
@@ -4118,14 +4098,45 @@ msgid "The player's gender."
 msgstr "El género del jugador."
 
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Torneo"
+
+#: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "The player's tournament."
 msgstr "El torneo del jugador."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ratings, title and fédération"
-msgstr "Clasificación, título y fédération de la FIDE"
+msgid "Fixed board:"
+msgstr "Tablero fijo:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "El número de tablero al que el jugador siempre será asignado (úselo para personas con discapacidad)."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "Ratings"
+msgstr "Acciones:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation, fuzzy
+msgid "FIDE"
+msgstr "ID FIDE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "ID FIDE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's FIDE ID (do not change)."
+msgstr "ID FIDE del jugador (no cambiar)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4149,18 +4160,38 @@ msgstr "La federación de jugadores."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FIDE ID:"
-msgstr "ID FIDE:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's FIDE ID (do not change)."
-msgstr "ID FIDE del jugador (no cambiar)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "French Chess Federation"
 msgstr "Federación Francesa de Ajedrez"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Número de licencia:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "El número de licencia del jugador."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Licencia:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "La licencia del jugador."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "FFE Uniq ID:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "El Uniq ID del jugador para la federación francesa (no cambie)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4186,36 +4217,6 @@ msgstr "Por ejemplo: ¡Mi club favorito!"
 #, ai_translation
 msgid "The player's club."
 msgstr "El club de jugadores."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence:"
-msgstr "Licencia:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence."
-msgstr "La licencia del jugador."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence number:"
-msgstr "Número de licencia:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence number."
-msgstr "El número de licencia del jugador."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "FFE Uniq ID:"
-msgstr "FFE Uniq ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "El Uniq ID del jugador para la federación francesa (no cambie)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4249,16 +4250,6 @@ msgstr "El número de teléfono del jugador."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Comment:"
-msgstr "Comentario:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "Cualquier comentario sobre el jugador (los comentarios son visibles sólo por los árbitros)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "Owed:"
 msgstr "Deuda:"
 
@@ -4279,13 +4270,13 @@ msgstr "El precio que el jugador ya pagó."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Fixed board:"
-msgstr "Tablero fijo:"
+msgid "Comment:"
+msgstr "Comentario:"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "El número de tablero al que el jugador siempre será asignado (úselo para personas con discapacidad)."
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr "Cualquier comentario sobre el jugador (los comentarios son visibles sólo por los árbitros)."
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -5443,6 +5434,11 @@ msgid "Time control"
 msgstr "Control del tiempo"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, fuzzy
+msgid "Initial time (optional):"
+msgstr "Incremento (opcional):"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr "Por ejemplo: %(seconds)d (%(minutes)d minutos)"
@@ -5516,11 +5512,6 @@ msgstr "El número máximo de movimientos ilegales que se pueden registrar por r
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Crear y añadir pantallas predeterminadas"
-
-#: src/web/templates/common/columns_number_dropdown.html
-#, ai_translation
-msgid "Change the number of columns."
-msgstr "Cambiar el número de columnas."
 
 #: src/web/templates/common/macros.j2
 #, ai_translation
@@ -5719,11 +5710,6 @@ msgstr "Imagen:"
 
 #: src/web/templates/user/screen/results.html
 #, ai_translation
-msgid "Tournament"
-msgstr "Torneo"
-
-#: src/web/templates/user/screen/results.html
-#, ai_translation
 msgid "Rnd.Boa"
 msgstr "Rnd.Boa"
 
@@ -5802,4 +5788,22 @@ msgstr ""
 #, ai_translation
 msgid "vs"
 msgstr "vs."
+
+#~ msgid "Messages ({num})"
+#~ msgstr "Mensajes ({num})"
+
+#~ msgid "Level"
+#~ msgstr "Nivel"
+
+#~ msgid "Message"
+#~ msgstr "Mensaje"
+
+#~ msgid "No messages."
+#~ msgstr "Sin mensajes."
+
+#~ msgid "Change the number of columns."
+#~ msgstr "Cambiar el número de columnas."
+
+#~ msgid "FIDE ratings, title and fédération"
+#~ msgstr "Clasificación, título y fédération de la FIDE"
 
