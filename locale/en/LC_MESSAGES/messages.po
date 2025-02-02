@@ -4486,6 +4486,10 @@ msgid "Initial time (optional):"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Initial time (optional):"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr ""
