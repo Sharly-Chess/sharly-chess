@@ -288,13 +288,13 @@ msgstr "- Versione {version}: nessun evento"
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No event found in previously installed versions."
+msgid "No events found in previously installed versions."
 msgstr "Nessun evento trovato nelle versioni precedentemente installate."
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No previously installed version found."
-msgstr "Nessuna versione precedentemente installata trovata."
+msgid "No previously installed versions found."
+msgstr "Non sono state trovate versioni precedentemente installate."
 
 #: src/common/engine.py
 #, ai_translation
@@ -468,14 +468,8 @@ msgstr "La nuova versione [{version}] è stata installata in [{dir}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Opzione non impostata, per impostazione predefinita [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Valore non valido [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "L'opzione è deprecata, imposta invece la variabile d'ambiente [{var}=1]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -504,6 +498,11 @@ msgstr "Livello di registro non valido [{level}], per impostazione predefinita [
 
 #: src/common/papi_web_config.py
 #, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Opzione non impostata, per impostazione predefinita [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Configurazione dell'host non valida [{host}], per impostazione predefinita [{default}]."
 
@@ -511,6 +510,12 @@ msgstr "Configurazione dell'host non valida [{host}], per impostazione predefini
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Porta non valida [{port}], per impostazione predefinita [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Valore non valido [{value}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation

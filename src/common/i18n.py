@@ -8,7 +8,7 @@ from string import capwords
 
 from babel import Locale
 
-from common import get_logger, BASE_DIR, DEVEL_ENV
+from common import get_logger, BASE_DIR, DEVEL_ENV, EXPERIMENTAL_FEATURES
 from common.logger import print_interactive_error, print_interactive_warning, input_interactive
 
 logger: Logger = get_logger()
@@ -100,19 +100,20 @@ translators['fr']= [
 """ Locales with translators assigned are considered trusted. """
 trusted_locales = [locale for locale in translators if locale in locales]
 
-""" Mark the untrusted locales as translated by an IA. """
-translators |= {
-    locale: [
-        {
-            'github_user': None,
-            'name': 'AI (Opus-MT)',
-        },
-    ]
-    for locale in locales
-    if locale not in trusted_locales
-}
-""" Other as considered untrusted. """
-untrusted_locales = list(set(locales) - set(trusted_locales))
+if EXPERIMENTAL_FEATURES:
+    """ Mark the untrusted locales as translated by an IA. """
+    translators |= {
+        locale: [
+            {
+                'github_user': None,
+                'name': 'AI (Opus-MT)',
+            },
+        ]
+        for locale in locales
+        if locale not in trusted_locales
+    }
+    """ Other as considered untrusted. """
+    untrusted_locales = list(set(locales) - set(trusted_locales))
 
 """ Initialize the current thread with the default locale. """
 _thread_local_data = threading.local()

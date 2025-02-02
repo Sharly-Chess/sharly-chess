@@ -9,7 +9,7 @@ import uvicorn
 from litestar import Litestar
 from litestar.contrib.htmx.request import HTMXRequest
 
-from common import DEVEL_ENV
+from common import DEVEL_ENV, EXPERIMENTAL_FEATURES
 from common.bbp_pairings import BbpPairings
 from common.engine import Engine
 from common.i18n import _, set_locale
@@ -52,7 +52,7 @@ class ServerEngine(Engine):
             print_interactive_error(_('Error while updating the FIDE database.'))
         if not FfeDatabase().check():
             print_interactive_error(_('Error while updating the FFE database.'))
-        if not BbpPairings().is_installed:
+        if EXPERIMENTAL_FEATURES and not BbpPairings().is_installed:
             if DEVEL_ENV:
                 print_interactive_warning(
                     'BBP Pairings not installed. To install, run: '

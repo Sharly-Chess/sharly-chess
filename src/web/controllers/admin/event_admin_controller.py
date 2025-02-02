@@ -152,10 +152,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
             case 'config':
                 pass
             case 'tournaments':
-                template_context |= {
-                    'hide_pairing': not DEVEL_ENV,
-                    'hide_trf_export': not DEVEL_ENV,
-                }
+                pass
             case 'players':
                 # The federations that will be shown on the federation select list
                 players_federations: list[FederationTuple] = sorted({

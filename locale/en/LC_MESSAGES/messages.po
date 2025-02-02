@@ -231,11 +231,11 @@ msgid "- Version {version}: no events"
 msgstr ""
 
 #: src/common/engine.py
-msgid "No event found in previously installed versions."
+msgid "No events found in previously installed versions."
 msgstr ""
 
 #: src/common/engine.py
-msgid "No previously installed version found."
+msgid "No previously installed versions found."
 msgstr ""
 
 #: src/common/engine.py
@@ -375,12 +375,7 @@ msgid "New version [{version}] has been installed in [{dir}]."
 msgstr ""
 
 #: src/common/papi_web_config.py
-msgid "Option not set, by default [{default}]."
-msgstr ""
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-msgid "Invalid value [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
 msgstr ""
 
 #: src/common/papi_web_config.py
@@ -404,11 +399,20 @@ msgid "Invalid log level [{level}], by default [{default}]."
 msgstr ""
 
 #: src/common/papi_web_config.py
+msgid "Option not set, by default [{default}]."
+msgstr ""
+
+#: src/common/papi_web_config.py
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr ""
 
 #: src/common/papi_web_config.py
 msgid "Invalid port [{port}], by default [{default}]."
+msgstr ""
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Invalid value [{value}]."
 msgstr ""
 
 #: src/common/papi_web_config.py

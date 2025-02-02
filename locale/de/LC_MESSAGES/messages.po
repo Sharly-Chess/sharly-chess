@@ -288,13 +288,13 @@ msgstr "- Version {version}: keine Ereignisse"
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No event found in previously installed versions."
-msgstr "Kein Ereignis in zuvor installierten Versionen gefunden."
+msgid "No events found in previously installed versions."
+msgstr "In den zuvor installierten Versionen wurden keine Ereignisse gefunden."
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No previously installed version found."
-msgstr "Keine zuvor installierte Version gefunden."
+msgid "No previously installed versions found."
+msgstr "Keine zuvor installierten Versionen gefunden."
 
 #: src/common/engine.py
 #, ai_translation
@@ -468,14 +468,8 @@ msgstr "Neue Version [{version}] wurde in [{dir}] installiert."
 
 #: src/common/papi_web_config.py
 #, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Option nicht gesetzt, standardmäßig [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Ungültiger Wert [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "Option ist veraltet, stattdessen die Umgebungsvariable [{var}=1] gesetzt."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -504,6 +498,11 @@ msgstr "Ungültige Protokollebene [{level}], standardmäßig [{default}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Option nicht gesetzt, standardmäßig [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Ungültige Hostkonfiguration [{host}], standardmäßig [{default}]."
 
@@ -511,6 +510,12 @@ msgstr "Ungültige Hostkonfiguration [{host}], standardmäßig [{default}]."
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ungültiger Port [{port}], standardmäßig [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Ungültiger Wert [{value}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -4292,8 +4297,6 @@ msgstr "Telefonnummer:"
 msgid "The player's phone number."
 msgstr "Die Telefonnummer des Spielers."
 
-# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
-# compared to initial [Owed:]
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "Owed:"

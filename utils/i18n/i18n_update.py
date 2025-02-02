@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 import time
@@ -8,6 +9,9 @@ from pathlib import Path
 from babel.messages import Catalog, Message
 from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po, write_po
+
+# force PAPI_WEB_EXPERIMENTAL to True to compile untrusted locales
+os.environ['PAPI_WEB_EXPERIMENTAL'] = '1'
 
 sys.path.extend(map(str,
     [

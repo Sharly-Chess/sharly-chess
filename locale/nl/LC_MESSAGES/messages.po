@@ -288,13 +288,13 @@ msgstr "- Versie {version}: geen gebeurtenissen"
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No event found in previously installed versions."
-msgstr "Geen gebeurtenis gevonden in eerder geïnstalleerde versies."
+msgid "No events found in previously installed versions."
+msgstr "Geen gebeurtenissen gevonden in eerder geïnstalleerde versies."
 
 #: src/common/engine.py
 #, ai_translation
-msgid "No previously installed version found."
-msgstr "Geen eerder geïnstalleerde versie gevonden."
+msgid "No previously installed versions found."
+msgstr "Geen eerder geïnstalleerde versies gevonden."
 
 #: src/common/engine.py
 #, ai_translation
@@ -468,14 +468,8 @@ msgstr "Nieuwe versie [{version}] is geïnstalleerd in [{dir}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Standaard is de optie niet ingesteld [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Ongeldige waarde [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "Optie is verouderd, zet omgevingsvariabele [{var}=1] in plaats daarvan."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -504,6 +498,11 @@ msgstr "Ongeldig logniveau [{level}], standaard [{default}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Standaard is de optie niet ingesteld [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Ongeldige hostconfiguratie [{host}], standaard [{default}]."
 
@@ -511,6 +510,12 @@ msgstr "Ongeldige hostconfiguratie [{host}], standaard [{default}]."
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ongeldige poort [{port}], standaard [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Ongeldige waarde [{value}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation

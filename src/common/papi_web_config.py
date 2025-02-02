@@ -12,7 +12,7 @@ import pyodbc
 import uvicorn
 from packaging.version import Version
 
-from common import TMP_DIR, BASE_DIR
+from common import TMP_DIR, BASE_DIR, DEVEL_ENV, EXPERIMENTAL_FEATURES_ENV_VAR
 from common.config_reader import ConfigReader
 from common.i18n import set_locale, default_locale, _, locale_localized_name, trusted_locales, untrusted_locales
 from common.logger import get_logger, configure_logger, print_interactive_error, print_interactive_input, \
@@ -71,19 +71,11 @@ class PapiWebConfig(metaclass=Singleton):
             try:
                 options = self.reader[section_key]
                 key = 'experimental_locales'
-                if key not in options:
+                if key in options and DEVEL_ENV:
                     self.reader.add_warning(
-                        _('Option not set, by default [{default}].').format(default='off'),
+                        _('Option is obsolete, set environment variable [{var}=1] instead.').format(
+                            var=EXPERIMENTAL_FEATURES_ENV_VAR),
                         section_key, key)
-                else:
-                    value: bool | None = self.reader.getboolean_safe(section_key, key)
-                    if value is None:
-                        self.reader.add_error(
-                            _('Invalid value [{value}].').format(value=self.reader.get(section_key, key)),
-                            section_key, key)
-                    elif value:
-                        # use all the locales, including the experimental ones.
-                        self.locales = trusted_locales + untrusted_locales
                 key = 'locale'
                 try:
                     locale = options[key]
@@ -221,7 +213,6 @@ class PapiWebConfig(metaclass=Singleton):
         config_save: Path = self.config_file.parent \
                             / f'{self.config_file.name}.{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
         try:
-
             self.config_file.rename(config_save)
             print_interactive_info(_('Your file {ini_file} has been saved as {ini_file_org}.').format(
                 ini_file=self.config_file, ini_file_org=config_save))
