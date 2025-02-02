@@ -2,46 +2,71 @@
     <input type='hidden' name='item' value='{{ timer_hour.id }}'/>
     {% if admin_timer_hour.id == timer_hour.id %}
         <form
-                hx-patch="{{ url_for('admin-timer-hour-update', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                hx-target="body"
-                hx-trigger="end"
-                hx-indicator="#please-wait">
-            <div class="admin-timer-hour-div edit border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %} px-1 mb-1">
-                <div class="row">
-                    <div class="col-3">
-                        {{ date_input(
-                            name='date_str',
-                            label=_('Date:'),
-                            help_text=_('Mandatory for the first hour, optional for next hours.'),
-                            data=data, errors=errors
-                        ) }}
+            hx-patch="{{ url_for('admin-timer-hour-update', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
+            hx-target="body"
+            hx-trigger="end"
+            hx-indicator="#please-wait"
+        >
+            <div class="admin-timer-hour-div edit border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
+                <div class="d-flex p-2 gap-4">
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-md-8 mb-3">
+                                {{ date_input(
+                                    name='date_str',
+                                    label=_('Date:'),
+                                    help_text=_('Mandatory for the first hour, optional for next hours.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-4 mb-3">
+                                {{ time_input(
+                                    name='time_str',
+                                    label=_('Hour:'),
+                                    help_text=_('E.g.: Start of check-in'),
+                                    disabled=action == 'delete',
+                                    error=action == 'delete',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ text_input(
+                                    name='uniq_id',
+                                    label=_('Round number or text:'),
+                                    placeholder=_('E.g.: Start of check-in'),
+                                    help_text=_('Texts before and after the hour below are optional for round numbers, mandatory otherwise.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ text_input(
+                                    name='text_before',
+                                    label=_('Text before the hour:'),
+                                    placeholder=_('E.g.: Check-in started for %%s'),
+                                    help_text=_('%%s is replaced by the time left before the hour.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ text_input(
+                                    name='text_after',
+                                    label=_('Text after the hour:'),
+                                    placeholder=_('E.g.: Start of check-in in %%s'),
+                                    help_text=_('%%s is replaced by the time elapsed since the hour.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-2">
-                        {{ time_input(
-                            name='time_str',
-                            label=_('Hour:'),
-                            help_text=_('E.g.: Start of check-in'),
-                            disabled=action == 'delete',
-                            error=action == 'delete',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-5">
-                        {{ text_input(
-                            name='uniq_id',
-                            label=_('Round number or text:'),
-                            placeholder=_('E.g.: Start of check-in'),
-                            help_text=_('Texts before and after the hour below are optional for round numbers, mandatory otherwise.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-2 text-end">
+                    <div class="d-flex flex-column gap-1">
                         <button
                                 class="btn btn-sm btn-primary text-nowrap mb-1"
                                 hx-patch="{{ url_for('admin-timer-hour-update', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait">
-                            <i class="bi-floppy-fill"></i>
+                            <i class="bi-floppy-fill pe-1"></i>
                             {{ _('Update') }}
                         </button>
                         <button
@@ -51,37 +76,17 @@
                                 hx-target="body"
                                 hx-trigger="click, keyup[key=='Escape'] from:body"
                                 hx-indicator="#please-wait">
-                            <i class="bi-x-circle-fill"></i>
+                            <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
                         </button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-5">
-                        {{ text_input(
-                            name='text_before',
-                            label=_('Text before the hour:'),
-                            placeholder=_('E.g.: Check-in started for %%s'),
-                            help_text=_('%%s is replaced by the time left before the hour.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-5">
-                        {{ text_input(
-                            name='text_after',
-                            label=_('Text after the hour:'),
-                            placeholder=_('E.g.: Start of check-in in %%s'),
-                            help_text=_('%%s is replaced by the time elapsed since the hour.'),
-                            data=data, errors=errors
-                        ) }}
                     </div>
                 </div>
             </div>
         </form>
     {% else %}
-        <div class="admin-timer-hour-div border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %} p-1 mb-1">
-            <div class="row">
-                <div class="col-10">
+        <div class="admin-timer-hour-div border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
+            <div class="p-2 d-flex align-items-start gap-4">
+                <div class="flex-grow-1">
                     <b>{% if timer_hour.timestamp %}{% if timer_hour.stored_timer_hour.date_str %}{{ timer_hour.stored_timer_hour.date_str }} {%endif %}{{ timer_hour.stored_timer_hour.time_str }}{% else %}??/??/???? ??:??{% endif %}</b> :
                     {{ timer_hour.uniq_id }}
                     ({% if timer_hour.text_before %}{{ timer_hour.text_before }}{% else %}???{% endif %}
@@ -89,34 +94,36 @@
                     {% if timer_hour.text_after %}{{ timer_hour.text_after }}{% else %}???{% endif %})
                     {% if timer_hour.error %}<br/><span class="text-danger">{{ timer_hour.error }}</span>{%endif %}
                 </div>
-                <div class="col-2 text-nowrap text-end">
+                <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                     {% if not admin_timer_hour %}
                         {% if not admin_timer_hour and admin_timer.timer_hours_sorted_by_order|length > 1 %}
                             <i class="bi-arrows-move"></i>
                         {% endif %}
                         <button
-                                class="btn btn-sm btn-primary text-nowrap"
-                                hx-get="{{ url_for('admin-timer-hours-hour-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                                preload
-                                hx-target="body"
-                                hx-indicator="#please-wait">
+                            class="btn btn-sm btn-outline-primary text-nowrap"
+                            hx-get="{{ url_for('admin-timer-hours-hour-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
+                            preload
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
                             <i class="bi-pencil-fill"></i>
                         </button>
                         <button
-                                class="btn btn-sm btn-primary text-nowrap"
-                                hx-post="{{ url_for('admin-timer-hour-clone', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait">
+                            class="btn btn-sm btn-outline-primary text-nowrap"
+                            hx-post="{{ url_for('admin-timer-hour-clone', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
                             <i class="bi-copy"></i>
                         </button>
                         <button
-                                class="btn btn-sm btn-danger text-nowrap"
-                                hx-delete="{{ url_for('admin-timer-hour-delete', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                {% if admin_timer.timer_hours_sorted_by_order|length <= 1 %}
-                                    disabled
-                                {% endif %}
+                            class="btn btn-sm btn-outline-danger text-nowrap"
+                            hx-delete="{{ url_for('admin-timer-hour-delete', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            {% if admin_timer.timer_hours_sorted_by_order|length <= 1 %}
+                                disabled
+                            {% endif %}
                         >
                             <i class="bi-trash-fill"></i>
                         </button>

@@ -55,12 +55,6 @@ class UserWebContext(WebContext):
 class AbstractUserController(AbstractController):
     """ An abstract class inherited by all the user controllers."""
 
-    @staticmethod
-    def set_user_columns(request: HTMXRequest, user_columns: int | None):
-        if user_columns:
-            SessionHandler.set_session_user_columns(request, user_columns)
-
-
 class IndexUserController(AbstractUserController):
 
     @staticmethod
@@ -115,7 +109,6 @@ class IndexUserController(AbstractUserController):
             template_name="user/index.html",
             context=web_context.template_context | {
                 'messages': Message.messages(web_context.request),
-                'user_columns': SessionHandler.get_session_user_columns(web_context.request),
                 'nav_tabs': nav_tabs,
             })
 
@@ -140,11 +133,9 @@ class IndexUserController(AbstractUserController):
     def _user(
             self, request: HTMXRequest,
             user_tab: str | None,
-            user_columns: int | None,
             locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         self.set_locale(request, locale)
-        self.set_user_columns(request, user_columns)
         web_context: UserWebContext = UserWebContext(request, data=None, user_tab=user_tab)
         if web_context.error:
             return web_context.error
@@ -160,10 +151,9 @@ class IndexUserController(AbstractUserController):
     )
     async def htmx_user(
             self, request: HTMXRequest,
-            user_columns: int | None,
             locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
-        return self._user(request, user_tab=None, user_columns=user_columns, locale=locale)
+        return self._user(request, user_tab=None, locale=locale)
 
     @get(
         path='/user/{user_tab:str}',
@@ -172,7 +162,6 @@ class IndexUserController(AbstractUserController):
     async def htmx_user_tab(
             self, request: HTMXRequest,
             user_tab: str,
-            user_columns: int | None,
             locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
-        return self._user(request, user_tab=user_tab, user_columns=user_columns, locale=locale)
+        return self._user(request, user_tab=user_tab, locale=locale)

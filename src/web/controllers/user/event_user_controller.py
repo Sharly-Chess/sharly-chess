@@ -54,8 +54,8 @@ class EventUserWebContext(UserWebContext):
         pass
 
     @property
-    def background_image(self) -> str:
-        return ''
+    def background_image(self) -> str | None:
+        return None
 
     @property
     def background_color(self) -> str:
@@ -137,7 +137,6 @@ class EventUserController(AbstractUserController):
             template_name="user/event.html",
             context=web_context.template_context | {
                 'messages': Message.messages(web_context.request),
-                'user_columns': SessionHandler.get_session_user_columns(web_context.request),
                 'nav_tabs': nav_tabs,
             })
 
@@ -193,17 +192,13 @@ class EventUserController(AbstractUserController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             user_event_tab: str | None,
-            user_columns: int | None,
             locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         self.set_locale(request, locale)
-        self.set_user_columns(request, user_columns)
         web_context: EventUserWebContext = EventUserWebContext(
             request, data=None, event_uniq_id=event_uniq_id, user_event_tab=user_event_tab)
         if web_context.error:
             return web_context.error
-        if user_columns:
-            SessionHandler.set_session_user_columns(request, user_columns)
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_event_refresh_needed(web_context.user_event, date):
             return self._user_event_render(web_context)
@@ -217,11 +212,10 @@ class EventUserController(AbstractUserController):
     async def htmx_user_event(
             self, request: HTMXRequest,
             event_uniq_id: str,
-            user_columns: int | None,
             locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         return self._user_event(
-            request, event_uniq_id=event_uniq_id, user_event_tab=None, user_columns=user_columns, locale=locale)
+            request, event_uniq_id=event_uniq_id, user_event_tab=None, locale=locale)
 
     @get(
         path='/user/event/{event_uniq_id:str}/{user_event_tab:str}',
@@ -231,9 +225,8 @@ class EventUserController(AbstractUserController):
             self, request: HTMXRequest,
             event_uniq_id: str,
             user_event_tab: str,
-            user_columns: int | None,
             locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         return self._user_event(
-            request, event_uniq_id=event_uniq_id, user_event_tab=user_event_tab, user_columns=user_columns,
+            request, event_uniq_id=event_uniq_id, user_event_tab=user_event_tab,
             locale=locale)

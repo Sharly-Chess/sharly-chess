@@ -52,15 +52,16 @@ class AdminWebContext(WebContext):
 
     @property
     def background_image(self) -> str | None:
-        if self.admin_tab in ['archives', 'config', ]:
-            return PapiWebConfig.default_background_image
-        else:
-            return None
+        return None
 
     @property
     def background_color(self) -> str:
         return PapiWebConfig.admin_background_color
 
+    @property
+    def theme(self) -> str:
+        return 'dark'
+    
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
@@ -143,11 +144,6 @@ class AbstractAdminController(AbstractController):
 
 class AbstractIndexAdminController(AbstractAdminController):
     """ An abstract class inherited by all the admin controllers."""
-
-    @staticmethod
-    def set_admin_columns(request: HTMXRequest, admin_columns: int | None):
-        if admin_columns:
-            SessionHandler.set_session_admin_columns(request, admin_columns)
 
     @staticmethod
     def _admin_validate_record_illegal_moves_update_data(
@@ -570,8 +566,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
             'messages': Message.messages(web_context.request),
-            'nav_tabs': nav_tabs,
-            'admin_columns': SessionHandler.get_session_admin_columns(web_context.request),
+            'nav_tabs': nav_tabs
         }
         match modal:
             case None:
@@ -606,14 +601,12 @@ class IndexAdminController(AbstractIndexAdminController):
     def _admin(
             cls, request: HTMXRequest,
             admin_tab: str | None,
-            admin_columns: int | None = None,
             locale: str | None = None,
             modal: str | None = None,
             data: dict[str, str] | None = None,
             errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         cls.set_locale(request, locale)
-        cls.set_admin_columns(request, admin_columns)
         web_context: AdminWebContext = AdminWebContext(request, data=None, admin_tab=admin_tab)
         if web_context.error:
             return web_context.error
@@ -626,10 +619,9 @@ class IndexAdminController(AbstractIndexAdminController):
     )
     async def htmx_admin(
             self, request: HTMXRequest,
-            admin_columns: int | None,
             locale: str | None,
     ) -> Template | ClientRedirect:
-        return self._admin(request, admin_tab=None, admin_columns=admin_columns, locale=locale, )
+        return self._admin(request, admin_tab=None, locale=locale, )
 
     @get(
         path='/admin/{admin_tab:str}',
@@ -639,10 +631,9 @@ class IndexAdminController(AbstractIndexAdminController):
     async def htmx_admin_tab(
             self, request: HTMXRequest,
             admin_tab: str,
-            admin_columns: int | None,
             locale: str | None,
     ) -> Template | ClientRedirect:
-        return self._admin(request, admin_tab=admin_tab, admin_columns=admin_columns, locale=locale, )
+        return self._admin(request, admin_tab=admin_tab, locale=locale, )
 
     @get(
         path='/admin/{admin_tab:str}/event-modal/create',
