@@ -287,13 +287,13 @@ msgid "- Version {version}: no events"
 msgstr "- Versie {version}: geen gebeurtenissen"
 
 #: src/common/engine.py
-#, ai_translation
-msgid "No event found in previously installed versions."
+#, ai_translation, fuzzy
+msgid "No events found in previously installed versions."
 msgstr "Geen gebeurtenis gevonden in eerder geïnstalleerde versies."
 
 #: src/common/engine.py
-#, ai_translation
-msgid "No previously installed version found."
+#, ai_translation, fuzzy
+msgid "No previously installed versions found."
 msgstr "Geen eerder geïnstalleerde versie gevonden."
 
 #: src/common/engine.py
@@ -468,14 +468,8 @@ msgstr "Nieuwe versie [{version}] is geïnstalleerd in [{dir}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Standaard is de optie niet ingesteld [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Ongeldige waarde [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "De optie is verouderd, zet omgevingsvariabele [{var}=1] in plaats daarvan."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -504,6 +498,11 @@ msgstr "Ongeldig logniveau [{level}], standaard [{default}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Standaard is de optie niet ingesteld [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Ongeldige hostconfiguratie [{host}], standaard [{default}]."
 
@@ -511,6 +510,12 @@ msgstr "Ongeldige hostconfiguratie [{host}], standaard [{default}]."
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ongeldige poort [{port}], standaard [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Ongeldige waarde [{value}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -3794,6 +3799,31 @@ msgstr "Markeren als verbeurd voor de komende ronde"
 msgid "Close the check-in"
 msgstr "Sluit de check-in"
 
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the players."
+msgstr "alle spelers"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Download de vCards van de geselecteerde spelers (VCF-formaat)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Download de informatie van de geselecteerde spelers (CSV-formaat)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Download de informatie van de geselecteerde spelers (ODS-formaat)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Download de informatie van de geselecteerde spelers (XLSX-formaat)."
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4292,6 +4322,16 @@ msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Edit the player's properties."
+msgstr "Bewerk de eigenschappen van de speler."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Remove the player from the event."
+msgstr "Verwijder de speler van het evenement."
+
+#: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Check-in is gesloten voor toernooi [%(tournament_uniq_id)s]."
@@ -4355,16 +4395,6 @@ msgstr "Onbekend FFE-licentietype [%(ffe_licence)s]."
 #, ai_translation
 msgid "Change the player's tournament."
 msgstr "Wijzig het toernooi van de speler."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Edit the player's properties."
-msgstr "Bewerk de eigenschappen van de speler."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Remove the player from the event."
-msgstr "Verwijder de speler van het evenement."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -5835,11 +5865,13 @@ msgstr "vs"
 #~ msgid "Change the number of columns."
 #~ msgstr "Verander het aantal kolommen."
 
+# Error: tokens differ between [ChessEvent connection [%(chessevent_uniq_id)s]
+# is used.] and [ChessEvent-verbinding niet gedefinieerd.]
 #~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
 #~ msgstr "ChessEvent-verbinding [%(chessevent_uniq_id)s] wordt gebruikt."
 
 #~ msgid "No ChessEvent connection is used."
-#~ msgstr "Er wordt geen ChessEvent-verbinding gebruikt."
+#~ msgstr "ChessEvent-verbinding niet gedefinieerd."
 
 #~ msgid "Messages ({num})"
 #~ msgstr "Berichten ({num})"

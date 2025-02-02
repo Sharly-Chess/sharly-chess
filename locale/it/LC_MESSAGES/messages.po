@@ -287,13 +287,13 @@ msgid "- Version {version}: no events"
 msgstr "- Versione {version}: nessun evento"
 
 #: src/common/engine.py
-#, ai_translation
-msgid "No event found in previously installed versions."
+#, ai_translation, fuzzy
+msgid "No events found in previously installed versions."
 msgstr "Nessun evento trovato nelle versioni precedentemente installate."
 
 #: src/common/engine.py
-#, ai_translation
-msgid "No previously installed version found."
+#, ai_translation, fuzzy
+msgid "No previously installed versions found."
 msgstr "Nessuna versione precedentemente installata trovata."
 
 #: src/common/engine.py
@@ -468,14 +468,8 @@ msgstr "La nuova versione [{version}] è stata installata in [{dir}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Opzione non impostata, per impostazione predefinita [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Valore non valido [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "L'opzione è obsoleta, imposta invece la variabile d'ambiente [{var}=1]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -504,6 +498,11 @@ msgstr "Livello di registro non valido [{level}], per impostazione predefinita [
 
 #: src/common/papi_web_config.py
 #, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Opzione non impostata, per impostazione predefinita [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Configurazione dell'host non valida [{host}], per impostazione predefinita [{default}]."
 
@@ -511,6 +510,12 @@ msgstr "Configurazione dell'host non valida [{host}], per impostazione predefini
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Porta non valida [{port}], per impostazione predefinita [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Valore non valido [{value}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -3806,6 +3811,31 @@ msgstr "Segna come incamerato per il prossimo round"
 msgid "Close the check-in"
 msgstr "Chiudere il check-in"
 
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the players."
+msgstr "tutti i giocatori"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Scarica le vCard dei giocatori selezionati (formato VCF)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Scarica le informazioni dei giocatori selezionati (formato CSV)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Scarica le informazioni dei giocatori selezionati (formato ODS)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Scarica le informazioni dei giocatori selezionati (formato XLSX)."
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4304,6 +4334,16 @@ msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Edit the player's properties."
+msgstr "Modificare le proprietà del giocatore."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Remove the player from the event."
+msgstr "Rimuovere il giocatore dall'evento."
+
+#: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Il check-in è chiuso per il torneo [%(tournament_uniq_id)s]."
@@ -4367,16 +4407,6 @@ msgstr "Tipo di licenza FFE sconosciuto [%(ffe_licence)s]."
 #, ai_translation
 msgid "Change the player's tournament."
 msgstr "Cambia il torneo del giocatore."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Edit the player's properties."
-msgstr "Modificare le proprietà del giocatore."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Remove the player from the event."
-msgstr "Rimuovere il giocatore dall'evento."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -5851,11 +5881,13 @@ msgstr "vs"
 #~ msgid "Change the number of columns."
 #~ msgstr "Cambia il numero di colonne."
 
+# Error: tokens differ between [ChessEvent connection [%(chessevent_uniq_id)s]
+# is used.] and [Connessione a scacchiEvent non definita.]
 #~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
 #~ msgstr "Si utilizza la connessione a scacchi [%(chessevent_uniq_id)s]."
 
 #~ msgid "No ChessEvent connection is used."
-#~ msgstr "Non viene utilizzata alcuna connessione a ChessEvent."
+#~ msgstr "Connessione a scacchiEvent non definita."
 
 #~ msgid "Messages ({num})"
 #~ msgstr "Messaggi ({num})"

@@ -2112,22 +2112,6 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-msgid "Visibility:"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-msgid "Public event"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Only arbiters can see private events."
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_modal.html
@@ -3567,6 +3551,14 @@ msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
+msgid "Edit the player's properties."
+msgstr ""
+
+#: src/web/templates/admin/players/tab.html
+msgid "Remove the player from the event."
+msgstr ""
+
+#: src/web/templates/admin/players/tab.html
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr ""
@@ -3623,14 +3615,6 @@ msgstr ""
 
 #: src/web/templates/admin/players/tab.html
 msgid "Change the player's tournament."
-msgstr ""
-
-#: src/web/templates/admin/players/tab.html
-msgid "Edit the player's properties."
-msgstr ""
-
-#: src/web/templates/admin/players/tab.html
-msgid "Remove the player from the event."
 msgstr ""
 
 #: src/web/templates/admin/players/tab.html
@@ -4486,10 +4470,6 @@ msgid "Initial time (optional):"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Initial time (optional):"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
 #, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr ""
@@ -4778,4 +4758,10 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
+
+#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
+#~ msgstr ""
+
+#~ msgid "No ChessEvent connection is used."
+#~ msgstr ""
 

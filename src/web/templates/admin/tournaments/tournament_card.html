@@ -85,23 +85,6 @@
                     <i class="bi-question"></i>
                 {% endif %}
             </span>
-            <span
-                class="me-2 text-nowrap"
-                {{ tooltip_attributes(
-                    'info',
-                    _('ChessEvent connection [%(chessevent_uniq_id)s] is used.', chessevent_uniq_id=tournament.chessevent.uniq_id)
-                    if tournament.chessevent else
-                    _('No ChessEvent connection is used.'),
-                    'top') }}
-            >
-                <i class="
-                    {% if tournament.chessevent %}
-                        bi-cloud-download-fill
-                    {% else %}
-                        bi-cloud-download text-secondary
-                    {% endif %}"
-                ></i>
-            </span>
             {% if not tournament.record_illegal_moves %}
                 {% set text=_('Illegal moves are not recorded.') %}
             {% else %}

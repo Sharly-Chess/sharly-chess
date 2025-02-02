@@ -2145,22 +2145,6 @@ msgid "ID (unique):"
 msgstr "Identifiant (unique) :"
 
 #: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-msgid "Visibility:"
-msgstr "Visibilité :"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-msgid "Public event"
-msgstr "Évènement public"
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "Only arbiters can see private events."
-msgstr "Seuls les arbitres peuvent voir les évènements privés."
-
-#: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: world-championship"
 msgstr "Exemple : championnat-du-monde"
 
@@ -3567,6 +3551,14 @@ msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Payé"
 
 #: src/web/templates/admin/players/tab.html
+msgid "Edit the player's properties."
+msgstr "Éditer les propriétés du·de la joueur·euse."
+
+#: src/web/templates/admin/players/tab.html
+msgid "Remove the player from the event."
+msgstr "Supprimer le·la joueur·euse de l'évènement."
+
+#: src/web/templates/admin/players/tab.html
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Le pointage est fermé pour le tournoi [%(tournament_uniq_id)s]."
@@ -3624,14 +3616,6 @@ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 #: src/web/templates/admin/players/tab.html
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
-
-#: src/web/templates/admin/players/tab.html
-msgid "Edit the player's properties."
-msgstr "Éditer les propriétés du·de la joueur·euse."
-
-#: src/web/templates/admin/players/tab.html
-msgid "Remove the player from the event."
-msgstr "Supprimer le·la joueur·euse de l'évènement."
 
 #: src/web/templates/admin/players/tab.html
 msgid "No players."

@@ -1067,6 +1067,10 @@ msgstr "FFE-Lizenz A (Wettbewerb)"
 # Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
 # DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
@@ -1083,6 +1087,10 @@ msgstr ""
 
 # Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
 # is much too long compared to initial [U12]
 #: src/data/util.py
@@ -1091,6 +1099,10 @@ msgid "U12"
 msgstr ""
 
 # Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
 # is much too long compared to initial [U14]
@@ -2670,25 +2682,6 @@ msgid "ID (unique):"
 msgstr "ID (einzigartig):"
 
 #: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
-msgid "Visibility:"
-msgstr "Sichtbarkeit:"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Public event"
-msgstr "Öffentliche Veranstaltung"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Only arbiters can see private events."
-msgstr "Nur Schiedsrichter können private Veranstaltungen sehen."
-
-#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: world-championship"
 msgstr "Z.B.: Weltmeisterschaft"
@@ -4141,21 +4134,6 @@ msgstr "Die FIDE-ID des Spielers (ändern Sie sich nicht)."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr "Die Brettnummer wird dem Spieler immer zugewiesen (für Behinderte)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation, fuzzy
-msgid "Ratings"
-msgstr "Maßnahmen:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation, fuzzy
-msgid "FIDE"
-msgstr "FIDE-ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "FIDE Title:"
 msgstr "FIDE-Titel:"
 
@@ -4185,14 +4163,14 @@ msgid "The player's licence number."
 msgstr "Die Lizenznummer des Spielers."
 
 #: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "Die Uniq-ID des Spielers für den französischen Verband (ändern Sie sich nicht)."
+#, ai_translation, fuzzy
+msgid "Licence:"
+msgstr "Lizenznummer:"
 
 #: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "League:"
-msgstr "Liga:"
+#, ai_translation, fuzzy
+msgid "The player's licence."
+msgstr "Die Lizenznummer des Spielers."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4385,6 +4363,16 @@ msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Edit the player's properties."
+msgstr "Bearbeiten Sie die Eigenschaften des Spielers."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Remove the player from the event."
+msgstr "Entfernen Sie den Spieler aus dem Event."
+
+#: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Der Check-in ist für Turniere geschlossen [%(tournament_uniq_id)s]."
@@ -4448,16 +4436,6 @@ msgstr "Unbekannter FFE-Lizenztyp [%(ffe_licence)s]."
 #, ai_translation
 msgid "Change the player's tournament."
 msgstr "Ändern Sie das Turnier des Spielers."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Edit the player's properties."
-msgstr "Bearbeiten Sie die Eigenschaften des Spielers."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Remove the player from the event."
-msgstr "Entfernen Sie den Spieler aus dem Event."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -5825,4 +5803,12 @@ msgstr "Vorstand #%(board_number)d mit %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs."
+
+# Error: tokens differ between [ChessEvent connection [%(chessevent_uniq_id)s]
+# is used.] and [ChessEvent-Verbindung nicht definiert.]
+#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
+#~ msgstr "ChessEvent Verbindung [%(chessevent_uniq_id)s] wird verwendet."
+
+#~ msgid "No ChessEvent connection is used."
+#~ msgstr "ChessEvent-Verbindung nicht definiert."
 

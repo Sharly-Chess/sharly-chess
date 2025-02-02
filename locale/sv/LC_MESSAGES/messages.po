@@ -287,13 +287,13 @@ msgid "- Version {version}: no events"
 msgstr "- Version {version}: inga händelser"
 
 #: src/common/engine.py
-#, ai_translation
-msgid "No event found in previously installed versions."
+#, ai_translation, fuzzy
+msgid "No events found in previously installed versions."
 msgstr "Ingen händelse hittades i tidigare installerade versioner."
 
 #: src/common/engine.py
-#, ai_translation
-msgid "No previously installed version found."
+#, ai_translation, fuzzy
+msgid "No previously installed versions found."
 msgstr "Ingen tidigare installerad version hittades."
 
 #: src/common/engine.py
@@ -468,14 +468,8 @@ msgstr "Ny version [{version}] har installerats i [{dir}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Alternativet är inte fastställt, som standard [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Ogiltigt värde [{value}]."
+msgid "Option is obsolete, set environment variable [{var}=1] instead."
+msgstr "Alternativet är föråldrat, ställ in miljövariabeln [{var}=1] istället."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -504,6 +498,11 @@ msgstr "Ogiltig loggnivå [{level}], som standard [{default}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
+msgid "Option not set, by default [{default}]."
+msgstr "Alternativet är inte fastställt, som standard [{default}]."
+
+#: src/common/papi_web_config.py
+#, ai_translation
 msgid "Invalid host configuration [{host}], by default [{default}]."
 msgstr "Ogiltig värdkonfiguration [{host}], som standard [{default}]."
 
@@ -511,6 +510,12 @@ msgstr "Ogiltig värdkonfiguration [{host}], som standard [{default}]."
 #, ai_translation
 msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ogiltig port [{port}], som standard [{default}]."
+
+#: src/common/papi_web_config.py
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Ogiltigt värde [{value}]."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -3825,6 +3830,31 @@ msgstr "Markera som förverkad för den kommande omgången"
 msgid "Close the check-in"
 msgstr "Stäng incheckningen"
 
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation, fuzzy
+msgid "Download the players."
+msgstr "alla spelare"
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the vCards of the selected players (VCF format)."
+msgstr "Ladda ner vCards för de valda spelarna (VCF-format)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Ladda ner informationen för de utvalda spelarna (CSV-format)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Ladda ner informationen om de utvalda spelarna (ODS-format)."
+
+#: src/web/templates/admin/players/download_players.html
+#, ai_translation
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Ladda ner informationen för de valda spelarna (XLSX-format)."
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4323,6 +4353,16 @@ msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Edit the player's properties."
+msgstr "Redigera spelarens egenskaper."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Remove the player from the event."
+msgstr "Ta bort spelaren från händelsen."
+
+#: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Incheckningen är stängd för turnering [%(tournament_uniq_id)s]."
@@ -4386,16 +4426,6 @@ msgstr "Okänd typ av FFE-licens [%(ffe_licence)s]."
 #, ai_translation
 msgid "Change the player's tournament."
 msgstr "Ändra spelarens turnering."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Edit the player's properties."
-msgstr "Redigera spelarens egenskaper."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Remove the player from the event."
-msgstr "Ta bort spelaren från händelsen."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -5874,11 +5904,13 @@ msgstr "vs"
 #~ msgid "Change the number of columns."
 #~ msgstr "Ändra antal kolumner."
 
+# Error: tokens differ between [ChessEvent connection [%(chessevent_uniq_id)s]
+# is used.] and [ChessEvent-anslutningen är inte definierad.]
 #~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
 #~ msgstr "ChessEvent-anslutning [%(chessevent_uniq_id)s] används."
 
 #~ msgid "No ChessEvent connection is used."
-#~ msgstr "Ingen ChessEvent-anslutning används."
+#~ msgstr "ChessEvent-anslutningen är inte definierad."
 
 #~ msgid "Messages ({num})"
 #~ msgstr "Meddelanden ({num})"
