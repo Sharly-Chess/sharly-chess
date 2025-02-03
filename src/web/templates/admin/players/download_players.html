@@ -5,7 +5,7 @@
         hx-indicator="#please-wait"
 >
     <span class="dropdown-center" >
-        <button class="btn btn-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+        <button class="btn btn-outline-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
             <span
                 {{ tooltip_attributes('info', _('Download the players.'), 'top') }}
             >
@@ -37,7 +37,7 @@
                                 >
                                     <button type="submit" name="download_format" value="{{ format }}" class="btn py-0" data-bs-dismiss="modal" >
                                         <i class="bi-download"></i>
-                                        CSV
+                                        {{ format | upper }}
                                     </button>
                                 </span>
                             {% endfor %}
