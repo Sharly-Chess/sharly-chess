@@ -263,7 +263,8 @@ class FamilyAdminController(AbstractEventAdminController):
                             uniq_id = web_context.admin_family.stored_family.uniq_id
                             name = web_context.admin_family.stored_family.name
                         case 'create':
-                            uniq_id = web_context.admin_event.get_unused_family_uniq_id(f'{family_type}-family')
+                            uniq_id = web_context.admin_event.get_unused_family_uniq_id(
+                                family_type=ScreenType.from_str(family_type))
                             basic_name: str
                             match family_type:
                                 case 'input':
@@ -274,12 +275,14 @@ class FamilyAdminController(AbstractEventAdminController):
                                     basic_name = _('Pairings by player')
                                 case _:
                                     raise ValueError(f'family_type=[{family_type}]')
-                            name = web_context.admin_event.get_unused_family_name(basic_name)
+                            name = web_context.admin_event.get_unused_family_name(
+                                family_type=ScreenType.from_str(family_type))
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
-                                web_context.admin_family.stored_family.uniq_id)
+                                base_uniq_id=web_context.admin_family.stored_family.uniq_id)
                             name = web_context.admin_event.get_unused_family_name(
-                                web_context.admin_family.stored_family.name)
+                                family_type=ScreenType.from_str(web_context.admin_family.type),
+                                base_name=web_context.admin_family.stored_family.name)
                         case 'delete':
                             pass
                         case _:

@@ -192,8 +192,8 @@ class TournamentAdminController(AbstractEventAdminController):
                             uniq_id = admin_tournament.stored_tournament.uniq_id
                             name = admin_tournament.stored_tournament.name
                         case 'create':
-                            uniq_id = admin_event.get_unused_tournament_uniq_id(_('tournament'))
-                            name = admin_event.get_unused_tournament_name(_('New tournament'))
+                            uniq_id = admin_event.get_unused_tournament_uniq_id()
+                            name = admin_event.get_unused_tournament_name()
                         case 'clone':
                             uniq_id = admin_event.get_unused_tournament_uniq_id(
                                 admin_tournament.stored_tournament.uniq_id)
@@ -378,7 +378,7 @@ class TournamentAdminController(AbstractEventAdminController):
                             stored_screen: StoredScreen = event_database.add_stored_screen(StoredScreen(
                                 id=None,
                                 uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
-                                    f'{stored_tournament.uniq_id}-{type_}'),
+                                    base_uniq_id=f'{stored_tournament.uniq_id}-{type_}'),
                                 type=type_,
                                 public=True,
                                 name=name,

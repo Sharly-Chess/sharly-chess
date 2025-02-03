@@ -1151,6 +1151,10 @@ class ScreenType(StrEnum):
             case _:
                 raise ValueError(f'Invalid screen type: {self}')
 
+    @property
+    def default_screen_name(self) -> str:
+        return str(self)
+
     @classmethod
     def from_str(cls, value: str) -> Self:
         match value:

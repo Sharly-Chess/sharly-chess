@@ -465,10 +465,13 @@ class Event:
             for timer in self.timers_by_id.values()
         }
 
-    def get_unused_timer_uniq_id(self, base_uniq_id: str) -> str:
+    def get_unused_timer_uniq_id(
+            self,
+            base_uniq_id: str | None = None,
+    ) -> str:
         """ Returns the first unused timer uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
-        return self._get_unused_item_uniq_id(base_uniq_id, self.timers_by_uniq_id)
+        return self._get_unused_item_uniq_id(base_uniq_id or _('timer'), self.timers_by_uniq_id)
 
     @cached_property
     def tournaments_by_id(self) -> dict[int, Tournament]:
@@ -514,16 +517,23 @@ class Event:
             if not tournament.finished and tournament.file_exists
         ]
 
-    def get_unused_tournament_uniq_id(self, base_uniq_id: str) -> str:
+    def get_unused_tournament_uniq_id(
+            self,
+            base_uniq_id: str | None = None,
+    ) -> str:
         """ Returns the first unused tournament uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
-        return self._get_unused_item_uniq_id(base_uniq_id, self.tournaments_by_uniq_id)
+        return self._get_unused_item_uniq_id(base_uniq_id or _('tournament'), self.tournaments_by_uniq_id)
 
-    def get_unused_tournament_name(self, base_name: str) -> str:
+    def get_unused_tournament_name(
+            self,
+            base_name: str | None = None,
+    ) -> str:
         """ Returns the first unused tournament name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)... """
         return self._get_unused_item_name(
-            base_name, [tournament.name for tournament in self.tournaments_by_id.values()])
+            base_name or _('New tournament'),
+            [tournament.name for tournament in self.tournaments_by_id.values()])
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:
@@ -544,15 +554,30 @@ class Event:
             for screen in self.basic_screens_by_id.values()
         }
 
-    def get_unused_screen_uniq_id(self, base_uniq_id: str) -> str:
+    def get_unused_screen_uniq_id(
+            self,
+            screen_type: ScreenType | None = None,
+            base_uniq_id: str | None = None,
+    ) -> str:
         """ Returns the first unused screen uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
-        return self._get_unused_item_uniq_id(base_uniq_id, self.basic_screens_by_uniq_id)
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
+        screen_type is used when the given ID is empty to set an ID that corresponds to the screen type."""
+        assert base_uniq_id is not None or screen_type is not None
+        return self._get_unused_item_uniq_id(
+            base_uniq_id or _('{screen_type}-screen').format(screen_type=screen_type.to_str()),
+            self.basic_screens_by_uniq_id)
 
-    def get_unused_screen_name(self, base_name: str) -> str:
+    def get_unused_screen_name(
+            self,
+            screen_type: ScreenType,
+            base_name: str | None = None,
+    ) -> str:
         """ Returns the first unused screen name looking like base_name:
-        base_name, or base_name (2), or base_name (n+1)... """
-        return self._get_unused_item_name(base_name, [screen.name for screen in self.basic_screens_by_id.values()])
+        base_name, or base_name (2), or base_name (n+1)...
+        screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
+        return self._get_unused_item_name(
+            base_name or screen_type.default_screen_name,
+            [screen.name for screen in self.basic_screens_by_id.values()])
 
     @cached_property
     def families_by_id(self) -> dict[int, Family]:
@@ -573,15 +598,29 @@ class Event:
             for family in self.families_by_id.values()
         }
 
-    def get_unused_family_uniq_id(self, base_uniq_id: str) -> str:
+    def get_unused_family_uniq_id(
+            self,
+            family_type: ScreenType | None = None,
+            base_uniq_id: str | None = None,
+    ) -> str:
         """ Returns the first unused family uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
-        return self._get_unused_item_uniq_id(base_uniq_id, self.families_by_uniq_id)
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
+        family_type is used when the given ID is empty to set an ID that corresponds to the family type."""
+        return self._get_unused_item_uniq_id(
+            base_uniq_id or _('{family_type}-family').format(family_type=family_type.to_str()),
+            self.families_by_uniq_id)
 
-    def get_unused_family_name(self, base_name: str) -> str:
+    def get_unused_family_name(
+            self,
+            family_type: ScreenType,
+            base_name: str | None = None,
+    ) -> str:
         """ Returns the first unused family name looking like base_name:
-        base_name, or base_name (2), or base_name (n+1)... """
-        return self._get_unused_item_name(base_name, [screen.name for screen in self.families_by_id.values()])
+        base_name, or base_name (2), or base_name (n+1)...
+        family_type is used when the given name is empty to set a name that corresponds to the family type."""
+        return self._get_unused_item_name(
+            base_name or family_type.default_screen_name,
+            [screen.name for screen in self.families_by_id.values()])
 
     @cached_property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
@@ -616,10 +655,15 @@ class Event:
             for rotator in self.rotators_by_id.values()
         }
 
-    def get_unused_rotator_uniq_id(self, base_uniq_id: str) -> str:
+    def get_unused_rotator_uniq_id(
+            self,
+            base_uniq_id: str | None = None
+    ) -> str:
         """ Returns the first unused rotator uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
-        return self._get_unused_item_uniq_id(base_uniq_id, self.rotators_by_uniq_id)
+        return self._get_unused_item_uniq_id(
+            base_uniq_id or _('rotator'),
+            self.rotators_by_uniq_id)
 
     def _add_message(
             self, level: int, text: str, tournament: Tournament | None = None, family: Family | None = None,
