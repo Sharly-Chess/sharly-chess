@@ -286,14 +286,14 @@ msgid "- Version {version}: no events"
 msgstr "- Versión {version}: no hay eventos"
 
 #: src/common/engine.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No events found in previously installed versions."
-msgstr "No se ha encontrado ningún evento en versiones previamente instaladas."
+msgstr "No se han encontrado eventos en versiones previamente instaladas."
 
 #: src/common/engine.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No previously installed versions found."
-msgstr "No se ha encontrado ninguna versión instalada previamente."
+msgstr "No se han encontrado versiones instaladas previamente."
 
 #: src/common/engine.py
 #, ai_translation
@@ -602,9 +602,9 @@ msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr "Rotador [{rotator_uniq_id}]: {text}"
 
 #: src/data/event.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded."
-msgstr "Se han encontrado errores en temporizadores; no se cargarán torneos, pantallas, familias y rotadores."
+msgstr "Se han encontrado errores en el evento; no se cargarán temporizadores, torneos, pantallas, familias y rotadores."
 
 #: src/data/event.py
 #, ai_translation
@@ -971,9 +971,9 @@ msgid "ChessEvent connection not defined."
 msgstr "Conexión ChessEvent no definida."
 
 #: src/data/tournament.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "ChessEvent event not set."
-msgstr "ChessEvent nombre del torneo no establecido."
+msgstr "El evento ChessEvent no se establece."
 
 #: src/data/tournament.py
 #, ai_translation
@@ -1755,7 +1755,6 @@ msgstr "No es posible especificar el número de piezas y el número de elementos
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
-#: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
 msgid "pairings by board"
 msgstr "emparejamientos a bordo"
@@ -1918,9 +1917,9 @@ msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Retraso no válido [{delay}] (se espera un número entero positivo)."
 
 #: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Please enter a password for the ChessEvent connection."
-msgstr "Por favor, introduzca el ID de la conexión ChessEvent."
+msgstr "Introduzca una contraseña para la conexión ChessEvent."
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -2616,6 +2615,17 @@ msgid "Only arbiters can see private events."
 msgstr "Sólo los árbitros pueden ver eventos privados."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Federation:"
+msgstr "Federación:"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "The federation that organizes the event."
+msgstr "La federación que organiza el evento."
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2634,17 +2644,6 @@ msgstr "Por ejemplo: campeona mundial"
 #, ai_translation
 msgid "The Unique ID, used for data storage and export."
 msgstr "El identificador único, utilizado para el almacenamiento y la exportación de datos."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Federation:"
-msgstr "Federación:"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
-msgid "The federation that organizes the event."
-msgstr "La fecha y hora finales del evento."
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
@@ -2721,15 +2720,15 @@ msgid "E.g.: %(string)s"
 msgstr "Por ejemplo: %(string)s"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr "el ID utilizado para conectarse a la plataforma ChessEvent."
+msgstr "El ID utilizado para conectarse a la plataforma ChessEvent (por defecto, puede ser anulado por los torneos)."
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "ChessEvent Password:"
-msgstr "Chessevent ID:"
+msgstr "Contraseña ChessEvent:"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -2738,9 +2737,9 @@ msgid "E.g.: my_password"
 msgstr "Por ejemplo: my_password"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr "La contraseña utilizada para conectarse a la plataforma ChessEvent."
+msgstr "La contraseña utilizada para conectarse a la plataforma ChessEvent (por defecto, puede ser anulada por los torneos)."
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -2749,9 +2748,9 @@ msgid "ChessEvent event:"
 msgstr "Evento ChessEvent:"
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr "El nombre del evento en la contraseña ChessEvent."
+msgstr "El nombre del evento en la plataforma ChessEvent (por defecto, puede ser anulado por los torneos)."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -2945,14 +2944,14 @@ msgid "Unique ID"
 msgstr "ID único"
 
 #: src/web/templates/admin/event/tab.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Date"
-msgstr "Fecha:"
+msgstr "Fecha"
 
 #: src/web/templates/admin/event/tab.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Federation"
-msgstr "Federación:"
+msgstr "Federación"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -2978,23 +2977,23 @@ msgid "(by default)"
 msgstr "(por defecto)"
 
 #: src/web/templates/admin/event/tab.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "ChessEvent"
-msgstr "Chessevent ID:"
+msgstr "ChessEvent"
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/index/event_card.html
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No ChessEvent identifier defined"
-msgstr "Conexión ChessEvent no definida."
+msgstr "No se ha definido ningún identificador ChessEvent"
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/index/event_card.html
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No ChessEvent event defined"
-msgstr "Evento ChessEvent:"
+msgstr "No se ha definido ningún evento ChessEvent"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -3616,14 +3615,12 @@ msgid "Tournaments: %(num)d"
 msgstr "Torneos: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No tournaments"
-msgstr "No hay torneos."
+msgstr "Sin torneos"
 
-# Error: tokens differ between [Chessevent: %(chessevent_user_id)s /
-# %(chessevent_event_id)s] and [Chessevent ID: %(chessevent_user_id)s]
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
 msgstr "Ajedrez: %(chessevent_user_id)s / %(chessevent_event_id)s"
 
@@ -3633,9 +3630,9 @@ msgid "Timers: %(num)d"
 msgstr "Temporizadores: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No timers"
-msgstr "Sin temporizadores."
+msgstr "Sin temporizadores"
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
@@ -3643,14 +3640,14 @@ msgid "Screens: %(num)d"
 msgstr "Pantallas: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "Screen families: %(num)d"
-msgstr "Familias: %(num)d"
+msgstr "Familias de pantalla: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No screen families"
-msgstr "No hay familias de pantalla."
+msgstr "Sin familias de pantalla"
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
@@ -3658,9 +3655,9 @@ msgid "Rotators: %(num)d"
 msgstr "Rotadores: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No rotators"
-msgstr "No hay rotadores."
+msgstr "Sin rotadores"
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
@@ -3668,9 +3665,9 @@ msgid "Errors: %(num)d"
 msgstr "Errores: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No errors"
-msgstr "No hay rotadores."
+msgstr "Sin errores"
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
@@ -3678,18 +3675,17 @@ msgid "Warnings: %(num)d"
 msgstr "Avisos: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No warnings"
-msgstr "Sin grabación"
+msgstr "Sin advertencias"
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
 msgid "Informations: %(num)d"
 msgstr "Información: %(num)d"
 
-# Error: tokens differ between [No informations] and [Información: %(num)d]
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No informations"
 msgstr "Sin información"
 
@@ -3781,9 +3777,9 @@ msgid "Close the check-in"
 msgstr "Cierre el check-in"
 
 #: src/web/templates/admin/players/download_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Download the players."
-msgstr "todos los jugadores"
+msgstr "Descarga los jugadores."
 
 #: src/web/templates/admin/players/download_players.html
 #, ai_translation
@@ -4057,14 +4053,14 @@ msgid "The board number the player will always be assigned to (use it for disabl
 msgstr "El número de tablero al que el jugador siempre será asignado (úselo para personas con discapacidad)."
 
 #: src/web/templates/admin/players/player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Ratings"
-msgstr "Acciones:"
+msgstr "Calificaciones"
 
 #: src/web/templates/admin/players/player_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "FIDE"
-msgstr "ID FIDE:"
+msgstr "FIDE"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4476,11 +4472,6 @@ msgstr "El identificador único, utilizado para hacer referencia al rotador."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
-msgid "Parameters"
-msgstr "Parámetros"
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-#, ai_translation
 msgid "Delay:"
 msgstr "Retraso:"
 
@@ -4502,33 +4493,13 @@ msgstr "Selección"
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
-msgid "results entry"
-msgstr "entrada de resultados"
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-#, ai_translation
-msgid "pairings by player"
-msgstr "emparejamientos por jugador"
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-#, ai_translation
-msgid "last results"
-msgstr "los últimos resultados"
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-#, ai_translation
-msgid "image"
-msgstr "imagen"
+msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
+msgstr "Las pantallas para rotar (las pantallas de entrada se enfatizan porque no deben aparecer en los rotadores)."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
 msgid "No screens."
 msgstr "No hay pantallas."
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-#, ai_translation
-msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
-msgstr "Las pantallas para rotar (las pantallas de entrada se enfatizan porque no deben aparecer en los rotadores)."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 #, ai_translation
@@ -5154,17 +5125,15 @@ msgstr "El archivo Papi para el torneo existe pero no se pudo leer (%(papi_file)
 msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr "El archivo Papi para el torneo fue leído con éxito (%(papi_file)s)."
 
-# Error: tokens differ between [FFE qualification: %(ffe_id)s] and [Número de
-# calificación FFE (opcional):]
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy, python-format
+#, ai_translation, python-format
 msgid "FFE qualification: %(ffe_id)s"
 msgstr "Calificación FFE: %(ffe_id)s"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No FFE qualification"
-msgstr "No hay licencia FFE"
+msgstr "Sin cualificación FFE"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
@@ -5172,9 +5141,9 @@ msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chesseve
 msgstr "Ajedrez: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "No ChessEvent tournament defined"
-msgstr "Nombre del torneo ChessEvent:"
+msgstr "Ningún torneo ChessEvent definido"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
@@ -5364,19 +5333,19 @@ msgid "The password used to connect to the ChessEvent platform (by default the p
 msgstr "La contraseña utilizada para conectarse a la plataforma ChessEvent (por defecto la contraseña definida para el evento Papi-web del torneo)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
-msgstr "El nombre del evento en la plataforma ChessEvent (por defecto el ChessEvent definido para el evento Papi-web del torneo)."
+msgstr "El ID del evento en la plataforma ChessEvent (por defecto el ID del evento ChessEvent definido para el evento Papi-web del torneo)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "ChessEvent tournament:"
-msgstr "Nombre del torneo ChessEvent:"
+msgstr "Torneo ChessEvent:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "E.g.: Tournoi A"
-msgstr "Por ejemplo: torneo principal"
+msgstr "Por ejemplo: Tournoi A"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
@@ -5389,9 +5358,9 @@ msgid "Time control"
 msgstr "Control del tiempo"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Initial time (optional):"
-msgstr "Incremento (opcional):"
+msgstr "Tiempo inicial (opcional):"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation, python-format
@@ -5743,129 +5712,4 @@ msgstr ""
 #, ai_translation
 msgid "vs"
 msgstr "vs."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
-#~ msgstr "Conexión ChessEvent [{chessevent_uniq_id}]: {text}"
-
-#~ msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Se han encontrado errores en el evento; no se cargarán las conexiones ChessEvent, temporizadores, torneos, pantallas, familias y rotadores."
-
-#~ msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
-#~ msgstr "Se han encontrado errores en las conexiones ChessEvent; no se cargarán temporizadores, torneos, pantallas, familias y rotadores."
-
-#~ msgid "ChessEvent connection [{uniq_id}] already exists."
-#~ msgstr "ChessEvent connection [{uniq_id}] ya existe."
-
-#~ msgid "Please enter the ID used to connect to the ChessEvent platform."
-#~ msgstr "Introduzca el ID utilizado para conectarse a la plataforma ChessEvent."
-
-#~ msgid "Please enter the password used to connect to the ChessEvent platform."
-#~ msgstr "Introduzca la contraseña utilizada para conectarse a la plataforma ChessEvent."
-
-#~ msgid "Please enter the ID of the event on the ChessEvent platform."
-#~ msgstr "Por favor, introduzca el ID del evento en la plataforma ChessEvent."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
-#~ msgstr "Conexión ChessEvent [{chessevent_uniq_id}] ha sido creado."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
-#~ msgstr "Conexión ChessEvent [{chessevent_uniq_id}] ha sido actualizado."
-
-#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
-#~ msgstr "Conexión ChessEvent [{chessevent_uniq_id}] ha sido eliminado."
-
-#~ msgid "ChessEvent ({num})"
-#~ msgstr "ChessEvent ({num})"
-
-#~ msgid "No ChessEvent connection"
-#~ msgstr "Sin conexión ChessEvent"
-
-#~ msgid "ChessEvent password: %(chessevent_password)s"
-#~ msgstr "ChessEvent password: %(chessevent_password)s"
-
-#~ msgid "ChessEvent event: %(chessevent_event)s"
-#~ msgstr "Evento de ChessEvent: %(chessevent_event)s"
-
-#~ msgid "Edit the properties of the ChessEvent connection."
-#~ msgstr "Edite las propiedades de la conexión ChessEvent."
-
-#~ msgid "Clone the ChessEvent connection."
-#~ msgstr "Clonar la conexión ChessEvent."
-
-#~ msgid "Delete the ChessEvent connection."
-#~ msgstr "Borrar la conexión ChessEvent."
-
-#~ msgid "ChessEvent connection creation"
-#~ msgstr "Creación de conexión ChessEvent"
-
-#~ msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
-#~ msgstr "Edición de la conexión ChessEvent [%(chessevent_uniq_id)s]"
-
-#~ msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
-#~ msgstr "Supresión de la conexión ChessEvent [%(chessevent_uniq_id)s]"
-
-#~ msgid "Warning: the deletion of a ChessEvent connection is permanent!"
-#~ msgstr "Advertencia: ¡la eliminación de una conexión ChessEvent es permanente!"
-
-#~ msgid "The following tournaments will not be connected to ChessEvent anymore:"
-#~ msgstr "Los siguientes torneos ya no estarán conectados a ChessEvent:"
-
-#~ msgid "E.g.: chessevent"
-#~ msgstr "Por ejemplo: evento de ajedrez"
-
-#~ msgid "The Unique ID, used to reference the ChessEvent connection."
-#~ msgstr "El ID Único, utilizado para hacer referencia a la conexión ChessEvent."
-
-#~ msgid "Password:"
-#~ msgstr "Contraseña:"
-
-#~ msgid "Add a ChessEvent connection to the event."
-#~ msgstr "Añade una conexión ChessEvent al evento."
-
-#~ msgid "Create a ChessEvent connection"
-#~ msgstr "Crear una conexión ChessEvent"
-
-#~ msgid "No ChessEvent connections."
-#~ msgstr "Sin conexiones ChessEvent."
-
-#~ msgid "Start"
-#~ msgstr "Comienzo"
-
-#~ msgid "End"
-#~ msgstr "Fin"
-
-#~ msgid "ChessEvent connections: %(num)d"
-#~ msgstr "ChessEvent conexiones: %(num)d"
-
-#~ msgid "ChessEvent connection:"
-#~ msgstr "Conexión ChessEvent:"
-
-#~ msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
-#~ msgstr "La conexión ChessEvent permite la recuperación de registros desde la plataforma ChessEvent."
-
-#~ msgid "Change the number of columns."
-#~ msgstr "Cambiar el número de columnas."
-
-# Error: tokens differ between [ChessEvent connection [%(chessevent_uniq_id)s]
-# is used.] and [Conexión ChessEvent no definida.]
-#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
-#~ msgstr "ChessEvent connection [%(chessevent_uniq_id)s] se utiliza."
-
-#~ msgid "No ChessEvent connection is used."
-#~ msgstr "Conexión ChessEvent no definida."
-
-#~ msgid "Messages ({num})"
-#~ msgstr "Mensajes ({num})"
-
-#~ msgid "Level"
-#~ msgstr "Nivel"
-
-#~ msgid "Message"
-#~ msgstr "Mensaje"
-
-#~ msgid "No messages."
-#~ msgstr "Sin mensajes."
-
-#~ msgid "FIDE ratings, title and fédération"
-#~ msgstr "Clasificación, título y fédération de la FIDE"
 
