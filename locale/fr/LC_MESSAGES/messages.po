@@ -1433,7 +1433,6 @@ msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
-#: src/web/templates/admin/rotators/rotator_modal.html
 msgid "pairings by board"
 msgstr "appariements par échiquier"
 
@@ -2136,6 +2135,15 @@ msgid "Only arbiters can see private events."
 msgstr "Seuls les arbitres peuvent voir les évènements privés."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/players/player_modal.html
+msgid "Federation:"
+msgstr "Fédération :"
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "The federation that organizes the event."
+msgstr "La fédération qui organise l'évènement."
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2151,15 +2159,6 @@ msgstr "Exemple : championnat-du-monde"
 #: src/web/templates/admin/event/event_modal.html
 msgid "The Unique ID, used for data storage and export."
 msgstr "L'identifiant unique, utilisé pour le stockage des données et les fichiers d'export."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/players/player_modal.html
-msgid "Federation:"
-msgstr "Fédération :"
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "The federation that organizes the event."
-msgstr "La fédération qui organise l'évènement."
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
@@ -3701,10 +3700,6 @@ msgid "The Unique ID, used to reference the rotator."
 msgstr "L'identifiant unique, utilisé pour référencer l'écran rotatif'."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-msgid "Parameters"
-msgstr "Paramètres"
-
-#: src/web/templates/admin/rotators/rotator_modal.html
 msgid "Delay:"
 msgstr "Délai :"
 
@@ -3724,28 +3719,12 @@ msgid "Selection"
 msgstr "Sélection"
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-msgid "results entry"
-msgstr "Saisie des résultats"
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "pairings by player"
-msgstr "appariements par ordre alphabétique"
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "last results"
-msgstr "derniers résultats"
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "image"
-msgstr "image"
+msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
+msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent en italique car ils ne devraient normalement pas être inclus dans les écrans rotatifs)."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 msgid "No screens."
 msgstr "Aucun écran."
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
-msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent en italique car ils ne devraient normalement pas être inclus dans les écrans rotatifs)."
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
