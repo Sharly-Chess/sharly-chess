@@ -28,12 +28,6 @@ body {
 .cursor-pointer {
     cursor: pointer;
 }
-.w-49 {
-    width: 49%; !important;
-}
-.w-1 {
-    width: 1%; !important;
-}
 .papi-web-tooltip-info, .papi-web-tooltip-warning, .papi-web-tooltip-error {
   --bs-tooltip-bg: #d0d000;
   --bs-tooltip-color: black;
