@@ -1433,7 +1433,6 @@ msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
-#: src/web/templates/admin/rotators/rotator_modal.html
 msgid "pairings by board"
 msgstr ""
 
@@ -2136,6 +2135,15 @@ msgid "Only arbiters can see private events."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/players/player_modal.html
+msgid "Federation:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "The federation that organizes the event."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2150,15 +2158,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "The Unique ID, used for data storage and export."
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/players/player_modal.html
-msgid "Federation:"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "The federation that organizes the event."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -3701,10 +3700,6 @@ msgid "The Unique ID, used to reference the rotator."
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-msgid "Parameters"
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
 msgid "Delay:"
 msgstr ""
 
@@ -3724,27 +3719,11 @@ msgid "Selection"
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-msgid "results entry"
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "pairings by player"
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "last results"
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "image"
+msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 msgid "No screens."
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -4758,10 +4737,4 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
-
-#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
-#~ msgstr ""
-
-#~ msgid "No ChessEvent connection is used."
-#~ msgstr ""
 
