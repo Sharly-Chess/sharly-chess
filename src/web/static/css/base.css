@@ -244,6 +244,10 @@ body {
     --bs-dropdown-link-disabled-color: var(--bs-tertiary-color);
 }
 
+[data-bs-theme=dark] .dropdown-menu .dropdown-item.no-hover {
+    --bs-dropdown-link-hover-bg: var(--bs-dropdown-bg);
+}
+
 [data-bs-theme=dark] .papi-web-tooltip-info {
     --bs-tooltip-bg: #9d9e9e;
     --bs-tooltip-color: black;
