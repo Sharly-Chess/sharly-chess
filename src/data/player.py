@@ -5,7 +5,6 @@ from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
 from typing import TYPE_CHECKING, Self, Callable
-
 from trf import Player as TrfPlayer
 
 if TYPE_CHECKING:

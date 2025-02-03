@@ -1,11 +1,11 @@
 <form
-        class="d-inline-block"
-        action="{{ url_for('admin-download-event-players', event_uniq_id=admin_event.uniq_id) }}"
-        target="_blank"
-        hx-indicator="#please-wait"
+    class="d-inline-block"
+    action="{{ url_for('admin-download-event-players', event_uniq_id=admin_event.uniq_id) }}"
+    target="_blank"
+    hx-indicator="#please-wait"
 >
     <span class="dropdown-center" >
-        <button class="btn btn-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+        <button class="btn btn-outline-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
             <span
                 {{ tooltip_attributes('info', _('Download the players.'), 'top') }}
             >
@@ -17,7 +17,7 @@
             {% with name='player_ids' %}
                 {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
                 <input type="hidden" name="{{ name }}" value="0" />
-                <li class="dropdown-item title text-nowrap">
+                <li class="dropdown-item title text-nowrap no-hover">
                     <div class="row">
                         <div class="col text-start">
                             <input
@@ -31,13 +31,13 @@
                                 'csv': _('Download the information of the selected players (CSV format).'),
                                 'ods': _('Download the information of the selected players (ODS format).'),
                                 'xlsx': _('Download the information of the selected players (XLSX format).'),
-                            } %}
+                            }.items() %}
                                 <span
-                                        {{ tooltip_attributes('top', tooltip_text, 'top') }}
+                                    {{ tooltip_attributes('top', tooltip_text, 'top') }}
                                 >
                                     <button type="submit" name="download_format" value="{{ format }}" class="btn py-0" data-bs-dismiss="modal" >
                                         <i class="bi-download"></i>
-                                        CSV
+                                        {{ format | upper }}
                                     </button>
                                 </span>
                             {% endfor %}
@@ -46,7 +46,7 @@
                 </li>
                 <li class="dropdown-divider m-0"></li>
                 {% for player in admin_event.players_sorted_by_name %}
-                    <li class="dropdown-item text-nowrap">
+                    <li class="dropdown-item d-flex gap-1 align-items-center">
                         <input
                             type="checkbox"
                             id="{{ name }}-{{ loop.index }}"
@@ -56,13 +56,13 @@
                             class="{% if player.mail or player.phone %}{{ name }}{% endif %} {{ name }}_{{ column }}"
                         />
                         <label
-                                for="{{ name }}-{{ loop.index }}"
-                                class="form-label w-100 my-0 p-0 text-start {% if player.mail or player.phone %}btn{% else %}text-secondary{% endif %}"
+                            for="{{ name }}-{{ loop.index }}"
+                            class="form-label w-100 my-0 p-0 text-start {% if not (player.mail or player.phone) %}text-secondary{% endif %}"
                         >
                             <img
-                                    class="player-federation-flag ms-1 ps-1 pe-1"
-                                    src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
-                                    {{ tooltip_attributes('info', player.federation, 'left') }}
+                                class="player-federation-flag ms-1 ps-1 pe-1"
+                                src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
+                                {{ tooltip_attributes('info', player.federation, 'left') }}
                             />
                             {{ player.last_name }}
                             {{ player.first_name }}

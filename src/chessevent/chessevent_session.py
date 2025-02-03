@@ -28,9 +28,9 @@ class ChessEventSession(Session):
         url: str = PapiWebConfig.chessevent_download_url
         try:
             post: dict[str, str] = {
-                'user_id': self._tournament.chessevent.user_id,
-                'password': self._tournament.chessevent.password,
-                'event_id': self._tournament.chessevent.event_id,
+                'user_id': self._tournament.chessevent_user_id,
+                'password': self._tournament.chessevent_password,
+                'event_id': self._tournament.chessevent_event_id,
                 'tournament_name': self._tournament.chessevent_tournament_name,
             }
             chessevent_string: str = (f'{post["user_id"]}:{"*" * 8}'

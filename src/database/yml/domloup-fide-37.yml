@@ -1,15 +1,14 @@
 name: "37e open Fide de Domloup"
+federation: "FRA"
 start: "2024-08-24 00:00"
 stop: "2024-08-25 23:59"
 background_image: "FRA/BRE/35/F35043.png"
 background_color: "#e5f4ff"
 update_password: "mot_de_passe"
 record_illegal_moves: 0
-chessevents:
-  domloup-fide-37:
-    user_id: "C69548"
-    password: "Find it!"
-    event_id: "BRE_35_domloupfide37"
+chessevent_user_id: "C69548"
+chessevent_password: "Find it!"
+chessevent_event_id: "BRE_35_domloupfide37"
 timers:
   chronometre:
     hours:
@@ -47,47 +46,40 @@ tournaments:
     name: "Tournoi A"
     ffe_id: 999990
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "domloup-fide-37"
     chessevent_tournament_name: "Tournoi A"
   B:
     filename: "domloup-fide-37-b"
     name: "Tournoi B"
     ffe_id: 999991
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "domloup-fide-37"
     chessevent_tournament_name: "Tournoi B"
   C:
     filename: "domloup-fide-37-c"
     name: "Tournoi C"
     ffe_id: 999992
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "domloup-fide-37"
     chessevent_tournament_name: "Tournoi C"
   D:
     filename: "domloup-fide-37-d"
     name: "Tournoi D"
     ffe_id: 999993
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "domloup-fide-37"
     chessevent_tournament_name: "Tournoi D"
   E:
     filename: "domloup-fide-37-e"
     name: "Tournoi E"
     ffe_id: 999994
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "domloup-fide-37"
     chessevent_tournament_name: "Tournoi E"
   F:
     filename: "domloup-fide-37-f"
     name: "Tournoi F"
     ffe_id: 999995
     ffe_password: "ABCDEFGHIJ"
-    chessevent_uniq_id: "domloup-fide-37"
     chessevent_tournament_name: "Tournoi F"
   X:
     filename: "domloup-fide-37-x"
     name: "Tournoi X"
-    chessevent_uniq_id: "domloup-fide-37"
     chessevent_tournament_name: "Tournois par niveaux"
 screens:
   affiche:

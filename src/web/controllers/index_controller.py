@@ -73,7 +73,7 @@ class WebContext:
             'image': self.background_image,
             'color': self.background_color,
         }
-    
+
     @property
     def theme(self) -> str:
         """
@@ -298,7 +298,6 @@ class WebContext:
                 'flag_url': locale_flag_url(locale),
                 'experimental': locale not in trusted_locales,
             }
-
         return {
             'DEVEL_ENV': DEVEL_ENV,
             'EXPERIMENTAL_FEATURES': EXPERIMENTAL_FEATURES,
@@ -310,7 +309,6 @@ class WebContext:
             'theme': self.theme,
             'locale_infos': locale_infos,
             'locale': SessionHandler.get_session_locale(self.request),
-            'DEVEL_ENV': DEVEL_ENV
         }
 
 

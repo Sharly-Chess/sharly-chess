@@ -136,10 +136,6 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 'title': _('Timers ({num})').format(num=len(admin_event.timers_by_id) or '-'),
                 'template': 'timers/tab.html',
             },
-            'chessevents': {
-                'title': _('ChessEvent ({num})').format(num=len(admin_event.chessevents_by_id) or '-'),
-                'template': 'chessevents/tab.html',
-            },
         }
         if not web_context.admin_event_tab:
             web_context.admin_event_tab = list(nav_tabs.keys())[0]
@@ -266,7 +262,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 template_context |= {
                     'admin_players': players,
                     'admin_players_columns': [
-                        'check_in', 'name', 'rating', 'federation', 'league', 'club', 'yob', 'category', 'mail',
+                        'name', 'check_in', 'rating', 'federation', 'league', 'club', 'yob', 'category', 'mail',
                         'phone', 'gender', 'fixed', 'fide', 'ffe', 'owed_paid', 'tournament', 'comment', 'history',
                     ],
                     'admin_players_sort': SessionHandler.get_session_admin_players_sort(web_context.request),
@@ -322,8 +318,6 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 }
             case 'timers':
                 pass
-            case 'chessevents':
-                pass
             case _:
                 raise ValueError(f'admin_event_tab={web_context.admin_event_tab}')
         return template_context
@@ -368,6 +362,7 @@ class EventAdminController(AbstractEventAdminController):
                 if errors is None:
                     errors = {}
                 template_context |= {
+                    'federations': PapiWebConfig.federations,
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         PapiWebConfig.default_record_illegal_moves_number),
                     'timer_color_texts': cls._get_timer_color_texts(PapiWebConfig.default_timer_delays),
@@ -544,8 +539,6 @@ class EventAdminController(AbstractEventAdminController):
             case 'rotators':
                 if admin_rotators_show_details is not None:
                     SessionHandler.set_session_admin_rotators_show_details(request, admin_rotators_show_details)
-            case 'chessevents':
-                pass
             case 'timers':
                 pass
             case _:
@@ -608,7 +601,7 @@ class EventAdminController(AbstractEventAdminController):
                     Message.success(
                         request,
                         _('Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.').format(
-                            olq_uniq_id=web_context.admin_event.uniq_id, new_uniq_id=uniq_id))
+                            old_uniq_id=web_context.admin_event.uniq_id, new_uniq_id=uniq_id))
                 else:
                     Message.success(request, _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id))
                 event_loader.clear_cache(uniq_id)

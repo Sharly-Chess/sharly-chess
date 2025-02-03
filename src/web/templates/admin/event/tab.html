@@ -52,12 +52,22 @@
             <td class="text-nowrap">{{ admin_event.uniq_id }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">{{ _('Start') }}</th>
-            <td class="">{{ admin_event.formatted_start_date_time }}</td>
+            <th scope="row" class="text-nowrap">{{ _('Date') }}</th>
+            <td class="">{{ admin_event.formatted_start_date_time }} - {{ admin_event.formatted_stop_date_time }}</td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">{{ _('End') }}</th>
-            <td class="">{{ admin_event.formatted_stop_date_time }}</td>
+            <th scope="row" class="text-nowrap">{{ _('Federation') }}</th>
+            <td class="">
+                <span class="player-federation_flag">
+                    <img
+                            class="player-federation-flag ms-1 ps-1 pe-1"
+                            src="{{ url_for('static', file_path='/images/federations/' ~ admin_event.federation ~ '.svg') }}"
+                    />
+                    {{ admin_event.federation }}
+                    -
+                    {{ papi_web_config.federations[admin_event.federation] }}
+                </span>
+            </td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
@@ -74,6 +84,20 @@
                     <span class="fst-italic">
                         {{ _('(by default)') }}
                     </span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">{{ _('ChessEvent') }}</th>
+            <td class="{% if not admin_event.chessevent_user_id or not admin_event.chessevent_event_id %}fst-italic{% endif %}">
+                {% if admin_event.chessevent_user_id and admin_event.chessevent_event_id %}
+                    {{ admin_event.chessevent_user_id }}
+                    /
+                    {{ admin_event.chessevent_event_id }}
+                {% elif not admin_event.chessevent_user_id %}
+                    {{ _('No ChessEvent identifier defined') }}
+                {% else %}
+                    {{ _('No ChessEvent event defined') }}
                 {% endif %}
             </td>
         </tr>

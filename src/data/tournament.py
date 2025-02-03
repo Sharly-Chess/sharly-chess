@@ -18,7 +18,6 @@ if TYPE_CHECKING:
 
 from common.logger import get_logger
 from data.board import Board
-from data.chessevent import ChessEvent
 from data.chessevent_tournament import ChessEventTournament
 from data.family import Family
 from data.player import Player, FederationTuple, LeagueTuple, ClubTuple
@@ -52,9 +51,11 @@ class Tournament:
             self.event.add_debug(
                 _('Qualification number and FFE password not set, operations on the FFE website will not be available.'),
                 tournament=self)
-        if not self.chessevent:
+        if not self.chessevent_user_id or not self.chessevent_password:
             self.event.add_debug(_('ChessEvent connection not defined.'), tournament=self)
-        if self.chessevent and not self.stored_tournament.chessevent_tournament_name:
+        elif not self.chessevent_event_id:
+            self.event.add_warning(_('ChessEvent event not set.'), tournament=self)
+        elif not self.chessevent_tournament_name:
             self.event.add_warning(_('ChessEvent tournament name not set.'), tournament=self)
         self._rounds: int = 0
         self._pairing: TournamentPairing | None = None
@@ -137,15 +138,25 @@ class Tournament:
         return self.stored_tournament.time_control_handicap_min_time
 
     @property
-    def chessevent(self) -> ChessEvent | None:
-        if self.stored_tournament.chessevent_id is None:
-            return None
-        return self.event.chessevents_by_id[self.stored_tournament.chessevent_id]
+    def chessevent_user_id(self) -> str | None:
+        if self.stored_tournament.chessevent_user_id:
+            return self.stored_tournament.chessevent_user_id
+        return self.event.chessevent_user_id
+
+    @property
+    def chessevent_password(self) -> str | None:
+        if self.stored_tournament.chessevent_password:
+            return self.stored_tournament.chessevent_password
+        return self.event.chessevent_password
+
+    @property
+    def chessevent_event_id(self) -> str | None:
+        if self.stored_tournament.chessevent_event_id:
+            return self.stored_tournament.chessevent_event_id
+        return self.event.chessevent_event_id
 
     @property
     def chessevent_tournament_name(self) -> str | None:
-        if self.chessevent is None:
-            return None
         return self.stored_tournament.chessevent_tournament_name
 
     @property
@@ -480,7 +491,8 @@ class Tournament:
                 )
         return fields
 
-    def _trf_bb_fields(self, result_class: type[Result] = Result) -> dict[str, str]:
+    @staticmethod
+    def _trf_bb_fields(result_class: type[Result] = Result) -> dict[str, str]:
         fields: dict[str, str] = {}
         for result in [
             result_class.GAIN,
@@ -774,22 +786,23 @@ class Tournament:
 
     def write_chessevent_info_to_database(
             self, chessevent_tournament: ChessEventTournament, chessevent_download_md5: str) -> int:
-        """Stores the information from the given `chessevent_tournament` in
-        the event database.
-        For comparison, also store `chessevent_download_md5`, so that the 
-        tournament is not downloaded unnecessarily."""
+        """Stores the information from the given `chessevent_tournament` in the event database.
+        For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
+        Returns the number of players added."""
+        players_added: int = 0
         with PapiDatabase(self.file, write=True) as papi_database:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
                 papi_database.write_chessevent_info(chessevent_tournament)
                 for player_papi_id, chessevent_player in enumerate(chessevent_tournament.players, start=2):
                     papi_database.add_chessevent_player(
                         player_papi_id, chessevent_player, chessevent_tournament.check_in_started)
+                    players_added += 1
                 event_database.set_tournament_check_in(self.id, True)
                 papi_database.open_check_in(1)
                 event_database.set_tournament_last_chessevent_download_md5(self.id, chessevent_download_md5)
                 event_database.commit()
                 papi_database.commit()
-        return player_papi_id - 1
+        return players_added
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""
@@ -894,8 +907,7 @@ class Tournament:
             with PapiDatabase(self.file, write=True) as papi_database:
                 event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
                 event_database.set_tournament_check_in(self.id, True)
-                round: int = self.current_round + 1
-                papi_database.open_check_in(round)
+                papi_database.open_check_in(self.current_round + 1)
                 papi_database.commit()
             event_database.commit()
 
@@ -907,7 +919,6 @@ class Tournament:
             event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
             event_database.set_tournament_check_in(self.id, False)
             event_database.commit()
-        round: int =self.current_round + 1
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.close_check_in(round, (self.rounds + 1) if forfeit_last_rounds else None)
+            papi_database.close_check_in(self.current_round + 1, (self.rounds + 1) if forfeit_last_rounds else None)
             papi_database.commit()

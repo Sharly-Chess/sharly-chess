@@ -103,7 +103,7 @@
                             name='fixed',
                             label=_('Fixed board:'),
                             help_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
-                            disabled=true,
+                            disabled=action == 'delete',
                             error=action == 'delete',
                             number_min=1,
                             data=data, errors=errors
@@ -263,7 +263,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                </div> 
+                </div>
                 </div class="row">
                     <div class="col-12 col-md-6 mb-3">
                         {{ select_input(
@@ -347,7 +347,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    
+
                 </div>
             </div>
             <div class="modal-footer d-block">

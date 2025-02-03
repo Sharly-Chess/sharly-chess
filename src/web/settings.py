@@ -16,7 +16,6 @@ from litestar.types import ControllerRouterHandler, Middleware
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
-from web.controllers.admin.chessevent_admin_controller import ChessEventAdminController
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
 from web.controllers.admin.index_admin_controller import IndexAdminController
@@ -61,7 +60,6 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     DownloadUserController,
     IndexAdminController,
     EventAdminController,
-    ChessEventAdminController,
     TournamentAdminController,
     ScreenAdminController,
     TimerAdminController,

@@ -66,6 +66,13 @@
                 <tr>
                     <th scope="col" class="text-nowrap text-start w-1">
                         <div class="d-flex align-items-center">
+                            <span id="players-table-counters" class="pe-1">
+                                {{ admin_players|length }}/{{admin_event.players_number}}
+                            </span>
+                        </div>
+                    </th>
+                    <th scope="col" class="text-nowrap text-end w-1">
+                        <div class="d-flex align-items-center">
                             <i
                                 class="bi-x-circle btn text-dark py-0 ps-1 pe-0 m-0"
                                 hx-get="{{ url }}"
@@ -76,15 +83,6 @@
                             ></i>
                         </div>
                     </th>
-                    {% if 'check_in' in admin_players_filter_columns %}
-                        <th scope="col" class="text-nowrap text-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi-circle"></i>
-                                <i class="bi-check-circle pe-1"></i>
-                                {% include 'filter_check_ins.html' %}
-                            </div>
-                        </th>
-                    {% endif %}
                     <th scope="col" class="text-nowrap">
                         {# Players' title #}
                     </th>
@@ -115,6 +113,15 @@
                             ></i>
                         </div>
                     </th>
+                    {% if 'check_in' in admin_players_filter_columns %}
+                        <th scope="col" class="text-nowrap text-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi-circle"></i>
+                                <i class="bi-check-circle pe-1"></i>
+                                {% include 'filter_check_ins.html' %}
+                            </div>
+                        </th>
+                    {% endif %}
                     <th scope="col" class="text-nowrap text-center">
                         <div class="d-flex align-items-center gap-1">
                             {{ _('Elo *** ELO COLUMN HEADER FOR PLAYERS') }}
@@ -223,7 +230,7 @@
                         <th scope="col" class="text-nowrap text-center w-1">
                             <div class="d-flex align-items-center">
                                 {{ _('FIDE *** FIDE COLUMN HEADER FOR PLAYERS') }}
-                            </div> 
+                            </div>
                         </th>
                     {% endif %}
                     {% if 'ffe' in admin_players_filter_columns %}
@@ -260,22 +267,53 @@
                             </div>
                         </th>
                     {% endif %}
-                    <th scope="col" class="text-nowrap text-end w-1">
-                        <div class="d-flex align-items-center">
-                            <span id="players-table-counters" class="pe-1">
-                                {{ admin_players|length }}/{{admin_event.players_number}}
-                            </span>
-                        </div>  
-                    </th>
                 </tr>
             </thead>
             <tbody id="players-table-body">
                 {% if admin_players %}
                     {% for player in admin_players %}
                         <tr>
+                            <td class="text-nowrap text-start w-1">
+                                <span class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
+                                        <i class="bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-start players-player-actions p-0" >
+                                        <li
+                                            class="dropdown-item btn text-start"
+                                            hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            {{ tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
+                                        >
+                                            <i class="bi-pencil-fill pe-1"></i>{{ _('Edit') }}
+                                        </li>
+                                        {% if not player.has_real_pairings %}
+                                            <li
+                                                class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
+                                                    hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                    {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
+                                            >
+                                                <i class="bi-trash-fill pe-1"></i>{{ _('Delete') }}
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </span>
+                            </td>
                             <th scope="row" class="text-nowrap text-end w-1">
                                 {{ loop.index }}
                             </th>
+                            <td class="text-end">
+                                {{ player.title.short_name }}
+                            </td>
+                            <td
+                                class="text-nowrap position-sticky start-0 px-3"
+                                style="border-right: 2px solid #454748;"
+                            >
+                                {{ player.last_name }} {{ player.first_name }}
+                            </td>
                             {% if 'check_in' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center">
                                     <i
@@ -307,15 +345,6 @@
                                     ></i>
                                 </td>
                             {% endif %}
-                            <td class="text-end">
-                                {{ player.title.short_name }}
-                            </td>
-                            <td
-                                class="text-nowrap position-sticky start-0 px-3"
-                                style="border-right: 2px solid #454748;"
-                            >
-                                {{ player.last_name }} {{ player.first_name }}
-                            </td>
                             <td class="text-nowrap text-center">
                                 {{ player.rating }}{{ player.rating_type }}
                             </td>
@@ -476,35 +505,6 @@
                                     {{ player_history(player) }}
                                 </td>
                             {% endif %}
-                            <th scope="row" class="text-nowrap text-end w-1">
-                                <span class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
-                                        <i class="bi-three-dots"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end players-player-actions p-0" >
-                                        <li
-                                            class="dropdown-item btn text-start"
-                                            hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            {{ tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
-                                        >
-                                            <i class="bi-pencil-fill pe-1"></i>{{ _('Edit') }}
-                                        </li>
-                                        {% if not player.has_real_pairings %}
-                                            <li
-                                                class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
-                                                    hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                                    hx-target="body"
-                                                    hx-indicator="#please-wait"
-                                                    {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
-                                            >
-                                                <i class="bi-trash-fill pe-1"></i>{{ _('Delete') }}
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </span>
-                            </th>
                         </tr>
                     {% endfor %}
                 {% else %}

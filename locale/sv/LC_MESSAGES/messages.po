@@ -287,14 +287,14 @@ msgid "- Version {version}: no events"
 msgstr "- Version {version}: inga händelser"
 
 #: src/common/engine.py
-#, ai_translation
+#, ai_translation, fuzzy
 msgid "No events found in previously installed versions."
-msgstr "Inga händelser hittades i tidigare installerade versioner."
+msgstr "Ingen händelse hittades i tidigare installerade versioner."
 
 #: src/common/engine.py
-#, ai_translation
+#, ai_translation, fuzzy
 msgid "No previously installed versions found."
-msgstr "Inga tidigare installerade versioner hittades."
+msgstr "Ingen tidigare installerad version hittades."
 
 #: src/common/engine.py
 #, ai_translation
@@ -469,7 +469,7 @@ msgstr "Ny version [{version}] har installerats i [{dir}]."
 #: src/common/papi_web_config.py
 #, ai_translation
 msgid "Option is obsolete, set environment variable [{var}=1] instead."
-msgstr "Alternativet är deprecated, ange miljövariabel [{var}=1] istället."
+msgstr "Alternativet är föråldrat, ställ in miljövariabeln [{var}=1] istället."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -574,11 +574,6 @@ msgstr "Turnering [{tournament_uniq_id}]: {text}"
 
 #: src/data/event.py
 #, ai_translation
-msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
-msgstr "ChessEvent-anslutning [{chessevent_uniq_id}]: {text}"
-
-#: src/data/event.py
-#, ai_translation
 msgid "Family [{family_uniq_id}]: {text}"
 msgstr "Familj [{family_uniq_id}]: {text}"
 
@@ -608,9 +603,9 @@ msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr "Rotator [{rotator_uniq_id}]: {text}"
 
 #: src/data/event.py
-#, ai_translation
-msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
-msgstr "Fel har upptäckts på eventet; ChessEvent-anslutningar, timers, turneringar, skärmar, familjer och rotatorer kommer inte att laddas."
+#, ai_translation, fuzzy
+msgid "Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded."
+msgstr "Fel har hittats på timers; turneringar, skärmar, familjer och rotatorer kommer inte att laddas."
 
 #: src/data/event.py
 #, ai_translation
@@ -651,11 +646,6 @@ msgstr "Inget lösenord inställt för resultatposten"
 #, ai_translation
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
 msgstr "Maximalt antal olagliga förflyttningar inte satta, som standard [{record_illegal_moves}]"
-
-#: src/data/event.py
-#, ai_translation
-msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
-msgstr "Fel har upptäckts på ChessEvent-anslutningar; timers, turneringar, skärmar, familjer och rotatorer kommer inte att laddas."
 
 #: src/data/event.py
 #, ai_translation
@@ -1000,6 +990,11 @@ msgid "ChessEvent connection not defined."
 msgstr "ChessEvent-anslutningen är inte definierad."
 
 #: src/data/tournament.py
+#, ai_translation, fuzzy
+msgid "ChessEvent event not set."
+msgstr "ChessEvent turneringsnamn inte bestämt."
+
+#: src/data/tournament.py
 #, ai_translation
 msgid "ChessEvent tournament name not set."
 msgstr "ChessEvent turneringsnamn inte bestämt."
@@ -1070,11 +1065,15 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
+# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
+# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
+# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1111,6 +1110,12 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
+# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
@@ -1121,6 +1126,9 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
+# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
+# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
+# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -1681,46 +1689,6 @@ msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
 msgid "USE AT YOUR OWN RISKS"
 msgstr "ANVÄNDNING VID DINA EGNA RISKER"
 
-#: src/web/controllers/admin/chessevent_admin_controller.py
-#, ai_translation
-msgid "Please enter the ID of ChessEvent connection."
-msgstr "Ange identifikationen för ChessEvent-anslutningen."
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-#, ai_translation
-msgid "ChessEvent connection [{uniq_id}] already exists."
-msgstr "ChessEvent-anslutning [{uniq_id}] finns redan."
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-#, ai_translation
-msgid "Please enter the ID used to connect to the ChessEvent platform."
-msgstr "Ange ID som används för att ansluta till ChessEvent-plattformen."
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-#, ai_translation
-msgid "Please enter the password used to connect to the ChessEvent platform."
-msgstr "Ange lösenordet som används för att ansluta till ChessEvent-plattformen."
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-#, ai_translation
-msgid "Please enter the ID of the event on the ChessEvent platform."
-msgstr "Ange ID för händelsen på ChessEvent-plattformen."
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-#, ai_translation
-msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
-msgstr "ChessEvent-anslutning [{chessevent_uniq_id}] har skapats."
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-#, ai_translation
-msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
-msgstr "ChessEvent-anslutningen [{chessevent_uniq_id}] har uppdaterats."
-
-#: src/web/controllers/admin/chessevent_admin_controller.py
-#, ai_translation
-msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
-msgstr "ChessEvent anslutning [{chessevent_uniq_id}] har tagits bort."
-
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
 msgid "Tournaments ({num})"
@@ -1751,11 +1719,6 @@ msgstr "Rotatorer ({num})"
 #, ai_translation
 msgid "Timers ({num})"
 msgstr "Timers ({num})"
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
-msgid "ChessEvent ({num})"
-msgstr "ChessEvent ({num})"
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -1995,6 +1958,11 @@ msgstr "Ange en webbadress eller välj en bild på höger sida."
 #, ai_translation
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Ogiltig fördröjning [{delay}] (positivt heltal förväntas)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation, fuzzy
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Ange identifikationen för ChessEvent-anslutningen."
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -2360,11 +2328,6 @@ msgstr "Lösenordet för turneringen på FFE webbplats är gjord av 10 stora bok
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
-msgid "No ChessEvent connection"
-msgstr "Ingen ChessEvent-anslutning"
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
 msgid "tournament"
 msgstr "turnering"
 
@@ -2502,235 +2465,6 @@ msgstr "Skiljemannagränssnitt (privat åtkomst)"
 #, ai_translation
 msgid "Go back to the home page."
 msgstr "Gå tillbaka till hemsidan."
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, ai_translation, python-format
-msgid "Chessevent ID: %(chessevent_user_id)s"
-msgstr "Chessevent ID: %(chessevent_user_id)s"
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, ai_translation, python-format
-msgid "ChessEvent password: %(chessevent_password)s"
-msgstr "ChessEvent lösenord: %(chessevent_password)s"
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, ai_translation, python-format
-msgid "ChessEvent event: %(chessevent_event)s"
-msgstr "ChessEvenemang: %(chessevent_event)s"
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, ai_translation
-msgid "Edit the properties of the ChessEvent connection."
-msgstr "Redigera egenskaperna hos ChessEvent-anslutningen."
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/families/family_card.html
-#: src/web/templates/admin/players/tab.html
-#: src/web/templates/admin/rotators/rotator_card.html
-#: src/web/templates/admin/screens/screen_card.html
-#: src/web/templates/admin/timers/timer_card.html
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Edit"
-msgstr "Redigera"
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, ai_translation
-msgid "Clone the ChessEvent connection."
-msgstr "Clone the ChessEvent-anslutningen."
-
-#: src/web/templates/admin/chessevents/chessevent_card.html
-#, ai_translation
-msgid "Delete the ChessEvent connection."
-msgstr "Ta bort ChessEvent-anslutningen."
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "ChessEvent connection creation"
-msgstr "ChessEvent-anslutningsskapande"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation, python-format
-msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
-msgstr "Upplaga av ChessEvent-anslutning [%(chessevent_uniq_id)s]"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation, python-format
-msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
-msgstr "Radering av ChessEvent-anslutningen [%(chessevent_uniq_id)s]"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "Warning: the deletion of a ChessEvent connection is permanent!"
-msgstr "Varning: Raderingen av en ChessEvent-anslutning är permanent!"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "The following tournaments will not be connected to ChessEvent anymore:"
-msgstr "Följande turneringar kommer inte längre att kopplas till ChessEvent:"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "Properties"
-msgstr "Egenskaper"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "ID (unique):"
-msgstr "Identitet (unik):"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "E.g.: chessevent"
-msgstr "T.ex. schackevenemang"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "The Unique ID, used to reference the ChessEvent connection."
-msgstr "Det unika ID, som används för att referera till ChessEvent-anslutningen."
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "Connection to the ChessEvent platform"
-msgstr "Anslutning till ChessEvent-plattformen"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "Chessevent ID:"
-msgstr "Chessevent ID:"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, python-format
-msgid "E.g.: %(string)s"
-msgstr "T.ex.: %(string)s"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "the ID used to connect to the ChessEvent platform."
-msgstr "ID som används för att ansluta till ChessEvent-plattformen."
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "Password:"
-msgstr "Lösenord:"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "E.g.: my_password"
-msgstr "T.ex.: mitt lösenord"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "The password used to connect to the ChessEvent platform."
-msgstr "Lösenordet som användes för att ansluta till ChessEvent-plattformen."
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "ChessEvent event:"
-msgstr "ChessEvent-evenemang:"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#, ai_translation
-msgid "The name of the event on the ChessEvent password."
-msgstr "Namnet på händelsen på lösenordet ChessEvent."
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "Create"
-msgstr "Skapa"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "Update"
-msgstr "Uppdatera"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/players/tab.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "Delete"
-msgstr "Ta bort"
-
-#: src/web/templates/admin/chessevents/chessevent_modal.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/close_check_in_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "Cancel"
-msgstr "Avbryt"
-
-#: src/web/templates/admin/chessevents/tab.html
-#: src/web/templates/admin/index/events_tab.html
-#: src/web/templates/admin/players/tab.html
-#: src/web/templates/admin/screens/tab.html
-#: src/web/templates/admin/timers/tab.html
-#: src/web/templates/admin/tournaments/tab.html
-#, ai_translation
-msgid "Refresh this page."
-msgstr "Uppdatera den här sidan."
-
-#: src/web/templates/admin/chessevents/tab.html
-#, ai_translation
-msgid "Add a ChessEvent connection to the event."
-msgstr "Lägg till en ChessEvent-anslutning till evenemanget."
-
-#: src/web/templates/admin/chessevents/tab.html
-#, ai_translation
-msgid "Create a ChessEvent connection"
-msgstr "Skapa en schackevent-anslutning"
-
-#: src/web/templates/admin/chessevents/tab.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "No ChessEvent connections."
-msgstr "Inga ChessEvent-förbindelser."
 
 #: src/web/templates/admin/common/macros.j2
 #, ai_translation
@@ -2896,6 +2630,15 @@ msgid "Recovering deleted events is not possible from the web interface (however
 msgstr "Återhämtning av raderade händelser är inte möjligt från webbgränssnittet (oavsett om händelserna arkiveras och kan återställas från filsystemet."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Properties"
+msgstr "Egenskaper"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2915,6 +2658,16 @@ msgid "Only arbiters can see private events."
 msgstr "Endast skiljedomare kan se privata evenemang."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "ID (unique):"
+msgstr "Identitet (unik):"
+
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "E.g.: world-championship"
 msgstr "T.ex. världsmästerskap"
@@ -2923,6 +2676,17 @@ msgstr "T.ex. världsmästerskap"
 #, ai_translation
 msgid "The Unique ID, used for data storage and export."
 msgstr "Unikt ID, som används för datalagring och export."
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Federation:"
+msgstr "Förbund:"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "The federation that organizes the event."
+msgstr "Slutdatum och tidpunkt för händelsen."
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
@@ -2978,6 +2742,58 @@ msgstr "T.ex.: c: \\chess vornaments"
 #, ai_translation, python-format
 msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
 msgstr "Standardkatalogen för Papi-filerna för turneringarna (absolut eller relativ sökväg, som standard %(dir)s)."
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation
+msgid "Connection to the ChessEvent platform"
+msgstr "Anslutning till ChessEvent-plattformen"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Chessevent ID:"
+msgstr "Chessevent ID:"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(string)s"
+msgstr "T.ex.: %(string)s"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr "ID som används för att ansluta till ChessEvent-plattformen."
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, fuzzy
+msgid "ChessEvent Password:"
+msgstr "Chessevent ID:"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "E.g.: my_password"
+msgstr "T.ex.: mitt lösenord"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr "Lösenordet som användes för att ansluta till ChessEvent-plattformen."
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "ChessEvent event:"
+msgstr "ChessEvent-evenemang:"
+
+#: src/web/templates/admin/event/event_modal.html
+#, ai_translation, fuzzy
+msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr "Namnet på händelsen på lösenordet ChessEvent."
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
@@ -3092,6 +2908,69 @@ msgstr "Textfärg:"
 msgid "The text colour of the alert messages."
 msgstr "Meddelandenas textfärg."
 
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Create"
+msgstr "Skapa"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Update"
+msgstr "Uppdatera"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/tab.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Delete"
+msgstr "Ta bort"
+
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/close_check_in_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/families/family_card.html
+#: src/web/templates/admin/players/tab.html
+#: src/web/templates/admin/rotators/rotator_card.html
+#: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/timers/timer_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation
+msgid "Edit"
+msgstr "Redigera"
+
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
 msgid "Clone"
@@ -3108,14 +2987,14 @@ msgid "Unique ID"
 msgstr "Unikt ID"
 
 #: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Start"
-msgstr "Börja"
+#, ai_translation, fuzzy
+msgid "Date"
+msgstr "Datum:"
 
 #: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "End"
-msgstr "Slut"
+#, ai_translation, fuzzy
+msgid "Federation"
+msgstr "Förbund:"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -3139,6 +3018,25 @@ msgstr "Förvald katalog för Papi-filerna"
 #, ai_translation
 msgid "(by default)"
 msgstr "(som standard)"
+
+#: src/web/templates/admin/event/tab.html
+#, ai_translation, fuzzy
+msgid "ChessEvent"
+msgstr "Chessevent ID:"
+
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/index/event_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, fuzzy
+msgid "No ChessEvent identifier defined"
+msgstr "ChessEvent-anslutningen är inte definierad."
+
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/index/event_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, fuzzy
+msgid "No ChessEvent event defined"
+msgstr "ChessEvent-evenemang:"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -3272,6 +3170,8 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -3301,6 +3201,7 @@ msgid "Players from #%(first)s to #%(last)s"
 msgstr "Spelare från #%(first)s till #%(last)s"
 
 #: src/web/templates/admin/families/family_card.html
+#: src/web/templates/admin/index/event_card.html
 #, ai_translation
 msgid "No screens"
 msgstr "Inga skärmar"
@@ -3726,6 +3627,8 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
+# Error: translation [Ej tillämpligt] is much too long compared to initial
+# [No]
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "No"
@@ -3763,9 +3666,16 @@ msgid "Tournaments: %(num)d"
 msgstr "Turneringar: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, python-format
-msgid "ChessEvent connections: %(num)d"
-msgstr "ChessEvent-förbindelser: %(num)d"
+#, ai_translation, fuzzy
+msgid "No tournaments"
+msgstr "Inga turneringar."
+
+# Error: tokens differ between [Chessevent: %(chessevent_user_id)s /
+# %(chessevent_event_id)s] and [Chessevent ID: %(chessevent_user_id)s]
+#: src/web/templates/admin/index/event_card.html
+#, ai_translation, fuzzy, python-format
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
+msgstr "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
@@ -3773,14 +3683,24 @@ msgid "Timers: %(num)d"
 msgstr "Tidtagare: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
+#, ai_translation, fuzzy
+msgid "No timers"
+msgstr "Inga timers."
+
+#: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
 msgid "Screens: %(num)d"
 msgstr "Skärmar: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
-#, ai_translation, python-format
-msgid "Families: %(num)d"
+#, ai_translation, fuzzy, python-format
+msgid "Screen families: %(num)d"
 msgstr "Familjer: %(num)d"
+
+#: src/web/templates/admin/index/event_card.html
+#, ai_translation, fuzzy
+msgid "No screen families"
+msgstr "Inga skärmfamiljer."
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
@@ -3788,9 +3708,19 @@ msgid "Rotators: %(num)d"
 msgstr "Rotatorer: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
+#, ai_translation, fuzzy
+msgid "No rotators"
+msgstr "Inga ruttnare."
+
+#: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
 msgid "Errors: %(num)d"
 msgstr "Fel: %(num)d"
+
+#: src/web/templates/admin/index/event_card.html
+#, ai_translation, fuzzy
+msgid "No errors"
+msgstr "Inga ruttnare."
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
@@ -3798,9 +3728,29 @@ msgid "Warnings: %(num)d"
 msgstr "Varningar: %(num)d"
 
 #: src/web/templates/admin/index/event_card.html
+#, ai_translation, fuzzy
+msgid "No warnings"
+msgstr "Ingen inspelning"
+
+#: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
 msgid "Informations: %(num)d"
 msgstr "Information: %(num)d"
+
+# Error: tokens differ between [No informations] and [Information: %(num)d]
+#: src/web/templates/admin/index/event_card.html
+#, ai_translation, fuzzy
+msgid "No informations"
+msgstr "Inga uppgifter"
+
+#: src/web/templates/admin/index/events_tab.html
+#: src/web/templates/admin/players/tab.html
+#: src/web/templates/admin/screens/tab.html
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/tournaments/tab.html
+#, ai_translation
+msgid "Refresh this page."
+msgstr "Uppdatera den här sidan."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
 #, ai_translation
@@ -3886,24 +3836,24 @@ msgid "Download the players."
 msgstr "alla spelare"
 
 #: src/web/templates/admin/players/download_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Download the vCards of the selected players (VCF format)."
-msgstr "Ladda ner vCards för de valda spelarna (VCF-format)"
+msgstr "Ladda ner vCards för de valda spelarna (VCF-format)."
 
 #: src/web/templates/admin/players/download_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Download the information of the selected players (CSV format)."
-msgstr "Ladda ner informationen för de valda spelarna (XLSX-format)"
+msgstr "Ladda ner informationen för de utvalda spelarna (CSV-format)."
 
 #: src/web/templates/admin/players/download_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Download the information of the selected players (ODS format)."
-msgstr "Ladda ner informationen för de valda spelarna (XLSX-format)"
+msgstr "Ladda ner informationen om de utvalda spelarna (ODS-format)."
 
 #: src/web/templates/admin/players/download_players.html
-#, ai_translation, fuzzy
+#, ai_translation
 msgid "Download the information of the selected players (XLSX format)."
-msgstr "Ladda ner informationen för de valda spelarna (XLSX-format)"
+msgstr "Ladda ner informationen för de valda spelarna (XLSX-format)."
 
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
@@ -4188,11 +4138,6 @@ msgstr "Spelarens FIDE-titel."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "Federation:"
-msgstr "Förbund:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "The player's federation."
 msgstr "Spelarens förbund."
 
@@ -4408,6 +4353,16 @@ msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Edit the player's properties."
+msgstr "Redigera spelarens egenskaper."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Remove the player from the event."
+msgstr "Ta bort spelaren från händelsen."
+
+#: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Incheckningen är stängd för turnering [%(tournament_uniq_id)s]."
@@ -4471,16 +4426,6 @@ msgstr "Okänd typ av FFE-licens [%(ffe_licence)s]."
 #, ai_translation
 msgid "Change the player's tournament."
 msgstr "Ändra spelarens turnering."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Edit the player's properties."
-msgstr "Redigera spelarens egenskaper."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "Remove the player from the event."
-msgstr "Ta bort spelaren från händelsen."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -4579,6 +4524,8 @@ msgstr "T.ex. min-rotator"
 msgid "The Unique ID, used to reference the rotator."
 msgstr "Det unika ID, som används för att referera rotatorn."
 
+# Error: translation [För en driftspänning av mer än 1000 V men högst 1000 V]
+# is much too long compared to initial [Parameters]
 # Error: translation [För en driftspänning av mer än 1000 V men högst 1000 V]
 # is much too long compared to initial [Parameters]
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -5261,20 +5208,32 @@ msgstr "Papi-filen för turneringen finns men kunde inte läsas (%(papi_file)s).
 msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr "Papi-filen för turneringen lästes framgångsrikt (%(papi_file)s)."
 
+# Error: tokens differ between [FFE qualification: %(ffe_id)s] and [FFE:s
+# kvalifikationsnummer (frivilligt):]
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, fuzzy, python-format
+msgid "FFE qualification: %(ffe_id)s"
+msgstr "FFE:s kvalifikationer: %(ffe_id)s"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, fuzzy
+msgid "No FFE qualification"
+msgstr "Ingen FFE-licens"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
+msgstr "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, fuzzy
+msgid "No ChessEvent tournament defined"
+msgstr "Namn på turneringen ChessEvent:"
+
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Players found in the Papi_file : %(num)d"
 msgstr "Spelare som finns i Papi_filen : %(num)d"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
-msgstr "ChessEvent-anslutning [%(chessevent_uniq_id)s] används."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "No ChessEvent connection is used."
-msgstr "Ingen ChessEvent-anslutning används."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -5450,18 +5409,28 @@ msgstr "Lösenordet är gjort av 10 stora bokstäver, det används för att ansl
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
-msgid "ChessEvent connection:"
-msgstr "ChessEvent-anslutning:"
+msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
+msgstr "ID:t som användes för att ansluta till ChessEvent-plattformen (som standard det ChessEvent ID som definierats för turneringens Papi-web-event)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
-msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
-msgstr "ChessEvent-anslutningen gör det möjligt att hämta registreringar från ChessEvent-plattformen."
+msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament)."
+msgstr "Lösenordet som användes för att ansluta till ChessEvent-plattformen (som standard det lösenord som definierats för turneringens Papi-web-event)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "Name of the ChessEvent tournament:"
+#, ai_translation, fuzzy
+msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
+msgstr "Namnet på eventet på ChessEvent-plattformen (default the ChessEvent definierat för turneringens papi-web-event)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, fuzzy
+msgid "ChessEvent tournament:"
 msgstr "Namn på turneringen ChessEvent:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, fuzzy
+msgid "E.g.: Tournoi A"
+msgstr "T.ex.: Huvudturnering"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
@@ -5750,6 +5719,8 @@ msgstr "Bild:"
 
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
+# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
+# much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
 #, ai_translation
 msgid "Rnd.Boa"
@@ -5831,6 +5802,116 @@ msgstr "Styrelsen #%(board_number)d med %(color)s"
 msgid "vs"
 msgstr "vs"
 
+#~ msgid "ChessEvent connection [{chessevent_uniq_id}]: {text}"
+#~ msgstr "ChessEvent-anslutning [{chessevent_uniq_id}]: {text}"
+
+#~ msgid "Errors have been found on the event; ChessEvent connections, timers, tournaments, screens, families and rotators will not be loaded."
+#~ msgstr "Fel har upptäckts på eventet; ChessEvent-anslutningar, timers, turneringar, skärmar, familjer och rotatorer kommer inte att laddas."
+
+#~ msgid "Errors have been found on ChessEvent connections; timers, tournaments, screens, families and rotators will not be loaded."
+#~ msgstr "Fel har upptäckts på ChessEvent-anslutningar; timers, turneringar, skärmar, familjer och rotatorer kommer inte att laddas."
+
+#~ msgid "ChessEvent connection [{uniq_id}] already exists."
+#~ msgstr "ChessEvent-anslutning [{uniq_id}] finns redan."
+
+#~ msgid "Please enter the ID used to connect to the ChessEvent platform."
+#~ msgstr "Ange ID som används för att ansluta till ChessEvent-plattformen."
+
+#~ msgid "Please enter the password used to connect to the ChessEvent platform."
+#~ msgstr "Ange lösenordet som används för att ansluta till ChessEvent-plattformen."
+
+#~ msgid "Please enter the ID of the event on the ChessEvent platform."
+#~ msgstr "Ange ID för händelsen på ChessEvent-plattformen."
+
+#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been created."
+#~ msgstr "ChessEvent-anslutning [{chessevent_uniq_id}] har skapats."
+
+#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been updated."
+#~ msgstr "ChessEvent-anslutningen [{chessevent_uniq_id}] har uppdaterats."
+
+#~ msgid "ChessEvent connection [{chessevent_uniq_id}] has been deleted."
+#~ msgstr "ChessEvent anslutning [{chessevent_uniq_id}] har tagits bort."
+
+#~ msgid "ChessEvent ({num})"
+#~ msgstr "ChessEvent ({num})"
+
+#~ msgid "No ChessEvent connection"
+#~ msgstr "Ingen ChessEvent-anslutning"
+
+#~ msgid "ChessEvent password: %(chessevent_password)s"
+#~ msgstr "ChessEvent lösenord: %(chessevent_password)s"
+
+#~ msgid "ChessEvent event: %(chessevent_event)s"
+#~ msgstr "ChessEvenemang: %(chessevent_event)s"
+
+#~ msgid "Edit the properties of the ChessEvent connection."
+#~ msgstr "Redigera egenskaperna hos ChessEvent-anslutningen."
+
+#~ msgid "Clone the ChessEvent connection."
+#~ msgstr "Clone the ChessEvent-anslutningen."
+
+#~ msgid "Delete the ChessEvent connection."
+#~ msgstr "Ta bort ChessEvent-anslutningen."
+
+#~ msgid "ChessEvent connection creation"
+#~ msgstr "ChessEvent-anslutningsskapande"
+
+#~ msgid "Edition of ChessEvent connection [%(chessevent_uniq_id)s]"
+#~ msgstr "Upplaga av ChessEvent-anslutning [%(chessevent_uniq_id)s]"
+
+#~ msgid "Deletion of ChessEvent connection [%(chessevent_uniq_id)s]"
+#~ msgstr "Radering av ChessEvent-anslutningen [%(chessevent_uniq_id)s]"
+
+#~ msgid "Warning: the deletion of a ChessEvent connection is permanent!"
+#~ msgstr "Varning: Raderingen av en ChessEvent-anslutning är permanent!"
+
+#~ msgid "The following tournaments will not be connected to ChessEvent anymore:"
+#~ msgstr "Följande turneringar kommer inte längre att kopplas till ChessEvent:"
+
+#~ msgid "E.g.: chessevent"
+#~ msgstr "T.ex. schackevenemang"
+
+#~ msgid "The Unique ID, used to reference the ChessEvent connection."
+#~ msgstr "Det unika ID, som används för att referera till ChessEvent-anslutningen."
+
+#~ msgid "Password:"
+#~ msgstr "Lösenord:"
+
+#~ msgid "Add a ChessEvent connection to the event."
+#~ msgstr "Lägg till en ChessEvent-anslutning till evenemanget."
+
+#~ msgid "Create a ChessEvent connection"
+#~ msgstr "Skapa en schackevent-anslutning"
+
+#~ msgid "No ChessEvent connections."
+#~ msgstr "Inga ChessEvent-förbindelser."
+
+#~ msgid "Start"
+#~ msgstr "Börja"
+
+#~ msgid "End"
+#~ msgstr "Slut"
+
+#~ msgid "ChessEvent connections: %(num)d"
+#~ msgstr "ChessEvent-förbindelser: %(num)d"
+
+#~ msgid "ChessEvent connection:"
+#~ msgstr "ChessEvent-anslutning:"
+
+#~ msgid "The ChessEvent connection allows the retrieval of registrations from the ChessEvent platform."
+#~ msgstr "ChessEvent-anslutningen gör det möjligt att hämta registreringar från ChessEvent-plattformen."
+
+#~ msgid "Change the number of columns."
+#~ msgstr "Ändra antal kolumner."
+
+# Error: tokens differ between [ChessEvent connection [%(chessevent_uniq_id)s]
+# is used.] and [ChessEvent-anslutningen är inte definierad.]
+#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
+#~ msgstr "ChessEvent-anslutning [%(chessevent_uniq_id)s] används."
+
+#~ msgid "No ChessEvent connection is used."
+#~ msgstr "ChessEvent-anslutningen är inte definierad."
+
 #~ msgid "Messages ({num})"
 #~ msgstr "Meddelanden ({num})"
 
@@ -5842,9 +5923,6 @@ msgstr "vs"
 
 #~ msgid "No messages."
 #~ msgstr "Inga meddelanden."
-
-#~ msgid "Change the number of columns."
-#~ msgstr "Ändra antal kolumner."
 
 #~ msgid "FIDE ratings, title and fédération"
 #~ msgstr "FIDE-betyg, titel och fédération"
