@@ -4,12 +4,12 @@
     {% if admin_auth %}
         {{ screen_visibility_icon(screen) }}
     {% endif %}
-    {{ screen.uniq_id }}
+    {{ screen.name }}
 {% endblock %}
 
 {% block card_title %}
     {{ screen_type_icon(screen.type, true) }}
-    {{ screen.name }}
+    {{ screen.uniq_id }}
 {% endblock %}
 
 {% block card_text %}

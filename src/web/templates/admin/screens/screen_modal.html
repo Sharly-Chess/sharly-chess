@@ -62,7 +62,7 @@
                         {% endif %}
                     </h4>
 
-                    {% set col = 3 if action == 'create' and screen_type in ['input', 'boards', 'players'] else 4 %}
+                    {% set col = 6 if action == 'create' and screen_type in ['input', 'boards', 'players'] else 4 %}
                     <div class="row">
                         <div class="col-12 col-xl-{{col}} mb-3">
                             {{ switch_input(
