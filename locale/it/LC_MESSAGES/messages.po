@@ -654,8 +654,23 @@ msgstr "Sono stati trovati errori su timer; tornei, schermi, famiglie e rotatori
 
 #: src/data/event.py
 #, ai_translation
+msgid "timer"
+msgstr "timer"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr "Sono stati trovati errori nei tornei; schermi, famiglie e rotatori non saranno caricati."
+
+#: src/data/event.py
+#, ai_translation
+msgid "tournament"
+msgstr "torneo"
+
+#: src/data/event.py
+#, ai_translation
+msgid "New tournament"
+msgstr "Nuovo torneo"
 
 #: src/data/event.py
 #, ai_translation
@@ -664,13 +679,28 @@ msgstr "Sono stati trovati errori sugli schermi; le famiglie e i rotatori non sa
 
 #: src/data/event.py
 #, ai_translation
+msgid "{screen_type}-screen"
+msgstr "{screen_type}-schermo"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr "Sono stati trovati errori sulle famiglie; i rotatori non saranno caricati."
 
 #: src/data/event.py
 #, ai_translation
+msgid "{family_type}-family"
+msgstr "{family_type}-famiglia"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on rotators."
 msgstr "Sono stati trovati errori sui rotatori."
+
+#: src/data/event.py
+#, ai_translation
+msgid "rotator"
+msgstr "rotatore"
 
 #: src/data/family.py
 #, ai_translation, python-format
@@ -839,7 +869,6 @@ msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Last results"
@@ -847,7 +876,6 @@ msgstr "Ultimi risultati"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Image"
@@ -1076,6 +1104,8 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
+# Error: translation [U12City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
@@ -1088,6 +1118,8 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
+# Error: translation [U16City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1098,6 +1130,8 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
+# Error: translation [U20City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #: src/data/util.py
@@ -1312,7 +1346,6 @@ msgstr "Abbinamenti a bordo"
 
 #: src/data/util.py src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1779,14 +1812,12 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr "Non è possibile specificare il numero di parti e il numero di elementi per parte."
 
 #: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "pairings by board"
 msgstr "Abbinamenti a bordo"
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/screens/tab.html
@@ -2180,11 +2211,6 @@ msgstr "URL non valido [{background_image}]."
 
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
-msgid "{screen_type}-screen"
-msgstr "{screen_type}-schermo"
-
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "Schermo [{screen_uniq_id}] è stato creato."
 
@@ -2307,16 +2333,6 @@ msgstr "L'ID FFE è un intero positivo."
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "La password del torneo sul sito FFE è composta da 10 lettere maiuscole."
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "tournament"
-msgstr "torneo"
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "New tournament"
-msgstr "Nuovo torneo"
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
@@ -5657,6 +5673,8 @@ msgstr "Numero massimo di risultati: illimitato"
 msgid "Image:"
 msgstr "Immagine:"
 
+# Error: translation [Rnd.BoaCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Rnd.Boa]
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html

@@ -653,8 +653,23 @@ msgstr "Se han encontrado errores en temporizadores; no se cargarán torneos, pa
 
 #: src/data/event.py
 #, ai_translation
+msgid "timer"
+msgstr "temporizador"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr "Se han encontrado errores en los torneos; las pantallas, las familias y los rotadores no se cargarán."
+
+#: src/data/event.py
+#, ai_translation
+msgid "tournament"
+msgstr "torneo"
+
+#: src/data/event.py
+#, ai_translation
+msgid "New tournament"
+msgstr "Nuevo torneo"
 
 #: src/data/event.py
 #, ai_translation
@@ -663,13 +678,28 @@ msgstr "Se han encontrado errores en las pantallas; las familias y los rotadores
 
 #: src/data/event.py
 #, ai_translation
+msgid "{screen_type}-screen"
+msgstr "{screen_type}-pantalla"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr "Se han encontrado errores en las familias; los rotadores no se cargarán."
 
 #: src/data/event.py
 #, ai_translation
+msgid "{family_type}-family"
+msgstr "{family_type}-familia"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on rotators."
 msgstr "Se han encontrado errores en los rotadores."
+
+#: src/data/event.py
+#, ai_translation
+msgid "rotator"
+msgstr "rotador"
 
 #: src/data/family.py
 #, ai_translation, python-format
@@ -820,7 +850,6 @@ msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Last results"
@@ -828,7 +857,6 @@ msgstr "Últimos resultados"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Image"
@@ -1287,7 +1315,6 @@ msgstr "Maridajes a bordo"
 
 #: src/data/util.py src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1754,14 +1781,12 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr "No es posible especificar el número de piezas y el número de elementos por pieza."
 
 #: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "pairings by board"
 msgstr "emparejamientos a bordo"
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/screens/tab.html
@@ -2155,11 +2180,6 @@ msgstr "URL no válida [{background_image}]."
 
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
-msgid "{screen_type}-screen"
-msgstr "{screen_type}-pantalla"
-
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "Pantalla [{screen_uniq_id}] ha sido creado."
 
@@ -2282,16 +2302,6 @@ msgstr "El ID FFE es un entero positivo."
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "La contraseña del torneo en el sitio web de la FFE está hecha de 10 letras mayúsculas."
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "tournament"
-msgstr "torneo"
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "New tournament"
-msgstr "Nuevo torneo"
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
