@@ -40,7 +40,7 @@ for l_entry in _locale_dir.iterdir():
                     if not po_file.is_file():
                         print_interactive_warning(f'PO file [{po_file}] not found.')
                     elif mo_file.lstat().st_mtime < po_file.lstat().st_mtime:
-                        print_interactive_warning(f'MO file [{po_file}] is out of date.')
+                        print_interactive_warning(f'MO file [{mo_file}] is out of date.')
             except Exception as ex:
                 print_interactive_error(f'Could not load locale [{l}]: {ex}.')
                 locale_error = True

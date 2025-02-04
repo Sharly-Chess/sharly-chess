@@ -19,8 +19,7 @@ sys.path.extend(map(str,
         Path(__file__).parents[2] / 'src',  # The path to the sources of the application
     ]))
 
-from common.i18n import default_locale, locale_localized_name, locale_flag_url, trusted_locales, \
-    translators
+from common.i18n import default_locale, locale_localized_name, locale_flag_url, trusted_locales, translators
 from common.logger import print_interactive_error, print_interactive_warning, print_interactive_info, \
     print_interactive_success, input_interactive, print_interactive_input
 from utils.i18n.i18n_translate import I18nTranslator
@@ -90,6 +89,7 @@ class LocaleInfo:
                 f'--output-dir={self.locale_dir}',
                 f'--input-file={pot_file}',
                 f'--output-file={self.po_file}',
+                '--no-fuzzy-matching',
                 '--no-wrap',
                 '--omit-header',
             ],
