@@ -347,21 +347,7 @@ class ScreenAdminController(AbstractEventAdminController):
                             name = web_context.admin_screen.stored_screen.name
                         case 'create':
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
-                                _('{screen_type}-screen').format(screen_type=screen_type))
-                            basic_name: str
-                            match screen_type:
-                                case 'input':
-                                    basic_name = _('Results entry')
-                                case 'boards':
-                                    basic_name = _('pairings by board')
-                                case 'players':
-                                    basic_name = _('Pairings by player')
-                                case 'results':
-                                    basic_name = _('Last results')
-                                case 'image':
-                                    basic_name = _('Image')
-                                case _:
-                                    raise ValueError(f'screen_type=[{screen_type}]')
+                                screen_type=ScreenType(screen_type))
                             match screen_type:
                                 case 'input' | 'boards' | 'players':
                                     init_set_tournament_id = list(web_context.admin_event.tournaments_by_id.keys())[0]
@@ -369,11 +355,14 @@ class ScreenAdminController(AbstractEventAdminController):
                                     pass
                                 case _:
                                     raise ValueError(f'screen_type=[{screen_type}]')
-                            name = web_context.admin_event.get_unused_screen_name(basic_name)
+                            name = web_context.admin_event.get_unused_screen_name(
+                                screen_type=ScreenType.from_str(screen_type))
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
-                                web_context.admin_screen.uniq_id)
-                            name = web_context.admin_event.get_unused_screen_name(web_context.admin_screen.name)
+                                base_uniq_id=web_context.admin_screen.uniq_id)
+                            name = web_context.admin_event.get_unused_screen_name(
+                                base_name=web_context.admin_screen.name,
+                                screen_type=ScreenType.from_str(web_context.admin_screen.type))
                         case 'delete':
                             pass
                         case _:

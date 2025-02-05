@@ -222,7 +222,7 @@ class TimerAdminController(AbstractEventAdminController):
                         case 'update':
                             uniq_id = web_context.admin_timer.stored_timer.uniq_id
                         case 'create':
-                            uniq_id = web_context.admin_event.get_unused_timer_uniq_id('timer')
+                            uniq_id = web_context.admin_event.get_unused_timer_uniq_id()
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_timer_uniq_id(
                                 web_context.admin_timer.stored_timer.uniq_id)

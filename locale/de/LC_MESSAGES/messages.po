@@ -654,8 +654,23 @@ msgstr "Fehler wurden auf Timern gefunden; Turniere, Bildschirme, Familien und R
 
 #: src/data/event.py
 #, ai_translation
+msgid "timer"
+msgstr "Zeitschaltuhr"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr "Fehler wurden auf Turnieren gefunden; Bildschirme, Familien und Rotatoren werden nicht geladen."
+
+#: src/data/event.py
+#, ai_translation
+msgid "tournament"
+msgstr "Turnier"
+
+#: src/data/event.py
+#, ai_translation
+msgid "New tournament"
+msgstr "Neues Turnier"
 
 #: src/data/event.py
 #, ai_translation
@@ -664,13 +679,28 @@ msgstr "Fehler wurden auf Bildschirmen gefunden; Familien und Rotatoren werden n
 
 #: src/data/event.py
 #, ai_translation
+msgid "{screen_type}-screen"
+msgstr "{screen_type}-Bildschirm"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr "Fehler wurden auf Familien gefunden; Rotatoren werden nicht geladen."
 
 #: src/data/event.py
 #, ai_translation
+msgid "{family_type}-family"
+msgstr "{family_type}-Familie"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on rotators."
 msgstr "Fehler wurden auf Rotatoren gefunden."
+
+#: src/data/event.py
+#, ai_translation
+msgid "rotator"
+msgstr "Drehmaschine"
 
 #: src/data/family.py
 #, ai_translation, python-format
@@ -839,7 +869,6 @@ msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Last results"
@@ -847,7 +876,6 @@ msgstr "Letzte Ergebnisse"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Image"
@@ -1067,6 +1095,10 @@ msgstr "FFE-Lizenz A (Wettbewerb)"
 # Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
 # DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
+# Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
 # DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
@@ -1080,11 +1112,18 @@ msgstr ""
 # Error: translation [U10
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U10]
+# Error: translation [U10
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U10]
 #: src/data/util.py
 #, ai_translation
 msgid "U10"
 msgstr ""
 
+# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
+# is much too long compared to initial [U12]
 # Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
@@ -1098,6 +1137,10 @@ msgstr ""
 msgid "U12"
 msgstr ""
 
+# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
+# is much too long compared to initial [U14]
 # Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -1114,6 +1157,9 @@ msgstr ""
 # Error: translation [U16
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U16]
+# Error: translation [U16
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1122,11 +1168,17 @@ msgstr ""
 # Error: translation [U18
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U18]
+# Error: translation [U18
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U18]
 #: src/data/util.py
 #, ai_translation
 msgid "U18"
 msgstr ""
 
+# Error: translation [U20
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U20]
 # Error: translation [U20
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U20]
@@ -1342,7 +1394,6 @@ msgstr "Kombinationen nach Bord"
 
 #: src/data/util.py src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1548,6 +1599,7 @@ msgstr "Inhalt der URL [{url}] ist nicht gültig (input[id=[{id]] nicht gefunden
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisieren einer Sitzung auf [{url}]..."
 
+# Error: translation [In Ordnung.] is much too long compared to initial [OK]
 # Error: translation [In Ordnung.] is much too long compared to initial [OK]
 #: src/ffe/ffe_session.py
 #: src/web/templates/admin/players/filter_categories.html
@@ -1810,14 +1862,12 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr "Die Angabe der Anzahl der Teile und der Anzahl der Teile pro Teil ist nicht möglich."
 
 #: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "pairings by board"
 msgstr "Paarungen nach Board"
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/screens/tab.html
@@ -2211,11 +2261,6 @@ msgstr "Ungültige URL [{background_image}]."
 
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
-msgid "{screen_type}-screen"
-msgstr "{screen_type}-Bildschirm"
-
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "Bildschirm [{screen_uniq_id}] wurde erstellt."
 
@@ -2338,16 +2383,6 @@ msgstr "Die FFE-ID ist eine positive Ganzzahl."
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Das Passwort des Turniers auf der FFE-Website besteht aus 10 Großbuchstaben."
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "tournament"
-msgstr "Turnier"
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "New tournament"
-msgstr "Neues Turnier"
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
@@ -4233,6 +4268,8 @@ msgstr "Telefonnummer:"
 msgid "The player's phone number."
 msgstr "Die Telefonnummer des Spielers."
 
+# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
+# compared to initial [Owed:]
 # Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
 # compared to initial [Owed:]
 #: src/web/templates/admin/players/player_modal.html

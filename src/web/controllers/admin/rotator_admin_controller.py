@@ -157,7 +157,7 @@ class RotatorAdminController(AbstractEventAdminController):
                         case 'update':
                             uniq_id = web_context.admin_rotator.stored_rotator.uniq_id
                         case 'create':
-                            uniq_id = web_context.admin_event.get_unused_rotator_uniq_id('rotator')
+                            uniq_id = web_context.admin_event.get_unused_rotator_uniq_id()
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_rotator_uniq_id(
                                 web_context.admin_rotator.stored_rotator.uniq_id)

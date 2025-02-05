@@ -10,6 +10,7 @@
 - Ajout d'une fédération sur les évènements
 - Correction du calcul des points virtuels en Système Accéléré Dégressif 
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
+- Correction d'un bug sur la duplication des écrans, familles et tournois
 
 ## Version 2.4.18 - 23 décembre 2024
 - Ajout de la possibilité d'ajouter des écrans par défaut à la création d'un tournoi

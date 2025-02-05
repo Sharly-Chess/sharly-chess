@@ -654,8 +654,23 @@ msgstr "Fel har hittats på timers; turneringar, skärmar, familjer och rotatore
 
 #: src/data/event.py
 #, ai_translation
+msgid "timer"
+msgstr "timer"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr "Fel har hittats på turneringar; skärmar, familjer och rotatorer kommer inte att laddas."
+
+#: src/data/event.py
+#, ai_translation
+msgid "tournament"
+msgstr "turnering"
+
+#: src/data/event.py
+#, ai_translation
+msgid "New tournament"
+msgstr "Ny turnering"
 
 #: src/data/event.py
 #, ai_translation
@@ -664,13 +679,28 @@ msgstr "Fel har hittats på skärmar; familjer och rotatorer kommer inte att lad
 
 #: src/data/event.py
 #, ai_translation
+msgid "{screen_type}-screen"
+msgstr "{screen_type}-skärm"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr "Fel har hittats på familjer; rotatorer kommer inte att laddas."
 
 #: src/data/event.py
 #, ai_translation
+msgid "{family_type}-family"
+msgstr "{family_type}-familj"
+
+#: src/data/event.py
+#, ai_translation
 msgid "Errors have been found on rotators."
 msgstr "Fel har upptäckts på rotatorer."
+
+#: src/data/event.py
+#, ai_translation
+msgid "rotator"
+msgstr "rotator"
 
 #: src/data/family.py
 #, ai_translation, python-format
@@ -839,7 +869,6 @@ msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Last results"
@@ -847,7 +876,6 @@ msgstr "Senaste resultat"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Image"
@@ -1065,11 +1093,15 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
+# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
+# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
+# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1105,6 +1137,9 @@ msgstr "U20 Ordförande"
 
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
+# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
@@ -1119,6 +1154,9 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
+# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
+# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
+# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -1319,7 +1357,6 @@ msgstr "Parningar ombord"
 
 #: src/data/util.py src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1786,14 +1823,12 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr "Det är inte möjligt att ange antalet delar och antalet objekt per del."
 
 #: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "pairings by board"
 msgstr "Parningar per plan"
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/screens/tab.html
@@ -2187,11 +2222,6 @@ msgstr "Ogiltig webbadress [{background_image}]."
 
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
-msgid "{screen_type}-screen"
-msgstr "{screen_type}-skärm"
-
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "Skärmen [{screen_uniq_id}] har skapats."
 
@@ -2314,16 +2344,6 @@ msgstr "FFE ID är ett positivt heltal."
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Lösenordet för turneringen på FFE webbplats är gjord av 10 stora bokstäver."
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "tournament"
-msgstr "turnering"
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "New tournament"
-msgstr "Ny turnering"
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
@@ -3159,6 +3179,8 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -3612,6 +3634,8 @@ msgstr "Starta webbläsaren vid serverstart"
 msgid "Yes"
 msgstr "Ja, det är jag."
 
+# Error: translation [Ej tillämpligt] is much too long compared to initial
+# [No]
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
 #: src/web/templates/admin/index/config_tab.html
@@ -5668,6 +5692,8 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
+# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
+# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
