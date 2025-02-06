@@ -78,7 +78,7 @@ class FFESession(Session):
                     if data:
                         logger.info('- data:')
                         for field_id, field in data.items():
-                            if field_id == 'ctl00$TextPassword':
+                            if 'password' in field_id.lower() or 'passwd' in field_id.lower():
                                 logger.info('  - %s: [********]', field_id)
                             else:
                                 logger.info(
