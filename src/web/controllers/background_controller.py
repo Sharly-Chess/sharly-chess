@@ -7,7 +7,6 @@ from litestar.enums import MediaType
 
 from common.background import inline_image_url
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
 from web.controllers.index_controller import WebContext, AbstractController
 
 logger: Logger = get_logger()
@@ -15,22 +14,23 @@ logger: Logger = get_logger()
 
 class BackgroundWebContext(WebContext):
     def __init__(
-            self, request: HTMXRequest,
-            color: str,
-            image: str,
+        self,
+        request: HTMXRequest,
+        color: str,
+        image: str,
     ):
         super().__init__(request)
         self.background: dict[str, str] = {
-            'color': color,
+            "color": color,
         }
         if not image:
-            self.background['url'] = ''
-        elif validators.url(image) or image.startswith('/'):
-            self.background['url'] = f'url({image})'
+            self.background["url"] = ""
+        elif validators.url(image) or image.startswith("/"):
+            self.background["url"] = f"url({image})"
         # elif image.startswith('/'):
         #     self.background['url'] = f'url({image})'
         else:
-            self.background['url'] = f'url({inline_image_url(image)})'
+            self.background["url"] = f"url({inline_image_url(image)})"
 
 
 class BackgroundController(AbstractController):
@@ -40,14 +40,11 @@ class BackgroundController(AbstractController):
     file in /custom is sent).
     """
 
-    @get(
-        path='/background',
-        name='background',
-        media_type=MediaType.JSON
-    )
+    @get(path="/background", name="background", media_type=MediaType.JSON)
     async def background(
-            self, request: HTMXRequest,
-            color: str,
-            image: str,
+        self,
+        request: HTMXRequest,
+        color: str,
+        image: str,
     ) -> dict[str, str]:
         return BackgroundWebContext(request, color=color, image=image).background

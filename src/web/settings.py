@@ -29,19 +29,23 @@ from web.controllers.index_controller import IndexController
 from web.controllers.user.event_user_controller import EventUserController
 from web.controllers.user.index_user_controller import IndexUserController
 from web.controllers.user.screen_user_controller import ScreenUserController
-from web.controllers.user.tournament_user_controller import CheckInUserController, IllegalMoveUserController, \
-    ResultUserController, DownloadUserController
+from web.controllers.user.tournament_user_controller import (
+    CheckInUserController,
+    IllegalMoveUserController,
+    ResultUserController,
+    DownloadUserController,
+)
 
-static_files_base_dir = BASE_DIR / 'src/web/static'
+static_files_base_dir = BASE_DIR / "src/web/static"
 
 static_files_folders = [
     static_files_base_dir,
 ]
 
 static_files_router: Router = create_static_files_router(
-    path='/static',
+    path="/static",
     directories=static_files_folders,
-    name='static',
+    name="static",
     # TODO using cache_control did not cache, make it work!
     # https://github.com/litestar-org/litestar/issues/3129
     cache_control=CacheControlHeader(max_age=3600),
@@ -80,13 +84,14 @@ route_handlers: Sequence[ControllerRouterHandler] = [
 #         template_callable=template_test_function,
 #     )
 
+
 class FileSystemLoaderWithRelativePath(FileSystemLoader):
     """override super().get_source() to allow .. in the template."""
 
     def get_source(
-            self,
-            environment: Environment,
-            template: str,
+        self,
+        environment: Environment,
+        template: str,
     ) -> t.Tuple[str, str, t.Callable[[], bool]]:
         # pieces = self.split_template_path(template)
         pieces: list[str] = template.split("/")
@@ -120,24 +125,34 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
-template_dir: Path = BASE_DIR / 'src/web/templates'
+template_dir: Path = BASE_DIR / "src/web/templates"
+
 
 class PapiWebEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
     - use a loader that accepts relative path with ..
     - load the gettext methods"""
+
     def __init__(
-            self,
-            directory: Path,
+        self,
+        directory: Path,
     ) -> None:
-        template_loader: FileSystemLoader = FileSystemLoaderWithRelativePath(searchpath=[directory])
-        super().__init__(loader=template_loader, autoescape=True, )
-        self.add_extension('jinja2.ext.i18n')
-        self.install_gettext_callables(gettext=gettext, ngettext=ngettext, newstyle=True)
+        template_loader: FileSystemLoader = FileSystemLoaderWithRelativePath(
+            searchpath=[directory]
+        )
+        super().__init__(
+            loader=template_loader,
+            autoescape=True,
+        )
+        self.add_extension("jinja2.ext.i18n")
+        self.install_gettext_callables(
+            gettext=gettext, ngettext=ngettext, newstyle=True
+        )
 
     def join_path(self, template: str, parent: str) -> str:
         return str(Path(parent).parent / template)
+
 
 template_engine: JinjaTemplateEngine = JinjaTemplateEngine(
     engine_instance=PapiWebEnvironment(template_dir),
@@ -149,12 +164,10 @@ template_config: TemplateConfig = TemplateConfig(
     # engine_callback=register_template_callables,
 )
 
-sessions_dir: Path = TMP_DIR / 'sessions'
+sessions_dir: Path = TMP_DIR / "sessions"
 sessions_dir.mkdir(parents=True, exist_ok=True)
 
-stores: dict[str, FileStore] = {
-    'sessions': FileStore(path=sessions_dir)
-}
+stores: dict[str, FileStore] = {"sessions": FileStore(path=sessions_dir)}
 
 middlewares: Sequence[Middleware] = [
     ServerSideSessionConfig().middleware,

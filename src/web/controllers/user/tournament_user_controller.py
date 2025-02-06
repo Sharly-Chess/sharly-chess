@@ -23,8 +23,11 @@ from data.util import Result
 from web.controllers.index_controller import AbstractController
 from web.controllers.user.event_user_controller import EventUserWebContext
 from web.controllers.user.index_user_controller import AbstractUserController
-from web.controllers.user.screen_user_controller import ScreenUserWebContext, AbstractScreenUserController, \
-    BasicScreenOrFamilyUserWebContext
+from web.controllers.user.screen_user_controller import (
+    ScreenUserWebContext,
+    AbstractScreenUserController,
+    BasicScreenOrFamilyUserWebContext,
+)
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -33,82 +36,124 @@ logger: Logger = get_logger()
 
 class TournamentUserWebContext(ScreenUserWebContext):
     def __init__(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
-            event_uniq_id: str,
-            screen_uniq_id: str | None,
-            screen_needed: bool,
-            tournament_id: int,
-            tournament_started: bool | None,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None,
+        event_uniq_id: str,
+        screen_uniq_id: str | None,
+        screen_needed: bool,
+        tournament_id: int,
+        tournament_started: bool | None,
     ):
         super().__init__(
-            request, data=data, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id, screen_needed=screen_needed)
+            request,
+            data=data,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            screen_needed=screen_needed,
+        )
         self.tournament: Tournament | None = None
         if self.error:
             return
         try:
-            self.tournament: Tournament = self.user_event.tournaments_by_id[tournament_id]
+            self.tournament: Tournament = self.user_event.tournaments_by_id[
+                tournament_id
+            ]
         except KeyError:
-            self._redirect_error(f'Tournament [{tournament_id}] not found.')
+            self._redirect_error(f"Tournament [{tournament_id}] not found.")
             return
         if tournament_started is not None:
             if tournament_started:
                 if not self.tournament.current_round:
-                    self._redirect_error(_('Tournament [{tournament_uniq_id}] is not started yet.').format(tournament_uniq_id=self.tournament.uniq_id))
+                    self._redirect_error(
+                        _(
+                            "Tournament [{tournament_uniq_id}] is not started yet."
+                        ).format(tournament_uniq_id=self.tournament.uniq_id)
+                    )
                     return
             else:
                 if self.tournament.current_round:
-                    self._redirect_error(_('Tournament [{tournament_uniq_id}] is started.').format(tournament_uniq_id=self.tournament.uniq_id))
+                    self._redirect_error(
+                        _("Tournament [{tournament_uniq_id}] is started.").format(
+                            tournament_uniq_id=self.tournament.uniq_id
+                        )
+                    )
                     return
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'tournament': self.tournament,
+            "tournament": self.tournament,
         }
 
 
 class BoardUserWebContext(TournamentUserWebContext):
     def __init__(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            board_id: int,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        board_id: int,
     ):
         super().__init__(
-            request, data=data, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id, screen_needed=True,
-            tournament_id=tournament_id, tournament_started=True)
+            request,
+            data=data,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            screen_needed=True,
+            tournament_id=tournament_id,
+            tournament_started=True,
+        )
         self.board: Board | None = None
         if self.error:
             return
         try:
             self.board = self.tournament.boards[board_id - 1]
         except KeyError:
-            self._redirect_error(f'Board [{board_id}] not found.')
+            self._redirect_error(f"Board [{board_id}] not found.")
             return
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'board': self.board,
+            "board": self.board,
         }
 
 
 class PlayerUserWebContext(TournamentUserWebContext):
     def __init__(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            player_id: int,
-            tournament_started: bool | None,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        player_id: int,
+        tournament_started: bool | None,
     ):
         super().__init__(
-            request, data=data, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id, screen_needed=True,
-            tournament_id=tournament_id, tournament_started=tournament_started)
+            request,
+            data=data,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            screen_needed=True,
+            tournament_id=tournament_id,
+            tournament_started=tournament_started,
+        )
         self.player: Player | None = None
         self.board: Board | None = None
         if self.error:
@@ -116,15 +161,19 @@ class PlayerUserWebContext(TournamentUserWebContext):
         try:
             self.player = self.tournament.players_by_id[player_id]
         except KeyError:
-            self._redirect_error(f'Player [{player_id}] not found.')
+            self._redirect_error(f"Player [{player_id}] not found.")
             return
-        self.board = self.tournament.boards[self.player.board_id - 1] if self.player.board_id else None
+        self.board = (
+            self.tournament.boards[self.player.board_id - 1]
+            if self.player.board_id
+            else None
+        )
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'player': self.player,
-            'board': self.board,
+            "player": self.player,
+            "board": self.board,
         }
 
 
@@ -134,48 +183,70 @@ class AbstractInputUserController(AbstractScreenUserController):
 
 class CheckInUserController(AbstractInputUserController):
     @get(
-        path='/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
-        name='user-checkin-modal'
+        path="/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}",
+        name="user-checkin-modal",
     )
     async def htmx_user_checkin_modal(
-            self,
-            request: HTMXRequest,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            player_id: int,
-    ) -> Template | ClientRedirect:
-        web_context: PlayerUserWebContext = PlayerUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id,
-            tournament_id=tournament_id, player_id=player_id, tournament_started=False)
-        if web_context.error:
-            return web_context.error
-        return HTMXTemplate(
-            template_name="user/screen.html",
-            context=web_context.template_context | {
-            })
-
-    @patch(
-        path='/user/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
-        name='user-toggle-check-in',
-    )
-    async def htmx_user_toggle_check_in(
-        self, request: HTMXRequest,
+        self,
+        request: HTMXRequest,
         event_uniq_id: str,
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
     ) -> Template | ClientRedirect:
         web_context: PlayerUserWebContext = PlayerUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id,
-            tournament_id=tournament_id, player_id=player_id, tournament_started=False)
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            player_id=player_id,
+            tournament_started=False,
+        )
         if web_context.error:
             return web_context.error
-        web_context.tournament.check_in_player(web_context.player, not web_context.player.check_in)
-        SessionHandler.set_session_user_last_check_in_updated(request, web_context.tournament.id, web_context.player.id)
+        return HTMXTemplate(
+            template_name="user/screen.html", context=web_context.template_context | {}
+        )
+
+    @patch(
+        path="/user/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}",
+        name="user-toggle-check-in",
+    )
+    async def htmx_user_toggle_check_in(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        player_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: PlayerUserWebContext = PlayerUserWebContext(
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            player_id=player_id,
+            tournament_started=False,
+        )
+        if web_context.error:
+            return web_context.error
+        web_context.tournament.check_in_player(
+            web_context.player, not web_context.player.check_in
+        )
+        SessionHandler.set_session_user_last_check_in_updated(
+            request, web_context.tournament.id, web_context.player.id
+        )
         EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
-        web_context: BasicScreenOrFamilyUserWebContext = BasicScreenOrFamilyUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id)
+        web_context: BasicScreenOrFamilyUserWebContext = (
+            BasicScreenOrFamilyUserWebContext(
+                request,
+                data=None,
+                event_uniq_id=event_uniq_id,
+                screen_uniq_id=screen_uniq_id,
+            )
+        )
         if web_context.error:
             return web_context.error
         return self._user_screen_render(web_context)
@@ -183,174 +254,248 @@ class CheckInUserController(AbstractInputUserController):
 
 class IllegalMoveUserController(AbstractInputUserController):
     def _delete_or_add_illegal_move(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            player_id: int,
-            add: bool
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        player_id: int,
+        add: bool,
     ) -> Template | ClientRedirect:
         web_context: PlayerUserWebContext = PlayerUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id,
-            tournament_id=tournament_id, player_id=player_id, tournament_started=True)
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            player_id=player_id,
+            tournament_started=True,
+        )
         if web_context.error:
             return web_context.error
         if add:
             web_context.tournament.store_illegal_move(web_context.player)
             SessionHandler.set_session_user_last_illegal_move_updated(
-                request, web_context.tournament.id, web_context.player.id)
+                request, web_context.tournament.id, web_context.player.id
+            )
         else:
             if not web_context.tournament.delete_illegal_move(web_context.player):
                 Message.error(
                     request,
-                    f'Player [{web_context.player.id}] has no illegal move recorded.')
+                    f"Player [{web_context.player.id}] has no illegal move recorded.",
+                )
             else:
                 SessionHandler.set_session_user_last_illegal_move_updated(
-                    request, web_context.tournament.id, web_context.player.id)
+                    request, web_context.tournament.id, web_context.player.id
+                )
         EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
-        web_context: BasicScreenOrFamilyUserWebContext = BasicScreenOrFamilyUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id)
+        web_context: BasicScreenOrFamilyUserWebContext = (
+            BasicScreenOrFamilyUserWebContext(
+                request,
+                data=None,
+                event_uniq_id=event_uniq_id,
+                screen_uniq_id=screen_uniq_id,
+            )
+        )
         if web_context.error:
             return web_context.error
         return self._user_screen_render(web_context)
 
     @put(
-        path='/user/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
-        name='user-add-illegal-move',
+        path="/user/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}",
+        name="user-add-illegal-move",
         status_code=HTTP_200_OK,
     )
     async def htmx_user_add_illegal_move(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            player_id: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        player_id: int,
     ) -> Template | ClientRedirect:
         return self._delete_or_add_illegal_move(
-            request, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id, tournament_id=tournament_id,
-            player_id=player_id, add=True)
+            request,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            player_id=player_id,
+            add=True,
+        )
 
     @delete(
-        path='/user/delete-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
-        name='user-delete-illegal-move',
+        path="/user/delete-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}",
+        name="user-delete-illegal-move",
         status_code=HTTP_200_OK,
     )
     async def htmx_user_delete_illegal_move(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            player_id: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        player_id: int,
     ) -> Template | ClientRedirect:
         return self._delete_or_add_illegal_move(
-            request, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id, tournament_id=tournament_id,
-            player_id=player_id, add=False)
+            request,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            player_id=player_id,
+            add=False,
+        )
 
 
 class ResultUserController(AbstractInputUserController):
     @get(
-        path='/user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}',
-        name='user-result-modal'
+        path="/user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}",
+        name="user-result-modal",
     )
     async def htmx_user_result_modal(
-            self,
-            request: HTMXRequest,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            board_id: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        board_id: int,
     ) -> Template | ClientRedirect:
         web_context: BoardUserWebContext = BoardUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id,
-            tournament_id=tournament_id, board_id=board_id)
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            board_id=board_id,
+        )
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name="user/screen.html",
-            context=web_context.template_context | {
-            })
+            template_name="user/screen.html", context=web_context.template_context | {}
+        )
 
     def _user_update_result(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            round: int,
-            board_id: int,
-            result: int | None,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        round: int,
+        board_id: int,
+        result: int | None,
     ) -> Template | ClientRedirect:
         web_context: BoardUserWebContext = BoardUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id, tournament_id=tournament_id,
-            board_id=board_id)
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            board_id=board_id,
+        )
         if web_context.error:
             return web_context.error
         if round not in range(1, web_context.tournament.rounds + 1):
-            return AbstractController.redirect_error(request, f'Invalid round number [{round}].')
+            return AbstractController.redirect_error(
+                request, f"Invalid round number [{round}]."
+            )
         if result is None:
             if not web_context.admin_auth:
-                return AbstractController.redirect_error(request, f'Result deletion is not allowed.')
+                return AbstractController.redirect_error(
+                    request, "Result deletion is not allowed."
+                )
             with suppress(ValueError):
                 web_context.tournament.delete_result(web_context.board)
         else:
-            if result not in (Result.admin_imputable_results() if web_context.admin_auth else Result.user_imputable_results()):
-                return AbstractController.redirect_error(request, f'Invalid result [{result}].')
-            web_context.tournament.add_result(web_context.board, Result.from_papi_value(result))
-        SessionHandler.set_session_last_result_updated(request, web_context.tournament.id, round, web_context.board.id)
+            if result not in (
+                Result.admin_imputable_results()
+                if web_context.admin_auth
+                else Result.user_imputable_results()
+            ):
+                return AbstractController.redirect_error(
+                    request, f"Invalid result [{result}]."
+                )
+            web_context.tournament.add_result(
+                web_context.board, Result.from_papi_value(result)
+            )
+        SessionHandler.set_session_last_result_updated(
+            request, web_context.tournament.id, round, web_context.board.id
+        )
         EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
-        web_context: BasicScreenOrFamilyUserWebContext = BasicScreenOrFamilyUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id)
+        web_context: BasicScreenOrFamilyUserWebContext = (
+            BasicScreenOrFamilyUserWebContext(
+                request,
+                data=None,
+                event_uniq_id=event_uniq_id,
+                screen_uniq_id=screen_uniq_id,
+            )
+        )
         if web_context.error:
             return web_context.error
         return self._user_screen_render(web_context)
 
     @put(
-        path='/user/add-result/'
-             '{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}/{result:int}',
-        name='user-add-result'
+        path="/user/add-result/"
+        "{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}/{result:int}",
+        name="user-add-result",
     )
     async def htmx_user_add_result(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            round: int,
-            board_id: int,
-            result: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        round: int,
+        board_id: int,
+        result: int,
     ) -> Template | ClientRedirect:
         return self._user_update_result(
-            request, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id, tournament_id=tournament_id,
-            round=round, board_id=board_id, result=result)
+            request,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            round=round,
+            board_id=board_id,
+            result=result,
+        )
 
     @delete(
-        path='/user/delete-result/'
-             '{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}',
-        name='user-delete-result',
+        path="/user/delete-result/"
+        "{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}",
+        name="user-delete-result",
         status_code=HTTP_200_OK,
     )
     async def htmx_user_delete_result(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_uniq_id: str,
-            tournament_id: int,
-            round: int,
-            board_id: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+        tournament_id: int,
+        round: int,
+        board_id: int,
     ) -> Template | ClientRedirect:
         return self._user_update_result(
-            request, event_uniq_id=event_uniq_id, screen_uniq_id=screen_uniq_id, tournament_id=tournament_id,
-            round=round, board_id=board_id, result=None)
+            request,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=screen_uniq_id,
+            tournament_id=tournament_id,
+            round=round,
+            board_id=board_id,
+            result=None,
+        )
 
 
 class DownloadUserController(AbstractUserController):
     @get(
-        path='/user/download-tournaments/{event_uniq_id:str}',
-        name='user-download-tournaments'
+        path="/user/download-tournaments/{event_uniq_id:str}",
+        name="user-download-tournaments",
     )
     async def htmx_user_download_event_tournaments(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
     ) -> Response[bytes] | ClientRedirect:
         web_context: EventUserWebContext = EventUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, user_event_tab=None)
+            request, data=None, event_uniq_id=event_uniq_id, user_event_tab=None
+        )
         if web_context.error:
             return web_context.error
         tournament_files: list[Path] = [
@@ -360,31 +505,43 @@ class DownloadUserController(AbstractUserController):
         ]
         if not tournament_files:
             return AbstractController.redirect_error(
-                request, f'No Papi file for event [{web_context.user_event.uniq_id}].')
+                request, f"No Papi file for event [{web_context.user_event.uniq_id}]."
+            )
         archive = BytesIO()
-        with ZipFile(archive, 'w') as zip_archive:
+        with ZipFile(archive, "w") as zip_archive:
             for tournament_file in tournament_files:
                 zip_entry: ZipInfo = ZipInfo(tournament_file.name)
-                with open(tournament_file, 'rb') as tournament_handler:
-                    zip_archive.writestr(
-                        zip_entry, tournament_handler.read())
-        return Response(content=bytes(archive.getbuffer()), media_type='application/zip')
+                with open(tournament_file, "rb") as tournament_handler:
+                    zip_archive.writestr(zip_entry, tournament_handler.read())
+        return Response(
+            content=bytes(archive.getbuffer()), media_type="application/zip"
+        )
 
     @get(
-        path='/user/download-tournament/{event_uniq_id:str}/{tournament_id:str}',
-        name='user-download-tournament'
+        path="/user/download-tournament/{event_uniq_id:str}/{tournament_id:str}",
+        name="user-download-tournament",
     )
     async def htmx_user_download_tournament(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            tournament_id: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
     ) -> File | ClientRedirect:
         web_context: TournamentUserWebContext = TournamentUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, screen_uniq_id=None, screen_needed=False,
-            tournament_id=tournament_id, tournament_started=None)
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=None,
+            screen_needed=False,
+            tournament_id=tournament_id,
+            tournament_started=None,
+        )
         if web_context.error:
             return web_context.error
         if not web_context.tournament.file_exists:
             return AbstractController.redirect_error(
-                request, f'Papi file [{web_context.tournament.file}] not found.')
-        return File(path=web_context.tournament.file, filename=web_context.tournament.file.name)
+                request, f"Papi file [{web_context.tournament.file}] not found."
+            )
+        return File(
+            path=web_context.tournament.file, filename=web_context.tournament.file.name
+        )

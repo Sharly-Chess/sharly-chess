@@ -21,8 +21,13 @@ ROTATOR_DEFAULT_DELAY: int = 15
 
 class Rotator:
     """A data wrapper around a stored rotator."""
-    def __init__(self, event: 'Event', stored_rotator: StoredRotator, ):
-        self.event: 'Event' = event
+
+    def __init__(
+        self,
+        event: "Event",
+        stored_rotator: StoredRotator,
+    ):
+        self.event: "Event" = event
         self.stored_rotator: StoredRotator = stored_rotator
 
     @property
@@ -39,8 +44,11 @@ class Rotator:
 
     @property
     def delay(self) -> int:
-        return self.stored_rotator.delay if self.stored_rotator.delay is not None \
+        return (
+            self.stored_rotator.delay
+            if self.stored_rotator.delay is not None
             else PapiWebConfig.default_rotator_delay
+        )
 
     @property
     def message_default(self) -> bool:
@@ -48,7 +56,11 @@ class Rotator:
 
     @property
     def message_text(self) -> str | None:
-        return self.event.message_text if self.message_default else self.stored_rotator.message_text
+        return (
+            self.event.message_text
+            if self.message_default
+            else self.stored_rotator.message_text
+        )
 
     @cached_property
     def screens(self) -> list[Screen]:
@@ -72,5 +84,7 @@ class Rotator:
     def rotating_screens(self) -> list[Screen]:
         rotating_screens: list[Screen] = [screen for screen in self.screens]
         for family in self.families:
-            rotating_screens += [screen for screen in family.screens_by_uniq_id.values()]
+            rotating_screens += [
+                screen for screen in family.screens_by_uniq_id.values()
+            ]
         return rotating_screens

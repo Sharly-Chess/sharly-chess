@@ -12,12 +12,13 @@ from common.logger import get_logger
 logger: Logger = get_logger()
 
 pyodbc.pooling = False
-logger.info('Pooling ODBC : %s', 'enabled' if pyodbc.pooling else 'disabled')
+logger.info("Pooling ODBC : %s", "enabled" if pyodbc.pooling else "disabled")
 
 
 @dataclass
 class AccessDatabase:
     """Base class for Access-based databases."""
+
     file: Path
     write: bool = field(default=False)
     database: pyodbc.Connection | None = field(init=False, default=None)
@@ -26,21 +27,25 @@ class AccessDatabase:
     def __enter__(self) -> Self:
         needed_driver: str = access_driver()
         if needed_driver not in pyodbc.drivers():
-            logger.error('Installed ODBC drivers are:')
+            logger.error("Installed ODBC drivers are:")
             for driver in odbc_drivers():
-                logger.error(' - %s', driver)
-            logger.error('Needed driver: %s', needed_driver)
-            install_url: str = 'https://www.microsoft.com/en-us/download/details.aspx?id=54920'
-            logger.error('Install the driver (see %s) and restart.', install_url)
-            logger.error('Note: 32/64bits compatibility: accessdatabaseengine_X64.exe /passive')
-            raise PapiWebException('Microsoft Access driver not found.')
-        db_url: str = f'DRIVER={{{needed_driver}}};DBQ={self.file.resolve()};'
+                logger.error(" - %s", driver)
+            logger.error("Needed driver: %s", needed_driver)
+            install_url: str = (
+                "https://www.microsoft.com/en-us/download/details.aspx?id=54920"
+            )
+            logger.error("Install the driver (see %s) and restart.", install_url)
+            logger.error(
+                "Note: 32/64bits compatibility: accessdatabaseengine_X64.exe /passive"
+            )
+            raise PapiWebException("Microsoft Access driver not found.")
+        db_url: str = f"DRIVER={{{needed_driver}}};DBQ={self.file.resolve()};"
         # Get rid of unresolved pyodbc.Error: ('HY000', 'The driver did not supply an error!')
         while self.database is None:
             try:
                 self.database = pyodbc.connect(db_url, readonly=not self.write)
             except pyodbc.Error as e:
-                logger.error('Connection to file %s failed: %s', self.file, e.args)
+                logger.error("Connection to file %s failed: %s", self.file, e.args)
                 time.sleep(1)
         self.cursor = self.database.cursor()
         return self
@@ -87,4 +92,4 @@ def odbc_drivers() -> list[str]:
 
 
 def access_driver() -> str:
-    return 'Microsoft Access Driver (*.mdb, *.accdb)'
+    return "Microsoft Access Driver (*.mdb, *.accdb)"

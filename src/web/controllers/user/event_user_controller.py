@@ -19,19 +19,26 @@ from data.loader import EventLoader
 from data.rotator import Rotator
 from data.screen import Screen
 from data.util import ScreenType
-from web.controllers.user.index_user_controller import AbstractUserController, UserWebContext
+from web.controllers.user.index_user_controller import (
+    AbstractUserController,
+    UserWebContext,
+)
 from web.messages import Message
-from web.session import SessionHandler
 
 logger: Logger = get_logger()
 
 
 class EventUserWebContext(UserWebContext):
     def __init__(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
-            event_uniq_id: str,
-            user_event_tab: str | None,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None,
+        event_uniq_id: str,
+        user_event_tab: str | None,
     ):
         super().__init__(request, data=data, user_tab=None)
         self.user_event: Event | None = None
@@ -39,16 +46,18 @@ class EventUserWebContext(UserWebContext):
         if self.error:
             return
         if not event_uniq_id:
-            self._redirect_error('Event not set.')
+            self._redirect_error("Event not set.")
             return
         try:
-            self.user_event = EventLoader.get(request=self.request).load_event(event_uniq_id)
+            self.user_event = EventLoader.get(request=self.request).load_event(
+                event_uniq_id
+            )
             if self.user_event.public or self.admin_auth:
                 self.user_event_tab = user_event_tab
                 return
-            self._redirect_error(f'Access denied for event [{event_uniq_id}].')
+            self._redirect_error(f"Access denied for event [{event_uniq_id}].")
         except PapiWebException as pwe:
-            self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}.')
+            self._redirect_error(f"Event [{event_uniq_id}] not found: {pwe}.")
 
     def check_user_tab(self):
         pass
@@ -64,16 +73,15 @@ class EventUserWebContext(UserWebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'user_event_tab': self.user_event_tab,
-            'user_event': self.user_event,
+            "user_event_tab": self.user_event_tab,
+            "user_event": self.user_event,
         }
 
 
 class EventUserController(AbstractUserController):
-
     @staticmethod
     def _user_event_render(
-            web_context: EventUserWebContext,
+        web_context: EventUserWebContext,
     ) -> Template:
         input_screens: list[Screen]
         boards_screens: list[Screen]
@@ -89,59 +97,89 @@ class EventUserController(AbstractUserController):
             image_screens = web_context.user_event.image_screens_sorted_by_uniq_id
             rotators = web_context.user_event.rotators_sorted_by_uniq_id
         else:
-            input_screens = web_context.user_event.public_input_screens_sorted_by_uniq_id
-            boards_screens = web_context.user_event.public_boards_screens_sorted_by_uniq_id
-            players_screens = web_context.user_event.public_players_screens_sorted_by_uniq_id
-            results_screens = web_context.user_event.public_results_screens_sorted_by_uniq_id
-            image_screens = web_context.user_event.public_image_screens_sorted_by_uniq_id
+            input_screens = (
+                web_context.user_event.public_input_screens_sorted_by_uniq_id
+            )
+            boards_screens = (
+                web_context.user_event.public_boards_screens_sorted_by_uniq_id
+            )
+            players_screens = (
+                web_context.user_event.public_players_screens_sorted_by_uniq_id
+            )
+            results_screens = (
+                web_context.user_event.public_results_screens_sorted_by_uniq_id
+            )
+            image_screens = (
+                web_context.user_event.public_image_screens_sorted_by_uniq_id
+            )
             rotators = web_context.user_event.public_rotators_sorted_by_uniq_id
         nav_tabs: dict[str, dict] = {
-            'input': {
-                'title': _('Results entry ({num})').format(num=len(input_screens) or "-"),
-                'screens': input_screens,
-                'disabled': not input_screens,
+            "input": {
+                "title": _("Results entry ({num})").format(
+                    num=len(input_screens) or "-"
+                ),
+                "screens": input_screens,
+                "disabled": not input_screens,
             },
-            'boards': {
-                'title': _('Pairings by board ({num})').format(num=len(boards_screens) or "-"),
-                'screens': boards_screens,
-                'disabled': not boards_screens,
+            "boards": {
+                "title": _("Pairings by board ({num})").format(
+                    num=len(boards_screens) or "-"
+                ),
+                "screens": boards_screens,
+                "disabled": not boards_screens,
             },
-            'players': {
-                'title': _('Pairings by player ({num})').format(num=len(players_screens) or "-"),
-                'screens': players_screens,
-                'disabled': not players_screens,
+            "players": {
+                "title": _("Pairings by player ({num})").format(
+                    num=len(players_screens) or "-"
+                ),
+                "screens": players_screens,
+                "disabled": not players_screens,
             },
-            'results': {
-                'title': _('Last results ({num})').format(num=len(results_screens) or "-"),
-                'screens': results_screens,
-                'disabled': not results_screens,
+            "results": {
+                "title": _("Last results ({num})").format(
+                    num=len(results_screens) or "-"
+                ),
+                "screens": results_screens,
+                "disabled": not results_screens,
             },
-            'image': {
-                'title': _('Image ({num})').format(num=len(image_screens) or "-"),
-                'screens': image_screens,
-                'disabled': not image_screens,
+            "image": {
+                "title": _("Image ({num})").format(num=len(image_screens) or "-"),
+                "screens": image_screens,
+                "disabled": not image_screens,
             },
-            'rotators': {
-                'title': _('Rotators ({num})').format(num=len(rotators) or "-"),
-                'rotators': rotators,
-                'disabled': not rotators,
+            "rotators": {
+                "title": _("Rotators ({num})").format(num=len(rotators) or "-"),
+                "rotators": rotators,
+                "disabled": not rotators,
             },
         }
-        if not web_context.user_event_tab or nav_tabs[web_context.user_event_tab]['disabled']:
+        if (
+            not web_context.user_event_tab
+            or nav_tabs[web_context.user_event_tab]["disabled"]
+        ):
             web_context.user_event_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
-            if web_context.user_event_tab == list(nav_tabs.keys())[nav_index] \
-                    and nav_tabs[web_context.user_event_tab]['disabled']:
-                web_context.user_event_tab = list(nav_tabs.keys())[(nav_index + 1) % len(nav_tabs)]
+            if (
+                web_context.user_event_tab == list(nav_tabs.keys())[nav_index]
+                and nav_tabs[web_context.user_event_tab]["disabled"]
+            ):
+                web_context.user_event_tab = list(nav_tabs.keys())[
+                    (nav_index + 1) % len(nav_tabs)
+                ]
         return HTMXTemplate(
             template_name="user/event.html",
-            context=web_context.template_context | {
-                'messages': Message.messages(web_context.request),
-                'nav_tabs': nav_tabs,
-            })
+            context=web_context.template_context
+            | {
+                "messages": Message.messages(web_context.request),
+                "nav_tabs": nav_tabs,
+            },
+        )
 
     @staticmethod
-    def _user_event_refresh_needed(event: Event, date: float, ) -> bool:
+    def _user_event_refresh_needed(
+        event: Event,
+        date: float,
+    ) -> bool:
         if event.last_update > date:
             return True
         for screen in event.basic_screens_by_id.values():
@@ -152,7 +190,10 @@ class EventUserController(AbstractUserController):
                     return True
                 if screen_set.tournament.last_update > date:
                     return True
-                if screen.type in [ScreenType.Boards, ScreenType.Input, ]:
+                if screen.type in [
+                    ScreenType.Boards,
+                    ScreenType.Input,
+                ]:
                     if screen_set.tournament.last_illegal_move_update > date:
                         return True
                     if screen_set.tournament.last_result_update > date:
@@ -162,11 +203,19 @@ class EventUserController(AbstractUserController):
                 if screen_set.tournament.last_check_in_update > date:
                     return True
             if screen.type == ScreenType.Results:
-                results_tournament_ids: list[int] = screen.results_tournament_ids \
-                    if screen.results_tournament_ids else event.tournaments_by_id.keys()
+                results_tournament_ids: list[int] = (
+                    screen.results_tournament_ids
+                    if screen.results_tournament_ids
+                    else event.tournaments_by_id.keys()
+                )
                 for tournament_id in results_tournament_ids:
                     with suppress(KeyError):
-                        if screen.event.tournaments_by_id[tournament_id].last_result_update > date:
+                        if (
+                            screen.event.tournaments_by_id[
+                                tournament_id
+                            ].last_result_update
+                            > date
+                        ):
                             return True
         for family in event.families_by_id.values():
             if family.last_update > date:
@@ -185,48 +234,63 @@ class EventUserController(AbstractUserController):
                     if family.tournament.last_check_in_update > date:
                         return True
                 case _:
-                    raise ValueError(f'type={family.type}')
+                    raise ValueError(f"type={family.type}")
         return False
 
     def _user_event(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            user_event_tab: str | None,
-            locale: str | None,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        user_event_tab: str | None,
+        locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         self.set_locale(request, locale)
         web_context: EventUserWebContext = EventUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, user_event_tab=user_event_tab)
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            user_event_tab=user_event_tab,
+        )
         if web_context.error:
             return web_context.error
         date: float | None = self.get_if_modified_since(request)
-        if date is None or self._user_event_refresh_needed(web_context.user_event, date):
+        if date is None or self._user_event_refresh_needed(
+            web_context.user_event, date
+        ):
             return self._user_event_render(web_context)
         else:
-            return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
+            return Reswap(
+                content=None, method="none", status_code=HTTP_304_NOT_MODIFIED
+            )
 
     @get(
-        path='/user/event/{event_uniq_id:str}',
-        name='user-event',
+        path="/user/event/{event_uniq_id:str}",
+        name="user-event",
     )
     async def htmx_user_event(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            locale: str | None,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         return self._user_event(
-            request, event_uniq_id=event_uniq_id, user_event_tab=None, locale=locale)
+            request, event_uniq_id=event_uniq_id, user_event_tab=None, locale=locale
+        )
 
     @get(
-        path='/user/event/{event_uniq_id:str}/{user_event_tab:str}',
-        name='user-event-tab',
+        path="/user/event/{event_uniq_id:str}/{user_event_tab:str}",
+        name="user-event-tab",
     )
     async def htmx_user_event_tab(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            user_event_tab: str,
-            locale: str | None,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        user_event_tab: str,
+        locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         return self._user_event(
-            request, event_uniq_id=event_uniq_id, user_event_tab=user_event_tab,
-            locale=locale)
+            request,
+            event_uniq_id=event_uniq_id,
+            user_event_tab=user_event_tab,
+            locale=locale,
+        )

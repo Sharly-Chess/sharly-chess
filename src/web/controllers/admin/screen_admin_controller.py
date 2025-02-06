@@ -19,7 +19,10 @@ from data.screen_set import ScreenSet
 from data.util import ScreenType
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredScreen, StoredScreenSet
-from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
+from web.controllers.admin.event_admin_controller import (
+    EventAdminWebContext,
+    AbstractEventAdminController,
+)
 from web.controllers.index_controller import WebContext, AbstractController
 from web.messages import Message
 
@@ -28,15 +31,25 @@ logger: Logger = get_logger()
 
 class ScreenAdminWebContext(EventAdminWebContext):
     def __init__(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            admin_event_tab: str | None,
-            screen_id: int | None,
-            screen_type: str | None,
-            screen_set_id: int | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        admin_event_tab: str | None,
+        screen_id: int | None,
+        screen_type: str | None,
+        screen_set_id: int | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None,
     ):
-        super().__init__(request, event_uniq_id=event_uniq_id, admin_event_tab=admin_event_tab, data=data)
+        super().__init__(
+            request,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab=admin_event_tab,
+            data=data,
+        )
         self.admin_screen: Screen | None = None
         self.admin_screen_set: ScreenSet | None = None
         if self.error:
@@ -45,33 +58,38 @@ class ScreenAdminWebContext(EventAdminWebContext):
             try:
                 self.admin_screen = self.admin_event.basic_screens_by_id[screen_id]
             except KeyError:
-                self._redirect_error(f'Screen [{screen_id}] not found.')
+                self._redirect_error(f"Screen [{screen_id}] not found.")
                 return
         self.screen_type = screen_type
         if screen_set_id:
             try:
-                self.admin_screen_set = self.admin_screen.screen_sets_by_id[screen_set_id]
+                self.admin_screen_set = self.admin_screen.screen_sets_by_id[
+                    screen_set_id
+                ]
             except KeyError:
-                self._redirect_error(f'Screen set [{screen_set_id}] not found for screen [{self.admin_screen.uniq_id}]')
+                self._redirect_error(
+                    f"Screen set [{screen_set_id}] not found for screen [{self.admin_screen.uniq_id}]"
+                )
                 return
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'admin_screen': self.admin_screen,
-            'screen_type': self.admin_screen.type if self.admin_screen else self.screen_type,
-            'admin_screen_set': self.admin_screen_set,
+            "admin_screen": self.admin_screen,
+            "screen_type": self.admin_screen.type
+            if self.admin_screen
+            else self.screen_type,
+            "admin_screen_set": self.admin_screen_set,
         }
 
 
 class ScreenAdminController(AbstractEventAdminController):
-
     @classmethod
     def _admin_validate_screen_update_data(
-            cls,
-            action: str,
-            web_context: ScreenAdminWebContext,
-            data: dict[str, str] | None = None,
+        cls,
+        action: str,
+        web_context: ScreenAdminWebContext,
+        data: dict[str, str] | None = None,
     ) -> StoredScreen:
         errors: dict[str, str] = {}
         if data is None:
@@ -80,23 +98,28 @@ class ScreenAdminController(AbstractEventAdminController):
         type: str
         init_set_tournament_id: int | None = None
         match action:
-            case 'create':
+            case "create":
                 type = web_context.screen_type
                 match type:
-                    case 'boards' | 'input' | 'players':
-                        field = 'init_set_tournament_id'
-                        init_set_tournament_id = WebContext.form_data_to_int(data, field)
-                        if init_set_tournament_id not in web_context.admin_event.tournaments_by_id:
-                            errors[field] = _('Please choose the tournament.')
-                    case 'results' | 'image':
+                    case "boards" | "input" | "players":
+                        field = "init_set_tournament_id"
+                        init_set_tournament_id = WebContext.form_data_to_int(
+                            data, field
+                        )
+                        if (
+                            init_set_tournament_id
+                            not in web_context.admin_event.tournaments_by_id
+                        ):
+                            errors[field] = _("Please choose the tournament.")
+                    case "results" | "image":
                         pass
                     case _:
-                        raise ValueError(f'type=[{type}]')
-            case 'update' | 'clone' | 'delete':
+                        raise ValueError(f"type=[{type}]")
+            case "update" | "clone" | "delete":
                 type = web_context.admin_screen.stored_screen.type
             case _:
-                raise ValueError(f'action=[{action}]')
-        field = 'uniq_id'
+                raise ValueError(f"action=[{action}]")
+        field = "uniq_id"
         uniq_id: str = WebContext.form_data_to_str(data, field)
         name: str | None = None
         public: bool | None = None
@@ -114,103 +137,133 @@ class ScreenAdminController(AbstractEventAdminController):
         background_color: str | None = None
         message_default: bool = True
         message_text: str | None = None
-        if action == 'delete':
+        if action == "delete":
             pass
         else:
             if not uniq_id:
-                errors[field] = _('Please enter the screen ID.')
-            elif ':' in uniq_id:
-                errors[field] = _('Character [{char}] is not allowed.').format(char=':')
+                errors[field] = _("Please enter the screen ID.")
+            elif ":" in uniq_id:
+                errors[field] = _("Character [{char}] is not allowed.").format(char=":")
             else:
                 match action:
-                    case 'create' | 'clone':
+                    case "create" | "clone":
                         if uniq_id in web_context.admin_event.screens_by_uniq_id:
-                            errors[field] = _('Screen [{uniq_id}] already exists.').format(uniq_id=uniq_id)
-                    case 'update':
-                        if uniq_id != web_context.admin_screen.uniq_id \
-                                and uniq_id in web_context.admin_event.screens_by_uniq_id:
-                            errors[field] = _('Screen [{uniq_id}] already exists.').format(uniq_id=uniq_id)
+                            errors[field] = _(
+                                "Screen [{uniq_id}] already exists."
+                            ).format(uniq_id=uniq_id)
+                    case "update":
+                        if (
+                            uniq_id != web_context.admin_screen.uniq_id
+                            and uniq_id in web_context.admin_event.screens_by_uniq_id
+                        ):
+                            errors[field] = _(
+                                "Screen [{uniq_id}] already exists."
+                            ).format(uniq_id=uniq_id)
                     case _:
-                        raise ValueError(f'action=[{action}]')
+                        raise ValueError(f"action=[{action}]")
         match action:
-            case 'create' | 'clone' | 'update':
-                name = WebContext.form_data_to_str(data, 'name')
-                public = WebContext.form_data_to_bool(data, 'public')
-                field = 'columns'
+            case "create" | "clone" | "update":
+                name = WebContext.form_data_to_str(data, "name")
+                public = WebContext.form_data_to_bool(data, "public")
+                field = "columns"
                 try:
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                    errors[field] = _("A positive integer is expected.")
                 if type != ScreenType.Image:
-                    menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
-                    menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
-                    menu = WebContext.form_data_to_str(data, 'menu', '')
-                field = 'timer_id'
+                    menu_link = WebContext.form_data_to_bool(data, "menu_link", False)
+                    menu_text = WebContext.form_data_to_str(data, "menu_text", "")
+                    menu = WebContext.form_data_to_str(data, "menu", "")
+                field = "timer_id"
                 try:
                     timer_id = WebContext.form_data_to_int(data, field)
-                    if timer_id and timer_id not in web_context.admin_event.timers_by_id:
-                        errors[field] = _('Timer [{timer_id}] not found.').format(timer_id=timer_id)
+                    if (
+                        timer_id
+                        and timer_id not in web_context.admin_event.timers_by_id
+                    ):
+                        errors[field] = _("Timer [{timer_id}] not found.").format(
+                            timer_id=timer_id
+                        )
                 except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                    errors[field] = _("A positive integer is expected.")
                 match type:
                     case ScreenType.Boards:
                         pass
                     case ScreenType.Input:
-                        input_exit_button = WebContext.form_data_to_bool(data, 'input_exit_button')
+                        input_exit_button = WebContext.form_data_to_bool(
+                            data, "input_exit_button"
+                        )
                     case ScreenType.Players:
-                        players_show_unpaired = WebContext.form_data_to_bool(data, 'players_show_unpaired')
+                        players_show_unpaired = WebContext.form_data_to_bool(
+                            data, "players_show_unpaired"
+                        )
                     case ScreenType.Results:
-                        field = 'results_limit'
+                        field = "results_limit"
                         try:
                             results_limit = WebContext.form_data_to_int(data, field)
                         except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                        field = 'results_max_age'
+                            errors[field] = _("A positive integer is expected.")
+                        field = "results_max_age"
                         try:
                             results_max_age = WebContext.form_data_to_int(data, field)
                         except ValueError:
-                            errors[field] = _('A positive integer is expected.')
+                            errors[field] = _("A positive integer is expected.")
                         results_tournament_ids = []
                         for tournament_id in web_context.admin_event.tournaments_by_id:
-                            field = f'results_tournament_{tournament_id}'
+                            field = f"results_tournament_{tournament_id}"
                             if WebContext.form_data_to_bool(data, field):
                                 results_tournament_ids.append(tournament_id)
                     case ScreenType.Image:
-                        field = 'background_image'
-                        background_image = WebContext.form_data_to_str(data, field, '')
+                        field = "background_image"
+                        background_image = WebContext.form_data_to_str(data, field, "")
                         if not background_image:
-                            errors[field] = _('Please enter the image URL.')
+                            errors[field] = _("Please enter the image URL.")
                         elif not validators.url(background_image):
                             errors[field] = _(
-                                'Invalid URL [{background_image}].').format(background_image=background_image)
+                                "Invalid URL [{background_image}]."
+                            ).format(background_image=background_image)
                         else:
                             try:
                                 response = requests.get(background_image)
                                 if response.status_code != 200:
                                     errors[field] = _(
-                                        'URL [{url}] responded code [{code}].').format(
-                                        url=background_image, code=response.status_code)
+                                        "URL [{url}] responded code [{code}]."
+                                    ).format(
+                                        url=background_image, code=response.status_code
+                                    )
                             except requests.ConnectionError as ce:
                                 errors[field] = _(
-                                    'URL [{url}] did not respond (error: [{error}]).').format(
-                                    url=background_image, error=str(ce))
-                        background_color = cls._admin_validate_background_color_update_data(data, errors)
+                                    "URL [{url}] did not respond (error: [{error}])."
+                                ).format(url=background_image, error=str(ce))
+                        background_color = (
+                            cls._admin_validate_background_color_update_data(
+                                data, errors
+                            )
+                        )
                     case _:
-                        raise ValueError(f'type=[{web_context.admin_screen.type}]')
-                field = 'message_text'
-                message_default = WebContext.form_data_to_bool(data, field + '_checkbox', False)
+                        raise ValueError(f"type=[{web_context.admin_screen.type}]")
+                field = "message_text"
+                message_default = WebContext.form_data_to_bool(
+                    data, field + "_checkbox", False
+                )
                 if message_default and web_context.admin_screen:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
                     message_text = web_context.admin_screen.stored_screen.message_text
                 else:
                     message_text = WebContext.form_data_to_str(data, field)
-            case 'delete':
+            case "delete":
                 pass
             case _:
-                raise ValueError(f'action=[{action}]')
+                raise ValueError(f"action=[{action}]")
         return StoredScreen(
-            id=web_context.admin_screen.id if action not in ['create', 'clone', ] else None,
+            id=web_context.admin_screen.id
+            if action
+            not in [
+                "create",
+                "clone",
+            ]
+            else None,
             uniq_id=uniq_id,
             type=type,
             public=public,
@@ -235,8 +288,8 @@ class ScreenAdminController(AbstractEventAdminController):
 
     @staticmethod
     def _admin_validate_screen_set_update_data(
-            web_context: ScreenAdminWebContext,
-            data: dict[str, str] | None = None,
+        web_context: ScreenAdminWebContext,
+        data: dict[str, str] | None = None,
     ) -> StoredScreenSet:
         errors: dict[str, str] = {}
         if data is None:
@@ -245,47 +298,58 @@ class ScreenAdminController(AbstractEventAdminController):
         name: str | None
         first: int | None = None
         last: int | None = None
-        field: str = 'name'
+        field: str = "name"
         name = WebContext.form_data_to_str(data, field)
-        field: str = 'tournament_id'
+        field: str = "tournament_id"
         try:
             if len(web_context.admin_screen.event.tournaments_by_id) == 1:
-                tournament_id = list(web_context.admin_screen.event.tournaments_by_id.keys())[0]
+                tournament_id = list(
+                    web_context.admin_screen.event.tournaments_by_id.keys()
+                )[0]
                 data[field] = WebContext.value_to_form_data(tournament_id)
             else:
                 tournament_id = WebContext.form_data_to_int(data, field)
                 if not tournament_id:
-                    errors[field] = _('Please choose the tournament.')
-                elif tournament_id not in web_context.admin_screen.event.tournaments_by_id:
-                    errors[field] = _('Tournament [{tournament_id}] not found.').format(tournament_id=tournament_id)
+                    errors[field] = _("Please choose the tournament.")
+                elif (
+                    tournament_id
+                    not in web_context.admin_screen.event.tournaments_by_id
+                ):
+                    errors[field] = _("Tournament [{tournament_id}] not found.").format(
+                        tournament_id=tournament_id
+                    )
         except ValueError:
-            errors[field] = _('A positive integer is expected.')
-        field: str = 'first'
+            errors[field] = _("A positive integer is expected.")
+        field: str = "first"
         try:
             first = WebContext.form_data_to_int(data, field, minimum=1)
         except ValueError:
-            errors[field] = _('A positive integer is expected.')
-        field: str = 'last'
+            errors[field] = _("A positive integer is expected.")
+        field: str = "last"
         try:
             last = WebContext.form_data_to_int(data, field, minimum=1)
         except ValueError:
-            errors[field] = _('A positive integer is expected.')
+            errors[field] = _("A positive integer is expected.")
         if first and last and first > last:
-            error: str = _('Numbers {first} and {last} are not compatible ({first} > {last}).').format(
-                first=first, last=last)
-            errors['first'] = error
-            errors['last'] = error
+            error: str = _(
+                "Numbers {first} and {last} are not compatible ({first} > {last})."
+            ).format(first=first, last=last)
+            errors["first"] = error
+            errors["last"] = error
         fixed_boards_str: str | None = None
         if web_context.admin_screen.type in [ScreenType.Boards, ScreenType.Input]:
-            fixed_boards_str = WebContext.form_data_to_str(data, 'fixed_boards_str')
+            fixed_boards_str = WebContext.form_data_to_str(data, "fixed_boards_str")
             if fixed_boards_str:
-                for fixed_board_str in list(map(str.strip, fixed_boards_str.split(','))):
+                for fixed_board_str in list(
+                    map(str.strip, fixed_boards_str.split(","))
+                ):
                     if fixed_board_str:
                         try:
                             int(fixed_board_str)
                         except ValueError:
-                            errors['fixed_boards_str'] = _('Invalid board number [{fixed_board_str}].').format(
-                                fixed_board_str=fixed_board_str)
+                            errors["fixed_boards_str"] = _(
+                                "Invalid board number [{fixed_board_str}]."
+                            ).format(fixed_board_str=fixed_board_str)
                             break
         return StoredScreenSet(
             id=web_context.admin_screen_set.id,
@@ -301,27 +365,35 @@ class ScreenAdminController(AbstractEventAdminController):
 
     @classmethod
     def _admin_event_screens_render(
-            cls,
-            request: HTMXRequest,
-            event_uniq_id: str,
-            modal: str | None = None,
-            action: str | None = None,
-            screen_id: int | None = None,
-            screen_type: str | None = None,
-            screen_set_id: int | None = None,
-            data: dict[str, str] | None = None,
-            errors: dict[str, str] | None = None,
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        modal: str | None = None,
+        action: str | None = None,
+        screen_id: int | None = None,
+        screen_type: str | None = None,
+        screen_set_id: int | None = None,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: ScreenAdminWebContext = ScreenAdminWebContext(
-            request, event_uniq_id=event_uniq_id, admin_event_tab='screens', screen_id=screen_id,
-            screen_type=screen_type, screen_set_id=screen_set_id, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab="screens",
+            screen_id=screen_id,
+            screen_type=screen_type,
+            screen_set_id=screen_set_id,
+            data=data,
+        )
         if web_context.error:
             return web_context.error
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(web_context)
+        template_context: dict[str, Any] = cls._get_admin_event_render_context(
+            web_context
+        )
         match modal:
             case None:
                 pass
-            case 'screen':
+            case "screen":
                 if data is None:
                     uniq_id: str | None = None
                     public: bool | None = None
@@ -342,38 +414,50 @@ class ScreenAdminController(AbstractEventAdminController):
                     results_tournament_ids: list[int] | None = None
                     init_set_tournament_id: int | None = None
                     match action:
-                        case 'update':
+                        case "update":
                             uniq_id = web_context.admin_screen.stored_screen.uniq_id
                             name = web_context.admin_screen.stored_screen.name
-                        case 'create':
+                        case "create":
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
-                                screen_type=ScreenType(screen_type))
+                                screen_type=ScreenType(screen_type)
+                            )
                             match screen_type:
-                                case 'input' | 'boards' | 'players':
-                                    init_set_tournament_id = list(web_context.admin_event.tournaments_by_id.keys())[0]
-                                case 'results' | 'image':
+                                case "input" | "boards" | "players":
+                                    init_set_tournament_id = list(
+                                        web_context.admin_event.tournaments_by_id.keys()
+                                    )[0]
+                                case "results" | "image":
                                     pass
                                 case _:
-                                    raise ValueError(f'screen_type=[{screen_type}]')
+                                    raise ValueError(f"screen_type=[{screen_type}]")
                             name = web_context.admin_event.get_unused_screen_name(
-                                screen_type=ScreenType.from_str(screen_type))
-                        case 'clone':
+                                screen_type=ScreenType.from_str(screen_type)
+                            )
+                        case "clone":
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
-                                base_uniq_id=web_context.admin_screen.uniq_id)
+                                base_uniq_id=web_context.admin_screen.uniq_id
+                            )
                             name = web_context.admin_event.get_unused_screen_name(
                                 base_name=web_context.admin_screen.name,
-                                screen_type=ScreenType.from_str(web_context.admin_screen.type))
-                        case 'delete':
+                                screen_type=ScreenType.from_str(
+                                    web_context.admin_screen.type
+                                ),
+                            )
+                        case "delete":
                             pass
                         case _:
-                            raise ValueError(f'action=[{action}]')
+                            raise ValueError(f"action=[{action}]")
                     match action:
-                        case 'update' | 'clone':
+                        case "update" | "clone":
                             public = web_context.admin_screen.stored_screen.public
                             columns = web_context.admin_screen.stored_screen.columns
                             if web_context.admin_screen.type != ScreenType.Image:
-                                menu_link = web_context.admin_screen.stored_screen.menu_link
-                                menu_text = web_context.admin_screen.stored_screen.menu_text
+                                menu_link = (
+                                    web_context.admin_screen.stored_screen.menu_link
+                                )
+                                menu_text = (
+                                    web_context.admin_screen.stored_screen.menu_text
+                                )
                                 menu = web_context.admin_screen.stored_screen.menu
                             timer_id = web_context.admin_screen.stored_screen.timer_id
                             match web_context.admin_screen.type:
@@ -389,400 +473,631 @@ class ScreenAdminController(AbstractEventAdminController):
                                     results_tournament_ids = web_context.admin_screen.stored_screen.results_tournament_ids
                                 case ScreenType.Image:
                                     background_image = web_context.admin_screen.stored_screen.background_image
-                                    background_color = web_context.admin_screen.background_color
+                                    background_color = (
+                                        web_context.admin_screen.background_color
+                                    )
                                 case _:
-                                    raise ValueError(f'screen_type={web_context.admin_screen.type}')
-                            message_default = web_context.admin_screen.stored_screen.message_default
-                            message_text = web_context.admin_screen.stored_screen.message_text
-                        case 'create':
+                                    raise ValueError(
+                                        f"screen_type={web_context.admin_screen.type}"
+                                    )
+                            message_default = (
+                                web_context.admin_screen.stored_screen.message_default
+                            )
+                            message_text = (
+                                web_context.admin_screen.stored_screen.message_text
+                            )
+                        case "create":
                             public = True
                             message_default = True
                             if screen_type != ScreenType.Image:
                                 menu_link = True
                             match screen_type:
                                 case ScreenType.Boards:
-                                    menu = '@boards'
+                                    menu = "@boards"
                                 case ScreenType.Input:
-                                    menu = '@input'
+                                    menu = "@input"
                                 case ScreenType.Players:
-                                    menu = '@players'
+                                    menu = "@players"
                                 case ScreenType.Results | ScreenType.Image:
                                     pass
                                 case _:
-                                    raise ValueError(f'screen_type={screen_type}')
-                        case 'delete':
+                                    raise ValueError(f"screen_type={screen_type}")
+                        case "delete":
                             pass
                         case _:
-                            raise ValueError(f'action=[{action}]')
+                            raise ValueError(f"action=[{action}]")
                     data: dict[str, str] = {
-                        'uniq_id': WebContext.value_to_form_data(uniq_id),
-                        'public': WebContext.value_to_form_data( public),
-                        'name': WebContext.value_to_form_data(name),
-                        'columns': WebContext.value_to_form_data(columns),
-                        'menu_link': WebContext.value_to_form_data(menu_link),
-                        'menu_text': WebContext.value_to_form_data(menu_text),
-                        'menu': WebContext.value_to_form_data(menu),
-                        'timer_id': WebContext.value_to_form_data(timer_id),
-                        'input_exit_button': WebContext.value_to_form_data(input_exit_button),
-                        'players_show_unpaired': WebContext.value_to_form_data(players_show_unpaired),
-                        'results_limit': WebContext.value_to_form_data(results_limit),
-                        'results_max_age': WebContext.value_to_form_data(results_max_age),
-                        'background_image': WebContext.value_to_form_data(background_image),
-                        'background_color': WebContext.value_to_form_data(background_color),
-                        'background_color_checkbox': WebContext.value_to_form_data(background_color is None),
-                        'message_text_checkbox': WebContext.value_to_form_data(message_default),
-                        'message_text': WebContext.value_to_form_data(message_text),
-                        'init_set_tournament_id': WebContext.value_to_form_data(init_set_tournament_id),
+                        "uniq_id": WebContext.value_to_form_data(uniq_id),
+                        "public": WebContext.value_to_form_data(public),
+                        "name": WebContext.value_to_form_data(name),
+                        "columns": WebContext.value_to_form_data(columns),
+                        "menu_link": WebContext.value_to_form_data(menu_link),
+                        "menu_text": WebContext.value_to_form_data(menu_text),
+                        "menu": WebContext.value_to_form_data(menu),
+                        "timer_id": WebContext.value_to_form_data(timer_id),
+                        "input_exit_button": WebContext.value_to_form_data(
+                            input_exit_button
+                        ),
+                        "players_show_unpaired": WebContext.value_to_form_data(
+                            players_show_unpaired
+                        ),
+                        "results_limit": WebContext.value_to_form_data(results_limit),
+                        "results_max_age": WebContext.value_to_form_data(
+                            results_max_age
+                        ),
+                        "background_image": WebContext.value_to_form_data(
+                            background_image
+                        ),
+                        "background_color": WebContext.value_to_form_data(
+                            background_color
+                        ),
+                        "background_color_checkbox": WebContext.value_to_form_data(
+                            background_color is None
+                        ),
+                        "message_text_checkbox": WebContext.value_to_form_data(
+                            message_default
+                        ),
+                        "message_text": WebContext.value_to_form_data(message_text),
+                        "init_set_tournament_id": WebContext.value_to_form_data(
+                            init_set_tournament_id
+                        ),
                     }
                     if results_tournament_ids:
                         data |= {
-                            f'results_tournament_{tournament_id}': WebContext.value_to_form_data(tournament_id)
+                            f"results_tournament_{tournament_id}": WebContext.value_to_form_data(
+                                tournament_id
+                            )
                             for tournament_id in results_tournament_ids
                         }
-                stored_screen: StoredScreen = cls._admin_validate_screen_update_data(action, web_context, data)
+                stored_screen: StoredScreen = cls._admin_validate_screen_update_data(
+                    action, web_context, data
+                )
                 errors = stored_screen.errors
                 if errors is None:
                     errors = {}
                 template_context |= {
-                    'tournament_options': web_context.get_tournament_options(),
-                    'screen_type_options': cls._get_screen_type_options(family_screens_only=False),
-                    'timer_options': cls._get_timer_options(web_context.admin_event),
-                    'input_exit_button_options': cls._get_input_exit_button_options(),
-                    'players_show_unpaired_options': cls._get_players_show_unpaired_options(),
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors,
+                    "tournament_options": web_context.get_tournament_options(),
+                    "screen_type_options": cls._get_screen_type_options(
+                        family_screens_only=False
+                    ),
+                    "timer_options": cls._get_timer_options(web_context.admin_event),
+                    "input_exit_button_options": cls._get_input_exit_button_options(),
+                    "players_show_unpaired_options": cls._get_players_show_unpaired_options(),
+                    "modal": modal,
+                    "action": action,
+                    "data": data,
+                    "errors": errors,
                 }
-            case 'screen_sets':
+            case "screen_sets":
                 if data is None:
                     if web_context.admin_screen_set:
                         data = {
-                            'tournament_id': WebContext.value_to_form_data(
-                                web_context.admin_screen_set.stored_screen_set.tournament_id),
-                            'fixed_boards_str': WebContext.value_to_form_data(
-                                web_context.admin_screen_set.stored_screen_set.fixed_boards_str),
-                            'name': WebContext.value_to_form_data(web_context.admin_screen_set.stored_screen_set.name),
-                            'first': WebContext.value_to_form_data(
-                                web_context.admin_screen_set.stored_screen_set.first),
-                            'last': WebContext.value_to_form_data(web_context.admin_screen_set.stored_screen_set.last),
+                            "tournament_id": WebContext.value_to_form_data(
+                                web_context.admin_screen_set.stored_screen_set.tournament_id
+                            ),
+                            "fixed_boards_str": WebContext.value_to_form_data(
+                                web_context.admin_screen_set.stored_screen_set.fixed_boards_str
+                            ),
+                            "name": WebContext.value_to_form_data(
+                                web_context.admin_screen_set.stored_screen_set.name
+                            ),
+                            "first": WebContext.value_to_form_data(
+                                web_context.admin_screen_set.stored_screen_set.first
+                            ),
+                            "last": WebContext.value_to_form_data(
+                                web_context.admin_screen_set.stored_screen_set.last
+                            ),
                         }
-                        if web_context.admin_screen.type in [ScreenType.Boards, ScreenType.Input]:
-                            data['fixed_boards_str'] = WebContext.value_to_form_data(
-                                web_context.admin_screen_set.stored_screen_set.fixed_boards_str)
-                        stored_screen_set = cls._admin_validate_screen_set_update_data(web_context, data)
+                        if web_context.admin_screen.type in [
+                            ScreenType.Boards,
+                            ScreenType.Input,
+                        ]:
+                            data["fixed_boards_str"] = WebContext.value_to_form_data(
+                                web_context.admin_screen_set.stored_screen_set.fixed_boards_str
+                            )
+                        stored_screen_set = cls._admin_validate_screen_set_update_data(
+                            web_context, data
+                        )
                         errors = stored_screen_set.errors
                     else:
                         data = {}
                 if errors is None:
                     errors = {}
                 template_context |= {
-                    'tournament_options': web_context.get_tournament_options(),
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors,
+                    "tournament_options": web_context.get_tournament_options(),
+                    "modal": modal,
+                    "action": action,
+                    "data": data,
+                    "errors": errors,
                 }
             case _:
-                raise ValueError(f'modal=[{modal}]')
+                raise ValueError(f"modal=[{modal}]")
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/screen-modal/create/{event_uniq_id:str}/{screen_type:str}',
-        name='admin-screen-create-modal',
+        path="/admin/screen-modal/create/{event_uniq_id:str}/{screen_type:str}",
+        name="admin-screen-create-modal",
         cache=1,
     )
     async def htmx_admin_screen_create_modal(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_type: str,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_type: str,
     ) -> Template | ClientRedirect:
         return self._admin_event_screens_render(
-            request, event_uniq_id=event_uniq_id, modal='screen', action='create', screen_id=None,
-            screen_type=screen_type)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal="screen",
+            action="create",
+            screen_id=None,
+            screen_type=screen_type,
+        )
 
     @get(
-        path='/admin/screen-modal/{action:str}/{event_uniq_id:str}/{screen_id:int}',
-        name='admin-screen-modal',
+        path="/admin/screen-modal/{action:str}/{event_uniq_id:str}/{screen_id:int}",
+        name="admin-screen-modal",
         cache=1,
     )
     async def htmx_admin_screen_modal(
-            self, request: HTMXRequest,
-            action: str,
-            event_uniq_id: str,
-            screen_id: int | None,
+        self,
+        request: HTMXRequest,
+        action: str,
+        event_uniq_id: str,
+        screen_id: int | None,
     ) -> Template | ClientRedirect:
         return self._admin_event_screens_render(
-            request, event_uniq_id=event_uniq_id, modal='screen', action=action, screen_id=screen_id)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal="screen",
+            action=action,
+            screen_id=screen_id,
+        )
 
     def _admin_screen_update(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            action: str,
-            screen_id: int | None,
-            screen_type: str | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        action: str,
+        screen_id: int | None,
+        screen_type: str | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         assert screen_id is not None or screen_type is not None
         match action:
-            case 'update' | 'delete' | 'clone' | 'create':
+            case "update" | "delete" | "clone" | "create":
                 web_context: ScreenAdminWebContext = ScreenAdminWebContext(
-                    request, event_uniq_id=event_uniq_id, admin_event_tab='screens', screen_id=screen_id,
-                    screen_type=screen_type, screen_set_id=None, data=data)
+                    request,
+                    event_uniq_id=event_uniq_id,
+                    admin_event_tab="screens",
+                    screen_id=screen_id,
+                    screen_type=screen_type,
+                    screen_set_id=None,
+                    data=data,
+                )
             case _:
-                raise ValueError(f'action=[{action}]')
+                raise ValueError(f"action=[{action}]")
         if web_context.error:
             return web_context.error
-        stored_screen: StoredScreen = self._admin_validate_screen_update_data(action, web_context, data)
+        stored_screen: StoredScreen = self._admin_validate_screen_update_data(
+            action, web_context, data
+        )
         if stored_screen.errors:
             return self._admin_event_screens_render(
-                request, event_uniq_id=event_uniq_id, modal='screen', action=action, screen_id=screen_id,
-                screen_type=screen_type, data=data, errors=stored_screen.errors)
+                request,
+                event_uniq_id=event_uniq_id,
+                modal="screen",
+                action=action,
+                screen_id=screen_id,
+                screen_type=screen_type,
+                data=data,
+                errors=stored_screen.errors,
+            )
         event_loader: EventLoader = EventLoader.get(request=request)
-        with EventDatabase(web_context.admin_event.uniq_id, write=True) as event_database:
+        with EventDatabase(
+            web_context.admin_event.uniq_id, write=True
+        ) as event_database:
             match action:
-                case 'create':
+                case "create":
                     init_set_tournament_id: int = stored_screen.init_set_tournament_id
                     stored_screen = event_database.add_stored_screen(stored_screen)
-                    if stored_screen.type in [ScreenType.Boards, ScreenType.Input, ScreenType.Players]:
-                        event_database.add_stored_screen_set(stored_screen.id, init_set_tournament_id)
+                    if stored_screen.type in [
+                        ScreenType.Boards,
+                        ScreenType.Input,
+                        ScreenType.Players,
+                    ]:
+                        event_database.add_stored_screen_set(
+                            stored_screen.id, init_set_tournament_id
+                        )
                     event_database.commit()
                     Message.success(
                         request,
-                        _('Screen [{screen_uniq_id}] has been created.').format(screen_uniq_id=stored_screen.uniq_id))
-                case 'clone':
+                        _("Screen [{screen_uniq_id}] has been created.").format(
+                            screen_uniq_id=stored_screen.uniq_id
+                        ),
+                    )
+                case "clone":
                     stored_screen = event_database.add_stored_screen(stored_screen)
-                    if stored_screen.type in [ScreenType.Boards, ScreenType.Input, ScreenType.Players]:
-                        for screen_set in web_context.admin_screen.screen_sets_sorted_by_order:
-                            event_database.clone_stored_screen_set(screen_set.id, stored_screen.id)
+                    if stored_screen.type in [
+                        ScreenType.Boards,
+                        ScreenType.Input,
+                        ScreenType.Players,
+                    ]:
+                        for (
+                            screen_set
+                        ) in web_context.admin_screen.screen_sets_sorted_by_order:
+                            event_database.clone_stored_screen_set(
+                                screen_set.id, stored_screen.id
+                            )
                     event_database.commit()
                     Message.success(
                         request,
-                        _('Screen [{screen_uniq_id}] has been created.').format(screen_uniq_id=stored_screen.uniq_id))
-                case 'update':
+                        _("Screen [{screen_uniq_id}] has been created.").format(
+                            screen_uniq_id=stored_screen.uniq_id
+                        ),
+                    )
+                case "update":
                     stored_screen = event_database.update_stored_screen(stored_screen)
                     event_database.commit()
                     Message.success(
                         request,
-                        _('Screen [{screen_uniq_id}] has been updated.').format(screen_uniq_id=stored_screen.uniq_id))
-                case 'delete':
+                        _("Screen [{screen_uniq_id}] has been updated.").format(
+                            screen_uniq_id=stored_screen.uniq_id
+                        ),
+                    )
+                case "delete":
                     event_database.delete_stored_screen(web_context.admin_screen.id)
                     event_database.commit()
                     Message.success(
                         request,
-                        _('Screen [{screen_uniq_id}] has been deleted.').format(screen_uniq_id=stored_screen.uniq_id))
+                        _("Screen [{screen_uniq_id}] has been deleted.").format(
+                            screen_uniq_id=stored_screen.uniq_id
+                        ),
+                    )
                 case _:
-                    raise ValueError(f'action=[{action}]')
+                    raise ValueError(f"action=[{action}]")
         event_loader.clear_cache(event_uniq_id)
         return self._admin_event_screens_render(request, event_uniq_id=event_uniq_id)
 
     @post(
-        path='/admin/screen-create/{event_uniq_id:str}/{screen_type:str}',
-        name='admin-screen-create'
+        path="/admin/screen-create/{event_uniq_id:str}/{screen_type:str}",
+        name="admin-screen-create",
     )
     async def htmx_admin_screen_create(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
-            event_uniq_id: str,
-            screen_type: str,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        screen_type: str,
     ) -> Template | ClientRedirect:
         return self._admin_screen_update(
-            request, event_uniq_id=event_uniq_id, action='create', screen_id=None, screen_type=screen_type, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="create",
+            screen_id=None,
+            screen_type=screen_type,
+            data=data,
+        )
 
     @post(
-        path='/admin/screen-clone/{event_uniq_id:str}/{screen_id:int}',
-        name='admin-screen-clone',
+        path="/admin/screen-clone/{event_uniq_id:str}/{screen_id:int}",
+        name="admin-screen-clone",
     )
     async def htmx_admin_screen_clone(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_screen_update(
-            request, event_uniq_id=event_uniq_id, action='clone', screen_id=screen_id, screen_type=None, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="clone",
+            screen_id=screen_id,
+            screen_type=None,
+            data=data,
+        )
 
     @patch(
-        path='/admin/screen-update/{event_uniq_id:str}/{screen_id:int}',
-        name='admin-screen-update',
+        path="/admin/screen-update/{event_uniq_id:str}/{screen_id:int}",
+        name="admin-screen-update",
     )
     async def htmx_admin_screen_update(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_screen_update(
-            request, event_uniq_id=event_uniq_id, action='update', screen_id=screen_id, screen_type=None, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="update",
+            screen_id=screen_id,
+            screen_type=None,
+            data=data,
+        )
 
     @delete(
-        path='/admin/screen-delete/{event_uniq_id:str}/{screen_id:int}',
-        name='admin-screen-delete',
+        path="/admin/screen-delete/{event_uniq_id:str}/{screen_id:int}",
+        name="admin-screen-delete",
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_screen_delete(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_screen_update(
-            request, event_uniq_id=event_uniq_id, action='delete', screen_id=screen_id, screen_type=None, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="delete",
+            screen_id=screen_id,
+            screen_type=None,
+            data=data,
+        )
 
     @get(
-        path='/admin/screen-sets-modal/{event_uniq_id:str}/{screen_id:int}',
-        name='admin-screen-sets-modal',
+        path="/admin/screen-sets-modal/{event_uniq_id:str}/{screen_id:int}",
+        name="admin-screen-sets-modal",
         cache=1,
     )
     async def htmx_admin_screen_sets_modal(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
     ) -> Template | ClientRedirect:
         return self._admin_event_screens_render(
-            request, event_uniq_id=event_uniq_id, modal='screen_sets', screen_id=screen_id, screen_set_id=None)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal="screen_sets",
+            screen_id=screen_id,
+            screen_set_id=None,
+        )
 
     @get(
-        path='/admin/screen-sets-set-modal/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
-        name='admin-screen-sets-set-modal',
+        path="/admin/screen-sets-set-modal/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}",
+        name="admin-screen-sets-set-modal",
         cache=1,
     )
     async def htmx_admin_screen_sets_set_modal(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            screen_set_id: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        screen_set_id: int,
     ) -> Template | ClientRedirect:
         return self._admin_event_screens_render(
-            request, event_uniq_id=event_uniq_id, modal='screen_sets', screen_id=screen_id, screen_set_id=screen_set_id)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal="screen_sets",
+            screen_id=screen_id,
+            screen_set_id=screen_set_id,
+        )
 
     def _admin_screen_sets_update(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            screen_set_id: int | None,
-            action: str,
-            data: Annotated[dict[str, str | list[int]], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        screen_set_id: int | None,
+        action: str,
+        data: Annotated[
+            dict[str, str | list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         match action:
-            case 'delete' | 'clone' | 'update' | 'add' | 'reorder':
+            case "delete" | "clone" | "update" | "add" | "reorder":
                 web_context: ScreenAdminWebContext = ScreenAdminWebContext(
-                    request, event_uniq_id=event_uniq_id, admin_event_tab='screens', screen_id=screen_id,
-                    screen_type=None, screen_set_id=screen_set_id, data=data)
+                    request,
+                    event_uniq_id=event_uniq_id,
+                    admin_event_tab="screens",
+                    screen_id=screen_id,
+                    screen_type=None,
+                    screen_set_id=screen_set_id,
+                    data=data,
+                )
             case _:
-                raise ValueError(f'action=[{action}]')
+                raise ValueError(f"action=[{action}]")
         if web_context.error:
             return web_context.error
         event_loader: EventLoader = EventLoader.get(request=request)
         match action:
-            case 'delete':
+            case "delete":
                 if len(web_context.admin_screen.screen_sets_sorted_by_order) <= 1:
                     return AbstractController.redirect_error(
-                        request, _('The last set of a screen can not be deleted.'))
-            case 'update' | 'clone' | 'add' | 'reorder':
+                        request, _("The last set of a screen can not be deleted.")
+                    )
+            case "update" | "clone" | "add" | "reorder":
                 pass
             case _:
-                raise ValueError(f'action=[{action}]')
+                raise ValueError(f"action=[{action}]")
         next_screen_set_id: int | None = None
-        with (EventDatabase(web_context.admin_event.uniq_id, write=True) as event_database):
+        with EventDatabase(
+            web_context.admin_event.uniq_id, write=True
+        ) as event_database:
             match action:
-                case 'update':
-                    stored_screen_set: StoredScreenSet = self._admin_validate_screen_set_update_data(web_context, data)
+                case "update":
+                    stored_screen_set: StoredScreenSet = (
+                        self._admin_validate_screen_set_update_data(web_context, data)
+                    )
                     if stored_screen_set.errors:
                         return self._admin_event_screens_render(
-                            request, event_uniq_id=event_uniq_id, modal='screen_sets', screen_id=screen_id,
-                            screen_set_id=screen_set_id, data=data, errors=stored_screen_set.errors)
+                            request,
+                            event_uniq_id=event_uniq_id,
+                            modal="screen_sets",
+                            screen_id=screen_id,
+                            screen_set_id=screen_set_id,
+                            data=data,
+                            errors=stored_screen_set.errors,
+                        )
                     event_database.update_stored_screen_set(stored_screen_set)
-                case 'delete':
+                case "delete":
                     event_database.delete_stored_screen_set(
-                        web_context.admin_screen_set.id, web_context.admin_screen.id)
-                case 'clone':
+                        web_context.admin_screen_set.id, web_context.admin_screen.id
+                    )
+                case "clone":
                     stored_screen_set = event_database.clone_stored_screen_set(
-                        web_context.admin_screen_set.id, web_context.admin_screen.id)
+                        web_context.admin_screen_set.id, web_context.admin_screen.id
+                    )
                     next_screen_set_id = stored_screen_set.id
-                case 'add':
+                case "add":
                     stored_screen_set = event_database.add_stored_screen_set(
-                        web_context.admin_screen.id, list(web_context.admin_event.tournaments_by_id.keys())[0])
+                        web_context.admin_screen.id,
+                        list(web_context.admin_event.tournaments_by_id.keys())[0],
+                    )
                     next_screen_set_id = stored_screen_set.id
-                case 'reorder':
-                    event_database.reorder_stored_screen_sets(web_context.admin_screen.id, data['item'])
+                case "reorder":
+                    event_database.reorder_stored_screen_sets(
+                        web_context.admin_screen.id, data["item"]
+                    )
                 case _:
-                    raise ValueError(f'action=[{action}]')
+                    raise ValueError(f"action=[{action}]")
             event_database.commit()
         event_loader.clear_cache(event_uniq_id)
         return self._admin_event_screens_render(
-            request, event_uniq_id=event_uniq_id, modal='screen_sets', screen_id=screen_id,
-            screen_set_id=next_screen_set_id)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal="screen_sets",
+            screen_id=screen_id,
+            screen_set_id=next_screen_set_id,
+        )
 
     @post(
-        path='/admin/screen-set-add/{event_uniq_id:str}/{screen_id:int}',
-        name='admin-screen-set-add',
+        path="/admin/screen-set-add/{event_uniq_id:str}/{screen_id:int}",
+        name="admin-screen-set-add",
     )
     async def htmx_admin_screen_set_add(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_screen_sets_update(
-            request, event_uniq_id=event_uniq_id, action='add', screen_id=screen_id, screen_set_id=None, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="add",
+            screen_id=screen_id,
+            screen_set_id=None,
+            data=data,
+        )
 
     @post(
-        path='/admin/screen-set-clone/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
-        name='admin-screen-set-clone',
+        path="/admin/screen-set-clone/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}",
+        name="admin-screen-set-clone",
     )
     async def htmx_admin_screen_set_clone(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            screen_set_id: int,
-            data: Annotated[dict[str, str | list[int]], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        screen_set_id: int,
+        data: Annotated[
+            dict[str, str | list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_screen_sets_update(
-            request, event_uniq_id=event_uniq_id, action='clone', screen_id=screen_id, screen_set_id=screen_set_id,
-            data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="clone",
+            screen_id=screen_id,
+            screen_set_id=screen_set_id,
+            data=data,
+        )
 
     @patch(
-        path='/admin/screen-set-update/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
-        name='admin-screen-set-update',
+        path="/admin/screen-set-update/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}",
+        name="admin-screen-set-update",
     )
     async def htmx_admin_screen_set_update(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            screen_set_id: int,
-            data: Annotated[dict[str, str | list[int]], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        screen_set_id: int,
+        data: Annotated[
+            dict[str, str | list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_screen_sets_update(
-            request, event_uniq_id=event_uniq_id, action='update', screen_id=screen_id, screen_set_id=screen_set_id,
-            data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="update",
+            screen_id=screen_id,
+            screen_set_id=screen_set_id,
+            data=data,
+        )
 
     @delete(
-        path='/admin/screen-set-delete/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
-        name='admin-screen-set-delete',
+        path="/admin/screen-set-delete/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}",
+        name="admin-screen-set-delete",
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_screen_set_delete(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str | list[int]], Body(media_type=RequestEncodingType.URL_ENCODED), ],
-            event_uniq_id: str,
-            screen_id: int,
-            screen_set_id: int,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        screen_id: int,
+        screen_set_id: int,
     ) -> Template | ClientRedirect:
         return self._admin_screen_sets_update(
-            request, event_uniq_id=event_uniq_id, action='delete', screen_id=screen_id, screen_set_id=screen_set_id,
-            data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="delete",
+            screen_id=screen_id,
+            screen_set_id=screen_set_id,
+            data=data,
+        )
 
     @patch(
-        path='/admin/screen-reorder-sets/{event_uniq_id:str}/{screen_id:int}',
-        name='admin-screen-reorder-sets',
+        path="/admin/screen-reorder-sets/{event_uniq_id:str}/{screen_id:int}",
+        name="admin-screen-reorder-sets",
     )
     async def htmx_admin_screen_reorder_sets(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            screen_id: int,
-            data: Annotated[dict[str, str | list[int]], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_id: int,
+        data: Annotated[
+            dict[str, str | list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_screen_sets_update(
-            request, event_uniq_id=event_uniq_id, action='reorder', screen_id=screen_id, screen_set_id=None,
-            data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action="reorder",
+            screen_id=screen_id,
+            screen_set_id=None,
+            data=data,
+        )

@@ -9,13 +9,17 @@ from string import capwords
 from babel import Locale
 
 from common import get_logger, BASE_DIR, DEVEL_ENV, EXPERIMENTAL_FEATURES
-from common.logger import print_interactive_error, print_interactive_warning, input_interactive
+from common.logger import (
+    print_interactive_error,
+    print_interactive_warning,
+    input_interactive,
+)
 
 logger: Logger = get_logger()
 
 
 """ The default locale used when no default locale is set in the configuration file. """
-default_locale: str = 'en'
+default_locale: str = "en"
 
 
 """ The directory where to find the i18n files. """
@@ -28,26 +32,36 @@ locale_error: bool = False
 _all_translations: dict[str, GNUTranslations] = {}
 for l_entry in _locale_dir.iterdir():
     if l_entry.is_dir():
-        mo_file: Path = l_entry / 'LC_MESSAGES' / 'messages.mo'
+        mo_file: Path = l_entry / "LC_MESSAGES" / "messages.mo"
         if mo_file.is_file():
-            l: str = l_entry.name
+            locale_name: str = l_entry.name
             try:
-                _all_translations[l] = gettext_lib.translation('messages', _locale_dir, [l, ])
-                locales.append(l)
+                _all_translations[locale_name] = gettext_lib.translation(
+                    "messages",
+                    _locale_dir,
+                    [
+                        locale_name,
+                    ],
+                )
+                locales.append(locale_name)
                 if DEVEL_ENV:
                     # Check that the MO files are up-to-date.
-                    po_file: Path = mo_file.with_suffix('.po')
+                    po_file: Path = mo_file.with_suffix(".po")
                     if not po_file.is_file():
-                        print_interactive_warning(f'PO file [{po_file}] not found.')
+                        print_interactive_warning(f"PO file [{po_file}] not found.")
                     elif mo_file.lstat().st_mtime < po_file.lstat().st_mtime:
-                        print_interactive_warning(f'MO file [{mo_file}] is out of date.')
+                        print_interactive_warning(
+                            f"MO file [{mo_file}] is out of date."
+                        )
             except Exception as ex:
-                print_interactive_error(f'Could not load locale [{l}]: {ex}.')
+                print_interactive_error(f"Could not load locale [{locale_name}]: {ex}.")
                 locale_error = True
                 if not DEVEL_ENV:
                     sys.exit()
         else:
-            print_interactive_error(f'Invalid locale [{l_entry.name}], MO file [{mo_file}] not found.')
+            print_interactive_error(
+                f"Invalid locale [{l_entry.name}], MO file [{mo_file}] not found."
+            )
             locale_error = True
             if not DEVEL_ENV:
                 sys.exit()
@@ -68,33 +82,35 @@ untrusted_locales: list[str] = []
 # Considering the case when no translation is available is needed
 # when the compilation of the PO files failed and no MO files are available.
 if not locales:
-    print_interactive_error('No locale found.')
+    print_interactive_error("No locale found.")
     locale_error = True
-    default_locale = ''
+    default_locale = ""
     if not DEVEL_ENV:
         sys.exit()
 elif default_locale not in locales:
-    print_interactive_error(f'Default locale [{default_locale}] not found, defaults to [{locales[0]}].')
+    print_interactive_error(
+        f"Default locale [{default_locale}] not found, defaults to [{locales[0]}]."
+    )
     locale_error = True
     default_locale = locales[0]
     if not DEVEL_ENV:
         sys.exit()
 
 """ The translators (assigned to the trusted locales). """
-translators['en'] = [
+translators["en"] = [
     {
-        'github_user': 'timothyarmes',
-        'name': 'Timothy ARMES',
+        "github_user": "timothyarmes",
+        "name": "Timothy ARMES",
     },
 ]
-translators['fr']= [
+translators["fr"] = [
     {
-        'github_user': 'pascalaubry',
-        'name': 'Pascal AUBRY',
+        "github_user": "pascalaubry",
+        "name": "Pascal AUBRY",
     },
     {
-        'github_user': 'Amaras',
-        'name': 'Sammy PLAT',
+        "github_user": "Amaras",
+        "name": "Sammy PLAT",
     },
 ]
 """ Locales with translators assigned are considered trusted. """
@@ -105,8 +121,8 @@ if EXPERIMENTAL_FEATURES:
     translators |= {
         locale: [
             {
-                'github_user': None,
-                'name': 'AI (Opus-MT)',
+                "github_user": None,
+                "name": "AI (Opus-MT)",
             },
         ]
         for locale in locales
@@ -119,10 +135,13 @@ if EXPERIMENTAL_FEATURES:
 _thread_local_data = threading.local()
 
 if locale_error:
-    if Path(sys.argv[0]).name != 'i18n_update.py':
-        print_interactive_error(f'Errors were found while loading locales, you should run i18n_update.')
-        if (input_interactive(f'Do you still wish to continue (Y/n)? ') or 'Y') != 'Y':
+    if Path(sys.argv[0]).name != "i18n_update.py":
+        print_interactive_error(
+            "Errors were found while loading locales, you should run i18n_update."
+        )
+        if (input_interactive("Do you still wish to continue (Y/n)? ") or "Y") != "Y":
             sys.exit()
+
 
 def get_locale() -> str:
     try:
@@ -132,18 +151,18 @@ def get_locale() -> str:
 
 
 def set_locale(locale: str) -> bool:
-    """ Sets the locale for the current thread, returns True if the given locale is recognized. """
+    """Sets the locale for the current thread, returns True if the given locale is recognized."""
     if locale in locales:
         _thread_local_data.locale = locale
-        logger.debug(f'Locale set to [{locale}].')
+        logger.debug(f"Locale set to [{locale}].")
         return True
     else:
-        logger.warning(f'Unknown locale [{locale}].')
+        logger.warning(f"Unknown locale [{locale}].")
         return False
 
 
 def locale_flag_url(locale: str):
-    return f'/static/images/locales/{locale}.svg'
+    return f"/static/images/locales/{locale}.svg"
 
 
 def locale_localized_name(locale: str):
@@ -151,7 +170,7 @@ def locale_localized_name(locale: str):
 
 
 def gettext(message: str, locale: str | None = None):
-    """ Overrides the gettext.gettext() function to use the locale of the current thread. """
+    """Overrides the gettext.gettext() function to use the locale of the current thread."""
     if locales:
         return _all_translations[locale or get_locale()].gettext(message)
     else:
@@ -159,12 +178,12 @@ def gettext(message: str, locale: str | None = None):
 
 
 def _(message: str, locale: str | None = None):
-    """ An alias for gettext(). """
+    """An alias for gettext()."""
     return gettext(message, locale)
 
 
 def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
-    """ Overrides the gettext.ngettext() function to use the locale of the current thread. """
+    """Overrides the gettext.ngettext() function to use the locale of the current thread."""
     if locales:
         return _all_translations[locale or get_locale()].ngettext(singular, plural, n)
     else:

@@ -44,7 +44,7 @@ class SQLiteDatabase:
             raise e
 
     def __enter__(self) -> Self:
-        db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
+        db_url: str = f"file:{self.file}?mode={'rw' if self.write else 'ro'}"
         self.database = connect(db_url, detect_types=1, uri=True)
         self.cursor = self.database.cursor()
         return self
@@ -97,7 +97,9 @@ class SQLiteDatabase:
         """Maps the string keys to integer keys and returns the resulting dict.
         If `string_dict` is None, returns None."""
         # This method is needed because JSON turns all keys to strings
-        return None if string_dict is None else {int(k): v for k, v in string_dict.items()}
+        return (
+            None if string_dict is None else {int(k): v for k, v in string_dict.items()}
+        )
 
     @staticmethod
     def dump_to_json_database_field(obj: Any, if_none=None) -> str | None:
@@ -120,4 +122,3 @@ class SQLiteDatabase:
         """Serializes the timer delays into JSON.
         By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
         return cls.dump_to_json_database_field(delays, {i: None for i in range(1, 4)})
-

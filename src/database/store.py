@@ -26,7 +26,9 @@ class StoredTimer:
     uniq_id: str
     colors: dict[int, str | None] | None
     delays: dict[int, int | None] | None
-    stored_timer_hours: list[StoredTimerHour] = field(default_factory=list[StoredTimerHour])
+    stored_timer_hours: list[StoredTimerHour] = field(
+        default_factory=list[StoredTimerHour]
+    )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -93,7 +95,9 @@ class StoredScreen:
     background_image: str | None
     background_color: str | None
     results_tournament_ids: list[int] = field(default_factory=list[int])
-    stored_screen_sets: list[StoredScreenSet] = field(default_factory=list[StoredScreenSet])
+    stored_screen_sets: list[StoredScreenSet] = field(
+        default_factory=list[StoredScreenSet]
+    )
     last_update: float = 0.0
     public: bool = True
     message_default: bool = True
@@ -166,7 +170,9 @@ class StoredEvent:
     chessevent_event_id: str | None = None
     last_update: float = 0.0
     stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])
-    stored_tournaments: list[StoredTournament] = field(default_factory=list[StoredTournament])
+    stored_tournaments: list[StoredTournament] = field(
+        default_factory=list[StoredTournament]
+    )
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])

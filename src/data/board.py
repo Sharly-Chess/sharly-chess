@@ -15,6 +15,7 @@ class Board:
     """The Board class, represented by its index in the board order and its
     display number (fixed tables).
     Stores both players and the result of the match between the two."""
+
     board_id: int | None = None
     number: int | None = None
     white_player: Player | None = None
@@ -28,14 +29,14 @@ class Board:
     @property
     def exempt(self) -> bool:
         return self.result == Result.PAIRING_ALLOCATED_BYE
-    
+
     @id.setter
     def id(self, new_id):
         self.board_id = new_id
 
     @property
     def result_str(self) -> str:
-        return str(self.result) if self.result else ''
+        return str(self.result) if self.result else ""
 
     def __lt__(self, other):
         # p1 < p2 calls p1.__lt__(p2)
@@ -113,4 +114,4 @@ class Board:
         return self_player_1 == other_player_1 and self_player_2 == other_player_2
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.number}. {self.white_player} {self.result_str} {self.black_player})'
+        return f"{self.__class__.__name__}({self.number}. {self.white_player} {self.result_str} {self.black_player})"
