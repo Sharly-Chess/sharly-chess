@@ -1073,8 +1073,7 @@ msgstr "Noirs"
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
-#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1452,18 +1451,6 @@ msgstr "Le chronomètre [{timer_id}] n'existe pas."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
 
-#: src/web/controllers/admin/family_admin_controller.py
-msgid "pairings by board"
-msgstr "appariements par échiquier"
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-msgid "Pairings by player"
-msgstr "Appariements par ordre alphabétique"
-
 #: src/web/controllers/admin/index_admin_controller.py
 #: src/web/templates/admin/event/tab.html
 msgid "No recording"
@@ -1490,6 +1477,13 @@ msgstr "La couleur n°2 est utilisée {delay_2} minutes avant le début des rond
 #: src/web/controllers/admin/index_admin_controller.py
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "La couleur n°3 est utilisée à partir du début des rondes et pendant {delay_3} minutes (délai n°3)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+msgid "Pairings by player"
+msgstr "Appariements par ordre alphabétique"
 
 #: src/web/controllers/admin/index_admin_controller.py
 msgid "Use no timer"
@@ -4744,4 +4738,7 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr "contre"
+
+#~ msgid "pairings by board"
+#~ msgstr "appariements par échiquier"
 

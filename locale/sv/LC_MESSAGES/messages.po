@@ -1355,8 +1355,7 @@ msgstr "Svart"
 msgid "Pairings by board"
 msgstr "Parningar ombord"
 
-#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1822,20 +1821,6 @@ msgstr "Timer [{timer_id}] hittades inte."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Det är inte möjligt att ange antalet delar och antalet objekt per del."
 
-#: src/web/controllers/admin/family_admin_controller.py
-#, ai_translation
-msgid "pairings by board"
-msgstr "Parningar per plan"
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-#, ai_translation
-msgid "Pairings by player"
-msgstr "Parningar av spelare"
-
 #: src/web/controllers/admin/index_admin_controller.py
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -1868,6 +1853,14 @@ msgstr "Färg #2 används {delay_2} minuter innan rundorna börjar (fördröj #2
 #, ai_translation
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "Färg #3 används från början av rundorna och för {delay_3} minuter efter (fördröj #3)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Parningar av spelare"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -5776,4 +5769,7 @@ msgstr "Styrelsen #%(board_number)d med %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs"
+
+#~ msgid "pairings by board"
+#~ msgstr "Parningar per plan"
 

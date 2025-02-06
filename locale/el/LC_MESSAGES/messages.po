@@ -1332,8 +1332,7 @@ msgstr "Μαύρο"
 msgid "Pairings by board"
 msgstr "Ζευγαρώματα με βάση το πλοίο"
 
-#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1799,20 +1798,6 @@ msgstr "Ο χρονοδιακόπτης [{timer_id}] δεν βρέθηκε."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Ο προσδιορισμός του αριθμού των μερών και του αριθμού των στοιχείων ανά μέρος δεν είναι δυνατός."
 
-#: src/web/controllers/admin/family_admin_controller.py
-#, ai_translation
-msgid "pairings by board"
-msgstr "Συναρμολογήσεις με το διοικητικό συμβούλιο"
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-#, ai_translation
-msgid "Pairings by player"
-msgstr "Ζευγάρωμα από τον παίκτη"
-
 #: src/web/controllers/admin/index_admin_controller.py
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -1845,6 +1830,14 @@ msgstr "Χρώμα #2 χρησιμοποιείται {delay_2} λεπτά πρι
 #, ai_translation
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "Χρώμα #3 χρησιμοποιείται από την αρχή των γύρων και για {delay_3} λεπτά μετά (delay #3)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Ζευγάρωμα από τον παίκτη"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -5759,4 +5752,7 @@ msgstr "Διοικητικό Συμβούλιο #%(board_number)d με %(color)s
 #, ai_translation
 msgid "vs"
 msgstr "vs"
+
+#~ msgid "pairings by board"
+#~ msgstr "Συναρμολογήσεις με το διοικητικό συμβούλιο"
 
