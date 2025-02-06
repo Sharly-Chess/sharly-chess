@@ -16,7 +16,6 @@ from data.event import Event
 from data.loader import EventLoader
 from web.controllers.index_controller import AbstractController, WebContext
 from web.messages import Message
-from web.session import SessionHandler
 
 logger: Logger = get_logger()
 
@@ -27,9 +26,14 @@ class UserWebContext(WebContext):
     """
 
     def __init__(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
-            user_tab: str | None,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None,
+        user_tab: str | None,
     ):
         super().__init__(request, data=data)
         self.user_tab: str | None = user_tab
@@ -38,8 +42,15 @@ class UserWebContext(WebContext):
         self.check_user_tab()
 
     def check_user_tab(self):
-        if self.user_tab not in [None, 'passed_events', 'current_events', 'coming_events', ]:
-            self._redirect_error(f'Invalid value [{self.user_tab}] for parameter [user_tab]')
+        if self.user_tab not in [
+            None,
+            'passed_events',
+            'current_events',
+            'coming_events',
+        ]:
+            self._redirect_error(
+                f'Invalid value [{self.user_tab}] for parameter [user_tab]'
+            )
 
     @property
     def background_color(self) -> str:
@@ -53,13 +64,13 @@ class UserWebContext(WebContext):
 
 
 class AbstractUserController(AbstractController):
-    """ An abstract class inherited by all the user controllers."""
+    """An abstract class inherited by all the user controllers."""
+
 
 class IndexUserController(AbstractUserController):
-
     @staticmethod
     def _user_render(
-            web_context: UserWebContext,
+        web_context: UserWebContext,
     ) -> Template | ClientRedirect:
         event_loader: EventLoader = EventLoader.get(request=web_context.request)
         current_events: list[Event]
@@ -75,7 +86,9 @@ class IndexUserController(AbstractUserController):
             passed_events = event_loader.passed_public_events
         nav_tabs: dict[str, dict] = {
             'current_events': {
-                'title': _('Current events ({num})').format(num=len(current_events) or '-'),
+                'title': _('Current events ({num})').format(
+                    num=len(current_events) or '-'
+                ),
                 'events': current_events,
                 'empty_str': _('No current events.'),
                 'class': 'bg-primary-subtle',
@@ -83,7 +96,9 @@ class IndexUserController(AbstractUserController):
                 'disabled': not current_events,
             },
             'coming_events': {
-                'title': _('Upcoming events ({num})').format(num=len(coming_events) or '-'),
+                'title': _('Upcoming events ({num})').format(
+                    num=len(coming_events) or '-'
+                ),
                 'events': coming_events,
                 'empty_str': _('No upcoming events.'),
                 'class': 'bg-info-subtle',
@@ -91,7 +106,9 @@ class IndexUserController(AbstractUserController):
                 'disabled': not coming_events,
             },
             'passed_events': {
-                'title': _('Passed events ({num})').format(num=len(passed_events) or '-'),
+                'title': _('Passed events ({num})').format(
+                    num=len(passed_events) or '-'
+                ),
                 'events': passed_events,
                 'empty_str': _('No passed events.'),
                 'class': 'bg-secondary-subtle',
@@ -102,20 +119,27 @@ class IndexUserController(AbstractUserController):
         if not web_context.user_tab or nav_tabs[web_context.user_tab]['disabled']:
             web_context.user_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
-            if web_context.user_tab == list(nav_tabs.keys())[nav_index] \
-                    and nav_tabs[web_context.user_tab]['disabled']:
-                web_context.user_tab = list(nav_tabs.keys())[(nav_index + 1) % len(nav_tabs)]
+            if (
+                web_context.user_tab == list(nav_tabs.keys())[nav_index]
+                and nav_tabs[web_context.user_tab]['disabled']
+            ):
+                web_context.user_tab = list(nav_tabs.keys())[
+                    (nav_index + 1) % len(nav_tabs)
+                ]
         return HTMXTemplate(
-            template_name="user/index.html",
-            context=web_context.template_context | {
+            template_name='user/index.html',
+            context=web_context.template_context
+            | {
                 'messages': Message.messages(web_context.request),
                 'nav_tabs': nav_tabs,
-            })
+            },
+        )
 
     @staticmethod
     def _user_refresh_needed(
-            web_context: UserWebContext,
-            date: float, ) -> bool:
+        web_context: UserWebContext,
+        date: float,
+    ) -> bool:
         event_loader: EventLoader = EventLoader.get(request=web_context.request)
         events: list[Event]
         if web_context.admin_auth:
@@ -131,27 +155,33 @@ class IndexUserController(AbstractUserController):
         return False
 
     def _user(
-            self, request: HTMXRequest,
-            user_tab: str | None,
-            locale: str | None,
+        self,
+        request: HTMXRequest,
+        user_tab: str | None,
+        locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         self.set_locale(request, locale)
-        web_context: UserWebContext = UserWebContext(request, data=None, user_tab=user_tab)
+        web_context: UserWebContext = UserWebContext(
+            request, data=None, user_tab=user_tab
+        )
         if web_context.error:
             return web_context.error
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_refresh_needed(web_context, date):
             return self._user_render(web_context)
         else:
-            return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
+            return Reswap(
+                content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
+            )
 
     @get(
         path='/user',
         name='user',
     )
     async def htmx_user(
-            self, request: HTMXRequest,
-            locale: str | None,
+        self,
+        request: HTMXRequest,
+        locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         return self._user(request, user_tab=None, locale=locale)
 
@@ -160,8 +190,9 @@ class IndexUserController(AbstractUserController):
         name='user-tab',
     )
     async def htmx_user_tab(
-            self, request: HTMXRequest,
-            user_tab: str,
-            locale: str | None,
+        self,
+        request: HTMXRequest,
+        user_tab: str,
+        locale: str | None,
     ) -> Template | Reswap | ClientRedirect:
         return self._user(request, user_tab=user_tab, locale=locale)

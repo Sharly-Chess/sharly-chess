@@ -14,9 +14,22 @@ from packaging.version import Version
 
 from common import TMP_DIR, BASE_DIR, DEVEL_ENV, EXPERIMENTAL_FEATURES_ENV_VAR
 from common.config_reader import ConfigReader
-from common.i18n import set_locale, default_locale, _, locale_localized_name, trusted_locales, untrusted_locales
-from common.logger import get_logger, configure_logger, print_interactive_error, print_interactive_input, \
-    input_interactive, print_interactive_info, print_interactive_success
+from common.i18n import (
+    set_locale,
+    default_locale,
+    _,
+    locale_localized_name,
+    trusted_locales,
+)
+from common.logger import (
+    get_logger,
+    configure_logger,
+    print_interactive_error,
+    print_interactive_input,
+    input_interactive,
+    print_interactive_info,
+    print_interactive_success,
+)
 from common.singleton import Singleton
 
 logger: Logger = get_logger()
@@ -73,9 +86,12 @@ class PapiWebConfig(metaclass=Singleton):
                 key = 'experimental_locales'
                 if key in options and DEVEL_ENV:
                     self.reader.add_warning(
-                        _('Option is obsolete, set environment variable [{var}=1] instead.').format(
-                            var=EXPERIMENTAL_FEATURES_ENV_VAR),
-                        section_key, key)
+                        _(
+                            'Option is obsolete, set environment variable [{var}=1] instead.'
+                        ).format(var=EXPERIMENTAL_FEATURES_ENV_VAR),
+                        section_key,
+                        key,
+                    )
                 key = 'locale'
                 try:
                     locale = options[key]
@@ -83,7 +99,10 @@ class PapiWebConfig(metaclass=Singleton):
                         self.locale = locale
                     else:
                         self.reader.add_warning(
-                            _('Locale [{locale}] not found.').format(locale=locale), section_key, key)
+                            _('Locale [{locale}] not found.').format(locale=locale),
+                            section_key,
+                            key,
+                        )
                 except (TypeError, KeyError):
                     self.reader.add_warning(_('Option not set.'), section_key, key)
             except KeyError:
@@ -96,7 +115,9 @@ class PapiWebConfig(metaclass=Singleton):
                 locale_range = range(1, len(self.locales) + 1)
                 for num in locale_range:
                     locale: str = self.locales[num - 1]
-                    print_interactive_input(f'  - [{num}] {locale} ({locale_localized_name(locale)})')
+                    print_interactive_input(
+                        f'  - [{num}] {locale} ({locale_localized_name(locale)})'
+                    )
                 locale_num: int | None = None
                 while locale_num is None:
                     choice: str = input_interactive(_('Your choice: '))
@@ -113,13 +134,17 @@ class PapiWebConfig(metaclass=Singleton):
             try:
                 PapiWebConfig.event_path.mkdir(parents=True, exist_ok=True)
             except PermissionError as pe:
-                logger.critical(f'Could not create directory [{TMP_DIR.absolute()}]: {pe}')
+                logger.critical(
+                    f'Could not create directory [{TMP_DIR.absolute()}]: {pe}'
+                )
                 raise pe
             logger.debug('ODBC drivers found:')
             for driver in pyodbc.drivers():
                 logger.debug(f' - {driver}')
             logger.debug('System information:')
-            logger.debug(f' - Machine/processor: {platform.machine()}/{platform.processor()}')
+            logger.debug(
+                f' - Machine/processor: {platform.machine()}/{platform.processor()}'
+            )
             logger.debug(f' - Platform: {platform.platform()}')
             logger.debug(f' - Architecture: {" ".join(platform.architecture())}')
             section_key = 'logging'
@@ -129,16 +154,28 @@ class PapiWebConfig(metaclass=Singleton):
                 try:
                     level = options[key]
                     try:
-                        self._log_level = [k for k, v in self.log_levels.items() if v == level][0]
+                        self._log_level = [
+                            k for k, v in self.log_levels.items() if v == level
+                        ][0]
                     except IndexError:
-                        self.reader.add_warning(_('Invalid log level [{level}], by default [{default}].').format(
-                            level=level, default=self.log_levels[self._default_log_level]),
-                            section_key, key)
+                        self.reader.add_warning(
+                            _(
+                                'Invalid log level [{level}], by default [{default}].'
+                            ).format(
+                                level=level,
+                                default=self.log_levels[self._default_log_level],
+                            ),
+                            section_key,
+                            key,
+                        )
                 except (TypeError, KeyError):
                     self.reader.add_warning(
                         _('Option not set, by default [{default}].').format(
-                            default=self.log_levels[self._default_log_level]),
-                        section_key, key)
+                            default=self.log_levels[self._default_log_level]
+                        ),
+                        section_key,
+                        key,
+                    )
             except KeyError:
                 self.reader.add_warning(_('Section not found.'), section_key)
             section_key = 'web'
@@ -160,33 +197,56 @@ class PapiWebConfig(metaclass=Singleton):
                         self._web_host = None
                     if self.web_host is None:
                         self.reader.add_warning(
-                            _('Invalid host configuration [{host}], by default [{default}].').format(
-                                host=self.reader.get(section_key, key), default=self._default_web_host),
-                            section_key, key)
+                            _(
+                                'Invalid host configuration [{host}], by default [{default}].'
+                            ).format(
+                                host=self.reader.get(section_key, key),
+                                default=self._default_web_host,
+                            ),
+                            section_key,
+                            key,
+                        )
                 key = 'port'
                 if key not in web_section:
                     self.reader.add_warning(
-                        _('Option not set, by default [{default}].').format(default=self._default_web_port),
-                        section_key, key)
+                        _('Option not set, by default [{default}].').format(
+                            default=self._default_web_port
+                        ),
+                        section_key,
+                        key,
+                    )
                 else:
                     self._web_port = self.reader.getint_safe(section_key, key)
                     if self.web_port is None:
                         self.reader.add_warning(
                             _('Invalid port [{port}], by default [{default}].').format(
-                                port=self.reader.get(section_key, key), default=self._default_web_port),
-                            section_key, key)
+                                port=self.reader.get(section_key, key),
+                                default=self._default_web_port,
+                            ),
+                            section_key,
+                            key,
+                        )
                 key = 'launch_browser'
                 if key not in web_section:
                     self.reader.add_warning(
                         _('Option not set, by default [{default}].').format(
-                            default='on' if self._default_web_launch_browser else 'off'),
-                        section_key, key)
+                            default='on' if self._default_web_launch_browser else 'off'
+                        ),
+                        section_key,
+                        key,
+                    )
                 else:
-                    self._web_launch_browser = self.reader.getboolean_safe(section_key, key)
+                    self._web_launch_browser = self.reader.getboolean_safe(
+                        section_key, key
+                    )
                     if self._web_launch_browser is None:
                         self.reader.add_error(
-                            _('Invalid value [{value}].').format(value=self.reader.get(section_key, key)),
-                            section_key, key)
+                            _('Invalid value [{value}].').format(
+                                value=self.reader.get(section_key, key)
+                            ),
+                            section_key,
+                            key,
+                        )
             section_key = 'ffe'
             try:
                 options = self.reader[section_key]
@@ -194,38 +254,62 @@ class PapiWebConfig(metaclass=Singleton):
                 if key not in options:
                     self.reader.add_warning(
                         _('Option not set, by default [{default}].').format(
-                            ffe_upload_delay=self._default_ffe_upload_delay),
-                        section_key, key)
+                            ffe_upload_delay=self._default_ffe_upload_delay
+                        ),
+                        section_key,
+                        key,
+                    )
                 else:
                     self._ffe_upload_delay = self.reader.getint_safe(section_key, key)
-                    if self.ffe_upload_delay is None or self.ffe_upload_delay < self.min_ffe_upload_delay:
+                    if (
+                        self.ffe_upload_delay is None
+                        or self.ffe_upload_delay < self.min_ffe_upload_delay
+                    ):
                         self.reader.add_warning(
                             _('Invalid delay [{delay}], by default [{default}]').format(
-                                delay=self.reader.get(section_key, key), default=self._default_ffe_upload_delay),
-                            section_key, key)
+                                delay=self.reader.get(section_key, key),
+                                default=self._default_ffe_upload_delay,
+                            ),
+                            section_key,
+                            key,
+                        )
             except KeyError:
-                self.reader.add_warning(_('Section not found, default configuration set.'), section_key)
+                self.reader.add_warning(
+                    _('Section not found, default configuration set.'), section_key
+                )
         else:
             self.reader.add_debug('Default configuration set.')
         configure_logger(self.log_level)
 
     def save_locale_preference(self):
-        config_save: Path = self.config_file.parent \
-                            / f'{self.config_file.name}.{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
+        config_save: Path = (
+            self.config_file.parent
+            / f'{self.config_file.name}.{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
+        )
         try:
             self.config_file.rename(config_save)
-            print_interactive_info(_('Your file {ini_file} has been saved as {ini_file_org}.').format(
-                ini_file=self.config_file, ini_file_org=config_save))
+            print_interactive_info(
+                _('Your file {ini_file} has been saved as {ini_file_org}.').format(
+                    ini_file=self.config_file, ini_file_org=config_save
+                )
+            )
         except Exception as ex:
-            print_interactive_error(_('Could not save {ini_file} to {ini_file_org}: {ex}.').format(
-                ini_file=self.config_file, ini_file_org=config_save, ex=ex))
+            print_interactive_error(
+                _('Could not save {ini_file} to {ini_file_org}: {ex}.').format(
+                    ini_file=self.config_file, ini_file_org=config_save, ex=ex
+                )
+            )
             return
         try:
             with open(config_save, 'r') as input_file:
                 with open(self.config_file, 'w', encoding='utf-8') as output_file:
-                    print_interactive_info(_('Adding lines to {file}...').format(file=self.config_file))
+                    print_interactive_info(
+                        _('Adding lines to {file}...').format(file=self.config_file)
+                    )
                     for line in [
-                        _('[i18n] # Added by Papi-web {version}').format(version=PapiWebConfig.version),
+                        _('[i18n] # Added by Papi-web {version}').format(
+                            version=PapiWebConfig.version
+                        ),
                         f'locale = {self.locale}',
                         '',
                     ]:
@@ -236,14 +320,24 @@ class PapiWebConfig(metaclass=Singleton):
                     for line in input_file:
                         if line.startswith('[i18n]') or locale_pattern.match(line):
                             output_file.write(
-                                _('# The line below has been commented by Papi-web {version}').format(
-                                    version=PapiWebConfig.version))
+                                _(
+                                    '# The line below has been commented by Papi-web {version}'
+                                ).format(version=PapiWebConfig.version)
+                            )
                             output_file.write(f'\n# {line}')
                         else:
                             output_file.write(line)
-            print_interactive_success(_('Your file {ini_file} has been modified.').format(ini_file=self.config_file))
+            print_interactive_success(
+                _('Your file {ini_file} has been modified.').format(
+                    ini_file=self.config_file
+                )
+            )
         except Exception as ex:
-            print_interactive_error(_('Could not write to {ini_file}: {ex}.').format(ini_file=self.config_file, ex=ex))
+            print_interactive_error(
+                _('Could not write to {ini_file}: {ex}.').format(
+                    ini_file=self.config_file, ex=ex
+                )
+            )
 
     @property
     def log_level(self) -> int:
@@ -263,7 +357,11 @@ class PapiWebConfig(metaclass=Singleton):
 
     @property
     def web_launch_browser(self) -> bool:
-        return self._web_launch_browser if self._web_launch_browser is not None else self._default_web_launch_browser
+        return (
+            self._web_launch_browser
+            if self._web_launch_browser is not None
+            else self._default_web_launch_browser
+        )
 
     @property
     def ffe_upload_delay(self) -> int:
@@ -280,12 +378,12 @@ class PapiWebConfig(metaclass=Singleton):
 
     @property
     def copyright(self) -> str:
-        """ The copyright of the application. """
+        """The copyright of the application."""
         return f'© {self.project} 2013-2025'
 
     @property
     def project(self) -> str:
-        """ The project of the application. """
+        """The project of the application."""
         return _('Papi-web project')
 
     """ The path where event databases are stored. """
@@ -329,27 +427,38 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ Other library versions, set manually and checked. """
     bootstrap_version: Version = Version('5.3.3')
-    assert (BASE_DIR / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist').is_dir()
+    assert (
+        BASE_DIR / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist'
+    ).is_dir()
     bootstrap_icons_version: Version = Version('1.11.3')
-    assert (BASE_DIR / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}').is_dir()
+    assert (
+        BASE_DIR
+        / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}'
+    ).is_dir()
     htmx_version: Version = Version('1.9.12')
     assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
     jquery_version: Version = Version('3.7.1')
-    assert (BASE_DIR / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js').is_file()
+    assert (
+        BASE_DIR / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js'
+    ).is_file()
     sortable_version: Version = Version('1.15.2')
-    assert (BASE_DIR / f'src/web/static/lib/sortable/sortable-{sortable_version}').is_dir()
+    assert (
+        BASE_DIR / f'src/web/static/lib/sortable/sortable-{sortable_version}'
+    ).is_dir()
     jstree_version: Version = Version('3.3.17')
-    assert (BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist').is_dir()
+    assert (
+        BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist'
+    ).is_dir()
 
     def _url(self, ip: str | None) -> str | None:
-        """ Returns the URL of the application for the given IP. """
+        """Returns the URL of the application for the given IP."""
         if ip is None:
             return None
         return f'http://{ip}{f":{self.web_port}" if self.web_port != 80 else ""}'
 
     @property
     def lan_ip(self) -> str | None:
-        """ Returns the IP of the server on the LAN/WAN. """
+        """Returns the IP of the server on the LAN/WAN."""
         if self._lan_ip is None:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.settimeout(0)
@@ -364,19 +473,19 @@ class PapiWebConfig(metaclass=Singleton):
 
     @property
     def local_ip(self) -> str:
-        """ Returns the local IP (localhost) of the server (with arbiter access). """
+        """Returns the local IP (localhost) of the server (with arbiter access)."""
         if self._local_ip is None:
             self._local_ip = '127.0.0.1'
         return self._local_ip
 
     @property
     def lan_url(self) -> str:
-        """ The URL of the application on the LAN/WAN. """
+        """The URL of the application on the LAN/WAN."""
         return self._url(self.lan_ip)
 
     @property
     def local_url(self) -> str:
-        """ The local URL of the application (with arbiter access). """
+        """The local URL of the application (with arbiter access)."""
         return self._url(self.local_ip)
 
     """ The default number of illegal moves to record. """
@@ -384,17 +493,17 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ The default colors for the timers. """
     default_timer_colors: dict[int, str] = {
-            1: '#00FF00',
-            2: '#FF7700',
-            3: '#FF0000',
-        }
+        1: '#00FF00',
+        2: '#FF7700',
+        3: '#FF0000',
+    }
 
     """ The default delays for the timers. """
     default_timer_delays: dict[int, int] = {
-            1: 15,
-            2: 5,
-            3: 10,
-        }
+        1: 15,
+        2: 5,
+        3: 10,
+    }
 
     """ The default text colour for the alert messages. """
     default_message_color: str = '#FF0000'
@@ -706,7 +815,7 @@ class PapiWebConfig(metaclass=Singleton):
         'NCA': 'Nouvelle-Calédonie',
         'NOR': 'Normandie',
         'OCC': 'Occitanie',
-        'PAC': 'Provence-Alpes-Côte d\'azur',
+        'PAC': "Provence-Alpes-Côte d'azur",
         'PDL': 'Pays de la Loire',
         'POL': 'Saint-Pierre-et-Miquelon',
         'REU': 'Réunion',

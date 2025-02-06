@@ -15,6 +15,7 @@ class Board:
     """The Board class, represented by its index in the board order and its
     display number (fixed tables).
     Stores both players and the result of the match between the two."""
+
     board_id: int | None = None
     number: int | None = None
     white_player: Player | None = None
@@ -28,7 +29,7 @@ class Board:
     @property
     def exempt(self) -> bool:
         return self.result == Result.PAIRING_ALLOCATED_BYE
-    
+
     @id.setter
     def id(self, new_id):
         self.board_id = new_id
@@ -89,8 +90,8 @@ class Board:
             return NotImplemented
         if self.board_id is not None and other.board_id is not None:
             return self.board_id == other.board_id
-        assert self.black_player is not None, "The black player is not defined."
-        assert other.black_player is not None, "The black player is not defined."
+        assert self.black_player is not None, 'The black player is not defined.'
+        assert other.black_player is not None, 'The black player is not defined.'
         # There is only one pairing allocated bye
         if self.black_player is None:
             return False

@@ -1,5 +1,6 @@
 """A file grouping all the "utility" classes/enum: Result, Color, PlayerTitle,
 PlayerSex, TournamentPairing, TournamentRating"""
+
 from datetime import datetime
 from enum import Enum, StrEnum, IntEnum, auto
 from itertools import islice
@@ -14,8 +15,10 @@ logger: Logger = get_logger()
 
 try:
     import itertools
+
     batched = itertools.batched
 except AttributeError:
+
     def batched(iterable, n):
         """Batch data from the *iterable* into tuples of length *n*.
         The last batch may be shorter than *n*"""
@@ -28,6 +31,7 @@ except AttributeError:
 
 class PapiResult(IntEnum):
     """An enum representing the results in the Papi database"""
+
     NOT_PAIRED = 0
     LOSS = 1
     DRAW_OR_HPB = 2  # HPB = Half Point Bye
@@ -38,7 +42,8 @@ class PapiResult(IntEnum):
 
 
 class Result(IntEnum):
-    """An enum representing the results in the database. Should be subclassed if the point value is not the default. """
+    """An enum representing the results in the database. Should be subclassed if the point value is not the default."""
+
     NO_RESULT = 0  # NOT PAIRED or NO RESULT YET
     LOSS = 1
     DRAW = 2
@@ -66,7 +71,11 @@ class Result(IntEnum):
                 return ''
             case Result.FORFEIT_LOSS:
                 return 'F-1'
-            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case (
+                Result.FORFEIT_GAIN
+                | Result.PAIRING_ALLOCATED_BYE
+                | Result.FULL_POINT_BYE
+            ):
                 return '1-F'
             case Result.DOUBLE_FORFEIT:
                 return 'F-F'
@@ -75,12 +84,13 @@ class Result(IntEnum):
 
     @classmethod
     def from_papi_value(
-            cls,
-            value: int,
-            is_point_bye: bool = False,
-            is_pairing_bye: bool = False,
-            is_zero_point_bye: bool = False,
-            is_unrated: bool = False) -> Self:
+        cls,
+        value: int,
+        is_point_bye: bool = False,
+        is_pairing_bye: bool = False,
+        is_zero_point_bye: bool = False,
+        is_unrated: bool = False,
+    ) -> Self:
         """Create a `Result` instance from the stored value in the
         Papi database."""
         match value:
@@ -130,7 +140,11 @@ class Result(IntEnum):
                 return PapiResult.NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS
-            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case (
+                Result.FORFEIT_GAIN
+                | Result.PAIRING_ALLOCATED_BYE
+                | Result.FULL_POINT_BYE
+            ):
                 return PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB
             case Result.DOUBLE_FORFEIT:
                 return PapiResult.DOUBLE_FORFEIT
@@ -149,13 +163,24 @@ class Result(IntEnum):
         Assumes a 0-0.5-1 scoring system.
         """
         match self:
-            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.LOSS \
-                 | Result.UNRATED_LOSS | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+            case (
+                Result.NO_RESULT
+                | Result.ZERO_POINT_BYE
+                | Result.LOSS
+                | Result.UNRATED_LOSS
+                | Result.FORFEIT_LOSS
+                | Result.DOUBLE_FORFEIT
+            ):
                 return 0.0
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return 0.5
-            case Result.GAIN | Result.UNRATED_GAIN | Result.FORFEIT_GAIN \
-                 | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case (
+                Result.GAIN
+                | Result.UNRATED_GAIN
+                | Result.FORFEIT_GAIN
+                | Result.PAIRING_ALLOCATED_BYE
+                | Result.FULL_POINT_BYE
+            ):
                 return 1.0
 
     @property
@@ -199,11 +224,15 @@ class Result(IntEnum):
                 return Result.DOUBLE_FORFEIT
             case Result.NO_RESULT:
                 return Result.NO_RESULT
-            case Result.ZERO_POINT_BYE | Result.HALF_POINT_BYE \
-                 | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case (
+                Result.ZERO_POINT_BYE
+                | Result.HALF_POINT_BYE
+                | Result.PAIRING_ALLOCATED_BYE
+                | Result.FULL_POINT_BYE
+            ):
                 raise ValueError(f"Result '{self}' is not reversible")
             case _:
-                raise ValueError(f"Unknown value: {self}")
+                raise ValueError(f'Unknown value: {self}')
 
     @property
     def to_trf(self) -> str:
@@ -235,7 +264,7 @@ class Result(IntEnum):
             case Result.NO_RESULT:
                 return ' '
             case _:
-                raise ValueError(f"Unknown value: {self}")
+                raise ValueError(f'Unknown value: {self}')
 
     @property
     def bbp_field(self) -> str:
@@ -253,7 +282,7 @@ class Result(IntEnum):
             case Result.ZERO_POINT_BYE:
                 return 'BBZ'
             case _:
-                raise ValueError(f"Result with no matching BBP field: {self}")
+                raise ValueError(f'Result with no matching BBP field: {self}')
 
     @property
     def is_bye(self) -> bool:
@@ -261,7 +290,8 @@ class Result(IntEnum):
             Result.ZERO_POINT_BYE,
             Result.HALF_POINT_BYE,
             Result.FULL_POINT_BYE,
-            Result.PAIRING_ALLOCATED_BYE)
+            Result.PAIRING_ALLOCATED_BYE,
+        )
 
     @classmethod
     def user_imputable_results(cls) -> tuple[Self, ...]:
@@ -272,11 +302,16 @@ class Result(IntEnum):
     @classmethod
     def admin_imputable_results(cls) -> tuple[Self, ...]:
         """Admin imputable results are the ones that only arbiters can input."""
-        return cls.user_imputable_results() + (cls.FORFEIT_GAIN, cls.FORFEIT_LOSS, cls.DOUBLE_FORFEIT)
+        return cls.user_imputable_results() + (
+            cls.FORFEIT_GAIN,
+            cls.FORFEIT_LOSS,
+            cls.DOUBLE_FORFEIT,
+        )
 
 
 class TournamentType(IntEnum):
     """An enumeration representing the supported types of tournaments."""
+
     UNKNOWN = 0
     SWISS = 1
     CHAMPIONSHIP = 2
@@ -316,6 +351,7 @@ class TournamentType(IntEnum):
 
 class TournamentRating(IntEnum):
     """A wrapper around the tournament rating used stored in the papi db."""
+
     STANDARD = 1
     RAPID = 2
     BLITZ = 3
@@ -384,6 +420,7 @@ class TournamentPairing(IntEnum):
     """An enumeration representing the supported types of tournament
     pairings.
     Swiss Dutch with acceleration and Berger-table tournaments are supported."""
+
     UNKNOWN = 0
     STANDARD = 1
     HALEY = 2
@@ -452,6 +489,7 @@ class TournamentPairing(IntEnum):
 class TournamentTieBreak(IntEnum):
     """An enumeration representing the supported types of tournament
     tie breaks."""
+
     NONE = 0
     BUCHHOLZ = 1
     BUCHHOLZ_CUT_TOP = 2
@@ -924,6 +962,7 @@ class PlayerTitle(IntEnum):
     """The possible FIDE titles: GM, WGM, IM, WIM, FM, WFM.
     Also includes the "no title" case, but does not include CM nor WCM.
     This is for Papi-compatibility reasons."""
+
     NONE = 0
     WOMAN_CANDIDATE_MASTER = 1
     CANDIDATE_MASTER = 2
@@ -952,12 +991,16 @@ class PlayerTitle(IntEnum):
             case 'g':
                 return PlayerTitle.GRANDMASTER
             case _:
-                raise ValueError(f"Unknown title value: {value}")
+                raise ValueError(f'Unknown title value: {value}')
 
     @property
     def to_papi_value(self) -> str:
         match self:
-            case PlayerTitle.NONE | PlayerTitle.WOMAN_CANDIDATE_MASTER | PlayerTitle.CANDIDATE_MASTER:
+            case (
+                PlayerTitle.NONE
+                | PlayerTitle.WOMAN_CANDIDATE_MASTER
+                | PlayerTitle.CANDIDATE_MASTER
+            ):
                 return ''
             case PlayerTitle.WOMAN_FIDE_MASTER:
                 return 'ff'
@@ -996,7 +1039,7 @@ class PlayerTitle(IntEnum):
             case 'GM':
                 return PlayerTitle.GRANDMASTER
             case _:
-                raise ValueError(f"Unknown title value: {value}")
+                raise ValueError(f'Unknown title value: {value}')
 
     @property
     def to_trf(self) -> str:
@@ -1215,7 +1258,7 @@ class NeedsUpload(Enum):
             case NeedsUpload.NO_CHANGE | NeedsUpload.RECENT_CHANGE:
                 return False
             case _:
-                raise ValueError(f"Unknown value: {self}")
+                raise ValueError(f'Unknown value: {self}')
 
 
 class TrfType(StrEnum):
@@ -1230,4 +1273,4 @@ class TrfType(StrEnum):
             case TrfType.PAIRING:
                 return 'trfx'
             case _:
-                raise ValueError(f"Unknown value: {self}")
+                raise ValueError(f'Unknown value: {self}')

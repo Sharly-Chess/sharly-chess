@@ -22,7 +22,13 @@ from data.chessevent_tournament import ChessEventTournament
 from data.family import Family
 from data.player import Player, FederationTuple, LeagueTuple, ClubTuple
 from data.screen import Screen
-from data.util import BoardColor, NeedsUpload, TournamentRating, PlayerFFELicence, PlayerGender
+from data.util import (
+    BoardColor,
+    NeedsUpload,
+    TournamentRating,
+    PlayerFFELicence,
+    PlayerGender,
+)
 from data.util import TournamentPairing, Result
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event_database import EventDatabase
@@ -33,30 +39,55 @@ logger: Logger = get_logger()
 
 class Tournament:
     """A data wrapper around a stored tournament."""
-    def __init__(self, event: 'Event', stored_tournament: StoredTournament, ):
+
+    def __init__(
+        self,
+        event: 'Event',
+        stored_tournament: StoredTournament,
+    ):
         self.event: 'Event' = event
         self.stored_tournament: StoredTournament = stored_tournament
         if not stored_tournament.path:
             self.event.add_debug(
-                _('No directory set for the Papi file, by default [{path}].').format(path=self.path), tournament=self)
+                _('No directory set for the Papi file, by default [{path}].').format(
+                    path=self.path
+                ),
+                tournament=self,
+            )
         if not self.path.exists():
-            self.event.add_warning(_('Directory [{path}] not found.').format(path=self.path), tournament=self)
+            self.event.add_warning(
+                _('Directory [{path}] not found.').format(path=self.path),
+                tournament=self,
+            )
         elif not self.path.is_dir():
-            self.event.add_error(_('[{path}] is not a directory.').format(path=self.path), tournament=self)
+            self.event.add_error(
+                _('[{path}] is not a directory.').format(path=self.path),
+                tournament=self,
+            )
         if not self.stored_tournament.filename:
             self.event.add_info(
-                _('The name of the Papi file is not set, by default [{filename}]').format(filename=self.filename),
-                tournament=self)
+                _(
+                    'The name of the Papi file is not set, by default [{filename}]'
+                ).format(filename=self.filename),
+                tournament=self,
+            )
         if not self.stored_tournament.ffe_id or not self.stored_tournament.ffe_password:
             self.event.add_debug(
-                _('Qualification number and FFE password not set, operations on the FFE website will not be available.'),
-                tournament=self)
+                _(
+                    'Qualification number and FFE password not set, operations on the FFE website will not be available.'
+                ),
+                tournament=self,
+            )
         if not self.chessevent_user_id or not self.chessevent_password:
-            self.event.add_debug(_('ChessEvent connection not defined.'), tournament=self)
+            self.event.add_debug(
+                _('ChessEvent connection not defined.'), tournament=self
+            )
         elif not self.chessevent_event_id:
             self.event.add_warning(_('ChessEvent event not set.'), tournament=self)
         elif not self.chessevent_tournament_name:
-            self.event.add_warning(_('ChessEvent tournament name not set.'), tournament=self)
+            self.event.add_warning(
+                _('ChessEvent tournament name not set.'), tournament=self
+            )
         self._rounds: int = 0
         self._pairing: TournamentPairing | None = None
         self._rating: TournamentRating | None = None
@@ -83,11 +114,17 @@ class Tournament:
 
     @property
     def name(self) -> str:
-        return self.stored_tournament.name if self.stored_tournament.name else self.uniq_id
+        return (
+            self.stored_tournament.name if self.stored_tournament.name else self.uniq_id
+        )
 
     @property
     def path(self) -> Path:
-        return Path(self.stored_tournament.path) if self.stored_tournament.path else self.event.path
+        return (
+            Path(self.stored_tournament.path)
+            if self.stored_tournament.path
+            else self.event.path
+        )
 
     @property
     def filename(self) -> str:
@@ -115,7 +152,11 @@ class Tournament:
 
     @property
     def shadowed_ffe_password(self) -> str | None:
-        return f'{self.ffe_password[:4] + "*" * (len(self.ffe_password) - 4)}' if self.ffe_password else None
+        return (
+            f'{self.ffe_password[:4] + "*" * (len(self.ffe_password) - 4)}'
+            if self.ffe_password
+            else None
+        )
 
     @property
     def time_control_initial_time(self) -> int | None:
@@ -308,16 +349,26 @@ class Tournament:
     @cached_property
     def players_by_ffe_licence_number(self) -> dict[str, Player]:
         return {
-            player.ffe_licence_number: player for player in self.players_by_id.values() if player.ffe_licence_number
+            player.ffe_licence_number: player
+            for player in self.players_by_id.values()
+            if player.ffe_licence_number
         }
 
     @cached_property
     def players_by_ffe_id(self) -> dict[int, Player]:
-        return {player.ffe_id: player for player in self.players_by_id.values() if player.ffe_id}
+        return {
+            player.ffe_id: player
+            for player in self.players_by_id.values()
+            if player.ffe_id
+        }
 
     @cached_property
     def players_by_fide_id(self) -> dict[int, Player]:
-        return {player.fide_id: player for player in self.players_by_id.values() if player.fide_id}
+        return {
+            player.fide_id: player
+            for player in self.players_by_id.values()
+            if player.fide_id
+        }
 
     @cached_property
     def players_by_trf_id(self) -> dict[int, Player]:
@@ -332,18 +383,25 @@ class Tournament:
 
     @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
-        return sorted(list(self.players_by_id.values()), key=lambda player: (player.last_name, player.first_name))
+        return sorted(
+            list(self.players_by_id.values()),
+            key=lambda player: (player.last_name, player.first_name),
+        )
 
     @cached_property
     def players_by_name_without_unpaired(self) -> list[Player]:
-        return sorted([
-                player for player in list(self.players_by_id.values())
+        return sorted(
+            [
+                player
+                for player in list(self.players_by_id.values())
                 if not self.current_round or player.board_id
-            ], key=lambda p: (p.last_name, p.first_name))
+            ],
+            key=lambda p: (p.last_name, p.first_name),
+        )
 
     @cached_property
     def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
-        """ Returns the number of players by FFE licence. """
+        """Returns the number of players by FFE licence."""
         counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
         for player in self.players_by_id.values():
             counter[player.ffe_licence] += 1
@@ -351,7 +409,7 @@ class Tournament:
 
     @cached_property
     def gender_counts(self) -> Counter[PlayerGender]:
-        """ Returns the number of players by gender. """
+        """Returns the number of players by gender."""
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
         for player in self.players_by_id.values():
             counter[player.gender] += 1
@@ -359,7 +417,7 @@ class Tournament:
 
     @cached_property
     def federation_counts(self) -> Counter[FederationTuple]:
-        """ Returns the number of players by federation. """
+        """Returns the number of players by federation."""
         counter: Counter[FederationTuple] = Counter[FederationTuple]()
         for player in self.players_by_id.values():
             counter[player.federation_tuple] += 1
@@ -367,7 +425,7 @@ class Tournament:
 
     @cached_property
     def league_counts(self) -> Counter[LeagueTuple]:
-        """ Returns the number of players by league. """
+        """Returns the number of players by league."""
         counter: Counter[LeagueTuple] = Counter[LeagueTuple]()
         for player in self.players_by_id.values():
             counter[player.league_tuple] += 1
@@ -375,7 +433,7 @@ class Tournament:
 
     @cached_property
     def club_counts(self) -> Counter[ClubTuple]:
-        """ Returns the number of players by club. """
+        """Returns the number of players by club."""
         counter: Counter[ClubTuple] = Counter[ClubTuple]()
         for player in self.players_by_id.values():
             counter[player.club_tuple] += 1
@@ -413,7 +471,11 @@ class Tournament:
 
     @cached_property
     def dependent_families(self) -> list[Family]:
-        return [family for family in self.event.families_by_id.values() if family.tournament.id == self.id]
+        return [
+            family
+            for family in self.event.families_by_id.values()
+            if family.tournament.id == self.id
+        ]
 
     @cached_property
     def dependent_screens(self) -> list[Screen]:
@@ -437,7 +499,7 @@ class Tournament:
                 return False
 
     def to_trf(
-        self, 
+        self,
         trf_type: TrfType,
         first_round_pairing: BoardColor = BoardColor.WHITE,
     ) -> TrfTournament:
@@ -453,32 +515,37 @@ class Tournament:
                     self._player_id_to_trf_id,
                     self.current_round + 1
                     if trf_type == TrfType.PAIRING
-                    else self.rounds)
-                for id_, player in self.players_by_trf_id.items()],
+                    else self.rounds,
+                )
+                for id_, player in self.players_by_trf_id.items()
+            ],
             xx_fields=(
                 self._trf_xx_fields(first_round_pairing)
-                if trf_type == TrfType.PAIRING else {}),
-            bb_fields=(
-                self._trf_bb_fields()
-                if trf_type == TrfType.PAIRING else {}),
+                if trf_type == TrfType.PAIRING
+                else {}
+            ),
+            bb_fields=(self._trf_bb_fields() if trf_type == TrfType.PAIRING else {}),
         )
 
     def _player_id_to_trf_id(self, player_id: int) -> int:
         for trf_id, player in self.players_by_trf_id.items():
             if player.id == player_id:
                 return trf_id
-        raise KeyError(f"Id of unknown player: {player_id}")
+        raise KeyError(f'Id of unknown player: {player_id}')
 
     def _trf_xx_fields(self, first_round_pairing: BoardColor):
         next_round = self.current_round + 1
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
             'XXC': first_round_pairing.to_trf_first_round_pairing,
-            'XXZ': ' '.join([
-                str(trf_id) for trf_id, player
-                in self.players_by_trf_id.items()
-                if next_round in player.pairings
-                and player.pairings[next_round].result.is_bye]),
+            'XXZ': ' '.join(
+                [
+                    str(trf_id)
+                    for trf_id, player in self.players_by_trf_id.items()
+                    if next_round in player.pairings
+                    and player.pairings[next_round].result.is_bye
+                ]
+            ),
         }
         for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
@@ -558,12 +625,21 @@ class Tournament:
             for player in self._players_by_id.values():
                 if player.ref_id != 1:
                     pairing: Pairing = player.pairings[round_]
-                    if pairing.color in (BoardColor.WHITE, BoardColor.BLACK, ):
+                    if pairing.color in (
+                        BoardColor.WHITE,
+                        BoardColor.BLACK,
+                    ):
                         round_infos[round_]['pairings_found'] = True
                         paired_rounds.append(round_)
-                    if pairing.result == Result.NO_RESULT and pairing.opponent_id is not None:
+                    if (
+                        pairing.result == Result.NO_RESULT
+                        and pairing.opponent_id is not None
+                    ):
                         round_infos[round_]['results_missing'] = True
-                    if round_infos[round_]['pairings_found'] and round_infos[round_]['results_missing']:
+                    if (
+                        round_infos[round_]['pairings_found']
+                        and round_infos[round_]['results_missing']
+                    ):
                         break
         # the current round is the first one with pairings and no missing result
         if paired_rounds:
@@ -583,7 +659,9 @@ class Tournament:
             player.compute_points(self._current_round)
             player.vpoints = player.points + vpoints
 
-    def _calculate_player_virtual_points(self, player: Player, round_number: int) -> float:
+    def _calculate_player_virtual_points(
+        self, player: Player, round_number: int
+    ) -> float:
         vpoints = 0.0
         if self._pairing == TournamentPairing.HALEY:
             if round_number <= 2 and player.rating >= self._rating_limit1:
@@ -640,7 +718,9 @@ class Tournament:
         """Store an illegal move for the given `player`, for the current
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.add_stored_illegal_move(self.id, self.current_round, player.id)
+            event_database.add_stored_illegal_move(
+                self.id, self.current_round, player.id
+            )
             event_database.commit()
         logger.info('An illegal move has been recorded for player [%s].', player.id)
 
@@ -648,7 +728,9 @@ class Tournament:
         """Deletes one illegal move for the given `player` for the current
         round. If no illegal move was stored, don't do anything in the database."""
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            deleted: bool = event_database.delete_stored_illegal_move(self.id, self.current_round, player.id)
+            deleted: bool = event_database.delete_stored_illegal_move(
+                self.id, self.current_round, player.id
+            )
             event_database.commit()
         if deleted:
             logger.info('An illegal move has been deleted for player [%s].', player.id)
@@ -679,11 +761,17 @@ class Tournament:
             if opponent_id in self._players_by_id:
                 player_board: Board | None = None
                 for board in self._boards:
-                    if board.white_player is not None and board.white_player.id == opponent_id:
+                    if (
+                        board.white_player is not None
+                        and board.white_player.id == opponent_id
+                    ):
                         player_board = board
                         player_board.black_player = player
                         break
-                    elif board.black_player is not None and board.black_player.id == opponent_id:
+                    elif (
+                        board.black_player is not None
+                        and board.black_player.id == opponent_id
+                    ):
                         player_board = board
                         player_board.white_player = player
                         break
@@ -696,15 +784,15 @@ class Tournament:
                 if player.pairings[self._current_round].exempt:
                     self._boards.append(Board(white_player=player))
                 else:
-                   self._unpaired_players.append(player)
-                   
+                    self._unpaired_players.append(player)
+
         self._boards = sorted(self._boards, reverse=True)
         for index, board in enumerate(self._boards, start=1):
             board.id = index
             number: int = (
-                board.white_player.fixed or 
-                (board.black_player.fixed if board.black_player else None) or 
-                index
+                board.white_player.fixed
+                or (board.black_player.fixed if board.black_player else None)
+                or index
             )
             board.number = number
             board.white_player.set_board(index, number, BoardColor.WHITE)
@@ -717,18 +805,21 @@ class Tournament:
                 strong_player, weak_player = sorted(
                     (board.white_player, board.black_player),
                     key=attrgetter('rating'),
-                    reverse=True
+                    reverse=True,
                 )
                 weak_time = self.time_control_initial_time
                 rating_diff = strong_player.rating - weak_player.rating
                 penalties = rating_diff // self.time_control_handicap_penalty_step
                 strong_time = max(
                     weak_time - penalties * self.time_control_handicap_penalty_value,
-                    self.time_control_handicap_min_time
+                    self.time_control_handicap_min_time,
                 )
                 strong_player.set_time_control(
-                    strong_time, self.time_control_increment, penalties > 0)
-                weak_player.set_time_control(weak_time, self.time_control_increment, False)
+                    strong_time, self.time_control_increment, penalties > 0
+                )
+                weak_player.set_time_control(
+                    weak_time, self.time_control_increment, False
+                )
 
     @property
     def ffe_upload_needed(self) -> NeedsUpload:
@@ -736,7 +827,11 @@ class Tournament:
             if self.stored_tournament.last_ffe_upload > self.file.lstat().st_mtime:
                 # last version already uploaded
                 return NeedsUpload.NO_CHANGE
-            if time.time() < self.stored_tournament.last_ffe_upload + PapiWebConfig().ffe_upload_delay:
+            if (
+                time.time()
+                < self.stored_tournament.last_ffe_upload
+                + PapiWebConfig().ffe_upload_delay
+            ):
                 # last upload too recent
                 return NeedsUpload.RECENT_CHANGE
             return NeedsUpload.YES
@@ -746,7 +841,10 @@ class Tournament:
     @property
     def ffe_rules_upload_needed(self) -> NeedsUpload:
         try:
-            if self.stored_tournament.last_ffe_rules_upload > Path(self.rules).lstat().st_mtime:
+            if (
+                self.stored_tournament.last_ffe_rules_upload
+                > Path(self.rules).lstat().st_mtime
+            ):
                 # last version already uploaded
                 return NeedsUpload.NO_CHANGE
             return NeedsUpload.YES
@@ -760,32 +858,57 @@ class Tournament:
         Assumes that no asymmetric result was entered."""
         black_result = white_result.opposite_result
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.add_board_result(board.white_player.ref_id, self._current_round, white_result)
-            papi_database.add_board_result(board.black_player.ref_id, self._current_round, black_result)
+            papi_database.add_board_result(
+                board.white_player.ref_id, self._current_round, white_result
+            )
+            papi_database.add_board_result(
+                board.black_player.ref_id, self._current_round, black_result
+            )
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.add_stored_result(self.id, self.current_round, board, white_result)
+            event_database.add_stored_result(
+                self.id, self.current_round, board, white_result
+            )
             event_database.commit()
-        logger.info('Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
-                    self.event.uniq_id, self.uniq_id, self._current_round, board.id, board.white_player.last_name,
-                    board.white_player.first_name, board.white_player.rating, white_result,
-                    board.black_player.last_name, board.black_player.first_name,
-                    board.black_player.rating)
+        logger.info(
+            'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
+            self.event.uniq_id,
+            self.uniq_id,
+            self._current_round,
+            board.id,
+            board.white_player.last_name,
+            board.white_player.first_name,
+            board.white_player.rating,
+            white_result,
+            board.black_player.last_name,
+            board.black_player.first_name,
+            board.black_player.rating,
+        )
 
     def delete_result(self, board: Board):
         """Deletes the result for the given `board` in the current round."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.remove_board_result(board.white_player.ref_id, self._current_round)
-            papi_database.remove_board_result(board.black_player.ref_id, self._current_round)
+            papi_database.remove_board_result(
+                board.white_player.ref_id, self._current_round
+            )
+            papi_database.remove_board_result(
+                board.black_player.ref_id, self._current_round
+            )
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.delete_stored_result(self.id, self.current_round, board.id)
             event_database.commit()
-        logger.info('Removed result: %s %s %d.%d.',
-                    self.event.uniq_id, self.uniq_id, self._current_round, board.id)
+        logger.info(
+            'Removed result: %s %s %d.%d.',
+            self.event.uniq_id,
+            self.uniq_id,
+            self._current_round,
+            board.id,
+        )
 
     def write_chessevent_info_to_database(
-            self, chessevent_tournament: ChessEventTournament, chessevent_download_md5: str) -> int:
+        self, chessevent_tournament: ChessEventTournament, chessevent_download_md5: str
+    ) -> int:
         """Stores the information from the given `chessevent_tournament` in the event database.
         For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
         Returns the number of players added."""
@@ -793,13 +916,20 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
                 papi_database.write_chessevent_info(chessevent_tournament)
-                for player_papi_id, chessevent_player in enumerate(chessevent_tournament.players, start=2):
+                for player_papi_id, chessevent_player in enumerate(
+                    chessevent_tournament.players, start=2
+                ):
                     papi_database.add_chessevent_player(
-                        player_papi_id, chessevent_player, chessevent_tournament.check_in_started)
+                        player_papi_id,
+                        chessevent_player,
+                        chessevent_tournament.check_in_started,
+                    )
                     players_added += 1
                 event_database.set_tournament_check_in(self.id, True)
                 papi_database.open_check_in(1)
-                event_database.set_tournament_last_chessevent_download_md5(self.id, chessevent_download_md5)
+                event_database.set_tournament_last_chessevent_download_md5(
+                    self.id, chessevent_download_md5
+                )
                 event_database.commit()
                 papi_database.commit()
         return players_added
@@ -809,13 +939,15 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
                 papi_database.check_in_player(player.id, check_in)
-                event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
+                event_database.set_tournament_last_check_in_update(
+                    self.stored_tournament.id
+                )
                 event_database.commit()
                 papi_database.commit()
 
     def read_player_dict(
-            self,
-            player_papi_id: int,
+        self,
+        player_papi_id: int,
     ) -> dict[str, str | int | float | None]:
         """Reads a player from the Papi database and returns it as a dict
         (used to move players from one tournament to another one)."""
@@ -823,16 +955,20 @@ class Tournament:
             return papi_database.read_player_dict(player_papi_id)
 
     def add_player(
-            self,
-            player: Player,
+        self,
+        player: Player,
     ) -> int:
         """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            player.id = Player.player_papi_web_id_from_papi_id(self.id, papi_database.next_player_papi_id)
+            player.id = Player.player_papi_web_id_from_papi_id(
+                self.id, papi_database.next_player_papi_id
+            )
             data: dict[str, str | int | float | None] = {
                 'Ref': player.ref_id,
                 'RefFFE': player.ffe_id,
-                'NrFFE': player.ffe_licence_number if player.ffe_licence_number else None,
+                'NrFFE': player.ffe_licence_number
+                if player.ffe_licence_number
+                else None,
                 'Nom': player.last_name,
                 'Prenom': player.first_name,
                 'Sexe': player.gender.to_papi_value,
@@ -870,8 +1006,8 @@ class Tournament:
         return player.id
 
     def delete_player(
-            self,
-            player: Player,
+        self,
+        player: Player,
     ):
         """Removes a player from the tournament, returns the deleted data as a dict if needed
         (used to move players from one tournament to another one)."""
@@ -880,8 +1016,8 @@ class Tournament:
             papi_database.commit()
 
     def update_player(
-            self,
-            player: Player,
+        self,
+        player: Player,
     ):
         """Updates a player."""
         with PapiDatabase(self.file, write=True) as papi_database:
@@ -894,31 +1030,43 @@ class Tournament:
             for player in self.players_by_id.values():
                 if round_nb in player.pairings:
                     papi_database.update_player_pairing(
-                        player, round_nb, player.pairings[round_nb])
+                        player, round_nb, player.pairings[round_nb]
+                    )
             papi_database.commit()
 
     def open_check_in(self):
-        """ Opens the check-in for the tournament and sets all the present players
-        as not checked-in for the next round. """
+        """Opens the check-in for the tournament and sets all the present players
+        as not checked-in for the next round."""
         assert not self.finished, f'Tournament [{self.uniq_id}] is finished.'
         assert not self.playing, f'Games are played for tournament [{self.uniq_id}].'
-        assert not self.check_in_open, f'Check-in already open for tournament [{self.uniq_id}].'
+        assert not self.check_in_open, (
+            f'Check-in already open for tournament [{self.uniq_id}].'
+        )
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             with PapiDatabase(self.file, write=True) as papi_database:
-                event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
+                event_database.set_tournament_last_check_in_update(
+                    self.stored_tournament.id
+                )
                 event_database.set_tournament_check_in(self.id, True)
                 papi_database.open_check_in(self.current_round + 1)
                 papi_database.commit()
             event_database.commit()
 
     def close_check_in(self, forfeit_last_rounds: bool):
-        """ Closes the check-in for the tournament and sets all the players not checked-in as forfeit
-        for the next round (if forfeit_last_rounds, for the rest of the tournament). """
-        assert self.check_in_open, f'Check-in already closed for tournament [{self.uniq_id}].'
+        """Closes the check-in for the tournament and sets all the players not checked-in as forfeit
+        for the next round (if forfeit_last_rounds, for the rest of the tournament)."""
+        assert self.check_in_open, (
+            f'Check-in already closed for tournament [{self.uniq_id}].'
+        )
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.set_tournament_last_check_in_update(self.stored_tournament.id)
+            event_database.set_tournament_last_check_in_update(
+                self.stored_tournament.id
+            )
             event_database.set_tournament_check_in(self.id, False)
             event_database.commit()
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.close_check_in(self.current_round + 1, (self.rounds + 1) if forfeit_last_rounds else None)
+            papi_database.close_check_in(
+                self.current_round + 1,
+                (self.rounds + 1) if forfeit_last_rounds else None,
+            )
             papi_database.commit()

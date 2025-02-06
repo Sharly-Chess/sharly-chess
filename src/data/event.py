@@ -9,7 +9,12 @@ from operator import attrgetter
 from pathlib import Path
 from typing import Iterable
 
-from common import format_timestamp_date_time, format_timestamp_date, format_timestamp_time, unicode_normalize
+from common import (
+    format_timestamp_date_time,
+    format_timestamp_date,
+    format_timestamp_time,
+    unicode_normalize,
+)
 from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
@@ -21,7 +26,13 @@ from data.screen import Screen
 from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
-from data.util import ScreenType, PlayerFFELicence, PlayerGender, PlayerCategory, TournamentRating
+from data.util import (
+    ScreenType,
+    PlayerFFELicence,
+    PlayerGender,
+    PlayerCategory,
+    TournamentRating,
+)
 from database.store import StoredEvent
 
 logger: Logger = get_logger()
@@ -43,29 +54,50 @@ class EventMessage:
     rotator: Rotator | None
 
     def __post_init__(self):
-        assert self.level in [logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL]
+        assert self.level in [
+            logging.DEBUG,
+            logging.INFO,
+            logging.WARNING,
+            logging.ERROR,
+            logging.CRITICAL,
+        ]
 
     @property
     def formatted_text(self) -> str:
         if self.tournament:
             return _('Tournament [{tournament_uniq_id}]: {text}').format(
-                tournament_uniq_id=self.tournament.uniq_id, text=self.text)
+                tournament_uniq_id=self.tournament.uniq_id, text=self.text
+            )
         elif self.family:
             return _('Family [{family_uniq_id}]: {text}').format(
-                family_uniq_id=self.family.uniq_id, text=self.text)
+                family_uniq_id=self.family.uniq_id, text=self.text
+            )
         elif self.timer_hour:
             return _('Timer [{timer_uniq_id}], hour [{hour_order}]: {text}').format(
-                timer_uniq_id=self.timer_hour.timer.uniq_id, hour_order=self.timer_hour.order, text=self.text)
+                timer_uniq_id=self.timer_hour.timer.uniq_id,
+                hour_order=self.timer_hour.order,
+                text=self.text,
+            )
         elif self.timer:
             return _('Timer [{timer_uniq_id}]: {text}').format(
-                timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text)
+                timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text
+            )
         elif self.screen_set:
-            return _('Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}').format(
-                screen_uniq_id=self.screen.uniq_id, screen_set_order=self.screen_set.order, text=self.text)
+            return _(
+                'Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}'
+            ).format(
+                screen_uniq_id=self.screen.uniq_id,
+                screen_set_order=self.screen_set.order,
+                text=self.text,
+            )
         elif self.screen:
-            return _('Screen [{screen_uniq_id}]: {text}').format(screen_uniq_id=self.screen.uniq_id, text=self.text)
+            return _('Screen [{screen_uniq_id}]: {text}').format(
+                screen_uniq_id=self.screen.uniq_id, text=self.text
+            )
         elif self.rotator:
-            return _('Rotator [{rotator_uniq_id}]: {text}').format(rotator_uniq_id=self.rotator.uniq_id, text=self.text)
+            return _('Rotator [{rotator_uniq_id}]: {text}').format(
+                rotator_uniq_id=self.rotator.uniq_id, text=self.text
+            )
         else:
             return self.text
 
@@ -73,15 +105,22 @@ class EventMessage:
 @total_ordering
 class Event:
     """A data wrapper around a StoredEvent."""
+
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
         self.messages: list[EventMessage] = []
         last_load_date: float = event_last_load_date_by_uniq_id.get(self.uniq_id, None)
-        self._silent = last_load_date is not None and last_load_date > self.stored_event.last_update
+        self._silent = (
+            last_load_date is not None
+            and last_load_date > self.stored_event.last_update
+        )
         event_last_load_date_by_uniq_id[self.uniq_id] = time.time()
         if self.errors:
             self.add_warning(
-                _('Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded.'))
+                _(
+                    'Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded.'
+                )
+            )
             return
 
     @property
@@ -89,9 +128,11 @@ class Event:
         return self.stored_event.uniq_id
 
     @staticmethod
-    def _get_unused_item_uniq_id(base_uniq_id: str, used_uniq_ids: Iterable[str]) -> str:
-        """ Returns the first unused uniq_id in a list looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
+    def _get_unused_item_uniq_id(
+        base_uniq_id: str, used_uniq_ids: Iterable[str]
+    ) -> str:
+        """Returns the first unused uniq_id in a list looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
         index: int
         uniq_id: str
         base_uniq_id = unicode_normalize(base_uniq_id)
@@ -109,8 +150,8 @@ class Event:
 
     @staticmethod
     def _get_unused_item_name(base_name: str, used_names: list[str]) -> str:
-        """ Returns the first unused name in a list looking like base_name:
-        base_name, or base_name (2), or base_name (n+1)... """
+        """Returns the first unused name in a list looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
         index: int
         name: str
         if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
@@ -167,8 +208,15 @@ class Event:
                             player.ratings[TournamentRating.BLITZ] = 1199
                 if not player.ratings[TournamentRating.STANDARD]:
                     match player.category:
-                        case PlayerCategory.U8 | PlayerCategory.U10 | PlayerCategory.U12 | PlayerCategory.U14 \
-                             | PlayerCategory.U16 | PlayerCategory.U18 | PlayerCategory.U20:
+                        case (
+                            PlayerCategory.U8
+                            | PlayerCategory.U10
+                            | PlayerCategory.U12
+                            | PlayerCategory.U14
+                            | PlayerCategory.U16
+                            | PlayerCategory.U18
+                            | PlayerCategory.U20
+                        ):
                             player.ratings[TournamentRating.STANDARD] = 1299
                         case _:
                             player.ratings[TournamentRating.STANDARD] = 1399
@@ -199,19 +247,28 @@ class Event:
 
     @cached_property
     def players_number(self) -> int:
-        return sum(len(tournament.players_by_name_with_unpaired) for tournament in self.tournaments_by_id.values())
+        return sum(
+            len(tournament.players_by_name_with_unpaired)
+            for tournament in self.tournaments_by_id.values()
+        )
 
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
         return {
             player_id: player
-            for tournament_players_id in [tournament.players_by_id for tournament in self.tournaments_by_id.values()]
+            for tournament_players_id in [
+                tournament.players_by_id
+                for tournament in self.tournaments_by_id.values()
+            ]
             for player_id, player in tournament_players_id.items()
         }
 
     @cached_property
     def players_sorted_by_name(self) -> list[Player]:
-        return sorted(self.players_by_id.values(), key=lambda player: (player.last_name, player.first_name))
+        return sorted(
+            self.players_by_id.values(),
+            key=lambda player: (player.last_name, player.first_name),
+        )
 
     @cached_property
     def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
@@ -234,7 +291,9 @@ class Event:
         counter: Counter[FederationTuple] = Counter[FederationTuple]()
         for tournament in self.tournaments_by_id.values():
             for federation_tuple in tournament.federation_counts:
-                counter[federation_tuple] += tournament.federation_counts[federation_tuple]
+                counter[federation_tuple] += tournament.federation_counts[
+                    federation_tuple
+                ]
         return counter
 
     @cached_property
@@ -265,7 +324,11 @@ class Event:
     def path(self) -> Path:
         path: Path = PapiWebConfig.default_papi_path
         if not self.stored_event.path:
-            self.add_debug(_('No directory set for Papi files, by default [{path}].').format(path=path))
+            self.add_debug(
+                _('No directory set for Papi files, by default [{path}].').format(
+                    path=path
+                )
+            )
         else:
             path = Path(self.stored_event.path)
         if not path.exists():
@@ -280,8 +343,11 @@ class Event:
             return ''
         background_image: str = PapiWebConfig.default_background_image
         if not self.stored_event.background_image:
-            self.add_debug(_('No background image set, by default [{background_image}]').format(
-                background_image=background_image))
+            self.add_debug(
+                _('No background image set, by default [{background_image}]').format(
+                    background_image=background_image
+                )
+            )
         else:
             background_image = self.stored_event.background_image
         return background_image
@@ -294,8 +360,11 @@ class Event:
     def background_color(self) -> str:
         background_color: str = PapiWebConfig.default_background_color
         if not self.stored_event.background_color:
-            self.add_debug(_('No background colour set, by default [{background_color}]').format(
-                background_color=background_color))
+            self.add_debug(
+                _('No background colour set, by default [{background_color}]').format(
+                    background_color=background_color
+                )
+            )
         else:
             background_color = self.stored_event.background_color
         return background_color
@@ -311,8 +380,11 @@ class Event:
     def record_illegal_moves(self) -> int:
         record_illegal_moves: int = PapiWebConfig.default_record_illegal_moves_number
         if self.stored_event.record_illegal_moves is None:
-            self.add_debug(_('Maximum number of illegal moves not set, by default [{record_illegal_moves}]').format(
-                record_illegal_moves=record_illegal_moves))
+            self.add_debug(
+                _(
+                    'Maximum number of illegal moves not set, by default [{record_illegal_moves}]'
+                ).format(record_illegal_moves=record_illegal_moves)
+            )
         else:
             record_illegal_moves = self.stored_event.record_illegal_moves
         return record_illegal_moves
@@ -353,7 +425,10 @@ class Event:
 
     @property
     def message_background_color(self) -> str:
-        return self.stored_event.message_background_color or PapiWebConfig.default_message_background_color
+        return (
+            self.stored_event.message_background_color
+            or PapiWebConfig.default_message_background_color
+        )
 
     @property
     def chessevent_user_id(self) -> str | None:
@@ -369,11 +444,17 @@ class Event:
 
     @cached_property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return sorted(self.screens_by_uniq_id.values(), key=lambda screen: screen.uniq_id)
+        return sorted(
+            self.screens_by_uniq_id.values(), key=lambda screen: screen.uniq_id
+        )
 
     @cached_property
-    def screens_of_type_sorted_by_uniq_id(self) -> defaultdict[ScreenType, list[Screen]]:
-        screens_of_type_sorted_by_uniq_id: defaultdict[ScreenType, list[Screen]] = defaultdict(list[Screen])
+    def screens_of_type_sorted_by_uniq_id(
+        self,
+    ) -> defaultdict[ScreenType, list[Screen]]:
+        screens_of_type_sorted_by_uniq_id: defaultdict[ScreenType, list[Screen]] = (
+            defaultdict(list[Screen])
+        )
         for screen in self.screens_sorted_by_uniq_id:
             screens_of_type_sorted_by_uniq_id[screen.type].append(screen)
         return screens_of_type_sorted_by_uniq_id
@@ -403,8 +484,12 @@ class Event:
         return [screen for screen in self.screens_by_uniq_id.values() if screen.public]
 
     @cached_property
-    def public_screens_of_type_sorted_by_uniq_id(self) -> defaultdict[ScreenType, list[Screen]]:
-        public_screens_of_type_sorted_by_uniq_id: defaultdict[ScreenType, list[Screen]] = defaultdict(list[Screen])
+    def public_screens_of_type_sorted_by_uniq_id(
+        self,
+    ) -> defaultdict[ScreenType, list[Screen]]:
+        public_screens_of_type_sorted_by_uniq_id: defaultdict[
+            ScreenType, list[Screen]
+        ] = defaultdict(list[Screen])
         for screen in self.public_screens_sorted_by_uniq_id:
             public_screens_of_type_sorted_by_uniq_id[screen.type].append(screen)
         return public_screens_of_type_sorted_by_uniq_id
@@ -435,7 +520,10 @@ class Event:
 
     @cached_property
     def public_rotators_sorted_by_uniq_id(self) -> list[Rotator]:
-        return sorted(filter(attrgetter('public'), self.rotators_by_id.values()), key=attrgetter('uniq_id'))
+        return sorted(
+            filter(attrgetter('public'), self.rotators_by_id.values()),
+            key=attrgetter('uniq_id'),
+        )
 
     @property
     def last_update(self) -> float | None:
@@ -455,23 +543,25 @@ class Event:
         }
         if self.errors:
             self.add_warning(
-                _('Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.'))
+                _(
+                    'Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.'
+                )
+            )
         return timers_by_id
 
     @cached_property
     def timers_by_uniq_id(self) -> dict[str, Timer]:
-        return {
-            timer.uniq_id: timer
-            for timer in self.timers_by_id.values()
-        }
+        return {timer.uniq_id: timer for timer in self.timers_by_id.values()}
 
     def get_unused_timer_uniq_id(
-            self,
-            base_uniq_id: str | None = None,
+        self,
+        base_uniq_id: str | None = None,
     ) -> str:
-        """ Returns the first unused timer uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
-        return self._get_unused_item_uniq_id(base_uniq_id or _('timer'), self.timers_by_uniq_id)
+        """Returns the first unused timer uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
+        return self._get_unused_item_uniq_id(
+            base_uniq_id or _('timer'), self.timers_by_uniq_id
+        )
 
     @cached_property
     def tournaments_by_id(self) -> dict[int, Tournament]:
@@ -483,7 +573,10 @@ class Event:
         }
         if self.errors:
             self.add_warning(
-                _('Errors have been found on tournaments; screens, families and rotators will not be loaded.'))
+                _(
+                    'Errors have been found on tournaments; screens, families and rotators will not be loaded.'
+                )
+            )
         return tournaments_by_id
 
     @cached_property
@@ -495,7 +588,9 @@ class Event:
 
     @cached_property
     def tournaments_sorted_by_uniq_id(self) -> list[Tournament]:
-        return sorted(self.tournaments_by_id.values(), key=lambda tournament: tournament.uniq_id)
+        return sorted(
+            self.tournaments_by_id.values(), key=lambda tournament: tournament.uniq_id
+        )
 
     @cached_property
     def tournaments_with_file_sorted_by_uniq_id(self) -> list[Tournament]:
@@ -518,22 +613,25 @@ class Event:
         ]
 
     def get_unused_tournament_uniq_id(
-            self,
-            base_uniq_id: str | None = None,
+        self,
+        base_uniq_id: str | None = None,
     ) -> str:
-        """ Returns the first unused tournament uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
-        return self._get_unused_item_uniq_id(base_uniq_id or _('tournament'), self.tournaments_by_uniq_id)
+        """Returns the first unused tournament uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
+        return self._get_unused_item_uniq_id(
+            base_uniq_id or _('tournament'), self.tournaments_by_uniq_id
+        )
 
     def get_unused_tournament_name(
-            self,
-            base_name: str | None = None,
+        self,
+        base_name: str | None = None,
     ) -> str:
-        """ Returns the first unused tournament name looking like base_name:
-        base_name, or base_name (2), or base_name (n+1)... """
+        """Returns the first unused tournament name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
         return self._get_unused_item_name(
             base_name or _('New tournament'),
-            [tournament.name for tournament in self.tournaments_by_id.values()])
+            [tournament.name for tournament in self.tournaments_by_id.values()],
+        )
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:
@@ -544,40 +642,44 @@ class Event:
             for stored_screen in self.stored_event.stored_screens
         }
         if self.errors:
-            self.add_warning(_('Errors have been found on screens; families and rotators will not be loaded.'))
+            self.add_warning(
+                _(
+                    'Errors have been found on screens; families and rotators will not be loaded.'
+                )
+            )
         return screens_by_id
 
     @cached_property
     def basic_screens_by_uniq_id(self) -> dict[str, Screen]:
-        return {
-            screen.uniq_id: screen
-            for screen in self.basic_screens_by_id.values()
-        }
+        return {screen.uniq_id: screen for screen in self.basic_screens_by_id.values()}
 
     def get_unused_screen_uniq_id(
-            self,
-            screen_type: ScreenType | None = None,
-            base_uniq_id: str | None = None,
+        self,
+        screen_type: ScreenType | None = None,
+        base_uniq_id: str | None = None,
     ) -> str:
-        """ Returns the first unused screen uniq_id looking like base_uniq_id:
+        """Returns the first unused screen uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
         screen_type is used when the given ID is empty to set an ID that corresponds to the screen type."""
         assert base_uniq_id is not None or screen_type is not None
         return self._get_unused_item_uniq_id(
-            base_uniq_id or _('{screen_type}-screen').format(screen_type=screen_type.to_str()),
-            self.basic_screens_by_uniq_id)
+            base_uniq_id
+            or _('{screen_type}-screen').format(screen_type=screen_type.to_str()),
+            self.basic_screens_by_uniq_id,
+        )
 
     def get_unused_screen_name(
-            self,
-            screen_type: ScreenType,
-            base_name: str | None = None,
+        self,
+        screen_type: ScreenType,
+        base_name: str | None = None,
     ) -> str:
-        """ Returns the first unused screen name looking like base_name:
+        """Returns the first unused screen name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)...
         screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
         return self._get_unused_item_name(
             base_name or screen_type.default_screen_name,
-            [screen.name for screen in self.basic_screens_by_id.values()])
+            [screen.name for screen in self.basic_screens_by_id.values()],
+        )
 
     @cached_property
     def families_by_id(self) -> dict[int, Family]:
@@ -588,39 +690,41 @@ class Event:
             for stored_family in self.stored_event.stored_families
         }
         if self.errors:
-            self.add_warning(_('Errors have been found on families; rotators will not be loaded.'))
+            self.add_warning(
+                _('Errors have been found on families; rotators will not be loaded.')
+            )
         return families_by_id
 
     @cached_property
     def families_by_uniq_id(self) -> dict[str, Family]:
-        return {
-            family.uniq_id: family
-            for family in self.families_by_id.values()
-        }
+        return {family.uniq_id: family for family in self.families_by_id.values()}
 
     def get_unused_family_uniq_id(
-            self,
-            family_type: ScreenType | None = None,
-            base_uniq_id: str | None = None,
+        self,
+        family_type: ScreenType | None = None,
+        base_uniq_id: str | None = None,
     ) -> str:
-        """ Returns the first unused family uniq_id looking like base_uniq_id:
+        """Returns the first unused family uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
         family_type is used when the given ID is empty to set an ID that corresponds to the family type."""
         return self._get_unused_item_uniq_id(
-            base_uniq_id or _('{family_type}-family').format(family_type=family_type.to_str()),
-            self.families_by_uniq_id)
+            base_uniq_id
+            or _('{family_type}-family').format(family_type=family_type.to_str()),
+            self.families_by_uniq_id,
+        )
 
     def get_unused_family_name(
-            self,
-            family_type: ScreenType,
-            base_name: str | None = None,
+        self,
+        family_type: ScreenType,
+        base_name: str | None = None,
     ) -> str:
-        """ Returns the first unused family name looking like base_name:
+        """Returns the first unused family name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)...
         family_type is used when the given name is empty to set a name that corresponds to the family type."""
         return self._get_unused_item_name(
             base_name or family_type.default_screen_name,
-            [screen.name for screen in self.families_by_id.values()])
+            [screen.name for screen in self.families_by_id.values()],
+        )
 
     @cached_property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
@@ -650,101 +754,192 @@ class Event:
 
     @cached_property
     def rotators_by_uniq_id(self) -> dict[str, Rotator]:
-        return {
-            rotator.uniq_id: rotator
-            for rotator in self.rotators_by_id.values()
-        }
+        return {rotator.uniq_id: rotator for rotator in self.rotators_by_id.values()}
 
-    def get_unused_rotator_uniq_id(
-            self,
-            base_uniq_id: str | None = None
-    ) -> str:
-        """ Returns the first unused rotator uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
+    def get_unused_rotator_uniq_id(self, base_uniq_id: str | None = None) -> str:
+        """Returns the first unused rotator uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
         return self._get_unused_item_uniq_id(
-            base_uniq_id or _('rotator'),
-            self.rotators_by_uniq_id)
+            base_uniq_id or _('rotator'), self.rotators_by_uniq_id
+        )
 
     def _add_message(
-            self, level: int, text: str, tournament: Tournament | None = None, family: Family | None = None,
-            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
-            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+        self,
+        level: int,
+        text: str,
+        tournament: Tournament | None = None,
+        family: Family | None = None,
+        timer: Timer | None = None,
+        timer_hour: TimerHour | None = None,
+        screen: Screen | None = None,
+        screen_set: ScreenSet | None = None,
+        rotator: Rotator | None = None,
     ) -> EventMessage:
         event_message: EventMessage = EventMessage(
-            level, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour, screen=screen,
-            screen_set=screen_set, rotator=rotator)
+            level,
+            text,
+            tournament=tournament,
+            family=family,
+            timer=timer,
+            timer_hour=timer_hour,
+            screen=screen,
+            screen_set=screen_set,
+            rotator=rotator,
+        )
         self.messages.append(event_message)
         return event_message
 
     def add_debug(
-            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
-            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
-            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+        self,
+        text: str,
+        tournament: Tournament | None = None,
+        family: Family | None = None,
+        timer: Timer | None = None,
+        timer_hour: TimerHour | None = None,
+        screen: Screen | None = None,
+        screen_set: ScreenSet | None = None,
+        rotator: Rotator | None = None,
     ):
         event_message: EventMessage = self._add_message(
-            logging.DEBUG, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour,
-            screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.DEBUG,
+            text,
+            tournament=tournament,
+            family=family,
+            timer=timer,
+            timer_hour=timer_hour,
+            screen=screen,
+            screen_set=screen_set,
+            rotator=rotator,
+        )
         if not self._silent:
             logger.debug(event_message.formatted_text)
 
     @property
     def infos(self) -> list[str]:
-        return [message.text for message in self.messages if message.level == logging.INFO]
+        return [
+            message.text for message in self.messages if message.level == logging.INFO
+        ]
 
     def add_info(
-            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
-            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
-            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+        self,
+        text: str,
+        tournament: Tournament | None = None,
+        family: Family | None = None,
+        timer: Timer | None = None,
+        timer_hour: TimerHour | None = None,
+        screen: Screen | None = None,
+        screen_set: ScreenSet | None = None,
+        rotator: Rotator | None = None,
     ):
         event_message: EventMessage = self._add_message(
-            logging.INFO, text, tournament=tournament, family=family, timer=timer,
-            timer_hour=timer_hour, screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.INFO,
+            text,
+            tournament=tournament,
+            family=family,
+            timer=timer,
+            timer_hour=timer_hour,
+            screen=screen,
+            screen_set=screen_set,
+            rotator=rotator,
+        )
         if not self._silent:
             logger.info(event_message.formatted_text)
 
     @property
     def warnings(self) -> list[str]:
-        return [message.text for message in self.messages if message.level == logging.WARNING]
+        return [
+            message.text
+            for message in self.messages
+            if message.level == logging.WARNING
+        ]
 
     def add_warning(
-            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
-            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
-            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+        self,
+        text: str,
+        tournament: Tournament | None = None,
+        family: Family | None = None,
+        timer: Timer | None = None,
+        timer_hour: TimerHour | None = None,
+        screen: Screen | None = None,
+        screen_set: ScreenSet | None = None,
+        rotator: Rotator | None = None,
     ):
         event_message: EventMessage = self._add_message(
-            logging.WARNING, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour,
-            screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.WARNING,
+            text,
+            tournament=tournament,
+            family=family,
+            timer=timer,
+            timer_hour=timer_hour,
+            screen=screen,
+            screen_set=screen_set,
+            rotator=rotator,
+        )
         if not self._silent:
             logger.info(event_message.formatted_text)
 
     @property
     def errors(self) -> list[str]:
-        return [message.text for message in self.messages if message.level == logging.ERROR]
+        return [
+            message.text for message in self.messages if message.level == logging.ERROR
+        ]
 
     def add_error(
-            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
-            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
-            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+        self,
+        text: str,
+        tournament: Tournament | None = None,
+        family: Family | None = None,
+        timer: Timer | None = None,
+        timer_hour: TimerHour | None = None,
+        screen: Screen | None = None,
+        screen_set: ScreenSet | None = None,
+        rotator: Rotator | None = None,
     ):
         event_message: EventMessage = self._add_message(
-            logging.ERROR, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour,
-            screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.ERROR,
+            text,
+            tournament=tournament,
+            family=family,
+            timer=timer,
+            timer_hour=timer_hour,
+            screen=screen,
+            screen_set=screen_set,
+            rotator=rotator,
+        )
         if not self._silent:
             logger.info(event_message.formatted_text)
 
     @property
     def criticals(self) -> list[str]:
-        return [message.text for message in self.messages if message.level == logging.CRITICAL]
+        return [
+            message.text
+            for message in self.messages
+            if message.level == logging.CRITICAL
+        ]
 
     def add_critical(
-            self, text: str, tournament: Tournament | None = None, family: Family | None = None,
-            timer: Timer | None = None, timer_hour: TimerHour | None = None, screen: Screen | None = None,
-            screen_set: ScreenSet | None = None, rotator: Rotator | None = None,
+        self,
+        text: str,
+        tournament: Tournament | None = None,
+        family: Family | None = None,
+        timer: Timer | None = None,
+        timer_hour: TimerHour | None = None,
+        screen: Screen | None = None,
+        screen_set: ScreenSet | None = None,
+        rotator: Rotator | None = None,
     ):
         """Adds a debug-level message and logs it"""
         event_message: EventMessage = self._add_message(
-            logging.CRITICAL, text, tournament=tournament, family=family, timer=timer, timer_hour=timer_hour,
-            screen=screen, screen_set=screen_set, rotator=rotator)
+            logging.CRITICAL,
+            text,
+            tournament=tournament,
+            family=family,
+            timer=timer,
+            timer_hour=timer_hour,
+            screen=screen,
+            screen_set=screen_set,
+            rotator=rotator,
+        )
         if not self._silent:
             logger.info(event_message.formatted_text)
 

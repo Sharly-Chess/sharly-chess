@@ -21,16 +21,16 @@ def download_bbp_build():
     elif system == 'Linux':
         build_file = LINUX_BUILD
     else:
-        raise OSError(
-            'BBP Pairings is not available for '
-            f'the current system: {system}')
+        raise OSError(f'BBP Pairings is not available for the current system: {system}')
 
-    build_url = f'{PROJECT_URL}/releases/download/{VERSION}/bbpPairings-{VERSION}-{build_file}'
+    build_url = (
+        f'{PROJECT_URL}/releases/download/{VERSION}/bbpPairings-{VERSION}-{build_file}'
+    )
     os.makedirs(TARGET_DIR, exist_ok=True)
     archive_path = TARGET_DIR / build_file
     response = requests.get(build_url, stream=True)
     response.raise_for_status()
-    with open(archive_path, "wb") as f:
+    with open(archive_path, 'wb') as f:
         for chunk in response.iter_content(chunk_size=8192):
             f.write(chunk)
     shutil.unpack_archive(archive_path, TARGET_DIR)

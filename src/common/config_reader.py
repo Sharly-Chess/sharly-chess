@@ -2,8 +2,13 @@ import re
 from pathlib import Path
 
 from configparser import (
-    ConfigParser, DuplicateSectionError, DuplicateOptionError,
-    MissingSectionHeaderError, ParsingError, Error, SectionProxy
+    ConfigParser,
+    DuplicateSectionError,
+    DuplicateOptionError,
+    MissingSectionHeaderError,
+    ParsingError,
+    Error,
+    SectionProxy,
 )
 from logging import Logger
 import chardet
@@ -25,36 +30,59 @@ class ConfigReader(ConfigParser):
         self.__warnings: list[str] = []
         self.__errors: list[str] = []
         if not self.ini_file.exists():
-            self.add_error(_('Configuration file [{file}] not found.').format(file=self.ini_file))
+            self.add_error(
+                _('Configuration file [{file}] not found.').format(file=self.ini_file)
+            )
             return
         if not self.ini_file.is_file():
-            self.add_error(_('Configuration file [{file}] is not a file.').format(file=self.ini_file))
+            self.add_error(
+                _('Configuration file [{file}] is not a file.').format(
+                    file=self.ini_file
+                )
+            )
             return
         try:
             files_read: list[str] = []
             encoding: str = 'utf-8-sig'
             try:
-                logger.debug('Reading [%s] with encoding [%s]...', self.ini_file, encoding)
+                logger.debug(
+                    'Reading [%s] with encoding [%s]...', self.ini_file, encoding
+                )
                 files_read = self.read(self.ini_file, encoding=encoding)
             except UnicodeDecodeError:
-                logger.debug('Reading [%s] with encoding [%s] failed, looking for the encoding...',
-                             self.ini_file, encoding)
+                logger.debug(
+                    'Reading [%s] with encoding [%s] failed, looking for the encoding...',
+                    self.ini_file,
+                    encoding,
+                )
                 detected_encoding: str
-                with open(self.ini_file, "rb") as f:
+                with open(self.ini_file, 'rb') as f:
                     detected_encoding: str = chardet.detect(f.read())['encoding']
                 logger.debug('Encoding detected: [%s]', detected_encoding)
                 if detected_encoding != 'utf-8':
-                    logger.debug('Reading [%s] with encoding [%s]...', self.ini_file, detected_encoding)
+                    logger.debug(
+                        'Reading [%s] with encoding [%s]...',
+                        self.ini_file,
+                        detected_encoding,
+                    )
                     files_read = self.read(self.ini_file, encoding=detected_encoding)
             if str(self.ini_file) not in files_read:
-                self.add_error(_('Could not read file [{file}].').format(file=self.ini_file))
+                self.add_error(
+                    _('Could not read file [{file}].').format(file=self.ini_file)
+                )
                 return
         except DuplicateSectionError as ex:
-            self.add_error(_('Duplicated section at line [{lineno}].').format(lineno=ex.lineno), ex.section)
+            self.add_error(
+                _('Duplicated section at line [{lineno}].').format(lineno=ex.lineno),
+                ex.section,
+            )
             return
         except DuplicateOptionError as ex:
             self.add_error(
-                _('Duplicated option at line [{lineno}].').format(lineno=ex.lineno), ex.section, ex.option)
+                _('Duplicated option at line [{lineno}].').format(lineno=ex.lineno),
+                ex.section,
+                ex.option,
+            )
             return
         except MissingSectionHeaderError:
             return
@@ -74,7 +102,9 @@ class ConfigReader(ConfigParser):
         else:
             return f'{self.ini_file.name}[{section_key}].{key}: {text}'
 
-    def add_debug(self, text: str, section_key: str | None = None, key: str | None = None):
+    def add_debug(
+        self, text: str, section_key: str | None = None, key: str | None = None
+    ):
         """Adds a debug-level message and logs it"""
         message = self.__format_message(text, section_key, key)
         logger.debug(message)
@@ -83,7 +113,9 @@ class ConfigReader(ConfigParser):
     def infos(self) -> list[str]:
         return self.__infos
 
-    def add_info(self, text: str, section_key: str | None = None, key: str | None = None):
+    def add_info(
+        self, text: str, section_key: str | None = None, key: str | None = None
+    ):
         """Adds an info-level message and logs it"""
         message = self.__format_message(text, section_key, key)
         logger.info(message)
@@ -93,7 +125,9 @@ class ConfigReader(ConfigParser):
     def warnings(self) -> list[str]:
         return self.__warnings
 
-    def add_warning(self, text: str, section_key: str | None = None, key: str | None = None):
+    def add_warning(
+        self, text: str, section_key: str | None = None, key: str | None = None
+    ):
         """Adds a warning-level message and logs it"""
         message = self.__format_message(text, section_key, key)
         logger.warning(message)
@@ -103,13 +137,17 @@ class ConfigReader(ConfigParser):
     def errors(self) -> list[str]:
         return self.__errors
 
-    def add_error(self, text: str, section_key: str | None = None, key: str | None = None):
+    def add_error(
+        self, text: str, section_key: str | None = None, key: str | None = None
+    ):
         """Adds an error-level message and logs it"""
         message = self.__format_message(text, section_key, key)
         logger.error(message)
         self.__errors.append(message)
 
-    def getint_safe(self, section_key: str, key: str, minimum: int = None, maximum: int = None) -> int | None:
+    def getint_safe(
+        self, section_key: str, key: str, minimum: int = None, maximum: int = None
+    ) -> int | None:
         """Tries to convert the value associated to the given key in the
         given section to an integer, returns None if it can't be converted
         properly.
@@ -137,7 +175,9 @@ class ConfigReader(ConfigParser):
         except ValueError:
             return None
 
-    def get_subsection_keys_with_prefix(self, prefix: str, first_level_only: bool = True) -> list[str]:
+    def get_subsection_keys_with_prefix(
+        self, prefix: str, first_level_only: bool = True
+    ) -> list[str]:
         """Returns the list of all subsections with the given prefix.
         If *first_level_only* is True, only direct subsections are returned.
         """

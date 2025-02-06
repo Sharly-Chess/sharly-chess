@@ -18,7 +18,14 @@ from litestar.response import Redirect, Template
 from phonenumbers.phonenumberutil import NumberParseException
 
 from common import RGB, check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
-from common.i18n import set_locale, locale_localized_name, locale_flag_url, trusted_locales, _, get_locale
+from common.i18n import (
+    set_locale,
+    locale_localized_name,
+    locale_flag_url,
+    trusted_locales,
+    _,
+    get_locale,
+)
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from web.messages import Message
@@ -35,8 +42,13 @@ class WebContext:
     """
 
     def __init__(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None = None,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None = None,
     ):
         self.request: HTMXRequest = request
         self.data: dict[str, str] = data
@@ -83,7 +95,9 @@ class WebContext:
         return 'light'
 
     @staticmethod
-    def form_data_to_str(data: dict[str, str], field: str, empty_value: str | None = None) -> str | None:
+    def form_data_to_str(
+        data: dict[str, str], field: str, empty_value: str | None = None
+    ) -> str | None:
         """Transforms given `data`'s value in `field` into a stripped
         str. If it is empty, returns `empty_value`."""
         if data is None:
@@ -95,12 +109,18 @@ class WebContext:
             return empty_value
         return data[field]
 
-    def _form_data_to_str(self, field: str, empty_value: str | None = None) -> str | None:
+    def _form_data_to_str(
+        self, field: str, empty_value: str | None = None
+    ) -> str | None:
         return self.form_data_to_str(self.data, field, empty_value)
 
     @staticmethod
     def form_data_to_int(
-            data: dict[str, str], field: str, empty_value: int | None = None, minimum: int = None) -> int | None:
+        data: dict[str, str],
+        field: str,
+        empty_value: int | None = None,
+        minimum: int = None,
+    ) -> int | None:
         """Transforms `data`'s value in `field` into a base-10 integer.
         If the value is empty, returns `empty_value`.
         If it is not empty but is not in base-10 integer format, raises
@@ -119,12 +139,18 @@ class WebContext:
             raise ValueError(f'{int_val} < {minimum}')
         return int_val
 
-    def _form_data_to_int(self, field: str, empty_value: int | None = None, minimum: int = None) -> int | None:
+    def _form_data_to_int(
+        self, field: str, empty_value: int | None = None, minimum: int = None
+    ) -> int | None:
         return self.form_data_to_int(self.data, field, empty_value, minimum)
 
     @staticmethod
     def form_data_to_float(
-            data: dict[str, str], field: str, empty_value: float | None = None, minimum: float = None) -> float | None:
+        data: dict[str, str],
+        field: str,
+        empty_value: float | None = None,
+        minimum: float = None,
+    ) -> float | None:
         if data is None:
             return empty_value
         data[field] = data.get(field, '')
@@ -137,11 +163,15 @@ class WebContext:
             raise ValueError(f'{float_val} < {minimum}')
         return float_val
 
-    def _form_data_to_float(self, field: str, empty_value: str | None = None, minimum: float = None) -> float | None:
+    def _form_data_to_float(
+        self, field: str, empty_value: str | None = None, minimum: float = None
+    ) -> float | None:
         return self.form_data_to_float(self.data, field, empty_value, minimum)
 
     @staticmethod
-    def form_data_to_bool(data: dict[str, str], field: str, empty_value: bool | None = None) -> bool | None:
+    def form_data_to_bool(
+        data: dict[str, str], field: str, empty_value: bool | None = None
+    ) -> bool | None:
         if data is None:
             return empty_value
         data[field] = data.get(field, '')
@@ -149,13 +179,20 @@ class WebContext:
             data[field] = data[field].strip().lower()
         if not data[field]:
             return empty_value
-        return data[field] in ['true', 'on', ]
+        return data[field] in [
+            'true',
+            'on',
+        ]
 
-    def _form_data_to_bool(self, field: str, empty_value: str | None = None) -> bool | None:
+    def _form_data_to_bool(
+        self, field: str, empty_value: str | None = None
+    ) -> bool | None:
         return self.form_data_to_bool(self.data, field, empty_value)
 
     @staticmethod
-    def form_data_to_rgb(data: dict[str, str], field: str, empty_value: RGB | None = None) -> str | None:
+    def form_data_to_rgb(
+        data: dict[str, str], field: str, empty_value: RGB | None = None
+    ) -> str | None:
         if data is None:
             return empty_value
         data[field] = data.get(field, '')
@@ -165,11 +202,15 @@ class WebContext:
             return empty_value
         return check_rgb_str(data[field])
 
-    def _form_data_to_rgb(self, field: str, empty_value: RGB | None = None) -> str | None:
+    def _form_data_to_rgb(
+        self, field: str, empty_value: RGB | None = None
+    ) -> str | None:
         return self.form_data_to_rgb(self.data, field, empty_value)
 
     @staticmethod
-    def form_data_to_date(data: dict[str, str], field: str, empty_value: RGB | None = None) -> date | None:
+    def form_data_to_date(
+        data: dict[str, str], field: str, empty_value: RGB | None = None
+    ) -> date | None:
         if data is None:
             return empty_value
         data[field] = data.get(field, '')
@@ -213,7 +254,9 @@ class WebContext:
                 raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)')
 
     @classmethod
-    def form_data_to_ffe_licence_number(cls, data: dict[str, str], field: str) -> str | None:
+    def form_data_to_ffe_licence_number(
+        cls, data: dict[str, str], field: str
+    ) -> str | None:
         if data is None:
             return None
         data[field] = data.get(field, '')
@@ -319,7 +362,9 @@ class AbstractController(Controller):
     """
 
     @staticmethod
-    def redirect_error(request: HTMXRequest, errors: str | list[str] | Exception) -> ClientRedirect:
+    def redirect_error(
+        request: HTMXRequest, errors: str | list[str] | Exception
+    ) -> ClientRedirect:
         Message.error(request, errors)
         return ClientRedirect(redirect_to=index_url(request))
 
@@ -331,7 +376,8 @@ class AbstractController(Controller):
             re_target='#messages',
             context={
                 'messages': Message.messages(request),
-            })
+            },
+        )
 
     IF_MODIFIED_SINCE_HEADER: str = 'If-Modified-Since'
 
@@ -348,16 +394,20 @@ class AbstractController(Controller):
             return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
         """
         try:
-            if_modified_since: float = httpdate_to_unixtime(request.headers[self.IF_MODIFIED_SINCE_HEADER])
+            if_modified_since: float = httpdate_to_unixtime(
+                request.headers[self.IF_MODIFIED_SINCE_HEADER]
+            )
             logger.debug(
-                f'request.headers[{self.IF_MODIFIED_SINCE_HEADER}]={request.headers[self.IF_MODIFIED_SINCE_HEADER]}')
+                f'request.headers[{self.IF_MODIFIED_SINCE_HEADER}]={request.headers[self.IF_MODIFIED_SINCE_HEADER]}'
+            )
             logger.debug(f'if_modified_since={if_modified_since}')
             return if_modified_since
         except KeyError:
             return None
         except ValueError:
             logger.warning(
-                f'Invalid [{self.IF_MODIFIED_SINCE_HEADER}] header [{request.headers[self.IF_MODIFIED_SINCE_HEADER]}]')
+                f'Invalid [{self.IF_MODIFIED_SINCE_HEADER}] header [{request.headers[self.IF_MODIFIED_SINCE_HEADER]}]'
+            )
             return None
 
     @staticmethod
@@ -369,29 +419,35 @@ class AbstractController(Controller):
 
 
 class IndexController(AbstractController):
-
     @get(
         path='/',
         name='index',
         cache=1,
     )
     async def index(
-            self,
-            request: HTMXRequest,
-            locale: str | None,
+        self,
+        request: HTMXRequest,
+        locale: str | None,
     ) -> Template:
         self.set_locale(request, locale)
         web_context: WebContext = WebContext(request)
         return HTMXTemplate(
-            template_name="index.html",
-            context=web_context.template_context | {
+            template_name='index.html',
+            context=web_context.template_context
+            | {
                 'messages': Message.messages(request),
-            })
+            },
+        )
 
     @get(
         path='/favicon.ico',
         name='favicon',
         cache=CACHE_FOREVER,
     )
-    async def favicon(self, request: HTMXRequest, ) -> Redirect:
-        return Redirect(request.app.route_reverse('static', file_path='/images/papi-web.ico'))
+    async def favicon(
+        self,
+        request: HTMXRequest,
+    ) -> Redirect:
+        return Redirect(
+            request.app.route_reverse('static', file_path='/images/papi-web.ico')
+        )

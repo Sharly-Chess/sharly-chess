@@ -16,7 +16,10 @@ from data.loader import EventLoader
 from data.util import ScreenType
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredFamily
-from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
+from web.controllers.admin.event_admin_controller import (
+    EventAdminWebContext,
+    AbstractEventAdminController,
+)
 from web.controllers.index_controller import WebContext
 from web.messages import Message
 
@@ -25,14 +28,24 @@ logger: Logger = get_logger()
 
 class FamilyAdminWebContext(EventAdminWebContext):
     def __init__(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            admin_event_tab: str | None,
-            family_id: int | None,
-            family_type: str | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        admin_event_tab: str | None,
+        family_id: int | None,
+        family_type: str | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None,
     ):
-        super().__init__(request, data=data, event_uniq_id=event_uniq_id, admin_event_tab=admin_event_tab)
+        super().__init__(
+            request,
+            data=data,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab=admin_event_tab,
+        )
         self.admin_family: Family | None = None
         if self.error:
             return
@@ -48,17 +61,18 @@ class FamilyAdminWebContext(EventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_family': self.admin_family,
-            'family_type': self.admin_family.type if self.admin_family else self.family_type,
+            'family_type': self.admin_family.type
+            if self.admin_family
+            else self.family_type,
         }
 
 
 class FamilyAdminController(AbstractEventAdminController):
-
     @staticmethod
     def _admin_validate_family_update_data(
-            action: str,
-            web_context: FamilyAdminWebContext,
-            data: dict[str, str] | None = None,
+        action: str,
+        web_context: FamilyAdminWebContext,
+        data: dict[str, str] | None = None,
     ) -> StoredFamily:
         errors: dict[str, str] = {}
         if data is None:
@@ -95,7 +109,9 @@ class FamilyAdminController(AbstractEventAdminController):
         number: int | None = None
         message_default: bool = True
         message_text: str | None = None
-        if action in ['delete', ]:
+        if action in [
+            'delete',
+        ]:
             pass
         else:
             if not uniq_id:
@@ -106,11 +122,17 @@ class FamilyAdminController(AbstractEventAdminController):
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.families_by_uniq_id:
-                            errors[field] = _('Family [{uniq_id}] already exists.').format(uniq_id=uniq_id)
+                            errors[field] = _(
+                                'Family [{uniq_id}] already exists.'
+                            ).format(uniq_id=uniq_id)
                     case 'update':
-                        if uniq_id != web_context.admin_family.uniq_id \
-                                and uniq_id in web_context.admin_event.families_by_uniq_id:
-                            errors[field] = _('Family [{uniq_id}] already exists.').format(uniq_id=uniq_id)
+                        if (
+                            uniq_id != web_context.admin_family.uniq_id
+                            and uniq_id in web_context.admin_event.families_by_uniq_id
+                        ):
+                            errors[field] = _(
+                                'Family [{uniq_id}] already exists.'
+                            ).format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
             name = WebContext.form_data_to_str(data, 'name')
@@ -122,15 +144,21 @@ class FamilyAdminController(AbstractEventAdminController):
                 field: str = 'tournament_id'
                 try:
                     if len(web_context.admin_event.tournaments_by_id) == 1:
-                        tournament_id = list(web_context.admin_event.tournaments_by_id.keys())[0]
+                        tournament_id = list(
+                            web_context.admin_event.tournaments_by_id.keys()
+                        )[0]
                         data[field] = WebContext.value_to_form_data(tournament_id)
                     else:
                         tournament_id = WebContext.form_data_to_int(data, field)
                         if not tournament_id:
                             errors[field] = _('Please choose the tournament.')
-                        elif tournament_id not in web_context.admin_event.tournaments_by_id:
-                            errors[field] = _('Tournament [{tournament_id}] not found.').format(
-                                tournament_id=tournament_id)
+                        elif (
+                            tournament_id
+                            not in web_context.admin_event.tournaments_by_id
+                        ):
+                            errors[field] = _(
+                                'Tournament [{tournament_id}] not found.'
+                            ).format(tournament_id=tournament_id)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 field = 'columns'
@@ -144,8 +172,13 @@ class FamilyAdminController(AbstractEventAdminController):
                 field = 'timer_id'
                 try:
                     timer_id = WebContext.form_data_to_int(data, field)
-                    if timer_id and timer_id not in web_context.admin_event.timers_by_id:
-                        errors[field] = _('Timer [{timer_id}] not found.').format(timer_id=timer_id)
+                    if (
+                        timer_id
+                        and timer_id not in web_context.admin_event.timers_by_id
+                    ):
+                        errors[field] = _('Timer [{timer_id}] not found.').format(
+                            timer_id=timer_id
+                        )
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 field: str = 'first'
@@ -159,17 +192,22 @@ class FamilyAdminController(AbstractEventAdminController):
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 if first and last and first > last:
-                    error: str = _('Numbers {first} and {last} are not compatible ({first} > {last}).').format(
-                        first=first, last=last)
+                    error: str = _(
+                        'Numbers {first} and {last} are not compatible ({first} > {last}).'
+                    ).format(first=first, last=last)
                     errors['first'] = error
                     errors['last'] = error
                 match type:
                     case 'boards':
                         pass
                     case 'input':
-                        input_exit_button = WebContext.form_data_to_bool(data, 'input_exit_button')
+                        input_exit_button = WebContext.form_data_to_bool(
+                            data, 'input_exit_button'
+                        )
                     case 'players':
-                        players_show_unpaired = WebContext.form_data_to_bool(data, 'players_show_unpaired')
+                        players_show_unpaired = WebContext.form_data_to_bool(
+                            data, 'players_show_unpaired'
+                        )
                     case _:
                         raise ValueError(f'type=[{type}]')
                 field: str = 'parts'
@@ -183,11 +221,15 @@ class FamilyAdminController(AbstractEventAdminController):
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 if parts and number:
-                    error: str = _('Specifying the number of parts and the number of items per part is not possible.')
+                    error: str = _(
+                        'Specifying the number of parts and the number of items per part is not possible.'
+                    )
                     errors['parts'] = error
                     errors['number'] = error
                 field = 'message_text'
-                message_default = WebContext.form_data_to_bool(data, field + '_checkbox', False)
+                message_default = WebContext.form_data_to_bool(
+                    data, field + '_checkbox', False
+                )
                 if message_default and web_context.admin_family:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
@@ -197,7 +239,13 @@ class FamilyAdminController(AbstractEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
         return StoredFamily(
-            id=web_context.admin_family.id if action not in ['create', 'clone', ] else None,
+            id=web_context.admin_family.id
+            if action
+            not in [
+                'create',
+                'clone',
+            ]
+            else None,
             uniq_id=uniq_id,
             type=type,
             public=public,
@@ -221,21 +269,29 @@ class FamilyAdminController(AbstractEventAdminController):
 
     @classmethod
     def _admin_event_families_render(
-            cls, request: HTMXRequest,
-            event_uniq_id: str,
-            modal: str | None = None,
-            action: str | None = None,
-            family_id: int | None = None,
-            family_type: str | None = None,
-            data: dict[str, str] | None = None,
-            errors: dict[str, str] | None = None,
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        modal: str | None = None,
+        action: str | None = None,
+        family_id: int | None = None,
+        family_type: str | None = None,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: FamilyAdminWebContext = FamilyAdminWebContext(
-            request, event_uniq_id=event_uniq_id, admin_event_tab='families', family_id=family_id,
-            family_type=family_type, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab='families',
+            family_id=family_id,
+            family_type=family_type,
+            data=data,
+        )
         if web_context.error:
             return web_context.error
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(web_context)
+        template_context: dict[str, Any] = cls._get_admin_event_render_context(
+            web_context
+        )
         match modal:
             case None:
                 pass
@@ -264,25 +320,31 @@ class FamilyAdminController(AbstractEventAdminController):
                             name = web_context.admin_family.stored_family.name
                         case 'create':
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
-                                family_type=ScreenType.from_str(family_type))
-                            basic_name: str
-                            match family_type:
-                                case 'input':
-                                    basic_name = _('Results entry')
-                                case 'boards':
-                                    basic_name = _('pairings by board')
-                                case 'players':
-                                    basic_name = _('Pairings by player')
-                                case _:
-                                    raise ValueError(f'family_type=[{family_type}]')
+                                family_type=ScreenType.from_str(family_type)
+                            )
+                            # basic_name: str
+                            # match family_type:
+                            #     case 'input':
+                            #         basic_name = _('Results entry')
+                            #     case 'boards':
+                            #         basic_name = _('pairings by board')
+                            #     case 'players':
+                            #         basic_name = _('Pairings by player')
+                            #     case _:
+                            #         raise ValueError(f'family_type=[{family_type}]')
                             name = web_context.admin_event.get_unused_family_name(
-                                family_type=ScreenType.from_str(family_type))
+                                family_type=ScreenType.from_str(family_type)
+                            )
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
-                                base_uniq_id=web_context.admin_family.stored_family.uniq_id)
+                                base_uniq_id=web_context.admin_family.stored_family.uniq_id
+                            )
                             name = web_context.admin_event.get_unused_family_name(
-                                family_type=ScreenType.from_str(web_context.admin_family.type),
-                                base_name=web_context.admin_family.stored_family.name)
+                                family_type=ScreenType.from_str(
+                                    web_context.admin_family.type
+                                ),
+                                base_name=web_context.admin_family.stored_family.name,
+                            )
                         case 'delete':
                             pass
                         case _:
@@ -290,7 +352,9 @@ class FamilyAdminController(AbstractEventAdminController):
                     match action:
                         case 'update' | 'clone':
                             public = web_context.admin_family.stored_family.public
-                            tournament_id = web_context.admin_family.stored_family.tournament_id
+                            tournament_id = (
+                                web_context.admin_family.stored_family.tournament_id
+                            )
                             columns = web_context.admin_family.stored_family.columns
                             menu_link = web_context.admin_family.stored_family.menu_link
                             menu_text = web_context.admin_family.stored_family.menu_text
@@ -306,15 +370,23 @@ class FamilyAdminController(AbstractEventAdminController):
                                 case ScreenType.Players:
                                     players_show_unpaired = web_context.admin_family.stored_family.players_show_unpaired
                                 case _:
-                                    raise ValueError(f'type=[{web_context.admin_family.type}]')
+                                    raise ValueError(
+                                        f'type=[{web_context.admin_family.type}]'
+                                    )
                             parts = web_context.admin_family.stored_family.parts
                             number = web_context.admin_family.stored_family.number
-                            message_default = web_context.admin_family.stored_family.message_default
-                            message_text = web_context.admin_family.stored_family.message_text
+                            message_default = (
+                                web_context.admin_family.stored_family.message_default
+                            )
+                            message_text = (
+                                web_context.admin_family.stored_family.message_text
+                            )
                         case 'create':
                             public = True
                             message_default = True
-                            tournament_id = list(web_context.admin_event.tournaments_by_id.keys())[0]
+                            tournament_id = list(
+                                web_context.admin_event.tournaments_by_id.keys()
+                            )[0]
                             match family_type:
                                 case ScreenType.Boards:
                                     menu = '@boards'
@@ -342,18 +414,30 @@ class FamilyAdminController(AbstractEventAdminController):
                         'last': WebContext.value_to_form_data(last),
                         'parts': WebContext.value_to_form_data(parts),
                         'number': WebContext.value_to_form_data(number),
-                        'message_text_checkbox': WebContext.value_to_form_data(message_default),
+                        'message_text_checkbox': WebContext.value_to_form_data(
+                            message_default
+                        ),
                         'message_text': WebContext.value_to_form_data(message_text),
-                        'input_exit_button': WebContext.value_to_form_data(input_exit_button),
-                        'players_show_unpaired': WebContext.value_to_form_data(players_show_unpaired),
+                        'input_exit_button': WebContext.value_to_form_data(
+                            input_exit_button
+                        ),
+                        'players_show_unpaired': WebContext.value_to_form_data(
+                            players_show_unpaired
+                        ),
                     }
-                    stored_family: StoredFamily = cls._admin_validate_family_update_data(action, web_context, data)
+                    stored_family: StoredFamily = (
+                        cls._admin_validate_family_update_data(
+                            action, web_context, data
+                        )
+                    )
                     errors = stored_family.errors
                 if errors is None:
                     errors = {}
                 template_context |= {
                     'tournament_options': web_context.get_tournament_options(),
-                    'screen_type_options': cls._get_screen_type_options(family_screens_only=True),
+                    'screen_type_options': cls._get_screen_type_options(
+                        family_screens_only=True
+                    ),
                     'timer_options': cls._get_timer_options(web_context.admin_event),
                     'input_exit_button_options': cls._get_input_exit_button_options(),
                     'players_show_unpaired_options': cls._get_players_show_unpaired_options(),
@@ -372,13 +456,19 @@ class FamilyAdminController(AbstractEventAdminController):
         cache=1,
     )
     async def htmx_admin_family_create_modal(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            family_type: str,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        family_type: str,
     ) -> Template | ClientRedirect:
         return self._admin_event_families_render(
-            request, event_uniq_id=event_uniq_id, modal='family', action='create', family_id=None,
-            family_type=family_type)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='family',
+            action='create',
+            family_id=None,
+            family_type=family_type,
+        )
 
     @get(
         path='/admin/family-modal/{action:str}/{event_uniq_id:str}/{family_id:int}',
@@ -386,51 +476,84 @@ class FamilyAdminController(AbstractEventAdminController):
         cache=1,
     )
     async def htmx_admin_family_modal(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            action: str,
-            family_id: int | None,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        action: str,
+        family_id: int | None,
     ) -> Template | ClientRedirect:
         return self._admin_event_families_render(
-            request, event_uniq_id=event_uniq_id, modal='family', action=action, family_id=family_id)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='family',
+            action=action,
+            family_id=family_id,
+        )
 
     def _admin_family_update(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            action: str,
-            family_id: int | None,
-            family_type: str | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        action: str,
+        family_id: int | None,
+        family_type: str | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         match action:
             case 'update' | 'delete' | 'clone' | 'create':
                 web_context: FamilyAdminWebContext = FamilyAdminWebContext(
-                    request, event_uniq_id=event_uniq_id, admin_event_tab='families', family_id=family_id,
-                    family_type=family_type, data=data)
+                    request,
+                    event_uniq_id=event_uniq_id,
+                    admin_event_tab='families',
+                    family_id=family_id,
+                    family_type=family_type,
+                    data=data,
+                )
             case _:
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        stored_family: StoredFamily = self._admin_validate_family_update_data(action, web_context, data)
+        stored_family: StoredFamily = self._admin_validate_family_update_data(
+            action, web_context, data
+        )
         if stored_family.errors:
             return self._admin_event_families_render(
-                request, event_uniq_id=event_uniq_id, modal='family', action=action, family_id=family_id,
-                family_type=family_type, data=data, errors=stored_family.errors)
+                request,
+                event_uniq_id=event_uniq_id,
+                modal='family',
+                action=action,
+                family_id=family_id,
+                family_type=family_type,
+                data=data,
+                errors=stored_family.errors,
+            )
         event_loader: EventLoader = EventLoader.get(request=request)
-        with (EventDatabase(web_context.admin_event.uniq_id, write=True) as event_database):
+        with EventDatabase(
+            web_context.admin_event.uniq_id, write=True
+        ) as event_database:
             match action:
                 case 'create' | 'clone':
                     stored_family = event_database.add_stored_family(stored_family)
                     event_database.commit()
-                    Message.success(request, f'La famille [{stored_family.uniq_id}] a été créée.')
+                    Message.success(
+                        request, f'La famille [{stored_family.uniq_id}] a été créée.'
+                    )
                 case 'update':
                     stored_family = event_database.update_stored_family(stored_family)
                     event_database.commit()
-                    Message.success(request, f'La famille [{stored_family.uniq_id}] a été modifiée.')
+                    Message.success(
+                        request, f'La famille [{stored_family.uniq_id}] a été modifiée.'
+                    )
                 case 'delete':
                     event_database.delete_stored_family(web_context.admin_family.id)
                     event_database.commit()
-                    Message.success(request, f'La famille [{web_context.admin_family.uniq_id}] a été supprimée.')
+                    Message.success(
+                        request,
+                        f'La famille [{web_context.admin_family.uniq_id}] a été supprimée.',
+                    )
                 case _:
                     raise ValueError(f'action=[{action}]')
         event_loader.clear_cache(event_uniq_id)
@@ -438,42 +561,72 @@ class FamilyAdminController(AbstractEventAdminController):
 
     @post(
         path='/admin/family-create/{event_uniq_id:str}/{family_type:str}',
-        name='admin-family-create'
+        name='admin-family-create',
     )
     async def htmx_admin_family_create(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            family_type: str,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        family_type: str,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_family_update(
-            request, event_uniq_id=event_uniq_id, action='create', family_id=None, family_type=family_type, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action='create',
+            family_id=None,
+            family_type=family_type,
+            data=data,
+        )
 
     @post(
         path='/admin/family-clone/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-clone',
     )
     async def htmx_admin_family_clone(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            family_id: int | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        family_id: int | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_family_update(
-            request, event_uniq_id=event_uniq_id, action='clone', family_id=family_id, family_type=None, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action='clone',
+            family_id=family_id,
+            family_type=None,
+            data=data,
+        )
 
     @patch(
         path='/admin/family-update/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-update',
     )
     async def htmx_admin_family_update(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            family_id: int | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        family_id: int | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_family_update(
-            request, event_uniq_id=event_uniq_id, action='update', family_id=family_id, family_type=None, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action='update',
+            family_id=family_id,
+            family_type=None,
+            data=data,
+        )
 
     @delete(
         path='/admin/family-delete/{event_uniq_id:str}/{family_id:int}',
@@ -481,10 +634,20 @@ class FamilyAdminController(AbstractEventAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_family_delete(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            family_id: int | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        family_id: int | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_family_update(
-            request, event_uniq_id=event_uniq_id, action='delete', family_id=family_id, family_type=None, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action='delete',
+            family_id=family_id,
+            family_type=None,
+            data=data,
+        )

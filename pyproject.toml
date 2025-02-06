@@ -54,3 +54,6 @@ translate = [
 export = [
   "PyInstaller"
 ]
+
+[tool.ruff.format]
+quote-style = "single"
