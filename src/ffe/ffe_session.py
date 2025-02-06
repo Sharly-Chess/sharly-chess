@@ -78,13 +78,16 @@ class FFESession(Session):
                     if data:
                         logger.info("- data:")
                         for field_id, field in data.items():
-                            logger.info(
-                                "  - %s: [%s]",
-                                field_id,
-                                field[:64] + ("..." if len(field) > 64 else "")
-                                if field
-                                else "None",
-                            )
+                            if field_id == "ctl00$TextPassword":
+                                logger.info("  - %s: [********]", field_id)
+                            else:
+                                logger.info(
+                                    "  - %s: [%s]",
+                                    field_id,
+                                    field[:64] + ("..." if len(field) > 64 else "")
+                                    if field
+                                    else "None",
+                                )
                     if files:
                         logger.info("- files:")
                         for field_id, file in files.items():
