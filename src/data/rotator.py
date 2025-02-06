@@ -24,10 +24,10 @@ class Rotator:
 
     def __init__(
         self,
-        event: "Event",
+        event: 'Event',
         stored_rotator: StoredRotator,
     ):
-        self.event: "Event" = event
+        self.event: 'Event' = event
         self.stored_rotator: StoredRotator = stored_rotator
 
     @property

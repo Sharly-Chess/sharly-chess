@@ -30,22 +30,22 @@ class Screen:
 
     def __init__(
         self,
-        event: "Event",
+        event: 'Event',
         stored_screen: StoredScreen | None = None,
-        family: "NewFamily | None" = None,
+        family: 'NewFamily | None' = None,
         family_part: int | None = None,
     ):
         if stored_screen is None:
             assert family is not None and family_part is not None, (
-                f"screen={stored_screen}, family={family}, family_part={family_part}"
+                f'screen={stored_screen}, family={family}, family_part={family_part}'
             )
         else:
             assert family is None and family_part is None, (
-                f"screen={stored_screen}, family={family}, family_part={family_part}"
+                f'screen={stored_screen}, family={family}, family_part={family_part}'
             )
-        self.event: "Event" = event
+        self.event: 'Event' = event
         self.stored_screen: StoredScreen | None = stored_screen
-        self.family: "NewFamily | None" = family
+        self.family: 'NewFamily | None' = family
         self.family_part: int | None = family_part
 
     @cached_property
@@ -68,7 +68,7 @@ class Screen:
             case ScreenType.Results | ScreenType.Image:
                 return {}
             case _:
-                raise ValueError(f"type=[{self.type}]")
+                raise ValueError(f'type=[{self.type}]')
 
     @property
     def id(self) -> int:
@@ -95,7 +95,7 @@ class Screen:
         return (
             self.stored_screen.uniq_id
             if self.stored_screen
-            else f"{self.family.uniq_id}:{self.family_part:03}"
+            else f'{self.family.uniq_id}:{self.family_part:03}'
         )
 
     @property
@@ -109,11 +109,11 @@ class Screen:
             case ScreenType.Players:
                 return self.screen_sets_sorted_by_order[0].name_for_players
             case ScreenType.Results:
-                return _("Last results")
+                return _('Last results')
             case ScreenType.Image:
-                return _("Image")
+                return _('Image')
             case _:
-                raise ValueError(f"type=[{self.type}]")
+                raise ValueError(f'type=[{self.type}]')
 
     @property
     def columns(self) -> int:
@@ -147,14 +147,14 @@ class Screen:
     ) -> str:
         if single_tournament:
             if first_last:
-                return _("Boards %f-%l")
+                return _('Boards %f-%l')
             else:
-                return _("By board")
+                return _('By board')
         else:
             if first_last:
-                return _("%t [Boards %f-%l]")
+                return _('%t [Boards %f-%l]')
             else:
-                return _("%t (by board)")
+                return _('%t (by board)')
 
     @staticmethod
     def default_players_screen_menu_text(
@@ -162,14 +162,14 @@ class Screen:
     ) -> str:
         if single_tournament:
             if first_last:
-                return "%f-%l"
+                return '%f-%l'
             else:
-                return _("By player")
+                return _('By player')
         else:
             if first_last:
-                return "%t [%f-%l]"
+                return '%t [%f-%l]'
             else:
-                return _("%t (by player)")
+                return _('%t (by player)')
 
     @property
     def menu_label(self) -> str | None:
@@ -192,39 +192,39 @@ class Screen:
                     text = self.menu_text or self.default_boards_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last
                     )
-                text = text.replace("%t", screen_set.tournament.name)
+                text = text.replace('%t', screen_set.tournament.name)
                 if (
                     self.type == ScreenType.Players
                     or not screen_set.tournament.current_round
                 ):
                     if screen_set.first_player_by_name:
                         text = text.replace(
-                            "%f",
+                            '%f',
                             str(screen_set.first_player_by_name.last_name[:3]).upper(),
                         )
                     if screen_set.last_player_by_name:
                         text = text.replace(
-                            "%l",
+                            '%l',
                             str(screen_set.last_player_by_name.last_name[:3]).upper(),
                         )
                 else:
-                    if "%f" in text:
-                        text = text.replace("%f", str(screen_set.first_board.id))
-                    if "%l" in text:
-                        text = text.replace("%l", str(screen_set.last_board.id))
+                    if '%f' in text:
+                        text = text.replace('%f', str(screen_set.first_board.id))
+                    if '%l' in text:
+                        text = text.replace('%l', str(screen_set.last_board.id))
                 return text
             case ScreenType.Results:
-                return self.stored_screen.menu_text or _("Last results")
+                return self.stored_screen.menu_text or _('Last results')
             case _:
-                raise ValueError(f"type=[{self.type}]")
+                raise ValueError(f'type=[{self.type}]')
 
     def _menu_screens(self, admin: bool) -> list[Self]:
         menu_screens: list[Self] = []
         if self.menu is not None:
-            for menu_part in map(str.strip, self.menu.split(",")):
+            for menu_part in map(str.strip, self.menu.split(',')):
                 if not menu_part:
                     continue
-                if menu_part == "@boards":
+                if menu_part == '@boards':
                     part_menu_screens: list[Screen] = (
                         self.event.boards_screens_sorted_by_uniq_id
                         if admin
@@ -233,13 +233,13 @@ class Screen:
                     if not part_menu_screens:
                         self.event.add_warning(
                             _(
-                                "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-                            ).format(screen_type="boards", screen_uniq_id=self.uniq_id)
+                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
+                            ).format(screen_type='boards', screen_uniq_id=self.uniq_id)
                         )
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == "@input":
+                if menu_part == '@input':
                     part_menu_screens: list[Screen] = (
                         self.event.input_screens_sorted_by_uniq_id
                         if admin
@@ -248,13 +248,13 @@ class Screen:
                     if not part_menu_screens:
                         self.event.add_warning(
                             _(
-                                "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-                            ).format(screen_type="input", screen_uniq_id=self.uniq_id)
+                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
+                            ).format(screen_type='input', screen_uniq_id=self.uniq_id)
                         )
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == "@players":
+                if menu_part == '@players':
                     part_menu_screens: list[Screen] = (
                         self.event.players_screens_sorted_by_uniq_id
                         if admin
@@ -263,13 +263,13 @@ class Screen:
                     if not part_menu_screens:
                         self.event.add_warning(
                             _(
-                                "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-                            ).format(screen_type="players", screen_uniq_id=self.uniq_id)
+                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
+                            ).format(screen_type='players', screen_uniq_id=self.uniq_id)
                         )
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == "@results":
+                if menu_part == '@results':
                     part_menu_screens: list[Screen] = (
                         self.event.results_screens_sorted_by_uniq_id
                         if admin
@@ -278,17 +278,17 @@ class Screen:
                     if not part_menu_screens:
                         self.event.add_warning(
                             _(
-                                "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-                            ).format(screen_type="results", screen_uniq_id=self.uniq_id)
+                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
+                            ).format(screen_type='results', screen_uniq_id=self.uniq_id)
                         )
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == "@family":
+                if menu_part == '@family':
                     if self.family_id is None:
                         self.event.add_warning(
                             _(
-                                "Pattern [{pattern}] can be used by screen families."
+                                'Pattern [{pattern}] can be used by screen families.'
                             ).format(pattern=menu_part)
                         )
                     else:
@@ -296,13 +296,13 @@ class Screen:
                             self.family_id
                         ].screens_by_uniq_id.values()
                     continue
-                if "*" in menu_part:
+                if '*' in menu_part:
                     menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
                         self.event.screens_by_uniq_id.keys(), menu_part
                     )
                     if not menu_part_screen_uniq_ids:
                         self.event.add_warning(
-                            _("Pattern [{pattern}] matches no screen.").format(
+                            _('Pattern [{pattern}] matches no screen.').format(
                                 pattern=menu_part
                             )
                         )
@@ -317,7 +317,7 @@ class Screen:
                 else:
                     self.event.add_warning(
                         _(
-                            "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
+                            'Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}].'
                         ).format(pattern=menu_part, screen_uniq_id=self.uniq_id)
                     )
         return menu_screens
@@ -366,7 +366,7 @@ class Screen:
                 else:
                     return self.family.input_exit_button
             case _:
-                raise ValueError(f"type=[{self.type}]")
+                raise ValueError(f'type=[{self.type}]')
 
     @property
     def players_show_unpaired(self) -> bool:
@@ -383,7 +383,7 @@ class Screen:
                 else:
                     return self.family.players_show_unpaired
             case _:
-                raise ValueError(f"type=[{self.type}]")
+                raise ValueError(f'type=[{self.type}]')
 
     @property
     def icon_str(self) -> str:
@@ -408,7 +408,7 @@ class Screen:
                     )
                     self.event.add_info(
                         _(
-                            "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
+                            'Maximum number of results set to [{results_limit}] to fit on [{columns}] columns.'
                         ).format(results_limit=results_limit, columns=self.columns),
                         screen=self,
                     )
@@ -416,7 +416,7 @@ class Screen:
                 else:
                     return self.stored_screen.results_limit
             case _:
-                raise ValueError(f"type=[{self.type}]")
+                raise ValueError(f'type=[{self.type}]')
 
     @cached_property
     def results_max_age(self) -> int:
@@ -427,7 +427,7 @@ class Screen:
                     or PapiWebConfig.default_results_screen_max_age
                 )
             case _:
-                raise ValueError(f"type=[{self.type}]")
+                raise ValueError(f'type=[{self.type}]')
 
     @cached_property
     def results_tournament_ids(self) -> list[int]:
@@ -439,11 +439,11 @@ class Screen:
                     if tournament_id in self.event.tournaments_by_id
                 ]
             case _:
-                raise ValueError(f"type=[{self.type}]")
+                raise ValueError(f'type=[{self.type}]')
 
     @cached_property
     def results_tournament_names(self) -> str:
-        return ", ".join(
+        return ', '.join(
             sorted(
                 [
                     self.event.tournaments_by_id[results_tournament_id].name

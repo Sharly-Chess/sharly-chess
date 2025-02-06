@@ -25,24 +25,24 @@ class ScreenSet:
 
     def __init__(
         self,
-        screen: "Screen",
+        screen: 'Screen',
         stored_screen_set: StoredScreenSet | None = None,
-        family: "NewFamily | None" = None,
+        family: 'NewFamily | None' = None,
         family_part: int | None = None,
     ):
         if stored_screen_set is None:
             assert family is not None and family_part is not None, (
-                f"screen_set={stored_screen_set}, family={family}, family_part={family_part}"
+                f'screen_set={stored_screen_set}, family={family}, family_part={family_part}'
             )
         else:
             assert family is None and family_part is None, (
-                f"screen_set={stored_screen_set}, family={family}, family_part={family_part}"
+                f'screen_set={stored_screen_set}, family={family}, family_part={family_part}'
             )
-        self.screen: "Screen" = screen
+        self.screen: 'Screen' = screen
         self.stored_screen_set: StoredScreenSet | None = stored_screen_set
-        self.family: "NewFamily | None" = family
+        self.family: 'NewFamily | None' = family
         self.family_part: int | None = family_part
-        self.uniq_id: str = f"{self.screen.uniq_id}_{self.stored_screen_set.order if self.stored_screen_set else self.family_part}"
+        self.uniq_id: str = f'{self.screen.uniq_id}_{self.stored_screen_set.order if self.stored_screen_set else self.family_part}'
         fixed_boards_str: str | None = (
             self.stored_screen_set.fixed_boards_str
             if self.screen.type in [ScreenType.Boards, ScreenType.Input]
@@ -57,7 +57,7 @@ class ScreenSet:
                 if fixed_boards_str:
                     self.fixed_board_numbers = []
                     for fixed_board_str in list(
-                        map(str.strip, fixed_boards_str.split(","))
+                        map(str.strip, fixed_boards_str.split(','))
                     ):
                         if fixed_board_str:
                             try:
@@ -65,7 +65,7 @@ class ScreenSet:
                             except ValueError:
                                 self.event.add_warning(
                                     _(
-                                        "Invalid board number [{fixed_board_str}]."
+                                        'Invalid board number [{fixed_board_str}].'
                                     ).format(fixed_board_str=fixed_board_str),
                                     screen_set=self,
                                 )
@@ -93,7 +93,7 @@ class ScreenSet:
         if self.first and self.last and self.first > self.last:
             self.event.add_warning(
                 _(
-                    "Numbers {first} and {last} are not compatible ({first} > {last})."
+                    'Numbers {first} and {last} are not compatible ({first} > {last}).'
                 ).format(first=self.first, last=self.last),
                 screen_set=self,
             )
@@ -116,7 +116,7 @@ class ScreenSet:
         return self.stored_screen_set.order if self.stored_screen_set else None
 
     @property
-    def event(self) -> "Event":
+    def event(self) -> 'Event':
         return self.screen.event
 
     @property
@@ -128,7 +128,7 @@ class ScreenSet:
         )
 
     @property
-    def tournament(self) -> "Tournament":
+    def tournament(self) -> 'Tournament':
         return self.event.tournaments_by_id[self.tournament_id]
 
     @property
@@ -150,14 +150,14 @@ class ScreenSet:
             )
             if name is None:
                 if self.first or self.last:
-                    name = _("Boards %f-%l")
+                    name = _('Boards %f-%l')
                 else:
-                    name = "%t"
-            name = name.replace("%t", str(self.tournament.name))
-            if r"%f" in name and self.first_item is not None:
-                name = name.replace(r"%f", str(self.first_board.id))
-            if r"%l" in name and self.last_item is not None:
-                name = name.replace(r"%l", str(self.last_board.id))
+                    name = '%t'
+            name = name.replace('%t', str(self.tournament.name))
+            if r'%f' in name and self.first_item is not None:
+                name = name.replace(r'%f', str(self.first_board.id))
+            if r'%l' in name and self.last_item is not None:
+                name = name.replace(r'%l', str(self.last_board.id))
             return name
         else:
             return self.name_for_players
@@ -170,14 +170,14 @@ class ScreenSet:
         )
         if name is None:
             if self.first or self.last:
-                name = _("%f to %l")
+                name = _('%f to %l')
             else:
-                name = "%t"
-        name = name.replace("%t", str(self.tournament.name))
+                name = '%t'
+        name = name.replace('%t', str(self.tournament.name))
         if self.first_item is not None:
-            name = name.replace("%f", self.first_player_by_name.last_name[:8])
+            name = name.replace('%f', self.first_player_by_name.last_name[:8])
         if self.last_item is not None:
-            name = name.replace("%l", self.last_player_by_name.last_name[:8])
+            name = name.replace('%l', self.last_player_by_name.last_name[:8])
         return name
 
     def _extract_data(self, items: list[Any]):
@@ -321,39 +321,39 @@ class ScreenSet:
     @property
     def numbers_str(self):
         if self.fixed_board_numbers:
-            return _("boards {board_numbers}").format(
-                board_numbers=", ".join(map(str, self.fixed_board_numbers))
+            return _('boards {board_numbers}').format(
+                board_numbers=', '.join(map(str, self.fixed_board_numbers))
             )
         if self.type in [ScreenType.Boards, ScreenType.Input]:
             match (self.first, self.last):
                 case (None, None):
-                    return _("all the boards")
+                    return _('all the boards')
                 case (first, None) if first is not None:
-                    return _("boards from #{first} to end").format(first=first)
+                    return _('boards from #{first} to end').format(first=first)
                 case (first, last) if first is not None and last is not None:
-                    return _("boards from #{first} to #{last}").format(
+                    return _('boards from #{first} to #{last}').format(
                         first=first, last=last
                     )
                 case (None, last) if last is not None:
-                    return _("boards from start to #{last}").format(last=last)
+                    return _('boards from start to #{last}').format(last=last)
                 case _:
-                    raise ValueError(f"first={self.first}, last={self.last}")
+                    raise ValueError(f'first={self.first}, last={self.last}')
         else:
             match (self.first, self.last):
                 case (None, None):
-                    return _("all the players")
+                    return _('all the players')
                 case (first, None) if first is not None:
-                    return _("players from #{first} to end").format(first=first)
+                    return _('players from #{first} to end').format(first=first)
                 case (first, last) if first is not None and last is not None:
-                    return _("players from #{first} to #{last}").format(
+                    return _('players from #{first} to #{last}').format(
                         first=first, last=last
                     )
                 case (None, last) if last is not None:
-                    return _("players from start to #{last}").format(last=last)
+                    return _('players from start to #{last}').format(last=last)
                 case _:
-                    raise ValueError(f"first={self.first}, last={self.last}")
+                    raise ValueError(f'first={self.first}, last={self.last}')
 
     def __str__(self):
-        return _("Tournament {tournament_uniq_id} ({numbers_str})").format(
+        return _('Tournament {tournament_uniq_id} ({numbers_str})').format(
             tournameuniq_id=self.tournament.uniq_id, numbers_str=self.numbers_str
         )

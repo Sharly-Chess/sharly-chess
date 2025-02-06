@@ -17,11 +17,11 @@ class Message:
     ERROR = 40
 
     CLASS = {
-        DEBUG: "border border-secondary bg-secondary-subtle",
-        INFO: "border border-info bg-info-subtle",
-        SUCCESS: "border border-success bg-success-subtle",
-        WARNING: "border border-warning bg-success-warning-subtle",
-        ERROR: "border border-danger bg-danger-subtle",
+        DEBUG: 'border border-secondary bg-secondary-subtle',
+        INFO: 'border border-info bg-info-subtle',
+        SUCCESS: 'border border-success bg-success-subtle',
+        WARNING: 'border border-warning bg-success-warning-subtle',
+        ERROR: 'border border-danger bg-danger-subtle',
     }
 
     AUTO_REMOVE = {
@@ -40,8 +40,8 @@ class Message:
     def _message(
         request: Request, errors: str | list[str] | Exception, level: int
     ) -> None:
-        if "_messages" not in request.session:
-            request.session["_messages"]: list[Message] = []
+        if '_messages' not in request.session:
+            request.session['_messages']: list[Message] = []
         texts: list[str]
         if isinstance(errors, list):
             texts = errors
@@ -55,10 +55,10 @@ class Message:
             ]
         else:
             raise ValueError(
-                f"unexpected type [{type(errors)}] for argument [{errors}]"
+                f'unexpected type [{type(errors)}] for argument [{errors}]'
             )
         for text in texts:
-            request.session["_messages"].append(Message(text, level))
+            request.session['_messages'].append(Message(text, level))
 
     @staticmethod
     def info(request: Request, string_or_list: str | list[str] | Exception) -> None:
@@ -79,5 +79,5 @@ class Message:
     @staticmethod
     def messages(request: Request) -> list:
         return (
-            request.session.pop("_messages") if "_messages" in request.session else []
+            request.session.pop('_messages') if '_messages' in request.session else []
         )

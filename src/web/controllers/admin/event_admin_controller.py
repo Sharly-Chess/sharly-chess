@@ -61,7 +61,7 @@ class EventAdminWebContext(AdminWebContext):
                     event_uniq_id
                 )
             except PapiWebException as pwe:
-                self._redirect_error(f"Event [{event_uniq_id}] not found: {pwe}")
+                self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
                 return
 
     def check_admin_tab(self):
@@ -70,13 +70,13 @@ class EventAdminWebContext(AdminWebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            "admin_event_tab": self.admin_event_tab,
-            "admin_event": self.admin_event,
+            'admin_event_tab': self.admin_event_tab,
+            'admin_event': self.admin_event,
         }
 
     def get_tournament_options(self) -> dict[str, str]:
         return {
-            str(tournament.id): f"{tournament.name} ({tournament.uniq_id})"
+            str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
         }
 
@@ -90,87 +90,87 @@ class AbstractEventAdminController(AbstractIndexAdminController):
         admin_event: Event = web_context.admin_event
         logging_levels: dict[int, dict[str, str]] = {
             logging.DEBUG: {
-                "name": "DEBUG",
-                "class": "bg-secondary-subtle text-secondary-emphasis",
-                "icon_class": "bi-search",
+                'name': 'DEBUG',
+                'class': 'bg-secondary-subtle text-secondary-emphasis',
+                'icon_class': 'bi-search',
             },
             logging.INFO: {
-                "name": "INFO",
-                "class": "bg-info-subtle text-info-emphasis",
-                "icon_class": "bi-info-circle",
+                'name': 'INFO',
+                'class': 'bg-info-subtle text-info-emphasis',
+                'icon_class': 'bi-info-circle',
             },
             logging.WARNING: {
-                "name": "WARNING",
-                "class": "bg-warning-subtle text-warning-emphasis",
-                "icon_class": "bi-exclamation-triangle",
+                'name': 'WARNING',
+                'class': 'bg-warning-subtle text-warning-emphasis',
+                'icon_class': 'bi-exclamation-triangle',
             },
             logging.ERROR: {
-                "name": "ERROR",
-                "class": "bg-danger-subtle text-danger-emphasis",
-                "icon_class": "bi-bug-fill",
+                'name': 'ERROR',
+                'class': 'bg-danger-subtle text-danger-emphasis',
+                'icon_class': 'bi-bug-fill',
             },
             logging.CRITICAL: {
-                "name": "CRITICAL",
-                "class": "bg-danger text-white",
-                "icon_class": "bi-sign-stop-fill",
+                'name': 'CRITICAL',
+                'class': 'bg-danger text-white',
+                'icon_class': 'bi-sign-stop-fill',
             },
         }
         nav_tabs: dict[str, dict[str, str]] = {
-            "config": {
-                "title": admin_event.uniq_id,
-                "template": "event/tab.html",
-                "icon_class": "bi-gear-fill",
+            'config': {
+                'title': admin_event.uniq_id,
+                'template': 'event/tab.html',
+                'icon_class': 'bi-gear-fill',
             },
-            "tournaments": {
-                "title": _("Tournaments ({num})").format(
-                    num=len(admin_event.tournaments_by_id) or "-"
+            'tournaments': {
+                'title': _('Tournaments ({num})').format(
+                    num=len(admin_event.tournaments_by_id) or '-'
                 ),
-                "template": "tournaments/tab.html",
+                'template': 'tournaments/tab.html',
             },
-            "players": {
-                "title": _("Players ({num})").format(
-                    num=admin_event.players_number or "-"
+            'players': {
+                'title': _('Players ({num})').format(
+                    num=admin_event.players_number or '-'
                 ),
-                "template": "players/tab.html",
+                'template': 'players/tab.html',
             },
-            "screens": {
-                "title": _("Screens ({num})").format(
-                    num=len(admin_event.basic_screens_by_id) or "-"
+            'screens': {
+                'title': _('Screens ({num})').format(
+                    num=len(admin_event.basic_screens_by_id) or '-'
                 ),
-                "template": "screens/tab.html",
+                'template': 'screens/tab.html',
             },
-            "families": {
-                "title": _("Families ({num})").format(
-                    num=len(admin_event.families_by_id) or "-"
+            'families': {
+                'title': _('Families ({num})').format(
+                    num=len(admin_event.families_by_id) or '-'
                 ),
-                "template": "families/tab.html",
+                'template': 'families/tab.html',
             },
-            "rotators": {
-                "title": _("Rotators ({num})").format(
-                    num=len(admin_event.rotators_by_id) or "-"
+            'rotators': {
+                'title': _('Rotators ({num})').format(
+                    num=len(admin_event.rotators_by_id) or '-'
                 ),
-                "template": "rotators/tab.html",
+                'template': 'rotators/tab.html',
             },
-            "timers": {
-                "title": _("Timers ({num})").format(
-                    num=len(admin_event.timers_by_id) or "-"
+            'timers': {
+                'title': _('Timers ({num})').format(
+                    num=len(admin_event.timers_by_id) or '-'
                 ),
-                "template": "timers/tab.html",
+                'template': 'timers/tab.html',
             },
         }
         if not web_context.admin_event_tab:
             web_context.admin_event_tab = list(nav_tabs.keys())[0]
         template_context: dict[str, Any] = web_context.template_context | {
-            "messages": Message.messages(web_context.request),
-            "logging_levels": logging_levels,
-            "nav_tabs": nav_tabs,
+            'messages': Message.messages(web_context.request),
+            'logging_levels': logging_levels,
+            'nav_tabs': nav_tabs,
         }
         match web_context.admin_event_tab:
-            case "config":
+            case 'config':
                 pass
-            case "tournaments":
+            case 'tournaments':
                 pass
-            case "players":
+            case 'players':
                 # The federations that will be shown on the federation select list
                 players_federations: list[FederationTuple] = sorted(
                     {
@@ -280,30 +280,30 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 filter_name: str = SessionHandler.get_session_admin_players_filter_name(
                     web_context.request
                 )
-                filter_name_parts: list[str] = filter_name.split(" ")
+                filter_name_parts: list[str] = filter_name.split(' ')
                 # The origin (federation+league+club) the players must match
                 filter_origin: str = (
                     SessionHandler.get_session_admin_players_filter_origin(
                         web_context.request
                     )
                 )
-                filter_origin_parts: list[str] = filter_origin.split(" ")
+                filter_origin_parts: list[str] = filter_origin.split(' ')
                 match SessionHandler.get_session_admin_players_sort(
                     web_context.request
                 ):
-                    case "alpha":
+                    case 'alpha':
 
                         def sort_key(player: Player):
                             return player.last_name, player.first_name
-                    case "rating_desc":
+                    case 'rating_desc':
 
                         def sort_key(player: Player):
                             return -player.rating, player.last_name, player.first_name
-                    case "rating_asc":
+                    case 'rating_asc':
 
                         def sort_key(player: Player):
                             return player.rating, player.last_name, player.first_name
-                    case "yob_desc":
+                    case 'yob_desc':
 
                         def sort_key(player: Player):
                             return (
@@ -311,7 +311,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                                 player.last_name,
                                 player.first_name,
                             )
-                    case "yob_asc":
+                    case 'yob_asc':
 
                         def sort_key(player: Player):
                             return (
@@ -319,15 +319,15 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                                 player.last_name,
                                 player.first_name,
                             )
-                    case "category_desc":
+                    case 'category_desc':
 
                         def sort_key(player: Player):
                             return -player.category, player.last_name, player.first_name
-                    case "category_asc":
+                    case 'category_asc':
 
                         def sort_key(player: Player):
                             return player.category, player.last_name, player.first_name
-                    case "origin":
+                    case 'origin':
 
                         def sort_key(player: Player):
                             return (
@@ -337,7 +337,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                                 player.last_name,
                                 player.first_name,
                             )
-                    case "tournament":
+                    case 'tournament':
 
                         def sort_key(player: Player):
                             return (
@@ -350,7 +350,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                             )
                     case _:
                         raise ValueError(
-                            f"sort={SessionHandler.get_session_admin_players_sort(web_context.request)}"
+                            f'sort={SessionHandler.get_session_admin_players_sort(web_context.request)}'
                         )
                 # 0 real players only
                 # 1 all or no genders selected, or player matches
@@ -408,7 +408,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                             {
                                 filter_name_part
                                 in unicode_normalize(
-                                    f"{player.last_name} {player.first_name}".lower()
+                                    f'{player.last_name} {player.first_name}'.lower()
                                 )
                                 for filter_name_part in filter_name_parts
                             }
@@ -417,7 +417,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                             {
                                 filter_origin_part
                                 in unicode_normalize(
-                                    f"{player.federation} {player.league} {player.club}".lower()
+                                    f'{player.federation} {player.league} {player.club}'.lower()
                                 )
                                 for filter_origin_part in filter_origin_parts
                             }
@@ -426,100 +426,100 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     key=sort_key,
                 )
                 template_context |= {
-                    "admin_players": players,
-                    "admin_players_columns": [
-                        "name",
-                        "check_in",
-                        "rating",
-                        "federation",
-                        "league",
-                        "club",
-                        "yob",
-                        "category",
-                        "mail",
-                        "phone",
-                        "gender",
-                        "fixed",
-                        "fide",
-                        "ffe",
-                        "owed_paid",
-                        "tournament",
-                        "comment",
-                        "history",
+                    'admin_players': players,
+                    'admin_players_columns': [
+                        'name',
+                        'check_in',
+                        'rating',
+                        'federation',
+                        'league',
+                        'club',
+                        'yob',
+                        'category',
+                        'mail',
+                        'phone',
+                        'gender',
+                        'fixed',
+                        'fide',
+                        'ffe',
+                        'owed_paid',
+                        'tournament',
+                        'comment',
+                        'history',
                     ],
-                    "admin_players_sort": SessionHandler.get_session_admin_players_sort(
+                    'admin_players_sort': SessionHandler.get_session_admin_players_sort(
                         web_context.request
                     ),
-                    "admin_players_federations": players_federations,
-                    "admin_players_leagues": players_leagues,
-                    "admin_players_clubs": players_clubs,
-                    "admin_players_yobs": players_yobs,
-                    "admin_players_categories": players_categories,
-                    "admin_players_genders": players_genders,
-                    "admin_players_licences": players_licences,
-                    "admin_players_check_ins": players_check_ins,
-                    "admin_players_filter_columns": SessionHandler.get_session_admin_players_filter_columns(
+                    'admin_players_federations': players_federations,
+                    'admin_players_leagues': players_leagues,
+                    'admin_players_clubs': players_clubs,
+                    'admin_players_yobs': players_yobs,
+                    'admin_players_categories': players_categories,
+                    'admin_players_genders': players_genders,
+                    'admin_players_licences': players_licences,
+                    'admin_players_check_ins': players_check_ins,
+                    'admin_players_filter_columns': SessionHandler.get_session_admin_players_filter_columns(
                         web_context.request
                     ),
-                    "admin_players_filter_federations": SessionHandler.get_session_admin_players_filter_federations(
+                    'admin_players_filter_federations': SessionHandler.get_session_admin_players_filter_federations(
                         web_context.request
                     ),
-                    "admin_players_filter_leagues": SessionHandler.get_session_admin_players_filter_leagues(
+                    'admin_players_filter_leagues': SessionHandler.get_session_admin_players_filter_leagues(
                         web_context.request
                     ),
-                    "admin_players_filter_clubs": SessionHandler.get_session_admin_players_filter_clubs(
+                    'admin_players_filter_clubs': SessionHandler.get_session_admin_players_filter_clubs(
                         web_context.request
                     ),
-                    "admin_players_filter_genders": SessionHandler.get_session_admin_players_filter_genders(
+                    'admin_players_filter_genders': SessionHandler.get_session_admin_players_filter_genders(
                         web_context.request
                     ),
-                    "admin_players_filter_licences": SessionHandler.get_session_admin_players_filter_licences(
+                    'admin_players_filter_licences': SessionHandler.get_session_admin_players_filter_licences(
                         web_context.request
                     ),
-                    "admin_players_filter_check_ins": SessionHandler.get_session_admin_players_filter_check_ins(
+                    'admin_players_filter_check_ins': SessionHandler.get_session_admin_players_filter_check_ins(
                         web_context.request
                     ),
-                    "admin_players_filter_tournaments": SessionHandler.get_session_admin_players_filter_tournaments(
+                    'admin_players_filter_tournaments': SessionHandler.get_session_admin_players_filter_tournaments(
                         web_context.request
                     ),
-                    "admin_players_filter_categories": SessionHandler.get_session_admin_players_filter_categories(
+                    'admin_players_filter_categories': SessionHandler.get_session_admin_players_filter_categories(
                         web_context.request
                     ),
-                    "admin_players_filter_name": SessionHandler.get_session_admin_players_filter_name(
+                    'admin_players_filter_name': SessionHandler.get_session_admin_players_filter_name(
                         web_context.request
                     ),
-                    "admin_players_filter_origin": SessionHandler.get_session_admin_players_filter_origin(
+                    'admin_players_filter_origin': SessionHandler.get_session_admin_players_filter_origin(
                         web_context.request
                     ),
                 }
-            case "screens":
+            case 'screens':
                 template_context |= {
-                    "admin_screens_show_family_screens": SessionHandler.get_session_admin_screens_show_family_screens(
+                    'admin_screens_show_family_screens': SessionHandler.get_session_admin_screens_show_family_screens(
                         web_context.request
                     ),
-                    "admin_screens_show_details": SessionHandler.get_session_admin_screens_show_details(
+                    'admin_screens_show_details': SessionHandler.get_session_admin_screens_show_details(
                         web_context.request
                     ),
-                    "admin_screens_screen_types": SessionHandler.get_session_admin_screens_screen_types(
+                    'admin_screens_screen_types': SessionHandler.get_session_admin_screens_screen_types(
                         web_context.request
                     ),
                 }
-            case "families":
+            case 'families':
                 template_context |= {
-                    "admin_families_show_details": SessionHandler.get_session_admin_families_show_details(
+                    'admin_families_show_details': SessionHandler.get_session_admin_families_show_details(
                         web_context.request
                     ),
                 }
-            case "rotators":
+            case 'rotators':
                 template_context |= {
-                    "admin_rotators_show_details": SessionHandler.get_session_admin_rotators_show_details(
+                    'admin_rotators_show_details': SessionHandler.get_session_admin_rotators_show_details(
                         web_context.request
                     ),
                 }
-            case "timers":
+            case 'timers':
                 pass
             case _:
-                raise ValueError(f"admin_event_tab={web_context.admin_event_tab}")
+                raise ValueError(f'admin_event_tab={web_context.admin_event_tab}')
         return template_context
 
     @classmethod
@@ -527,7 +527,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
         cls,
         template_context: dict[str, Any],
     ) -> Template:
-        return HTMXTemplate(template_name="admin/event.html", context=template_context)
+        return HTMXTemplate(template_name='admin/event.html', context=template_context)
 
 
 class EventAdminController(AbstractEventAdminController):
@@ -556,7 +556,7 @@ class EventAdminController(AbstractEventAdminController):
         match modal:
             case None:
                 pass
-            case "event":
+            case 'event':
                 if data is None:
                     data = cls._prepare_event_modal_data(
                         action, request, web_context.admin_event
@@ -568,29 +568,29 @@ class EventAdminController(AbstractEventAdminController):
                 if errors is None:
                     errors = {}
                 template_context |= {
-                    "federations": PapiWebConfig.federations,
-                    "record_illegal_moves_options": cls._get_record_illegal_moves_options(
+                    'federations': PapiWebConfig.federations,
+                    'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         PapiWebConfig.default_record_illegal_moves_number
                     ),
-                    "timer_color_texts": cls._get_timer_color_texts(
+                    'timer_color_texts': cls._get_timer_color_texts(
                         PapiWebConfig.default_timer_delays
                     ),
-                    "background_images_jstree_data": cls.background_images_jstree_data(
-                        data["background_image"]
+                    'background_images_jstree_data': cls.background_images_jstree_data(
+                        data['background_image']
                     )
                     if action
                     in [
-                        "update",
-                        "clone",
+                        'update',
+                        'clone',
                     ]
                     else {},
-                    "modal": "event",
-                    "action": action,
-                    "data": data,
-                    "errors": errors,
+                    'modal': 'event',
+                    'action': action,
+                    'data': data,
+                    'errors': errors,
                 }
             case _:
-                raise ValueError(f"modal=[{modal}]")
+                raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
 
     def _admin_event(
@@ -616,8 +616,8 @@ class EventAdminController(AbstractEventAdminController):
         )
 
     @get(
-        path="/admin/event/{event_uniq_id:str}",
-        name="admin-event",
+        path='/admin/event/{event_uniq_id:str}',
+        name='admin-event',
         cache=1,
     )
     async def htmx_admin_event(
@@ -634,8 +634,8 @@ class EventAdminController(AbstractEventAdminController):
         )
 
     @get(
-        path="/admin/event/{event_uniq_id:str}/{admin_event_tab:str}",
-        name="admin-event-tab",
+        path='/admin/event/{event_uniq_id:str}/{admin_event_tab:str}',
+        name='admin-event-tab',
         cache=1,
     )
     async def htmx_admin_event_tab(
@@ -668,11 +668,11 @@ class EventAdminController(AbstractEventAdminController):
         admin_players_clear_filters: int | None = None,
     ) -> Template | ClientRedirect:
         match admin_event_tab:
-            case "config":
+            case 'config':
                 pass
-            case "tournaments":
+            case 'tournaments':
                 pass
-            case "players":
+            case 'players':
                 if admin_players_sort is not None:
                     SessionHandler.set_session_admin_players_sort(
                         request, admin_players_sort
@@ -789,9 +789,9 @@ class EventAdminController(AbstractEventAdminController):
                     SessionHandler.set_session_admin_players_filter_categories(
                         request, []
                     )
-                    SessionHandler.set_session_admin_players_filter_name(request, "")
-                    SessionHandler.set_session_admin_players_filter_origin(request, "")
-            case "screens":
+                    SessionHandler.set_session_admin_players_filter_name(request, '')
+                    SessionHandler.set_session_admin_players_filter_origin(request, '')
+            case 'screens':
                 if admin_screens_show_family_screens is not None:
                     SessionHandler.set_session_admin_screens_show_family_screens(
                         request, admin_screens_show_family_screens
@@ -804,11 +804,11 @@ class EventAdminController(AbstractEventAdminController):
                     SessionHandler.get_session_admin_screens_screen_types(request)
                 )
                 for screen_type, param in {
-                    "boards": admin_screens_show_boards,
-                    "input": admin_screens_show_input,
-                    "players": admin_screens_show_players,
-                    "results": admin_screens_show_results,
-                    "image": admin_screens_show_image,
+                    'boards': admin_screens_show_boards,
+                    'input': admin_screens_show_input,
+                    'players': admin_screens_show_players,
+                    'results': admin_screens_show_results,
+                    'image': admin_screens_show_image,
                 }.items():
                     if param is not None:
                         if param:
@@ -819,20 +819,20 @@ class EventAdminController(AbstractEventAdminController):
                             request, screen_types
                         )
                         continue
-            case "families":
+            case 'families':
                 if admin_families_show_details is not None:
                     SessionHandler.set_session_admin_families_show_details(
                         request, admin_families_show_details
                     )
-            case "rotators":
+            case 'rotators':
                 if admin_rotators_show_details is not None:
                     SessionHandler.set_session_admin_rotators_show_details(
                         request, admin_rotators_show_details
                     )
-            case "timers":
+            case 'timers':
                 pass
             case _:
-                raise ValueError(f"admin_event_tab={admin_event_tab}")
+                raise ValueError(f'admin_event_tab={admin_event_tab}')
         return self._admin_event(
             request,
             event_uniq_id=event_uniq_id,
@@ -841,8 +841,8 @@ class EventAdminController(AbstractEventAdminController):
         )
 
     @get(
-        path="/admin/event-modal/{action:str}/{event_uniq_id:str}",
-        name="admin-event-modal",
+        path='/admin/event-modal/{action:str}/{event_uniq_id:str}',
+        name='admin-event-modal',
         cache=1,
     )
     async def htmx_admin_event_modal(
@@ -853,7 +853,7 @@ class EventAdminController(AbstractEventAdminController):
     ) -> Template | ClientRedirect:
         return self._admin_event(
             request,
-            modal="event",
+            modal='event',
             action=action,
             event_uniq_id=event_uniq_id,
         )
@@ -869,7 +869,7 @@ class EventAdminController(AbstractEventAdminController):
         event_uniq_id: str | None,
     ) -> Template | ClientRedirect | Redirect:
         match action:
-            case "clone" | "update" | "delete":
+            case 'clone' | 'update' | 'delete':
                 web_context: EventAdminWebContext = EventAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
@@ -877,7 +877,7 @@ class EventAdminController(AbstractEventAdminController):
                     data=data,
                 )
             case _:
-                raise ValueError(f"action=[{action}]")
+                raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
         stored_event: StoredEvent = self._admin_validate_event_update_data(
@@ -887,7 +887,7 @@ class EventAdminController(AbstractEventAdminController):
             return self._admin_event_tab_render(
                 request,
                 event_uniq_id=event_uniq_id,
-                modal="event",
+                modal='event',
                 action=action,
                 data=data,
                 errors=stored_event.errors,
@@ -895,7 +895,7 @@ class EventAdminController(AbstractEventAdminController):
         uniq_id: str = stored_event.uniq_id
         event_loader = EventLoader.get(request=request)
         match action:
-            case "update":
+            case 'update':
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
                 if rename:
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
@@ -906,7 +906,7 @@ class EventAdminController(AbstractEventAdminController):
                     except PermissionError as ex:
                         return AbstractController.redirect_error(
                             request,
-                            _("Renaming the database failed: {ex}.").format(ex=ex),
+                            _('Renaming the database failed: {ex}.').format(ex=ex),
                         )
                 with EventDatabase(uniq_id, write=True) as event_database:
                     event_database.update_stored_event(stored_event)
@@ -915,7 +915,7 @@ class EventAdminController(AbstractEventAdminController):
                     Message.success(
                         request,
                         _(
-                            "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
+                            'Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.'
                         ).format(
                             old_uniq_id=web_context.admin_event.uniq_id,
                             new_uniq_id=uniq_id,
@@ -924,13 +924,13 @@ class EventAdminController(AbstractEventAdminController):
                 else:
                     Message.success(
                         request,
-                        _("Event [{uniq_id}] has been updated.").format(
+                        _('Event [{uniq_id}] has been updated.').format(
                             uniq_id=uniq_id
                         ),
                     )
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
-            case "clone":
+            case 'clone':
                 EventDatabase(web_context.admin_event.uniq_id).clone(
                     new_uniq_id=uniq_id
                 )
@@ -939,33 +939,33 @@ class EventAdminController(AbstractEventAdminController):
                     event_database.commit()
                 Message.success(
                     request,
-                    _("Event [{uniq_id}] has been created.").format(uniq_id=uniq_id),
+                    _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
                 )
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
-            case "delete":
+            case 'delete':
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
                 except PermissionError as ex:
                     return AbstractController.redirect_error(
-                        request, f"Archiving the database failed: {ex}"
+                        request, f'Archiving the database failed: {ex}'
                     )
                 event_loader.clear_cache(web_context.admin_event.uniq_id)
                 Message.success(
                     request,
                     _(
-                        "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
+                        'Event [{uniq_id}] has been deleted, the database has been archived ({arch}).'
                     ).format(uniq_id=web_context.admin_event.uniq_id, arch=arch),
                 )
                 return self._admin_render(
                     AdminWebContext(request, data=None, admin_tab=None)
                 )
             case _:
-                raise ValueError(f"action=[{action}]")
+                raise ValueError(f'action=[{action}]')
 
     @post(
-        path="/admin/event-clone/{event_uniq_id:str}",
-        name="admin-event-clone",
+        path='/admin/event-clone/{event_uniq_id:str}',
+        name='admin-event-clone',
     )
     async def htmx_admin_event_clone(
         self,
@@ -977,12 +977,12 @@ class EventAdminController(AbstractEventAdminController):
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
         return self._admin_event_update(
-            request, data=data, action="clone", event_uniq_id=event_uniq_id
+            request, data=data, action='clone', event_uniq_id=event_uniq_id
         )
 
     @delete(
-        path="/admin/event-delete/{event_uniq_id:str}",
-        name="admin-event-delete",
+        path='/admin/event-delete/{event_uniq_id:str}',
+        name='admin-event-delete',
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_event_delete(
@@ -995,10 +995,10 @@ class EventAdminController(AbstractEventAdminController):
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
         return self._admin_event_update(
-            request, data=data, action="delete", event_uniq_id=event_uniq_id
+            request, data=data, action='delete', event_uniq_id=event_uniq_id
         )
 
-    @patch(path="/admin/event-update/{event_uniq_id:str}", name="admin-event-update")
+    @patch(path='/admin/event-update/{event_uniq_id:str}', name='admin-event-update')
     async def htmx_admin_event_update(
         self,
         request: HTMXRequest,
@@ -1009,7 +1009,7 @@ class EventAdminController(AbstractEventAdminController):
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
         return self._admin_event_update(
-            request, data=data, action="update", event_uniq_id=event_uniq_id
+            request, data=data, action='update', event_uniq_id=event_uniq_id
         )
 
     @staticmethod
@@ -1018,29 +1018,29 @@ class EventAdminController(AbstractEventAdminController):
         players: list[Player],
     ) -> Response[str]:
         """Returns a file with all the vCards of the players."""
-        data: str = ""
+        data: str = ''
         for player in players:
             if player.mail or player.phone:
-                data += "BEGIN:VCARD\n"
-                data += "VERSION: 3.0\n"
+                data += 'BEGIN:VCARD\n'
+                data += 'VERSION: 3.0\n'
                 if player.first_name:
-                    data += f"N:{capwords(player.last_name)};{player.first_name}\n"
-                    data += f"FN:{capwords(player.first_name)} {player.last_name}\n"
+                    data += f'N:{capwords(player.last_name)};{player.first_name}\n'
+                    data += f'FN:{capwords(player.first_name)} {player.last_name}\n'
                 else:
-                    data += f"N:{capwords(player.last_name)}\n"
-                    data += f"FN:{capwords(player.first_name)}\n"
-                data += f"ORG:{player.league} - {player.club}\n"
-                data += f"item1.TEL:{player.phone}\n"
-                data += "item1.X - ABLabel:\n"
-                data += f"item2.EMAIL;type = INTERNET:{player.mail}\n"
-                data += "item2.X - ABLabel:\n"
-                data += f"CATEGORIES: {_('Échecs')}\n"
-                data += "END: VCARD\n\n"
+                    data += f'N:{capwords(player.last_name)}\n'
+                    data += f'FN:{capwords(player.first_name)}\n'
+                data += f'ORG:{player.league} - {player.club}\n'
+                data += f'item1.TEL:{player.phone}\n'
+                data += 'item1.X - ABLabel:\n'
+                data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
+                data += 'item2.X - ABLabel:\n'
+                data += f'CATEGORIES: {_("Échecs")}\n'
+                data += 'END: VCARD\n\n'
         return Response(
             content=data,
-            media_type="text/x-vcard",
+            media_type='text/x-vcard',
             headers={
-                "Content-Disposition": f"attachment;{event_uniq_id}.vcf",
+                'Content-Disposition': f'attachment;{event_uniq_id}.vcf',
             },
         )
 
@@ -1048,26 +1048,26 @@ class EventAdminController(AbstractEventAdminController):
     def get_players_datasheet_columns() -> list[str]:
         """Returns the names of the columns used in the datasheets that can be downloaded."""
         return [
-            "last_name",
-            "first_name",
-            "yob",
-            "mail",
-            "phone",
-            "gender",
-            "fide_id",
-            "ffe_id",
-            "ffe_licence_number",
-            "ffe_licence",
-            "tournament",
-            "federation",
-            "league",
-            "club",
-            "St",
-            "S",
-            "Ra",
-            "R",
-            "Bl",
-            "B",
+            'last_name',
+            'first_name',
+            'yob',
+            'mail',
+            'phone',
+            'gender',
+            'fide_id',
+            'ffe_id',
+            'ffe_licence_number',
+            'ffe_licence',
+            'tournament',
+            'federation',
+            'league',
+            'club',
+            'St',
+            'S',
+            'Ra',
+            'R',
+            'Bl',
+            'B',
         ]
 
     @staticmethod
@@ -1108,7 +1108,7 @@ class EventAdminController(AbstractEventAdminController):
         players: list[Player],
     ) -> File:
         """Returns a file with all the information of the players in an XLSX format."""
-        temp_file = NamedTemporaryFile(delete=False, mode="wb", suffix=".xlsx")
+        temp_file = NamedTemporaryFile(delete=False, mode='wb', suffix='.xlsx')
         workbook = xlsxwriter.Workbook(temp_file)
         worksheet = workbook.add_worksheet()
         columns = cls.get_players_datasheet_columns()
@@ -1119,13 +1119,13 @@ class EventAdminController(AbstractEventAdminController):
             len(data),
             len(columns) - 1,
             options={
-                "columns": [{"header": column} for column in columns],
-                "data": data,
+                'columns': [{'header': column} for column in columns],
+                'data': data,
             },
         )
         worksheet.autofit()
         workbook.close()
-        return File(path=temp_file.name, filename=f"{event_uniq_id}.xlsx")
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.xlsx')
 
     @classmethod
     def download_players_as_csv(
@@ -1135,12 +1135,12 @@ class EventAdminController(AbstractEventAdminController):
     ) -> File:
         """Returns a file with all the information of the players in a CSV format (comma-separated)."""
         temp_file = NamedTemporaryFile(
-            delete=False, mode="w", suffix=".csv", newline=""
+            delete=False, mode='w', suffix='.csv', newline=''
         )
         writer = csv.writer(temp_file)
         writer.writerow(cls.get_players_datasheet_columns())
         writer.writerows(cls.get_players_datasheet_data(players))
-        return File(path=temp_file.name, filename=f"{event_uniq_id}.csv")
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.csv')
 
     @classmethod
     def download_players_as_ods(
@@ -1149,17 +1149,17 @@ class EventAdminController(AbstractEventAdminController):
         players: list[Player],
     ) -> File:
         """Returns a file with all the information of the players in an ODS format."""
-        temp_file = NamedTemporaryFile(delete=False, mode="w", suffix=".ods")
+        temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.ods')
         save_data(
             temp_file,
             cls.get_players_datasheet_columns()
             + cls.get_players_datasheet_data(players),
         )
-        return File(path=temp_file.name, filename=f"{event_uniq_id}.ods")
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.ods')
 
     @get(
-        path="/admin/download-event-players/{event_uniq_id:str}",
-        name="admin-download-event-players",
+        path='/admin/download-event-players/{event_uniq_id:str}',
+        name='admin-download-event-players',
     )
     async def htmx_admin_event_download_players(
         self,
@@ -1181,21 +1181,21 @@ class EventAdminController(AbstractEventAdminController):
         if not len(players):
             players = web_context.admin_event.players_sorted_by_name
         match download_format:
-            case "vcf":
+            case 'vcf':
                 return self.download_players_as_vcf(
                     web_context.admin_event.uniq_id, players
                 )
-            case "csv":
+            case 'csv':
                 return self.download_players_as_csv(
                     web_context.admin_event.uniq_id, players
                 )
-            case "xlsx":
+            case 'xlsx':
                 return self.download_players_as_xlsx(
                     web_context.admin_event.uniq_id, players
                 )
-            case "ods":
+            case 'ods':
                 return self.download_players_as_ods(
                     web_context.admin_event.uniq_id, players
                 )
             case _:
-                raise ValueError(f"download_format={download_format}")
+                raise ValueError(f'download_format={download_format}')

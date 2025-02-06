@@ -14,19 +14,19 @@ try:
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-s", "--server", help="start the web server", action="store_true"
+        '-s', '--server', help='start the web server', action='store_true'
     )
     parser.add_argument(
-        "-f", "--ffe", help="run the FFE utilities", action="store_true"
+        '-f', '--ffe', help='run the FFE utilities', action='store_true'
     )
     parser.add_argument(
-        "-c",
-        "--chessevent",
-        help="download Papi files from Chess Event",
-        action="store_true",
+        '-c',
+        '--chessevent',
+        help='download Papi files from Chess Event',
+        action='store_true',
     )
     # undocumented feature to start from a different folder and work with different configurations
-    parser.add_argument("--path", default=".")
+    parser.add_argument('--path', default='.')
     args = parser.parse_args()
     os.chdir(args.path)
 
@@ -40,7 +40,7 @@ try:
         parser.print_help(sys.stderr)
         logger.error(
             _(
-                "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+                'This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat.'
             )
         )
 except KeyboardInterrupt:

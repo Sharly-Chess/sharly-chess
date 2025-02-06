@@ -31,55 +31,55 @@ class ConfigReader(ConfigParser):
         self.__errors: list[str] = []
         if not self.ini_file.exists():
             self.add_error(
-                _("Configuration file [{file}] not found.").format(file=self.ini_file)
+                _('Configuration file [{file}] not found.').format(file=self.ini_file)
             )
             return
         if not self.ini_file.is_file():
             self.add_error(
-                _("Configuration file [{file}] is not a file.").format(
+                _('Configuration file [{file}] is not a file.').format(
                     file=self.ini_file
                 )
             )
             return
         try:
             files_read: list[str] = []
-            encoding: str = "utf-8-sig"
+            encoding: str = 'utf-8-sig'
             try:
                 logger.debug(
-                    "Reading [%s] with encoding [%s]...", self.ini_file, encoding
+                    'Reading [%s] with encoding [%s]...', self.ini_file, encoding
                 )
                 files_read = self.read(self.ini_file, encoding=encoding)
             except UnicodeDecodeError:
                 logger.debug(
-                    "Reading [%s] with encoding [%s] failed, looking for the encoding...",
+                    'Reading [%s] with encoding [%s] failed, looking for the encoding...',
                     self.ini_file,
                     encoding,
                 )
                 detected_encoding: str
-                with open(self.ini_file, "rb") as f:
-                    detected_encoding: str = chardet.detect(f.read())["encoding"]
-                logger.debug("Encoding detected: [%s]", detected_encoding)
-                if detected_encoding != "utf-8":
+                with open(self.ini_file, 'rb') as f:
+                    detected_encoding: str = chardet.detect(f.read())['encoding']
+                logger.debug('Encoding detected: [%s]', detected_encoding)
+                if detected_encoding != 'utf-8':
                     logger.debug(
-                        "Reading [%s] with encoding [%s]...",
+                        'Reading [%s] with encoding [%s]...',
                         self.ini_file,
                         detected_encoding,
                     )
                     files_read = self.read(self.ini_file, encoding=detected_encoding)
             if str(self.ini_file) not in files_read:
                 self.add_error(
-                    _("Could not read file [{file}].").format(file=self.ini_file)
+                    _('Could not read file [{file}].').format(file=self.ini_file)
                 )
                 return
         except DuplicateSectionError as ex:
             self.add_error(
-                _("Duplicated section at line [{lineno}].").format(lineno=ex.lineno),
+                _('Duplicated section at line [{lineno}].').format(lineno=ex.lineno),
                 ex.section,
             )
             return
         except DuplicateOptionError as ex:
             self.add_error(
-                _("Duplicated option at line [{lineno}].").format(lineno=ex.lineno),
+                _('Duplicated option at line [{lineno}].').format(lineno=ex.lineno),
                 ex.section,
                 ex.option,
             )
@@ -87,20 +87,20 @@ class ConfigReader(ConfigParser):
         except MissingSectionHeaderError:
             return
         except ParsingError as ex:
-            self.add_error(_("Parsing error: [{ex}].").format(ex=ex.message))
-            self.add_error(f"erreur de parsing: {ex.message}")
+            self.add_error(_('Parsing error: [{ex}].').format(ex=ex.message))
+            self.add_error(f'erreur de parsing: {ex.message}')
             return
         except Error as ex:
-            self.add_error(_("Error: [{ex}].").format(ex=ex.message))
+            self.add_error(_('Error: [{ex}].').format(ex=ex.message))
             return
 
     def __format_message(self, text: str, section_key: str | None, key: str | None):
         if section_key is None:
-            return f"{self.ini_file.name}: {text}"
+            return f'{self.ini_file.name}: {text}'
         elif key is None:
-            return f"{self.ini_file.name}[{section_key}]: {text}"
+            return f'{self.ini_file.name}[{section_key}]: {text}'
         else:
-            return f"{self.ini_file.name}[{section_key}].{key}: {text}"
+            return f'{self.ini_file.name}[{section_key}].{key}: {text}'
 
     def add_debug(
         self, text: str, section_key: str | None = None, key: str | None = None
@@ -184,10 +184,10 @@ class ConfigReader(ConfigParser):
         subsection_keys: list[str] = []
         for section_key in self.sections():
             if first_level_only:
-                pattern = r"^{}\.([^.]+)$"
+                pattern = r'^{}\.([^.]+)$'
             else:
-                pattern = r"^{}\.([^.]+(\.[^.]+)*)$"
-            matches = re.match(pattern.format(prefix.replace(".", "\\.")), section_key)
+                pattern = r'^{}\.([^.]+(\.[^.]+)*)$'
+            matches = re.match(pattern.format(prefix.replace('.', '\\.')), section_key)
             if matches:
                 subsection_keys.append(matches.group(1))
         return subsection_keys

@@ -28,7 +28,7 @@ class Result:
 
     @property
     def result_str(self) -> str:
-        return str(self.result) if self.result else ""
+        return str(self.result) if self.result else ''
 
     def __lt__(self, other):
         # p1 < p2 calls p1.__lt__(p2)
@@ -40,9 +40,9 @@ class Result:
 
     def __repr__(self):
         return (
-            f"{self.__class__.__name__}("
-            f"{self.timestamp_str} {self.tournament_id}.{self.board_id} "
-            f"{self.white_player_id} "
-            f"{self.result_str} "
-            f"{self.black_player_id})"
+            f'{self.__class__.__name__}('
+            f'{self.timestamp_str} {self.tournament_id}.{self.board_id} '
+            f'{self.white_player_id} '
+            f'{self.result_str} '
+            f'{self.black_player_id})'
         )

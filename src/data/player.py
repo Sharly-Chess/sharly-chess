@@ -29,13 +29,13 @@ logger: Logger = get_logger()
 @dataclass(frozen=True)
 @total_ordering
 class FederationTuple:
-    federation: str = ""
+    federation: str = ''
 
     @classmethod
     def string_tuple_to_query_param(cls, strings: tuple[str, ...]) -> str:
-        return "-" + "-".join(
+        return '-' + '-'.join(
             [
-                base64.b64encode(string.encode("utf-8")).decode("utf-8")
+                base64.b64encode(string.encode('utf-8')).decode('utf-8')
                 for string in strings
             ]
         )
@@ -43,8 +43,8 @@ class FederationTuple:
     @classmethod
     def query_param_to_string_tuple(cls, query_param: str) -> tuple[str, ...]:
         return tuple(
-            base64.b64decode(string).decode("utf-8")
-            for string in query_param[1:].split("-")
+            base64.b64decode(string).decode('utf-8')
+            for string in query_param[1:].split('-')
         )
 
     @cached_property
@@ -59,14 +59,14 @@ class FederationTuple:
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
-            f"Can not compare [{type(other)}] and [{self.__class__}]"
+            f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
         return self.federation <= other.federation
 
     def __eq__(self, other: Self):
         # p1 == p2 calls p1.__eq__(p2)
         assert isinstance(other, self.__class__), (
-            f"Can not compare [{type(other)}] and [{self.__class__}]"
+            f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
         return self.federation == other.federation
 
@@ -77,7 +77,7 @@ class FederationTuple:
 @dataclass(frozen=True)
 @total_ordering
 class LeagueTuple(FederationTuple):
-    league: str = ""
+    league: str = ''
 
     @cached_property
     def to_query_param(self) -> str:
@@ -91,25 +91,25 @@ class LeagueTuple(FederationTuple):
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
-            f"Can not compare [{type(other)}] and [{self.__class__}]"
+            f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
         return (self.federation, self.league) <= (other.federation, other.league)
 
     def __eq__(self, other: Self):
         # p1 == p2 calls p1.__eq__(p2)
         assert isinstance(other, self.__class__), (
-            f"Can not compare [{type(other)}] and [{self.__class__}]"
+            f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
         return self.federation == other.federation and self.league == other.league
 
     def __str__(self) -> str:
-        return f"{self.federation}-{self.league}"
+        return f'{self.federation}-{self.league}'
 
 
 @dataclass(frozen=True)
 @total_ordering
 class ClubTuple(LeagueTuple):
-    club: str = ""
+    club: str = ''
 
     @cached_property
     def to_query_param(self) -> str:
@@ -125,7 +125,7 @@ class ClubTuple(LeagueTuple):
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
-            f"Can not compare [{type(other)}] and [{self.__class__}]"
+            f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
         return (self.federation, self.league, self.club) <= (
             other.federation,
@@ -136,7 +136,7 @@ class ClubTuple(LeagueTuple):
     def __eq__(self, other: Self):
         # p1 == p2 calls p1.__eq__(p2)
         assert isinstance(other, self.__class__), (
-            f"Can not compare [{type(other)}] and [{self.__class__}]"
+            f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
         return (
             self.federation == other.federation
@@ -145,7 +145,7 @@ class ClubTuple(LeagueTuple):
         )
 
     def __str__(self) -> str:
-        return f"{self.federation}-{self.league}-{self.club}"
+        return f'{self.federation}-{self.league}-{self.club}'
 
 
 @total_ordering
@@ -177,7 +177,7 @@ class Player:
         fixed: int,
         check_in: bool,
         pairings: dict[int, Pairing],
-        tournament: "Tournament | None" = None,
+        tournament: 'Tournament | None' = None,
         errors: dict[str, str] | None = None,
     ):
         self.id: int = id
@@ -288,10 +288,10 @@ class Player:
     @staticmethod
     def _points_str(points: float | None) -> str:
         if points is None:
-            return ""
+            return ''
         if points == 0.5:
-            return "½"
-        return "{:.1f}".format(points).replace(".0", "").replace(".5", "½")
+            return '½'
+        return '{:.1f}'.format(points).replace('.0', '').replace('.5', '½')
 
     def add_points(self, points: float):
         """If `self.points` is set, add `points` to it.
@@ -304,15 +304,15 @@ class Player:
     ) -> TrfPlayer:
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
-            name=f"{self.last_name}, {self.first_name}",
+            name=f'{self.last_name}, {self.first_name}',
             sex=self.gender.to_trf,
             title=self.title.to_trf,
             rating=self.rating,
             fed=self.federation,
             id=self.fide_id,
-            birthdate=self.date_of_birth.strftime("%Y/%m/%d")
+            birthdate=self.date_of_birth.strftime('%Y/%m/%d')
             if self.date_of_birth
-            else "",
+            else '',
             points=self.points_total(),
             games=[
                 result.to_trf(round_nb, player_id_to_trf_id)
@@ -338,17 +338,17 @@ class Player:
     @property
     def not_paired_str(self) -> str:
         return (
-            _("Unpaired *** FEMALE")
+            _('Unpaired *** FEMALE')
             if self.gender == PlayerGender.FEMALE
-            else _("Unpaired *** MALE")
+            else _('Unpaired *** MALE')
         )
 
     @property
     def exempt_str(self) -> str:
         return (
-            _("Exempt *** FEMALE")
+            _('Exempt *** FEMALE')
             if self.gender == PlayerGender.FEMALE
-            else _("Exempt *** MALE")
+            else _('Exempt *** MALE')
         )
 
     def set_board(self, board_id: int, board_number: int, color: BoardColor):
@@ -387,7 +387,7 @@ class Player:
     @property
     def color_str(self) -> str:
         if self.color is None:
-            return ""
+            return ''
         else:
             return str(self.color)
 
@@ -406,9 +406,9 @@ class Player:
         if self.time_control_initial_time is None:
             return None
         (minutes, seconds) = divmod(self.time_control_initial_time, 60)
-        minutes_str: str = f"{minutes}'" if minutes > 0 else ""
-        seconds_str: str = f'{seconds}"' if seconds > 0 else ""
-        class_str: str = "modified-time" if self.time_control_modified else "base-time"
+        minutes_str: str = f"{minutes}'" if minutes > 0 else ''
+        seconds_str: str = f'{seconds}"' if seconds > 0 else ''
+        class_str: str = 'modified-time' if self.time_control_modified else 'base-time'
         return f'<span class="{class_str}">{minutes_str}{seconds_str}</span> + {self.time_control_increment}"/cp'
 
     def set_time_control(self, initial_time: int, increment: int, modified: bool):
@@ -416,7 +416,7 @@ class Player:
         self.time_control_increment = increment
         self.time_control_modified = modified
 
-    def starting_rank_comparison(self, other: "Player") -> bool:
+    def starting_rank_comparison(self, other: 'Player') -> bool:
         return (self.rating, self.title, other.last_name, other.first_name) <= (
             other.rating,
             other.title,
@@ -450,8 +450,8 @@ class Player:
 
     def __repr__(self):
         if self.ref_id == 1:
-            return f"{self.__class__.__name__}(#{self.id} PAB)"
+            return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (
-            f"{self.__class__.__name__}"
-            f"(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} licence={self.ffe_licence.value} {self.last_name} {self.first_name} {self.club_tuple})"
+            f'{self.__class__.__name__}'
+            f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} licence={self.ffe_licence.value} {self.last_name} {self.first_name} {self.club_tuple})'
         )

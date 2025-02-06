@@ -36,16 +36,16 @@ from web.controllers.user.tournament_user_controller import (
     DownloadUserController,
 )
 
-static_files_base_dir = BASE_DIR / "src/web/static"
+static_files_base_dir = BASE_DIR / 'src/web/static'
 
 static_files_folders = [
     static_files_base_dir,
 ]
 
 static_files_router: Router = create_static_files_router(
-    path="/static",
+    path='/static',
     directories=static_files_folders,
-    name="static",
+    name='static',
     # TODO using cache_control did not cache, make it work!
     # https://github.com/litestar-org/litestar/issues/3129
     cache_control=CacheControlHeader(max_age=3600),
@@ -94,7 +94,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         template: str,
     ) -> t.Tuple[str, str, t.Callable[[], bool]]:
         # pieces = self.split_template_path(template)
-        pieces: list[str] = template.split("/")
+        pieces: list[str] = template.split('/')
 
         for searchpath in self.searchpath:
             # Use posixpath even on Windows to avoid "drive:" or UNC
@@ -103,11 +103,11 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
             if os.path.isfile(filename):
                 break
         else:
-            plural = "path" if len(self.searchpath) == 1 else "paths"
-            paths_str = ", ".join(repr(p) for p in self.searchpath)
+            plural = 'path' if len(self.searchpath) == 1 else 'paths'
+            paths_str = ', '.join(repr(p) for p in self.searchpath)
             raise TemplateNotFound(
                 template,
-                f"{template!r} not found in search {plural}: {paths_str}",
+                f'{template!r} not found in search {plural}: {paths_str}',
             )
 
         with open(filename, encoding=self.encoding) as f:
@@ -125,7 +125,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
-template_dir: Path = BASE_DIR / "src/web/templates"
+template_dir: Path = BASE_DIR / 'src/web/templates'
 
 
 class PapiWebEnvironment(Environment):
@@ -145,7 +145,7 @@ class PapiWebEnvironment(Environment):
             loader=template_loader,
             autoescape=True,
         )
-        self.add_extension("jinja2.ext.i18n")
+        self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(
             gettext=gettext, ngettext=ngettext, newstyle=True
         )
@@ -164,10 +164,10 @@ template_config: TemplateConfig = TemplateConfig(
     # engine_callback=register_template_callables,
 )
 
-sessions_dir: Path = TMP_DIR / "sessions"
+sessions_dir: Path = TMP_DIR / 'sessions'
 sessions_dir.mkdir(parents=True, exist_ok=True)
 
-stores: dict[str, FileStore] = {"sessions": FileStore(path=sessions_dir)}
+stores: dict[str, FileStore] = {'sessions': FileStore(path=sessions_dir)}
 
 middlewares: Sequence[Middleware] = [
     ServerSideSessionConfig().middleware,

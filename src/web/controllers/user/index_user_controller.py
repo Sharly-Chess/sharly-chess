@@ -44,12 +44,12 @@ class UserWebContext(WebContext):
     def check_user_tab(self):
         if self.user_tab not in [
             None,
-            "passed_events",
-            "current_events",
-            "coming_events",
+            'passed_events',
+            'current_events',
+            'coming_events',
         ]:
             self._redirect_error(
-                f"Invalid value [{self.user_tab}] for parameter [user_tab]"
+                f'Invalid value [{self.user_tab}] for parameter [user_tab]'
             )
 
     @property
@@ -59,7 +59,7 @@ class UserWebContext(WebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            "user_tab": self.user_tab,
+            'user_tab': self.user_tab,
         }
 
 
@@ -85,53 +85,53 @@ class IndexUserController(AbstractUserController):
             coming_events = event_loader.coming_public_events
             passed_events = event_loader.passed_public_events
         nav_tabs: dict[str, dict] = {
-            "current_events": {
-                "title": _("Current events ({num})").format(
-                    num=len(current_events) or "-"
+            'current_events': {
+                'title': _('Current events ({num})').format(
+                    num=len(current_events) or '-'
                 ),
-                "events": current_events,
-                "empty_str": _("No current events."),
-                "class": "bg-primary-subtle",
-                "icon_class": "bi-calendar",
-                "disabled": not current_events,
+                'events': current_events,
+                'empty_str': _('No current events.'),
+                'class': 'bg-primary-subtle',
+                'icon_class': 'bi-calendar',
+                'disabled': not current_events,
             },
-            "coming_events": {
-                "title": _("Upcoming events ({num})").format(
-                    num=len(coming_events) or "-"
+            'coming_events': {
+                'title': _('Upcoming events ({num})').format(
+                    num=len(coming_events) or '-'
                 ),
-                "events": coming_events,
-                "empty_str": _("No upcoming events."),
-                "class": "bg-info-subtle",
-                "icon_class": "bi-calendar-check",
-                "disabled": not coming_events,
+                'events': coming_events,
+                'empty_str': _('No upcoming events.'),
+                'class': 'bg-info-subtle',
+                'icon_class': 'bi-calendar-check',
+                'disabled': not coming_events,
             },
-            "passed_events": {
-                "title": _("Passed events ({num})").format(
-                    num=len(passed_events) or "-"
+            'passed_events': {
+                'title': _('Passed events ({num})').format(
+                    num=len(passed_events) or '-'
                 ),
-                "events": passed_events,
-                "empty_str": _("No passed events."),
-                "class": "bg-secondary-subtle",
-                "icon_class": "bi-calendar-minus",
-                "disabled": not passed_events,
+                'events': passed_events,
+                'empty_str': _('No passed events.'),
+                'class': 'bg-secondary-subtle',
+                'icon_class': 'bi-calendar-minus',
+                'disabled': not passed_events,
             },
         }
-        if not web_context.user_tab or nav_tabs[web_context.user_tab]["disabled"]:
+        if not web_context.user_tab or nav_tabs[web_context.user_tab]['disabled']:
             web_context.user_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
                 web_context.user_tab == list(nav_tabs.keys())[nav_index]
-                and nav_tabs[web_context.user_tab]["disabled"]
+                and nav_tabs[web_context.user_tab]['disabled']
             ):
                 web_context.user_tab = list(nav_tabs.keys())[
                     (nav_index + 1) % len(nav_tabs)
                 ]
         return HTMXTemplate(
-            template_name="user/index.html",
+            template_name='user/index.html',
             context=web_context.template_context
             | {
-                "messages": Message.messages(web_context.request),
-                "nav_tabs": nav_tabs,
+                'messages': Message.messages(web_context.request),
+                'nav_tabs': nav_tabs,
             },
         )
 
@@ -171,12 +171,12 @@ class IndexUserController(AbstractUserController):
             return self._user_render(web_context)
         else:
             return Reswap(
-                content=None, method="none", status_code=HTTP_304_NOT_MODIFIED
+                content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
             )
 
     @get(
-        path="/user",
-        name="user",
+        path='/user',
+        name='user',
     )
     async def htmx_user(
         self,
@@ -186,8 +186,8 @@ class IndexUserController(AbstractUserController):
         return self._user(request, user_tab=None, locale=locale)
 
     @get(
-        path="/user/{user_tab:str}",
-        name="user-tab",
+        path='/user/{user_tab:str}',
+        name='user-tab',
     )
     async def htmx_user_tab(
         self,

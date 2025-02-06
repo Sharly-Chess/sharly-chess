@@ -70,21 +70,21 @@ class Pairing:
     def color_papi_value(self) -> str:
         if self.color:
             return self.color.to_papi_value
-        return "F" if self.result.is_bye else "R"
+        return 'F' if self.result.is_bye else 'R'
 
     def to_trf(
         self, round_number: int, player_id_to_trf_id: Callable[[int], int]
     ) -> TrfGame:
         return TrfGame(
             startrank=(
-                "0000"
+                '0000'
                 if self.result.is_bye
                 else player_id_to_trf_id(self.opponent_id)
                 if self.opponent_id
-                else ""
+                else ''
             ),
             color=(
-                "-" if self.result.is_bye else self.color.to_trf if self.color else ""
+                '-' if self.result.is_bye else self.color.to_trf if self.color else ''
             ),
             result=self.result.to_trf,
             round=round_number,
@@ -92,5 +92,5 @@ class Pairing:
 
     def __repr__(self):
         return (
-            f"{self.__class__.__name__}({self.color} {self.opponent_id} {self.result})"
+            f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result})'
         )

@@ -53,14 +53,14 @@ class AdminWebContext(WebContext):
     def check_admin_tab(self):
         if self.admin_tab not in [
             None,
-            "config",
-            "passed_events",
-            "current_events",
-            "coming_events",
-            "archives",
+            'config',
+            'passed_events',
+            'current_events',
+            'coming_events',
+            'archives',
         ]:
             self._redirect_error(
-                f"Invalid value [{self.admin_tab}] for parameter [admin_tab]"
+                f'Invalid value [{self.admin_tab}] for parameter [admin_tab]'
             )
 
     @property
@@ -73,12 +73,12 @@ class AdminWebContext(WebContext):
 
     @property
     def theme(self) -> str:
-        return "dark"
+        return 'dark'
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            "admin_tab": self.admin_tab,
+            'admin_tab': self.admin_tab,
         }
 
 
@@ -88,51 +88,51 @@ class AbstractAdminController(AbstractController):
         default: int | None,
     ) -> dict[str, str]:
         options: dict[str, str] = {
-            "": "",
-            "0": _("No recording"),
+            '': '',
+            '0': _('No recording'),
         } | {
             str(i): ngettext(
-                "{num} illegal move max", "{num} illegal moves max", i
+                '{num} illegal move max', '{num} illegal moves max', i
             ).format(num=i)
             for i in range(1, 4)
         }
-        options[""] = _("By default - {option}").format(option=options[str(default)])
+        options[''] = _('By default - {option}').format(option=options[str(default)])
         return options
 
     @staticmethod
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
         return {
             1: _(
-                "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
+                'Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).'
             ).format(delay_1=delays[1], delay_2=delays[2]),
             2: _(
-                "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
+                'Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).'
             ).format(delay_2=delays[2]),
             3: _(
-                "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+                'Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).'
             ).format(delay_3=delays[3]),
         }
 
     @staticmethod
     def _get_screen_type_options(family_screens_only: bool) -> dict[str, str]:
         options: dict[str, str] = {
-            "": "-",
-            "input": _("Results entry"),
-            "boards": _("Pairings by board"),
-            "players": _("Pairings by player"),
+            '': '-',
+            'input': _('Results entry'),
+            'boards': _('Pairings by board'),
+            'players': _('Pairings by player'),
         }
         if not family_screens_only:
-            options["results"] = _("Last results")
-            options["image"] = _("Image")
+            options['results'] = _('Last results')
+            options['image'] = _('Image')
         return options
 
     @staticmethod
     def _get_timer_options(event: Event) -> dict[str, str]:
         options: dict[str, str] = {
-            "": _("Use no timer") if event.timers_by_id else _("No timer defined"),
+            '': _('Use no timer') if event.timers_by_id else _('No timer defined'),
         }
         for timer in event.timers_by_id.values():
-            options[str(timer.id)] = _("Timer {timer_uniq_id}").format(
+            options[str(timer.id)] = _('Timer {timer_uniq_id}').format(
                 timer_uniq_id=timer.uniq_id
             )
         return options
@@ -140,25 +140,25 @@ class AbstractAdminController(AbstractController):
     @staticmethod
     def _get_input_exit_button_options() -> dict[str, str]:
         options: dict[str, str] = {
-            "": "-",
-            "on": _("Display the exit button"),
-            "off": _("Hide the exit button"),
+            '': '-',
+            'on': _('Display the exit button'),
+            'off': _('Hide the exit button'),
         }
-        options[""] = _("By default - {option}").format(
-            option=options["on" if PapiWebConfig.default_input_exit_button else "off"]
+        options[''] = _('By default - {option}').format(
+            option=options['on' if PapiWebConfig.default_input_exit_button else 'off']
         )
         return options
 
     @staticmethod
     def _get_players_show_unpaired_options() -> dict[str, str]:
         options: dict[str, str] = {
-            "": "-",
-            "off": _("Display only paired players"),
-            "on": _("Display all the players, paired and unpaired"),
+            '': '-',
+            'off': _('Display only paired players'),
+            'on': _('Display all the players, paired and unpaired'),
         }
-        options[""] = _("By default - {option}").format(
+        options[''] = _('By default - {option}').format(
             option=options[
-                "on" if PapiWebConfig.default_players_show_unpaired else "off"
+                'on' if PapiWebConfig.default_players_show_unpaired else 'off'
             ]
         )
         return options
@@ -172,14 +172,14 @@ class AbstractIndexAdminController(AbstractAdminController):
         data: dict[str, str] | None,
         errors: dict[str, str],
     ) -> int | None:
-        field: str = "record_illegal_moves"
+        field: str = 'record_illegal_moves'
         record_illegal_moves: int | None
         try:
             record_illegal_moves = WebContext.form_data_to_int(data, field)
             assert record_illegal_moves is None or 0 <= record_illegal_moves <= 3
         except (ValueError, AssertionError):
             record_illegal_moves = None
-            errors["record_illegal_moves"] = _("Invalid value [{value}].").format(
+            errors['record_illegal_moves'] = _('Invalid value [{value}].').format(
                 value=data[field]
             )
         return record_illegal_moves
@@ -189,7 +189,7 @@ class AbstractIndexAdminController(AbstractAdminController):
         data: dict[str, str] | None,
         errors: dict[str, str],
     ) -> str | None:
-        field: str = "rules"
+        field: str = 'rules'
         rules: str | None = WebContext.form_data_to_str(data, field)
         if rules:
             if validators.url(rules):
@@ -197,23 +197,23 @@ class AbstractIndexAdminController(AbstractAdminController):
                     response = requests.get(rules)
                     if response.status_code != 200:
                         errors[field] = _(
-                            "URL [{url}] responded code [{code}]."
+                            'URL [{url}] responded code [{code}].'
                         ).format(url=rules, code=response.status_code)
                 except requests.ConnectionError as ce:
                     errors[field] = _(
-                        "URL [{url}] did not respond (error: [{error}])."
+                        'URL [{url}] did not respond (error: [{error}]).'
                     ).format(url=rules, error=str(ce))
             else:
-                if rules.find("..") != -1:
-                    errors[field] = _("Incorrect path [{path}].").format(path=rules)
-                    data[field] = ""
+                if rules.find('..') != -1:
+                    errors[field] = _('Incorrect path [{path}].').format(path=rules)
+                    data[field] = ''
                 else:
                     file: Path = Path(rules)
                     if not file.exists() or not file.is_file():
-                        errors[field] = _("File [{file}] not found.").format(file=rules)
-                    elif file.suffix.lower() != ".pdf":
+                        errors[field] = _('File [{file}] not found.').format(file=rules)
+                    elif file.suffix.lower() != '.pdf':
                         errors[field] = _(
-                            "Wrong file extension [{ext}] ([pdf] expected)."
+                            'Wrong file extension [{ext}] ([pdf] expected).'
                         ).format(ext=file.suffix)
         return rules
 
@@ -222,15 +222,15 @@ class AbstractIndexAdminController(AbstractAdminController):
         data: dict[str, str] | None,
         errors: dict[str, str],
     ) -> str | None:
-        field: str = "background_color"
+        field: str = 'background_color'
         background_color: str | None = None
-        color_checkbox = WebContext.form_data_to_bool(data, field + "_checkbox")
+        color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
         if not color_checkbox:
             try:
                 background_color = WebContext.form_data_to_rgb(data, field)
             except ValueError:
                 errors[field] = _(
-                    "Invalid color [{color}] ([#RRGGBB] expected)."
+                    'Invalid color [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
         return background_color
 
@@ -245,36 +245,36 @@ class AbstractIndexAdminController(AbstractAdminController):
         if data is None:
             data = {}
         errors: dict[str, str] = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, "uniq_id")
-        if action == "delete":
+        uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
+        if action == 'delete':
             if not uniq_id:
-                errors["uniq_id"] = _("Please enter the event ID.")
+                errors['uniq_id'] = _('Please enter the event ID.')
             elif uniq_id != admin_event.uniq_id:
-                errors["uniq_id"] = _("event ID does not match.")
+                errors['uniq_id'] = _('event ID does not match.')
         else:
             if not uniq_id:
-                errors["uniq_id"] = _("Please enter the event ID.")
-            elif uniq_id.find("/") != -1:
-                errors["uniq_id"] = _("Character [{char}] is not allowed.").format(
-                    char="/"
+                errors['uniq_id'] = _('Please enter the event ID.')
+            elif uniq_id.find('/') != -1:
+                errors['uniq_id'] = _('Character [{char}] is not allowed.').format(
+                    char='/'
                 )
             else:
                 event_uniq_ids: list[str] = EventLoader.get(
                     request=request
                 ).event_uniq_ids
                 match action:
-                    case "clone" | "create":
+                    case 'clone' | 'create':
                         if uniq_id in event_uniq_ids:
-                            errors["uniq_id"] = _(
-                                "Event [{uniq_id}] already exists."
+                            errors['uniq_id'] = _(
+                                'Event [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
-                    case "update":
+                    case 'update':
                         if uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids:
-                            errors["uniq_id"] = _(
-                                "Event [{uniq_id}] already exists."
+                            errors['uniq_id'] = _(
+                                'Event [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case _:
-                        raise ValueError(f"action=[{action}]")
+                        raise ValueError(f'action=[{action}]')
         name: str | None = None
         federation: str | None = None
         start: float | None = None
@@ -296,70 +296,70 @@ class AbstractIndexAdminController(AbstractAdminController):
         chessevent_password: str | None = None
         chessevent_event_id: str | None = None
         match action:
-            case "clone" | "update" | "create":
-                name: str | None = WebContext.form_data_to_str(data, field := "name")
+            case 'clone' | 'update' | 'create':
+                name: str | None = WebContext.form_data_to_str(data, field := 'name')
                 if not name:
-                    errors[field] = _("Please enter the name of the event.")
+                    errors[field] = _('Please enter the name of the event.')
                 federation: str | None = WebContext.form_data_to_str(
-                    data, field := "federation"
+                    data, field := 'federation'
                 )
                 if federation not in PapiWebConfig.federations:
                     # should never happen, not translated.
-                    errors[field] = f"Invalid federation value [{data[field]}]."
-                    data[field] = ""
+                    errors[field] = f'Invalid federation value [{data[field]}].'
+                    data[field] = ''
                 start_str: str | None = WebContext.form_data_to_str(
-                    data, field := "start"
+                    data, field := 'start'
                 )
                 if not start_str:
-                    errors[field] = _("Please enter the start date of the event.")
+                    errors[field] = _('Please enter the start date of the event.')
                 else:
                     start = time.mktime(
-                        datetime.strptime(start_str, "%Y-%m-%dT%H:%M").timetuple()
+                        datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
                     )
                 stop_str: str | None = WebContext.form_data_to_str(
-                    data, field := "stop"
+                    data, field := 'stop'
                 )
                 if not stop_str:
-                    errors[field] = _("Please enter the end date of the event.")
+                    errors[field] = _('Please enter the end date of the event.')
                 else:
                     stop = time.mktime(
-                        datetime.strptime(stop_str, "%Y-%m-%dT%H:%M").timetuple()
+                        datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
                     )
-                if "start" not in errors and "stop" not in errors and start > stop:
-                    errors[field] = _("Please enter a date after the start date.")
-                public = WebContext.form_data_to_bool(data, "public")
-                path: str | None = WebContext.form_data_to_str(data, "path")
-                update_password = WebContext.form_data_to_str(data, "update_password")
-                field = "background_image"
+                if 'start' not in errors and 'stop' not in errors and start > stop:
+                    errors[field] = _('Please enter a date after the start date.')
+                public = WebContext.form_data_to_bool(data, 'public')
+                path: str | None = WebContext.form_data_to_str(data, 'path')
+                update_password = WebContext.form_data_to_str(data, 'update_password')
+                field = 'background_image'
                 hide_background_image = WebContext.form_data_to_bool(
-                    data, field + "_checkbox"
+                    data, field + '_checkbox'
                 )
                 if not hide_background_image:
-                    if background_image := WebContext.form_data_to_str(data, field, ""):
+                    if background_image := WebContext.form_data_to_str(data, field, ''):
                         if validators.url(background_image):
                             try:
                                 response = requests.get(background_image)
                                 if response.status_code != 200:
                                     errors[field] = _(
-                                        "URL [{url}] responded code [{code}]."
+                                        'URL [{url}] responded code [{code}].'
                                     ).format(
                                         url=background_image, code=response.status_code
                                     )
                             except requests.ConnectionError as ce:
                                 errors[field] = _(
-                                    "URL [{url}] did not respond (error: [{error}])."
+                                    'URL [{url}] did not respond (error: [{error}]).'
                                 ).format(url=background_image, error=str(ce))
                         elif Path(background_image).exists():
                             errors[field] = _(
-                                "Please enter a URL or select an image on the right hand side."
+                                'Please enter a URL or select an image on the right hand side.'
                             )
                         else:
-                            background_image = background_image.strip("/")
-                            if background_image.find("..") != -1:
-                                errors[field] = _("Incorrect path [{path}].").format(
+                            background_image = background_image.strip('/')
+                            if background_image.find('..') != -1:
+                                errors[field] = _('Incorrect path [{path}].').format(
                                     path=background_image
                                 )
-                                data[field] = ""
+                                data[field] = ''
                             elif (
                                 not (
                                     PapiWebConfig.custom_path / background_image
@@ -369,7 +369,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                                     / background_image
                                 ).exists()
                             ):
-                                errors[field] = _("File [{file}] not found.").format(
+                                errors[field] = _('File [{file}] not found.').format(
                                     file=background_image
                                 )
                 background_color = cls._admin_validate_background_color_update_data(
@@ -380,61 +380,61 @@ class AbstractIndexAdminController(AbstractAdminController):
                 )
                 rules = cls._admin_validate_rules_update_data(data, errors)
                 for i in range(1, 4):
-                    field: str = f"color_{i}"
-                    if not WebContext.form_data_to_bool(data, field + "_checkbox"):
+                    field: str = f'color_{i}'
+                    if not WebContext.form_data_to_bool(data, field + '_checkbox'):
                         try:
                             timer_colors[i] = WebContext.form_data_to_rgb(data, field)
                         except ValueError:
                             errors[field] = _(
-                                "Invalid color [{color}] ([#RRGGBB] expected)."
+                                'Invalid color [{color}] ([#RRGGBB] expected).'
                             ).format(color={data[field]})
-                    field: str = f"delay_{i}"
+                    field: str = f'delay_{i}'
                     try:
                         timer_delays[i] = WebContext.form_data_to_int(
                             data, field, minimum=1
                         )
                     except ValueError:
                         errors[field] = _(
-                            "Invalid delay [{delay}] (positive integer expected)."
+                            'Invalid delay [{delay}] (positive integer expected).'
                         ).format(delay=data[field])
-                field: str = "message_text"
+                field: str = 'message_text'
                 message_text = WebContext.form_data_to_str(data, field)
-                field: str = "message_color"
-                if not WebContext.form_data_to_bool(data, field + "_checkbox"):
+                field: str = 'message_color'
+                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
                     try:
                         message_color = WebContext.form_data_to_rgb(data, field)
                     except ValueError:
                         errors[field] = _(
-                            "Invalid color [{color}] ([#RRGGBB] expected)."
+                            'Invalid color [{color}] ([#RRGGBB] expected).'
                         ).format(color={data[field]})
-                field: str = "message_background_color"
-                if not WebContext.form_data_to_bool(data, field + "_checkbox"):
+                field: str = 'message_background_color'
+                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
                     try:
                         message_background_color = WebContext.form_data_to_rgb(
                             data, field
                         )
                     except ValueError:
                         errors[field] = _(
-                            "Invalid color [{color}] ([#RRGGBB] expected)."
+                            'Invalid color [{color}] ([#RRGGBB] expected).'
                         ).format(color={data[field]})
                 pass
                 chessevent_user_id = WebContext.form_data_to_str(
-                    data, "chessevent_user_id"
+                    data, 'chessevent_user_id'
                 )
                 chessevent_password = WebContext.form_data_to_str(
-                    data, field := "chessevent_password"
+                    data, field := 'chessevent_password'
                 )
                 if chessevent_user_id and not chessevent_password:
                     errors[field] = _(
-                        "Please enter a password for the ChessEvent connection."
+                        'Please enter a password for the ChessEvent connection.'
                     )
                 chessevent_event_id = WebContext.form_data_to_str(
-                    data, "chessevent_event_id"
+                    data, 'chessevent_event_id'
                 )
-            case "delete":
+            case 'delete':
                 pass
             case _:
-                raise ValueError(f"action=[{action}]")
+                raise ValueError(f'action=[{action}]')
         return StoredEvent(
             uniq_id=uniq_id,
             name=name,
@@ -468,12 +468,12 @@ class AbstractIndexAdminController(AbstractAdminController):
             PapiWebConfig.embedded_custom_path,
             PapiWebConfig.custom_path,
         ]:
-            for item in custom_path.rglob("*"):
+            for item in custom_path.rglob('*'):
                 item_str = (
                     str(item)
-                    .replace(str(custom_path), "")
-                    .replace("\\", "/")
-                    .lstrip("/")
+                    .replace(str(custom_path), '')
+                    .replace('\\', '/')
+                    .lstrip('/')
                 )
                 if item.is_dir():
                     if item_str not in dirs:
@@ -483,39 +483,39 @@ class AbstractIndexAdminController(AbstractAdminController):
                         files.append(item_str)
         dir_nodes: list[dict[str, str]] = [
             {
-                "id": d or "#",
-                "parent": "/".join(d.split("/")[:-1]) or "#",
-                "text": f" {d.split('/')[-1]}",
-                "state": {},
-                "icon": "bi-folder",
+                'id': d or '#',
+                'parent': '/'.join(d.split('/')[:-1]) or '#',
+                'text': f' {d.split("/")[-1]}',
+                'state': {},
+                'icon': 'bi-folder',
             }
             for d in dirs
         ]
         file_nodes: list[dict[str, str]] = [
             {
-                "id": f or "#",
-                "parent": "/".join(f.split("/")[:-1]) or "#",
-                "text": f.split("/")[-1],
-                "state": {
-                    "selected": background_image == f,
+                'id': f or '#',
+                'parent': '/'.join(f.split('/')[:-1]) or '#',
+                'text': f.split('/')[-1],
+                'state': {
+                    'selected': background_image == f,
                 },
-                "icon": "bi-card-image",
-                "a_attr": {
-                    "onclick": f'$("#background-image").val("{f}"); '
-                    f"$.ajax({{"
+                'icon': 'bi-card-image',
+                'a_attr': {
+                    'onclick': f'$("#background-image").val("{f}"); '
+                    f'$.ajax({{'
                     f'    url: "/background",'
                     f'    type: "GET",'
                     f'    data: {{ "image": "{f}", "color": $("#background-color").val() }},'
-                    f"    success: function(data) {{"
+                    f'    success: function(data) {{'
                     f'        $("#background-image-test").css("background-image", data["url"]);'
-                    f"    }},"
-                    f"    error: function(jqXHR, exception) {{"
-                    f"        console.log("
+                    f'    }},'
+                    f'    error: function(jqXHR, exception) {{'
+                    f'        console.log('
                     f'            "Changing background failed: status_code=" + jqXHR.status '
                     f'            + ", exception=" + exception + ", response=" + jqXHR.responseText'
-                    f"        );"
-                    f"    }},"
-                    f"}});",
+                    f'        );'
+                    f'    }},'
+                    f'}});',
                 },
             }
             for f in files
@@ -532,45 +532,45 @@ class AbstractIndexAdminController(AbstractAdminController):
         uniq_id: str | None = None
         name: str | None = None
         match action:
-            case "update":
+            case 'update':
                 name = admin_event.stored_event.name
                 uniq_id = admin_event.stored_event.uniq_id
-            case "clone":
+            case 'clone':
                 name = EventLoader.get(request).get_unused_event_name(
                     admin_event.stored_event.name
                 )
                 uniq_id = EventLoader.get(request).get_unused_event_uniq_id(
                     admin_event.stored_event.uniq_id
                 )
-            case "create":
-                name = EventLoader.get(request).get_unused_event_name(_("New event"))
-                uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_("event"))
-            case "delete":
+            case 'create':
+                name = EventLoader.get(request).get_unused_event_name(_('New event'))
+                uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
+            case 'delete':
                 pass
             case _:
-                raise ValueError(f"action=[{action}]")
+                raise ValueError(f'action=[{action}]')
         start: float | None = None
         stop: float | None = None
         match action:
-            case "update" | "clone":
+            case 'update' | 'clone':
                 start = admin_event.stored_event.start
                 stop = admin_event.stored_event.stop
-            case "create":
+            case 'create':
                 today_str: str = format_timestamp_date()
                 start = time.mktime(
                     datetime.strptime(
-                        f"{today_str} 00:00", "%Y-%m-%d %H:%M"
+                        f'{today_str} 00:00', '%Y-%m-%d %H:%M'
                     ).timetuple()
                 )
                 stop = time.mktime(
                     datetime.strptime(
-                        f"{today_str} 23:59", "%Y-%m-%d %H:%M"
+                        f'{today_str} 23:59', '%Y-%m-%d %H:%M'
                     ).timetuple()
                 )
-            case "delete":
+            case 'delete':
                 pass
             case _:
-                raise ValueError(f"action=[{action}]")
+                raise ValueError(f'action=[{action}]')
         public: bool | None = None
         federation: str | None = None
         hide_background_image: bool | None = None
@@ -589,7 +589,7 @@ class AbstractIndexAdminController(AbstractAdminController):
         chessevent_password: str | None = None
         chessevent_event_id: str | None = None
         match action:
-            case "update" | "clone":
+            case 'update' | 'clone':
                 public = admin_event.stored_event.public
                 federation = admin_event.stored_event.federation
                 hide_background_image = admin_event.stored_event.hide_background_image
@@ -607,64 +607,64 @@ class AbstractIndexAdminController(AbstractAdminController):
                 chessevent_user_id = admin_event.stored_event.chessevent_user_id
                 chessevent_password = admin_event.stored_event.chessevent_password
                 chessevent_event_id = admin_event.stored_event.chessevent_event_id
-            case "create":
+            case 'create':
                 public = False
                 hide_background_image = PapiWebConfig.default_hide_background_image
-            case "delete":
+            case 'delete':
                 pass
             case _:
-                raise ValueError(f"action=[{action}]")
+                raise ValueError(f'action=[{action}]')
         return (
             {
-                "uniq_id": WebContext.value_to_form_data(uniq_id),
-                "name": WebContext.value_to_form_data(name),
-                "public": WebContext.value_to_form_data(public),
-                "federation": WebContext.value_to_form_data(federation),
-                "start": WebContext.value_to_datetime_form_data(start),
-                "stop": WebContext.value_to_datetime_form_data(stop),
-                "background_image_checkbox": WebContext.value_to_form_data(
+                'uniq_id': WebContext.value_to_form_data(uniq_id),
+                'name': WebContext.value_to_form_data(name),
+                'public': WebContext.value_to_form_data(public),
+                'federation': WebContext.value_to_form_data(federation),
+                'start': WebContext.value_to_datetime_form_data(start),
+                'stop': WebContext.value_to_datetime_form_data(stop),
+                'background_image_checkbox': WebContext.value_to_form_data(
                     hide_background_image
                 ),
-                "background_image": WebContext.value_to_form_data(background_image),
-                "background_color": WebContext.value_to_form_data(background_color),
-                "background_color_checkbox": WebContext.value_to_form_data(
+                'background_image': WebContext.value_to_form_data(background_image),
+                'background_color': WebContext.value_to_form_data(background_color),
+                'background_color_checkbox': WebContext.value_to_form_data(
                     background_color is None
                 ),
-                "path": WebContext.value_to_form_data(path),
-                "update_password": WebContext.value_to_form_data(update_password),
-                "record_illegal_moves": WebContext.value_to_form_data(
+                'path': WebContext.value_to_form_data(path),
+                'update_password': WebContext.value_to_form_data(update_password),
+                'record_illegal_moves': WebContext.value_to_form_data(
                     record_illegal_moves
                 ),
-                "rules": WebContext.value_to_form_data(rules),
-                "message_text": WebContext.value_to_form_data(message_text),
-                "message_color_checkbox": WebContext.value_to_form_data(
+                'rules': WebContext.value_to_form_data(rules),
+                'message_text': WebContext.value_to_form_data(message_text),
+                'message_color_checkbox': WebContext.value_to_form_data(
                     message_color is None
                 ),
-                "message_color": WebContext.value_to_form_data(message_color),
-                "message_background_color_checkbox": WebContext.value_to_form_data(
+                'message_color': WebContext.value_to_form_data(message_color),
+                'message_background_color_checkbox': WebContext.value_to_form_data(
                     message_background_color is None
                 ),
-                "message_background_color": WebContext.value_to_form_data(
+                'message_background_color': WebContext.value_to_form_data(
                     message_background_color
                 ),
-                "chessevent_user_id": WebContext.value_to_form_data(chessevent_user_id),
-                "chessevent_password": WebContext.value_to_form_data(
+                'chessevent_user_id': WebContext.value_to_form_data(chessevent_user_id),
+                'chessevent_password': WebContext.value_to_form_data(
                     chessevent_password
                 ),
-                "chessevent_event_id": WebContext.value_to_form_data(
+                'chessevent_event_id': WebContext.value_to_form_data(
                     chessevent_event_id
                 ),
             }
             | {
-                f"color_{i}": WebContext.value_to_form_data(colors[i])
+                f'color_{i}': WebContext.value_to_form_data(colors[i])
                 for i in range(1, 4)
             }
             | {
-                f"color_{i}_checkbox": WebContext.value_to_form_data(colors[i] is None)
+                f'color_{i}_checkbox': WebContext.value_to_form_data(colors[i] is None)
                 for i in range(1, 4)
             }
             | {
-                f"delay_{i}": WebContext.value_to_form_data(delays[i])
+                f'delay_{i}': WebContext.value_to_form_data(delays[i])
                 for i in range(1, 4)
             }
         )
@@ -680,102 +680,102 @@ class AbstractIndexAdminController(AbstractAdminController):
         event_loader: EventLoader = EventLoader.get(request=web_context.request)
         archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
         nav_tabs: dict[str, dict[str, Any]] = {
-            "current_events": {
-                "title": _("Current events ({num})").format(
-                    num=len(event_loader.current_events) or "-"
+            'current_events': {
+                'title': _('Current events ({num})').format(
+                    num=len(event_loader.current_events) or '-'
                 ),
-                "template": "index/events_tab.html",
-                "events": event_loader.current_events,
-                "disabled": not event_loader.current_events,
-                "empty_str": _("No current events."),
-                "icon_class": "bi-calendar",
+                'template': 'index/events_tab.html',
+                'events': event_loader.current_events,
+                'disabled': not event_loader.current_events,
+                'empty_str': _('No current events.'),
+                'icon_class': 'bi-calendar',
             },
-            "coming_events": {
-                "title": _("Upcoming events ({num})").format(
-                    num=len(event_loader.coming_events) or "-"
+            'coming_events': {
+                'title': _('Upcoming events ({num})').format(
+                    num=len(event_loader.coming_events) or '-'
                 ),
-                "template": "index/events_tab.html",
-                "events": event_loader.coming_events,
-                "disabled": not event_loader.coming_events,
-                "empty_str": _("No upcoming events."),
-                "icon_class": "bi-calendar-check",
+                'template': 'index/events_tab.html',
+                'events': event_loader.coming_events,
+                'disabled': not event_loader.coming_events,
+                'empty_str': _('No upcoming events.'),
+                'icon_class': 'bi-calendar-check',
             },
-            "passed_events": {
-                "title": _("Passed events ({num})").format(
-                    num=len(event_loader.passed_events) or "-"
+            'passed_events': {
+                'title': _('Passed events ({num})').format(
+                    num=len(event_loader.passed_events) or '-'
                 ),
-                "template": "index/events_tab.html",
-                "events": event_loader.passed_events,
-                "disabled": not event_loader.passed_events,
-                "empty_str": _("No passed events."),
-                "icon_class": "bi-calendar-minus",
+                'template': 'index/events_tab.html',
+                'events': event_loader.passed_events,
+                'disabled': not event_loader.passed_events,
+                'empty_str': _('No passed events.'),
+                'icon_class': 'bi-calendar-minus',
             },
-            "archives": {
-                "title": _("Archived events ({num})").format(
-                    num=len(archive_loader.archives_sorted_by_date) or "-"
+            'archives': {
+                'title': _('Archived events ({num})').format(
+                    num=len(archive_loader.archives_sorted_by_date) or '-'
                 ),
-                "template": "index/archives_tab.html",
-                "archives": archive_loader.archives_sorted_by_date,
-                "disabled": not archive_loader.archives_sorted_by_date,
-                "empty_str": _("No archived events."),
-                "icon_class": "bi-archive-fill",
+                'template': 'index/archives_tab.html',
+                'archives': archive_loader.archives_sorted_by_date,
+                'disabled': not archive_loader.archives_sorted_by_date,
+                'empty_str': _('No archived events.'),
+                'icon_class': 'bi-archive-fill',
             },
-            "config": {
-                "title": _("Papi-web configuration"),
-                "template": "index/config_tab.html",
-                "icon_class": "bi-gear-fill",
-                "disabled": False,
+            'config': {
+                'title': _('Papi-web configuration'),
+                'template': 'index/config_tab.html',
+                'icon_class': 'bi-gear-fill',
+                'disabled': False,
             },
         }
-        if not web_context.admin_tab or nav_tabs[web_context.admin_tab]["disabled"]:
+        if not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']:
             web_context.admin_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
                 web_context.admin_tab == list(nav_tabs.keys())[nav_index]
-                and nav_tabs[web_context.admin_tab]["disabled"]
+                and nav_tabs[web_context.admin_tab]['disabled']
             ):
                 web_context.admin_tab = list(nav_tabs.keys())[
                     (nav_index + 1) % len(nav_tabs)
                 ]
         context = web_context.template_context | {
-            "odbc_drivers": odbc_drivers(),
-            "access_driver": access_driver(),
-            "messages": Message.messages(web_context.request),
-            "nav_tabs": nav_tabs,
+            'odbc_drivers': odbc_drivers(),
+            'access_driver': access_driver(),
+            'messages': Message.messages(web_context.request),
+            'nav_tabs': nav_tabs,
         }
         match modal:
             case None:
                 pass
-            case "event":
+            case 'event':
                 if data is None:
                     data = cls._prepare_event_modal_data(
-                        "create", web_context.request, None
+                        'create', web_context.request, None
                     )
                     stored_event: StoredEvent = cls._admin_validate_event_update_data(
-                        "create", web_context.request, None, data
+                        'create', web_context.request, None, data
                     )
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
                 context |= {
-                    "federations": PapiWebConfig.federations,
-                    "record_illegal_moves_options": cls._get_record_illegal_moves_options(
+                    'federations': PapiWebConfig.federations,
+                    'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         PapiWebConfig.default_record_illegal_moves_number
                     ),
-                    "timer_color_texts": cls._get_timer_color_texts(
+                    'timer_color_texts': cls._get_timer_color_texts(
                         PapiWebConfig.default_timer_delays
                     ),
-                    "background_images_jstree_data": cls.background_images_jstree_data(
-                        data["background_image"]
+                    'background_images_jstree_data': cls.background_images_jstree_data(
+                        data['background_image']
                     ),
-                    "modal": "event",
-                    "action": "create",
-                    "data": data,
-                    "errors": errors,
+                    'modal': 'event',
+                    'action': 'create',
+                    'data': data,
+                    'errors': errors,
                 }
             case _:
-                raise ValueError(f"modal=[{modal}]")
-        return HTMXTemplate(template_name="admin/index.html", context=context)
+                raise ValueError(f'modal=[{modal}]')
+        return HTMXTemplate(template_name='admin/index.html', context=context)
 
 
 class IndexAdminController(AbstractIndexAdminController):
@@ -798,8 +798,8 @@ class IndexAdminController(AbstractIndexAdminController):
         return cls._admin_render(web_context, modal=modal, data=data, errors=errors)
 
     @get(
-        path="/admin",
-        name="admin",
+        path='/admin',
+        name='admin',
         cache=1,
     )
     async def htmx_admin(
@@ -814,8 +814,8 @@ class IndexAdminController(AbstractIndexAdminController):
         )
 
     @get(
-        path="/admin/{admin_tab:str}",
-        name="admin-tab",
+        path='/admin/{admin_tab:str}',
+        name='admin-tab',
         cache=1,
     )
     async def htmx_admin_tab(
@@ -831,8 +831,8 @@ class IndexAdminController(AbstractIndexAdminController):
         )
 
     @get(
-        path="/admin/{admin_tab:str}/event-modal/create",
-        name="admin-tab-event-create-modal",
+        path='/admin/{admin_tab:str}/event-modal/create',
+        name='admin-tab-event-create-modal',
         cache=1,
     )
     async def htmx_admin_tab_event_create_modal(
@@ -843,7 +843,7 @@ class IndexAdminController(AbstractIndexAdminController):
         return self._admin(
             request,
             admin_tab=admin_tab,
-            modal="event",
+            modal='event',
         )
 
     def _admin_event_create(
@@ -861,13 +861,13 @@ class IndexAdminController(AbstractIndexAdminController):
         if web_context.error:
             return web_context.error
         stored_event: StoredEvent = self._admin_validate_event_update_data(
-            "create", request, None, data
+            'create', request, None, data
         )
         if stored_event.errors:
             return self._admin(
                 request,
                 admin_tab=admin_tab,
-                modal="event",
+                modal='event',
                 data=data,
                 errors=stored_event.errors,
             )
@@ -877,11 +877,11 @@ class IndexAdminController(AbstractIndexAdminController):
             event_database.update_stored_event(stored_event)
             event_database.commit()
         Message.success(
-            request, _("Event [{uniq_id}] has been created.").format(uniq_id=uniq_id)
+            request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)
         )
         return Redirect(admin_event_url(request, event_uniq_id=uniq_id))
 
-    @post(path="/admin/{admin_tab:str}/create-event", name="admin-tab-create-event")
+    @post(path='/admin/{admin_tab:str}/create-event', name='admin-tab-create-event')
     async def htmx_admin_tab_event_create(
         self,
         request: HTMXRequest,

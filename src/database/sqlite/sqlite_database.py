@@ -44,7 +44,7 @@ class SQLiteDatabase:
             raise e
 
     def __enter__(self) -> Self:
-        db_url: str = f"file:{self.file}?mode={'rw' if self.write else 'ro'}"
+        db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
         self.database = connect(db_url, detect_types=1, uri=True)
         self.cursor = self.database.cursor()
         return self

@@ -13,7 +13,7 @@ logger: logging.Logger = get_logger()
 
 
 class SessionHandler:
-    AUTH_SESSION_KEY: str = "auth"
+    AUTH_SESSION_KEY: str = 'auth'
 
     @classmethod
     def store_password(cls, request: HTMXRequest, event: Event, password: str | None):
@@ -28,7 +28,7 @@ class SessionHandler:
         except KeyError:
             return None
 
-    LAST_RESULT_UPDATED_SESSION_KEY: str = "last_result_updated"
+    LAST_RESULT_UPDATED_SESSION_KEY: str = 'last_result_updated'
 
     @classmethod
     def set_session_last_result_updated(
@@ -41,17 +41,17 @@ class SessionHandler:
         request.session[cls.LAST_RESULT_UPDATED_SESSION_KEY]: dict[
             str, int | str | float
         ] = {
-            "tournament_id": tournament_id,
-            "round": round,
-            "board_id": board_id,
-            "expiration": time.time() + 20,
+            'tournament_id': tournament_id,
+            'round': round,
+            'board_id': board_id,
+            'expiration': time.time() + 20,
         }
 
     @classmethod
     def get_session_last_result_updated(cls, request: HTMXRequest):
         return request.session.get(cls.LAST_RESULT_UPDATED_SESSION_KEY, None)
 
-    USER_LAST_ILLEGAL_MOVE_UPDATED_KEY: str = "user_last_illegal_move_updated"
+    USER_LAST_ILLEGAL_MOVE_UPDATED_KEY: str = 'user_last_illegal_move_updated'
 
     @classmethod
     def set_session_user_last_illegal_move_updated(
@@ -63,16 +63,16 @@ class SessionHandler:
         request.session[cls.USER_LAST_ILLEGAL_MOVE_UPDATED_KEY]: dict[
             str, int | str | float
         ] = {
-            "tournament_id": tournament_id,
-            "player_id": player_id,
-            "expiration": time.time() + 20,
+            'tournament_id': tournament_id,
+            'player_id': player_id,
+            'expiration': time.time() + 20,
         }
 
     @classmethod
     def get_session_user_last_illegal_move_updated(cls, request: HTMXRequest):
         return request.session.get(cls.USER_LAST_ILLEGAL_MOVE_UPDATED_KEY, None)
 
-    USER_LAST_CHECK_IN_UPDATED_KEY: str = "user_last_check_in_updated"
+    USER_LAST_CHECK_IN_UPDATED_KEY: str = 'user_last_check_in_updated'
 
     @classmethod
     def set_session_user_last_check_in_updated(
@@ -84,16 +84,16 @@ class SessionHandler:
         request.session[cls.USER_LAST_CHECK_IN_UPDATED_KEY]: dict[
             str, int | str | float
         ] = {
-            "tournament_id": tournament_id,
-            "player_id": player_id,
-            "expiration": time.time() + 20,
+            'tournament_id': tournament_id,
+            'player_id': player_id,
+            'expiration': time.time() + 20,
         }
 
     @classmethod
     def get_session_user_last_check_in_updated(cls, request: HTMXRequest):
         return request.session.get(cls.USER_LAST_CHECK_IN_UPDATED_KEY, None)
 
-    ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY: str = "admin_screens_show_family_screens"
+    ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY: str = 'admin_screens_show_family_screens'
 
     @classmethod
     def set_session_admin_screens_show_family_screens(
@@ -107,7 +107,7 @@ class SessionHandler:
     ) -> bool:
         return request.session.get(cls.ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY, False)
 
-    ADMIN_SCREENS_SHOW_DETAILS_KEY: str = "admin_screens_show_details"
+    ADMIN_SCREENS_SHOW_DETAILS_KEY: str = 'admin_screens_show_details'
 
     @classmethod
     def set_session_admin_screens_show_details(cls, request: HTMXRequest, b: bool):
@@ -117,7 +117,7 @@ class SessionHandler:
     def get_session_admin_screens_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_SCREENS_SHOW_DETAILS_KEY, False)
 
-    ADMIN_FAMILIES_SHOW_DETAILS_KEY: str = "admin_families_show_details"
+    ADMIN_FAMILIES_SHOW_DETAILS_KEY: str = 'admin_families_show_details'
 
     @classmethod
     def set_session_admin_families_show_details(cls, request: HTMXRequest, b: bool):
@@ -127,7 +127,7 @@ class SessionHandler:
     def get_session_admin_families_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_FAMILIES_SHOW_DETAILS_KEY, False)
 
-    ADMIN_ROTATORS_SHOW_DETAILS_KEY: str = "admin_rotators_show_details"
+    ADMIN_ROTATORS_SHOW_DETAILS_KEY: str = 'admin_rotators_show_details'
 
     @classmethod
     def set_session_admin_rotators_show_details(cls, request: HTMXRequest, b: bool):
@@ -137,7 +137,7 @@ class SessionHandler:
     def get_session_admin_rotators_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_ROTATORS_SHOW_DETAILS_KEY, False)
 
-    ADMIN_SCREENS_SCREEN_TYPES_KEY: str = "admin_screens_screen_types"
+    ADMIN_SCREENS_SCREEN_TYPES_KEY: str = 'admin_screens_screen_types'
 
     @classmethod
     def set_session_admin_screens_screen_types(
@@ -149,10 +149,10 @@ class SessionHandler:
     def get_session_admin_screens_screen_types(cls, request: HTMXRequest) -> list[str]:
         return request.session.get(
             cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
-            ["boards", "input", "players", "results", "image"],
+            ['boards', 'input', 'players', 'results', 'image'],
         )
 
-    LOCALE_KEY: str = "locale"
+    LOCALE_KEY: str = 'locale'
 
     @classmethod
     def set_session_locale(cls, request: HTMXRequest, locale: str):
@@ -162,28 +162,28 @@ class SessionHandler:
     def get_session_locale(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.LOCALE_KEY, PapiWebConfig().locale)
 
-    ADMIN_PLAYERS_SORT_KEY: str = "admin_players_sort"
+    ADMIN_PLAYERS_SORT_KEY: str = 'admin_players_sort'
 
     @classmethod
     def set_session_admin_players_sort(cls, request: HTMXRequest, players_sort: str):
         assert players_sort in [
-            "alpha",
-            "rating_desc",
-            "rating_asc",
-            "yob_desc",
-            "yob_asc",
-            "category_desc",
-            "category_asc",
-            "origin",
-            "tournament",
+            'alpha',
+            'rating_desc',
+            'rating_asc',
+            'yob_desc',
+            'yob_asc',
+            'category_desc',
+            'category_asc',
+            'origin',
+            'tournament',
         ]
         request.session[cls.ADMIN_PLAYERS_SORT_KEY]: str = players_sort
 
     @classmethod
     def get_session_admin_players_sort(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_SORT_KEY, "alpha")
+        return request.session.get(cls.ADMIN_PLAYERS_SORT_KEY, 'alpha')
 
-    ADMIN_PLAYERS_FILTER_COLUMNS_KEY: str = "admin_players_filter_columns"
+    ADMIN_PLAYERS_FILTER_COLUMNS_KEY: str = 'admin_players_filter_columns'
 
     @classmethod
     def set_session_admin_players_filter_columns(
@@ -200,7 +200,7 @@ class SessionHandler:
             PapiWebConfig.default_players_filter_columns,
         )
 
-    ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY: str = "admin_players_filter_federations"
+    ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY: str = 'admin_players_filter_federations'
 
     @classmethod
     def set_session_admin_players_filter_federations(
@@ -217,11 +217,11 @@ class SessionHandler:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, FederationTuple) else FederationTuple(d["federation"])
+            d if isinstance(d, FederationTuple) else FederationTuple(d['federation'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, [])
         ]
 
-    ADMIN_PLAYERS_FILTER_LEAGUES_KEY: str = "admin_players_filter_leagues"
+    ADMIN_PLAYERS_FILTER_LEAGUES_KEY: str = 'admin_players_filter_leagues'
 
     @classmethod
     def set_session_admin_players_filter_leagues(
@@ -240,11 +240,11 @@ class SessionHandler:
         return [
             d
             if isinstance(d, LeagueTuple)
-            else LeagueTuple(d["federation"], d["league"])
+            else LeagueTuple(d['federation'], d['league'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY, [])
         ]
 
-    ADMIN_PLAYERS_FILTER_CLUBS_KEY: str = "admin_players_filter_clubs"
+    ADMIN_PLAYERS_FILTER_CLUBS_KEY: str = 'admin_players_filter_clubs'
 
     @classmethod
     def set_session_admin_players_filter_clubs(
@@ -263,11 +263,11 @@ class SessionHandler:
         return [
             d
             if isinstance(d, ClubTuple)
-            else ClubTuple(d["federation"], d["league"], d["club"])
+            else ClubTuple(d['federation'], d['league'], d['club'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
 
-    ADMIN_PLAYERS_FILTER_GENDERS_KEY: str = "admin_players_filter_genders"
+    ADMIN_PLAYERS_FILTER_GENDERS_KEY: str = 'admin_players_filter_genders'
 
     @classmethod
     def set_session_admin_players_filter_genders(
@@ -288,7 +288,7 @@ class SessionHandler:
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, [])
         ]
 
-    ADMIN_PLAYERS_FILTER_LICENCES_KEY: str = "admin_players_filter_licences"
+    ADMIN_PLAYERS_FILTER_LICENCES_KEY: str = 'admin_players_filter_licences'
 
     @classmethod
     def set_session_admin_players_filter_licences(
@@ -309,7 +309,7 @@ class SessionHandler:
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_LICENCES_KEY, [])
         ]
 
-    ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = "admin_players_filter_check_ins"
+    ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'
 
     @classmethod
     def set_session_admin_players_filter_check_ins(
@@ -323,7 +323,7 @@ class SessionHandler:
     ) -> list[bool | None]:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY, [])
 
-    ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY: str = "admin_players_filter_tournaments"
+    ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY: str = 'admin_players_filter_tournaments'
 
     @classmethod
     def set_session_admin_players_filter_tournaments(
@@ -339,7 +339,7 @@ class SessionHandler:
     ) -> list[int]:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY, [])
 
-    ADMIN_PLAYERS_FILTER_CATEGORIES_KEY: str = "admin_players_filter_categories"
+    ADMIN_PLAYERS_FILTER_CATEGORIES_KEY: str = 'admin_players_filter_categories'
 
     @classmethod
     def set_session_admin_players_filter_categories(
@@ -360,7 +360,7 @@ class SessionHandler:
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, [])
         ]
 
-    ADMIN_PLAYERS_FILTER_NAME_KEY: str = "admin_players_filter_name"
+    ADMIN_PLAYERS_FILTER_NAME_KEY: str = 'admin_players_filter_name'
 
     @classmethod
     def set_session_admin_players_filter_name(cls, request: HTMXRequest, name: str):
@@ -368,9 +368,9 @@ class SessionHandler:
 
     @classmethod
     def get_session_admin_players_filter_name(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, "")
+        return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, '')
 
-    ADMIN_PLAYERS_FILTER_ORIGIN_KEY: str = "admin_players_filter_origin"
+    ADMIN_PLAYERS_FILTER_ORIGIN_KEY: str = 'admin_players_filter_origin'
 
     @classmethod
     def set_session_admin_players_filter_origin(cls, request: HTMXRequest, origin: str):
@@ -378,4 +378,4 @@ class SessionHandler:
 
     @classmethod
     def get_session_admin_players_filter_origin(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_ORIGIN_KEY, "")
+        return request.session.get(cls.ADMIN_PLAYERS_FILTER_ORIGIN_KEY, '')

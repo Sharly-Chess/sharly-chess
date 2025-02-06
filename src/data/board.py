@@ -36,7 +36,7 @@ class Board:
 
     @property
     def result_str(self) -> str:
-        return str(self.result) if self.result else ""
+        return str(self.result) if self.result else ''
 
     def __lt__(self, other):
         # p1 < p2 calls p1.__lt__(p2)
@@ -90,8 +90,8 @@ class Board:
             return NotImplemented
         if self.board_id is not None and other.board_id is not None:
             return self.board_id == other.board_id
-        assert self.black_player is not None, "The black player is not defined."
-        assert other.black_player is not None, "The black player is not defined."
+        assert self.black_player is not None, 'The black player is not defined.'
+        assert other.black_player is not None, 'The black player is not defined.'
         # There is only one pairing allocated bye
         if self.black_player is None:
             return False
@@ -114,4 +114,4 @@ class Board:
         return self_player_1 == other_player_1 and self_player_2 == other_player_2
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.number}. {self.white_player} {self.result_str} {self.black_player})"
+        return f'{self.__class__.__name__}({self.number}. {self.white_player} {self.result_str} {self.black_player})'

@@ -21,16 +21,16 @@ class BackgroundWebContext(WebContext):
     ):
         super().__init__(request)
         self.background: dict[str, str] = {
-            "color": color,
+            'color': color,
         }
         if not image:
-            self.background["url"] = ""
-        elif validators.url(image) or image.startswith("/"):
-            self.background["url"] = f"url({image})"
+            self.background['url'] = ''
+        elif validators.url(image) or image.startswith('/'):
+            self.background['url'] = f'url({image})'
         # elif image.startswith('/'):
         #     self.background['url'] = f'url({image})'
         else:
-            self.background["url"] = f"url({inline_image_url(image)})"
+            self.background['url'] = f'url({inline_image_url(image)})'
 
 
 class BackgroundController(AbstractController):
@@ -40,7 +40,7 @@ class BackgroundController(AbstractController):
     file in /custom is sent).
     """
 
-    @get(path="/background", name="background", media_type=MediaType.JSON)
+    @get(path='/background', name='background', media_type=MediaType.JSON)
     async def background(
         self,
         request: HTMXRequest,

@@ -82,8 +82,8 @@ class WebContext:
         :return: a dict with an image (a relative or absolute URL, or a path of a file located in /custom) and a color.
         """
         return {
-            "image": self.background_image,
-            "color": self.background_color,
+            'image': self.background_image,
+            'color': self.background_color,
         }
 
     @property
@@ -92,7 +92,7 @@ class WebContext:
         Override this method to change the theme
         :return:
         """
-        return "light"
+        return 'light'
 
     @staticmethod
     def form_data_to_str(
@@ -102,7 +102,7 @@ class WebContext:
         str. If it is empty, returns `empty_value`."""
         if data is None:
             return empty_value
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
             data[field] = data[field].strip()
         if not data[field]:
@@ -129,14 +129,14 @@ class WebContext:
         `minimum`, raise `ValueError`."""
         if data is None:
             return empty_value
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
             data[field] = data[field].strip()
         if not data[field]:
             return empty_value
         int_val = int(data[field])
         if minimum is not None and int_val < minimum:
-            raise ValueError(f"{int_val} < {minimum}")
+            raise ValueError(f'{int_val} < {minimum}')
         return int_val
 
     def _form_data_to_int(
@@ -153,14 +153,14 @@ class WebContext:
     ) -> float | None:
         if data is None:
             return empty_value
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
-            data[field] = data[field].strip().replace(",", ".")
+            data[field] = data[field].strip().replace(',', '.')
         if not data[field]:
             return empty_value
         float_val = float(data[field])
         if minimum is not None and float_val < minimum:
-            raise ValueError(f"{float_val} < {minimum}")
+            raise ValueError(f'{float_val} < {minimum}')
         return float_val
 
     def _form_data_to_float(
@@ -174,14 +174,14 @@ class WebContext:
     ) -> bool | None:
         if data is None:
             return empty_value
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
             data[field] = data[field].strip().lower()
         if not data[field]:
             return empty_value
         return data[field] in [
-            "true",
-            "on",
+            'true',
+            'on',
         ]
 
     def _form_data_to_bool(
@@ -195,7 +195,7 @@ class WebContext:
     ) -> str | None:
         if data is None:
             return empty_value
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
             data[field] = data[field].strip().lower()
         if not data[field]:
@@ -213,33 +213,33 @@ class WebContext:
     ) -> date | None:
         if data is None:
             return empty_value
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
             data[field] = data[field].strip().lower()
         if not data[field]:
             return empty_value
-        return datetime.strptime(data[field], "%Y-%m-%d").date()
+        return datetime.strptime(data[field], '%Y-%m-%d').date()
 
     @classmethod
     def form_data_to_mail(cls, data: dict[str, str], field: str) -> str | None:
         if data is None:
             return None
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
             data[field] = data[field].strip().lower()
         if not data[field]:
             return None
-        if re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$", data[field]):
+        if re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$', data[field]):
             return data[field]
-        raise ValueError(f"data[{field}]=[{data[field]}] (mail expected)")
+        raise ValueError(f'data[{field}]=[{data[field]}] (mail expected)')
 
     @classmethod
     def form_data_to_phone(cls, data: dict[str, str], field: str) -> str | None:
         if data is None:
             return None
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
-            data[field] = data[field].lower().replace(" ", "")
+            data[field] = data[field].lower().replace(' ', '')
         if not data[field]:
             return None
         try:
@@ -251,7 +251,7 @@ class WebContext:
                 phonenumbers.parse(data[field], get_locale().upper())
                 return data[field]
             except NumberParseException:
-                raise ValueError(f"data[{field}]=[{data[field]}] (phone expected)")
+                raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)')
 
     @classmethod
     def form_data_to_ffe_licence_number(
@@ -259,46 +259,46 @@ class WebContext:
     ) -> str | None:
         if data is None:
             return None
-        data[field] = data.get(field, "")
+        data[field] = data.get(field, '')
         if data[field] is not None:
             data[field] = data[field].strip().upper()
         if not data[field]:
             return None
-        if re.match(r"^[A-Za-z][0-9]{5}$", data[field]):
+        if re.match(r'^[A-Za-z][0-9]{5}$', data[field]):
             return data[field]
-        raise ValueError(f"data[{field}]=[{data[field]}] (licence number expected)")
+        raise ValueError(f'data[{field}]=[{data[field]}] (licence number expected)')
 
     @staticmethod
     def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
         if value is None:
-            return ""
+            return ''
         if isinstance(value, str):
             return value.strip()
         if isinstance(value, bool):
-            return "on" if value else "off"
+            return 'on' if value else 'off'
         if isinstance(value, int):
             return str(value)
         if isinstance(value, float):
-            return f"{value:.2f}"
+            return f'{value:.2f}'
         if isinstance(value, Path):
             return str(value)
-        raise ValueError(f"unknown type for value [{value}]")
+        raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod
     def value_to_datetime_form_data(value: float | datetime | None) -> str | None:
         if value is None:
-            return ""
+            return ''
         if isinstance(value, float):
-            return datetime.strftime(datetime.fromtimestamp(value), "%Y-%m-%dT%H:%M")
+            return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%dT%H:%M')
         if isinstance(value, datetime):
-            return datetime.strftime(value, "%Y-%m-%dT%H:%M")
-        raise ValueError(f"unknown type for value [{value}]")
+            return datetime.strftime(value, '%Y-%m-%dT%H:%M')
+        raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod
     def value_to_date_form_data(value: date | None) -> str | None:
         if value is None:
-            return ""
-        return datetime.strftime(value, "%Y-%m-%d")
+            return ''
+        return datetime.strftime(value, '%Y-%m-%d')
 
     def _redirect_error(self, errors: str | list[str]):
         self.error = AbstractController.redirect_error(self.request, errors)
@@ -313,7 +313,7 @@ class WebContext:
         """
         # NOTE(Amaras): see https://docs.litestar.dev/2/usage/security/index.html
         # for security considerations in Litestar
-        if self.request.client.host == "127.0.0.1":
+        if self.request.client.host == '127.0.0.1':
             return True
         return False
 
@@ -328,30 +328,30 @@ class WebContext:
         now: float = time.time()
         locale_infos: dict[str, Any] = {}
         for locale in papi_web_config.locales:
-            name: str = f"{locale_localized_name(locale)}"
+            name: str = f'{locale_localized_name(locale)}'
             name_and_warning: str
             if locale in trusted_locales:
                 name_and_warning = name
             else:
-                warning_str: str = _("USE AT YOUR OWN RISKS", locale=locale)
-                name_and_warning = f"{name} ({warning_str})"
+                warning_str: str = _('USE AT YOUR OWN RISKS', locale=locale)
+                name_and_warning = f'{name} ({warning_str})'
             locale_infos[locale] = {
-                "name": name,
-                "name_and_warning": name_and_warning,
-                "flag_url": locale_flag_url(locale),
-                "experimental": locale not in trusted_locales,
+                'name': name,
+                'name_and_warning': name_and_warning,
+                'flag_url': locale_flag_url(locale),
+                'experimental': locale not in trusted_locales,
             }
         return {
-            "DEVEL_ENV": DEVEL_ENV,
-            "EXPERIMENTAL_FEATURES": EXPERIMENTAL_FEATURES,
-            "now": now,
-            "now_http_date": unixtime_to_httpdate(int(now)),
-            "papi_web_config": papi_web_config,
-            "admin_auth": self.admin_auth,
-            "background_info": self.background_info,
-            "theme": self.theme,
-            "locale_infos": locale_infos,
-            "locale": SessionHandler.get_session_locale(self.request),
+            'DEVEL_ENV': DEVEL_ENV,
+            'EXPERIMENTAL_FEATURES': EXPERIMENTAL_FEATURES,
+            'now': now,
+            'now_http_date': unixtime_to_httpdate(int(now)),
+            'papi_web_config': papi_web_config,
+            'admin_auth': self.admin_auth,
+            'background_info': self.background_info,
+            'theme': self.theme,
+            'locale_infos': locale_infos,
+            'locale': SessionHandler.get_session_locale(self.request),
         }
 
 
@@ -371,15 +371,15 @@ class AbstractController(Controller):
     @staticmethod
     def _render_messages(request: HTMXRequest) -> Template:
         return HTMXTemplate(
-            template_name="messages.html",
-            re_swap="afterbegin",
-            re_target="#messages",
+            template_name='messages.html',
+            re_swap='afterbegin',
+            re_target='#messages',
             context={
-                "messages": Message.messages(request),
+                'messages': Message.messages(request),
             },
         )
 
-    IF_MODIFIED_SINCE_HEADER: str = "If-Modified-Since"
+    IF_MODIFIED_SINCE_HEADER: str = 'If-Modified-Since'
 
     def get_if_modified_since(self, request: HTMXRequest) -> float | None:
         """
@@ -398,15 +398,15 @@ class AbstractController(Controller):
                 request.headers[self.IF_MODIFIED_SINCE_HEADER]
             )
             logger.debug(
-                f"request.headers[{self.IF_MODIFIED_SINCE_HEADER}]={request.headers[self.IF_MODIFIED_SINCE_HEADER]}"
+                f'request.headers[{self.IF_MODIFIED_SINCE_HEADER}]={request.headers[self.IF_MODIFIED_SINCE_HEADER]}'
             )
-            logger.debug(f"if_modified_since={if_modified_since}")
+            logger.debug(f'if_modified_since={if_modified_since}')
             return if_modified_since
         except KeyError:
             return None
         except ValueError:
             logger.warning(
-                f"Invalid [{self.IF_MODIFIED_SINCE_HEADER}] header [{request.headers[self.IF_MODIFIED_SINCE_HEADER]}]"
+                f'Invalid [{self.IF_MODIFIED_SINCE_HEADER}] header [{request.headers[self.IF_MODIFIED_SINCE_HEADER]}]'
             )
             return None
 
@@ -420,8 +420,8 @@ class AbstractController(Controller):
 
 class IndexController(AbstractController):
     @get(
-        path="/",
-        name="index",
+        path='/',
+        name='index',
         cache=1,
     )
     async def index(
@@ -432,16 +432,16 @@ class IndexController(AbstractController):
         self.set_locale(request, locale)
         web_context: WebContext = WebContext(request)
         return HTMXTemplate(
-            template_name="index.html",
+            template_name='index.html',
             context=web_context.template_context
             | {
-                "messages": Message.messages(request),
+                'messages': Message.messages(request),
             },
         )
 
     @get(
-        path="/favicon.ico",
-        name="favicon",
+        path='/favicon.ico',
+        name='favicon',
         cache=CACHE_FOREVER,
     )
     async def favicon(
@@ -449,5 +449,5 @@ class IndexController(AbstractController):
         request: HTMXRequest,
     ) -> Redirect:
         return Redirect(
-            request.app.route_reverse("static", file_path="/images/papi-web.ico")
+            request.app.route_reverse('static', file_path='/images/papi-web.ico')
         )

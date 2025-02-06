@@ -42,51 +42,51 @@ class Tournament:
 
     def __init__(
         self,
-        event: "Event",
+        event: 'Event',
         stored_tournament: StoredTournament,
     ):
-        self.event: "Event" = event
+        self.event: 'Event' = event
         self.stored_tournament: StoredTournament = stored_tournament
         if not stored_tournament.path:
             self.event.add_debug(
-                _("No directory set for the Papi file, by default [{path}].").format(
+                _('No directory set for the Papi file, by default [{path}].').format(
                     path=self.path
                 ),
                 tournament=self,
             )
         if not self.path.exists():
             self.event.add_warning(
-                _("Directory [{path}] not found.").format(path=self.path),
+                _('Directory [{path}] not found.').format(path=self.path),
                 tournament=self,
             )
         elif not self.path.is_dir():
             self.event.add_error(
-                _("[{path}] is not a directory.").format(path=self.path),
+                _('[{path}] is not a directory.').format(path=self.path),
                 tournament=self,
             )
         if not self.stored_tournament.filename:
             self.event.add_info(
                 _(
-                    "The name of the Papi file is not set, by default [{filename}]"
+                    'The name of the Papi file is not set, by default [{filename}]'
                 ).format(filename=self.filename),
                 tournament=self,
             )
         if not self.stored_tournament.ffe_id or not self.stored_tournament.ffe_password:
             self.event.add_debug(
                 _(
-                    "Qualification number and FFE password not set, operations on the FFE website will not be available."
+                    'Qualification number and FFE password not set, operations on the FFE website will not be available.'
                 ),
                 tournament=self,
             )
         if not self.chessevent_user_id or not self.chessevent_password:
             self.event.add_debug(
-                _("ChessEvent connection not defined."), tournament=self
+                _('ChessEvent connection not defined.'), tournament=self
             )
         elif not self.chessevent_event_id:
-            self.event.add_warning(_("ChessEvent event not set."), tournament=self)
+            self.event.add_warning(_('ChessEvent event not set.'), tournament=self)
         elif not self.chessevent_tournament_name:
             self.event.add_warning(
-                _("ChessEvent tournament name not set."), tournament=self
+                _('ChessEvent tournament name not set.'), tournament=self
             )
         self._rounds: int = 0
         self._pairing: TournamentPairing | None = None
@@ -96,10 +96,10 @@ class Tournament:
         self._playing: bool = False
         self._rating_limit1: int = 0
         self._rating_limit2: int = 0
-        self._location: str = ""
-        self._start_date: str = ""
-        self._end_date: str = ""
-        self._arbiter: str = ""
+        self._location: str = ''
+        self._start_date: str = ''
+        self._end_date: str = ''
+        self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
         self._papi_read = False
@@ -136,7 +136,7 @@ class Tournament:
 
     @property
     def file(self) -> Path:
-        return self.path / f"{self.filename}.{PapiWebConfig.papi_ext}"
+        return self.path / f'{self.filename}.{PapiWebConfig.papi_ext}'
 
     @property
     def file_exists(self) -> bool:
@@ -153,7 +153,7 @@ class Tournament:
     @property
     def shadowed_ffe_password(self) -> str | None:
         return (
-            f"{self.ffe_password[:4] + '*' * (len(self.ffe_password) - 4)}"
+            f'{self.ffe_password[:4] + "*" * (len(self.ffe_password) - 4)}'
             if self.ffe_password
             else None
         )
@@ -531,14 +531,14 @@ class Tournament:
         for trf_id, player in self.players_by_trf_id.items():
             if player.id == player_id:
                 return trf_id
-        raise KeyError(f"Id of unknown player: {player_id}")
+        raise KeyError(f'Id of unknown player: {player_id}')
 
     def _trf_xx_fields(self, first_round_pairing: BoardColor):
         next_round = self.current_round + 1
         fields: dict[str, str] = {
-            "XXR": str(self.rounds),
-            "XXC": first_round_pairing.to_trf_first_round_pairing,
-            "XXZ": " ".join(
+            'XXR': str(self.rounds),
+            'XXC': first_round_pairing.to_trf_first_round_pairing,
+            'XXZ': ' '.join(
                 [
                     str(trf_id)
                     for trf_id, player in self.players_by_trf_id.items()
@@ -553,8 +553,8 @@ class Tournament:
                 for round_nb in range(1, next_round)
             ]
             if sum(vpoints_history) > 0:
-                fields[f"XXA {trf_id:>4}"] = " ".join(
-                    [f"{vpoints:>4}" for vpoints in vpoints_history]
+                fields[f'XXA {trf_id:>4}'] = ' '.join(
+                    [f'{vpoints:>4}' for vpoints in vpoints_history]
                 )
         return fields
 
@@ -569,7 +569,7 @@ class Tournament:
             result_class.PAIRING_ALLOCATED_BYE,
             result_class.ZERO_POINT_BYE,
         ]:
-            fields[result.bbp_field] = f"{result.point_value:>4}"
+            fields[result.bbp_field] = f'{result.point_value:>4}'
         return fields
 
     def read_papi(self, update: bool = False):
@@ -599,10 +599,10 @@ class Tournament:
             self._current_round = 0
             self._rating_limit1 = None
             self._rating_limit2 = None
-            self._location = ""
-            self._start_date = ""
-            self._end_date = ""
-            self._arbiter = ""
+            self._location = ''
+            self._start_date = ''
+            self._end_date = ''
+            self._arbiter = ''
             self._boards = []
             self._unpaired_players = []
         self._papi_read = True
@@ -619,8 +619,8 @@ class Tournament:
         paired_rounds: list[int] = []
         for round_ in range(1, self._rounds + 1):
             round_infos[round_] = {
-                "pairings_found": False,
-                "results_missing": False,
+                'pairings_found': False,
+                'results_missing': False,
             }
             for player in self._players_by_id.values():
                 if player.ref_id != 1:
@@ -629,22 +629,22 @@ class Tournament:
                         BoardColor.WHITE,
                         BoardColor.BLACK,
                     ):
-                        round_infos[round_]["pairings_found"] = True
+                        round_infos[round_]['pairings_found'] = True
                         paired_rounds.append(round_)
                     if (
                         pairing.result == Result.NO_RESULT
                         and pairing.opponent_id is not None
                     ):
-                        round_infos[round_]["results_missing"] = True
+                        round_infos[round_]['results_missing'] = True
                     if (
-                        round_infos[round_]["pairings_found"]
-                        and round_infos[round_]["results_missing"]
+                        round_infos[round_]['pairings_found']
+                        and round_infos[round_]['results_missing']
                     ):
                         break
         # the current round is the first one with pairings and no missing result
         if paired_rounds:
             for round_ in paired_rounds:
-                if round_infos[round_]["results_missing"]:
+                if round_infos[round_]['results_missing']:
                     self._current_round = round_
                     self._playing = True
                     break
@@ -722,7 +722,7 @@ class Tournament:
                 self.id, self.current_round, player.id
             )
             event_database.commit()
-        logger.info("An illegal move has been recorded for player [%s].", player.id)
+        logger.info('An illegal move has been recorded for player [%s].', player.id)
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current
@@ -733,9 +733,9 @@ class Tournament:
             )
             event_database.commit()
         if deleted:
-            logger.info("An illegal move has been deleted for player [%s].", player.id)
+            logger.info('An illegal move has been deleted for player [%s].', player.id)
         else:
-            logger.info("No illegal move found for player [%s].", player.id)
+            logger.info('No illegal move found for player [%s].', player.id)
         return deleted
 
     def get_illegal_moves(self) -> Counter[int]:
@@ -804,7 +804,7 @@ class Tournament:
                 weak_player: Player
                 strong_player, weak_player = sorted(
                     (board.white_player, board.black_player),
-                    key=attrgetter("rating"),
+                    key=attrgetter('rating'),
                     reverse=True,
                 )
                 weak_time = self.time_control_initial_time
@@ -871,7 +871,7 @@ class Tournament:
             )
             event_database.commit()
         logger.info(
-            "Added result: %s %s %d.%d %s %s %d %s %s %s %d.",
+            'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
             self.uniq_id,
             self._current_round,
@@ -899,7 +899,7 @@ class Tournament:
             event_database.delete_stored_result(self.id, self.current_round, board.id)
             event_database.commit()
         logger.info(
-            "Removed result: %s %s %d.%d.",
+            'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
             self.uniq_id,
             self._current_round,
@@ -964,43 +964,43 @@ class Tournament:
                 self.id, papi_database.next_player_papi_id
             )
             data: dict[str, str | int | float | None] = {
-                "Ref": player.ref_id,
-                "RefFFE": player.ffe_id,
-                "NrFFE": player.ffe_licence_number
+                'Ref': player.ref_id,
+                'RefFFE': player.ffe_id,
+                'NrFFE': player.ffe_licence_number
                 if player.ffe_licence_number
                 else None,
-                "Nom": player.last_name,
-                "Prenom": player.first_name,
-                "Sexe": player.gender.to_papi_value,
-                "NeLe": PapiDatabase.date_to_papi_date(player.date_of_birth),
-                "Cat": player.category.to_papi_value,
-                "AffType": player.ffe_licence.to_papi_value,
-                "Elo": player.ratings[TournamentRating.STANDARD],
-                "Rapide": player.ratings[TournamentRating.RAPID],
-                "Blitz": player.ratings[TournamentRating.BLITZ],
-                "Federation": player.federation,
-                "ClubRef": 0,
-                "Club": player.club,
-                "Ligue": player.league,
-                "Fide": player.rating_types[TournamentRating.STANDARD].to_papi_value,
-                "RapideFide": player.rating_types[TournamentRating.RAPID].to_papi_value,
-                "BlitzFide": player.rating_types[TournamentRating.BLITZ].to_papi_value,
-                "FideCode": player.fide_id if player.fide_id else None,
-                "FideTitre": player.title.to_papi_value,
-                "Pointe": False,
-                "InscriptionRegle": player.paid,
-                "InscriptionDu": player.owed,
-                "Tel": player.phone,
-                "EMail": player.mail,
-                "Fixe": player.fixed or 0,
-                "Flotteur": "X" * 24,
-                "Pts": 0,
-                "PtA": 0,
+                'Nom': player.last_name,
+                'Prenom': player.first_name,
+                'Sexe': player.gender.to_papi_value,
+                'NeLe': PapiDatabase.date_to_papi_date(player.date_of_birth),
+                'Cat': player.category.to_papi_value,
+                'AffType': player.ffe_licence.to_papi_value,
+                'Elo': player.ratings[TournamentRating.STANDARD],
+                'Rapide': player.ratings[TournamentRating.RAPID],
+                'Blitz': player.ratings[TournamentRating.BLITZ],
+                'Federation': player.federation,
+                'ClubRef': 0,
+                'Club': player.club,
+                'Ligue': player.league,
+                'Fide': player.rating_types[TournamentRating.STANDARD].to_papi_value,
+                'RapideFide': player.rating_types[TournamentRating.RAPID].to_papi_value,
+                'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,
+                'FideCode': player.fide_id if player.fide_id else None,
+                'FideTitre': player.title.to_papi_value,
+                'Pointe': False,
+                'InscriptionRegle': player.paid,
+                'InscriptionDu': player.owed,
+                'Tel': player.phone,
+                'EMail': player.mail,
+                'Fixe': player.fixed or 0,
+                'Flotteur': 'X' * 24,
+                'Pts': 0,
+                'PtA': 0,
             }
             for round_ in range(1, 25):
-                data[f"Rd{round_:0>2}Adv"] = None
-                data[f"Rd{round_:0>2}Res"] = Result.NO_RESULT.to_papi_value
-                data[f"Rd{round_:0>2}Cl"] = "F" if round_ < self.current_round else "R"
+                data[f'Rd{round_:0>2}Adv'] = None
+                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
+                data[f'Rd{round_:0>2}Cl'] = 'F' if round_ < self.current_round else 'R'
             papi_database.write_player_dict(data)
             papi_database.commit()
         return player.id
@@ -1037,10 +1037,10 @@ class Tournament:
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
         as not checked-in for the next round."""
-        assert not self.finished, f"Tournament [{self.uniq_id}] is finished."
-        assert not self.playing, f"Games are played for tournament [{self.uniq_id}]."
+        assert not self.finished, f'Tournament [{self.uniq_id}] is finished.'
+        assert not self.playing, f'Games are played for tournament [{self.uniq_id}].'
         assert not self.check_in_open, (
-            f"Check-in already open for tournament [{self.uniq_id}]."
+            f'Check-in already open for tournament [{self.uniq_id}].'
         )
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             with PapiDatabase(self.file, write=True) as papi_database:
@@ -1056,7 +1056,7 @@ class Tournament:
         """Closes the check-in for the tournament and sets all the players not checked-in as forfeit
         for the next round (if forfeit_last_rounds, for the rest of the tournament)."""
         assert self.check_in_open, (
-            f"Check-in already closed for tournament [{self.uniq_id}]."
+            f'Check-in already closed for tournament [{self.uniq_id}].'
         )
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.set_tournament_last_check_in_update(

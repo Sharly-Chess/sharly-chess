@@ -46,7 +46,7 @@ class EventUserWebContext(UserWebContext):
         if self.error:
             return
         if not event_uniq_id:
-            self._redirect_error("Event not set.")
+            self._redirect_error('Event not set.')
             return
         try:
             self.user_event = EventLoader.get(request=self.request).load_event(
@@ -55,9 +55,9 @@ class EventUserWebContext(UserWebContext):
             if self.user_event.public or self.admin_auth:
                 self.user_event_tab = user_event_tab
                 return
-            self._redirect_error(f"Access denied for event [{event_uniq_id}].")
+            self._redirect_error(f'Access denied for event [{event_uniq_id}].')
         except PapiWebException as pwe:
-            self._redirect_error(f"Event [{event_uniq_id}] not found: {pwe}.")
+            self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}.')
 
     def check_user_tab(self):
         pass
@@ -73,8 +73,8 @@ class EventUserWebContext(UserWebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            "user_event_tab": self.user_event_tab,
-            "user_event": self.user_event,
+            'user_event_tab': self.user_event_tab,
+            'user_event': self.user_event,
         }
 
 
@@ -114,64 +114,64 @@ class EventUserController(AbstractUserController):
             )
             rotators = web_context.user_event.public_rotators_sorted_by_uniq_id
         nav_tabs: dict[str, dict] = {
-            "input": {
-                "title": _("Results entry ({num})").format(
-                    num=len(input_screens) or "-"
+            'input': {
+                'title': _('Results entry ({num})').format(
+                    num=len(input_screens) or '-'
                 ),
-                "screens": input_screens,
-                "disabled": not input_screens,
+                'screens': input_screens,
+                'disabled': not input_screens,
             },
-            "boards": {
-                "title": _("Pairings by board ({num})").format(
-                    num=len(boards_screens) or "-"
+            'boards': {
+                'title': _('Pairings by board ({num})').format(
+                    num=len(boards_screens) or '-'
                 ),
-                "screens": boards_screens,
-                "disabled": not boards_screens,
+                'screens': boards_screens,
+                'disabled': not boards_screens,
             },
-            "players": {
-                "title": _("Pairings by player ({num})").format(
-                    num=len(players_screens) or "-"
+            'players': {
+                'title': _('Pairings by player ({num})').format(
+                    num=len(players_screens) or '-'
                 ),
-                "screens": players_screens,
-                "disabled": not players_screens,
+                'screens': players_screens,
+                'disabled': not players_screens,
             },
-            "results": {
-                "title": _("Last results ({num})").format(
-                    num=len(results_screens) or "-"
+            'results': {
+                'title': _('Last results ({num})').format(
+                    num=len(results_screens) or '-'
                 ),
-                "screens": results_screens,
-                "disabled": not results_screens,
+                'screens': results_screens,
+                'disabled': not results_screens,
             },
-            "image": {
-                "title": _("Image ({num})").format(num=len(image_screens) or "-"),
-                "screens": image_screens,
-                "disabled": not image_screens,
+            'image': {
+                'title': _('Image ({num})').format(num=len(image_screens) or '-'),
+                'screens': image_screens,
+                'disabled': not image_screens,
             },
-            "rotators": {
-                "title": _("Rotators ({num})").format(num=len(rotators) or "-"),
-                "rotators": rotators,
-                "disabled": not rotators,
+            'rotators': {
+                'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
+                'rotators': rotators,
+                'disabled': not rotators,
             },
         }
         if (
             not web_context.user_event_tab
-            or nav_tabs[web_context.user_event_tab]["disabled"]
+            or nav_tabs[web_context.user_event_tab]['disabled']
         ):
             web_context.user_event_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
                 web_context.user_event_tab == list(nav_tabs.keys())[nav_index]
-                and nav_tabs[web_context.user_event_tab]["disabled"]
+                and nav_tabs[web_context.user_event_tab]['disabled']
             ):
                 web_context.user_event_tab = list(nav_tabs.keys())[
                     (nav_index + 1) % len(nav_tabs)
                 ]
         return HTMXTemplate(
-            template_name="user/event.html",
+            template_name='user/event.html',
             context=web_context.template_context
             | {
-                "messages": Message.messages(web_context.request),
-                "nav_tabs": nav_tabs,
+                'messages': Message.messages(web_context.request),
+                'nav_tabs': nav_tabs,
             },
         )
 
@@ -234,7 +234,7 @@ class EventUserController(AbstractUserController):
                     if family.tournament.last_check_in_update > date:
                         return True
                 case _:
-                    raise ValueError(f"type={family.type}")
+                    raise ValueError(f'type={family.type}')
         return False
 
     def _user_event(
@@ -260,12 +260,12 @@ class EventUserController(AbstractUserController):
             return self._user_event_render(web_context)
         else:
             return Reswap(
-                content=None, method="none", status_code=HTTP_304_NOT_MODIFIED
+                content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
             )
 
     @get(
-        path="/user/event/{event_uniq_id:str}",
-        name="user-event",
+        path='/user/event/{event_uniq_id:str}',
+        name='user-event',
     )
     async def htmx_user_event(
         self,
@@ -278,8 +278,8 @@ class EventUserController(AbstractUserController):
         )
 
     @get(
-        path="/user/event/{event_uniq_id:str}/{user_event_tab:str}",
-        name="user-event-tab",
+        path='/user/event/{event_uniq_id:str}/{user_event_tab:str}',
+        name='user-event-tab',
     )
     async def htmx_user_event_tab(
         self,

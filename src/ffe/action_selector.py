@@ -34,7 +34,7 @@ class ActionSelector(metaclass=Singleton):
             if not tournament.ffe_id or not tournament.ffe_password:
                 print_interactive_warning(
                     _(
-                        "FFE ID not defined for tournament [{tournament_uniq_id}]."
+                        'FFE ID not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
             else:
@@ -52,19 +52,19 @@ class ActionSelector(metaclass=Singleton):
             if not tournament.ffe_id or not tournament.ffe_password:
                 print_interactive_warning(
                     _(
-                        "FFE ID not defined for tournament [{tournament_uniq_id}]."
+                        'FFE ID not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
             elif not tournament.file:
                 print_interactive_warning(
                     _(
-                        "Papi file not defined for tournament [{tournament_uniq_id}]."
+                        'Papi file not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
             elif not tournament.file_exists:
                 print_interactive_warning(
                     _(
-                        "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+                        'Papi file not found [{file}] for tournament [{tournament_uniq_id}].'
                     ).format(
                         file=tournament.file, tournament_uniq_id=tournament.uniq_id
                     )
@@ -84,25 +84,25 @@ class ActionSelector(metaclass=Singleton):
             if not tournament.ffe_id or not tournament.ffe_password:
                 print_interactive_warning(
                     _(
-                        "FFE ID not defined for tournament [{tournament_uniq_id}]."
+                        'FFE ID not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
             elif not tournament.rules:
                 print_interactive_warning(
                     _(
-                        "Rules file not defined for tournament [{tournament_uniq_id}]."
+                        'Rules file not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
             elif validators.url(tournament.rules):
                 print_interactive_warning(
                     _(
-                        "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
+                        'Rules file defined by a URL for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
             elif not Path(tournament.rules).exists():
                 print_interactive_warning(
                     _(
-                        "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
+                        'Rules file [{file}] not found for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
             else:
@@ -112,41 +112,41 @@ class ActionSelector(metaclass=Singleton):
     def run(self, event_uniq_id: str) -> bool:
         event_loader: EventLoader = EventLoader.get(request=None)
         event: Event = event_loader.reload_event(event_uniq_id)
-        print_interactive_info(_("Event: {event_name}").format(event_name=event.name))
+        print_interactive_info(_('Event: {event_name}').format(event_name=event.name))
         tournaments = self.__get_qualified_tournaments(event)
         if not tournaments:
             print_interactive_error(
-                _("No FFE operations can be done on the tournaments of this event.")
+                _('No FFE operations can be done on the tournaments of this event.')
             )
             return False
         choice: str | None = None
         print_interactive_info(
-            _("Tournaments: {tournament_ffe_ids}").format(
-                tournament_ffe_ids=", ".join(
+            _('Tournaments: {tournament_ffe_ids}').format(
+                tournament_ffe_ids=', '.join(
                     (str(tournament.ffe_id) for tournament in tournaments)
                 )
             )
         )
-        test_answer: str = _("T *** THE LETTER TO ANSWER TEST")
-        visible_answer: str = _("V *** THE LETTER TO ANSWER VISIBLE")
-        fees_answer: str = _("F *** THE LETTER TO ANSWER FEES")
-        rules_answer: str = _("R *** THE LETTER TO ANSWER RULES")
-        upload_answer: str = _("U *** THE LETTER TO ANSWER UPLOAD")
-        quit_answer: str = _("Q *** THE LETTER TO ANSWER QUIT")
+        test_answer: str = _('T *** THE LETTER TO ANSWER TEST')
+        visible_answer: str = _('V *** THE LETTER TO ANSWER VISIBLE')
+        fees_answer: str = _('F *** THE LETTER TO ANSWER FEES')
+        rules_answer: str = _('R *** THE LETTER TO ANSWER RULES')
+        upload_answer: str = _('U *** THE LETTER TO ANSWER UPLOAD')
+        quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
         actions: dict[str, str] = {
-            test_answer: _("Test the tournament passwords on the FFE website"),
-            visible_answer: _("Make the tournaments visible on the FFE website"),
-            fees_answer: _("Download fees invoices"),
-            rules_answer: _("Upload the rules of the tournaments"),
-            upload_answer: _("Upload the results of the tournaments"),
-            quit_answer: _("Quit"),
+            test_answer: _('Test the tournament passwords on the FFE website'),
+            visible_answer: _('Make the tournaments visible on the FFE website'),
+            fees_answer: _('Download fees invoices'),
+            rules_answer: _('Upload the rules of the tournaments'),
+            upload_answer: _('Upload the results of the tournaments'),
+            quit_answer: _('Quit'),
         }
-        print_interactive_input(_("Actions:"))
+        print_interactive_input(_('Actions:'))
         for letter, text in actions.items():
-            print_interactive_input(f"  - [{letter}] {text}")
+            print_interactive_input(f'  - [{letter}] {text}')
         while choice not in actions:
-            choice = input_interactive("Your choice : ").upper()
-        print_interactive_info(_("Action: {action}").format(action=actions[choice]))
+            choice = input_interactive('Your choice : ').upper()
+        print_interactive_info(_('Action: {action}').format(action=actions[choice]))
         if choice == quit_answer:
             return False
         if choice == test_answer:
@@ -156,7 +156,7 @@ class ActionSelector(metaclass=Singleton):
             if not tournaments:
                 print_interactive_error(
                     _(
-                        "This action can not be applied to the tournaments of this event."
+                        'This action can not be applied to the tournaments of this event.'
                     )
                 )
                 return True
@@ -170,7 +170,7 @@ class ActionSelector(metaclass=Singleton):
             if not tournaments:
                 print_interactive_error(
                     _(
-                        "This action can not be applied to the tournaments of this event."
+                        'This action can not be applied to the tournaments of this event.'
                     )
                 )
                 return True
@@ -184,7 +184,7 @@ class ActionSelector(metaclass=Singleton):
             if not tournaments:
                 print_interactive_error(
                     _(
-                        "This action can not be applied to the tournaments of this event."
+                        'This action can not be applied to the tournaments of this event.'
                     )
                 )
                 return True
@@ -198,7 +198,7 @@ class ActionSelector(metaclass=Singleton):
             if not tournaments:
                 print_interactive_error(
                     _(
-                        "This action can not be applied to the tournaments of this event."
+                        'This action can not be applied to the tournaments of this event.'
                     )
                 )
                 return True
@@ -210,7 +210,7 @@ class ActionSelector(metaclass=Singleton):
                         updated_tournaments.append(tournament)
             if not updated_tournaments:
                 print_interactive_info(
-                    _("No need to upload the rules to the FFE website (up to date).")
+                    _('No need to upload the rules to the FFE website (up to date).')
                 )
             for tournament in updated_tournaments:
                 FFESession(tournament, debug=False).upload_rules()
@@ -225,7 +225,7 @@ class ActionSelector(metaclass=Singleton):
                     if not tournaments:
                         print_interactive_error(
                             _(
-                                "This action can not be applied to the tournaments of this event."
+                                'This action can not be applied to the tournaments of this event.'
                             )
                         )
                         return True
@@ -244,14 +244,14 @@ class ActionSelector(metaclass=Singleton):
                         if recent_updates == 0:
                             print_interactive_info(
                                 _(
-                                    "No need to upload the results to the FFE website (up to date)."
+                                    'No need to upload the results to the FFE website (up to date).'
                                 )
                             )
                         else:
                             print_interactive_info(
                                 ngettext(
-                                    "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting.",
-                                    "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting.",
+                                    '{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting.',
+                                    '{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting.',
                                     recent_updates,
                                 ).format(
                                     recent_updates=recent_updates,
@@ -262,6 +262,6 @@ class ActionSelector(metaclass=Singleton):
                         FFESession(tournament, debug=False).upload(set_visible=False)
                     time.sleep(10)
             except KeyboardInterrupt:
-                print_interactive_info(_("End of upload (Ctrl-C)"))
+                print_interactive_info(_('End of upload (Ctrl-C)'))
                 return True
         return True

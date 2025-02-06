@@ -64,21 +64,21 @@ class TournamentUserWebContext(ScreenUserWebContext):
                 tournament_id
             ]
         except KeyError:
-            self._redirect_error(f"Tournament [{tournament_id}] not found.")
+            self._redirect_error(f'Tournament [{tournament_id}] not found.')
             return
         if tournament_started is not None:
             if tournament_started:
                 if not self.tournament.current_round:
                     self._redirect_error(
                         _(
-                            "Tournament [{tournament_uniq_id}] is not started yet."
+                            'Tournament [{tournament_uniq_id}] is not started yet.'
                         ).format(tournament_uniq_id=self.tournament.uniq_id)
                     )
                     return
             else:
                 if self.tournament.current_round:
                     self._redirect_error(
-                        _("Tournament [{tournament_uniq_id}] is started.").format(
+                        _('Tournament [{tournament_uniq_id}] is started.').format(
                             tournament_uniq_id=self.tournament.uniq_id
                         )
                     )
@@ -87,7 +87,7 @@ class TournamentUserWebContext(ScreenUserWebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            "tournament": self.tournament,
+            'tournament': self.tournament,
         }
 
 
@@ -120,13 +120,13 @@ class BoardUserWebContext(TournamentUserWebContext):
         try:
             self.board = self.tournament.boards[board_id - 1]
         except KeyError:
-            self._redirect_error(f"Board [{board_id}] not found.")
+            self._redirect_error(f'Board [{board_id}] not found.')
             return
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            "board": self.board,
+            'board': self.board,
         }
 
 
@@ -161,7 +161,7 @@ class PlayerUserWebContext(TournamentUserWebContext):
         try:
             self.player = self.tournament.players_by_id[player_id]
         except KeyError:
-            self._redirect_error(f"Player [{player_id}] not found.")
+            self._redirect_error(f'Player [{player_id}] not found.')
             return
         self.board = (
             self.tournament.boards[self.player.board_id - 1]
@@ -172,8 +172,8 @@ class PlayerUserWebContext(TournamentUserWebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            "player": self.player,
-            "board": self.board,
+            'player': self.player,
+            'board': self.board,
         }
 
 
@@ -183,8 +183,8 @@ class AbstractInputUserController(AbstractScreenUserController):
 
 class CheckInUserController(AbstractInputUserController):
     @get(
-        path="/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}",
-        name="user-checkin-modal",
+        path='/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        name='user-checkin-modal',
     )
     async def htmx_user_checkin_modal(
         self,
@@ -206,12 +206,12 @@ class CheckInUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name="user/screen.html", context=web_context.template_context | {}
+            template_name='user/screen.html', context=web_context.template_context | {}
         )
 
     @patch(
-        path="/user/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}",
-        name="user-toggle-check-in",
+        path='/user/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        name='user-toggle-check-in',
     )
     async def htmx_user_toggle_check_in(
         self,
@@ -282,7 +282,7 @@ class IllegalMoveUserController(AbstractInputUserController):
             if not web_context.tournament.delete_illegal_move(web_context.player):
                 Message.error(
                     request,
-                    f"Player [{web_context.player.id}] has no illegal move recorded.",
+                    f'Player [{web_context.player.id}] has no illegal move recorded.',
                 )
             else:
                 SessionHandler.set_session_user_last_illegal_move_updated(
@@ -302,8 +302,8 @@ class IllegalMoveUserController(AbstractInputUserController):
         return self._user_screen_render(web_context)
 
     @put(
-        path="/user/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}",
-        name="user-add-illegal-move",
+        path='/user/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        name='user-add-illegal-move',
         status_code=HTTP_200_OK,
     )
     async def htmx_user_add_illegal_move(
@@ -324,8 +324,8 @@ class IllegalMoveUserController(AbstractInputUserController):
         )
 
     @delete(
-        path="/user/delete-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}",
-        name="user-delete-illegal-move",
+        path='/user/delete-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        name='user-delete-illegal-move',
         status_code=HTTP_200_OK,
     )
     async def htmx_user_delete_illegal_move(
@@ -348,8 +348,8 @@ class IllegalMoveUserController(AbstractInputUserController):
 
 class ResultUserController(AbstractInputUserController):
     @get(
-        path="/user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}",
-        name="user-result-modal",
+        path='/user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}',
+        name='user-result-modal',
     )
     async def htmx_user_result_modal(
         self,
@@ -370,7 +370,7 @@ class ResultUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name="user/screen.html", context=web_context.template_context | {}
+            template_name='user/screen.html', context=web_context.template_context | {}
         )
 
     def _user_update_result(
@@ -395,12 +395,12 @@ class ResultUserController(AbstractInputUserController):
             return web_context.error
         if round not in range(1, web_context.tournament.rounds + 1):
             return AbstractController.redirect_error(
-                request, f"Invalid round number [{round}]."
+                request, f'Invalid round number [{round}].'
             )
         if result is None:
             if not web_context.admin_auth:
                 return AbstractController.redirect_error(
-                    request, "Result deletion is not allowed."
+                    request, 'Result deletion is not allowed.'
                 )
             with suppress(ValueError):
                 web_context.tournament.delete_result(web_context.board)
@@ -411,7 +411,7 @@ class ResultUserController(AbstractInputUserController):
                 else Result.user_imputable_results()
             ):
                 return AbstractController.redirect_error(
-                    request, f"Invalid result [{result}]."
+                    request, f'Invalid result [{result}].'
                 )
             web_context.tournament.add_result(
                 web_context.board, Result.from_papi_value(result)
@@ -433,9 +433,9 @@ class ResultUserController(AbstractInputUserController):
         return self._user_screen_render(web_context)
 
     @put(
-        path="/user/add-result/"
-        "{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}/{result:int}",
-        name="user-add-result",
+        path='/user/add-result/'
+        '{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}/{result:int}',
+        name='user-add-result',
     )
     async def htmx_user_add_result(
         self,
@@ -458,9 +458,9 @@ class ResultUserController(AbstractInputUserController):
         )
 
     @delete(
-        path="/user/delete-result/"
-        "{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}",
-        name="user-delete-result",
+        path='/user/delete-result/'
+        '{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}',
+        name='user-delete-result',
         status_code=HTTP_200_OK,
     )
     async def htmx_user_delete_result(
@@ -485,8 +485,8 @@ class ResultUserController(AbstractInputUserController):
 
 class DownloadUserController(AbstractUserController):
     @get(
-        path="/user/download-tournaments/{event_uniq_id:str}",
-        name="user-download-tournaments",
+        path='/user/download-tournaments/{event_uniq_id:str}',
+        name='user-download-tournaments',
     )
     async def htmx_user_download_event_tournaments(
         self,
@@ -505,21 +505,21 @@ class DownloadUserController(AbstractUserController):
         ]
         if not tournament_files:
             return AbstractController.redirect_error(
-                request, f"No Papi file for event [{web_context.user_event.uniq_id}]."
+                request, f'No Papi file for event [{web_context.user_event.uniq_id}].'
             )
         archive = BytesIO()
-        with ZipFile(archive, "w") as zip_archive:
+        with ZipFile(archive, 'w') as zip_archive:
             for tournament_file in tournament_files:
                 zip_entry: ZipInfo = ZipInfo(tournament_file.name)
-                with open(tournament_file, "rb") as tournament_handler:
+                with open(tournament_file, 'rb') as tournament_handler:
                     zip_archive.writestr(zip_entry, tournament_handler.read())
         return Response(
-            content=bytes(archive.getbuffer()), media_type="application/zip"
+            content=bytes(archive.getbuffer()), media_type='application/zip'
         )
 
     @get(
-        path="/user/download-tournament/{event_uniq_id:str}/{tournament_id:str}",
-        name="user-download-tournament",
+        path='/user/download-tournament/{event_uniq_id:str}/{tournament_id:str}',
+        name='user-download-tournament',
     )
     async def htmx_user_download_tournament(
         self,
@@ -540,7 +540,7 @@ class DownloadUserController(AbstractUserController):
             return web_context.error
         if not web_context.tournament.file_exists:
             return AbstractController.redirect_error(
-                request, f"Papi file [{web_context.tournament.file}] not found."
+                request, f'Papi file [{web_context.tournament.file}] not found.'
             )
         return File(
             path=web_context.tournament.file, filename=web_context.tournament.file.name

@@ -2,10 +2,10 @@ from database.sqlite.fide_database import FideDatabase
 
 FideDatabase().delete()
 if FideDatabase().create():
-    print("Searching the database...")
+    print('Searching the database...')
     with FideDatabase() as fide_database:
-        for player in fide_database.search_player("aub p"):
-            print(f"player={player}")
+        for player in fide_database.search_player('aub p'):
+            print(f'player={player}')
 
 # FfeDatabase().delete():
 # if FfeDatabase().create():

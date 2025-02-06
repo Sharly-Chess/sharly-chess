@@ -45,11 +45,11 @@ class PapiWebConfig(metaclass=Singleton):
         5. The delay between FFE uploads."""
 
     """ The configuration file. """
-    config_file: Path = Path("papi-web.ini")
+    config_file: Path = Path('papi-web.ini')
 
     """ The default values of the configuration file values (if not set on the configuration file). """
     _default_log_level: int = logging.INFO
-    _default_web_host: str = "0.0.0.0"
+    _default_web_host: str = '0.0.0.0'
     _default_web_port: int = 80
     _default_web_launch_browser: bool = True
     _default_ffe_upload_delay: int = 180
@@ -59,16 +59,16 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ The accepted log levels. """
     log_levels: dict[int, str] = {
-        logging.DEBUG: "DEBUG",
-        logging.INFO: "INFO",
-        logging.WARNING: "WARNING",
-        logging.ERROR: "ERROR",
+        logging.DEBUG: 'DEBUG',
+        logging.INFO: 'INFO',
+        logging.WARNING: 'WARNING',
+        logging.ERROR: 'ERROR',
     }
 
     def __init__(self):
         if not default_locale:
             # This happens only for developers when no MO files are available
-            raise FileNotFoundError("No MO files found, please run i18n_update.")
+            raise FileNotFoundError('No MO files found, please run i18n_update.')
         self._log_level: int | None = None
         self._web_host: str | None = None
         self._web_port: int | None = None
@@ -80,47 +80,47 @@ class PapiWebConfig(metaclass=Singleton):
         self._lan_ip: str | None = None
         self.reader = ConfigReader(self.config_file)
         if not self.reader.errors and not self.reader.warnings:
-            section_key = "i18n"
+            section_key = 'i18n'
             try:
                 options = self.reader[section_key]
-                key = "experimental_locales"
+                key = 'experimental_locales'
                 if key in options and DEVEL_ENV:
                     self.reader.add_warning(
                         _(
-                            "Option is obsolete, set environment variable [{var}=1] instead."
+                            'Option is obsolete, set environment variable [{var}=1] instead.'
                         ).format(var=EXPERIMENTAL_FEATURES_ENV_VAR),
                         section_key,
                         key,
                     )
-                key = "locale"
+                key = 'locale'
                 try:
                     locale = options[key]
                     if locale in self.locales:
                         self.locale = locale
                     else:
                         self.reader.add_warning(
-                            _("Locale [{locale}] not found.").format(locale=locale),
+                            _('Locale [{locale}] not found.').format(locale=locale),
                             section_key,
                             key,
                         )
                 except (TypeError, KeyError):
-                    self.reader.add_warning(_("Option not set."), section_key, key)
+                    self.reader.add_warning(_('Option not set.'), section_key, key)
             except KeyError:
-                self.reader.add_warning(_("Section not found."), section_key)
+                self.reader.add_warning(_('Section not found.'), section_key)
             if self.locale:
                 set_locale(self.locale)
             else:
                 set_locale(default_locale)
-                print_interactive_input(_("The following languages are available:"))
+                print_interactive_input(_('The following languages are available:'))
                 locale_range = range(1, len(self.locales) + 1)
                 for num in locale_range:
                     locale: str = self.locales[num - 1]
                     print_interactive_input(
-                        f"  - [{num}] {locale} ({locale_localized_name(locale)})"
+                        f'  - [{num}] {locale} ({locale_localized_name(locale)})'
                     )
                 locale_num: int | None = None
                 while locale_num is None:
-                    choice: str = input_interactive(_("Your choice: "))
+                    choice: str = input_interactive(_('Your choice: '))
                     try:
                         locale_num = int(choice)
                         if locale_num not in locale_range:
@@ -135,22 +135,22 @@ class PapiWebConfig(metaclass=Singleton):
                 PapiWebConfig.event_path.mkdir(parents=True, exist_ok=True)
             except PermissionError as pe:
                 logger.critical(
-                    f"Could not create directory [{TMP_DIR.absolute()}]: {pe}"
+                    f'Could not create directory [{TMP_DIR.absolute()}]: {pe}'
                 )
                 raise pe
-            logger.debug("ODBC drivers found:")
+            logger.debug('ODBC drivers found:')
             for driver in pyodbc.drivers():
-                logger.debug(f" - {driver}")
-            logger.debug("System information:")
+                logger.debug(f' - {driver}')
+            logger.debug('System information:')
             logger.debug(
-                f" - Machine/processor: {platform.machine()}/{platform.processor()}"
+                f' - Machine/processor: {platform.machine()}/{platform.processor()}'
             )
-            logger.debug(f" - Platform: {platform.platform()}")
-            logger.debug(f" - Architecture: {' '.join(platform.architecture())}")
-            section_key = "logging"
+            logger.debug(f' - Platform: {platform.platform()}')
+            logger.debug(f' - Architecture: {" ".join(platform.architecture())}')
+            section_key = 'logging'
             try:
                 options = self.reader[section_key]
-                key = "level"
+                key = 'level'
                 try:
                     level = options[key]
                     try:
@@ -160,7 +160,7 @@ class PapiWebConfig(metaclass=Singleton):
                     except IndexError:
                         self.reader.add_warning(
                             _(
-                                "Invalid log level [{level}], by default [{default}]."
+                                'Invalid log level [{level}], by default [{default}].'
                             ).format(
                                 level=level,
                                 default=self.log_levels[self._default_log_level],
@@ -170,25 +170,25 @@ class PapiWebConfig(metaclass=Singleton):
                         )
                 except (TypeError, KeyError):
                     self.reader.add_warning(
-                        _("Option not set, by default [{default}].").format(
+                        _('Option not set, by default [{default}].').format(
                             default=self.log_levels[self._default_log_level]
                         ),
                         section_key,
                         key,
                     )
             except KeyError:
-                self.reader.add_warning(_("Section not found."), section_key)
-            section_key = "web"
+                self.reader.add_warning(_('Section not found.'), section_key)
+            section_key = 'web'
             if section_key not in self.reader:
-                self.reader.add_warning(_("Section not found."), section_key)
+                self.reader.add_warning(_('Section not found.'), section_key)
             else:
                 web_section = self.reader[section_key]
-                key = "host"
+                key = 'host'
                 if key not in web_section:
-                    self.reader.add_warning(_("Option not set."), section_key, key)
+                    self.reader.add_warning(_('Option not set.'), section_key, key)
                 else:
                     self._web_host = self.reader.get(section_key, key)
-                    matches = re.match(r"^(\d+)\.(\d+)\.(\d+)\.(\d+)$", self._web_host)
+                    matches = re.match(r'^(\d+)\.(\d+)\.(\d+)\.(\d+)$', self._web_host)
                     if matches:
                         for i in range(4):
                             if int(matches.group(i + 1)) > 255:
@@ -198,7 +198,7 @@ class PapiWebConfig(metaclass=Singleton):
                     if self.web_host is None:
                         self.reader.add_warning(
                             _(
-                                "Invalid host configuration [{host}], by default [{default}]."
+                                'Invalid host configuration [{host}], by default [{default}].'
                             ).format(
                                 host=self.reader.get(section_key, key),
                                 default=self._default_web_host,
@@ -206,10 +206,10 @@ class PapiWebConfig(metaclass=Singleton):
                             section_key,
                             key,
                         )
-                key = "port"
+                key = 'port'
                 if key not in web_section:
                     self.reader.add_warning(
-                        _("Option not set, by default [{default}].").format(
+                        _('Option not set, by default [{default}].').format(
                             default=self._default_web_port
                         ),
                         section_key,
@@ -219,18 +219,18 @@ class PapiWebConfig(metaclass=Singleton):
                     self._web_port = self.reader.getint_safe(section_key, key)
                     if self.web_port is None:
                         self.reader.add_warning(
-                            _("Invalid port [{port}], by default [{default}].").format(
+                            _('Invalid port [{port}], by default [{default}].').format(
                                 port=self.reader.get(section_key, key),
                                 default=self._default_web_port,
                             ),
                             section_key,
                             key,
                         )
-                key = "launch_browser"
+                key = 'launch_browser'
                 if key not in web_section:
                     self.reader.add_warning(
-                        _("Option not set, by default [{default}].").format(
-                            default="on" if self._default_web_launch_browser else "off"
+                        _('Option not set, by default [{default}].').format(
+                            default='on' if self._default_web_launch_browser else 'off'
                         ),
                         section_key,
                         key,
@@ -241,19 +241,19 @@ class PapiWebConfig(metaclass=Singleton):
                     )
                     if self._web_launch_browser is None:
                         self.reader.add_error(
-                            _("Invalid value [{value}].").format(
+                            _('Invalid value [{value}].').format(
                                 value=self.reader.get(section_key, key)
                             ),
                             section_key,
                             key,
                         )
-            section_key = "ffe"
+            section_key = 'ffe'
             try:
                 options = self.reader[section_key]
-                key = "upload_delay"
+                key = 'upload_delay'
                 if key not in options:
                     self.reader.add_warning(
-                        _("Option not set, by default [{default}].").format(
+                        _('Option not set, by default [{default}].').format(
                             ffe_upload_delay=self._default_ffe_upload_delay
                         ),
                         section_key,
@@ -266,7 +266,7 @@ class PapiWebConfig(metaclass=Singleton):
                         or self.ffe_upload_delay < self.min_ffe_upload_delay
                     ):
                         self.reader.add_warning(
-                            _("Invalid delay [{delay}], by default [{default}]").format(
+                            _('Invalid delay [{delay}], by default [{default}]').format(
                                 delay=self.reader.get(section_key, key),
                                 default=self._default_ffe_upload_delay,
                             ),
@@ -275,66 +275,66 @@ class PapiWebConfig(metaclass=Singleton):
                         )
             except KeyError:
                 self.reader.add_warning(
-                    _("Section not found, default configuration set."), section_key
+                    _('Section not found, default configuration set.'), section_key
                 )
         else:
-            self.reader.add_debug("Default configuration set.")
+            self.reader.add_debug('Default configuration set.')
         configure_logger(self.log_level)
 
     def save_locale_preference(self):
         config_save: Path = (
             self.config_file.parent
-            / f"{self.config_file.name}.{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+            / f'{self.config_file.name}.{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
         )
         try:
             self.config_file.rename(config_save)
             print_interactive_info(
-                _("Your file {ini_file} has been saved as {ini_file_org}.").format(
+                _('Your file {ini_file} has been saved as {ini_file_org}.').format(
                     ini_file=self.config_file, ini_file_org=config_save
                 )
             )
         except Exception as ex:
             print_interactive_error(
-                _("Could not save {ini_file} to {ini_file_org}: {ex}.").format(
+                _('Could not save {ini_file} to {ini_file_org}: {ex}.').format(
                     ini_file=self.config_file, ini_file_org=config_save, ex=ex
                 )
             )
             return
         try:
-            with open(config_save, "r") as input_file:
-                with open(self.config_file, "w", encoding="utf-8") as output_file:
+            with open(config_save, 'r') as input_file:
+                with open(self.config_file, 'w', encoding='utf-8') as output_file:
                     print_interactive_info(
-                        _("Adding lines to {file}...").format(file=self.config_file)
+                        _('Adding lines to {file}...').format(file=self.config_file)
                     )
                     for line in [
-                        _("[i18n] # Added by Papi-web {version}").format(
+                        _('[i18n] # Added by Papi-web {version}').format(
                             version=PapiWebConfig.version
                         ),
-                        f"locale = {self.locale}",
-                        "",
+                        f'locale = {self.locale}',
+                        '',
                     ]:
-                        output_file.write(f"{line}\n")
+                        output_file.write(f'{line}\n')
                         if line:
-                            print_interactive_info(f"- {line}")
-                    locale_pattern = re.compile(r"^locale\s*=")
+                            print_interactive_info(f'- {line}')
+                    locale_pattern = re.compile(r'^locale\s*=')
                     for line in input_file:
-                        if line.startswith("[i18n]") or locale_pattern.match(line):
+                        if line.startswith('[i18n]') or locale_pattern.match(line):
                             output_file.write(
                                 _(
-                                    "# The line below has been commented by Papi-web {version}"
+                                    '# The line below has been commented by Papi-web {version}'
                                 ).format(version=PapiWebConfig.version)
                             )
-                            output_file.write(f"\n# {line}")
+                            output_file.write(f'\n# {line}')
                         else:
                             output_file.write(line)
             print_interactive_success(
-                _("Your file {ini_file} has been modified.").format(
+                _('Your file {ini_file} has been modified.').format(
                     ini_file=self.config_file
                 )
             )
         except Exception as ex:
             print_interactive_error(
-                _("Could not write to {ini_file}: {ex}.").format(
+                _('Could not write to {ini_file}: {ex}.').format(
                     ini_file=self.config_file, ex=ex
                 )
             )
@@ -368,56 +368,56 @@ class PapiWebConfig(metaclass=Singleton):
         return self._ffe_upload_delay or self._default_ffe_upload_delay
 
     """ The version of the application. """
-    version: Version = Version("2.4.21")
+    version: Version = Version('2.4.21')
 
     """ The URL of the project. """
-    url: str = "https://github.com/papi-web-org/papi-web"
+    url: str = 'https://github.com/papi-web-org/papi-web'
 
     """ The contact email. """
-    mail: str = "papi-web@echecs-bretagne.fr"
+    mail: str = 'papi-web@echecs-bretagne.fr'
 
     @property
     def copyright(self) -> str:
         """The copyright of the application."""
-        return f"© {self.project} 2013-2025"
+        return f'© {self.project} 2013-2025'
 
     @property
     def project(self) -> str:
         """The project of the application."""
-        return _("Papi-web project")
+        return _('Papi-web project')
 
     """ The path where event databases are stored. """
-    event_path: Path = Path() / "events"
+    event_path: Path = Path() / 'events'
 
     """ The extension of event databases. """
-    event_ext: str = "db"
+    event_ext: str = 'db'
 
     """ The extension of archives event databases. """
-    arch_ext: str = "arch"
+    arch_ext: str = 'arch'
 
     """ The path to the user custom files. """
-    custom_path: Path = Path().absolute() / "custom"
+    custom_path: Path = Path().absolute() / 'custom'
 
     """ The path to the embedded custom files. """
-    embedded_custom_path: Path = BASE_DIR / "src/custom"
+    embedded_custom_path: Path = BASE_DIR / 'src/custom'
 
     """ The default path to the Papi files. """
-    default_papi_path: Path = Path() / "papi"
+    default_papi_path: Path = Path() / 'papi'
 
     """ The extension of Papi files. """
-    papi_ext: str = "papi"
+    papi_ext: str = 'papi'
 
     """ The path to database source files (see below). """
-    _database_path: Path = BASE_DIR / "src/database"
+    _database_path: Path = BASE_DIR / 'src/database'
 
     """ The path to SQL files (used to create new event databases). """
-    database_sql_path: Path = _database_path / "sql"
+    database_sql_path: Path = _database_path / 'sql'
 
     """ The path to YAML files (used to create example databases). """
-    database_yml_path: Path = _database_path / "yml"
+    database_yml_path: Path = _database_path / 'yml'
 
     """ The extension of YAML files. """
-    yml_ext: str = "yml"
+    yml_ext: str = 'yml'
 
     """ The versions of the libraries for which the version can be easily extracted. """
     litestar_version: Version = litestar.__version__.formatted(short=True)
@@ -426,35 +426,35 @@ class PapiWebConfig(metaclass=Singleton):
     pyodbc_version: Version = Version(pyodbc.version)
 
     """ Other library versions, set manually and checked. """
-    bootstrap_version: Version = Version("5.3.3")
+    bootstrap_version: Version = Version('5.3.3')
     assert (
-        BASE_DIR / f"src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist"
+        BASE_DIR / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist'
     ).is_dir()
-    bootstrap_icons_version: Version = Version("1.11.3")
+    bootstrap_icons_version: Version = Version('1.11.3')
     assert (
         BASE_DIR
-        / f"src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}"
+        / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}'
     ).is_dir()
-    htmx_version: Version = Version("1.9.12")
-    assert (BASE_DIR / f"src/web/static/lib/htmx/htmx-{htmx_version}").is_dir()
-    jquery_version: Version = Version("3.7.1")
+    htmx_version: Version = Version('1.9.12')
+    assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
+    jquery_version: Version = Version('3.7.1')
     assert (
-        BASE_DIR / f"src/web/static/lib/jquery/jquery-{jquery_version}.min.js"
+        BASE_DIR / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js'
     ).is_file()
-    sortable_version: Version = Version("1.15.2")
+    sortable_version: Version = Version('1.15.2')
     assert (
-        BASE_DIR / f"src/web/static/lib/sortable/sortable-{sortable_version}"
+        BASE_DIR / f'src/web/static/lib/sortable/sortable-{sortable_version}'
     ).is_dir()
-    jstree_version: Version = Version("3.3.17")
+    jstree_version: Version = Version('3.3.17')
     assert (
-        BASE_DIR / f"src/web/static/lib/jstree/jstree-{jstree_version}-dist"
+        BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist'
     ).is_dir()
 
     def _url(self, ip: str | None) -> str | None:
         """Returns the URL of the application for the given IP."""
         if ip is None:
             return None
-        return f"http://{ip}{f':{self.web_port}' if self.web_port != 80 else ''}"
+        return f'http://{ip}{f":{self.web_port}" if self.web_port != 80 else ""}'
 
     @property
     def lan_ip(self) -> str | None:
@@ -463,7 +463,7 @@ class PapiWebConfig(metaclass=Singleton):
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.settimeout(0)
             try:
-                s.connect(("10.254.254.254", 1))  # doesn't even have to be reachable
+                s.connect(('10.254.254.254', 1))  # doesn't even have to be reachable
                 self._lan_ip = s.getsockname()[0]
             except Exception:  # pylint: disable=broad-exception-caught
                 pass
@@ -475,7 +475,7 @@ class PapiWebConfig(metaclass=Singleton):
     def local_ip(self) -> str:
         """Returns the local IP (localhost) of the server (with arbiter access)."""
         if self._local_ip is None:
-            self._local_ip = "127.0.0.1"
+            self._local_ip = '127.0.0.1'
         return self._local_ip
 
     @property
@@ -493,9 +493,9 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ The default colors for the timers. """
     default_timer_colors: dict[int, str] = {
-        1: "#00FF00",
-        2: "#FF7700",
-        3: "#FF0000",
+        1: '#00FF00',
+        2: '#FF7700',
+        3: '#FF0000',
     }
 
     """ The default delays for the timers. """
@@ -506,10 +506,10 @@ class PapiWebConfig(metaclass=Singleton):
     }
 
     """ The default text colour for the alert messages. """
-    default_message_color: str = "#FF0000"
+    default_message_color: str = '#FF0000'
 
     """ The default background colour for the alert messages. """
-    default_message_background_color: str = "#FFFF00"
+    default_message_background_color: str = '#FFFF00'
 
     """ True to show an exit button on input screens by default (may be changed for each screen). """
     default_input_exit_button: bool = True
@@ -521,10 +521,10 @@ class PapiWebConfig(metaclass=Singleton):
     default_rotator_delay: int = 15
 
     """ The default text shown on timers before the start of a round. """
-    default_timer_round_text_before: str = "Début de la ronde {} dans %s"
+    default_timer_round_text_before: str = 'Début de la ronde {} dans %s'
 
     """ The default text shown on timers after the start of a round. """
-    default_timer_round_text_after: str = "Ronde {} commencée depuis %s"
+    default_timer_round_text_after: str = 'Ronde {} commencée depuis %s'
 
     """ The delay before checking if the user index page has changed. """
     user_index_update_delay: int = 10
@@ -545,16 +545,16 @@ class PapiWebConfig(metaclass=Singleton):
     default_hide_background_image: bool = False
 
     """ The default event background image. """
-    default_background_image: str = ""
+    default_background_image: str = ''
 
     """ The error background image. """
-    error_background_image: str = "/static/images/papi-web-error.png"
+    error_background_image: str = '/static/images/papi-web-error.png'
 
     """ The default event background colour. """
-    default_background_color: str = "#e9ecef"
+    default_background_color: str = '#e9ecef'
 
     """ The default background colour for arbiter pages. """
-    admin_background_color: str = ""
+    admin_background_color: str = ''
 
     """ The default background colour for user pages. """
     user_background_color: str = default_background_color
@@ -566,257 +566,257 @@ class PapiWebConfig(metaclass=Singleton):
     default_results_screen_max_age: int = 60
 
     """ The ChessEvent download URL. """
-    chessevent_download_url: str = "https://chessevent.echecs-bretagne.fr/download"
+    chessevent_download_url: str = 'https://chessevent.echecs-bretagne.fr/download'
 
     """ The default filter for the players columns. """
-    default_players_filter_columns: list["str"] = [
-        "federation",
-        "league",
-        "club",
-        "yob",
-        "category",
-        "mail",
-        "phone",
-        "gender",
-        "fixed",
-        "fide",
-        "ffe",
-        "check_in",
-        "tournament",
-        "history",
+    default_players_filter_columns: list['str'] = [
+        'federation',
+        'league',
+        'club',
+        'yob',
+        'category',
+        'mail',
+        'phone',
+        'gender',
+        'fixed',
+        'fide',
+        'ffe',
+        'check_in',
+        'tournament',
+        'history',
     ]
 
     """ The federation names. """
     federations: dict[str, str] = {
-        "NON": "None",
-        "AFG": "Afghanistan",
-        "ALB": "Albania",
-        "ALG": "Algeria",
-        "AND": "Andorra",
-        "ANG": "Angola",
-        "ANT": "Antigua and Barbuda",
-        "ARG": "Argentina",
-        "ARM": "Armenia",
-        "ARU": "Aruba",
-        "AUS": "Australia",
-        "AUT": "Austria",
-        "AZE": "Azerbaijan",
-        "BAH": "Bahamas",
-        "BRN": "Bahrain",
-        "BAN": "Bangladesh",
-        "BAR": "Barbados",
-        "BLR": "Belarus",
-        "BEL": "Belgium",
-        "BIZ": "Belize",
-        "BER": "Bermuda",
-        "BHU": "Bhutan",
-        "BOL": "Bolivia",
-        "BIH": "Bosnia & Herzegovina",
-        "BOT": "Botswana",
-        "BRA": "Brazil",
-        "BRU": "Brunei Darussalam",
-        "BUL": "Bulgaria",
-        "BUR": "Burkina Faso",
-        "BDI": "Burundi",
-        "CAM": "Cambodia",
-        "CMR": "Cameroon",
-        "CAN": "Canada",
-        "CPV": "Cape Verde",
-        "CAY": "Cayman Islands",
-        "CAF": "Central African Republic",
-        "CHA": "Chad",
-        "CHI": "Chile",
-        "CHN": "China",
-        "CGO": "Congo",
-        "COL": "Colombia",
-        "COM": "Comoros Islands",
-        "CRC": "Costa Rica",
-        "CIV": "Cote d’Ivoire",
-        "CRO": "Croatia",
-        "CUB": "Cuba",
-        "CYP": "Cyprus",
-        "CZE": "Czech Republic",
-        "COD": "Democratic Republic of the Congo",
-        "DEN": "Denmark",
-        "DJI": "Djibouti",
-        "DMA": "Dominica",
-        "DOM": "Dominican Republic",
-        "ECU": "Ecuador",
-        "EGY": "Egypt",
-        "ESA": "El Salvador",
-        "ENG": "England",
-        "GEQ": "Equatorial Guinea",
-        "ERI": "Eritrea",
-        "EST": "Estonia",
-        "SWZ": "Eswatini",
-        "ETH": "Ethiopia",
-        "FAI": "Faroe Islands",
-        "FID": "International Chess Federation",
-        "FIJ": "Fiji",
-        "FIN": "Finland",
-        "FRA": "France",
-        "GAB": "Gabon",
-        "GAM": "Gambia",
-        "GEO": "Georgia",
-        "GER": "Germany",
-        "GHA": "Ghana",
-        "GRE": "Greece",
-        "GRL": "Groenland",
-        "GRN": "Grenada",
-        "GUM": "Guam",
-        "GUA": "Guatemala",
-        "GCI": "Guernsey",
-        "GUY": "Guyana",
-        "HAI": "Haiti",
-        "HON": "Honduras",
-        "HKG": "Hong Kong, China",
-        "HUN": "Hungary",
-        "ISL": "Iceland",
-        "IND": "India",
-        "INA": "Indonesia",
-        "IRI": "Iran",
-        "IRQ": "Iraq",
-        "IRL": "Ireland",
-        "IOM": "Isle of Man",
-        "ISR": "Israel",
-        "ITA": "Italy",
-        "IVB": "British Virgin Islands",
-        "JAM": "Jamaica",
-        "JPN": "Japan",
-        "JCI": "Jersey",
-        "JOR": "Jordan",
-        "KAZ": "Kazakhstan",
-        "KEN": "Kenya",
-        "KOS": "Kosovo *",
-        "KUW": "Kuwait",
-        "KGZ": "Kyrgyzstan",
-        "LAO": "Laos",
-        "LAT": "Latvia",
-        "LBN": "Lebanon",
-        "LES": "Lesotho",
-        "LBR": "Liberia",
-        "LBA": "Libya",
-        "LIE": "Liechtenstein",
-        "LTU": "Lithuania",
-        "LUX": "Luxembourg",
-        "MAC": "Macau, China",
-        "MAD": "Madagascar",
-        "MAW": "Malawi",
-        "MAS": "Malaysia",
-        "MDV": "Maldives",
-        "MLI": "Mali",
-        "MLT": "Malta",
-        "MTN": "Mauritania",
-        "MRI": "Mauritius",
-        "MEX": "Mexico",
-        "MDA": "Moldova",
-        "MNC": "Monaco",
-        "MGL": "Mongolia",
-        "MNE": "Montenegro",
-        "MAR": "Morocco",
-        "MOZ": "Mozambique",
-        "MYA": "Myanmar",
-        "NAM": "Namibia",
-        "NRU": "Nauru",
-        "NEP": "Nepal",
-        "NED": "Netherlands",
-        "AHO": "Netherlands Antilles",
-        "NCL": "New Caledonia",
-        "NZL": "New Zealand",
-        "NCA": "Nicaragua",
-        "NIG": "Niger",
-        "NGR": "Nigeria",
-        "MKD": "North Macedonia",
-        "NOR": "Norway",
-        "OMA": "Oman",
-        "PAK": "Pakistan",
-        "PLW": "Palau",
-        "PLE": "Palestine",
-        "PAN": "Panama",
-        "PNG": "Papua New Guinea",
-        "PAR": "Paraguay",
-        "PER": "Peru",
-        "PHI": "Philippines",
-        "POL": "Poland",
-        "POR": "Portugal",
-        "PUR": "Puerto Rico",
-        "QAT": "Qatar",
-        "ROU": "Romania",
-        "RUS": "Russia",
-        "RWA": "Rwanda",
-        "SKN": "Saint Kitts and Nevis",
-        "LCA": "Saint Lucia",
-        "VIN": "Saint Vincent and the Grenadines",
-        "SMR": "San Marino",
-        "STP": "Sao Tome and Principe",
-        "KSA": "Saudi Arabia",
-        "SCO": "Scotland",
-        "SEN": "Senegal",
-        "SRB": "Serbia",
-        "SEY": "Seychelles",
-        "SLE": "Sierra Leone",
-        "SGP": "Singapore",
-        "SVK": "Slovakia",
-        "SLO": "Slovenia",
-        "SOL": "Solomon Islands",
-        "SOM": "Somalia",
-        "RSA": "South Africa",
-        "KOR": "South Korea",
-        "SSD": "South Sudan",
-        "ESP": "Spain",
-        "SRI": "Sri Lanka",
-        "SUD": "Sudan",
-        "SUR": "Suriname",
-        "SWE": "Sweden",
-        "SUI": "Switzerland",
-        "SYR": "Syria",
-        "TJK": "Tajikistan",
-        "TAN": "Tanzania",
-        "THA": "Thailand",
-        "TLS": "Timor-Leste",
-        "TOG": "Togo",
-        "TGA": "Tonga",
-        "TPE": "Chinese Taipei",
-        "TTO": "Trinidad & Tobago",
-        "TUN": "Tunisia",
-        "TUR": "Turkiye",
-        "TKM": "Turkmenistan",
-        "UGA": "Uganda",
-        "UKR": "Ukraine",
-        "UAE": "United Arab Emirates",
-        "USA": "United States of America",
-        "URU": "Uruguay",
-        "ISV": "US Virgin Islands",
-        "UZB": "Uzbekistan",
-        "VAN": "Vanuatu",
-        "VEN": "Venezuela",
-        "VIE": "Vietnam",
-        "WLS": "Wales",
-        "YEM": "Yemen",
-        "ZAM": "Zambia",
-        "ZIM": "Zimbabwe",
+        'NON': 'None',
+        'AFG': 'Afghanistan',
+        'ALB': 'Albania',
+        'ALG': 'Algeria',
+        'AND': 'Andorra',
+        'ANG': 'Angola',
+        'ANT': 'Antigua and Barbuda',
+        'ARG': 'Argentina',
+        'ARM': 'Armenia',
+        'ARU': 'Aruba',
+        'AUS': 'Australia',
+        'AUT': 'Austria',
+        'AZE': 'Azerbaijan',
+        'BAH': 'Bahamas',
+        'BRN': 'Bahrain',
+        'BAN': 'Bangladesh',
+        'BAR': 'Barbados',
+        'BLR': 'Belarus',
+        'BEL': 'Belgium',
+        'BIZ': 'Belize',
+        'BER': 'Bermuda',
+        'BHU': 'Bhutan',
+        'BOL': 'Bolivia',
+        'BIH': 'Bosnia & Herzegovina',
+        'BOT': 'Botswana',
+        'BRA': 'Brazil',
+        'BRU': 'Brunei Darussalam',
+        'BUL': 'Bulgaria',
+        'BUR': 'Burkina Faso',
+        'BDI': 'Burundi',
+        'CAM': 'Cambodia',
+        'CMR': 'Cameroon',
+        'CAN': 'Canada',
+        'CPV': 'Cape Verde',
+        'CAY': 'Cayman Islands',
+        'CAF': 'Central African Republic',
+        'CHA': 'Chad',
+        'CHI': 'Chile',
+        'CHN': 'China',
+        'CGO': 'Congo',
+        'COL': 'Colombia',
+        'COM': 'Comoros Islands',
+        'CRC': 'Costa Rica',
+        'CIV': 'Cote d’Ivoire',
+        'CRO': 'Croatia',
+        'CUB': 'Cuba',
+        'CYP': 'Cyprus',
+        'CZE': 'Czech Republic',
+        'COD': 'Democratic Republic of the Congo',
+        'DEN': 'Denmark',
+        'DJI': 'Djibouti',
+        'DMA': 'Dominica',
+        'DOM': 'Dominican Republic',
+        'ECU': 'Ecuador',
+        'EGY': 'Egypt',
+        'ESA': 'El Salvador',
+        'ENG': 'England',
+        'GEQ': 'Equatorial Guinea',
+        'ERI': 'Eritrea',
+        'EST': 'Estonia',
+        'SWZ': 'Eswatini',
+        'ETH': 'Ethiopia',
+        'FAI': 'Faroe Islands',
+        'FID': 'International Chess Federation',
+        'FIJ': 'Fiji',
+        'FIN': 'Finland',
+        'FRA': 'France',
+        'GAB': 'Gabon',
+        'GAM': 'Gambia',
+        'GEO': 'Georgia',
+        'GER': 'Germany',
+        'GHA': 'Ghana',
+        'GRE': 'Greece',
+        'GRL': 'Groenland',
+        'GRN': 'Grenada',
+        'GUM': 'Guam',
+        'GUA': 'Guatemala',
+        'GCI': 'Guernsey',
+        'GUY': 'Guyana',
+        'HAI': 'Haiti',
+        'HON': 'Honduras',
+        'HKG': 'Hong Kong, China',
+        'HUN': 'Hungary',
+        'ISL': 'Iceland',
+        'IND': 'India',
+        'INA': 'Indonesia',
+        'IRI': 'Iran',
+        'IRQ': 'Iraq',
+        'IRL': 'Ireland',
+        'IOM': 'Isle of Man',
+        'ISR': 'Israel',
+        'ITA': 'Italy',
+        'IVB': 'British Virgin Islands',
+        'JAM': 'Jamaica',
+        'JPN': 'Japan',
+        'JCI': 'Jersey',
+        'JOR': 'Jordan',
+        'KAZ': 'Kazakhstan',
+        'KEN': 'Kenya',
+        'KOS': 'Kosovo *',
+        'KUW': 'Kuwait',
+        'KGZ': 'Kyrgyzstan',
+        'LAO': 'Laos',
+        'LAT': 'Latvia',
+        'LBN': 'Lebanon',
+        'LES': 'Lesotho',
+        'LBR': 'Liberia',
+        'LBA': 'Libya',
+        'LIE': 'Liechtenstein',
+        'LTU': 'Lithuania',
+        'LUX': 'Luxembourg',
+        'MAC': 'Macau, China',
+        'MAD': 'Madagascar',
+        'MAW': 'Malawi',
+        'MAS': 'Malaysia',
+        'MDV': 'Maldives',
+        'MLI': 'Mali',
+        'MLT': 'Malta',
+        'MTN': 'Mauritania',
+        'MRI': 'Mauritius',
+        'MEX': 'Mexico',
+        'MDA': 'Moldova',
+        'MNC': 'Monaco',
+        'MGL': 'Mongolia',
+        'MNE': 'Montenegro',
+        'MAR': 'Morocco',
+        'MOZ': 'Mozambique',
+        'MYA': 'Myanmar',
+        'NAM': 'Namibia',
+        'NRU': 'Nauru',
+        'NEP': 'Nepal',
+        'NED': 'Netherlands',
+        'AHO': 'Netherlands Antilles',
+        'NCL': 'New Caledonia',
+        'NZL': 'New Zealand',
+        'NCA': 'Nicaragua',
+        'NIG': 'Niger',
+        'NGR': 'Nigeria',
+        'MKD': 'North Macedonia',
+        'NOR': 'Norway',
+        'OMA': 'Oman',
+        'PAK': 'Pakistan',
+        'PLW': 'Palau',
+        'PLE': 'Palestine',
+        'PAN': 'Panama',
+        'PNG': 'Papua New Guinea',
+        'PAR': 'Paraguay',
+        'PER': 'Peru',
+        'PHI': 'Philippines',
+        'POL': 'Poland',
+        'POR': 'Portugal',
+        'PUR': 'Puerto Rico',
+        'QAT': 'Qatar',
+        'ROU': 'Romania',
+        'RUS': 'Russia',
+        'RWA': 'Rwanda',
+        'SKN': 'Saint Kitts and Nevis',
+        'LCA': 'Saint Lucia',
+        'VIN': 'Saint Vincent and the Grenadines',
+        'SMR': 'San Marino',
+        'STP': 'Sao Tome and Principe',
+        'KSA': 'Saudi Arabia',
+        'SCO': 'Scotland',
+        'SEN': 'Senegal',
+        'SRB': 'Serbia',
+        'SEY': 'Seychelles',
+        'SLE': 'Sierra Leone',
+        'SGP': 'Singapore',
+        'SVK': 'Slovakia',
+        'SLO': 'Slovenia',
+        'SOL': 'Solomon Islands',
+        'SOM': 'Somalia',
+        'RSA': 'South Africa',
+        'KOR': 'South Korea',
+        'SSD': 'South Sudan',
+        'ESP': 'Spain',
+        'SRI': 'Sri Lanka',
+        'SUD': 'Sudan',
+        'SUR': 'Suriname',
+        'SWE': 'Sweden',
+        'SUI': 'Switzerland',
+        'SYR': 'Syria',
+        'TJK': 'Tajikistan',
+        'TAN': 'Tanzania',
+        'THA': 'Thailand',
+        'TLS': 'Timor-Leste',
+        'TOG': 'Togo',
+        'TGA': 'Tonga',
+        'TPE': 'Chinese Taipei',
+        'TTO': 'Trinidad & Tobago',
+        'TUN': 'Tunisia',
+        'TUR': 'Turkiye',
+        'TKM': 'Turkmenistan',
+        'UGA': 'Uganda',
+        'UKR': 'Ukraine',
+        'UAE': 'United Arab Emirates',
+        'USA': 'United States of America',
+        'URU': 'Uruguay',
+        'ISV': 'US Virgin Islands',
+        'UZB': 'Uzbekistan',
+        'VAN': 'Vanuatu',
+        'VEN': 'Venezuela',
+        'VIE': 'Vietnam',
+        'WLS': 'Wales',
+        'YEM': 'Yemen',
+        'ZAM': 'Zambia',
+        'ZIM': 'Zimbabwe',
     }
 
     """ The FFE league names. """
     ffe_leagues: dict[str, str] = {
-        "": "",
-        "ARA": "Auvergne-Rhône-Alpes",
-        "BFC": "Bourgogne-Franche-Comté",
-        "BRE": "Bretagne",
-        "CRS": "Corse",
-        "CVL": "Centre-Val de Loire",
-        "EST": "Grand-Est",
-        "GUA": "Guadeloupe",
-        "GUY": "Guyane",
-        "HDF": "Hauts-de-France",
-        "IDF": "Île-de-France",
-        "MAR": "Martinique",
-        "NAQ": "Nouvelle-Aquitaine",
-        "NCA": "Nouvelle-Calédonie",
-        "NOR": "Normandie",
-        "OCC": "Occitanie",
-        "PAC": "Provence-Alpes-Côte d'azur",
-        "PDL": "Pays de la Loire",
-        "POL": "Saint-Pierre-et-Miquelon",
-        "REU": "Réunion",
+        '': '',
+        'ARA': 'Auvergne-Rhône-Alpes',
+        'BFC': 'Bourgogne-Franche-Comté',
+        'BRE': 'Bretagne',
+        'CRS': 'Corse',
+        'CVL': 'Centre-Val de Loire',
+        'EST': 'Grand-Est',
+        'GUA': 'Guadeloupe',
+        'GUY': 'Guyane',
+        'HDF': 'Hauts-de-France',
+        'IDF': 'Île-de-France',
+        'MAR': 'Martinique',
+        'NAQ': 'Nouvelle-Aquitaine',
+        'NCA': 'Nouvelle-Calédonie',
+        'NOR': 'Normandie',
+        'OCC': 'Occitanie',
+        'PAC': "Provence-Alpes-Côte d'azur",
+        'PDL': 'Pays de la Loire',
+        'POL': 'Saint-Pierre-et-Miquelon',
+        'REU': 'Réunion',
     }

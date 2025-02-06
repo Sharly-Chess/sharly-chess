@@ -25,13 +25,13 @@ class ChessEventTournament:
             | list[dict[str, bool | str | int | dict[int, float] | None]],
         ],
     ):
-        self.name: str = ""
+        self.name: str = ''
         self.type: TournamentType = TournamentType.UNKNOWN
         self.rounds: int = 0
         self.pairing: TournamentPairing = TournamentPairing.UNKNOWN
-        self.time_control: str = ""
-        self.location: str = ""
-        self.arbiter: str = ""
+        self.time_control: str = ''
+        self.location: str = ''
+        self.arbiter: str = ''
         self.start: float = 0.0
         self.end: float = 0.0
         self.tie_breaks: list[TournamentTieBreak] = [
@@ -42,34 +42,34 @@ class ChessEventTournament:
         self.players: list[ChessEventPlayer] = []
         self.error = True
         self.check_in_started: bool = False
-        key: str = ""
+        key: str = ''
         try:
-            self.name = str(chessevent_tournament_info[key := "name"])
-            self.type = TournamentType(int(chessevent_tournament_info[key := "type"]))
-            self.rounds = int(chessevent_tournament_info[key := "rounds"])
+            self.name = str(chessevent_tournament_info[key := 'name'])
+            self.type = TournamentType(int(chessevent_tournament_info[key := 'type']))
+            self.rounds = int(chessevent_tournament_info[key := 'rounds'])
             if self.rounds not in range(25):  # the 0-value is set by default later
                 raise ValueError
             self.pairing = TournamentPairing(
-                int(chessevent_tournament_info[key := "pairing"])
+                int(chessevent_tournament_info[key := 'pairing'])
             )
-            self.time_control = str(chessevent_tournament_info[key := "time_control"])
-            self.location = str(chessevent_tournament_info[key := "location"])
-            self.arbiter = str(chessevent_tournament_info[key := "arbiter"])
-            self.start = float(chessevent_tournament_info[key := "start"])
-            self.end = float(chessevent_tournament_info[key := "end"])
+            self.time_control = str(chessevent_tournament_info[key := 'time_control'])
+            self.location = str(chessevent_tournament_info[key := 'location'])
+            self.arbiter = str(chessevent_tournament_info[key := 'arbiter'])
+            self.start = float(chessevent_tournament_info[key := 'start'])
+            self.end = float(chessevent_tournament_info[key := 'end'])
             for tie_break_index in range(3):
-                key = f"tie_break_{tie_break_index + 1}"
+                key = f'tie_break_{tie_break_index + 1}'
                 if chessevent_tournament_info[key]:
                     self.tie_breaks[tie_break_index] = TournamentTieBreak(
                         int(chessevent_tournament_info[key])
                     )
             self.rating = TournamentRating(
-                int(chessevent_tournament_info[key := "rating"])
+                int(chessevent_tournament_info[key := 'rating'])
             )
-            ffe_id = chessevent_tournament_info[key := "ffe_id"]
+            ffe_id = chessevent_tournament_info[key := 'ffe_id']
             if ffe_id:
                 self.ffe_id = int(ffe_id)
-            key = "players"
+            key = 'players'
             for chessevent_player_info in chessevent_tournament_info[key]:
                 chessevent_player: ChessEventPlayer = ChessEventPlayer(
                     chessevent_player_info
@@ -80,11 +80,11 @@ class ChessEventTournament:
                     return
                 self.players.append(chessevent_player)
         except KeyError:
-            logger.error("Field [%s] missing in the ChessEvent response", key)
+            logger.error('Field [%s] missing in the ChessEvent response', key)
             return
         except (TypeError, ValueError):
             logger.error(
-                "Invalid value [%s] for field [%s] in the ChessEvent response",
+                'Invalid value [%s] for field [%s] in the ChessEvent response',
                 chessevent_tournament_info[key],
                 key,
             )
@@ -92,23 +92,23 @@ class ChessEventTournament:
         self.error = False
 
     def __str__(self) -> str:
-        return "\n".join(
+        return '\n'.join(
             [
-                f"  - Name: {self.name}",
-                f"  - Type: {self.type}",
-                f"  - Number of rounds: {self.rounds}",
-                f"  - Paring: {self.pairing}",
-                f"  - Time control: {self.time_control}",
-                f"  - Location: {self.location}",
-                f"  - Arbiter: {self.arbiter}",
-                f"  - Dates: {self.start} - {self.end}",
+                f'  - Name: {self.name}',
+                f'  - Type: {self.type}',
+                f'  - Number of rounds: {self.rounds}',
+                f'  - Paring: {self.pairing}',
+                f'  - Time control: {self.time_control}',
+                f'  - Location: {self.location}',
+                f'  - Arbiter: {self.arbiter}',
+                f'  - Dates: {self.start} - {self.end}',
             ]
             + [
-                f"  - Tie-break #{tie_break_index} : {self.tie_breaks[tie_break_index]}"
+                f'  - Tie-break #{tie_break_index} : {self.tie_breaks[tie_break_index]}'
                 for tie_break_index in range(1, 4)
             ]
             + [
-                f"  - Rating: {self.rating}",
-                f"  - FFE qualification: {self.ffe_id}",
+                f'  - Rating: {self.rating}',
+                f'  - FFE qualification: {self.ffe_id}',
             ]
         )
