@@ -3,7 +3,12 @@ from logging import Logger
 from chessevent.action_selector import ActionSelector
 from common.exception import PapiWebException
 from common.i18n import _
-from common.logger import get_logger, print_interactive_input, input_interactive, print_interactive_error
+from common.logger import (
+    get_logger,
+    print_interactive_input,
+    input_interactive,
+    print_interactive_error,
+)
 from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
@@ -13,6 +18,7 @@ logger: Logger = get_logger()
 
 class EventSelector(metaclass=Singleton):
     """The CLI interface to select an event."""
+
     def __init__(self):
         self.__silent: bool = False
 
@@ -29,12 +35,16 @@ class EventSelector(metaclass=Singleton):
         quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
         if len(events) == 1:
             event_num = 1
-            if input_interactive(_('One event found, press Enter (Q to quit): ')) == quit_answer:
+            if (
+                input_interactive(_('One event found, press Enter (Q to quit): '))
+                == quit_answer
+            ):
                 return False
         else:
             print_interactive_input(_('Please choose the event:'))
             version_choices = {
-                str(i + 1): f'{events[i].name} {events[i].uniq_id}' for i in range(len(events))
+                str(i + 1): f'{events[i].name} {events[i].uniq_id}'
+                for i in range(len(events))
             } | {
                 quit_answer: _('Quit'),
             }

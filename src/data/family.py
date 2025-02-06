@@ -16,10 +16,11 @@ if TYPE_CHECKING:
 
 class Family:
     """A data wrapper around a StoredFamily."""
+
     def __init__(
-            self,
-            event: 'Event',
-            stored_family: StoredFamily,
+        self,
+        event: 'Event',
+        stored_family: StoredFamily,
     ):
         self.event: 'Event' = event
         self.stored_family: StoredFamily = stored_family
@@ -46,7 +47,9 @@ class Family:
 
     @property
     def name(self) -> str:
-        name: str = self.stored_family.name if self.stored_family.name else _('%t (%f to %l)')
+        name: str = (
+            self.stored_family.name if self.stored_family.name else _('%t (%f to %l)')
+        )
         return name.replace('%t', self.tournament.name)
 
     @property
@@ -81,10 +84,12 @@ class Family:
         text: str
         if self.type == ScreenType.Players or not self.tournament.current_round:
             text = Screen.default_players_screen_menu_text(
-                single_tournament=single_tournament, first_last=True)
+                single_tournament=single_tournament, first_last=True
+            )
         else:
             text = Screen.default_boards_screen_menu_text(
-                single_tournament=single_tournament, first_last=True)
+                single_tournament=single_tournament, first_last=True
+            )
         return text.replace('%t', self.tournament.name)
 
     @property
@@ -141,7 +146,11 @@ class Family:
 
     @property
     def message_text(self) -> str | None:
-        return self.event.message_text if self.message_default else self.stored_family.message_text
+        return (
+            self.event.message_text
+            if self.message_default
+            else self.stored_family.message_text
+        )
 
     @property
     def last_update(self) -> float | None:
@@ -154,8 +163,9 @@ class Family:
     @cache
     def _calculate_screens(self) -> bool:
         if not self.tournament.rounds:
-            self.error = _('Tournament [{tournament_uniq_id}] can not be read, family ignored.').format(
-                tournament_uniq_id=self.tournament.uniq_id)
+            self.error = _(
+                'Tournament [{tournament_uniq_id}] can not be read, family ignored.'
+            ).format(tournament_uniq_id=self.tournament.uniq_id)
             self.event.add_warning(self.error, family=self)
             return False
         players_instead_of_boards: bool
@@ -166,9 +176,13 @@ class Family:
                     total_items_number: int = len(self.tournament.boards)
                     if self.first:
                         if self.first > total_items_number:
-                            self.error = _('Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored.').format(
-                                boards_number=total_items_number, tournament_uniq_id=self.tournament.uniq_id,
-                                first=self.first)
+                            self.error = _(
+                                'Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored.'
+                            ).format(
+                                boards_number=total_items_number,
+                                tournament_uniq_id=self.tournament.uniq_id,
+                                first=self.first,
+                            )
                             self.event.add_warning(self.error, family=self)
                             return False
                         self._calculated_first = self.first
@@ -178,26 +192,40 @@ class Family:
                         self._calculated_last = min(self.last, total_items_number)
                     else:
                         self._calculated_last = total_items_number
-                    cut_items_number = self._calculated_last - self._calculated_first + 1
+                    cut_items_number = (
+                        self._calculated_last - self._calculated_first + 1
+                    )
                 else:
                     players_instead_of_boards = True
-                    cut_items_number = len(self.tournament.players_by_name_with_unpaired)
+                    cut_items_number = len(
+                        self.tournament.players_by_name_with_unpaired
+                    )
                     self._calculated_first = 1
                     self._calculated_last = cut_items_number
             case ScreenType.Players:
                 players_instead_of_boards = False
                 if self.tournament.current_round:
                     if self.players_show_unpaired:
-                        total_items_number = len(self.tournament.players_by_name_with_unpaired)
+                        total_items_number = len(
+                            self.tournament.players_by_name_with_unpaired
+                        )
                     else:
-                        total_items_number = len(self.tournament.players_by_name_without_unpaired)
+                        total_items_number = len(
+                            self.tournament.players_by_name_without_unpaired
+                        )
                 else:
-                    total_items_number = len(self.tournament.players_by_name_with_unpaired)
+                    total_items_number = len(
+                        self.tournament.players_by_name_with_unpaired
+                    )
                 if self.first:
                     if self.first > total_items_number:
-                        self.error = _('Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored.').format(
-                            players_number=total_items_number, tournament_uniq_id=self.tournament.uniq_id,
-                            first=self.first)
+                        self.error = _(
+                            'Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored.'
+                        ).format(
+                            players_number=total_items_number,
+                            tournament_uniq_id=self.tournament.uniq_id,
+                            first=self.first,
+                        )
                         self.event.add_warning(self.error, family=self)
                         return False
                     self._calculated_first = self.first
@@ -211,8 +239,9 @@ class Family:
             case _:
                 raise ValueError(f'type={self.type}')
         if not cut_items_number:
-            self.error = _('Nothing to display for tournament [{tournament_uniq_id}], family ignored.').format(
-                tournament_uniq_id=self.tournament.uniq_id)
+            self.error = _(
+                'Nothing to display for tournament [{tournament_uniq_id}], family ignored.'
+            ).format(tournament_uniq_id=self.tournament.uniq_id)
             self.event.add_warning(self.error, family=self)
             return False
         # OK now we know the number of items and the number of the first item to take
@@ -230,8 +259,8 @@ class Family:
         # ensure that the number of items is divisible by the number of columns
         if self._calculated_number % divisor != 0:
             self._calculated_number = min(
-                (self._calculated_number // divisor + 1) * divisor,
-                cut_items_number)
+                (self._calculated_number // divisor + 1) * divisor, cut_items_number
+            )
         # recalculate the number of parts
         # (because the number of items by part may increase to fit the number of columns)
         self._calculated_parts = ceil(cut_items_number / self._calculated_number)
@@ -242,7 +271,9 @@ class Family:
         screens_by_uniq_id: dict[str, Screen] = {}
         if self._calculate_screens():
             for family_index in range(1, self.calculated_parts + 1):
-                screen: Screen = Screen(self.event, family=self, family_part=family_index)
+                screen: Screen = Screen(
+                    self.event, family=self, family_part=family_index
+                )
                 screens_by_uniq_id[screen.uniq_id] = screen
         return screens_by_uniq_id
 
@@ -276,29 +307,56 @@ class Family:
                     return _('boards from #{first} to end').format(first=first)
                 case (None, last, None, None) if last is not None:
                     return _('boards from start to #{last}').format(last=last)
-                case (first, last, None, None) if first is not None and last is not None:
-                    return _('boards from #{first} to #{last}').format(first=first, last=last)
+                case (first, last, None, None) if (
+                    first is not None and last is not None
+                ):
+                    return _('boards from #{first} to #{last}').format(
+                        first=first, last=last
+                    )
                 case (None, None, number, None) if number is not None:
                     return _('screens of {number} boards').format(number=number)
-                case (first, None, number, None) if first is not None and number is not None:
-                    return _('screens of {number} boards from #{first} to end').format(first=first, number=number)
-                case (None, last, number, None) if last is not None and number is not None:
-                    return _('screens of {number} boards from start to #{last}').format(last=last, number=number)
-                case (first, last, number, None) if first is not None and last is not None and number is not None:
-                    return _('screens of {number} boards from #{first} to #{last}').format(
-                        first=first, last=last, number=number)
+                case (first, None, number, None) if (
+                    first is not None and number is not None
+                ):
+                    return _('screens of {number} boards from #{first} to end').format(
+                        first=first, number=number
+                    )
+                case (None, last, number, None) if (
+                    last is not None and number is not None
+                ):
+                    return _('screens of {number} boards from start to #{last}').format(
+                        last=last, number=number
+                    )
+                case (first, last, number, None) if (
+                    first is not None and last is not None and number is not None
+                ):
+                    return _(
+                        'screens of {number} boards from #{first} to #{last}'
+                    ).format(first=first, last=last, number=number)
                 case (None, None, None, parts) if parts is not None:
                     return _('boards on {parts} screens').format(parts=parts)
-                case (first, None, None, parts) if first is not None and parts is not None:
-                    return _('boards from #{first} to end, on {parts} screens').format(first=first, parts=parts)
-                case (None, last, None, parts) if last is not None and parts is not None:
-                    return _('boards from start to #{last}, on {parts} screens').format(last=last, parts=parts)
-                case (first, last, None, parts) if first is not None and last is not None and parts is not None:
-                    return _('boards from #{first} to #{last}, on {parts} screens').format(
-                        first=first, last=last, parts=parts)
+                case (first, None, None, parts) if (
+                    first is not None and parts is not None
+                ):
+                    return _('boards from #{first} to end, on {parts} screens').format(
+                        first=first, parts=parts
+                    )
+                case (None, last, None, parts) if (
+                    last is not None and parts is not None
+                ):
+                    return _('boards from start to #{last}, on {parts} screens').format(
+                        last=last, parts=parts
+                    )
+                case (first, last, None, parts) if (
+                    first is not None and last is not None and parts is not None
+                ):
+                    return _(
+                        'boards from #{first} to #{last}, on {parts} screens'
+                    ).format(first=first, last=last, parts=parts)
                 case _:
                     raise ValueError(
-                        f'first={self.first}, last={self.last}, parts={self.parts}, number={self.number}')
+                        f'first={self.first}, last={self.last}, parts={self.parts}, number={self.number}'
+                    )
         else:
             match (self.first, self.last, self.number, self.parts):
                 case (None, None, None, None):
@@ -307,29 +365,56 @@ class Family:
                     return _('players from #{first} to end').format(first=first)
                 case (None, last, None, None) if last is not None:
                     return _('players from start to #{last}').format(last=last)
-                case (first, last, None, None) if first is not None and last is not None:
-                    return _('players from #{first} to #{last}').format(first=first, last=last)
+                case (first, last, None, None) if (
+                    first is not None and last is not None
+                ):
+                    return _('players from #{first} to #{last}').format(
+                        first=first, last=last
+                    )
                 case (None, None, number, None) if number is not None:
                     return _('screens of {number} players').format(number=number)
-                case (first, None, number, None) if first is not None and number is not None:
-                    return _('screens of {number} players from #{first} to end').format(first=first, number=number)
-                case (None, last, number, None) if last is not None and number is not None:
-                    return _('screens of {number} players from start to #{last}').format(last=last, number=number)
-                case (first, last, number, None) if first is not None and last is not None and number is not None:
-                    return _('screens of {number} players from #{first} to #{last}').format(
-                        first=first, last=last, number=number)
+                case (first, None, number, None) if (
+                    first is not None and number is not None
+                ):
+                    return _('screens of {number} players from #{first} to end').format(
+                        first=first, number=number
+                    )
+                case (None, last, number, None) if (
+                    last is not None and number is not None
+                ):
+                    return _(
+                        'screens of {number} players from start to #{last}'
+                    ).format(last=last, number=number)
+                case (first, last, number, None) if (
+                    first is not None and last is not None and number is not None
+                ):
+                    return _(
+                        'screens of {number} players from #{first} to #{last}'
+                    ).format(first=first, last=last, number=number)
                 case (None, None, None, parts) if parts is not None:
                     return _('players on {parts} screens').format(parts=parts)
-                case (first, None, None, parts) if first is not None and parts is not None:
-                    return _('players from #{first} to end, on {parts} screens').format(first=first, parts=parts)
-                case (None, last, None, parts) if last is not None and parts is not None:
-                    return _('players from start to #{last}, on {parts} screens').format(last=last, parts=parts)
-                case (first, last, None, parts) if first is not None and last is not None and parts is not None:
-                    return _('players from #{first} to #{last}, on {parts} screens').format(
-                        first=first, last=last, parts=parts)
+                case (first, None, None, parts) if (
+                    first is not None and parts is not None
+                ):
+                    return _('players from #{first} to end, on {parts} screens').format(
+                        first=first, parts=parts
+                    )
+                case (None, last, None, parts) if (
+                    last is not None and parts is not None
+                ):
+                    return _(
+                        'players from start to #{last}, on {parts} screens'
+                    ).format(last=last, parts=parts)
+                case (first, last, None, parts) if (
+                    first is not None and last is not None and parts is not None
+                ):
+                    return _(
+                        'players from #{first} to #{last}, on {parts} screens'
+                    ).format(first=first, last=last, parts=parts)
                 case _:
                     raise ValueError(
-                        f'first={self.first}, last={self.last}, parts={self.parts}, number={self.number}')
+                        f'first={self.first}, last={self.last}, parts={self.parts}, number={self.number}'
+                    )
 
     def __str__(self):
         return f'Tournament {self.tournament.uniq_id} ({self.numbers_str})'

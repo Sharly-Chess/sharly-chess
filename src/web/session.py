@@ -13,7 +13,6 @@ logger: logging.Logger = get_logger()
 
 
 class SessionHandler:
-
     AUTH_SESSION_KEY: str = 'auth'
 
     @classmethod
@@ -33,8 +32,15 @@ class SessionHandler:
 
     @classmethod
     def set_session_last_result_updated(
-            cls, request: HTMXRequest, tournament_id: int, round: int, board_id: int, ):
-        request.session[cls.LAST_RESULT_UPDATED_SESSION_KEY]: dict[str, int | str | float] = {
+        cls,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        board_id: int,
+    ):
+        request.session[cls.LAST_RESULT_UPDATED_SESSION_KEY]: dict[
+            str, int | str | float
+        ] = {
             'tournament_id': tournament_id,
             'round': round,
             'board_id': board_id,
@@ -48,8 +54,15 @@ class SessionHandler:
     USER_LAST_ILLEGAL_MOVE_UPDATED_KEY: str = 'user_last_illegal_move_updated'
 
     @classmethod
-    def set_session_user_last_illegal_move_updated(cls, request: HTMXRequest, tournament_id: int, player_id: int, ):
-        request.session[cls.USER_LAST_ILLEGAL_MOVE_UPDATED_KEY]: dict[str, int | str | float] = {
+    def set_session_user_last_illegal_move_updated(
+        cls,
+        request: HTMXRequest,
+        tournament_id: int,
+        player_id: int,
+    ):
+        request.session[cls.USER_LAST_ILLEGAL_MOVE_UPDATED_KEY]: dict[
+            str, int | str | float
+        ] = {
             'tournament_id': tournament_id,
             'player_id': player_id,
             'expiration': time.time() + 20,
@@ -62,8 +75,15 @@ class SessionHandler:
     USER_LAST_CHECK_IN_UPDATED_KEY: str = 'user_last_check_in_updated'
 
     @classmethod
-    def set_session_user_last_check_in_updated(cls, request: HTMXRequest, tournament_id: int, player_id: int, ):
-        request.session[cls.USER_LAST_CHECK_IN_UPDATED_KEY]: dict[str, int | str | float] = {
+    def set_session_user_last_check_in_updated(
+        cls,
+        request: HTMXRequest,
+        tournament_id: int,
+        player_id: int,
+    ):
+        request.session[cls.USER_LAST_CHECK_IN_UPDATED_KEY]: dict[
+            str, int | str | float
+        ] = {
             'tournament_id': tournament_id,
             'player_id': player_id,
             'expiration': time.time() + 20,
@@ -76,11 +96,15 @@ class SessionHandler:
     ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY: str = 'admin_screens_show_family_screens'
 
     @classmethod
-    def set_session_admin_screens_show_family_screens(cls, request: HTMXRequest, b: bool):
+    def set_session_admin_screens_show_family_screens(
+        cls, request: HTMXRequest, b: bool
+    ):
         request.session[cls.ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY]: bool = b
 
     @classmethod
-    def get_session_admin_screens_show_family_screens(cls, request: HTMXRequest) -> bool:
+    def get_session_admin_screens_show_family_screens(
+        cls, request: HTMXRequest
+    ) -> bool:
         return request.session.get(cls.ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY, False)
 
     ADMIN_SCREENS_SHOW_DETAILS_KEY: str = 'admin_screens_show_details'
@@ -116,13 +140,17 @@ class SessionHandler:
     ADMIN_SCREENS_SCREEN_TYPES_KEY: str = 'admin_screens_screen_types'
 
     @classmethod
-    def set_session_admin_screens_screen_types(cls, request: HTMXRequest, screen_types: list[str]):
+    def set_session_admin_screens_screen_types(
+        cls, request: HTMXRequest, screen_types: list[str]
+    ):
         request.session[cls.ADMIN_SCREENS_SCREEN_TYPES_KEY]: list[str] = screen_types
 
     @classmethod
     def get_session_admin_screens_screen_types(cls, request: HTMXRequest) -> list[str]:
         return request.session.get(
-            cls.ADMIN_SCREENS_SCREEN_TYPES_KEY, ['boards', 'input', 'players', 'results', 'image'])
+            cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
+            ['boards', 'input', 'players', 'results', 'image'],
+        )
 
     LOCALE_KEY: str = 'locale'
 
@@ -139,7 +167,14 @@ class SessionHandler:
     @classmethod
     def set_session_admin_players_sort(cls, request: HTMXRequest, players_sort: str):
         assert players_sort in [
-            'alpha', 'rating_desc', 'rating_asc', 'yob_desc', 'yob_asc', 'category_desc', 'category_asc', 'origin',
+            'alpha',
+            'rating_desc',
+            'rating_asc',
+            'yob_desc',
+            'yob_asc',
+            'category_desc',
+            'category_asc',
+            'origin',
             'tournament',
         ]
         request.session[cls.ADMIN_PLAYERS_SORT_KEY]: str = players_sort
@@ -152,22 +187,33 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_players_filter_columns(
-            cls, request: HTMXRequest, columns: list[str]):
+        cls, request: HTMXRequest, columns: list[str]
+    ):
         request.session[cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY]: list[str] = columns
 
     @classmethod
-    def get_session_admin_players_filter_columns(cls, request: HTMXRequest) -> list[str]:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY, PapiWebConfig.default_players_filter_columns)
+    def get_session_admin_players_filter_columns(
+        cls, request: HTMXRequest
+    ) -> list[str]:
+        return request.session.get(
+            cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY,
+            PapiWebConfig.default_players_filter_columns,
+        )
 
     ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY: str = 'admin_players_filter_federations'
 
     @classmethod
     def set_session_admin_players_filter_federations(
-            cls, request: HTMXRequest, federation_tuples: list[FederationTuple]):
-        request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY]: list[FederationTuple] = federation_tuples
+        cls, request: HTMXRequest, federation_tuples: list[FederationTuple]
+    ):
+        request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY]: list[
+            FederationTuple
+        ] = federation_tuples
 
     @classmethod
-    def get_session_admin_players_filter_federations(cls, request: HTMXRequest) -> list[FederationTuple]:
+    def get_session_admin_players_filter_federations(
+        cls, request: HTMXRequest
+    ) -> list[FederationTuple]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
@@ -178,41 +224,63 @@ class SessionHandler:
     ADMIN_PLAYERS_FILTER_LEAGUES_KEY: str = 'admin_players_filter_leagues'
 
     @classmethod
-    def set_session_admin_players_filter_leagues(cls, request: HTMXRequest, league_tuples: list[LeagueTuple]):
-        request.session[cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY]: list[LeagueTuple] = league_tuples
+    def set_session_admin_players_filter_leagues(
+        cls, request: HTMXRequest, league_tuples: list[LeagueTuple]
+    ):
+        request.session[cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY]: list[LeagueTuple] = (
+            league_tuples
+        )
 
     @classmethod
-    def get_session_admin_players_filter_leagues(cls, request: HTMXRequest) -> list[LeagueTuple]:
+    def get_session_admin_players_filter_leagues(
+        cls, request: HTMXRequest
+    ) -> list[LeagueTuple]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, LeagueTuple) else LeagueTuple(d['federation'], d['league'])
+            d
+            if isinstance(d, LeagueTuple)
+            else LeagueTuple(d['federation'], d['league'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY, [])
         ]
 
     ADMIN_PLAYERS_FILTER_CLUBS_KEY: str = 'admin_players_filter_clubs'
 
     @classmethod
-    def set_session_admin_players_filter_clubs(cls, request: HTMXRequest, club_tuples: list[ClubTuple]):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY]: list[ClubTuple] = club_tuples
+    def set_session_admin_players_filter_clubs(
+        cls, request: HTMXRequest, club_tuples: list[ClubTuple]
+    ):
+        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY]: list[ClubTuple] = (
+            club_tuples
+        )
 
     @classmethod
-    def get_session_admin_players_filter_clubs(cls, request: HTMXRequest) -> list[ClubTuple]:
+    def get_session_admin_players_filter_clubs(
+        cls, request: HTMXRequest
+    ) -> list[ClubTuple]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, ClubTuple) else ClubTuple(d['federation'], d['league'], d['club'])
+            d
+            if isinstance(d, ClubTuple)
+            else ClubTuple(d['federation'], d['league'], d['club'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
 
     ADMIN_PLAYERS_FILTER_GENDERS_KEY: str = 'admin_players_filter_genders'
 
     @classmethod
-    def set_session_admin_players_filter_genders(cls, request: HTMXRequest, genders: list[PlayerGender]):
-        request.session[cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY]: list[PlayerGender] = genders
+    def set_session_admin_players_filter_genders(
+        cls, request: HTMXRequest, genders: list[PlayerGender]
+    ):
+        request.session[cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY]: list[PlayerGender] = (
+            genders
+        )
 
     @classmethod
-    def get_session_admin_players_filter_genders(cls, request: HTMXRequest) -> list[PlayerGender]:
+    def get_session_admin_players_filter_genders(
+        cls, request: HTMXRequest
+    ) -> list[PlayerGender]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
@@ -223,11 +291,17 @@ class SessionHandler:
     ADMIN_PLAYERS_FILTER_LICENCES_KEY: str = 'admin_players_filter_licences'
 
     @classmethod
-    def set_session_admin_players_filter_licences(cls, request: HTMXRequest, licences: list[PlayerFFELicence]):
-        request.session[cls.ADMIN_PLAYERS_FILTER_LICENCES_KEY]: list[PlayerFFELicence] = licences
+    def set_session_admin_players_filter_licences(
+        cls, request: HTMXRequest, licences: list[PlayerFFELicence]
+    ):
+        request.session[cls.ADMIN_PLAYERS_FILTER_LICENCES_KEY]: list[
+            PlayerFFELicence
+        ] = licences
 
     @classmethod
-    def get_session_admin_players_filter_licences(cls, request: HTMXRequest) -> list[PlayerFFELicence]:
+    def get_session_admin_players_filter_licences(
+        cls, request: HTMXRequest
+    ) -> list[PlayerFFELicence]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
@@ -238,31 +312,47 @@ class SessionHandler:
     ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'
 
     @classmethod
-    def set_session_admin_players_filter_check_ins(cls, request: HTMXRequest, check_ins: list[bool | None]):
+    def set_session_admin_players_filter_check_ins(
+        cls, request: HTMXRequest, check_ins: list[bool | None]
+    ):
         request.session[cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY]: list[bool] = check_ins
 
     @classmethod
-    def get_session_admin_players_filter_check_ins(cls, request: HTMXRequest) -> list[bool | None]:
+    def get_session_admin_players_filter_check_ins(
+        cls, request: HTMXRequest
+    ) -> list[bool | None]:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY, [])
 
     ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY: str = 'admin_players_filter_tournaments'
 
     @classmethod
-    def set_session_admin_players_filter_tournaments(cls, request: HTMXRequest, tournament_ids: list[int]):
-        request.session[cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY]: list[int] = tournament_ids
+    def set_session_admin_players_filter_tournaments(
+        cls, request: HTMXRequest, tournament_ids: list[int]
+    ):
+        request.session[cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY]: list[int] = (
+            tournament_ids
+        )
 
     @classmethod
-    def get_session_admin_players_filter_tournaments(cls, request: HTMXRequest) -> list[int]:
+    def get_session_admin_players_filter_tournaments(
+        cls, request: HTMXRequest
+    ) -> list[int]:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY, [])
 
     ADMIN_PLAYERS_FILTER_CATEGORIES_KEY: str = 'admin_players_filter_categories'
 
     @classmethod
-    def set_session_admin_players_filter_categories(cls, request: HTMXRequest, categories: list[PlayerCategory]):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY]: list[PlayerCategory] = categories
+    def set_session_admin_players_filter_categories(
+        cls, request: HTMXRequest, categories: list[PlayerCategory]
+    ):
+        request.session[cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY]: list[
+            PlayerCategory
+        ] = categories
 
     @classmethod
-    def get_session_admin_players_filter_categories(cls, request: HTMXRequest) -> list[PlayerCategory]:
+    def get_session_admin_players_filter_categories(
+        cls, request: HTMXRequest
+    ) -> list[PlayerCategory]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [

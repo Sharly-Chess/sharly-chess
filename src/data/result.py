@@ -13,6 +13,7 @@ logger: Logger = get_logger()
 @total_ordering
 class Result:
     """A representation of a result entered in Papi-web."""
+
     timestamp: float
     tournament_id: int
     round: int
@@ -38,8 +39,10 @@ class Result:
         return self.timestamp == other.timestamp
 
     def __repr__(self):
-        return (f'{self.__class__.__name__}('
-                f'{self.timestamp_str} {self.tournament_id}.{self.board_id} '
-                f'{self.white_player_id} '
-                f'{self.result_str} '
-                f'{self.black_player_id})')
+        return (
+            f'{self.__class__.__name__}('
+            f'{self.timestamp_str} {self.tournament_id}.{self.board_id} '
+            f'{self.white_player_id} '
+            f'{self.result_str} '
+            f'{self.black_player_id})'
+        )

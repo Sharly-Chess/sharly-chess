@@ -59,16 +59,21 @@ class EventLoader:
             return self._loaded_stored_events_by_id[uniq_id]
         except KeyError:
             with EventDatabase(uniq_id) as event_database:
-                self._loaded_stored_events_by_id[uniq_id] = event_database.load_stored_event()
+                self._loaded_stored_events_by_id[uniq_id] = (
+                    event_database.load_stored_event()
+                )
             return self._loaded_stored_events_by_id[uniq_id]
 
     @cached_property
     def event_uniq_ids(self) -> list[str]:
-        return [file.stem for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_ext}')]
+        return [
+            file.stem
+            for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_ext}')
+        ]
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
-        """ Returns the first unused event uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1... """
+        """Returns the first unused event uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
         index: int
         uniq_id: str
         base_uniq_id = unicode_normalize(base_uniq_id)
@@ -85,8 +90,8 @@ class EventLoader:
         return uniq_id
 
     def get_unused_event_name(self, base_name: str) -> str:
-        """ Returns the first unused event name looking like base_name:
-        base_name, or base_name (2), or base_name (n+1)... """
+        """Returns the first unused event name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
         index: int
         name: str
         if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
@@ -104,7 +109,9 @@ class EventLoader:
 
     @cached_property
     def stored_events_by_id(self) -> dict[str, StoredEvent]:
-        return {uniq_id: self.load_stored_event(uniq_id) for uniq_id in self.event_uniq_ids}
+        return {
+            uniq_id: self.load_stored_event(uniq_id) for uniq_id in self.event_uniq_ids
+        }
 
     @cached_property
     def stored_events_sorted_by_name(self) -> list[StoredEvent]:
@@ -142,58 +149,84 @@ class EventLoader:
 
     @cached_property
     def events_with_tournaments_sorted_by_name(self) -> list[Event]:
-        return [event for event in self.events_sorted_by_name if event.tournaments_by_id]
+        return [
+            event for event in self.events_sorted_by_name if event.tournaments_by_id
+        ]
 
     @cached_property
     def passed_events(self) -> list[Event]:
-        return sorted([
-            event for event in self.events_by_id.values()
-            if event.stop < time.time()
-        ], key=lambda event: (-event.stop, -event.start, event.name))
+        return sorted(
+            [event for event in self.events_by_id.values() if event.stop < time.time()],
+            key=lambda event: (-event.stop, -event.start, event.name),
+        )
 
     @cached_property
     def current_events(self) -> list[Event]:
-        return sorted([
-            event for event in self.events_by_id.values()
-            if event.start < time.time() < event.stop
-        ], key=lambda event: (event.stop, event.start, event.name))
+        return sorted(
+            [
+                event
+                for event in self.events_by_id.values()
+                if event.start < time.time() < event.stop
+            ],
+            key=lambda event: (event.stop, event.start, event.name),
+        )
 
     @cached_property
     def coming_events(self) -> list[Event]:
-        return sorted([
-            event for event in self.events_by_id.values()
-            if time.time() < event.start
-        ], key=lambda event: (event.stop, event.start, event.name))
+        return sorted(
+            [
+                event
+                for event in self.events_by_id.values()
+                if time.time() < event.start
+            ],
+            key=lambda event: (event.stop, event.start, event.name),
+        )
 
     @cached_property
     def public_events(self) -> list[Event]:
-        return sorted(filter(attrgetter('public'), self.events_by_id.values()), key=attrgetter('name'))
+        return sorted(
+            filter(attrgetter('public'), self.events_by_id.values()),
+            key=attrgetter('name'),
+        )
 
     @cached_property
     def passed_public_events(self) -> list[Event]:
-        return sorted([
-            event for event in self.events_by_id.values()
-            if event.public and event.stop < time.time()
-        ], key=lambda event: (-event.stop, -event.start, event.name))
+        return sorted(
+            [
+                event
+                for event in self.events_by_id.values()
+                if event.public and event.stop < time.time()
+            ],
+            key=lambda event: (-event.stop, -event.start, event.name),
+        )
 
     @cached_property
     def current_public_events(self) -> list[Event]:
-        return sorted([
-            event for event in self.events_by_id.values()
-            if event.public and event.start < time.time() < event.stop
-        ], key=lambda event: (-event.stop, -event.start, event.name))
+        return sorted(
+            [
+                event
+                for event in self.events_by_id.values()
+                if event.public and event.start < time.time() < event.stop
+            ],
+            key=lambda event: (-event.stop, -event.start, event.name),
+        )
 
     @cached_property
     def coming_public_events(self) -> list[Event]:
-        return sorted([
-            event for event in self.events_by_id.values()
-            if event.public and time.time() < event.start
-        ], key=lambda event: (-event.stop, -event.start, event.name))
+        return sorted(
+            [
+                event
+                for event in self.events_by_id.values()
+                if event.public and time.time() < event.start
+            ],
+            key=lambda event: (-event.stop, -event.start, event.name),
+        )
 
 
 @dataclass
 class Archive:
-    """ This class implements archives (deleted events). """
+    """This class implements archives (deleted events)."""
+
     file: Path
     name: str
     date: float
@@ -222,7 +255,10 @@ class ArchiveLoader:
 
     @cached_property
     def archives_sorted_by_date(self) -> list[Archive]:
-        return sorted([
-                          Archive(file, file.stem, file.lstat().st_ctime)
-                          for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.arch_ext}')
-                      ], key=lambda archive: archive.date)
+        return sorted(
+            [
+                Archive(file, file.stem, file.lstat().st_ctime)
+                for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.arch_ext}')
+            ],
+            key=lambda archive: archive.date,
+        )

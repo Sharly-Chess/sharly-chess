@@ -2,19 +2,29 @@ from logging import Logger
 
 from common.logger import get_logger
 from data.chessevent_player import ChessEventPlayer
-from data.util import TournamentType, TournamentPairing, TournamentTieBreak, TournamentRating
+from data.util import (
+    TournamentType,
+    TournamentPairing,
+    TournamentTieBreak,
+    TournamentRating,
+)
 
 logger: Logger = get_logger()
 
 
 class ChessEventTournament:
     """A class representing all the data of a ChessEvent tournament."""
+
     def __init__(
-            self,
-            chessevent_tournament_info: dict[
-                str,
-                str | int | float | list[dict[str, bool | str | int | dict[int, float] | None]]
-            ]):
+        self,
+        chessevent_tournament_info: dict[
+            str,
+            str
+            | int
+            | float
+            | list[dict[str, bool | str | int | dict[int, float] | None]],
+        ],
+    ):
         self.name: str = ''
         self.type: TournamentType = TournamentType.UNKNOWN
         self.rounds: int = 0
@@ -24,7 +34,9 @@ class ChessEventTournament:
         self.arbiter: str = ''
         self.start: float = 0.0
         self.end: float = 0.0
-        self.tie_breaks: list[TournamentTieBreak] = [TournamentTieBreak.NONE, ] * 3
+        self.tie_breaks: list[TournamentTieBreak] = [
+            TournamentTieBreak.NONE,
+        ] * 3
         self.rating: TournamentRating = TournamentRating.STANDARD
         self.ffe_id: int = 0
         self.players: list[ChessEventPlayer] = []
@@ -37,7 +49,9 @@ class ChessEventTournament:
             self.rounds = int(chessevent_tournament_info[key := 'rounds'])
             if self.rounds not in range(25):  # the 0-value is set by default later
                 raise ValueError
-            self.pairing = TournamentPairing(int(chessevent_tournament_info[key := 'pairing']))
+            self.pairing = TournamentPairing(
+                int(chessevent_tournament_info[key := 'pairing'])
+            )
             self.time_control = str(chessevent_tournament_info[key := 'time_control'])
             self.location = str(chessevent_tournament_info[key := 'location'])
             self.arbiter = str(chessevent_tournament_info[key := 'arbiter'])
@@ -46,14 +60,20 @@ class ChessEventTournament:
             for tie_break_index in range(3):
                 key = f'tie_break_{tie_break_index + 1}'
                 if chessevent_tournament_info[key]:
-                    self.tie_breaks[tie_break_index] = TournamentTieBreak(int(chessevent_tournament_info[key]))
-            self.rating = TournamentRating(int(chessevent_tournament_info[key := 'rating']))
+                    self.tie_breaks[tie_break_index] = TournamentTieBreak(
+                        int(chessevent_tournament_info[key])
+                    )
+            self.rating = TournamentRating(
+                int(chessevent_tournament_info[key := 'rating'])
+            )
             ffe_id = chessevent_tournament_info[key := 'ffe_id']
             if ffe_id:
                 self.ffe_id = int(ffe_id)
             key = 'players'
             for chessevent_player_info in chessevent_tournament_info[key]:
-                chessevent_player: ChessEventPlayer = ChessEventPlayer(chessevent_player_info)
+                chessevent_player: ChessEventPlayer = ChessEventPlayer(
+                    chessevent_player_info
+                )
                 if chessevent_player.check_in:
                     self.check_in_started = True
                 if chessevent_player.error:
@@ -65,7 +85,9 @@ class ChessEventTournament:
         except (TypeError, ValueError):
             logger.error(
                 'Invalid value [%s] for field [%s] in the ChessEvent response',
-                chessevent_tournament_info[key], key)
+                chessevent_tournament_info[key],
+                key,
+            )
             return
         self.error = False
 
@@ -80,10 +102,12 @@ class ChessEventTournament:
                 f'  - Location: {self.location}',
                 f'  - Arbiter: {self.arbiter}',
                 f'  - Dates: {self.start} - {self.end}',
-            ] + [
+            ]
+            + [
                 f'  - Tie-break #{tie_break_index} : {self.tie_breaks[tie_break_index]}'
                 for tie_break_index in range(1, 4)
-            ] + [
+            ]
+            + [
                 f'  - Rating: {self.rating}',
                 f'  - FFE qualification: {self.ffe_id}',
             ]

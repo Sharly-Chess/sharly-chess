@@ -47,17 +47,21 @@ class FfeAccessDatabase(AccessDatabase):
         }
         # the fields for players with a club
         no_club_fields: dict[str, tuple[str, types.FunctionType]] = common_fields | {
-            'club': '\'\'',  # str
-            'league': '\'\'',  # str
-            'city': '\'\'',  # str
+            'club': "''",  # str
+            'league': "''",  # str
+            'city': "''",  # str
         }
         club_query_fields = (
-            f'{field_name} AS {field_as}' for field_as, field_name in club_fields.items()
+            f'{field_name} AS {field_as}'
+            for field_as, field_name in club_fields.items()
         )
         club_query: str = f'SELECT {", ".join(club_query_fields)} FROM joueur INNER JOIN club ON joueur.ClubRef = club.Ref'
         no_club_query_fields = (
-            f'{field_name} AS {field_as}' for field_as, field_name in no_club_fields.items()
+            f'{field_name} AS {field_as}'
+            for field_as, field_name in no_club_fields.items()
         )
-        no_club_query: str = f'SELECT {", ".join(no_club_query_fields)} FROM joueur WHERE ClubRef = 0'
+        no_club_query: str = (
+            f'SELECT {", ".join(no_club_query_fields)} FROM joueur WHERE ClubRef = 0'
+        )
         self._execute(f'({club_query}) UNION ({no_club_query})')
         return self._fetchall()

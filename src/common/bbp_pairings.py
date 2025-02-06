@@ -6,7 +6,6 @@ from typing import TextIO
 import trf
 
 from common import TMP_DIR, BASE_DIR
-from common.i18n import _
 from data.pairing import Pairing
 from data.tournament import Tournament
 from data.util import TrfType, Result, BoardColor
@@ -14,10 +13,10 @@ from data.util import TrfType, Result, BoardColor
 
 class BbpPairings:
     EXEMPT_ID = 0
-    PROJECT_URL = "https://github.com/BieremaBoyzProgramming/bbpPairings"
-    VERSION = "v5.0.1"
-    WINDOWS_BUILD = "x86_64-pc-windows.zip"
-    LINUX_BUILD = "x86_64-pc-linux.tar.gz"
+    PROJECT_URL = 'https://github.com/BieremaBoyzProgramming/bbpPairings'
+    VERSION = 'v5.0.1'
+    WINDOWS_BUILD = 'x86_64-pc-windows.zip'
+    LINUX_BUILD = 'x86_64-pc-linux.tar.gz'
 
     @property
     def is_installed(self) -> bool:
@@ -25,7 +24,9 @@ class BbpPairings:
 
     @property
     def executable_path(self) -> Path:
-        return BASE_DIR / 'resources' / f'bbpPairings-{self.VERSION}' / 'bbpPairings.exe'
+        return (
+            BASE_DIR / 'resources' / f'bbpPairings-{self.VERSION}' / 'bbpPairings.exe'
+        )
 
     def generate_pairings(self, tournament: Tournament):
         """Generate the pairings of a tournament's next round"""
@@ -33,7 +34,8 @@ class BbpPairings:
             raise ValueError(
                 'Impossible to generate pairings '
                 'if tournament is finished '
-                'or if a round is ongoing.')
+                'or if a round is ongoing.'
+            )
 
         trf_file_path = TMP_DIR / 'tournament.trfx'
         pairings_file_path = TMP_DIR / 'pairings.txt'
@@ -43,9 +45,13 @@ class BbpPairings:
             subprocess.run(
                 [
                     self.executable_path,
-                    "--dutch", trf_file_path,
-                    "-p", pairings_file_path],
-                check=True)
+                    '--dutch',
+                    trf_file_path,
+                    '-p',
+                    pairings_file_path,
+                ],
+                check=True,
+            )
         finally:
             os.remove(trf_file_path)
         try:
@@ -64,9 +70,12 @@ class BbpPairings:
             if black_trf_id != self.EXEMPT_ID:
                 black_player = tournament.players_by_trf_id[black_trf_id]
                 white_player.pairings[next_round] = Pairing(
-                    BoardColor.WHITE, black_player.id, Result.NO_RESULT)
+                    BoardColor.WHITE, black_player.id, Result.NO_RESULT
+                )
                 black_player.pairings[next_round] = Pairing(
-                    BoardColor.BLACK, white_player.id, Result.NO_RESULT)
+                    BoardColor.BLACK, white_player.id, Result.NO_RESULT
+                )
             else:
                 white_player.pairings[next_round] = Pairing(
-                    BoardColor.WHITE, 1, Result.PAIRING_ALLOCATED_BYE)
+                    BoardColor.WHITE, 1, Result.PAIRING_ALLOCATED_BYE
+                )

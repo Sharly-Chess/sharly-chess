@@ -1,14 +1,24 @@
 from logging import Logger
 
 from common.logger import get_logger
-from data.util import PlayerGender, PlayerCategory, PlayerRatingType, PlayerTitle, PlayerFFELicence
+from data.util import (
+    PlayerGender,
+    PlayerCategory,
+    PlayerRatingType,
+    PlayerTitle,
+    PlayerFFELicence,
+)
 
 logger: Logger = get_logger()
 
 
 class ChessEventPlayer:
     """A class representing a player information on ChessEvent."""
-    def __init__(self, chessevent_player_info: dict[str, bool | str | int | dict[int, float] | None]):
+
+    def __init__(
+        self,
+        chessevent_player_info: dict[str, bool | str | int | dict[int, float] | None],
+    ):
         self.last_name: str = ''
         self.first_name: str = ''
         self.federation: str = ''
@@ -50,8 +60,12 @@ class ChessEventPlayer:
                 self.gender = PlayerGender(int(chessevent_player_info[key]))
             self.birth = float(chessevent_player_info[key := 'birth'])
             self.ffe_id = int(chessevent_player_info[key := 'ffe_id'])
-            self.ffe_license = PlayerFFELicence.from_chessevent_value(int(chessevent_player_info[key := 'ffe_license']))
-            self.ffe_license_number = str(chessevent_player_info[key := 'ffe_license_number'])
+            self.ffe_license = PlayerFFELicence.from_chessevent_value(
+                int(chessevent_player_info[key := 'ffe_license'])
+            )
+            self.ffe_license_number = str(
+                chessevent_player_info[key := 'ffe_license_number']
+            )
             self.ffe_league = str(chessevent_player_info[key := 'ffe_league'])
             key = 'ffe_club_id'
             if chessevent_player_info[key]:
@@ -64,11 +78,17 @@ class ChessEventPlayer:
             if chessevent_player_info[key]:
                 self.category = PlayerCategory(int(chessevent_player_info[key]))
             self.standard_rating = int(chessevent_player_info[key := 'standard_rating'])
-            self.standard_rating_type = PlayerRatingType(int(chessevent_player_info[key := 'standard_rating_type']))
+            self.standard_rating_type = PlayerRatingType(
+                int(chessevent_player_info[key := 'standard_rating_type'])
+            )
             self.rapid_rating = int(chessevent_player_info[key := 'rapid_rating'])
-            self.rapide_rating_type = PlayerRatingType(int(chessevent_player_info[key := 'rapid_rating_type']))
+            self.rapide_rating_type = PlayerRatingType(
+                int(chessevent_player_info[key := 'rapid_rating_type'])
+            )
             self.blitz_rating = int(chessevent_player_info[key := 'blitz_rating'])
-            self.blitz_rating_type = PlayerRatingType(int(chessevent_player_info[key := 'blitz_rating_type']))
+            self.blitz_rating_type = PlayerRatingType(
+                int(chessevent_player_info[key := 'blitz_rating_type'])
+            )
             self.title = PlayerTitle(int(chessevent_player_info[key := 'title']))
             self.email = str(chessevent_player_info[key := 'email'])
             self.phone = str(chessevent_player_info[key := 'phone'])
@@ -79,17 +99,30 @@ class ChessEventPlayer:
             self.skipped_rounds: dict[int, float] = {}
             key = 'skipped_rounds'
             for round_ in chessevent_player_info[key]:
-                if int(round_) in range(1, 25) and chessevent_player_info[key][round_] in [0.0, 0.5]:
-                    self.skipped_rounds[int(round_)] = chessevent_player_info[key][round_]
+                if int(round_) in range(1, 25) and chessevent_player_info[key][
+                    round_
+                ] in [0.0, 0.5]:
+                    self.skipped_rounds[int(round_)] = chessevent_player_info[key][
+                        round_
+                    ]
                 else:
                     raise ValueError
         except KeyError:
-            logger.error('Field [%s] not found for player [%s %s]', key, self.last_name, self.first_name)
+            logger.error(
+                'Field [%s] not found for player [%s %s]',
+                key,
+                self.last_name,
+                self.first_name,
+            )
             return
         except (TypeError, ValueError):
             logger.error(
                 'Invalid value [%s] for field [%s] for player [%s %s]',
-                chessevent_player_info[key], key, self.last_name, self.first_name)
+                chessevent_player_info[key],
+                key,
+                self.last_name,
+                self.first_name,
+            )
             return
         self.error = False
 

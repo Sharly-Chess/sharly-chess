@@ -15,7 +15,10 @@ from data.loader import EventLoader
 from data.rotator import Rotator
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredRotator
-from web.controllers.admin.event_admin_controller import EventAdminWebContext, AbstractEventAdminController
+from web.controllers.admin.event_admin_controller import (
+    EventAdminWebContext,
+    AbstractEventAdminController,
+)
 from web.controllers.index_controller import WebContext
 from web.messages import Message
 
@@ -24,13 +27,23 @@ logger: Logger = get_logger()
 
 class RotatorAdminWebContext(EventAdminWebContext):
     def __init__(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            admin_event_tab: str | None,
-            rotator_id: int | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ] | None,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        admin_event_tab: str | None,
+        rotator_id: int | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ]
+        | None,
     ):
-        super().__init__(request, data=data, event_uniq_id=event_uniq_id, admin_event_tab=admin_event_tab)
+        super().__init__(
+            request,
+            data=data,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab=admin_event_tab,
+        )
         self.admin_rotator: Rotator | None = None
         if self.error:
             return
@@ -49,12 +62,11 @@ class RotatorAdminWebContext(EventAdminWebContext):
 
 
 class RotatorAdminController(AbstractEventAdminController):
-
     @staticmethod
     def _admin_validate_rotator_update_data(
-            action: str,
-            web_context: RotatorAdminWebContext,
-            data: dict[str, str] | None = None,
+        action: str,
+        web_context: RotatorAdminWebContext,
+        data: dict[str, str] | None = None,
     ) -> StoredRotator:
         errors: dict[str, str] = {}
         if data is None:
@@ -67,7 +79,9 @@ class RotatorAdminController(AbstractEventAdminController):
         message_text: str | None = None
         screen_ids: list[int] | None = None
         family_ids: list[int] | None = None
-        if action in ['delete', ]:
+        if action in [
+            'delete',
+        ]:
             pass
         else:
             if not uniq_id:
@@ -76,11 +90,17 @@ class RotatorAdminController(AbstractEventAdminController):
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.rotators_by_uniq_id:
-                            errors[field] = _('Rotator [{uniq_id}] already exists.').format(uniq_id=uniq_id)
+                            errors[field] = _(
+                                'Rotator [{uniq_id}] already exists.'
+                            ).format(uniq_id=uniq_id)
                     case 'update':
-                        if uniq_id != web_context.admin_rotator.uniq_id \
-                                and uniq_id in web_context.admin_event.rotators_by_uniq_id:
-                            errors[field] = _('Rotator [{uniq_id}] already exists.').format(uniq_id=uniq_id)
+                        if (
+                            uniq_id != web_context.admin_rotator.uniq_id
+                            and uniq_id in web_context.admin_event.rotators_by_uniq_id
+                        ):
+                            errors[field] = _(
+                                'Rotator [{uniq_id}] already exists.'
+                            ).format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
             public: bool = WebContext.form_data_to_bool(data, 'public')
@@ -103,7 +123,9 @@ class RotatorAdminController(AbstractEventAdminController):
                     if WebContext.form_data_to_bool(data, field):
                         family_ids.append(family_id)
                 field = 'message_text'
-                message_default = WebContext.form_data_to_bool(data, field + '_checkbox', False)
+                message_default = WebContext.form_data_to_bool(
+                    data, field + '_checkbox', False
+                )
                 if message_default and web_context.admin_rotator:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
@@ -115,7 +137,13 @@ class RotatorAdminController(AbstractEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
         return StoredRotator(
-            id=web_context.admin_rotator.id if action not in ['create', 'clone', ] else None,
+            id=web_context.admin_rotator.id
+            if action
+            not in [
+                'create',
+                'clone',
+            ]
+            else None,
             uniq_id=uniq_id,
             public=public,
             delay=delay,
@@ -128,19 +156,27 @@ class RotatorAdminController(AbstractEventAdminController):
 
     @classmethod
     def _admin_event_rotators_render(
-            cls, request: HTMXRequest,
-            event_uniq_id: str,
-            modal: str | None = None,
-            action: str | None = None,
-            rotator_id: int | None = None,
-            data: dict[str, str] | None = None,
-            errors: dict[str, str] | None = None,
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        modal: str | None = None,
+        action: str | None = None,
+        rotator_id: int | None = None,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: RotatorAdminWebContext = RotatorAdminWebContext(
-            request, event_uniq_id=event_uniq_id, admin_event_tab='rotators', rotator_id=rotator_id, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab='rotators',
+            rotator_id=rotator_id,
+            data=data,
+        )
         if web_context.error:
             return web_context.error
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(web_context)
+        template_context: dict[str, Any] = cls._get_admin_event_render_context(
+            web_context
+        )
         match modal:
             case None:
                 pass
@@ -157,10 +193,15 @@ class RotatorAdminController(AbstractEventAdminController):
                         case 'update':
                             uniq_id = web_context.admin_rotator.stored_rotator.uniq_id
                         case 'create':
-                            uniq_id = web_context.admin_event.get_unused_rotator_uniq_id('rotator')
+                            uniq_id = (
+                                web_context.admin_event.get_unused_rotator_uniq_id()
+                            )
                         case 'clone':
-                            uniq_id = web_context.admin_event.get_unused_rotator_uniq_id(
-                                web_context.admin_rotator.stored_rotator.uniq_id)
+                            uniq_id = (
+                                web_context.admin_event.get_unused_rotator_uniq_id(
+                                    web_context.admin_rotator.stored_rotator.uniq_id
+                                )
+                            )
                         case 'delete':
                             pass
                         case _:
@@ -169,10 +210,18 @@ class RotatorAdminController(AbstractEventAdminController):
                         case 'update' | 'clone':
                             public = web_context.admin_rotator.stored_rotator.public
                             delay = web_context.admin_rotator.stored_rotator.delay
-                            message_default = web_context.admin_rotator.stored_rotator.message_default
-                            message_text = web_context.admin_rotator.stored_rotator.message_text
-                            screen_ids = web_context.admin_rotator.stored_rotator.screen_ids
-                            family_ids = web_context.admin_rotator.stored_rotator.family_ids
+                            message_default = (
+                                web_context.admin_rotator.stored_rotator.message_default
+                            )
+                            message_text = (
+                                web_context.admin_rotator.stored_rotator.message_text
+                            )
+                            screen_ids = (
+                                web_context.admin_rotator.stored_rotator.screen_ids
+                            )
+                            family_ids = (
+                                web_context.admin_rotator.stored_rotator.family_ids
+                            )
                         case 'create':
                             public = True
                             message_default = True
@@ -184,20 +233,30 @@ class RotatorAdminController(AbstractEventAdminController):
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'public': WebContext.value_to_form_data(public),
                         'delay': WebContext.value_to_form_data(delay),
-                        'message_text_checkbox': WebContext.value_to_form_data(message_default),
+                        'message_text_checkbox': WebContext.value_to_form_data(
+                            message_default
+                        ),
                         'message_text': WebContext.value_to_form_data(message_text),
                     }
                     if screen_ids:
                         data |= {
-                            f'screen_{screen_id}': WebContext.value_to_form_data(screen_id in screen_ids)
+                            f'screen_{screen_id}': WebContext.value_to_form_data(
+                                screen_id in screen_ids
+                            )
                             for screen_id in web_context.admin_event.basic_screens_by_id
                         }
                     if family_ids:
                         data |= {
-                            f'family_{family_id}': WebContext.value_to_form_data(family_id in family_ids)
+                            f'family_{family_id}': WebContext.value_to_form_data(
+                                family_id in family_ids
+                            )
                             for family_id in web_context.admin_event.families_by_id
                         }
-                    stored_rotator: StoredRotator = cls._admin_validate_rotator_update_data(action, web_context, data)
+                    stored_rotator: StoredRotator = (
+                        cls._admin_validate_rotator_update_data(
+                            action, web_context, data
+                        )
+                    )
                     errors = stored_rotator.errors
                 if errors is None:
                     errors = {}
@@ -217,11 +276,17 @@ class RotatorAdminController(AbstractEventAdminController):
         cache=1,
     )
     async def htmx_admin_rotator_create_modal(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
     ) -> Template | ClientRedirect:
         return self._admin_event_rotators_render(
-            request, event_uniq_id=event_uniq_id, modal='rotator', action='create', rotator_id=None)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='rotator',
+            action='create',
+            rotator_id=None,
+        )
 
     @get(
         path='/admin/rotator-modal/{action:str}/{event_uniq_id:str}/{rotator_id:int}',
@@ -229,85 +294,135 @@ class RotatorAdminController(AbstractEventAdminController):
         cache=1,
     )
     async def htmx_admin_rotator_modal(
-            self, request: HTMXRequest,
-            action: str,
-            event_uniq_id: str,
-            rotator_id: int | None,
+        self,
+        request: HTMXRequest,
+        action: str,
+        event_uniq_id: str,
+        rotator_id: int | None,
     ) -> Template | ClientRedirect:
         return self._admin_event_rotators_render(
-            request, event_uniq_id=event_uniq_id, modal='rotator', action=action, rotator_id=rotator_id)
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='rotator',
+            action=action,
+            rotator_id=rotator_id,
+        )
 
     def _admin_rotator_update(
-            self, request: HTMXRequest,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
-            action: str,
-            event_uniq_id: str,
-            rotator_id: int | None,
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        action: str,
+        event_uniq_id: str,
+        rotator_id: int | None,
     ) -> Template | ClientRedirect:
         match action:
             case 'update' | 'delete' | 'create':
                 web_context: RotatorAdminWebContext = RotatorAdminWebContext(
-                    request, event_uniq_id=event_uniq_id, admin_event_tab='tournaments', rotator_id=rotator_id,
-                    data=data)
+                    request,
+                    event_uniq_id=event_uniq_id,
+                    admin_event_tab='tournaments',
+                    rotator_id=rotator_id,
+                    data=data,
+                )
             case _:
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        stored_rotator: StoredRotator = self._admin_validate_rotator_update_data(action, web_context, data)
+        stored_rotator: StoredRotator = self._admin_validate_rotator_update_data(
+            action, web_context, data
+        )
         if stored_rotator.errors:
             return self._admin_event_rotators_render(
-                request, event_uniq_id=event_uniq_id, modal='rotator', action=action, rotator_id=rotator_id,
-                data=data, errors=stored_rotator.errors)
+                request,
+                event_uniq_id=event_uniq_id,
+                modal='rotator',
+                action=action,
+                rotator_id=rotator_id,
+                data=data,
+                errors=stored_rotator.errors,
+            )
         event_loader: EventLoader = EventLoader.get(request=request)
-        with EventDatabase(web_context.admin_event.uniq_id, write=True) as event_database:
+        with EventDatabase(
+            web_context.admin_event.uniq_id, write=True
+        ) as event_database:
             match action:
                 case 'create':
                     stored_rotator = event_database.add_stored_rotator(stored_rotator)
                     event_database.commit()
                     Message.success(
-                        request, _('Rotator [{rotator_uniq_id}] has been created.').format(
-                            rotator_uniq_id=stored_rotator.uniq_id))
+                        request,
+                        _('Rotator [{rotator_uniq_id}] has been created.').format(
+                            rotator_uniq_id=stored_rotator.uniq_id
+                        ),
+                    )
                 case 'update':
-                    stored_rotator = event_database.update_stored_rotator(stored_rotator)
+                    stored_rotator = event_database.update_stored_rotator(
+                        stored_rotator
+                    )
                     event_database.commit()
                     Message.success(
-                        request, _('Rotator [{rotator_uniq_id}] has been updated.').format(
-                            rotator_uniq_id=stored_rotator.uniq_id))
+                        request,
+                        _('Rotator [{rotator_uniq_id}] has been updated.').format(
+                            rotator_uniq_id=stored_rotator.uniq_id
+                        ),
+                    )
                 case 'delete':
                     event_database.delete_stored_rotator(web_context.admin_rotator.id)
                     event_database.commit()
                     Message.success(
-                        request, _('Rotator [{rotator_uniq_id}] has been deleted.').format(
-                            rotator_uniq_id=web_context.admin_rotator.uniq_id))
+                        request,
+                        _('Rotator [{rotator_uniq_id}] has been deleted.').format(
+                            rotator_uniq_id=web_context.admin_rotator.uniq_id
+                        ),
+                    )
                 case _:
                     raise ValueError(f'action=[{action}]')
         event_loader.clear_cache(event_uniq_id)
         return self._admin_event_rotators_render(request, event_uniq_id=event_uniq_id)
 
-    @post(
-        path='/admin/rotator-create/{event_uniq_id:str}',
-        name='admin-rotator-create'
-    )
+    @post(path='/admin/rotator-create/{event_uniq_id:str}', name='admin-rotator-create')
     async def htmx_admin_rotator_create(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_rotator_update(
-            request, event_uniq_id=event_uniq_id, action='create', rotator_id=None, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action='create',
+            rotator_id=None,
+            data=data,
+        )
 
     @patch(
         path='/admin/rotator-update/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-update',
     )
     async def htmx_admin_rotator_update(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            rotator_id: int | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        rotator_id: int | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_rotator_update(
-            request, event_uniq_id=event_uniq_id, action='update', rotator_id=rotator_id, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action='update',
+            rotator_id=rotator_id,
+            data=data,
+        )
 
     @delete(
         path='/admin/rotator-delete/{event_uniq_id:str}/{rotator_id:int}',
@@ -315,10 +430,19 @@ class RotatorAdminController(AbstractEventAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_rotator_delete(
-            self, request: HTMXRequest,
-            event_uniq_id: str,
-            rotator_id: int | None,
-            data: Annotated[dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED), ],
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        rotator_id: int | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template | ClientRedirect:
         return self._admin_rotator_update(
-            request, event_uniq_id=event_uniq_id, action='delete', rotator_id=rotator_id, data=data)
+            request,
+            event_uniq_id=event_uniq_id,
+            action='delete',
+            rotator_id=rotator_id,
+            data=data,
+        )

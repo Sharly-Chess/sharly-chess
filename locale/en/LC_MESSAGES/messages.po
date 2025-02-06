@@ -524,7 +524,19 @@ msgid "Errors have been found on timers; tournaments, screens, families and rota
 msgstr ""
 
 #: src/data/event.py
+msgid "timer"
+msgstr ""
+
+#: src/data/event.py
 msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
+msgstr ""
+
+#: src/data/event.py
+msgid "tournament"
+msgstr ""
+
+#: src/data/event.py
+msgid "New tournament"
 msgstr ""
 
 #: src/data/event.py
@@ -532,11 +544,23 @@ msgid "Errors have been found on screens; families and rotators will not be load
 msgstr ""
 
 #: src/data/event.py
+msgid "{screen_type}-screen"
+msgstr ""
+
+#: src/data/event.py
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr ""
 
 #: src/data/event.py
+msgid "{family_type}-family"
+msgstr ""
+
+#: src/data/event.py
 msgid "Errors have been found on rotators."
+msgstr ""
+
+#: src/data/event.py
+msgid "rotator"
 msgstr ""
 
 #: src/data/family.py
@@ -674,14 +698,12 @@ msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 msgid "Last results"
 msgstr ""
 
 #: src/data/screen.py src/data/util.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 msgid "Image"
 msgstr ""
@@ -1053,7 +1075,6 @@ msgstr ""
 
 #: src/data/util.py src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1432,14 +1453,11 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#: src/web/templates/admin/rotators/rotator_modal.html
 msgid "pairings by board"
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/screens/tab.html
@@ -1757,10 +1775,6 @@ msgid "Invalid URL [{background_image}]."
 msgstr ""
 
 #: src/web/controllers/admin/screen_admin_controller.py
-msgid "{screen_type}-screen"
-msgstr ""
-
-#: src/web/controllers/admin/screen_admin_controller.py
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr ""
 
@@ -1858,14 +1872,6 @@ msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-msgstr ""
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-msgid "tournament"
-msgstr ""
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-msgid "New tournament"
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
@@ -2136,6 +2142,15 @@ msgid "Only arbiters can see private events."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/players/player_modal.html
+msgid "Federation:"
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
+msgid "The federation that organizes the event."
+msgstr ""
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2150,15 +2165,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "The Unique ID, used for data storage and export."
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/players/player_modal.html
-msgid "Federation:"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
-msgid "The federation that organizes the event."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
@@ -3701,10 +3707,6 @@ msgid "The Unique ID, used to reference the rotator."
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-msgid "Parameters"
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
 msgid "Delay:"
 msgstr ""
 
@@ -3724,27 +3726,11 @@ msgid "Selection"
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
-msgid "results entry"
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "pairings by player"
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "last results"
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "image"
+msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
 msgid "No screens."
-msgstr ""
-
-#: src/web/templates/admin/rotators/rotator_modal.html
-msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -4758,10 +4744,4 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
-
-#~ msgid "ChessEvent connection [%(chessevent_uniq_id)s] is used."
-#~ msgstr ""
-
-#~ msgid "No ChessEvent connection is used."
-#~ msgstr ""
 

@@ -11,21 +11,23 @@ logger: Logger = getLogger()
 def configure_logger(level: int):
     """Initialize the logger configuration."""
     handler: StreamHandler = StreamHandler(sys.stdout)
-    handler.setFormatter(ColoredFormatter(
-        # fmt='%(log_color)s%(levelname)-8s %(message)s%(reset)s',
-        fmt='%(log_color)s%(message)s%(reset)s',
-        datefmt=None,
-        reset=True,
-        log_colors={
-            'DEBUG': 'white',  # 'cyan',
-            'INFO': 'light_white',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'red,bg_light_white',
-        },
-        secondary_log_colors={},
-        style='%',
-    ))
+    handler.setFormatter(
+        ColoredFormatter(
+            # fmt='%(log_color)s%(levelname)-8s %(message)s%(reset)s',
+            fmt='%(log_color)s%(message)s%(reset)s',
+            datefmt=None,
+            reset=True,
+            log_colors={
+                'DEBUG': 'white',  # 'cyan',
+                'INFO': 'light_white',
+                'WARNING': 'yellow',
+                'ERROR': 'red',
+                'CRITICAL': 'red,bg_light_white',
+            },
+            secondary_log_colors={},
+            style='%',
+        )
+    )
     logger.handlers.clear()
     logger.addHandler(handler)
     logger.setLevel(level)

@@ -2,14 +2,18 @@
 This script re-creates the /src/database/papi_template.py file on invocation including
 imports.
 """
+
 import bz2
 import base64
 from pathlib import Path
 
 script_dir: Path = Path() / 'utils' / 'papi'
-output_dir = Path() / 'src' / 'database'
+output_dir = Path() / 'src'/ 'database' / 'access' / 'papi'
 
-papi_versions = [path.stem.replace('template-', '').replace('.papi', '') for path in script_dir.glob('template-*.papi')]
+papi_versions = [
+    path.stem.replace('template-', '').replace('.papi', '')
+    for path in script_dir.glob('template-*.papi')
+]
 
 with open(output_dir / 'papi_template.py', 'wt', encoding='utf-8') as output_file:
     output_file.write(
@@ -27,42 +31,37 @@ with open(output_dir / 'papi_template.py', 'wt', encoding='utf-8') as output_fil
         f'logger: Logger = get_logger()\n'
         f'\n'
         f'\n'
-        f'PAPI_VERSIONS: list[str] = [\n')
+        f'PAPI_VERSIONS: list[str] = [\n'
+    )
     for papi_version in papi_versions:
-        output_file.write(
-            f'    \'{papi_version}\',\n')
+        output_file.write(f"    '{papi_version}',\n")
     output_file.write(
         ']\n'
         '\n'
         '\n'
         'def create_empty_papi_database(file: Path, papi_version: str) -> bool:\n'
-        '    match papi_version:\n')
+        '    match papi_version:\n'
+    )
     for papi_version in papi_versions:
         papi_file = script_dir / f'template-{papi_version}.papi'
         with open(papi_file, 'rb') as input_file:
             b64 = base64.b64encode(bz2.compress(input_file.read()))
-            output_file.write(
-                f'        case \'{papi_version}\':\n'
-                f'            b64 = (\n')
+            output_file.write(f"        case '{papi_version}':\n            b64 = (\n")
             part_len: int = 80
-            for b64_part in [b64[i:i + part_len] for i in range(0, len(b64), part_len)]:
-                output_file.write(
-                    f'                {b64_part}\n')
-        output_file.write(
-            '            )\n')
-    output_file.write(
-        '        case _:\n'
-        '            raise ValueError()\n')
+            for b64_part in [
+                b64[i : i + part_len] for i in range(0, len(b64), part_len)
+            ]:
+                output_file.write(f'                {b64_part}\n')
+        output_file.write('            )\n')
+    output_file.write('        case _:\n            raise ValueError()\n')
     output_file.write(
         '    if not file.parents[0].is_dir():\n'
-        '        logger.warning(f\'Directory [%s] not found, could not generate the Papi file.\', file.parents[0])\n'
+        '        logger.warning(\n'
+        '            \'Directory [%s] not found, could not generate the Papi file.\',\n'
+        '            file.parents[0],\n'
+        '        )\n'
         '        return False\n'
         '    with open(file, \'wb\') as f:\n'
-        '        f.write(\n'
-        '            bz2.decompress(\n'
-        '                base64.decodebytes(\n'
-        '                    b64\n'
-        '                )\n'
-        '            )\n'
-        '        )\n'
-        '    return True\n')
+        '        f.write(bz2.decompress(base64.decodebytes(b64)))\n'
+        '    return True\n'
+    )

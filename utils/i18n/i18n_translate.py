@@ -8,32 +8,39 @@ from transformers import AutoTokenizer, MarianMTModel, MarianTokenizer
 from huggingface_hub import hf_hub_url
 
 from common.i18n import default_locale
-from common.logger import print_interactive_info, print_interactive_error, print_interactive_success
+from common.logger import (
+    print_interactive_info,
+    print_interactive_error,
+    print_interactive_success,
+)
 
 HF_HUB_DISABLE_SYMLINKS_WARNING = 1
 
 
 class I18nTranslator:
-
     def __init__(
-            self,
-            target_locale: str,
+        self,
+        target_locale: str,
     ):
         self.target_locale = target_locale
         self.po_file = Path() / 'locale' / target_locale / 'LC_MESSAGES' / 'messages.po'
         self.model_name: str
         if target_locale == 'pt':
-            self.model_name = f'Helsinki-NLP/opus-mt-tc-big-{default_locale}-{self.target_locale}'
+            self.model_name = (
+                f'Helsinki-NLP/opus-mt-tc-big-{default_locale}-{self.target_locale}'
+            )
         else:
-            self.model_name = f'Helsinki-NLP/opus-mt-{default_locale}-{self.target_locale}'
+            self.model_name = (
+                f'Helsinki-NLP/opus-mt-{default_locale}-{self.target_locale}'
+            )
         self.model_dir = Path() / 'utils' / 'i18n' / 'models' / self.model_name
         self.catalog: Catalog | None = None
         self.model: MarianMTModel | None = None
         self.tokenizer: MarianTokenizer | None = None
 
     def load_catalog(self) -> bool:
-        print_interactive_info(f'Loading catalog...')
-        #try:
+        print_interactive_info('Loading catalog...')
+        # try:
         with open(self.po_file, 'rb') as f:
             self.catalog: Catalog = read_po(f)
         print_interactive_success(f'Loaded {len(self.catalog._messages)} messages.')
@@ -41,7 +48,9 @@ class I18nTranslator:
 
     def download_file(self, filename: str) -> bool:
         self.model_dir.mkdir(parents=True, exist_ok=True)
-        url: str = f'{hf_hub_url(repo_id=self.model_name, filename=filename)}?download=true'
+        url: str = (
+            f'{hf_hub_url(repo_id=self.model_name, filename=filename)}?download=true'
+        )
         print_interactive_info(f'Downloading {url}...')
         r = requests.get(url, stream=True)
         if r.ok:
@@ -54,7 +63,9 @@ class I18nTranslator:
             print_interactive_success(f'Saved file {output}.')
             return True
         else:
-            print_interactive_error(f'Download failed with status code {r.status_code}: {r.text}.')
+            print_interactive_error(
+                f'Download failed with status code {r.status_code}: {r.text}.'
+            )
             return False
 
     def check_model_files(self) -> bool:
@@ -70,21 +81,29 @@ class I18nTranslator:
             if not (self.model_dir / filename).is_file():
                 error = error or not self.download_file(filename)
             else:
-                print_interactive_success(f'{filename} found in directory {self.model_dir}.')
+                print_interactive_success(
+                    f'{filename} found in directory {self.model_dir}.'
+                )
         return not error
 
     def load_translator(self) -> bool:
-        print_interactive_info(f'Missing translations, loading translator {self.target_locale}...')
+        print_interactive_info(
+            f'Missing translations, loading translator {self.target_locale}...'
+        )
         print_interactive_info(f'PO locale: {default_locale}')
         print_interactive_info(f'Model: {self.model_name}')
         print_interactive_info('Checking model files...')
         if not self.check_model_files():
             return False
         try:
-            print_interactive_info(f'Loading model from pretrained dataset {self.model_name}...')
-            self.model = MarianMTModel.from_pretrained(self.model_name, ignore_mismatched_sizes=True)
+            print_interactive_info(
+                f'Loading model from pretrained dataset {self.model_name}...'
+            )
+            self.model = MarianMTModel.from_pretrained(
+                self.model_name, ignore_mismatched_sizes=True
+            )
             print_interactive_success('Model loaded.')
-            print_interactive_info(f'Loading tokenizer...')
+            print_interactive_info('Loading tokenizer...')
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
             print_interactive_success('Tokenizer loaded.')
         except Exception as ex:
@@ -104,11 +123,17 @@ class I18nTranslator:
             token: str | None = None
             if match := re.search(r'{[^}]*}', string):  # Looking for {name}
                 token = match.group()
-            elif match := re.search(r'%%[sflt]', string):  # Looking for %%s, %%f, %%l and %%t
+            elif match := re.search(
+                r'%%[sflt]', string
+            ):  # Looking for %%s, %%f, %%l and %%t
                 token = match.group()
-            elif match := re.search(r'%[sflt]', string):  # Looking for %s, %f, %l and %t
+            elif match := re.search(
+                r'%[sflt]', string
+            ):  # Looking for %s, %f, %l and %t
                 token = match.group()
-            elif match := re.search(r'%\([^)]*\)[ds]', string):  # Looking for %(name)s or %(name)d
+            elif match := re.search(
+                r'%\([^)]*\)[ds]', string
+            ):  # Looking for %(name)s or %(name)d
                 token = match.group()
             if token:
                 string = string.replace(token, f'←{len(tokens)}→', 1)
@@ -124,46 +149,59 @@ class I18nTranslator:
         return string
 
     def translate_string(
-            self,
-            string: str,
-            percent: int,
+        self,
+        string: str,
+        percent: int,
     ) -> str:
-        """ Translate a string and returns the translation. """
+        """Translate a string and returns the translation."""
         # extract all the {}, %()s and %()d tokens and replace them by self.token_replacement,
         # hoping they won't be translated
         string_without_tokens, tokens = self.extract_tokens(string)
         # Call the model.
-        batch = self.tokenizer([string_without_tokens, ], return_tensors='pt')
+        batch = self.tokenizer(
+            [
+                string_without_tokens,
+            ],
+            return_tensors='pt',
+        )
         generated_ids = self.model.generate(**batch)
-        translated_string: str = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+        translated_string: str = self.tokenizer.batch_decode(
+            generated_ids, skip_special_tokens=True
+        )[0]
         # Restore the tokens previously extracted.
         translated_string_with_tokens = self.inject_tokens(translated_string, tokens)
         # Extract the tokens of the translated string.
         _, tokens_after_translation = self.extract_tokens(translated_string_with_tokens)
         # Check that the tokens are the same.
         if sorted(tokens) == sorted(tokens_after_translation):
-            print_interactive_info(f'{percent}% {string} >>> {translated_string_with_tokens}')
+            print_interactive_info(
+                f'{percent}% {string} >>> {translated_string_with_tokens}'
+            )
         else:
             # Tokens have changed, delete the translation.
-            print_interactive_error(f'{percent}% The tokens have changed (the translation is deleted):')
-            print_interactive_error(f'{percent}% {string} >>> {translated_string_with_tokens}')
+            print_interactive_error(
+                f'{percent}% The tokens have changed (the translation is deleted):'
+            )
+            print_interactive_error(
+                f'{percent}% {string} >>> {translated_string_with_tokens}'
+            )
             translated_string_with_tokens = ''
         return translated_string_with_tokens
 
     @staticmethod
     def flag_message(message: Message, flag: str):
-        """ Flags a message to indicate that it has not been translated by a human. """
+        """Flags a message to indicate that it has not been translated by a human."""
         if flag not in message.flags:
             if not message.flags:
                 message.flags = set()
             message.flags.add(flag)
 
     def translate_message(
-            self,
-            message: Message,
-            percent: int,
+        self,
+        message: Message,
+        percent: int,
     ) -> bool:
-        """ Translates a message, returns True on success, False on error. """
+        """Translates a message, returns True on success, False on error."""
         if isinstance(message.id, str):
             if (index := message.id.find(' ***')) != -1:
                 message.string = message.id[:index]
@@ -187,7 +225,7 @@ class I18nTranslator:
                 return False
 
     def add_missing_translations(self):
-        """ Adds the missing translations, returns True if no error encountered, False Otherwise. """
+        """Adds the missing translations, returns True if no error encountered, False Otherwise."""
         print_interactive_info(f'Adding missing translations to {self.po_file}...')
         if not self.load_catalog():
             print_interactive_error('Loading catalog failed.')

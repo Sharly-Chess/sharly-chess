@@ -37,18 +37,26 @@ class Message:
         self.auto_remove: bool = self.AUTO_REMOVE[self.level]
 
     @staticmethod
-    def _message(request: Request, errors: str | list[str] | Exception, level: int) -> None:
+    def _message(
+        request: Request, errors: str | list[str] | Exception, level: int
+    ) -> None:
         if '_messages' not in request.session:
             request.session['_messages']: list[Message] = []
         texts: list[str]
         if isinstance(errors, list):
             texts = errors
         elif isinstance(errors, str):
-            texts = [errors, ]
+            texts = [
+                errors,
+            ]
         elif isinstance(errors, Exception):
-            texts = [str(errors), ]
+            texts = [
+                str(errors),
+            ]
         else:
-            raise ValueError(f'unexpected type [{type(errors)}] for argument [{errors}]')
+            raise ValueError(
+                f'unexpected type [{type(errors)}] for argument [{errors}]'
+            )
         for text in texts:
             request.session['_messages'].append(Message(text, level))
 
@@ -70,4 +78,6 @@ class Message:
 
     @staticmethod
     def messages(request: Request) -> list:
-        return request.session.pop('_messages') if '_messages' in request.session else []
+        return (
+            request.session.pop('_messages') if '_messages' in request.session else []
+        )

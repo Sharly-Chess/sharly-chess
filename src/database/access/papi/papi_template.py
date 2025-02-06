@@ -597,14 +597,11 @@ def create_empty_papi_database(file: Path, papi_version: str) -> bool:
         case _:
             raise ValueError()
     if not file.parents[0].is_dir():
-        logger.warning(f'Directory [%s] not found, could not generate the Papi file.', file.parents[0])
+        logger.warning(
+            'Directory [%s] not found, could not generate the Papi file.',
+            file.parents[0],
+        )
         return False
     with open(file, 'wb') as f:
-        f.write(
-            bz2.decompress(
-                base64.decodebytes(
-                    b64
-                )
-            )
-        )
+        f.write(bz2.decompress(base64.decodebytes(b64)))
     return True
