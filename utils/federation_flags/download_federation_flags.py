@@ -47,9 +47,7 @@ def run():
     papi_web_config: PapiWebConfig = PapiWebConfig()
     if not FideDatabase(write=True).check():
         print_interactive_error(
-            _('Error while updating the FIDE database.').format(
-                port=papi_web_config.web_port
-            )
+            _('Error while updating the FIDE database.')
         )
         return
     with FideDatabase() as fide_database:
