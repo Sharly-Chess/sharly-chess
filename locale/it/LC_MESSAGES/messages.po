@@ -1344,8 +1344,7 @@ msgstr "Nero"
 msgid "Pairings by board"
 msgstr "Abbinamenti a bordo"
 
-#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1811,20 +1810,6 @@ msgstr "Timer [{timer_id}] non trovato."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Non è possibile specificare il numero di parti e il numero di elementi per parte."
 
-#: src/web/controllers/admin/family_admin_controller.py
-#, ai_translation
-msgid "pairings by board"
-msgstr "Abbinamenti a bordo"
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-#, ai_translation
-msgid "Pairings by player"
-msgstr "Abbinamenti per giocatore"
-
 #: src/web/controllers/admin/index_admin_controller.py
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -1857,6 +1842,14 @@ msgstr "Il colore #2 viene usato {delay_2} minuti prima dell'inizio dei giri (ri
 #, ai_translation
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "Il colore #3 viene usato fin dall'inizio dei giri e per {delay_3} minuti dopo (ritardo #3)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Abbinamenti per giocatore"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -5757,4 +5750,7 @@ msgstr "Tavola #%(board_number)d con %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs"
+
+#~ msgid "pairings by board"
+#~ msgstr "Abbinamenti a bordo"
 

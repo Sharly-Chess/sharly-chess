@@ -1313,8 +1313,7 @@ msgstr "Negro"
 msgid "Pairings by board"
 msgstr "Maridajes a bordo"
 
-#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1780,20 +1779,6 @@ msgstr "Temporizador [{timer_id}] no encontrado."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "No es posible especificar el número de piezas y el número de elementos por pieza."
 
-#: src/web/controllers/admin/family_admin_controller.py
-#, ai_translation
-msgid "pairings by board"
-msgstr "emparejamientos a bordo"
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-#, ai_translation
-msgid "Pairings by player"
-msgstr "Maridajes por jugador"
-
 #: src/web/controllers/admin/index_admin_controller.py
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -1826,6 +1811,14 @@ msgstr "Color #2 se utiliza {delay_2} minutos antes del inicio de las rondas (re
 #, ai_translation
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "El color #3 se utiliza desde el comienzo de las rondas y para {delay_3} minutos después (retraso #3)."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Maridajes por jugador"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -5722,4 +5715,7 @@ msgstr ""
 #, ai_translation
 msgid "vs"
 msgstr "vs."
+
+#~ msgid "pairings by board"
+#~ msgstr "emparejamientos a bordo"
 

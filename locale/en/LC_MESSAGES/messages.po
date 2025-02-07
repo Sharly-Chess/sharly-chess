@@ -1073,8 +1073,7 @@ msgstr ""
 msgid "Pairings by board"
 msgstr ""
 
-#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1452,18 +1451,6 @@ msgstr ""
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
-#: src/web/controllers/admin/family_admin_controller.py
-msgid "pairings by board"
-msgstr ""
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-msgid "Pairings by player"
-msgstr ""
-
 #: src/web/controllers/admin/index_admin_controller.py
 #: src/web/templates/admin/event/tab.html
 msgid "No recording"
@@ -1489,6 +1476,13 @@ msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+msgid "Pairings by player"
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py
@@ -4744,4 +4738,7 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
+
+#~ msgid "pairings by board"
+#~ msgstr ""
 

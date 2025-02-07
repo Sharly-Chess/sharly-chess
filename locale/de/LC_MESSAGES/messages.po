@@ -1392,8 +1392,7 @@ msgstr "Schwarz"
 msgid "Pairings by board"
 msgstr "Kombinationen nach Bord"
 
-#: src/data/util.py src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -1861,20 +1860,6 @@ msgstr "Timer [{timer_id}] nicht gefunden."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Die Angabe der Anzahl der Teile und der Anzahl der Teile pro Teil ist nicht möglich."
 
-#: src/web/controllers/admin/family_admin_controller.py
-#, ai_translation
-msgid "pairings by board"
-msgstr "Paarungen nach Board"
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-#, ai_translation
-msgid "Pairings by player"
-msgstr "Kombinationen nach Spieler"
-
 #: src/web/controllers/admin/index_admin_controller.py
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -1907,6 +1892,14 @@ msgstr "Farbe #2 wird verwendet {delay_2} Minuten vor dem Start der Runden (Verz
 #, ai_translation
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "Farbe #3 wird von Beginn der Runden und für {delay_3} Minuten nach (Verzögerung #3) verwendet."
+
+#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Kombinationen nach Spieler"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -5807,4 +5800,7 @@ msgstr "Vorstand #%(board_number)d mit %(color)s"
 #, ai_translation
 msgid "vs"
 msgstr "vs."
+
+#~ msgid "pairings by board"
+#~ msgstr "Paarungen nach Board"
 
