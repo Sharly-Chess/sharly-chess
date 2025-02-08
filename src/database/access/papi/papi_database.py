@@ -121,7 +121,7 @@ class PapiDatabase(AccessDatabase):
         fields = ', '.join(f'`{f}`' for f in field_names)
         values = ', '.join(['?'] * len(field_names))
         self._execute(
-            f'INSERT INTO `joueur`({fields}) VALUES ({values})', tuple(params)
+            f'INSERT INTO `joueur`({fields}) VALUES ({values})', params
         )
         return data['Ref']
 
