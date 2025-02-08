@@ -38,10 +38,9 @@ class AdminWebContext(WebContext):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None,
+        ],
         admin_tab: str | None,
     ):
         super().__init__(request, data=data)
