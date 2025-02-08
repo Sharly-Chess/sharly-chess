@@ -192,6 +192,7 @@
                                     class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=1) }}"
                                     hx-target="body"
+                                    hx-indicator="#please-wait"
                                 >{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating }}{{ bp.rating_type }}</button>
                             </div>
                             {% if admin_auth %}
@@ -212,6 +213,7 @@
                                         class="admin-result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                         hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=4) }}"
                                         hx-target="body"
+                                        hx-indicator="#please-wait"
                                     >{{ _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>F - 1</button>
                                 </div>
                             {% endif %}
