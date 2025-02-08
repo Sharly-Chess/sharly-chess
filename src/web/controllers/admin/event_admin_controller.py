@@ -233,7 +233,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                     )
                 )
                 # The years or birth that will be shown on the year of birth select list
-                players_yobs: list[str] = sorted(
+                players_yobs: list[int] = sorted(
                     {
                         player.year_of_birth
                         for player in web_context.admin_event.players_by_id.values()
@@ -1034,10 +1034,10 @@ class EventAdminController(AbstractEventAdminController):
                     data += f'FN:{capwords(player.last_name)}\n'
                 data += f'ORG:{player.league} - {player.club}\n'
                 data += f'item1.TEL:{player.phone}\n'
-                data += f'item1.X-ABLabel:{_("Personal")}\n'
+                data += 'item1.X-ABLabel:' + _('Personal') + '\n'
                 data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
-                data += f'item2.X-ABLabel:{_("Personal")}\n'
-                data += f'CATEGORIES:{_("Chess")}\n'
+                data += 'item2.X-ABLabel:' + _('Personal') + '\n'
+                data += 'CATEGORIES:' + _('Chess') + '\n'
                 data += 'END:VCARD\n\n'
         return Response(
             content=data,
