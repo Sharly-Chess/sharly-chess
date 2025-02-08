@@ -360,71 +360,74 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 # 5 less than two federations, all or no federations selected, or player matches
                 # 6 less than two leagues, all or no leagues selected, or player matches
                 # 7 less than two clubs, all or no clubs selected, or player matches
-                players: list[Player] = sorted(
-                    [
-                        player
-                        for player in web_context.admin_event.players_by_id.values()
-                        if (
-                            player.ref_id > 1
-                            and len(filter_genders) in [0, 3]
-                            or player.gender.value in filter_genders
-                        )
-                        and (
-                            len(filter_licences) in [0, len(players_licences)]
-                            or player.ffe_licence in filter_licences
-                        )
-                        and (
-                            len(filter_categories) in [0, len(players_categories)]
-                            or player.category in filter_categories
-                        )
-                        and (
-                            len(filter_check_ins) in [0, 3]
-                            or (
-                                player.can_check_in_out
-                                and player.check_in in filter_check_ins
+                players: dict[int, Player] = {
+                    p.id: p
+                    for p in sorted(
+                        [
+                            player
+                            for player in web_context.admin_event.players_by_id.values()
+                            if (
+                                player.ref_id > 1
+                                and len(filter_genders) in [0, 3]
+                                or player.gender.value in filter_genders
                             )
-                            or (
-                                not player.can_check_in_out and None in filter_check_ins
+                            and (
+                                len(filter_licences) in [0, len(players_licences)]
+                                or player.ffe_licence in filter_licences
                             )
-                        )
-                        and (
-                            len(filter_tournaments)
-                            in [0, len(web_context.admin_event.tournaments_by_id)]
-                            or player.tournament_id in filter_tournaments
-                        )
-                        and (
-                            len(filter_federations) in [0, len(players_federations)]
-                            or player.federation_tuple in filter_federations
-                        )
-                        and (
-                            len(filter_leagues) in [0, len(players_leagues)]
-                            or player.league_tuple in filter_leagues
-                        )
-                        and (
-                            len(filter_clubs) in [0, len(players_clubs)]
-                            or player.club_tuple in filter_clubs
-                        )
-                        and all(
-                            {
-                                filter_name_part
-                                in unicode_normalize(
-                                    f'{player.last_name} {player.first_name}'.lower()
+                            and (
+                                len(filter_categories) in [0, len(players_categories)]
+                                or player.category in filter_categories
+                            )
+                            and (
+                                len(filter_check_ins) in [0, 3]
+                                or (
+                                    player.can_check_in_out
+                                    and player.check_in in filter_check_ins
                                 )
-                                for filter_name_part in filter_name_parts
-                            }
-                        )
-                        and all(
-                            {
-                                filter_origin_part
-                                in unicode_normalize(
-                                    f'{player.federation} {player.league} {player.club}'.lower()
+                                or (
+                                    not player.can_check_in_out and None in filter_check_ins
                                 )
-                                for filter_origin_part in filter_origin_parts
-                            }
-                        )
-                    ],
-                    key=sort_key,
-                )
+                            )
+                            and (
+                                len(filter_tournaments)
+                                in [0, len(web_context.admin_event.tournaments_by_id)]
+                                or player.tournament_id in filter_tournaments
+                            )
+                            and (
+                                len(filter_federations) in [0, len(players_federations)]
+                                or player.federation_tuple in filter_federations
+                            )
+                            and (
+                                len(filter_leagues) in [0, len(players_leagues)]
+                                or player.league_tuple in filter_leagues
+                            )
+                            and (
+                                len(filter_clubs) in [0, len(players_clubs)]
+                                or player.club_tuple in filter_clubs
+                            )
+                            and all(
+                                {
+                                    filter_name_part
+                                    in unicode_normalize(
+                                        f'{player.last_name} {player.first_name}'.lower()
+                                    )
+                                    for filter_name_part in filter_name_parts
+                                }
+                            )
+                            and all(
+                                {
+                                    filter_origin_part
+                                    in unicode_normalize(
+                                        f'{player.federation} {player.league} {player.club}'.lower()
+                                    )
+                                    for filter_origin_part in filter_origin_parts
+                                }
+                            )
+                        ],
+                        key=sort_key,
+                    )
+                }
                 template_context |= {
                     'admin_players': players,
                     'admin_players_columns': [

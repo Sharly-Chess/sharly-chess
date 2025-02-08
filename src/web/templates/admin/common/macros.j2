@@ -114,7 +114,7 @@
         {% set _tooltip_text='Unknown sort [%(sort)s]'|format(sort=sort) %}
     {% endif %}
     <i
-            class="{{ icon }} {% if admin_players_sort != sort %}cursor-pointer{% else %}text-primary{%endif %}"
+            class="{{ icon }} {% if admin_players_sort != sort %}cursor-pointer{% else %}text-danger{%endif %}"
             {% if admin_players_sort != sort %}
                 hx-get="{{ url }}"
                 hx-vals='{"admin_players_sort": "{{ sort }}"}'
