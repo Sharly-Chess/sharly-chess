@@ -371,7 +371,7 @@ class AbstractController(Controller):
     @staticmethod
     def _render_messages(request: HTMXRequest) -> Template:
         return HTMXTemplate(
-            template_name='messages.html',
+            template_name='common/messages.html',
             re_swap='afterbegin',
             re_target='#messages',
             context={
