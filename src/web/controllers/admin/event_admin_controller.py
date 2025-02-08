@@ -1025,20 +1025,20 @@ class EventAdminController(AbstractEventAdminController):
         for player in players:
             if player.mail or player.phone:
                 data += 'BEGIN:VCARD\n'
-                data += 'VERSION: 3.0\n'
+                data += 'VERSION:3.0\n'
                 if player.first_name:
                     data += f'N:{capwords(player.last_name)};{player.first_name}\n'
-                    data += f'FN:{capwords(player.first_name)} {player.last_name}\n'
+                    data += f'FN:{player.first_name} {capwords(player.last_name)}\n'
                 else:
                     data += f'N:{capwords(player.last_name)}\n'
-                    data += f'FN:{capwords(player.first_name)}\n'
+                    data += f'FN:{capwords(player.last_name)}\n'
                 data += f'ORG:{player.league} - {player.club}\n'
                 data += f'item1.TEL:{player.phone}\n'
-                data += 'item1.X - ABLabel:\n'
+                data += f'item1.X-ABLabel:{_("Personal")}\n'
                 data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
-                data += 'item2.X - ABLabel:\n'
-                data += f'CATEGORIES: {_("Échecs")}\n'
-                data += 'END: VCARD\n\n'
+                data += f'item2.X-ABLabel:{_("Personal")}\n'
+                data += f'CATEGORIES:{_("Chess")}\n'
+                data += 'END:VCARD\n\n'
         return Response(
             content=data,
             media_type='text/x-vcard',
