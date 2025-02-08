@@ -311,6 +311,34 @@ msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr ""
 
 #: src/common/engine.py
+msgid "Hello,"
+msgstr ""
+
+#: src/common/engine.py
+msgid "I would like the following custom files to be added to a future version of Papi-web:"
+msgstr ""
+
+#: src/common/engine.py
+msgid "Thanks :-)"
+msgstr ""
+
+#: src/common/engine.py
+msgid "View the files on filebin.net"
+msgstr ""
+
+#: src/common/engine.py
+msgid "Download the files (ZIP archive)"
+msgstr ""
+
+#: src/common/engine.py
+msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
+msgstr ""
+
+#: src/common/engine.py
+msgid "First name LAST NAME"
+msgstr ""
+
+#: src/common/engine.py
 msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr ""
 
@@ -1408,6 +1436,14 @@ msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
+msgid "Personal"
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
+msgid "Chess"
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py

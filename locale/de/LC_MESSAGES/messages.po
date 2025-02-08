@@ -388,6 +388,41 @@ msgstr "[Papi-web {version}] Anfrage für die Integration von benutzerdefinierte
 
 #: src/common/engine.py
 #, ai_translation
+msgid "Hello,"
+msgstr "Guten Tag."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "I would like the following custom files to be added to a future version of Papi-web:"
+msgstr "Ich möchte, dass die folgenden benutzerdefinierten Dateien einer zukünftigen Version von Papi-web hinzugefügt werden:"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Thanks :-)"
+msgstr "Vielen Dank :-)"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "View the files on filebin.net"
+msgstr "Sehen Sie die Dateien auf filebin.net"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Download the files (ZIP archive)"
+msgstr "Dateien herunterladen (ZIP-Archiv)"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
+msgstr "Fügen Sie hier alle Informationen, die Sie für notwendig halten, und wenn Sie nicht von den Entwicklern bekannt sind, stellen Sie sich vor!"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "First name LAST NAME"
+msgstr "Vorname LAST NAME"
+
+#: src/common/engine.py
+#, ai_translation
 msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr "Ein Fenster öffnet sich, um eine E-Mail an das Papi-Web-Projekt zu senden; Wenn sich das Fenster nicht öffnet, klicken Sie bitte auf den untenstehenden Link oder senden Sie manuell eine E-Mail an {email}."
 
@@ -1810,6 +1845,16 @@ msgstr "Event [{uniq_id}] wurde erstellt."
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Event [{uniq_id}] wurde gelöscht, die Datenbank wurde archiviert ({arch})."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Personal"
+msgstr "Persönlich"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Chess"
+msgstr "Schach"
 
 #: src/web/controllers/admin/family_admin_controller.py
 #, ai_translation

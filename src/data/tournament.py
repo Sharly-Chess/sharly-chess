@@ -957,6 +957,7 @@ class Tournament:
     def add_player(
         self,
         player: Player,
+        check_in: bool = False,
     ) -> int:
         """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
@@ -987,7 +988,7 @@ class Tournament:
                 'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,
                 'FideCode': player.fide_id if player.fide_id else None,
                 'FideTitre': player.title.to_papi_value,
-                'Pointe': False,
+                'Pointe': check_in,
                 'InscriptionRegle': player.paid,
                 'InscriptionDu': player.owed,
                 'Tel': player.phone,
