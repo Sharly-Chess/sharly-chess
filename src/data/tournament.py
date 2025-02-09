@@ -960,9 +960,6 @@ class Tournament:
     ):
         """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            player_id = Player.player_papi_web_id_from_papi_id(
-                self.id, papi_database.next_player_papi_id
-            )
             data: dict[str, str | int | float | None] = {
                 'Ref': player.ref_id,
                 'RefFFE': player.ffe_id,
