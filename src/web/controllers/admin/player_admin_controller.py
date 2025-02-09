@@ -665,9 +665,8 @@ class PlayerAdminController(AbstractEventAdminController):
                     f'FFE ID [{admin_player.ffe_id}] already present in tournament [{dst_tournament.uniq_id}].',
                 )
             else:
-                check_in: bool = admin_player.check_in
+                dst_tournament.add_player(admin_player)
                 src_tournament.delete_player(admin_player)
-                dst_tournament.add_player(admin_player, check_in)
                 Message.success(
                     request,
                     _(
