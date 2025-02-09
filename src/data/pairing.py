@@ -67,6 +67,35 @@ class Pairing:
         return self.result == Result.FORFEIT_GAIN
 
     @property
+    def unplayed(self) -> bool:
+        return self.result in (
+            Result.FORFEIT_GAIN,
+            Result.FORFEIT_LOSS,
+            Result.DOUBLE_FORFEIT,
+            Result.HALF_POINT_BYE,
+            Result.ZERO_POINT_BYE,
+            Result.FULL_POINT_BYE,
+            Result.PAIRING_ALLOCATED_BYE
+        )
+    
+    @property
+    def played(self) -> bool:
+        return not self.unplayed
+
+    @property
+    def voluntary_unplayed(self) -> bool:
+        return self.result in (
+            Result.FORFEIT_LOSS,
+            Result.DOUBLE_FORFEIT,
+            Result.HALF_POINT_BYE,
+            Result.ZERO_POINT_BYE
+        )
+
+    @property
+    def requested_bye(self) -> bool:
+        return self.result in (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE)
+
+    @property
     def color_papi_value(self) -> str:
         if self.color:
             return self.color.to_papi_value
