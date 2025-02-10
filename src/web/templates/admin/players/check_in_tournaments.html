@@ -16,7 +16,9 @@
                 {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
                     <li
                         class="dropdown-item text-nowrap my-0 d-inline-flex align-items-center gap-2"
-                        {% if tournament.finished %}
+                        {% if not tournament.file_exists %}
+                            {{ tooltip_attributes('warning', _('No file found for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                        {% elif tournament.finished %}
                             {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% elif tournament.playing %}
                             {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is playing.', tournament_uniq_id=tournament.uniq_id), 'left') }}
@@ -28,19 +30,20 @@
                     >
                         <div class="form-check form-switch d-inline-block my-0">
                             <input
-                                {% if not tournament.finished and not tournament.playing %}
+                                {% if tournament.file_exists and not tournament.finished and not tournament.playing %}
                                     {% if tournament.check_in_open %}
                                         hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                                    {% endif %}
-                                        hx-patch="{{ url_for('admin-tournament-open-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                                     {% else %}
+                                        hx-patch="{{ url_for('admin-tournament-open-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                    {% endif %}
                                     hx-target="body"
                                     hx-indicator="#please-wait"
+                                {% else %}
+                                    disabled
                                 {% endif %}
                                 id="{{ id }}-{{ loop.index }}"
                                 class="form-check-input {% if tournament.finished or tournament.playing %}disabled{% endif %}"
                                 type="checkbox"
-                                {% if tournament.finished or tournament.playing %}disabled{% endif %}
                                 {% if tournament.check_in_open %}checked{% endif %}
                             />
                         </div>
