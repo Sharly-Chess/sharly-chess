@@ -3388,7 +3388,7 @@ msgstr "Le tournoi du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Fixed board:"
-msgstr "Échiquiers fixes :"
+msgstr "Échiquier fixe :"
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The board number the player will always be assigned to (use it for disabled people)."
