@@ -3108,6 +3108,11 @@ msgid "Check-in"
 msgstr ""
 
 #: src/web/templates/admin/players/check_in_tournaments.html
+#, python-format
+msgid "No Papi file for tournament [%(tournament_uniq_id)s]."
+msgstr ""
+
+#: src/web/templates/admin/players/check_in_tournaments.html
 #: src/web/templates/admin/players/tab.html
 #, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is finished."

@@ -17,7 +17,7 @@
                     <li
                         class="dropdown-item text-nowrap my-0 d-inline-flex align-items-center gap-2"
                         {% if not tournament.file_exists %}
-                            {{ tooltip_attributes('warning', _('No file found for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ tooltip_attributes('warning', _('No Papi file for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% elif tournament.finished %}
                             {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% elif tournament.playing %}
