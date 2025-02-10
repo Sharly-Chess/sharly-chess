@@ -75,45 +75,45 @@
             {# Needed for the sticky copyright footer #}
             class="d-inline-block"
         >
-        <div
-            id="main-wrapper"
-            class="d-inline-block"
-            style="min-height: calc(var(--vh, 100vh) - 60px); min-width: var(--vw, 100vw);"
-        >
             <div
-                id="header-wrapper"
-                class="header-wrapper top-0 start-0 position-sticky"
-                style="width: var(--vw, 100vw); z-index: 4;"
+                id="main-wrapper"
+                class="d-inline-block"
+                style="min-height: calc(var(--vh, 100vh) - 60px); min-width: var(--vw, 100vw);"
             >
-                {% block header %}
-                    HEADER
-                {% endblock header %}
+                <div
+                    id="header-wrapper"
+                    class="header-wrapper top-0 start-0 position-sticky"
+                    style="width: var(--vw, 100vw); z-index: 4;"
+                >
+                    {% block header %}
+                        HEADER
+                    {% endblock header %}
+                </div>
+                <div id="content-wrapper" class="©">
+                    {% block content %}
+                        BODY CONTENT
+                    {% endblock content %}
+                </div>
+                <div id="footer-wrapper" class="footer-wrapper">
+                    {% block footer %}
+                        FOOTER
+                    {% endblock footer %}
+                </div>
             </div>
-            <div id="content-wrapper" class="©">
-                {% block content %}
-                    BODY CONTENT
-                {% endblock content %}
-            </div>
-            <div id="footer-wrapper" class="footer-wrapper">
-                {% block footer %}
-                    FOOTER
-                {% endblock footer %}
-            </div>
-        </div>
-        <div
-            id="copyright-wrapper"
-            class="flex-grow-1 d-flex align-items-end justify-content-center start-0 position-sticky"
-            style="width: var(--vw, 100vw);"
-        >
-            {# copyright may be hidden by the copyright_script_macro #}
             <div
-                id="copyright"
-                class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
-                style="height: 60px;"
+                id="copyright-wrapper"
+                class="flex-grow-1 d-flex align-items-end justify-content-center start-0 position-sticky"
+                style="width: var(--vw, 100vw);"
             >
-                Papi-web {{ papi_web_config.version }} - {{ papi_web_config.copyright }} - {{ papi_web_config.url }}
+                {# copyright may be hidden by the copyright_script_macro #}
+                <div
+                    id="copyright"
+                    class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
+                    style="height: 60px;"
+                >
+                    Papi-web {{ papi_web_config.version }} - {{ papi_web_config.copyright }} - {{ papi_web_config.url }}
+                </div>
             </div>
-        </div>
         </div>
         <div id="please-wait-wrapper">
             <div
