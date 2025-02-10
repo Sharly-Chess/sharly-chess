@@ -1035,7 +1035,7 @@ class EventAdminController(AbstractEventAdminController):
                 data += f'ORG:{player.league} - {player.club}\n'
                 data += f'item1.TEL:{player.phone}\n'
                 data += 'item1.X-ABLabel:' + _('Personal') + '\n'
-                data += f'item2.EMAIL;type = INTERNET:{player.mail}\n'
+                data += f'item2.EMAIL;type=INTERNET:{player.mail}\n'
                 data += 'item2.X-ABLabel:' + _('Personal') + '\n'
                 data += 'CATEGORIES:' + _('Chess') + '\n'
                 data += 'END:VCARD\n\n'
