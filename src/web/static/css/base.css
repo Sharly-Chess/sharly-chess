@@ -1,6 +1,15 @@
-* {
-	font-family: Arial;
+@font-face {
+font-family: "AtkinsonHyperlegibleNextVF";
+src: url("/static/fonts/AtkinsonHyperlegibleNextVF-Variable.woff2") format("woff2"),
+        url("/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf") format("truetype");
+font-weight: 400 900; 
+font-style: normal;
 }
+  
+* {
+	font-family: AtkinsonHyperlegibleNextVF, sans-serif;
+}
+
 body {
 	background-repeat: no-repeat;
 	background-position: center center;
