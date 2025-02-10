@@ -1,8 +1,7 @@
-from collections.abc import Iterator
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
 from data.pairing import Pairing
-from data.util import Result, BoardColor
+from data.util import Result, BoardColor, TournamentPairing
 
 
 def wins(player: Player, _tournament: Tournament, /, *, max_round: int | None = None) -> int:
@@ -106,18 +105,23 @@ def adjusted_score(
     *,
     max_round: int | None = None,
     adjust_fore: bool = False,
+    papi_legacy: bool = False,
 ) -> float:
     """Computes the adjusted score of the player for the purposes of ther opponents' tie-breaks
     Only adjusts them in case of requested byes followed by all VUR.
     If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
-    games not already determined are considered a draw."""
+    games not already determined are considered a draw.
+    When *papi_legacy* is True, all unplayed rounds are counted as draws."""
     if max_round is None:
         max_round = max(player.pairings) + 1
     score = 0
     for round_index, pairing in player.pairings.items():
         if round_index > max_round:
             continue
-        elif adjust_fore and round_index == max_round - 1:
+        if papi_legacy and pairing.unplayed:
+            score += Result.DRAW.point_value
+            continue
+        if adjust_fore and round_index == max_round - 1:
             if pairing.result in (
                 Result.FULL_POINT_BYE,
                 Result.PAIRING_ALLOCATED_BYE,
@@ -128,9 +132,9 @@ def adjusted_score(
             continue
         if pairing.requested_bye:
             if all(
-              p.voluntary_unplayed
-              for index, p in player.pairings.items()
-              if round_index < index < max_round
+                p.voluntary_unplayed
+                for index, p in player.pairings.items()
+                if round_index < index < max_round
             ):
                 score += Result.DRAW.point_value
             else:
@@ -138,6 +142,7 @@ def adjusted_score(
         else:
             score += pairing.result.point_value
     return score
+
 
 def buchholz(
     player: Player,
@@ -148,6 +153,7 @@ def buchholz(
     cut_top: int = 0,
     cut_btm: int = 0,
     played_modifier: bool = False,
+    papi_legacy: bool = False,
 ) -> float:
     """Computes the sum of the scores of each of the opponents of a participant,
     before round *max_round*.
@@ -159,13 +165,15 @@ def buchholz(
     Both values must be non-negative, and *cut_top* must be at most equal to *cut_btm*.
     When *played_modifier* is True, forfeit losses and wins are considered
     played against the scheduled opponent.
+    When *papi_legacy* is 
     """
-    # if player.id in (9, 11, 14) and fore_buchholz and max_round is None:
+    # if player.id in (9, 14) and papi_legacy and max_round is None:
     #     breakpoint()
     if max_round is None:
         max_round = max(player.pairings) + 1
     if cut_top < 0 or cut_btm < 0:
-        raise ValueError(f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
+        raise ValueError(
+            f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
     elif cut_top > cut_btm:
         raise ValueError('Top cut must be at most bottom cut')
     pairings: dict[Pairing] = {
@@ -176,16 +184,30 @@ def buchholz(
     scores: list[float] = []
     voluntary_unplayed: list[float] = []
     for round_index, pairing in pairings.items():
-        should_add_dummy = (
+        should_add_dummy = tournament.pairing.swiss and (
+            (papi_legacy and pairing.unplayed) or
             (pairing.unplayed and not played_modifier) or
-            (played_modifier and pairing.result in 
+            (played_modifier and pairing.result in
                 (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE,
                  Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE)
-            )
+             )
         )
         if should_add_dummy:
-            dummy_points = player.points_after(max_round)
-            if pairing.voluntary_unplayed:
+            if papi_legacy:
+                dummy_points = (
+                    player.points_before(round_index)
+                    + Result.DRAW.point_value * (max_round - round_index - 1)
+                )
+                match pairing.result:
+                    case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+                        dummy_points += 0
+                    case Result.HALF_POINT_BYE:
+                        dummy_points += 0.5
+                    case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
+                        dummy_points += 1
+            else:
+                dummy_points = player.points_after(max_round)
+            if pairing.voluntary_unplayed and not papi_legacy:
                 # We must take those into account to ensure
                 # correct computations for cut-1
                 voluntary_unplayed.append(dummy_points)
@@ -193,17 +215,22 @@ def buchholz(
                 scores.append(dummy_points)
             continue
         opponent: Player = tournament.players_by_id[pairing.opponent_id]
-        opponent_adjusted_score = adjusted_score(
-            opponent, tournament, max_round=max_round
-        )
+        if tournament.pairing.swiss:
+            opponent_adjusted_score = adjusted_score(
+                opponent, tournament, max_round=max_round,
+                papi_legacy=papi_legacy
+            )
+        else:
+            opponent_adjusted_score = opponent.points_after(max_round)
         scores.append(opponent_adjusted_score)
     voluntary_unplayed = sorted(voluntary_unplayed)
     scores = sorted(scores)
     scores = voluntary_unplayed + scores
-    
+
     if cut_top:
         return sum(scores[cut_btm:-cut_top])
     return sum(scores[cut_btm:])
+
 
 def fore_buchholz(
     player: Player,
@@ -230,7 +257,8 @@ def fore_buchholz(
     if max_round is None:
         max_round = max(player.pairings) + 1
     if cut_top < 0 or cut_btm < 0:
-        raise ValueError(f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
+        raise ValueError(
+            f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
     elif cut_top > cut_btm:
         raise ValueError('Top cut must be at most bottom cut')
     pairings: dict[Pairing] = {
@@ -252,10 +280,10 @@ def fore_buchholz(
     for pairing in pairings.values():
         should_add_dummy = (
             (pairing.unplayed and not played_modifier) or
-            (played_modifier and pairing.result in 
+            (played_modifier and pairing.result in
                 (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE,
                  Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE)
-            )
+             )
         )
         if should_add_dummy:
             if pairing.voluntary_unplayed:
@@ -274,7 +302,7 @@ def fore_buchholz(
     voluntary_unplayed = sorted(voluntary_unplayed)
     scores = sorted(scores)
     scores = voluntary_unplayed + scores
-    
+
     if cut_top:
         return sum(scores[cut_btm:-cut_top])
     return sum(scores[cut_btm:])

@@ -484,6 +484,16 @@ class TournamentPairing(IntEnum):
                 return 'Berger'
             case _:
                 raise ValueError(f'Unknown pairing type: {self}')
+    
+    @property
+    def swiss(self):
+        return self in (
+            TournamentPairing.HALEY,
+            TournamentPairing.HALEY_SOFT,
+            TournamentPairing.NICOIS,
+            TournamentPairing.SAD,
+            TournamentPairing.STANDARD
+        )
 
 
 class TournamentTieBreak(IntEnum):

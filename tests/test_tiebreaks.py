@@ -7,15 +7,16 @@ from src.data.util import (
     BoardColor,
     PlayerGender,
     PlayerTitle,
-    TournamentRating,
+    TournamentPairing,
 )
 from src.data.player import TournamentPlayer
-from src.tie_breaks import swiss
+from tie_breaks import individual
 
 
 @dataclass
 class Tournament:
     players_by_id: dict[int, TournamentPlayer] = field(default_factory=dict)
+    pairing: TournamentPairing = TournamentPairing.UNKNOWN
 
 
 class SwissTieBreaks(unittest.TestCase):
@@ -310,7 +311,8 @@ class SwissTieBreaks(unittest.TestCase):
                         5: Pairing(BoardColor.BLACK, 5, Result.LOSS),
                     },
                 ),
-            }
+            },
+            TournamentPairing.STANDARD
         )
 
     def test_points(self):
@@ -338,7 +340,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_win(self):
         assert {
-            player.id: swiss.wins(player, self.tournament)
+            player.id: individual.wins(player, self.tournament)
             for player in self.tournament.players_by_id.values()
         } == {
             2: 3,
@@ -361,7 +363,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_won(self):
         assert {
-            player.id: swiss.games_won(player, self.tournament)
+            player.id: individual.games_won(player, self.tournament)
             for player in self.tournament.players_by_id.values()
         } == {
             2: 3,
@@ -384,7 +386,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_played_with_black(self):
         assert {
-            player.id: swiss.games_played_with_black(player, self.tournament)
+            player.id: individual.games_played_with_black(player, self.tournament)
             for player in self.tournament.players_by_id.values()
         } == {
             2: 3,
@@ -407,7 +409,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_won_with_black(self):
         assert {
-            player.id: swiss.games_won_with_black(player, self.tournament)
+            player.id: individual.games_won_with_black(player, self.tournament)
             for player in self.tournament.players_by_id.values()
         } == {
             2: 1,
@@ -430,7 +432,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_games_elected_to_play(self):
         assert {
-            player.id: swiss.rounds_elected_to_play(player, self.tournament)
+            player.id: individual.rounds_elected_to_play(player, self.tournament)
             for player in self.tournament.players_by_id.values()
         } == {
             2: 5,
@@ -453,7 +455,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_progressive_scores(self):
         assert {
-            player.id: swiss.progressive_scores(player, self.tournament)
+            player.id: individual.progressive_scores(player, self.tournament)
             for player in self.tournament.players_by_id.values()
         } == {
             2: 13,
@@ -476,7 +478,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_progressive_cut1(self):
         assert {
-            player.id: swiss.progressive_scores(player, self.tournament, cut=1)
+            player.id: individual.progressive_scores(player, self.tournament, cut=1)
             for player in self.tournament.players_by_id.values()
         } == {
             2: 12,
@@ -499,7 +501,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_buchholz(self):
         assert {
-            i: swiss.buchholz(
+            i: individual.buchholz(
                 self.tournament.players_by_id[i],
                 self.tournament,
             )
@@ -517,7 +519,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_buchholz_cut1(self):
         assert {
-            i: swiss.buchholz(
+            i: individual.buchholz(
                 self.tournament.players_by_id[i], self.tournament, cut_btm=1
             )
             for i in (5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15)
@@ -539,7 +541,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_adjusted_score(self):
         assert {
-            player.id: swiss.adjusted_score(player, self.tournament)
+            player.id: individual.adjusted_score(player, self.tournament)
             for player in self.tournament.players_by_id.values()
         } == {
             1: 3.5,
@@ -562,7 +564,7 @@ class SwissTieBreaks(unittest.TestCase):
     
     def test_adjusted_score_fore(self):
         assert {
-            player.id: swiss.adjusted_score(
+            player.id: individual.adjusted_score(
                 player, self.tournament, adjust_fore=True
             )
             for player in self.tournament.players_by_id.values()
@@ -587,7 +589,7 @@ class SwissTieBreaks(unittest.TestCase):
     
     def test_fore_buchholz(self):
         assert {
-            player.id: swiss.fore_buchholz(
+            player.id: individual.fore_buchholz(
                 player, self.tournament,
             )
             for player in self.tournament.players_by_id.values()
@@ -607,5 +609,28 @@ class SwissTieBreaks(unittest.TestCase):
             7: 13.5,
             9: 9.5,
             13: 13.5,
+            10: 12.5
+        }
+    
+    def test_buchholz_legacy(self):
+        assert {
+            player.id: individual.buchholz(player, self.tournament, papi_legacy=True)
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 13,
+            3: 14.5,
+            4: 13.5,
+            1: 12.5,
+            16: 12,
+            6: 11,
+            8: 14,
+            11: 12,
+            5: 8,
+            12: 13.5,
+            15: 12,
+            14: 12,
+            13: 15,
+            7: 14,
+            9: 8.5,
             10: 12.5
         }
