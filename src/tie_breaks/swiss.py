@@ -147,14 +147,18 @@ def buchholz(
     max_round: int | None = None,
     cut_top: int = 0,
     cut_btm: int = 0,
-    played: bool = False,
+    played_modifier: bool = False,
 ) -> float:
     """Computes the sum of the scores of each of the opponents of a participant,
     before round *max_round*.
-    Setting *cut_top* will remove the *cut_top* highest contributions, and *cut_btm* the lowest contributions.
+    See FIDE Handbook C.07.8.1
+    Setting *cut_top* will remove the *cut_top* highest contributions, and
+    *cut_btm* the lowest contributions.
+    When cutting the lowest contriibutions, all Voluntary Unplayed Rounds
+    (requested byes and forfeit losses) are cut before any other round is cut.
     Both values must be non-negative, and *cut_top* must be at most equal to *cut_btm*.
-    When *fore_buchholz* is True, Fore Buchholz adjustment is used.
-    When *played* is True, forfeit losses are considered games against the scheduled opponent.
+    When *played_modifier* is True, forfeit losses and wins are considered
+    played against the scheduled opponent.
     """
     # if player.id in (9, 11, 14) and fore_buchholz and max_round is None:
     #     breakpoint()
@@ -172,7 +176,14 @@ def buchholz(
     scores: list[float] = []
     voluntary_unplayed: list[float] = []
     for round_index, pairing in pairings.items():
-        if pairing.unplayed:
+        should_add_dummy = (
+            (pairing.unplayed and not played_modifier) or
+            (played_modifier and pairing.result in 
+                (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE,
+                 Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE)
+            )
+        )
+        if should_add_dummy:
             dummy_points = player.points_after(max_round)
             if pairing.voluntary_unplayed:
                 # We must take those into account to ensure
@@ -202,9 +213,20 @@ def fore_buchholz(
     max_round: int | None = None,
     cut_top: int = 0,
     cut_btm: int = 0,
-    played: bool = False
+    played_modifier: bool = False
 ) -> float:
-
+    """Computes the Buchholz score before round *max_round,
+    as if all paired games for the final round hadended in draws.
+    See FIDE Handbook C.07.8.3
+    When *cut_top* is set, will remove the *cut_top* highest contributions
+    to the Buchholz score.
+    When *cut_btm* is set, will remove the *cut_btm* lowest contributions
+    to the Buchholz score, starting with the Voluntary Unplayed Rounds
+    (requested byes or forfeit losses).
+    Both values mut be non-negative, and *cut_top* must be at most *cut_btm*
+    When *played_modifier* is set to True, forfeit losses and wins are counted
+    as wins against the scheduled opponent.
+    """
     if max_round is None:
         max_round = max(player.pairings) + 1
     if cut_top < 0 or cut_btm < 0:
@@ -228,7 +250,14 @@ def fore_buchholz(
     else:
         dummy_points += Result.DRAW.point_value
     for pairing in pairings.values():
-        if pairing.unplayed:
+        should_add_dummy = (
+            (pairing.unplayed and not played_modifier) or
+            (played_modifier and pairing.result in 
+                (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE,
+                 Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE)
+            )
+        )
+        if should_add_dummy:
             if pairing.voluntary_unplayed:
                 # We must take those into account to ensure
                 # correct computations for cut-1
