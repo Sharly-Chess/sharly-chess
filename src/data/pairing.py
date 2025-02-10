@@ -121,5 +121,5 @@ class Pairing:
 
     def __repr__(self):
         return (
-            f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result})'
+            f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'
         )
