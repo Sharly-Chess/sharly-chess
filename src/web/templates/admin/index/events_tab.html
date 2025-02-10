@@ -36,7 +36,7 @@
             {% for event in nav_tab.events %}
                 {% with
                     card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                    card_class='bg-danger-subtle' if not event.public and admin_auth else ''
+                    card_class='border-danger' if not event.public and admin_auth else ''
                 %}
                     {% include 'event_card.html' %}
                 {% endwith %}
