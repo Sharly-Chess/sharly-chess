@@ -311,6 +311,34 @@ msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr "[Papi-web {version}] Demande d'intégration de fichiers de personnalisation"
 
 #: src/common/engine.py
+msgid "Hello,"
+msgstr "Bonjour,"
+
+#: src/common/engine.py
+msgid "I would like the following custom files to be added to a future version of Papi-web:"
+msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Papi-web :"
+
+#: src/common/engine.py
+msgid "Thanks :-)"
+msgstr "Merci :-)"
+
+#: src/common/engine.py
+msgid "View the files on filebin.net"
+msgstr "Voir les fichiers sur filebin.net"
+
+#: src/common/engine.py
+msgid "Download the files (ZIP archive)"
+msgstr "Télécharger les fichiers (archive ZIP)"
+
+#: src/common/engine.py
+msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
+msgstr "Ajouter ici toutes les informations que vous pensez nécessaires, et si vous n'êtes pas connu·e des développeur·euses, présentez-vous !"
+
+#: src/common/engine.py
+msgid "First name LAST NAME"
+msgstr "Prénom NOM"
+
+#: src/common/engine.py
 msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr "Une fenêtre va s'ouvrir pour envoyer un mél au projet Papi-web ; si la fenêtre ne s'ouvre pas, veuillez cliquer sur le lien ci-dessous ou envoyer manuellement un mél à {email}."
 
@@ -1409,6 +1437,14 @@ msgstr "L'évènement [{uniq_id}] a été créé."
 #: src/web/controllers/admin/event_admin_controller.py
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été archivée ({arch})."
+
+#: src/web/controllers/admin/event_admin_controller.py
+msgid "Personal"
+msgstr "Personnel"
+
+#: src/web/controllers/admin/event_admin_controller.py
+msgid "Chess"
+msgstr "Échecs"
 
 #: src/web/controllers/admin/family_admin_controller.py
 msgid "Please enter the family ID."
@@ -3070,6 +3106,11 @@ msgstr "Ouvrir/fermer le pointage."
 #: src/web/templates/user/screen.html
 msgid "Check-in"
 msgstr "Pointage"
+
+#: src/web/templates/admin/players/check_in_tournaments.html
+#, python-format
+msgid "No Papi file for tournament [%(tournament_uniq_id)s]."
+msgstr "Pas de fichier Papi pour le tournoi [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
 #: src/web/templates/admin/players/tab.html

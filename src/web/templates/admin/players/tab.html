@@ -60,6 +60,7 @@
             class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
         >
             <thead
+                id="players-table-header"
                 class="position-sticky z-2"
                 style="top: var(--header-height);"
             >
@@ -214,7 +215,7 @@
                             </div>
                         </th>
                     {% endif %}
-                    {% if 'gender' in admin_players_filter_columns %}
+                    {% if 'fixed' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center">
                                 {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}
@@ -271,8 +272,8 @@
             </thead>
             <tbody id="players-table-body">
                 {% if admin_players %}
-                    {% for player in admin_players %}
-                        <tr>
+                    {% for player in admin_players.values() %}
+                        <tr id="player-{{ player.id }}">
                             <td class="text-nowrap text-start w-1">
                                 <span class="dropdown">
                                     <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
@@ -329,17 +330,18 @@
                                         {% elif not player.can_check_in_out %}
                                             class="bi-ban text-secondary"
                                             {{ tooltip_attributes('warning', _('Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].', last_name=player.last_name, first_name=player.first_name, tournament_uniq_id=player.tournament.uniq_id), 'right') }}
-                                        {% elif player.check_in %}
-                                            class="bi-check-circle-fill text-success cursor-pointer"
-                                            {{ tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
-                                            hx-patch="{{ url_for('admin-player-check-out', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
                                         {% else %}
-                                            class="bi-circle-fill text-warning cursor-pointer"
-                                            {{ tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
-                                            hx-patch="{{ url_for('admin-player-check-in', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                            hx-target="body"
+                                            {% if player.check_in %}
+                                                class="bi-check-circle-fill text-success cursor-pointer"
+                                                {{ tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
+                                                hx-patch="{{ url_for('admin-player-check-out', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                            {% else %}
+                                                class="bi-circle-fill text-warning cursor-pointer"
+                                                {{ tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                                                hx-patch="{{ url_for('admin-player-check-in', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                            {% endif %}
+                                            hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                            hx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML"
                                             hx-indicator="#please-wait"
                                         {% endif %}
                                     ></i>
@@ -480,6 +482,8 @@
                                                             class="dropdown-item btn {% if not enable %}disabled{% endif %} text-start"
                                                             {% if enable %}
                                                                 hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
+                                                                hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                                                xhx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML"
                                                                 hx-target="body"
                                                                 hx-indicator="#please-wait"
                                                             {% else %}
@@ -506,6 +510,13 @@
                                 </td>
                             {% endif %}
                         </tr>
+                    {% endfor %}
+                    {# return empty rows for when an update removes the player from the players' table #}
+                    {% for player_id in admin_event.players_by_id %}
+                        {% if player_id not in admin_players %}
+                            <tr id="player-{{ player_id }}">
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                 {% else %}
                     <tr>

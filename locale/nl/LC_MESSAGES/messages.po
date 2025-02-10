@@ -388,6 +388,41 @@ msgstr "[Papi-web {version}] Verzoek om integratie van aangepaste bestanden"
 
 #: src/common/engine.py
 #, ai_translation
+msgid "Hello,"
+msgstr "Hallo."
+
+#: src/common/engine.py
+#, ai_translation
+msgid "I would like the following custom files to be added to a future version of Papi-web:"
+msgstr "Ik zou willen dat de volgende aangepaste bestanden worden toegevoegd aan een toekomstige versie van Papi-web:"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Thanks :-)"
+msgstr "Bedankt:-)"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "View the files on filebin.net"
+msgstr "Bestanden bekijken op filebin.net"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Download the files (ZIP archive)"
+msgstr "Bestanden downloaden (ZIP-archief)"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
+msgstr "Voeg hier alle informatie toe die u nodig acht, en als u niet bekend bent bij de ontwikkelaars, stel uzelf dan voor!"
+
+#: src/common/engine.py
+#, ai_translation
+msgid "First name LAST NAME"
+msgstr "Voornaam LAATSTE NAAM"
+
+#: src/common/engine.py
+#, ai_translation
 msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr "Een venster opent om een e-mail te sturen naar het Papi-webproject; Als het venster niet geopend wordt, klik dan op onderstaande link of stuur handmatig een e-mail naar {email}."
 
@@ -1748,6 +1783,16 @@ msgstr "Gebeurtenis [{uniq_id}] is aangemaakt."
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "Gebeurtenis [{uniq_id}] is verwijderd, de database is gearchiveerd ({arch})."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Personal"
+msgstr "Persoonlijk"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
+msgid "Chess"
+msgstr "Schaak"
 
 #: src/web/controllers/admin/family_admin_controller.py
 #, ai_translation
@@ -3730,6 +3775,11 @@ msgstr "Open/sluiten check-in."
 #, ai_translation
 msgid "Check-in"
 msgstr "Check-in"
+
+#: src/web/templates/admin/players/check_in_tournaments.html
+#, ai_translation, python-format
+msgid "No Papi file for tournament [%(tournament_uniq_id)s]."
+msgstr "Geen Papi-bestand voor toernooi [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
 #: src/web/templates/admin/players/tab.html

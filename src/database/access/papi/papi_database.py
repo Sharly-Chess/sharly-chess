@@ -94,15 +94,10 @@ class PapiDatabase(AccessDatabase):
     def delete_player(
         self,
         player_papi_id: int,
-        return_deleted_data: bool = False,
-    ) -> dict[str, str | int | float | None] | None:
+    ):
         """Reads the database and fetches the information of the player with the given Papi ID,
         returns Papi ID of the deleted player if needed."""
-        data: dict[str, str | int | float | None] | None = None
-        if return_deleted_data:
-            data = self.read_player_dict(player_papi_id)
         self._execute('DELETE FROM joueur WHERE Ref = ?', (player_papi_id,))
-        return data
 
     @property
     def next_player_papi_id(self) -> int:
@@ -121,7 +116,7 @@ class PapiDatabase(AccessDatabase):
         fields = ', '.join(f'`{f}`' for f in field_names)
         values = ', '.join(['?'] * len(field_names))
         self._execute(
-            f'INSERT INTO `joueur`({fields}) VALUES ({values})', tuple(params)
+            f'INSERT INTO `joueur`({fields}) VALUES ({values})', params
         )
         return data['Ref']
 

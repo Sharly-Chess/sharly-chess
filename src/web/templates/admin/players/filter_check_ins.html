@@ -4,7 +4,7 @@
             <button
                 class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
             ><i
-                    class="bi-funnel {% if admin_players_filter_check_ins|length not in [0,2] %}text-primary{% endif %}"
+                    class="bi-funnel {% if admin_players_filter_check_ins|length not in [0,3] %}text-danger{% endif %}"
                     {{ tooltip_attributes('info', _('Filter the check-in status.'), 'top') }}
             ></i></button>
             <ul class="dropdown-menu players-filter-check-in p-0">
@@ -46,7 +46,7 @@
                                 id="{{ name }}-{{ loop.index }}"
                                 name="{{ name }}"
                                 value="{{ check_in }}"
-                                {% if (check_in == 0 and none in admin_players_filter_check_ins) or (check_in in admin_players_filter_check_ins) %}checked{% endif %}
+                                {% if (check_in == 0 and none in admin_players_filter_check_ins) or (check_in == 1 and false in admin_players_filter_check_ins) or (check_in == 2 and true in admin_players_filter_check_ins) %}checked{% endif %}
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">

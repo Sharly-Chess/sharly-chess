@@ -446,21 +446,21 @@ class Engine:
             subject: str = _(
                 '[Papi-web {version}] Request for the integration of custom files'
             ).format(version=PapiWebConfig.version)
-            body: str = f'<p>{_("Hello,")}</p>'
-            body += f'<p>{_("I would like the following custom files to be added to a future version of Papi-web:")}</p>'
+            body: str = '<p>' + _('Hello,') + '</p>'
+            body += '<p>' + _('I would like the following custom files to be added to a future version of Papi-web:') + '/p>'
             body += '<ul>'
             for filename in custom_files:
                 body += f'<li>{filename}</li>'
             body += '</ul>'
-            body += f'<p>{_("Thanks :-)")}</p>'
+            body += f'<p>' + _('Thanks :-)') + '/p>'
             body += '<ul>'
             body += (
-                f'<li><a href="{bin_url}">{_("View the files on filebin.net")}</a></li>'
+                f'<li><a href="{bin_url}">' + _('View the files on filebin.net') + '</a></li>'
             )
-            body += f'<li><a href="{bin_zip_url}">{_("Download the files (ZIP archive)")}</a></li>'
+            body += f'<li><a href="{bin_zip_url}">' + _('Download the files (ZIP archive)') + '</a></li>'
             body += '</ul>'
-            body += f'<p>{_("Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!")}</p>'
-            body += f'<p>{_("First name LAST NAME")}</p>'
+            body += '<p>' + _('Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!') + '</p>'
+            body += '<p>' + _('First name LAST NAME') + '/p>'
             mail_url: str = (
                 f'mailto:{PapiWebConfig.mail}?subject={subject}&html-body={body}'
             )

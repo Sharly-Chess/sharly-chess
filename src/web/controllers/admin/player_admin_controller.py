@@ -665,8 +665,8 @@ class PlayerAdminController(AbstractEventAdminController):
                     f'FFE ID [{admin_player.ffe_id}] already present in tournament [{dst_tournament.uniq_id}].',
                 )
             else:
-                src_tournament.delete_player(admin_player)
                 dst_tournament.add_player(admin_player)
+                src_tournament.delete_player(admin_player)
                 Message.success(
                     request,
                     _(

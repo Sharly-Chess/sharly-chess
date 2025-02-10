@@ -957,12 +957,9 @@ class Tournament:
     def add_player(
         self,
         player: Player,
-    ) -> int:
+    ):
         """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            player.id = Player.player_papi_web_id_from_papi_id(
-                self.id, papi_database.next_player_papi_id
-            )
             data: dict[str, str | int | float | None] = {
                 'Ref': player.ref_id,
                 'RefFFE': player.ffe_id,
@@ -987,7 +984,7 @@ class Tournament:
                 'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,
                 'FideCode': player.fide_id if player.fide_id else None,
                 'FideTitre': player.title.to_papi_value,
-                'Pointe': False,
+                'Pointe': player.check_in,
                 'InscriptionRegle': player.paid,
                 'InscriptionDu': player.owed,
                 'Tel': player.phone,
@@ -1003,7 +1000,6 @@ class Tournament:
                 data[f'Rd{round_:0>2}Cl'] = 'F' if round_ < self.current_round else 'R'
             papi_database.write_player_dict(data)
             papi_database.commit()
-        return player.id
 
     def delete_player(
         self,
