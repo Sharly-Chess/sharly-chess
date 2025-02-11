@@ -68,7 +68,7 @@ class EventLoader:
     def event_uniq_ids(self) -> list[str]:
         return [
             file.stem
-            for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_ext}')
+            for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_database_ext}')
         ]
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
@@ -258,7 +258,7 @@ class ArchiveLoader:
         return sorted(
             [
                 Archive(file, file.stem, file.lstat().st_ctime)
-                for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.arch_ext}')
+                for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_archive_ext}')
             ],
             key=lambda archive: archive.date,
         )

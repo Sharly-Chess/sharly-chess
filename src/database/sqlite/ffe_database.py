@@ -49,8 +49,8 @@ class FfeDatabase(SQLiteDatabase):
             ...
     """
 
-    def __init__(self, basename: str = 'ffe', write: bool = False):
-        super().__init__(TMP_DIR / f'{basename}.{PapiWebConfig.event_ext}', write)
+    def __init__(self, write: bool = False):
+        super().__init__(TMP_DIR / f'ffe.{PapiWebConfig.federation_database_ext}', write)
 
     def check(self) -> bool:
         """Check if the database exists and proposes to create it if not, or update it if too old,
