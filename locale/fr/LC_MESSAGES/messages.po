@@ -1167,7 +1167,7 @@ msgstr "La base de données FIDE [{file}] est osbolète ({days} jours), voulez-v
 
 #: src/database/sqlite/fide_database.py
 msgid "Downloading the FIDE database..."
-msgstr "Téléchargement des la base de données de la FIDE..."
+msgstr "Téléchargement de la base de données de la FIDE..."
 
 #: src/ffe/action_selector.py
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
