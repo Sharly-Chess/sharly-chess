@@ -717,12 +717,12 @@ class AbstractIndexAdminController(AbstractAdminController):
                 'archives': archive_loader.archives_sorted_by_date,
                 'disabled': not archive_loader.archives_sorted_by_date,
                 'empty_str': _('No archived events.'),
-                'icon_class': 'bi-archive-fill',
+                'icon_class': 'bi-archive',
             },
             'config': {
                 'title': _('Papi-web configuration'),
                 'template': 'index/config_tab.html',
-                'icon_class': 'bi-gear-fill',
+                'icon_class': 'bi-gear',
                 'disabled': False,
             },
         }
