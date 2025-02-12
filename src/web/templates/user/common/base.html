@@ -3,18 +3,18 @@
 {% block header %}
     <div
         id="user-header"
-        class="header user-header position-sticky top-0 mx-2 border-bottom border-dark"
-        style="background-color: var(--bs-body-bg);"
+        class="header user-header border-bottom border-dark"
+        style="background-color: var(--pw-nav-bg);"
     >
-        <div hx-ext="bs-tabs" class="bs-tabs py-2">
-            <nav class="d-flex align-items-center gap-2">
+        <div hx-ext="bs-tabs" class="bs-tabs mx-3 py-2">
+            <nav class="d-flex align-items-center gap-4">
                  <!-- block user_header_back_button -->
                 {% block user_header_back_button %}
                     USER_HEADER_BACK_BUTTON
                 {% endblock user_header_back_button %}
                 <!-- end block user_header_back_button -->
                 <div
-                    class="nav nav-underline flex-grow-1"
+                    class="nav nav-underline flex-grow-1 d-flex row-gap-1 column-gap-3"
                     style="--bs-nav-underline-gap: 0.5rem;"
                     id="nav-tab"
                     role="tablist"
@@ -42,7 +42,7 @@
     </div>
     <!-- block user_header_refresher -->
     {% block user_header_refresher %}
-            USER_HEADER_REFRESHER
+        USER_HEADER_REFRESHER
     {% endblock user_header_refresher %}
     <!-- end block user_header_refresher -->
 {% endblock header %}

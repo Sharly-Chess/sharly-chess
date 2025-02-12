@@ -36,7 +36,7 @@
 {% block user_header_nav %}
     {% for nav_id, nav_tab in nav_tabs.items() %}
         <button
-            class="user-event-nav-link nav-link {% if nav_tab.disabled %}link-secondary{% endif %} {%if user_event_tab == nav_id %}active{% endif %} fw-bold px-2 py-0"
+            class="user-event-nav-link nav-link {% if nav_tab.disabled %}link-secondary{% endif %} {%if user_event_tab == nav_id %}active{% endif %} py-0"
             id="nav-{{ nav_id }}-tab"
             hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=nav_id) }}"
             preload

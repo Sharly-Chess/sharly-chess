@@ -1235,11 +1235,11 @@ class ScreenType(StrEnum):
             case self.Boards:
                 return 'bi-card-list'
             case self.Input:
-                return 'bi-pencil-fill'
+                return 'bi-pencil'
             case self.Players:
-                return 'bi-people-fill'
+                return 'bi-people'
             case self.Results:
-                return 'bi-trophy-fill'
+                return 'bi-trophy'
             case self.Image:
                 return 'bi-image'
             case _:
