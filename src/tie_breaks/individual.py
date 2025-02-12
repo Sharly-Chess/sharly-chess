@@ -1,7 +1,10 @@
+from bisect import bisect_right
 from collections import namedtuple
+from collections.abc import Iterable
 from contextlib import suppress
 from decimal import Decimal
-from math import floor
+from itertools import groupby
+from math import floor, isclose
 from typing import Literal
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
@@ -621,6 +624,7 @@ def average_rating_opponents(
     return round_fide(average)
 
 
+
 performance_table: list[int] = [
     0, 7, 14, 21, 29, 36, 43, 50, 57, 65, 72, 80, 87, 95, 102, 110, 117,
     125, 133, 141, 149, 158, 166, 175, 184, 193, 202, 211, 220, 230, 240,
@@ -629,6 +633,123 @@ performance_table: list[int] = [
 ]
 
 papi_performance_table: list[int] = performance_table[:-1] + [677, 677]
+
+def performance_bonus(
+    fractional_score: float,
+    /, *,
+    papi_legacy: bool = False,
+) -> int:
+    percent = 100 * fractional_score
+    index = floor(abs(50 - percent))
+    percent_int = floor(percent)
+    if papi_legacy:
+        bonus = papi_performance_table[index]
+        smaller_difference = percent - percent_int
+        if smaller_difference > 0:
+            smaller_difference *= (
+                papi_performance_table[index+1]
+                - bonus
+            )
+            bonus += smaller_difference
+    else:
+        bonus = performance_table[index]
+    if fractional_score < 0.5:
+        bonus *= -1
+    return bonus
+
+
+def papi_estimation(
+    players: Iterable[Player],
+    points: float,
+    /,
+    *,
+    max_round: int | None = None,
+    papi_legacy: bool = False,
+) -> dict[float, list[Player]]:
+    """Compute the estimation for the group with *points* after *max_round*"""
+    players = sorted(players, key=lambda player: player.points_before(max_round))
+    players: dict[float, list[Player]] = {
+        pts: list(group) for pts, group in groupby(players, lambda player: player.points_before(max_round))
+    }
+    point_keys = sorted(list(players.keys()))
+    test_group = players[points]
+    test_group_index = point_keys.index(points)
+    group_ratings = [
+        (rating := player.ratings.get(player.tournament_rating))
+        for player in test_group
+        if rating is not None
+    ]
+    if group_ratings:
+        return sum(group_ratings) / len(group_ratings)
+    max_possible_points = Result.GAIN.point_value * (max_round - 1)
+    superior_ratings = []
+    i = 0
+    while not superior_ratings:
+        i -= 1
+        try:
+            superior_points = point_keys[test_group_index - i]
+            superior_group = players[test_group_index - i]
+            ratings = [
+                (rating := player.ratings.get(player.tounament_rating))
+                for player in superior_group
+                if rating is not None
+            ]
+            if ratings:
+                superior_ratings = ratings
+        except IndexError:
+            break
+    inferior_ratings = []
+    i = 0
+    while not inferior_ratings:
+        i -= 1
+        try:
+            inferiror_group = players[test_group_index + i]
+            inferiror_points = point_keys[test_group_index + i]
+            ratings = [
+                (rating := player.ratings.get(player.tounament_rating))
+                for player in inferiror_group
+                if rating is not None
+            ]
+            if ratings:
+                superior_ratings = ratings
+        except IndexError:
+            break
+    if not superior_ratings and not inferior_ratings:
+        return performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+    test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+    if superior_ratings:
+        superiror_group_bonus = performance_bonus(
+            superior_points / max_possible_points,
+            papi_legacy=papi_legacy
+        )
+    if inferior_ratings:
+        inferior_group_bonus = performance_bonus(
+            inferiror_points / max_possible_points,
+            papi_legacy=papi_legacy
+        )
+    if not inferior_ratings:
+        assert superior_ratings
+        average_rating = sum(superior_ratings) / len(superior_ratings)
+        bonus_difference = superiror_group_bonus - test_group_bonus
+        return average_rating + bonus_difference
+    if not superior_ratings:
+        assert inferior_ratings
+        average_rating = sum(inferior_ratings) / len(inferior_ratings)
+        bonus_difference = test_group_bonus - inferior_group_bonus
+        return average_rating + bonus_difference
+    assert superior_ratings and inferior_ratings
+    superiror_average = sum(superior_ratings) / len(superior_ratings)
+    inferior_average = sum(inferior_ratings) / len(inferior_ratings)
+    if papi_legacy:
+        round_function = round
+    else:
+        round_function = round_fide
+    return round_function(
+        inferior_average 
+        + (superiror_average - inferior_average) 
+        * (test_group_bonus - inferior_group_bonus) 
+        / (superiror_group_bonus - inferior_group_bonus)
+    )
 
 def tournament_performance_rating(
     player: Player,
@@ -648,14 +769,12 @@ def tournament_performance_rating(
     pairings: list[Pairing] = [
         pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index < max_round and pairing.played
     ]
     tournament_rating: TournamentRating = tournament.rating
     ratings = []
     score = 0
     for pairing in pairings:
-        if pairing.unplayed:
-            continue
         opponent = tournament.players_by_id[pairing.opponent_id]
         with suppress(KeyError):
             if papi_legacy:
@@ -673,22 +792,7 @@ def tournament_performance_rating(
         fractional_score = round(score / max_score, 2)
     else:
         fractional_score = score / max_score
-    percent = 100 * fractional_score
-    index = floor(abs(50 - percent))
-    percent_int = floor(percent)
-    if papi_legacy:
-        bonus = papi_performance_table[index]
-        smaller_difference = percent - percent_int
-        if smaller_difference > 0:
-            smaller_difference *= (
-                papi_performance_table[index+1]
-                - bonus
-            )
-            bonus += smaller_difference
-    else:
-        bonus = performance_table[index]
-    if fractional_score < 0.5:
-        bonus *= -1
+    bonus = performance_bonus(fractional_score, papi_legacy=papi_legacy)
     if papi_legacy:
         return round(average + bonus)
     return round_fide(average + bonus)
@@ -725,3 +829,123 @@ def average_performance_rating_opponents(
     
     average = sum(performance_ratings) / len(performance_ratings)
     return round_fide(average)
+
+
+def win_chances(player_rating: int, opponent_rating: int) -> tuple[Decimal, Decimal]:
+    difference = abs(player_rating - opponent_rating)
+    lower_bounds: list[int] = [
+        4, 11, 17, 18, 26, 33, 40, 47, 54, 62, 69, 77, 84, 92, 99,
+        107, 114, 122, 130, 138, 146, 154, 163, 171, 180, 189, 198, 207,
+        216, 226, 236, 246, 257, 268, 279, 291, 303, 316, 329, 345, 358,
+        375, 392, 412, 433, 457, 485, 518, 560, 620, 736,
+    ]
+    difference_index = bisect_right(lower_bounds, difference) - 1
+    high = Decimal(0.5) + Decimal('0.01') * difference_index
+    low = 1 - high
+    if player_rating >= opponent_rating:
+        return high, low
+    else:
+        return low, high
+
+
+def expected_score(player_rating: int, opponent_ratings: Iterable[int]) -> Decimal:
+    chances = [
+        win_chances(player_rating, opponent_rating)
+        for opponent_rating in opponent_ratings
+    ]
+    computed_score = sum(
+        chance[0] * Decimal(Result.GAIN.point_value) 
+        + chance[1] * Decimal(Result.LOSS.point_value)
+        for chance in chances
+    )
+    return computed_score
+
+
+def perfect_tournament_performance(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+) -> int:
+    """Computes the Perfect Tournament Performance for the player, i.e.
+    the lowest rating that a participant should have for their expected score
+    to be greater than or equal to their tournament score before *max_round*.
+    See FIDE Handbook C.07.10.3.
+    This assumes that all players are rated, or at least have an estimation.
+    """
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    played_rounds: list[Pairing] = [
+        pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round and pairing.played 
+    ]
+    actual_score = Decimal(sum(pairing.result.point_value for pairing in played_rounds))
+    if not played_rounds:
+        return 0
+    if actual_score == len(played_rounds) * Result.LOSS.point_value:
+        return -800 + min(tournament.players_by_id[pairing.opponent_id].ratings[player.tournament_rating] for pairing in played_rounds)
+    ratings: list[int] = [
+        tournament.players_by_id[pairing.opponent_id].ratings[player.tournament_rating]
+        for pairing in played_rounds
+    ]
+    first_estimation = tournament_performance_rating(player, tournament, max_round=max_round)
+    first_expected_score = expected_score(first_estimation, ratings)
+    if isclose(first_expected_score, actual_score, abs_tol=0.01):
+        return round_fide(first_estimation)
+    second_estimation = first_estimation * actual_score / first_expected_score
+    second_estimation = round_fide(second_estimation)
+    second_expected_score = expected_score(second_estimation, ratings)
+
+    if first_expected_score >= second_expected_score:
+        low, high = second_estimation, first_estimation
+    else:
+        low, high = first_estimation, second_estimation
+    while not isclose(
+        actual_score,
+        mid_score := expected_score((mid := (low + high) / 2), ratings),
+        abs_tol=0.01
+    ):
+        if mid_score >= actual_score:
+            high = mid
+        else:
+            low = mid
+    mid = round_fide(mid)
+    while (mid_score := expected_score(mid, ratings)) >= actual_score:
+        mid -= 1
+    while (mid_score := expected_score(mid, ratings)) < actual_score:
+        mid += 1
+    return round_fide(mid)
+
+
+def average_perfect_performance(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None
+) -> int:
+    """Computes the average of the Perfect Tournament Performances
+    of the opponents (only those who played) before round *max_round*.
+    See FIDE Hand book C.07.10.5.
+    If *max_round* is None, will compute for all the rounds so far."""
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    pairings: list[Pairing] = [
+        pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round and pairing.played
+    ]
+    ptp = [
+        perfect_tournament_performance(
+            tournament.players_by_id[pairing.opponent_id],
+            tournament,
+            max_round=max_round
+        )
+        for pairing in pairings
+    ]
+
+    if not ptp:
+        return 0
+    return round_fide(sum(ptp) / len(ptp))

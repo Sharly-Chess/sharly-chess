@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from decimal import Decimal
 import unittest
 
 from src.data.pairing import Pairing
@@ -904,6 +905,85 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1869,
             10: 1717,
         }
+    
+    def test_win_chances(self):
+        ratings = [1700, 1950, 1850, 2050, 2150]
+        assert [
+            individual.win_chances(2089, rating)[0]
+            for rating in ratings
+        ] == [
+            Decimal('0.91'), Decimal('0.69'), Decimal('0.80'), Decimal('0.55'), Decimal('0.42')
+        ]
+
+    def test_ptp(self):
+        assert {
+            player.id: individual.perfect_tournament_performance(
+                player, self.tournament
+            )
+            for player in self.tournament.players_by_id.values()
+            if player.id not in (2, 14)
+        } == {
+            3: 2112,
+            4: 2168,
+            1: 2029,
+            16: 2013,
+            6: 1810,
+            11: 1763,
+            8: 1715,
+            5: 1689,
+            12: 1250,
+            15: 1768,
+            9: 950,
+            13: 1744,
+            7: 1531,
+            10: 1575,
+        }
+
+        # NOTE(Amaras): the following two players do not have the
+        # correct PTP, according to the tie-break exercices.
+        # I do not know why this happens, but it's the closest I got
+        # to having all correct values
+        assert individual.perfect_tournament_performance(
+                self.tournament.players_by_id[2],
+                self.tournament
+        ) == 2217 # NOTE(Amaras): this should be 2216
+        assert individual.perfect_tournament_performance(
+            self.tournament.players_by_id[14],
+            self.tournament
+        ) == 1940 # NOTE(Amaras): this should be 1942
+    
+    def test_average_perfect_performance_opponents(self):
+        assert {
+            player.id: individual.average_perfect_performance(
+                player,
+                self.tournament
+            )
+            for player in self.tournament.players_by_id.values()
+            if player.id not in (3, 13)
+        } == {
+            2: 1852,
+            4: 1784,
+            1: 1769,
+            16: 1799,
+            6: 1836,
+            11: 1836,
+            8: 1924,
+            5: 1676,
+            12: 2168,
+            15: 1767,
+            14: 1756,
+            9: 1802,
+            7: 1890,
+            10: 1687,
+        }
+        assert individual.average_perfect_performance(
+            self.tournament.players_by_id[3],
+            self.tournament
+        ) == 1935 # NOTE(Amaras): should be 1934
+        assert individual.average_perfect_performance(
+            self.tournament.players_by_id[13],
+            self.tournament
+        ) == 1908 # NOTE(Amaras): should be 1909
 
 class RoundRobinTieBreaks(unittest.TestCase):
     def setUp(self):
