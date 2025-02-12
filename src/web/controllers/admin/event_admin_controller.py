@@ -107,19 +107,19 @@ class AbstractEventAdminController(AbstractIndexAdminController):
             logging.ERROR: {
                 'name': 'ERROR',
                 'class': 'bg-danger-subtle text-danger-emphasis',
-                'icon_class': 'bi-bug-fill',
+                'icon_class': 'bi-bug',
             },
             logging.CRITICAL: {
                 'name': 'CRITICAL',
                 'class': 'bg-danger text-white',
-                'icon_class': 'bi-sign-stop-fill',
+                'icon_class': 'bi-sign-stop',
             },
         }
         nav_tabs: dict[str, dict[str, str]] = {
             'config': {
                 'title': admin_event.uniq_id,
                 'template': 'event/tab.html',
-                'icon_class': 'bi-gear-fill',
+                'icon_class': 'bi-gear',
             },
             'tournaments': {
                 'title': _('Tournaments ({num})').format(

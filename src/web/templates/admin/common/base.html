@@ -13,17 +13,17 @@
     <div
         id="admin-header"
         class="header admin-header border-bottom"
-        style="background-color: var(--bs-body-bg);"
+        style="background-color: var(--pw-nav-bg);"
     >
         <div hx-ext="bs-tabs" class="bs-tabs mx-3 py-2">
-            <nav class="d-flex align-items-center gap-2">
+            <nav class="d-flex align-items-center gap-4 ">
                 <!-- block admin_header_back_button -->
                 {% block admin_header_back_button %}
                     ADMIN_HEADER_BACK_BUTTON
                 {% endblock admin_header_back_button %}
                 <!-- end block admin_header_back_button -->
                 <div
-                    class="nav nav-underline flex-grow-1"
+                    class="nav nav-underline flex-grow-1 d-flex row-gap-1 column-gap-3"
                     style="--bs-nav-underline-gap: 0.5rem;"
                     id="nav-tab"
                     role="tablist"

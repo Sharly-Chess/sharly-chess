@@ -1,6 +1,15 @@
-* {
-	font-family: Arial;
+@font-face {
+font-family: "AtkinsonHyperlegibleNextVF";
+src: url("/static/fonts/AtkinsonHyperlegibleNextVF-Variable.woff2") format("woff2"),
+        url("/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf") format("truetype");
+font-weight: 400 900; 
+font-style: normal;
 }
+  
+* {
+	font-family: AtkinsonHyperlegibleNextVF, sans-serif;
+}
+
 body {
 	background-repeat: no-repeat;
 	background-position: center center;
@@ -12,6 +21,19 @@ body {
 .input-group:has(.is-invalid) ~ .invalid-feedback,
 .input-group:has(.is-invalid) ~ .invalid-tooltip {
   display: block;
+}
+
+
+.nav-underline .nav-link.active, .nav-underline .show > .nav-link {
+    font-weight: 400;
+}
+
+nav .btn-link {
+    color: var(--bs-nav-link-color);
+}
+
+nav .btn-link:hover {
+    color: var(--bs-nav-hover-color);
 }
 
 .please-wait {
@@ -137,38 +159,66 @@ body {
 
 /* Colour themes */
 
-body[data-bs-theme=light] {
-    --bs-primary: #d7c9aa;
-    --bs-primary-rgb: 215, 201, 170;
-    --bs-body-bg: #fff;
-    --bs-link-color: #978d77;
-    --bs-link-color-rgb: 151, 141, 119;
-    --bs-link-hover-color: #918876;
+.text-contrast {
+    color: var(--pw-contrast-text);
+}
 
-    --pw-dark-text: #212529;
+body[data-bs-theme=light] {
+    --bs-primary: #777;
+    --bs-primary-rgb: 119, 119, 119;
+    --bs-body-bg: #fff;
+    --bs-link-color: #777;
+    --bs-link-color-rgb: 119, 119, 119;
+    --bs-link-hover-color: #888;
+
+    --pw-contrast-text: #fff;
+    --pw-nav-bg: #eee;
+}
+
+body[data-bs-theme=light] .nav {
+    --bs-nav-link-color: #000;
+    --bs-nav-link-hover-color: #000;
 }
 
 body[data-bs-theme=light] .btn-primary {
-    --bs-btn-color: var(--pw-dark-text);
+    --bs-btn-color: var(--pw-contrast-text);
     --bs-btn-bg: var(--bs-primary);
     --bs-btn-border-color: #d7c9aa;
-    --bs-btn-hover-color: var(--pw-dark-text);
+    --bs-btn-hover-color: var(--pw-contrast-text);
     --bs-btn-hover-bg: var(--bs-link-hover-color);
     --bs-btn-hover-border-color: var(--bs-link-hover-color);
     --bs-btn-focus-shadow-rgb: 49, 132, 253;
-    --bs-btn-active-color: var(--pw-dark-text);;
+    --bs-btn-active-color: var(--pw-contrast-text);;
     --bs-btn-active-bg: var(--bs-link-hover-color);
     --bs-btn-active-border-color: var(--bs-link-hover-color);
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: var(--pw-dark-text);
+    --bs-btn-disabled-color: var(--pw-contrast-text);
     --bs-btn-disabled-bg: #9d9e98;
     --bs-btn-disabled-border-color: #9d9e98;
+}
+
+[data-bs-theme=light] .btn-outline-primary {
+    --bs-btn-color: var(--bs-link-color);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-color: var(--pw-contrast-text);
+    --bs-btn-hover-bg: var(--bs-primary);
+    --bs-btn-hover-border-color: var(--bs-primary);
+    --bs-btn-focus-shadow-rgb: 13, 110, 253;
+    --bs-btn-active-color: var(--pw-contrast-text);;
+    --bs-btn-active-bg: var(--bs-link-hover-color);
+    --bs-btn-active-border-color: var(--bs-link-hover-color);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #9d9e98;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #9d9e98;
+    --bs-gradient: none;
 }
 
 [data-bs-theme=dark] {
     --bs-primary: #d7c9aa;
     --bs-primary-rgb: 215, 201, 170;
-    --pw-dark-text: #212529;
+    --pw-contrast-text: #212529;
+    --pw-nav-bg: #313334;
 
     /* Copy/pasted from the BS docs for easier editing */
     color-scheme: dark;
@@ -226,19 +276,24 @@ body[data-bs-theme=light] .btn-primary {
     --bs-form-invalid-border-color: #ea868f;
 }
 
+[data-bs-theme=dark] .nav {
+    --bs-nav-link-color: #fff;
+    --bs-nav-link-hover-color: #fff;
+}
+
 [data-bs-theme=dark] .btn-primary {
-    --bs-btn-color: var(--pw-dark-text);
+    --bs-btn-color: var(--pw-contrast-text);
     --bs-btn-bg: var(--bs-primary);
     --bs-btn-border-color: #d7c9aa;
-    --bs-btn-hover-color: var(--pw-dark-text);
+    --bs-btn-hover-color: var(--pw-contrast-text);
     --bs-btn-hover-bg: var(--bs-link-hover-color);
     --bs-btn-hover-border-color: var(--bs-link-hover-color);
     --bs-btn-focus-shadow-rgb: 49, 132, 253;
-    --bs-btn-active-color: var(--pw-dark-text);;
+    --bs-btn-active-color: var(--pw-contrast-text);;
     --bs-btn-active-bg: var(--bs-link-hover-color);
     --bs-btn-active-border-color: var(--bs-link-hover-color);
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: var(--pw-dark-text);
+    --bs-btn-disabled-color: var(--pw-contrast-text);
     --bs-btn-disabled-bg: #9d9e98;
     --bs-btn-disabled-border-color: #9d9e98;
 }
@@ -246,11 +301,11 @@ body[data-bs-theme=light] .btn-primary {
 [data-bs-theme=dark] .btn-outline-primary {
     --bs-btn-color: var(--bs-link-color);
     --bs-btn-border-color: var(--bs-primary);
-    --bs-btn-hover-color: var(--pw-dark-text);
+    --bs-btn-hover-color: var(--pw-contrast-text);
     --bs-btn-hover-bg: var(--bs-primary);
     --bs-btn-hover-border-color: var(--bs-primary);
     --bs-btn-focus-shadow-rgb: 13, 110, 253;
-    --bs-btn-active-color: var(--pw-dark-text);;
+    --bs-btn-active-color: var(--pw-contrast-text);;
     --bs-btn-active-bg: var(--bs-link-hover-color);
     --bs-btn-active-border-color: var(--bs-link-hover-color);
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
@@ -271,9 +326,9 @@ body[data-bs-theme=light] .btn-primary {
 [data-bs-theme=dark] .dropdown-menu {
     --bs-dropdown-bg: #515b5c;
     --bs-dropdown-link-color: var(--bs-body-color);
-    --bs-dropdown-link-hover-color: var(--pw-dark-text);
+    --bs-dropdown-link-hover-color: var(--pw-contrast-text);
     --bs-dropdown-link-hover-bg: var(--bs-primary);
-    --bs-dropdown-link-active-color: var(--pw-dark-text);
+    --bs-dropdown-link-active-color: var(--pw-contrast-text);
     --bs-dropdown-link-active-bg: var(--bs-primary);
     --bs-dropdown-link-disabled-color: var(--bs-tertiary-color);
 }
@@ -302,7 +357,7 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] table.prominent thead th {
     background-color: var(--bs-primary);
-    color: var(--pw-dark-text);
+    color: var(--pw-contrast-text);
     padding: 5px;
     border-bottom: 7px solid var(--bs-body-bg);
     vertical-align: middle;
