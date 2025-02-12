@@ -8,6 +8,12 @@ body {
 	background-attachment: fixed;
 	overflow: auto !important;
 }
+
+.input-group:has(.is-invalid) ~ .invalid-feedback,
+.input-group:has(.is-invalid) ~ .invalid-tooltip {
+  display: block;
+}
+
 .please-wait {
     pointer-events: none;
     height: 80px;
