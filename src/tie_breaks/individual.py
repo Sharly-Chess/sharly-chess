@@ -1,10 +1,12 @@
 from collections import namedtuple
 from contextlib import suppress
+from decimal import Decimal
+from math import floor
 from typing import Literal
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
 from data.pairing import Pairing
-from data.util import Result, BoardColor, TournamentPairing
+from data.util import Result, BoardColor, TournamentPairing, TournamentRating
 
 
 def wins(player: Player, _tournament: Tournament, /, *, max_round: int | None = None) -> int:
@@ -234,8 +236,8 @@ def buchholz(
     if cut_top < 0 or cut_btm < 0:
         raise ValueError(
             f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
-    elif cut_top > cut_btm:
-        raise ValueError('Top cut must be at most bottom cut')
+    elif cut_top + cut_btm >= max_round:
+        return 0
     pairings: dict[Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
@@ -321,8 +323,8 @@ def fore_buchholz(
     if cut_top < 0 or cut_btm < 0:
         raise ValueError(
             f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
-    elif cut_top > cut_btm:
-        raise ValueError('Top cut must be at most bottom cut')
+    elif cut_top + cut_btm >= max_round:
+        return 0
     pairings: dict[Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
@@ -458,6 +460,8 @@ def sonneborn_berger(
         max_round = max(player.pairings) + 1
     if cut < 0:
         raise ValueError(f"cut must be non-negative, got: {cut}")
+    if cut >= max_round:
+        return 0
     if tournament.pairing == TournamentPairing.BERGER:
         played_modifier = True
     pairings: dict[int, Pairing] = {
@@ -559,3 +563,132 @@ def koya(
         if opponent_score >= limit:
             score += pairing.result.point_value
     return score
+
+
+def round_fide(num: float):
+    lowest_int = int(num)
+    if num - lowest_int >= 0.5:
+        return lowest_int + 1
+    return lowest_int
+
+
+def average_rating_opponents(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+    cut_btm: int = 0,
+    cut_top: int = 0,
+) -> int:
+    """Computes the average rating of opponents for *player* before round
+    *max_round*. If *max_round* is None, computes the average of all opponents.
+    Only opponents met over the board will be counted.
+    See FIDE Handbook C.07.10.1
+    WARNING: This assumes everyone has a rating; if an opponent does not have
+    a rating, they will be removed from consideration.
+    If *cut_btm* is set, will remove the lowest *cut_btm* ratings.
+    If *cut_top* is set, will remove the highest *cut_top* ratings."""
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    if cut_btm < 0 or cut_top < 0:
+        raise ValueError(
+            f'Cut values must be non-negative, got: {cut_btm=}, {cut_top=}'
+        )
+    if cut_top + cut_btm >= max_round:
+        return 0
+    pairings: list[Pairing] = [
+        pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round
+    ]
+    tournament_rating: TournamentRating = tournament.rating
+    ratings = []
+    for pairing in pairings:
+        if pairing.unplayed:
+            continue
+        opponent = tournament.players_by_id[pairing.opponent_id]
+        with suppress(KeyError):
+            ratings.append(opponent.ratings[tournament_rating])
+    ratings = sorted(ratings)
+    if cut_top:
+        ratings = ratings[cut_btm:-cut_top]
+    else:
+        ratings = ratings[cut_btm:]
+    if not ratings:
+        return 0
+    average = sum(ratings) / len(ratings)
+    return round_fide(average)
+
+
+performance_table: list[int] = [
+    0, 7, 14, 21, 29, 36, 43, 50, 57, 65, 72, 80, 87, 95, 102, 110, 117,
+    125, 133, 141, 149, 158, 166, 175, 184, 193, 202, 211, 220, 230, 240,
+    251, 262, 273, 284, 296, 309, 322, 336, 351, 366, 383, 401, 422,
+    444, 470, 501, 538, 589, 677, 800
+]
+
+papi_performance_table: list[int] = performance_table[:-1] + [677, 677]
+
+def tournament_performance_rating(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+    papi_legacy: bool = False,
+) -> int:
+    """Computes the Tournament Performance Rating of the player before
+    round *max_round*, i.e. the Average Rating of the Opponents, added
+    to a number resulting from the conversion of the fractional score
+    into RD (see FIDE Rating Regulations for the Cnversion Table).
+    See FIDE Handbook C.07.10.2."""
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    pairings: list[Pairing] = [
+        pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round
+    ]
+    tournament_rating: TournamentRating = tournament.rating
+    ratings = []
+    score = 0
+    for pairing in pairings:
+        if pairing.unplayed:
+            continue
+        opponent = tournament.players_by_id[pairing.opponent_id]
+        with suppress(KeyError):
+            if papi_legacy:
+                rating = min(
+                    player.ratings[tournament_rating] + 400,
+                    max(player.ratings[tournament_rating] - 400, 
+                        opponent.ratings[tournament_rating]))
+            else:
+                rating = opponent.ratings[tournament_rating]
+            ratings.append(rating)
+            score += pairing.result.point_value
+    max_score = len(ratings) * Result.GAIN.point_value
+    average = sum(ratings) / len(ratings)
+    if not papi_legacy:
+        fractional_score = round(score / max_score, 2)
+    else:
+        fractional_score = score / max_score
+    percent = 100 * fractional_score
+    index = floor(abs(50 - percent))
+    percent_int = floor(percent)
+    if papi_legacy:
+        bonus = papi_performance_table[index]
+        smaller_difference = percent - percent_int
+        if smaller_difference > 0:
+            smaller_difference *= (
+                papi_performance_table[index+1]
+                - bonus
+            )
+            bonus += smaller_difference
+    else:
+        bonus = performance_table[index]
+    if fractional_score < 0.5:
+        bonus *= -1
+    if papi_legacy:
+        return round(average + bonus)
+    return round_fide(average + bonus)

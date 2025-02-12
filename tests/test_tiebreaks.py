@@ -18,6 +18,7 @@ from tie_breaks import individual
 class TieBreakTournament:
     players_by_id: dict[int, TournamentPlayer] = field(default_factory=dict)
     pairing: TournamentPairing = TournamentPairing.UNKNOWN
+    rating: TournamentRating = TournamentRating.STANDARD
 
 
 class SwissTieBreaks(unittest.TestCase):
@@ -33,7 +34,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD, 2100},
+                    {TournamentRating.STANDARD: 2150},
                     tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 10, Result.GAIN),
@@ -776,6 +777,106 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1.25,
             9: 2.25,
             10: 0,
+        }
+    
+    def test_aro(self):
+        assert {
+            player.id: individual.average_rating_opponents(
+                player, self.tournament
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 1880,
+            3: 1940,
+            4: 1888,
+            1: 1820,
+            16: 1820,
+            6: 1813,
+            11: 1863,
+            8: 1730,
+            5: 1690,
+            12: 2050,
+            15: 1860,
+            14: 1800,
+            9: 1975,
+            13: 1930,
+            7: 1760,
+            10: 1880,
+        }
+
+    def test_aro_cut1(self):
+        assert {
+            player.id: individual.average_rating_opponents(
+                player, self.tournament, cut_btm=1
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 1988,
+            3: 2000,
+            4: 1983,
+            1: 1900,
+            16: 1900,
+            6: 1900,
+            11: 2000,
+            8: 1800,
+            5: 1738,
+            15: 1963,
+            14: 1900,
+            12: 0,
+            9: 2200,
+            13: 2025,
+            7: 1838,
+            10: 1975,
+        }
+
+    def test_tpr(self):
+        assert {
+            player.id: individual.tournament_performance_rating(
+                player, self.tournament
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 2120,
+            3: 2089,
+            4: 2081,
+            1: 1969,
+            16: 1969,
+            6: 1813,
+            11: 1776,
+            8: 1730,
+            5: 1690,
+            14: 1925,
+            15: 1788,
+            12: 1250,
+            13: 1781,
+            7: 1611,
+            9: 1175,
+            10: 1640,
+        }
+    
+    def test_tpr_legacy(self):
+        assert {
+            player.id: individual.tournament_performance_rating(
+                player, self.tournament, papi_legacy=True
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 2180,
+            4: 2093,
+            3: 2089,
+            1: 2069,
+            16: 1899,
+            6: 1812,
+            11: 1772,
+            8: 1730,
+            5: 1710,
+            14: 1922,
+            15: 1708,
+            12: 1373,
+            13: 1731,
+            7: 1621,
+            9: 1298,
+            10: 1640,
         }
 
 class RoundRobinTieBreaks(unittest.TestCase):

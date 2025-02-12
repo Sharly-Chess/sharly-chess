@@ -6,7 +6,7 @@
 /custom/
 /docs/images/src/
 /papi-web.ini
-/papi-web.ini.*
+papi-web.ini.*
 tmp/
 db/
 __pycache__/
