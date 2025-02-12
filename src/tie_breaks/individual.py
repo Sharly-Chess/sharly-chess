@@ -692,3 +692,36 @@ def tournament_performance_rating(
     if papi_legacy:
         return round(average + bonus)
     return round_fide(average + bonus)
+
+
+def average_performance_rating_opponents(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+) -> float:
+    """Computes the average of the tournament performance rating of the
+    opponents before *max_round*, only taking played games into account.
+    See FIDE Handbook C.07.10.4.
+    If *max_round* is None, will compute the TRP of all the opponents so far.
+    """
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    played_games: list[Pairing] = [
+        pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round and pairing.played
+    ]
+    performance_ratings = []
+    for pairing in played_games:
+        opponent: Player = tournament.players_by_id[pairing.opponent_id]
+        opponent_tpr = tournament_performance_rating(
+            opponent,
+            tournament,
+            max_round=max_round
+        )
+        performance_ratings.append(opponent_tpr)
+    
+    average = sum(performance_ratings) / len(performance_ratings)
+    return round_fide(average)

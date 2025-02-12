@@ -878,6 +878,32 @@ class SwissTieBreaks(unittest.TestCase):
             9: 1298,
             10: 1640,
         }
+    
+    def test_apro(self):
+        assert {
+            player.id: individual.average_performance_rating_opponents(
+                player,
+                self.tournament,
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 1856,
+            3: 1904,
+            4: 1772,
+            1: 1789,
+            16: 1805,
+            6: 1846,
+            11: 1840,
+            8: 1915,
+            5: 1719,
+            12: 2081,
+            15: 1776,
+            14: 1775,
+            9: 1805,
+            13: 1879,
+            7: 1869,
+            10: 1717,
+        }
 
 class RoundRobinTieBreaks(unittest.TestCase):
     def setUp(self):
