@@ -8,20 +8,21 @@ from src.data.util import (
     PlayerGender,
     PlayerTitle,
     TournamentPairing,
+    TournamentRating
 )
 from src.data.player import TournamentPlayer
 from tie_breaks import individual
 
 
 @dataclass
-class Tournament:
+class TieBreakTournament:
     players_by_id: dict[int, TournamentPlayer] = field(default_factory=dict)
     pairing: TournamentPairing = TournamentPairing.UNKNOWN
 
 
 class SwissTieBreaks(unittest.TestCase):
     def setUp(self):
-        self.tournament = Tournament(
+        self.tournament = TieBreakTournament(
             {
                 2: TournamentPlayer(
                     2,
@@ -32,7 +33,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    2100,
+                    {TournamentRating.STANDARD, 2100},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 10, Result.GAIN),
                         2: Pairing(BoardColor.WHITE, 7, Result.GAIN),
@@ -50,7 +52,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    2200,
+                    {TournamentRating.STANDARD: 2200},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 9, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 13, Result.DRAW),
@@ -68,7 +71,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    2100,
+                    {TournamentRating.STANDARD: 2100},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 11, Result.DRAW),
                         2: Pairing(BoardColor.BLACK, 6, Result.GAIN),
@@ -86,7 +90,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    2050,
+                    {TournamentRating.STANDARD: 2050},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 12, Result.GAIN),
                         2: Pairing(None, None, Result.HALF_POINT_BYE),
@@ -104,7 +109,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1450,
+                    {TournamentRating.STANDARD: 1450},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 8, Result.DRAW),
                         2: Pairing(BoardColor.BLACK, 11, Result.GAIN),
@@ -122,7 +128,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1950,
+                    {TournamentRating.STANDARD: 1950},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 14, Result.LOSS),
                         2: Pairing(BoardColor.WHITE, 3, Result.LOSS),
@@ -140,7 +147,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    2000,
+                    {TournamentRating.STANDARD: 2000},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 13, Result.LOSS),
                         2: Pairing(BoardColor.BLACK, 15, Result.LOSS),
@@ -158,7 +166,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1850,
+                    {TournamentRating.STANDARD: 1850},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 16, Result.DRAW),
                         2: Pairing(BoardColor.WHITE, 14, Result.GAIN),
@@ -176,7 +185,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1700,
+                    {TournamentRating.STANDARD: 1700},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 3, Result.DRAW),
                         2: Pairing(BoardColor.WHITE, 16, Result.LOSS),
@@ -194,7 +204,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1650,
+                    {TournamentRating.STANDARD: 1650},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 4, Result.LOSS),
                         2: Pairing(None, None, Result.PAIRING_ALLOCATED_BYE),
@@ -212,7 +223,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1550,
+                    {TournamentRating.STANDARD: 1550},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 6, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 8, Result.LOSS),
@@ -230,7 +242,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FIDE',
                     PlayerTitle.NONE,
-                    1500,
+                    {TournamentRating.STANDARD: 1500},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 7, Result.LOSS),
                         2: Pairing(BoardColor.WHITE, 5, Result.GAIN),
@@ -248,7 +261,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1900,
+                    {TournamentRating.STANDARD: 1900},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 15, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 2, Result.LOSS),
@@ -266,7 +280,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1800,
+                    {TournamentRating.STANDARD: 1800},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 1, Result.LOSS),
                         2: Pairing(BoardColor.WHITE, 10, Result.LOSS),
@@ -284,7 +299,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1600,
+                    {TournamentRating.STANDARD: 1600},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 5, Result.GAIN),
                         2: Pairing(BoardColor.WHITE, 1, Result.DRAW),
@@ -302,7 +318,8 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    1750,
+                    {TournamentRating.STANDARD: 1750},
+                    tournament_rating=TournamentRating.STANDARD,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 2, Result.LOSS),
                         2: Pairing(BoardColor.BLACK, 9, Result.GAIN),
@@ -633,4 +650,253 @@ class SwissTieBreaks(unittest.TestCase):
             7: 14,
             9: 8.5,
             10: 12.5
+        }
+    
+    def test_buchholz_cut_legacy(self):
+        assert {
+            player.id: individual.buchholz(player, self.tournament, papi_legacy=True, cut_btm=1)
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 12,
+            3: 12.5,
+            4: 12,
+            1: 11,
+            16: 10.5,
+            6: 10,
+            8: 12.5,
+            11: 11,
+            5: 7,
+            12: 12,
+            15: 11,
+            14: 10.5,
+            13: 12.5,
+            7: 12,
+            9: 8,
+            10: 11,
+        }
+
+    def test_buchholz_median_legacy(self):
+        assert {
+            player.id: individual.buchholz(
+                player,
+                self.tournament,
+                papi_legacy=True,
+                cut_btm=1,
+                cut_top=1,
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 8.5,
+            3: 8.5,
+            4: 8.5,
+            1: 7,
+            16: 6.5,
+            6: 6.5,
+            8: 9,
+            11: 7.5,
+            5: 5,
+            12: 8.5,
+            15: 7.5,
+            14: 7.5,
+            13: 9,
+            7: 8,
+            9: 4.5,
+            10: 7,
+        }
+ 
+    def test_aob(self):
+        aob = individual.average_of_buchholz
+        assert {
+            player.id: round(aob(player, self.tournament), 2)
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 13.6,
+            3: 13.4,
+            4: 13.38,
+            16: 13.3,
+            1: 12.6,
+            6: 13.25,
+            5: 13.4,
+            8: 13,
+            11: 12.75,
+            12: 15,
+            14: 13.17,
+            15: 12.2,
+            9: 12.75,
+            13: 12.1,
+            7: 11.9,
+            10: 10.9,
+        }
+    
+    def test_sonneborn_berger_swiss(self):
+        assert {
+            player.id: individual.sonneborn_berger(
+                player, self.tournament
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 9.5,
+            3: 10.5,
+            4: 9.75,
+            1: 8,
+            16: 7.25,
+            6: 6.5,
+            11: 5.75,
+            8: 5.25,
+            5: 4.25,
+            14: 4.5,
+            12: 4,
+            15: 3.5,
+            13: 4.25,
+            7: 3.25,
+            9: 2.25,
+            10: 1.5
+        }
+    
+    def test_sb_cut1_swiss(self):
+        assert {
+            player.id : individual.sonneborn_berger(
+                player, self.tournament, cut=1
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 8.5,
+            3: 9.25,
+            4: 8,
+            1: 7.25,
+            16: 5.75,
+            6: 5.5,
+            11: 4.25,
+            8: 3.75,
+            5: 3.25,
+            12: 4,
+            14: 3,
+            15: 2.5,
+            13: 4.25,
+            7: 1.25,
+            9: 2.25,
+            10: 0,
+        }
+
+class RoundRobinTieBreaks(unittest.TestCase):
+    def setUp(self):
+        self.tournament = TieBreakTournament(
+            pairing=TournamentPairing.BERGER,
+            players_by_id={
+                1: TournamentPlayer(
+                    1, 'Alyx', '', None, PlayerGender.NONE, 0, 'FID',
+                    PlayerTitle.NONE, {TournamentRating.STANDARD: 2200},
+                    tournament_rating=TournamentRating.STANDARD,
+                    pairings = {
+                        1: Pairing(BoardColor.WHITE, 5, Result.DRAW),
+                        2: Pairing(BoardColor.WHITE, 2, Result.GAIN),
+                        3: Pairing(BoardColor.BLACK, 3, Result.GAIN),
+                        4: Pairing(BoardColor.WHITE, 4, Result.LOSS),
+                        5: Pairing(BoardColor.BLACK, 6, Result.GAIN)
+                    }
+                ),
+                2: TournamentPlayer(
+                    2, 'Bruno', '', None, PlayerGender.NONE, 0, 'FID',
+                    PlayerTitle.NONE, {TournamentRating.STANDARD: 2150},
+                    tournament_rating=TournamentRating.STANDARD,
+                    pairings={
+                        1: Pairing(BoardColor.WHITE, 6, Result.GAIN),
+                        2: Pairing(BoardColor.BLACK, 1, Result.LOSS),
+                        3: Pairing(BoardColor.WHITE, 5, Result.GAIN),
+                        4: Pairing(BoardColor.WHITE, 3, Result.DRAW),
+                        5: Pairing(BoardColor.BLACK, 4, Result.GAIN)
+                    }
+                ),
+                3: TournamentPlayer(
+                    3, 'Charline', '', None, PlayerGender.NONE, 0, 'FID',
+                    PlayerTitle.NONE, {TournamentRating: 2100},
+                    tournament_rating=TournamentRating.STANDARD,
+                    pairings={
+                        1: Pairing(BoardColor.WHITE, 4, Result.GAIN),
+                        2: Pairing(BoardColor.BLACK, 6, Result.GAIN),
+                        3: Pairing(BoardColor.WHITE, 1, Result.LOSS),
+                        4: Pairing(BoardColor.BLACK, 2, Result.DRAW),
+                        5: Pairing(BoardColor.WHITE, 5, Result.GAIN)
+                    }
+                ),
+                4: TournamentPlayer(
+                    4, 'David', '', None, PlayerGender.NONE, 0, 'FID',
+                    PlayerTitle.NONE, {TournamentRating.STANDARD: 2050},
+                    tournament_rating=TournamentRating.STANDARD,
+                    pairings={
+                        1: Pairing(BoardColor.BLACK, 3, Result.LOSS),
+                        2: Pairing(BoardColor.BLACK, 5, Result.LOSS),
+                        3: Pairing(BoardColor.WHITE, 6, Result.DRAW),
+                        4: Pairing(BoardColor.BLACK, 1, Result.GAIN),
+                        5: Pairing(BoardColor.WHITE, 2, Result.LOSS)
+                    }
+                ),
+                5: TournamentPlayer(
+                    5, 'Franck', '', None, PlayerGender.NONE, 0, 'FID',
+                    PlayerTitle.NONE, {TournamentRating.STANDARD: 1950},
+                    tournament_rating=TournamentRating.STANDARD,
+                    pairings={
+                        1: Pairing(BoardColor.BLACK, 1, Result.DRAW),
+                        2: Pairing(BoardColor.WHITE, 4, Result.GAIN),
+                        3: Pairing(BoardColor.BLACK, 2, Result.LOSS),
+                        4: Pairing(BoardColor.WHITE, 6, Result.FORFEIT_LOSS),
+                        5: Pairing(BoardColor.BLACK, 3, Result.LOSS)
+                    }
+                ),
+                6: TournamentPlayer(
+                    6, 'Helene', '', None, PlayerGender.NONE, 0, 'FID',
+                    PlayerTitle.NONE, {TournamentRating.STANDARD: 2000},
+                    tournament_rating=TournamentRating.STANDARD,
+                    pairings={
+                        1: Pairing(BoardColor.BLACK, 2, Result.LOSS),
+                        2: Pairing(BoardColor.WHITE, 3, Result.LOSS),
+                        3: Pairing(BoardColor.BLACK, 4, Result.DRAW),
+                        4: Pairing(BoardColor.BLACK, 5, Result.FORFEIT_GAIN),
+                        5: Pairing(BoardColor.WHITE, 1, Result.LOSS)
+                    }
+                )
+            }
+        )
+    
+    def test_all_players_met_each_other(self):
+        assert {
+            player.id: [pairing.opponent_id for pairing in player.pairings.values()]
+            for player in self.tournament.players_by_id.values()
+        } == {
+            1: [5, 2, 3, 4, 6],
+            2: [6, 1, 5, 3, 4],
+            3: [4, 6, 1, 2, 5],
+            4: [3, 5, 6, 1, 2],
+            5: [1, 4, 2, 6, 3],
+            6: [2, 3, 4, 5, 1],
+        }
+
+    def test_points_are_correct(self):
+        assert {
+            player.id: player.total_points()
+            for player in self.tournament.players_by_id.values()
+        } == {
+            1: 3.5, 2: 3.5, 3: 3.5, 4: 1.5, 5: 1.5, 6: 1.5
+        }
+    
+    def test_sonneborn_berger_round_robin(self):
+        assert {
+            player.id: individual.sonneborn_berger(
+                player, self.tournament
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            1: 9.25, 2: 6.25, 3: 6.25,
+            4: 4.25, 5: 3.25, 6: 2.25
+        }
+    
+    def test_sb_cut1_round_robin(self):
+        assert {
+            player.id: individual.sonneborn_berger(
+                player, self.tournament, cut=1
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            1: 9.25, 2: 4.75, 3: 4.75,
+            4: 4.25, 5: 3.25, 6: 1.5
         }

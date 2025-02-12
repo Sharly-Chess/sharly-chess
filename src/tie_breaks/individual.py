@@ -1,3 +1,6 @@
+from collections import namedtuple
+from contextlib import suppress
+from typing import Literal
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
 from data.pairing import Pairing
@@ -100,7 +103,7 @@ def rounds_elected_to_play(
 
 def adjusted_score(
     player: Player,
-    _tournament: Tournament,
+    tournament: Tournament,
     /,
     *,
     max_round: int | None = None,
@@ -114,6 +117,8 @@ def adjusted_score(
     When *papi_legacy* is True, all unplayed rounds are counted as draws."""
     if max_round is None:
         max_round = max(player.pairings) + 1
+    if tournament.pairing == TournamentPairing.BERGER:
+        return player.points_before(max_round)
     score = 0
     for round_index, pairing in player.pairings.items():
         if round_index > max_round:
@@ -142,6 +147,61 @@ def adjusted_score(
         else:
             score += pairing.result.point_value
     return score
+
+
+def dummy_score(
+    player: Player,
+    pairing: Pairing,
+    /,
+    *,
+    max_round: int = 1,
+    round_index: int = 1,
+    papi_legacy: bool = False,
+    fore_modifier: bool = False,
+    dummy_type: Literal['BH'] | Literal['SB'] = 'BH',
+) -> float | tuple[float, Result]:
+    """Computes the dummy score for the given pairing before *max_round*.
+    If *dummy_type* is 'BH', returns the dummy score alone.
+    If *dummy_type* is 'SB', returns the dummy score and the equivalent result
+    for the given *pairing*.
+    The given *pairing* must be an unplayed round, otherwise this will give a ValueError.
+    If *papi_legacy* is True, *round_index* is used in the computation,
+    and thus must be set correctly.
+    *round_index* is not used if *papi_legacy* is False.
+    """
+    if dummy_type == 'BH':
+        if not papi_legacy and not fore_modifier:
+            return player.points_before(max_round) 
+        if fore_modifier:
+            dummy = player.points_before(max_round - 1)
+            last_pairing = player.pairings[max_round - 1]
+            if last_pairing.result in (
+                Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE,
+                Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE
+            ):
+                dummy += last_pairing.result.point_value
+            else:
+                dummy += Result.DRAW.point_value
+            return dummy
+        dummy = player.points_before(round_index) + Result.DRAW.point_value * (max_round - round_index - 1)
+        match pairing.result:
+            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+                return dummy + Result.LOSS.point_value
+            case Result.HALF_POINT_BYE:
+                return dummy + Result.DRAW.point_value
+            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
+                return dummy + Result.GAIN.point_value
+    elif dummy_type == 'SB':
+        dummy = player.points_before(max_round)
+        match pairing.result:
+            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+                return dummy, Result.GAIN
+            case Result.HALF_POINT_BYE:
+                return dummy, Result.DRAW
+            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
+                return dummy, Result.LOSS
+            case _:
+                return pairing.result
 
 
 def buchholz(
@@ -181,6 +241,15 @@ def buchholz(
         for round_index, pairing in player.pairings.items()
         if round_index < max_round
     }
+    if tournament.pairing == TournamentPairing.BERGER:
+        return sum(
+            adjusted_score(
+                tournament.players_by_id[pairing.opponent_id],
+                tournament,
+                max_round=max_round,
+                papi_legacy=papi_legacy)
+            for pairing in pairings.values()
+        )
     scores: list[float] = []
     voluntary_unplayed: list[float] = []
     for round_index, pairing in pairings.items():
@@ -193,20 +262,13 @@ def buchholz(
              )
         )
         if should_add_dummy:
-            if papi_legacy:
-                dummy_points = (
-                    player.points_before(round_index)
-                    + Result.DRAW.point_value * (max_round - round_index - 1)
-                )
-                match pairing.result:
-                    case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
-                        dummy_points += 0
-                    case Result.HALF_POINT_BYE:
-                        dummy_points += 0.5
-                    case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
-                        dummy_points += 1
-            else:
-                dummy_points = player.points_after(max_round)
+            dummy_points = dummy_score(
+                player,
+                pairing,
+                max_round=max_round,
+                papi_legacy=papi_legacy,
+                round_index=round_index,
+            )
             if pairing.voluntary_unplayed and not papi_legacy:
                 # We must take those into account to ensure
                 # correct computations for cut-1
@@ -240,7 +302,7 @@ def fore_buchholz(
     max_round: int | None = None,
     cut_top: int = 0,
     cut_btm: int = 0,
-    played_modifier: bool = False
+    played_modifier: bool = False,
 ) -> float:
     """Computes the Buchholz score before round *max_round,
     as if all paired games for the final round hadended in draws.
@@ -268,15 +330,12 @@ def fore_buchholz(
     }
     scores: list[float] = []
     voluntary_unplayed: list[float] = []
-    dummy_points = player.points_before(max_round - 1)
-    last_pairing = pairings[max_round - 1]
-    if last_pairing.result in (
-        Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE,
-        Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE
-    ):
-        dummy_points += last_pairing.result.point_value
-    else:
-        dummy_points += Result.DRAW.point_value
+    dummy_points = dummy_score(
+        player,
+        pairings[min(pairings)],
+        max_round=max_round,
+        fore_modifier=True,
+    )
     for pairing in pairings.values():
         should_add_dummy = (
             (pairing.unplayed and not played_modifier) or
@@ -306,3 +365,154 @@ def fore_buchholz(
     if cut_top:
         return sum(scores[cut_btm:-cut_top])
     return sum(scores[cut_btm:])
+
+
+def sum_of_buchholz(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+    fore_modifier: bool = False,
+) -> float:
+    """Computes the sum of Buchholz scores of the opponents before *max_round*
+    If *max_round* is not provided, it will be set to the maximum round index
+    of the player.
+    If *fore_modifier* is True, will use Fore Bochholz instead of total Buchholz.
+    If *papi_legacy* is True, will use the backwards compatible computation."""
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    opponents: list[Player] = [
+        tournament.players_by_id.get(pairing.opponent_id)
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round
+    ]
+    if fore_modifier:
+        buchholz_function = fore_buchholz
+    else:
+        buchholz_function = buchholz
+    return sum(
+        buchholz_function(
+            opponent,
+            tournament,
+            max_round=max_round,
+        )
+        for opponent in opponents
+        if opponent is not None
+    )
+    
+
+def average_of_buchholz(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+    fore_modifier: bool = False,
+) -> float:
+    """Computes the average of the opponents Buchholz scores before *max_round*.
+    See FIDE Handbook C.07.8.2.
+    If *fore_modifier* is True, uses Fore Buchholz instead of total score."""
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    opponents: list[Player] = [
+        tournament.players_by_id[pairing.opponent_id]
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round and pairing.opponent_id is not None
+        and pairing.played
+    ]
+    if fore_modifier:
+        buchholz_function = fore_buchholz
+    else:
+        buchholz_function = buchholz
+    return sum(
+        buchholz_function(
+            opponent,
+            tournament,
+            max_round=max_round,
+        )
+        for opponent in opponents
+        if opponent is not None
+    ) / len(opponents)
+
+SBContribution = namedtuple('SBContribution', ['score', 'contribution'])
+
+def sonneborn_berger(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+    cut: int = 0,
+    played_modifier: bool = False
+) -> float:
+    """Computes the Sonneborn-Berger score by adding, for each round,
+    a value given by multiplying their score before *max_round* of the opponent by
+    the points scored against them.
+    See FIDE Handbook C.07.9.1.
+    If *max_round* is None, the scores so far will be computed.
+    If *cut* is more than zero, will cut the *cut* lowest contributions.
+    If *played_modifier* is True, forfeit wins and losses will be counted
+    as played games (only relevant in Swiss tornaments)."""
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    if cut < 0:
+        raise ValueError(f"cut must be non-negative, got: {cut}")
+    if tournament.pairing == TournamentPairing.BERGER:
+        played_modifier = True
+    pairings: dict[int, Pairing] = {
+        round_index: pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round
+    }
+    general_contributions: list[SBContribution] = []
+    voluntary_unplayed: list[SBContribution] = []
+    for round_index, pairing in pairings.items():
+        if pairing.unplayed and not played_modifier:
+            dummy, result = dummy_score(
+                player,
+                pairing,
+                max_round=max_round,
+                round_index=round_index,
+                dummy_type='SB')
+            value = dummy * result.point_value
+            if not pairing.voluntary_unplayed:
+                general_contributions.append(SBContribution(dummy, value))                
+            else:
+                voluntary_unplayed.append(SBContribution(dummy, value))
+        elif pairing.played or (
+            pairing.unplayed and pairing.opponent_id is not None and played_modifier
+        ):
+            opponent: Player = tournament.players_by_id[pairing.opponent_id]
+            opponent_score = adjusted_score(
+                opponent,
+                tournament,
+                max_round=max_round
+            )
+            contribution = pairing.result.point_value * opponent_score
+            general_contributions.append(SBContribution(opponent_score, contribution))
+    voluntary_unplayed = sorted(voluntary_unplayed)
+    general_contributions = sorted(general_contributions)
+    for _ in range(cut):
+        if not voluntary_unplayed:
+            # Suppress, because both lists are empty at this point
+            with suppress(IndexError):
+                general_contributions.pop(0)
+        elif not general_contributions:
+            with suppress(IndexError):
+                # Suppress, because both lists are empty
+                voluntary_unplayed.pop(0)
+        else:
+            # At this point, we know both lists have at least an element
+            vur = voluntary_unplayed[0]
+            lsv = general_contributions[0]
+            if vur.score <= lsv.score:
+                voluntary_unplayed.pop(0)
+            # Cut the lowest contribution from a VUR only if it is not lower
+            # than the least significant value
+            elif vur.contribution >= lsv.contribution:
+                voluntary_unplayed.pop(0)
+            else:
+                general_contributions.pop(0)
+    
+    return sum(map(lambda t: t.contribution, voluntary_unplayed + general_contributions))
