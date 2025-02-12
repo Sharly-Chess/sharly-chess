@@ -515,4 +515,47 @@ def sonneborn_berger(
             else:
                 general_contributions.pop(0)
     
-    return sum(map(lambda t: t.contribution, voluntary_unplayed + general_contributions))
+    return sum(
+        map(
+            lambda t: t.contribution,
+            voluntary_unplayed + general_contributions
+        )
+    )
+
+def koya(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+    limit: float | None = None,
+) -> float:
+    """Computes the Koya score for the *player*, i.e.
+    the number of points achieved against all partiipants
+    who have scored at 50% of the maximum possible
+    score before *max_round* (if *limit* is not set).
+    See FIDE Hanbook C.07.9.2.
+    This is only used in Round-Robin tournaments, but is still
+    defined for Swiss tournaments.
+    If *max_round* is None, will compute the score for the whole
+    tournament so far.
+    If *limit* is set, this function will compute the points obtained
+    against opponents who have at least *limit* points."""
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    if limit is None:
+        limit = 0.5 * Result.GAIN.point_value * (max_round - 1)
+    pairings: dict[int, Pairing] = {
+        round_index: pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round
+    }
+    score = 0
+    for _round_index, pairing in pairings.items():
+        if pairing.opponent_id is None:
+            continue
+        opponent = tournament.players_by_id[pairing.opponent_id]
+        opponent_score = opponent.points_before(max_round)
+        if opponent_score >= limit:
+            score += pairing.result.point_value
+    return score

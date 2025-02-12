@@ -900,3 +900,14 @@ class RoundRobinTieBreaks(unittest.TestCase):
             1: 9.25, 2: 4.75, 3: 4.75,
             4: 4.25, 5: 3.25, 6: 1.5
         }
+    
+    def test_koya(self):
+        assert {
+            player.id: individual.koya(
+                player, self.tournament
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            1: 2, 2: 0.5, 3: 0.5,
+            4: 1, 5: 0.5, 6: 0
+        }
