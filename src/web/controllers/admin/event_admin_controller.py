@@ -45,10 +45,9 @@ class EventAdminWebContext(AdminWebContext):
         event_uniq_id: str | None,
         admin_event_tab: str | None,
         data: Annotated[
-            dict[str, str],
+            dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None,
+        ],
     ):
         super().__init__(request, data=data, admin_tab=None)
         self.admin_event: Event | None = None

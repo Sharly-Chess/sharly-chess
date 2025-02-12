@@ -156,6 +156,9 @@ default_value: the value to be set when the default checkbox is checked
 select_options: a dict[str, str], keys are the select values and values are the select texts
 number_min: the minimum value for numbers
 disabled: if set to true, the field will be disabled
+hx_get: the hx-get attribute of the input, optional
+hx_target: the hx-target attribute of the input, optional
+hx_indicator_img: the URL of the image of the indicator, optional
 #}
 
 {% macro _generic_input(
@@ -172,7 +175,11 @@ disabled: if set to true, the field will be disabled
     default_value='',
     select_options={},
     number_min=0,
-    disabled=false
+    disabled=false,
+    hx_get='',
+    hx_target='',
+    hx_indicator_img='',
+    hx_trigger=''
 ) %}
     <!-- {{ input_type }}_input({{ name }}) -->
         {% set id=name|replace('_', '-') %}
@@ -256,12 +263,32 @@ disabled: if set to true, the field will be disabled
                         placeholder="{{ placeholder }}"
                         value="{{ value }}"
                         {% if disabled or (default_checkbox and data[default_checkbox_name] == 'on') %}disabled{% endif %}
+                        {% if hx_get %}
+                            hx-get="{{ hx_get }}"
+                        {% endif %}
+                        {% if hx_target %}
+                            hx-target="{{ hx_target }}"
+                        {% endif %}
+                        {% if hx_indicator_img %}
+                            hx-indicator="#{{ id }}_indicator"
+                        {% endif %}
+                        {% if hx_trigger %}
+                            hx-trigger="{{ hx_trigger }}"
+                        {% endif %}
                     />
                     {% if input_type == 'password' %}
                         <i
                             id="{{ id }}-toggle-password"
                             class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %}"
                         ></i>
+                    {% endif %}
+                    {% if hx_indicator_img %}
+                        <img
+                                id="{{ id }}_indicator"
+                                class="htmx-indicator"
+                                src="{{ hx_indicator_img }}"
+                                style="height: 2em; margin-left: -45px; margin-top: 5px; z-index: 3;"
+                        />
                     {% endif %}
                 {% endif %}
             </div>
@@ -313,7 +340,11 @@ disabled: if set to true, the field will be disabled
     default_checkbox=false,
     default_checkbox_text='',
     default_value='',
-    disabled=false
+    disabled=false,
+    hx_get='',
+    hx_trigger='',
+    hx_target='',
+    hx_indicator_img=''
 ) %}
     {{ _generic_input(
         name=name,
@@ -328,6 +359,10 @@ disabled: if set to true, the field will be disabled
         default_checkbox_text=default_checkbox_text,
         default_value=default_value,
         disabled=disabled,
+        hx_get=hx_get,
+        hx_trigger=hx_trigger,
+        hx_target=hx_target,
+        hx_indicator_img=hx_indicator_img,
     ) }}
 {% endmacro %}
 

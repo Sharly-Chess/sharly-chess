@@ -187,7 +187,11 @@ class FfeDatabase(SQLiteDatabase):
         )
         return True
 
-    def search_player(self, string: str) -> Iterator[Player]:
+    def search_player(
+            self,
+            string: str,
+            limit: int = 0
+    ) -> Iterator[Player]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[str, ...] = (
             'last_name',
@@ -211,7 +215,7 @@ class FfeDatabase(SQLiteDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        self._execute(f'SELECT * FROM player WHERE {conditions}')
+        self._execute(f'SELECT * FROM player WHERE {conditions} LIMIT {limit}')
         return (
             Player(
                 id=0,
@@ -253,3 +257,46 @@ class FfeDatabase(SQLiteDatabase):
             )
             for row in self._fetchall()
         )
+
+    def get_player_by_ffe_id(self, player_ffe_id: int) -> Player:
+        self._execute(f'SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
+        row = self._fetchone()
+        return Player(
+            id=0,
+            first_name=row['first_name'],
+            last_name=row['last_name'],
+            date_of_birth=datetime.strptime(
+                row['date_of_birth'], '%Y-%m-%d'
+            ).date(),
+            gender=PlayerGender(row['gender']),
+            mail='',
+            phone='',
+            comment='',
+            owed=0.0,
+            paid=0.0,
+            title=PlayerTitle(row['fide_title']),
+            ratings={
+                TournamentRating.STANDARD: row['standard_rating'],
+                TournamentRating.RAPID: row['rapid_rating'],
+                TournamentRating.BLITZ: row['blitz_rating'],
+            },
+            rating_types={
+                TournamentRating.STANDARD: PlayerRatingType(
+                    row['standard_rating_type']
+                ),
+                TournamentRating.RAPID: PlayerRatingType(row['rapid_rating_type']),
+                TournamentRating.BLITZ: PlayerRatingType(row['blitz_rating_type']),
+            },
+            fide_id=row['fide_id'],
+            ffe_id=row['ffe_id'],
+            ffe_licence=PlayerFFELicence(row['ffe_licence']),
+            ffe_licence_number=row['ffe_licence_number'],
+            federation=row['federation'],
+            league=row['league'],
+            club=row['club'],
+            fixed=0,
+            check_in=False,  # not taken into account when updating/creating/deleting the player
+            pairings={},  # Pairings are read from Papi but not used
+            tournament=None,
+        )
+

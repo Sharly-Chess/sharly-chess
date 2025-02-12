@@ -961,7 +961,7 @@ class Tournament:
         """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
             data: dict[str, str | int | float | None] = {
-                'Ref': player.ref_id,
+                'Ref': (max(p.ref_id for p in self.players_by_id.values()) if self.players_by_id else 1) + 1,
                 'RefFFE': player.ffe_id,
                 'NrFFE': player.ffe_licence_number
                 if player.ffe_licence_number
