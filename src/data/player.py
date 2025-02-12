@@ -159,8 +159,9 @@ class TournamentPlayer:
         fide_id: int,
         federation: str,
         title: PlayerTitle,
-        rating: int,
-        pairings: dict[int, Pairing]
+        ratings: dict[TournamentRating],
+        pairings: dict[int, Pairing],
+        tournament_rating: TournamentRating = TournamentRating.STANDARD,
     ):
         self.id = id
         self.last_name = last_name
@@ -170,8 +171,9 @@ class TournamentPlayer:
         self.fide_id = fide_id
         self.federation = federation
         self.title = title
-        self.rating = rating
+        self.ratings = ratings
         self.pairings = pairings
+        self.tournament_rating = tournament_rating
     
     def points_before(self, max_round: int) -> float:
         return sum(
@@ -231,8 +233,9 @@ class Player(TournamentPlayer):
             fide_id,
             federation,
             title,
-            rating=ratings[tournament.rating],
-            pairings=pairings
+            ratings,
+            pairings,
+            tournament_rating=tournament.rating if tournament is not None else TournamentRating.STANDARD,
         )
         self.mail: str = mail
         self.phone: str = phone
@@ -280,6 +283,16 @@ class Player(TournamentPlayer):
     @property
     def tournament_id(self) -> int:
         return self.player_tournament_id_from_papi_web_id(self.id)
+
+    @property
+    def tournament(self) -> 'Tournament | None':
+        return self._tournament
+
+    @tournament.setter
+    def tournament(self, value: 'Tournament | None'):
+        self._tournament = value
+        if value is not None:
+            self.tournament_rating = value.rating
 
     @property
     def year_of_birth(self) -> int:
