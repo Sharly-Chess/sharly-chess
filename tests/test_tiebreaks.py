@@ -984,6 +984,23 @@ class SwissTieBreaks(unittest.TestCase):
             self.tournament.players_by_id[13],
             self.tournament
         ) == 1908 # NOTE(Amaras): should be 1909
+    
+    def test_direct_encounter(self):
+        assert {
+            i: individual.direct_encounter(
+                self.tournament.players_by_id[i],
+                self.tournament
+            )
+            for i in (1, 3, 4, 16, 5, 8, 11)
+        } == {
+            1: (2.5, False),
+            3: (2.5, False),
+            4: (2, False),
+            16: (3, False),
+            5: (2, False),
+            8: (2, False),
+            11: (1, False),
+        }
 
 class RoundRobinTieBreaks(unittest.TestCase):
     def setUp(self):
@@ -1117,4 +1134,15 @@ class RoundRobinTieBreaks(unittest.TestCase):
         } == {
             1: 2, 2: 0.5, 3: 0.5,
             4: 1, 5: 0.5, 6: 0
+        }
+    
+    def test_direct_encounter(self):
+        assert {
+            player.id: individual.direct_encounter(
+                player, self.tournament
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            1: (2, True), 2: (0.5, True), 3: (0.5, True),
+            4: (0.5, True), 6: (1.5, True), 5: (1, True),
         }

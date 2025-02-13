@@ -949,3 +949,72 @@ def average_perfect_performance(
     if not ptp:
         return 0
     return round_fide(sum(ptp) / len(ptp))
+
+
+def direct_encounter(
+    player: Player,
+    tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+    exclude_ids: Iterable[int] | None = None,
+    played_modifier: bool = False,
+) -> tuple[float, bool]:
+    """Computes the Direct Encounter score before *max_round*
+    See FIDE Handbook C.07.6.
+    If all players with the same number of points as *player* before round
+    *max_round* have played each other, returns the score *player* achieved against
+    all tied opponents in the form (score, True).
+    If not, returns the score achieved and a number of wins against all missing opponents
+    in the form (virtual_score, False).
+    If the second member is True, either some ties are broken correctly, or
+    some players cannot be untied this way.
+    If the second member is False, some ties might be broken, but there is no guarantee.
+    If *exclude_ids* is not None, will not take the given player ids into account.
+    If *played_modifier* is False and the tourament is a Swiss tournament, all forfeit games
+    will be excluded from consideration."""
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+    final_points = player.points_before(max_round)
+    tied_opponents: dict[int, Player] = {
+        opponent_id: opponent
+        for opponent_id, opponent in tournament.players_by_id.items()
+        if opponent_id != player.id
+    }
+    tied_opponents = {
+        opponent_id: opponent
+        for opponent_id, opponent in tied_opponents.items()
+        if opponent_id is not None 
+        and opponent.points_before(max_round) == final_points
+    }
+    if exclude_ids is not None:
+        tied_opponents = {
+            opponent.id: opponent
+            for opponent in tied_opponents
+            if opponent.id not in exclude_ids
+        }
+    tied_pairings: dict[int, Pairing] = {
+        pairing.opponent_id: pairing
+        for pairing in player.pairings.values()
+        if pairing.opponent_id in tied_opponents
+    }
+    if tournament.pairing.swiss and not played_modifier:
+        tied_pairings = {
+            opponent_id: pairing
+            for opponent_id, pairing in tied_pairings.items()
+            if pairing.result not in (Result.FORFEIT_GAIN, Result.DOUBLE_FORFEIT, Result.FORFEIT_LOSS)
+        }
+    if len(tied_pairings) == len(tied_opponents):
+        return sum(
+            pairing.result.point_value
+            for pairing in tied_pairings.values()
+        ), True
+    virtual_pairings: dict[int, Pairing] = {
+        opponent_id: Pairing(None, opponent_id, Result.GAIN)
+        for opponent_id in tied_opponents
+        if opponent_id not in tied_pairings
+    }
+    return sum(
+        pairing.result.point_value
+        for pairing in list(tied_pairings.values()) + list(virtual_pairings.values())
+    ), False
