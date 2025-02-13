@@ -230,10 +230,9 @@ def buchholz(
     Both values must be non-negative, and *cut_top* must be at most equal to *cut_btm*.
     When *played_modifier* is True, forfeit losses and wins are considered
     played against the scheduled opponent.
-    When *papi_legacy* is 
+    When *papi_legacy* is True, legacy adjusted score calculations are used:
+    all unplayed games could for as much as a draw, and all contributions are used.
     """
-    # if player.id in (9, 14) and papi_legacy and max_round is None:
-    #     breakpoint()
     if max_round is None:
         max_round = max(player.pairings) + 1
     if cut_top < 0 or cut_btm < 0:
@@ -538,7 +537,7 @@ def koya(
     limit: float | None = None,
 ) -> float:
     """Computes the Koya score for the *player*, i.e.
-    the number of points achieved against all partiipants
+    the number of points achieved against all participants
     who have scored at 50% of the maximum possible
     score before *max_round* (if *limit* is not set).
     See FIDE Hanbook C.07.9.2.

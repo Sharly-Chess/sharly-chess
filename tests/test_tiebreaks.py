@@ -520,20 +520,28 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_buchholz(self):
         assert {
-            i: individual.buchholz(
-                self.tournament.players_by_id[i],
+            player.id: individual.buchholz(
+                player,
                 self.tournament,
             )
-            for i in (2, 1, 3, 5, 8, 11, 16, 4)
+            for player in self.tournament.players_by_id.values()
         } == {
             2: 13,  # No problem exercise
-            1: 12.5,
             3: 15.5,  # 1 unplayed round in opponent each
-            5: 8.5,
+            4: 15,
+            1: 12.5,
+            16: 12.5,
+            6: 12,
             8: 13.5,
             11: 13.5,  # 11 has an unplayed round
-            16: 12.5,
-            4: 15,
+            5: 8.5,
+            15: 12,
+            12: 11.5,
+            14: 11,
+            7: 14.5,
+            13: 14,
+            9: 9,
+            10: 13, 
         }
 
     def test_buchholz_cut1(self):
