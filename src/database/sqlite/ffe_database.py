@@ -215,7 +215,7 @@ class FfeDatabase(SQLiteDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        self._execute(f'SELECT * FROM player WHERE {conditions} LIMIT {limit}')
+        self._execute(f'SELECT * FROM player WHERE {conditions}' + (f'LIMIT {limit}' if limit else ''))
         return (
             Player(
                 id=0,
