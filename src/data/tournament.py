@@ -664,7 +664,7 @@ class Tournament:
     def _calculate_player_virtual_points(
         self, player: Player, round_number: int
     ) -> float:
-        vpoints = Result.LOSS
+        vpoints = Result.LOSS.point_value
         if self._pairing == TournamentPairing.HALEY:
             if round_number <= 2 and player.rating >= self._rating_limit1:
                 vpoints = Result.GAIN.point_value
