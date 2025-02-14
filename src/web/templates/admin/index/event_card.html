@@ -24,7 +24,7 @@
         </div>
         <div class="{% if not event.tournaments_by_id %}text-secondary{% endif %}">
             <i class="bi-people pe-1" ></i>
-            {% if not event.tournaments_by_id %}
+            {% if event.tournaments_by_id %}
                 {{ _(
                     'Tournaments: %(num)d',
                     num=event.tournaments_by_id|length
