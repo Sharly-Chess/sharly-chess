@@ -887,23 +887,23 @@ class PlayerCategory(IntEnum):
         now: datetime = datetime.now()
         ref_year: int = now.year if now.month < 9 else now.year + 1
         age: int = ref_year - year_of_birth
-        if age < 8:
+        if age <= 8:
             return PlayerCategory.U8
-        elif age < 10:
+        elif age <= 10:
             return PlayerCategory.U10
-        elif age < 12:
+        elif age <= 12:
             return PlayerCategory.U12
-        elif age < 14:
+        elif age <= 14:
             return PlayerCategory.U14
-        elif age < 16:
+        elif age <= 16:
             return PlayerCategory.U16
-        elif age < 18:
+        elif age <= 18:
             return PlayerCategory.U18
-        elif age < 20:
+        elif age <= 20:
             return PlayerCategory.U20
-        elif age < 50:
+        elif age <= 50:
             return PlayerCategory.O20
-        elif age < 65:
+        elif age <= 65:
             return PlayerCategory.O50
         else:
             return PlayerCategory.O65
