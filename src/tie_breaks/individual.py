@@ -9,7 +9,7 @@ from typing import Literal
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
 from data.pairing import Pairing
-from data.util import Result, BoardColor, TournamentPairing, TournamentRating
+from data.util import Result, BoardColor, TournamentPairing, TournamentRating, performance_bonus, round_fide
 
 
 def wins(player: Player, _tournament: Tournament, /, *, max_round: int | None = None) -> int:
@@ -567,13 +567,6 @@ def koya(
     return score
 
 
-def round_fide(num: float):
-    lowest_int = int(num)
-    if num - lowest_int >= 0.5:
-        return lowest_int + 1
-    return lowest_int
-
-
 def average_rating_opponents(
     player: Player,
     tournament: Tournament,
@@ -604,14 +597,13 @@ def average_rating_opponents(
         for round_index, pairing in player.pairings.items()
         if round_index < max_round
     ]
-    tournament_rating: TournamentRating = tournament.rating
     ratings = []
     for pairing in pairings:
         if pairing.unplayed:
             continue
         opponent = tournament.players_by_id[pairing.opponent_id]
         with suppress(KeyError):
-            ratings.append(opponent.ratings[tournament_rating])
+            ratings.append(opponent.estimation)
     ratings = sorted(ratings)
     if cut_top:
         ratings = ratings[cut_btm:-cut_top]
@@ -622,133 +614,6 @@ def average_rating_opponents(
     average = sum(ratings) / len(ratings)
     return round_fide(average)
 
-
-
-performance_table: list[int] = [
-    0, 7, 14, 21, 29, 36, 43, 50, 57, 65, 72, 80, 87, 95, 102, 110, 117,
-    125, 133, 141, 149, 158, 166, 175, 184, 193, 202, 211, 220, 230, 240,
-    251, 262, 273, 284, 296, 309, 322, 336, 351, 366, 383, 401, 422,
-    444, 470, 501, 538, 589, 677, 800
-]
-
-papi_performance_table: list[int] = performance_table[:-1] + [677, 677]
-
-def performance_bonus(
-    fractional_score: float,
-    /, *,
-    papi_legacy: bool = False,
-) -> int:
-    percent = 100 * fractional_score
-    index = floor(abs(50 - percent))
-    percent_int = floor(percent)
-    if papi_legacy:
-        bonus = papi_performance_table[index]
-        smaller_difference = percent - percent_int
-        if smaller_difference > 0:
-            smaller_difference *= (
-                papi_performance_table[index+1]
-                - bonus
-            )
-            bonus += smaller_difference
-    else:
-        bonus = performance_table[index]
-    if fractional_score < 0.5:
-        bonus *= -1
-    return bonus
-
-
-def papi_estimation(
-    players: Iterable[Player],
-    points: float,
-    /,
-    *,
-    max_round: int | None = None,
-    papi_legacy: bool = False,
-) -> dict[float, list[Player]]:
-    """Compute the estimation for the group with *points* after *max_round*"""
-    players = sorted(players, key=lambda player: player.points_before(max_round))
-    players: dict[float, list[Player]] = {
-        pts: list(group) for pts, group in groupby(players, lambda player: player.points_before(max_round))
-    }
-    point_keys = sorted(list(players.keys()))
-    test_group = players[points]
-    test_group_index = point_keys.index(points)
-    group_ratings = [
-        (rating := player.ratings.get(player.tournament_rating))
-        for player in test_group
-        if rating is not None
-    ]
-    if group_ratings:
-        return sum(group_ratings) / len(group_ratings)
-    max_possible_points = Result.GAIN.point_value * (max_round - 1)
-    superior_ratings = []
-    i = 0
-    while not superior_ratings:
-        i -= 1
-        try:
-            superior_points = point_keys[test_group_index - i]
-            superior_group = players[test_group_index - i]
-            ratings = [
-                (rating := player.ratings.get(player.tounament_rating))
-                for player in superior_group
-                if rating is not None
-            ]
-            if ratings:
-                superior_ratings = ratings
-        except IndexError:
-            break
-    inferior_ratings = []
-    i = 0
-    while not inferior_ratings:
-        i -= 1
-        try:
-            inferiror_group = players[test_group_index + i]
-            inferiror_points = point_keys[test_group_index + i]
-            ratings = [
-                (rating := player.ratings.get(player.tounament_rating))
-                for player in inferiror_group
-                if rating is not None
-            ]
-            if ratings:
-                superior_ratings = ratings
-        except IndexError:
-            break
-    if not superior_ratings and not inferior_ratings:
-        return performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
-    test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
-    if superior_ratings:
-        superiror_group_bonus = performance_bonus(
-            superior_points / max_possible_points,
-            papi_legacy=papi_legacy
-        )
-    if inferior_ratings:
-        inferior_group_bonus = performance_bonus(
-            inferiror_points / max_possible_points,
-            papi_legacy=papi_legacy
-        )
-    if not inferior_ratings:
-        assert superior_ratings
-        average_rating = sum(superior_ratings) / len(superior_ratings)
-        bonus_difference = superiror_group_bonus - test_group_bonus
-        return average_rating + bonus_difference
-    if not superior_ratings:
-        assert inferior_ratings
-        average_rating = sum(inferior_ratings) / len(inferior_ratings)
-        bonus_difference = test_group_bonus - inferior_group_bonus
-        return average_rating + bonus_difference
-    assert superior_ratings and inferior_ratings
-    superiror_average = sum(superior_ratings) / len(superior_ratings)
-    inferior_average = sum(inferior_ratings) / len(inferior_ratings)
-    if papi_legacy:
-        round_function = round
-    else:
-        round_function = round_fide
-    return round_function(
-        inferior_average 
-        + (superiror_average - inferior_average) 
-        * (test_group_bonus - inferior_group_bonus) 
-        / (superiror_group_bonus - inferior_group_bonus)
-    )
 
 def tournament_performance_rating(
     player: Player,
@@ -770,7 +635,6 @@ def tournament_performance_rating(
         for round_index, pairing in player.pairings.items()
         if round_index < max_round and pairing.played
     ]
-    tournament_rating: TournamentRating = tournament.rating
     ratings = []
     score = 0
     for pairing in pairings:
@@ -778,11 +642,11 @@ def tournament_performance_rating(
         with suppress(KeyError):
             if papi_legacy:
                 rating = min(
-                    player.ratings[tournament_rating] + 400,
-                    max(player.ratings[tournament_rating] - 400, 
-                        opponent.ratings[tournament_rating]))
+                    player.estimation + 400,
+                    max(player.estimation - 400,
+                        opponent.estimation))
             else:
-                rating = opponent.ratings[tournament_rating]
+                rating = opponent.estimation
             ratings.append(rating)
             score += pairing.result.point_value
     max_score = len(ratings) * Result.GAIN.point_value
@@ -884,9 +748,9 @@ def perfect_tournament_performance(
     if not played_rounds:
         return 0
     if actual_score == len(played_rounds) * Result.LOSS.point_value:
-        return -800 + min(tournament.players_by_id[pairing.opponent_id].ratings[player.tournament_rating] for pairing in played_rounds)
+        return -800 + min(tournament.players_by_id[pairing.opponent_id].estimation for pairing in played_rounds)
     ratings: list[int] = [
-        tournament.players_by_id[pairing.opponent_id].ratings[player.tournament_rating]
+        tournament.players_by_id[pairing.opponent_id].estimation
         for pairing in played_rounds
     ]
     first_estimation = tournament_performance_rating(player, tournament, max_round=max_round)
