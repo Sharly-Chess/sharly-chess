@@ -192,7 +192,7 @@ class TournamentPlayer:
     
     @property
     def estimation(self):
-        return self.estimation or 0
+        return self._estimation or 0
 
 @total_ordering
 class Player(TournamentPlayer):
