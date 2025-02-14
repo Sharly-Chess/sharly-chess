@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import Enum, StrEnum, IntEnum, auto
 from itertools import islice
 from logging import Logger
+from math import floor
 from typing import Self
 
 from common.i18n import _
@@ -1284,3 +1285,44 @@ class TrfType(StrEnum):
                 return 'trfx'
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+
+def round_fide(num: float):
+    lowest_int = int(num)
+    if num - lowest_int >= 0.5:
+        return lowest_int + 1
+    return lowest_int
+
+
+performance_table: list[int] = [
+    0, 7, 14, 21, 29, 36, 43, 50, 57, 65, 72, 80, 87, 95, 102, 110, 117,
+    125, 133, 141, 149, 158, 166, 175, 184, 193, 202, 211, 220, 230, 240,
+    251, 262, 273, 284, 296, 309, 322, 336, 351, 366, 383, 401, 422,
+    444, 470, 501, 538, 589, 677, 800
+]
+
+papi_performance_table: list[int] = performance_table[:-1] + [677, 677]
+
+
+def performance_bonus(
+    fractional_score: float,
+    /, *,
+    papi_legacy: bool = False,
+) -> int:
+    percent = 100 * fractional_score
+    index = floor(abs(50 - percent))
+    percent_int = floor(percent)
+    if papi_legacy:
+        bonus = papi_performance_table[index]
+        smaller_difference = percent - percent_int
+        if smaller_difference > 0:
+            smaller_difference *= (
+                papi_performance_table[index+1]
+                - bonus
+            )
+            bonus += smaller_difference
+    else:
+        bonus = performance_table[index]
+    if fractional_score < 0.5:
+        bonus *= -1
+    return bonus

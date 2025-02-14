@@ -1,3 +1,4 @@
+from itertools import groupby
 import time
 from collections import Counter
 from functools import cached_property
@@ -11,7 +12,7 @@ from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.pairing import Pairing
-from data.util import TrfType
+from data.util import TrfType, performance_bonus, round_fide
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -610,6 +611,7 @@ class Tournament:
         self._set_players_illegal_moves()  # load illegal moves for the current round
         self._calculate_points()
         self._build_boards()
+        self.estimate_players(papi_legacy=True)
 
     def _calculate_current_round(self):
         """Computes which round is the current round.
@@ -662,10 +664,10 @@ class Tournament:
     def _calculate_player_virtual_points(
         self, player: Player, round_number: int
     ) -> float:
-        vpoints = 0.0
+        vpoints = Result.LOSS
         if self._pairing == TournamentPairing.HALEY:
             if round_number <= 2 and player.rating >= self._rating_limit1:
-                vpoints = 1.0
+                vpoints = Result.GAIN.point_value
         elif self._pairing == TournamentPairing.HALEY_SOFT:
             # Round 1: All players above rating_limit1 get 1 vpoint
             # Round 2: All players above rating_limit1 get 1 vpoint
@@ -674,9 +676,9 @@ class Tournament:
             # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
             # please remove if OK
             if round_number <= 2 and player.rating >= self.rating_limit1:
-                vpoints = 1.0
+                vpoints = Result.GAIN.point_value
             elif round_number == 2 and player.rating < self.rating_limit1:
-                vpoints = 0.5
+                vpoints = Result.DRAW.point_value
         elif self._pairing == TournamentPairing.SAD:
             # Before the second to last round, we remove the virtual
             # points, and use a simple Swiss Dutch system.
@@ -695,24 +697,122 @@ class Tournament:
                 # way simpler to implement than by applying the algorithm
                 # step by step.
                 points = player.points_before(round_number)
-                potential_vpoints = 0.5 * (points // 1.5)
+                potential_vpoints = Result.DRAW.point_value * (points // (3 * Result.DRAW.point_value))
                 if player.rating >= self.rating_limit1:
                     # Group A players get 2 virtual points
-                    vpoints = 2.0
+                    vpoints = 2 * Result.GAIN.point_value
                 elif player.rating >= self.rating_limit2:
                     # Group B players start with 1 point
                     # Players cannot have more than 2 points
-                    vpoints = min(2.0, 1.0 + potential_vpoints)
+                    vpoints = min(2 * Result.GAIN.point_value, Result.GAIN.point_value + potential_vpoints)
                 else:
                     # Group C players start with 0 points
                     # Players cannot have more than 2 points
-                    vpoints = min(2.0, potential_vpoints)
-                if 2 * points >= self._rounds:
+                    vpoints = min(2 * Result.GAIN.point_value, potential_vpoints)
+                if 2 * points >= self._rounds * Result.GAIN.point_value:
                     # If a player gets at least half the possible score,
                     # their capital is set at 2 points.
                     # Assumes a 0-0.5-1 scoring system.
-                    vpoints = 2.0
+                    vpoints = 2 * Result.GAIN.point_value
         return vpoints
+    
+    def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True):
+        if max_round is None:
+            max_round = self._current_round
+        if self._current_round <= 1:
+            return
+        players = sorted(self.players_by_id.values(), key=lambda player: player.points_before(max_round))
+        players_by_points: dict[float, list[Player]] = {
+            points: list(group)
+            for points, group in groupby(players, key=lambda player: player.points_before(max_round))
+        }
+        point_keys = sorted(list(players_by_points.keys()))
+        for points, test_group in players_by_points.items():
+            test_group_index = point_keys.index(points)
+            group_ratings = [
+                player.estimation
+                for player in test_group
+                if player.estimation is not None
+            ]
+            if group_ratings:
+                return sum(group_ratings) / len(group_ratings)
+            max_possible_points = Result.GAIN.point_value * (max_round - 1)
+            superior_ratings = []
+            i = 0
+            while not superior_ratings:
+                i -= 1
+                try:
+                    superior_points = point_keys[test_group_index - i]
+                    superior_group = players_by_points[superior_points]
+                    ratings = [
+                        player.estimation
+                        for player in superior_group
+                        if player.estimation is not None
+                    ]
+                    if ratings:
+                        superior_ratings = ratings
+                except IndexError:
+                    break
+            inferior_ratings = []
+            i = 0
+            while not inferior_ratings:
+                i -= 1
+                try:
+                    inferiror_points = point_keys[test_group_index + i]
+                    inferiror_group = players_by_points[inferiror_points]
+                    ratings = [
+                        player.estimation
+                        for player in inferiror_group
+                        if player.estimation is not None
+                    ]
+                    if ratings:
+                        superior_ratings = ratings
+                except IndexError:
+                    break
+            if superior_ratings == inferior_ratings == []:
+                for player in test_group:
+                    player.estimation = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+            test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+            if superior_ratings:
+                superiror_group_bonus = performance_bonus(
+                    superior_points / max_possible_points,
+                    papi_legacy=papi_legacy
+                )
+            if inferior_ratings:
+                inferior_group_bonus = performance_bonus(
+                    inferiror_points / max_possible_points,
+                    papi_legacy=papi_legacy
+                )
+            if not inferior_ratings:
+                try:
+                    assert superior_ratings
+                except AssertionError:
+                    breakpoint()
+                average_rating = sum(superior_ratings) / len(superior_ratings)
+                bonus_difference = superiror_group_bonus - test_group_bonus
+                for player in test_group:
+                    player.estimation = average_rating + bonus_difference
+            if not superior_ratings:
+                assert inferior_ratings
+                average_rating = sum(inferior_ratings) / len(inferior_ratings)
+                bonus_difference = test_group_bonus - inferior_group_bonus
+                for player in test_group:
+                    player.estimation = average_rating + bonus_difference
+            assert superior_ratings and inferior_ratings
+            superiror_average = sum(superior_ratings) / len(superior_ratings)
+            inferior_average = sum(inferior_ratings) / len(inferior_ratings)
+            if papi_legacy:
+                round_function = round
+            else:
+                round_function = round_fide
+            for player in test_group:
+                player.estimation = round_function(
+                    inferior_average
+                    + (superiror_average - inferior_average)
+                    * (test_group_bonus - inferior_group_bonus)
+                    / (superiror_group_bonus - inferior_group_bonus)
+                )
+
 
     def store_illegal_move(self, player: Player):
         """Store an illegal move for the given `player`, for the current
@@ -972,9 +1072,9 @@ class Tournament:
                 'NeLe': PapiDatabase.date_to_papi_date(player.date_of_birth),
                 'Cat': player.category.to_papi_value,
                 'AffType': player.ffe_licence.to_papi_value,
-                'Elo': player.ratings[TournamentRating.STANDARD],
-                'Rapide': player.ratings[TournamentRating.RAPID],
-                'Blitz': player.ratings[TournamentRating.BLITZ],
+                'Elo': player.estimation[TournamentRating.STANDARD],
+                'Rapide': player.estimation[TournamentRating.RAPID],
+                'Blitz': player.estimation[TournamentRating.BLITZ],
                 'Federation': player.federation,
                 'ClubRef': 0,
                 'Club': player.club,

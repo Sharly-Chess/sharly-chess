@@ -159,9 +159,8 @@ class TournamentPlayer:
         fide_id: int,
         federation: str,
         title: PlayerTitle,
-        ratings: dict[TournamentRating],
         pairings: dict[int, Pairing],
-        tournament_rating: TournamentRating = TournamentRating.STANDARD,
+        estimation: int | None = None
     ):
         self.id = id
         self.last_name = last_name
@@ -171,9 +170,8 @@ class TournamentPlayer:
         self.fide_id = fide_id
         self.federation = federation
         self.title = title
-        self.ratings = ratings
+        self._estimation = estimation
         self.pairings = pairings
-        self.tournament_rating = tournament_rating
     
     def points_before(self, max_round: int) -> float:
         return sum(
@@ -191,6 +189,10 @@ class TournamentPlayer:
     
     def total_points(self) -> float:
         return sum(pairing.result.point_value for pairing in self.pairings.values())
+    
+    @property
+    def estimation(self):
+        return self.estimation or 0
 
 @total_ordering
 class Player(TournamentPlayer):
@@ -233,15 +235,14 @@ class Player(TournamentPlayer):
             fide_id,
             federation,
             title,
-            ratings,
             pairings,
-            tournament_rating=tournament.rating if tournament is not None else TournamentRating.STANDARD,
         )
         self.mail: str = mail
         self.phone: str = phone
         self.comment: str = comment
         self.owed: float = owed
         self.paid: float = paid
+        self.ratings: dict[TournamentRating, int] = ratings
         self.rating_types: dict[TournamentRating, PlayerRatingType] = rating_types
         self.ffe_id: int = ffe_id
         self.ffe_licence: PlayerFFELicence = ffe_licence
@@ -285,14 +286,21 @@ class Player(TournamentPlayer):
         return self.player_tournament_id_from_papi_web_id(self.id)
 
     @property
-    def tournament(self) -> 'Tournament | None':
-        return self._tournament
+    def estimation(self) -> int:
+        if not self.estimated:
+            return self.ratings[self.tournament.rating]
+        return self._estimation
 
-    @tournament.setter
-    def tournament(self, value: 'Tournament | None'):
-        self._tournament = value
-        if value is not None:
-            self.tournament_rating = value.rating
+    @estimation.setter
+    def estimation(self, value: int):
+        if not self.estimated:
+            self._estimation = self.ratings[self.tournament.rating]
+        else:
+            self._estimation = value
+    
+    @property
+    def estimated(self) -> bool:
+        return self.rating_types[self.tournament.rating] == PlayerRatingType.ESTIMATED
 
     @property
     def year_of_birth(self) -> int:
@@ -332,13 +340,6 @@ class Player(TournamentPlayer):
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
         self.points = self.points_before(max_round)
-
-    def points_before(self, max_round: int) -> float:
-        return sum(
-            pairing.result.point_value
-            for round_index, pairing in self.pairings.items()
-            if round_index < max_round
-        )
 
     def points_total(self) -> float:
         return sum(pairing.result.point_value for pairing in self.pairings.values())
