@@ -6,6 +6,8 @@
             preload
             hx-target="body"
             hx-indicator="#please-wait"
+            hx-trigger="click, keyup[key=='Enter'], keyup[key==' ']"
+            tabindex="0"
         {% endif %}
     >
         <div class="card-header text-center fs-5 text-primary">

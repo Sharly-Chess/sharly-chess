@@ -28,6 +28,8 @@
                                         preload
                                         hx-target="body"
                                         hx-indicator="#please-wait"
+                                        hx-trigger="click, keyup[key=='Enter']"
+                                        tabindex="0"
                                     {% endif %}
                                     {{ tooltip_attributes('warning' if l_info.experimental else 'info', l_info.name_and_warning, 'right') }}
                                 >

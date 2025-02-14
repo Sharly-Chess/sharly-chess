@@ -89,6 +89,8 @@
                     preload
                     hx-target="body"
                     hx-indicator="#please-wait"
+                    hx-trigger="click, keyup[key=='Enter']"
+                    tabindex="0
                     {{ tooltip_attributes('info', screen_data.tooltip_text, 'left') }}
                 >
                     <i class="{{ screen_data['icon_class'] }}"></i>
