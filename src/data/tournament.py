@@ -769,9 +769,15 @@ class Tournament:
                         superior_ratings = ratings
                 except IndexError:
                     break
+            if papi_legacy:
+                round_function = round
+            else:
+                round_function = round_fide
             if superior_ratings == inferior_ratings == []:
                 for player in test_group:
-                    player.estimation = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+                    player.estimation = round_function(
+                        performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+                    )
             test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
             if superior_ratings:
                 superiror_group_bonus = performance_bonus(
@@ -783,28 +789,21 @@ class Tournament:
                     inferiror_points / max_possible_points,
                     papi_legacy=papi_legacy
                 )
-            if not inferior_ratings:
-                try:
-                    assert superior_ratings
-                except AssertionError:
-                    breakpoint()
+            if not inferior_ratings and superior_ratings:
                 average_rating = sum(superior_ratings) / len(superior_ratings)
                 bonus_difference = superiror_group_bonus - test_group_bonus
                 for player in test_group:
-                    player.estimation = average_rating + bonus_difference
-            if not superior_ratings:
-                assert inferior_ratings
+                    player.estimation = round_function(average_rating + bonus_difference)
+                continue
+            if not superior_ratings and inferior_ratings:
                 average_rating = sum(inferior_ratings) / len(inferior_ratings)
                 bonus_difference = test_group_bonus - inferior_group_bonus
                 for player in test_group:
-                    player.estimation = average_rating + bonus_difference
-            assert superior_ratings and inferior_ratings
+                    player.estimation = round_function(average_rating + bonus_difference)
+                continue
+            assert len(superior_ratings) > 0 and len(inferior_ratings) > 0
             superiror_average = sum(superior_ratings) / len(superior_ratings)
             inferior_average = sum(inferior_ratings) / len(inferior_ratings)
-            if papi_legacy:
-                round_function = round
-            else:
-                round_function = round_fide
             for player in test_group:
                 player.estimation = round_function(
                     inferior_average
