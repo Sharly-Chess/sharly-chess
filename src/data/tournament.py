@@ -721,6 +721,8 @@ class Tournament:
             max_round = self._current_round
         if self._current_round <= 1:
             return
+        if not any(player.estimated for player in self.players_by_id.values()):
+            return
         players = sorted(self.players_by_id.values(), key=lambda player: player.points_before(max_round))
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
@@ -728,11 +730,13 @@ class Tournament:
         }
         point_keys = sorted(list(players_by_points.keys()))
         for points, test_group in players_by_points.items():
+            if not any(player.estimated for player in test_group):
+                continue
             test_group_index = point_keys.index(points)
             group_ratings = [
                 player.estimation
                 for player in test_group
-                if player.estimation is not None
+                if not player.estimated
             ]
             if group_ratings:
                 return sum(group_ratings) / len(group_ratings)
@@ -747,7 +751,7 @@ class Tournament:
                     ratings = [
                         player.estimation
                         for player in superior_group
-                        if player.estimation is not None
+                        if not player.estimated
                     ]
                     if ratings:
                         superior_ratings = ratings
@@ -763,7 +767,7 @@ class Tournament:
                     ratings = [
                         player.estimation
                         for player in inferiror_group
-                        if player.estimation is not None
+                        if not player.estimated
                     ]
                     if ratings:
                         superior_ratings = ratings
