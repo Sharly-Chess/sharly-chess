@@ -898,7 +898,7 @@ class Tournament:
             if board.black_player is not None:
                 board.black_player.set_board(index, number, BoardColor.BLACK)
             board.result = board.white_player.pairings[self._current_round].result
-            if self.handicap:
+            if self.handicap and board.black_player is not None:
                 strong_player: Player
                 weak_player: Player
                 strong_player, weak_player = sorted(
