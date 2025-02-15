@@ -66,15 +66,18 @@
                 style="top: var(--header-height);"
             >
                 <tr>
-                    <th scope="col" class="text-nowrap text-start w-1">
+                    <th scope="col" colspan="2" class="text-nowrap text-start w-1">
                         <div class="d-flex align-items-center">
-                            <span id="players-table-counters" class="pe-1">
+                            <i
+                                class="bi-arrow-clockwise btn text-dark py-0 ps-0 pe-1 m-0"
+                                hx-get="{{ url }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                {{ tooltip_attributes('info', _('Refresh this page.'), 'top') }}
+                            ></i>
+                            <span id="players-table-counters" class="px-0">
                                 {{ admin_players|length }}/{{admin_event.players_number}}
                             </span>
-                        </div>
-                    </th>
-                    <th scope="col" class="text-nowrap text-end w-1">
-                        <div class="d-flex align-items-center">
                             <i
                                 class="bi-x-circle btn text-dark py-0 ps-1 pe-0 m-0"
                                 hx-get="{{ url }}"
