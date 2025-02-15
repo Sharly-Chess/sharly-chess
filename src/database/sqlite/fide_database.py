@@ -197,7 +197,9 @@ class FideDatabase(SQLiteDatabase):
             string: str,
             limit: int = 0
     ) -> Iterator[Player]:
-        tokens: list[str] = string.split(' ')
+        tokens: list[str] = list(
+            map(lambda s: s.replace("'", "''"), string.split(' '))
+        )
         str_fields: tuple[str, ...] = (
             'last_name',
             'first_name',

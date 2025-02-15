@@ -193,12 +193,15 @@ class FfeDatabase(SQLiteDatabase):
             string: str,
             limit: int = 0
     ) -> Iterator[Player]:
-        tokens: list[str] = string.split(' ')
+        tokens: list[str] = list(
+            map(lambda s: s.replace("'", "''"), string.split(' '))
+        )
         str_fields: tuple[str, ...] = (
             'last_name',
             'first_name',
             'club',
             'city',
+            'ffe_licence_number',
         )
         int_fields: tuple[str, ...] = ('fide_id',)
         token_conditions: dict[str, str] = {}
