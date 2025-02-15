@@ -396,7 +396,7 @@ class PlayerAdminController(AbstractEventAdminController):
                         club = admin_player.club
                         ffe_licence = admin_player.ffe_licence
                         ffe_licence_number = admin_player.ffe_licence_number
-                        fide_id = admin_player.fide_id
+                        fide_id = admin_player.fide_id or None
                         ffe_id = admin_player.ffe_id
                         mail = admin_player.mail
                         phone = admin_player.phone
