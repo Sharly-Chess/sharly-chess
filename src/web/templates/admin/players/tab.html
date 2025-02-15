@@ -58,6 +58,7 @@
 
     <section class="pt-1 pb-1">
         <table
+            id="players-table"
             class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
         >
             <thead
@@ -296,7 +297,8 @@
                                             <li
                                                 class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
                                                 hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                                hx-target="body"
+                                                hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                                hx-swap="multi:#players-table:outerHTML,#messages:afterbegin"
                                                 hx-indicator="#please-wait"
                                                 hx-trigger="click, keyup[key=='Enter']"
                                                 tabindex="0"
@@ -490,8 +492,7 @@
                                                             {% if enable %}
                                                                 hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
                                                                 hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                                                                xhx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML"
-                                                                hx-target="body"
+                                                                hx-swap="multi:#players-table:outerHTML,#messages:afterbegin"
                                                                 hx-indicator="#please-wait"
                                                             {% else %}
                                                                 disabled
