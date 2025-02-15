@@ -35,8 +35,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 2150},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=2150,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 10, Result.GAIN),
                         2: Pairing(BoardColor.WHITE, 7, Result.GAIN),
@@ -54,8 +53,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 2200},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=2200,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 9, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 13, Result.DRAW),
@@ -73,8 +71,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 2100},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=2100,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 11, Result.DRAW),
                         2: Pairing(BoardColor.BLACK, 6, Result.GAIN),
@@ -92,8 +89,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 2050},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=2050,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 12, Result.GAIN),
                         2: Pairing(None, None, Result.HALF_POINT_BYE),
@@ -111,8 +107,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1450},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1450,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 8, Result.DRAW),
                         2: Pairing(BoardColor.BLACK, 11, Result.GAIN),
@@ -130,8 +125,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1950},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1950,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 14, Result.LOSS),
                         2: Pairing(BoardColor.WHITE, 3, Result.LOSS),
@@ -149,8 +143,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 2000},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=2000,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 13, Result.LOSS),
                         2: Pairing(BoardColor.BLACK, 15, Result.LOSS),
@@ -168,8 +161,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1850},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1850,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 16, Result.DRAW),
                         2: Pairing(BoardColor.WHITE, 14, Result.GAIN),
@@ -187,8 +179,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1700},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1700,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 3, Result.DRAW),
                         2: Pairing(BoardColor.WHITE, 16, Result.LOSS),
@@ -206,8 +197,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1650},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1650,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 4, Result.LOSS),
                         2: Pairing(None, None, Result.PAIRING_ALLOCATED_BYE),
@@ -225,8 +215,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1550},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1550,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 6, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 8, Result.LOSS),
@@ -244,8 +233,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FIDE',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1500},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1500,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 7, Result.LOSS),
                         2: Pairing(BoardColor.WHITE, 5, Result.GAIN),
@@ -263,8 +251,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1900},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1900,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 15, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 2, Result.LOSS),
@@ -282,8 +269,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1800},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1800,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 1, Result.LOSS),
                         2: Pairing(BoardColor.WHITE, 10, Result.LOSS),
@@ -301,8 +287,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1600},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1600,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 5, Result.GAIN),
                         2: Pairing(BoardColor.WHITE, 1, Result.DRAW),
@@ -320,8 +305,7 @@ class SwissTieBreaks(unittest.TestCase):
                     0,
                     'FID',
                     PlayerTitle.NONE,
-                    {TournamentRating.STANDARD: 1750},
-                    tournament_rating=TournamentRating.STANDARD,
+                    estimation=1750,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 2, Result.LOSS),
                         2: Pairing(BoardColor.BLACK, 9, Result.GAIN),
@@ -1017,8 +1001,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             players_by_id={
                 1: TournamentPlayer(
                     1, 'Alyx', '', None, PlayerGender.NONE, 0, 'FID',
-                    PlayerTitle.NONE, {TournamentRating.STANDARD: 2200},
-                    tournament_rating=TournamentRating.STANDARD,
+                    PlayerTitle.NONE, estimation=2200,
                     pairings = {
                         1: Pairing(BoardColor.WHITE, 5, Result.DRAW),
                         2: Pairing(BoardColor.WHITE, 2, Result.GAIN),
@@ -1029,8 +1012,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                 ),
                 2: TournamentPlayer(
                     2, 'Bruno', '', None, PlayerGender.NONE, 0, 'FID',
-                    PlayerTitle.NONE, {TournamentRating.STANDARD: 2150},
-                    tournament_rating=TournamentRating.STANDARD,
+                    PlayerTitle.NONE, estimation=2150,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 6, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 1, Result.LOSS),
@@ -1041,8 +1023,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                 ),
                 3: TournamentPlayer(
                     3, 'Charline', '', None, PlayerGender.NONE, 0, 'FID',
-                    PlayerTitle.NONE, {TournamentRating: 2100},
-                    tournament_rating=TournamentRating.STANDARD,
+                    PlayerTitle.NONE, estimation=2100,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 4, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 6, Result.GAIN),
@@ -1053,8 +1034,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                 ),
                 4: TournamentPlayer(
                     4, 'David', '', None, PlayerGender.NONE, 0, 'FID',
-                    PlayerTitle.NONE, {TournamentRating.STANDARD: 2050},
-                    tournament_rating=TournamentRating.STANDARD,
+                    PlayerTitle.NONE, estimation=2050,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 3, Result.LOSS),
                         2: Pairing(BoardColor.BLACK, 5, Result.LOSS),
@@ -1065,8 +1045,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                 ),
                 5: TournamentPlayer(
                     5, 'Franck', '', None, PlayerGender.NONE, 0, 'FID',
-                    PlayerTitle.NONE, {TournamentRating.STANDARD: 1950},
-                    tournament_rating=TournamentRating.STANDARD,
+                    PlayerTitle.NONE, estimation=1950,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 1, Result.DRAW),
                         2: Pairing(BoardColor.WHITE, 4, Result.GAIN),
@@ -1077,8 +1056,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                 ),
                 6: TournamentPlayer(
                     6, 'Helene', '', None, PlayerGender.NONE, 0, 'FID',
-                    PlayerTitle.NONE, {TournamentRating.STANDARD: 2000},
-                    tournament_rating=TournamentRating.STANDARD,
+                    PlayerTitle.NONE, estimation=2000,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 2, Result.LOSS),
                         2: Pairing(BoardColor.WHITE, 3, Result.LOSS),
