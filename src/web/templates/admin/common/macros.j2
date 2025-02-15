@@ -251,6 +251,14 @@ hx_indicator_img: the URL of the image of the indicator, optional
                     />
                     {{ placeholder }}
                 {% else %}
+                    {% if disabled %}
+                        <input
+                            id="{{ id }}"
+                            name="{{ name }}"
+                            type="hidden"
+                            value="{{ value }}"
+                        />
+                    {% endif %}
                     <input
                         id="{{ id }}"
                         name="{{ name }}"
