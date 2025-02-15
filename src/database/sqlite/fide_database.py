@@ -159,9 +159,6 @@ class FideDatabase(SQLiteDatabase):
                         if field_function:
                             data[field_name] = field_function(data[field_name])
                     if ',' in data['name']:
-                        name_parts: list[str] = data['name'].split(',', maxsplit=2)
-                        data['last_name'] = name_parts[0]
-                        data['first_name'] = name_parts[1]
                         data['last_name'], data['first_name'] = data['name'].split(
                             ',', maxsplit=1
                         )
@@ -194,7 +191,11 @@ class FideDatabase(SQLiteDatabase):
         )
         yield from map(lambda row: row['federation'], self._fetchall())
 
-    def search_player(self, string: str) -> Iterator[Player]:
+    def search_player(
+            self,
+            string: str,
+            limit: int = 0
+    ) -> Iterator[Player]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[str, ...] = (
             'last_name',
@@ -216,7 +217,7 @@ class FideDatabase(SQLiteDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        self._execute(f'SELECT * FROM player WHERE {conditions}')
+        self._execute(f'SELECT * FROM player WHERE {conditions}' + (f'LIMIT {limit}' if limit else ''))
         return (
             Player(
                 id=0,
@@ -264,3 +265,47 @@ class FideDatabase(SQLiteDatabase):
             )
             for row in self._fetchall()
         )
+
+    def get_player_by_fide_id(self, player_fide_id: int) -> Player:
+        self._execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
+        row = self._fetchone()
+        return Player(
+            id=0,
+            first_name=row['first_name'],
+            last_name=row['last_name'],
+            date_of_birth=datetime.strptime(
+                f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
+            ).date(),
+            gender=PlayerGender(row['gender']),
+            mail='',
+            phone='',
+            comment='',
+            owed=0.0,
+            paid=0.0,
+            title=PlayerTitle(row['fide_title']),
+            ratings={
+                TournamentRating.STANDARD: row['standard_rating'],
+                TournamentRating.RAPID: row['rapid_rating'],
+                TournamentRating.BLITZ: row['blitz_rating'],
+            },
+            rating_types={
+                TournamentRating.STANDARD:
+                    PlayerRatingType.FIDE if row['standard_rating'] else PlayerRatingType.ESTIMATED,
+                TournamentRating.RAPID:
+                    PlayerRatingType.FIDE if row['rapid_rating'] else PlayerRatingType.ESTIMATED,
+                TournamentRating.BLITZ:
+                    PlayerRatingType.FIDE if row['blitz_rating'] else PlayerRatingType.ESTIMATED,
+            },
+            fide_id=row['fide_id'],
+            ffe_id=None,
+            ffe_licence=PlayerFFELicence.NONE,
+            ffe_licence_number=None,
+            federation=row['federation'],
+            league='',
+            club='',
+            fixed=0,
+            check_in=False,  # not taken into account when updating/creating/deleting the player
+            pairings={},  # Pairings are read from Papi but not used
+            tournament=None,
+        )
+

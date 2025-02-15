@@ -39,31 +39,47 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 col-lg-4 mb-3">
-                            {{ text_input(
-                                name='fide_search',
-                                label=_('FIDE database:'),
-                                placeholder=_('E.g.: john doe'),
+                            {#
+                                TODO Can not use a help text because the dropdown ul is placed under the help div
                                 help_text=
                                     _('Search the FIDE database for names, FIDE ID, federation...')
                                     if fide_search_available else
-                                    _('The FIDE database is not available.'),
-                                disabled=not fide_search_available
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-4 mb-3">
-                            {#
-                                    help_text=
-                                        _('Search the FFE database for names, FIDE ID, FFE licence number, federation, league, club...')
-                                        if ffe_search_available else
-                                        _('The FFE database is not available.'),
+                                    '',
                             #}
                             <span class="dropdown">
                                 {{ text_input(
-                                    name='search',
+                                    name='search_fide',
+                                    label=_('FIDE database:'),
+                                    help_text='',
+                                    placeholder=_('E.g.: john doe'),
+                                    errors={} if fide_search_available else {'search_fide': _('The FIDE database is not available.'), },
+                                    disabled=not fide_search_available,
+                                    hx_get=url_for('search-fide', event_uniq_id=admin_event.uniq_id) if fide_search_available else '',
+                                    hx_trigger='keyup changed delay:0.2s',
+                                    hx_target='#fide-search-results',
+                                    hx_indicator_img=url_for('static', file_path='images/papi-web.gif')
+                                ) }}
+                                {% if fide_search_available %}
+                                    <ul id="fide-search-results" class="dropdown-menu fide-search-results p-0">
+                                    </ul>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
+                            {#
+                                    TODO Can not use a help text because the dropdown ul is placed under the help div
+                                    help_text=
+                                        _('Search the FFE database for names, FIDE ID, FFE licence number, federation, league, club...')
+                                        if ffe_search_available else
+                                        '',
+                            #}
+                            <span class="dropdown">
+                                {{ text_input(
+                                    name='search_ffe',
                                     label=_('FFE database:'),
                                     help_text='',
                                     placeholder=_('E.g.: %(string)s', string='pierre dupont paris'),
-                                    errors={} if ffe_search_available else {'search': _('The FFE database is not available.'), },
+                                    errors={} if ffe_search_available else {'search_ffe': _('The FFE database is not available.'), },
                                     disabled=not ffe_search_available,
                                     hx_get=url_for('search-ffe', event_uniq_id=admin_event.uniq_id) if ffe_search_available else '',
                                     hx_trigger='keyup changed delay:0.2s',

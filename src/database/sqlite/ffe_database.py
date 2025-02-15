@@ -299,4 +299,3 @@ class FfeDatabase(SQLiteDatabase):
             pairings={},  # Pairings are read from Papi but not used
             tournament=None,
         )
-

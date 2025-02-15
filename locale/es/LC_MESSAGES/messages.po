@@ -2062,9 +2062,17 @@ msgid "Only estimated rankings are optional."
 msgstr "Sólo los rankings estimados son opcionales."
 
 #: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "ID FIDE no válido [{fide_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2075,6 +2083,10 @@ msgstr "Identificación FFE no válida [{ffe_id}]."
 #, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Número de licencia FFE no válido [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -3854,6 +3866,11 @@ msgstr "Descargue la información de los reproductores seleccionados (formato OD
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Descargue la información de los reproductores seleccionados (formato XLSX)."
 
+#: src/web/templates/admin/players/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+msgid "No results."
+msgstr ""
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4033,6 +4050,30 @@ msgstr "Supresión del jugador [%(last_name)s %(first_name)s]"
 #, ai_translation
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Advertencia: ¡la eliminación de un jugador es permanente!"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Search"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE database:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "E.g.: john doe"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The FIDE database is not available."
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FFE database:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The FFE database is not available."
+msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4410,6 +4451,11 @@ msgstr "ID FIDE: %(fide_id)s (haga clic para copiar al portapapeles)."
 #, ai_translation
 msgid "No FIDE ID."
 msgstr "No hay identificación."
+
+#: src/web/templates/admin/players/tab.html
+#, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr ""
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format

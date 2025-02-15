@@ -1139,8 +1139,6 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
-# Error: translation [U12City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
@@ -1153,8 +1151,6 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
-# Error: translation [U16City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1165,8 +1161,6 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
-# Error: translation [U20City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #: src/data/util.py
@@ -2093,9 +2087,17 @@ msgid "Only estimated rankings are optional."
 msgstr "Solo le classifiche stimate sono facoltative."
 
 #: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "ID FIDE non valido [{fide_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2106,6 +2108,10 @@ msgstr "ID FFE non valido [{ffe_id}]."
 #, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Numero di licenza FFE non valido [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -3885,6 +3891,11 @@ msgstr "Scarica le informazioni dei giocatori selezionati (formato ODS)."
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Scarica le informazioni dei giocatori selezionati (formato XLSX)."
 
+#: src/web/templates/admin/players/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+msgid "No results."
+msgstr ""
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4064,6 +4075,30 @@ msgstr "Cancellazione del giocatore [%(last_name)s %(first_name)s]"
 #, ai_translation
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attenzione: la cancellazione di un giocatore è permanente!"
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Search"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE database:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "E.g.: john doe"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The FIDE database is not available."
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FFE database:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The FFE database is not available."
+msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4441,6 +4476,11 @@ msgstr "ID FIDE: %(fide_id)s (clicca per copiare negli appunti)."
 #, ai_translation
 msgid "No FIDE ID."
 msgstr "Nessun documento di identità."
+
+#: src/web/templates/admin/players/tab.html
+#, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr ""
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
@@ -5716,8 +5756,6 @@ msgstr "Numero massimo di risultati: illimitato"
 msgid "Image:"
 msgstr "Immagine:"
 
-# Error: translation [Rnd.BoaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Rnd.Boa]
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html

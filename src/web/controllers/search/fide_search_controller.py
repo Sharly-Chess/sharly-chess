@@ -5,21 +5,21 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
 from data.player import Player
-from database.sqlite.ffe_database import FfeDatabase
+from database.sqlite.fide_database import FideDatabase
 from web.controllers.admin.event_admin_controller import AbstractEventAdminController, EventAdminWebContext
 
 
-class FfeSearchController(AbstractEventAdminController):
+class FideSearchController(AbstractEventAdminController):
 
     @get(
-        path='/search/ffe/{event_uniq_id:str}',
-        name='search-ffe',
+        path='/search/fide/{event_uniq_id:str}',
+        name='search-fide',
     )
-    async def htmx_search_ffe(
+    async def htmx_search_fide(
             self,
             request: HTMXRequest,
             event_uniq_id: str,
-            search_ffe: str,
+            search_fide: str,
     ) -> Template | ClientRedirect:
         web_context: EventAdminWebContext = EventAdminWebContext(
             request,
@@ -33,11 +33,11 @@ class FfeSearchController(AbstractEventAdminController):
             web_context
         )
         players: list[Player] | None = None
-        if search_ffe:
-            with FfeDatabase() as ffe_database:
-                players: list[Player] = [player for player in ffe_database.search_player(search_ffe, limit=8)]
+        if search_fide:
+            with FideDatabase() as fide_database:
+                players: list[Player] = [player for player in fide_database.search_player(search_fide, limit=8)]
         return HTMXTemplate(
-            template_name='admin/players/ffe_search_results.html',
+            template_name='admin/players/fide_search_results.html',
             context= template_context | {
                 'search_results': players,
             }

@@ -214,7 +214,7 @@ class Player(TournamentPlayer):
         ratings: dict[TournamentRating, int],
         rating_types: dict[TournamentRating, PlayerRatingType],
         fide_id: int | None,
-        ffe_id: int,
+        ffe_id: int | None,
         ffe_licence: PlayerFFELicence,
         ffe_licence_number: str | None,
         federation: str,

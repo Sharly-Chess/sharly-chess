@@ -44,6 +44,7 @@ class PlayerAdminWebContext(EventAdminWebContext):
         request: HTMXRequest,
         event_uniq_id: str,
         player_id: int | None,
+        player_fide_id: int | None,
         player_ffe_id: int | None,
         tournament_id: int | None,
         data: Annotated[
@@ -65,6 +66,9 @@ class PlayerAdminWebContext(EventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Player [{player_id}] not found.')
                 return
+        elif player_fide_id:
+            with FideDatabase() as fide_database:
+                self.admin_player = fide_database.get_player_by_fide_id(player_fide_id)
         elif player_ffe_id:
             with FfeDatabase() as ffe_database:
                 self.admin_player = ffe_database.get_player_by_ffe_id(player_ffe_id)
@@ -176,6 +180,7 @@ class PlayerAdminController(AbstractEventAdminController):
         fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
+            print(f'action={action}, fide_id={fide_id}, tournament.players_by_fide_id.keys={tournament.players_by_fide_id.keys()}')
             if action == 'create' and fide_id and fide_id in tournament.players_by_fide_id:
                     errors[field] = _(
                         'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
@@ -198,7 +203,7 @@ class PlayerAdminController(AbstractEventAdminController):
                         tournament_uniq_id=tournament.uniq_id
                     )
         except ValueError:
-            errors[field] = _('Invalid FFE ID [{ffe_id}].').format(fide_id=data[field])
+            errors[field] = _('Invalid FFE ID [{ffe_id}].').format(ffe_id=data[field])
         ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
         try:
             ffe_licence = PlayerFFELicence(
@@ -291,6 +296,7 @@ class PlayerAdminController(AbstractEventAdminController):
         modal: str | None = None,
         action: str | None = None,
         player_id: int | None = None,
+        player_fide_id: int | None = None,
         player_ffe_id: int | None = None,
         tournament_id: int | None = None,
         data: dict[str, str] | None = None,
@@ -300,6 +306,7 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
+            player_fide_id=player_fide_id,
             player_ffe_id=player_ffe_id,
             tournament_id=tournament_id,
             data=data,
@@ -333,6 +340,7 @@ class PlayerAdminController(AbstractEventAdminController):
                     club: str | None = None
                     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
                     ffe_licence_number: str | None = None
+                    fide_id: int | None = None
                     ffe_id: int | None = None
                     mail: str | None = None
                     phone: str | None = None
@@ -354,6 +362,7 @@ class PlayerAdminController(AbstractEventAdminController):
                         club = admin_player.club
                         ffe_licence = admin_player.ffe_licence
                         ffe_licence_number = admin_player.ffe_licence_number
+                        fide_id = admin_player.fide_id
                         ffe_id = admin_player.ffe_id
                         mail = admin_player.mail
                         phone = admin_player.phone
@@ -501,6 +510,25 @@ class PlayerAdminController(AbstractEventAdminController):
         )
 
     @get(
+        path='/admin/player-modal/create-from-fide/{event_uniq_id:str}/{player_fide_id:int}',
+        name='admin-player-create-from-fide-modal',
+        cache=1,
+    )
+    async def htmx_admin_player_create_from_fide_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        player_fide_id: int | None,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_players_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='player',
+            action='create',
+            player_fide_id=player_fide_id,
+        )
+
+    @get(
         path='/admin/player-modal/create-from-ffe/{event_uniq_id:str}/{player_ffe_id:int}',
         name='admin-player-create-from-ffe-modal',
         cache=1,
@@ -556,6 +584,7 @@ class PlayerAdminController(AbstractEventAdminController):
                     request,
                     event_uniq_id=event_uniq_id,
                     player_id=player_id,
+                    player_fide_id=None,
                     player_ffe_id=None,
                     tournament_id=None,
                     data=data,
@@ -574,6 +603,7 @@ class PlayerAdminController(AbstractEventAdminController):
                 modal='player',
                 action=action,
                 player_id=player_id,
+                player_fide_id=None,
                 player_ffe_id=None,
                 data=data,
                 errors=player.errors,
@@ -658,6 +688,7 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
+            player_fide_id=None,
             player_ffe_id=None,
             tournament_id=tournament_id,
             data=data,
@@ -814,6 +845,7 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=None,
+            player_fide_id=None,
             player_ffe_id=None,
             tournament_id=tournament_id,
             data=data,
@@ -849,6 +881,7 @@ class PlayerAdminController(AbstractEventAdminController):
             modal='close_check_in',
             action=None,
             player_id=None,
+            player_fide_id=None,
             player_ffe_id=None,
             tournament_id=tournament_id,
         )
@@ -868,6 +901,7 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=None,
+            player_fide_id=None,
             player_ffe_id=None,
             tournament_id=tournament_id,
             data=data,
@@ -945,6 +979,7 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
+            player_fide_id=None,
             player_ffe_id=None,
             tournament_id=None,
             data=data,
