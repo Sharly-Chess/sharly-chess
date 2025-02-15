@@ -3646,6 +3646,11 @@ msgstr "Identifiant FIDE défini."
 
 #: src/web/templates/admin/players/tab.html
 #, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr "Licence FFE : %(ffe_licence_number)s (expirée)."
+
+#: src/web/templates/admin/players/tab.html
+#, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
 

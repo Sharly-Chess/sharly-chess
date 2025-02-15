@@ -440,7 +440,9 @@
                                         {% if player.ffe_licence.value == 0 %}
                                             {{ tooltip_attributes('error', player.ffe_licence.name, 'right') }}
                                         {% elif player.ffe_licence.value == 1 %}
-                                            {{ tooltip_attributes('warning', player.ffe_licence.name, 'right') }}
+                                            {{ tooltip_attributes('warning', _('FFE licence: %(ffe_licence_number)s (expired).', ffe_licence_number=player.ffe_licence_number), 'right') }}
+                                            class="cursor-pointer"
+                                            onclick="navigator.clipboard.writeText('{{ player.ffe_licence_number }}')"
                                         {% elif player.ffe_licence.value in [2, 3] %}
                                             {{ tooltip_attributes('info', _('FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).', ffe_licence_number=player.ffe_licence_number), 'right') }}
                                             class="cursor-pointer"
