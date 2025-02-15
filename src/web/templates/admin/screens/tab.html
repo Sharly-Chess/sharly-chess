@@ -77,10 +77,10 @@
         </button>
         <ul class="dropdown-menu">
             {% for screen_type, screen_data in {
-                'input': { 'title': _('Results entry'), 'icon_class': 'bi-pencil-fill','tooltip_text': _('Add a screen to enter the results.'),  },
+                'input': { 'title': _('Results entry'), 'icon_class': 'bi-pencil','tooltip_text': _('Add a screen to enter the results.'),  },
                 'boards': { 'title': _('Pairings by board'), 'icon_class': 'bi-card-list', 'tooltip_text': _('Add a screen to display the pairings by board.'), },
-                'players': { 'title': _('Pairings by player'), 'icon_class': 'bi-people-fill', 'tooltip_text': _('Add a screen to display the pairings by alphabetical order.'), },
-                'results': { 'title': _('Last results'), 'icon_class': 'bi-trophy-fill', 'tooltip_text': _('Add a screen to display the last results.'), },
+                'players': { 'title': _('Pairings by player'), 'icon_class': 'bi-people', 'tooltip_text': _('Add a screen to display the pairings by alphabetical order.'), },
+                'results': { 'title': _('Last results'), 'icon_class': 'bi-trophy', 'tooltip_text': _('Add a screen to display the last results.'), },
                 'image': { 'title': _('Image'), 'icon_class': 'bi-image', 'tooltip_text': _('Add a screen to display an image.'), },
             }.items() %}
                 <li
@@ -89,6 +89,8 @@
                     preload
                     hx-target="body"
                     hx-indicator="#please-wait"
+                    hx-trigger="click, keyup[key=='Enter']"
+                    tabindex="0
                     {{ tooltip_attributes('info', screen_data.tooltip_text, 'left') }}
                 >
                     <i class="{{ screen_data['icon_class'] }}"></i>
@@ -105,22 +107,22 @@
             'input': {
                 'title': _('Results entry'),
                 'checkbox_tooltip_text': _('Show/hide the input screens.'),
-                'icon_class': 'bi-pencil-fill',
+                'icon_class': 'bi-pencil',
             },
             'boards': {
                 'title': _('Pairings by board'),
                 'checkbox_tooltip_text': _('Show/hide the boards screens.'),
-                'icon_class': 'bi-card-list',
+                'icon_class': 'bi-card',
             },
             'players': {
                 'title': _('Pairings by player'),
                 'checkbox_tooltip_text': _('Show/hide the players screens.'),
-                'icon_class': 'bi-people-fill',
+                'icon_class': 'bi-people',
             },
             'results': {
                 'title': _('Last results'),
                 'checkbox_tooltip_text': _('Show/hide the results screens.'),
-                'icon_class': 'bi-trophy-fill',
+                'icon_class': 'bi-trophy',
             },
             'image': {
                 'title': _('Image'),

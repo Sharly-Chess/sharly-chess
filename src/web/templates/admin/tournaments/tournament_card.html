@@ -34,9 +34,9 @@
         </div>
         <div class="text-start {% if not tournament.ffe_id %}text-secondary{% endif %}">
             <img
-                    src="{{ url_for('static', file_path='/images/federations/ffe.png') }}"
-                    style="height: 1.2em"
-                    class="p-0"
+                src="{{ url_for('static', file_path='/images/federations/ffe.png') }}"
+                style="height: 1.2em"
+                class="p-0"
             />
             {% if tournament.ffe_id %}
                 {{ _('FFE qualification: %(ffe_id)s', ffe_id=tournament.ffe_id) }}

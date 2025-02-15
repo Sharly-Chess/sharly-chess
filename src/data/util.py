@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import Enum, StrEnum, IntEnum, auto
 from itertools import islice
 from logging import Logger
+from math import floor
 from typing import Self
 
 from common.i18n import _
@@ -484,6 +485,16 @@ class TournamentPairing(IntEnum):
                 return 'Berger'
             case _:
                 raise ValueError(f'Unknown pairing type: {self}')
+    
+    @property
+    def swiss(self):
+        return self in (
+            TournamentPairing.HALEY,
+            TournamentPairing.HALEY_SOFT,
+            TournamentPairing.NICOIS,
+            TournamentPairing.SAD,
+            TournamentPairing.STANDARD
+        )
 
 
 class TournamentTieBreak(IntEnum):
@@ -876,23 +887,23 @@ class PlayerCategory(IntEnum):
         now: datetime = datetime.now()
         ref_year: int = now.year if now.month < 9 else now.year + 1
         age: int = ref_year - year_of_birth
-        if age < 8:
+        if age <= 8:
             return PlayerCategory.U8
-        elif age < 10:
+        elif age <= 10:
             return PlayerCategory.U10
-        elif age < 12:
+        elif age <= 12:
             return PlayerCategory.U12
-        elif age < 14:
+        elif age <= 14:
             return PlayerCategory.U14
-        elif age < 16:
+        elif age <= 16:
             return PlayerCategory.U16
-        elif age < 18:
+        elif age <= 18:
             return PlayerCategory.U18
-        elif age < 20:
+        elif age <= 20:
             return PlayerCategory.U20
-        elif age < 50:
+        elif age <= 50:
             return PlayerCategory.O20
-        elif age < 65:
+        elif age <= 65:
             return PlayerCategory.O50
         else:
             return PlayerCategory.O65
@@ -1235,11 +1246,11 @@ class ScreenType(StrEnum):
             case self.Boards:
                 return 'bi-card-list'
             case self.Input:
-                return 'bi-pencil-fill'
+                return 'bi-pencil'
             case self.Players:
-                return 'bi-people-fill'
+                return 'bi-people'
             case self.Results:
-                return 'bi-trophy-fill'
+                return 'bi-trophy'
             case self.Image:
                 return 'bi-image'
             case _:
@@ -1274,3 +1285,44 @@ class TrfType(StrEnum):
                 return 'trfx'
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+
+def round_fide(num: float):
+    lowest_int = int(num)
+    if num - lowest_int >= 0.5:
+        return lowest_int + 1
+    return lowest_int
+
+
+performance_table: list[int] = [
+    0, 7, 14, 21, 29, 36, 43, 50, 57, 65, 72, 80, 87, 95, 102, 110, 117,
+    125, 133, 141, 149, 158, 166, 175, 184, 193, 202, 211, 220, 230, 240,
+    251, 262, 273, 284, 296, 309, 322, 336, 351, 366, 383, 401, 422,
+    444, 470, 501, 538, 589, 677, 800
+]
+
+papi_performance_table: list[int] = performance_table[:-1] + [677, 677]
+
+
+def performance_bonus(
+    fractional_score: float,
+    /, *,
+    papi_legacy: bool = False,
+) -> int:
+    percent = 100 * fractional_score
+    index = floor(abs(50 - percent))
+    percent_int = floor(percent)
+    if papi_legacy:
+        bonus = papi_performance_table[index]
+        smaller_difference = percent - percent_int
+        if smaller_difference > 0:
+            smaller_difference *= (
+                papi_performance_table[index+1]
+                - bonus
+            )
+            bonus += smaller_difference
+    else:
+        bonus = performance_table[index]
+    if fractional_score < 0.5:
+        bonus *= -1
+    return bonus

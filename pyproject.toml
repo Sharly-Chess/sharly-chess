@@ -35,24 +35,28 @@ dependencies = [
   "trf @ https://github.com/papi-web-org/TRF/archive/refs/tags/v1.1.3-unofficial.zip",
   "uvicorn ~= 0.34.0",
   "validators ~= 0.34.0",
-  "wheel ~= 0.45.1",
+  "wheel >= 0.45.1",
 ]
 
 [project.optional-dependencies]
 lint = [
   "ruff",
   "validate-pyproject",
-  "pipdeptree"
+  "pipdeptree",
 ]
 
 translate = [
   "torch",
   "sentencepiece",
-  "sacremoses"
+  "sacremoses",
 ]
 
 export = [
-  "PyInstaller"
+  "PyInstaller",
+]
+
+tests = [
+  "pytest",
 ]
 
 [tool.ruff.format]

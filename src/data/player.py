@@ -147,10 +147,56 @@ class ClubTuple(LeagueTuple):
     def __str__(self) -> str:
         return f'{self.federation}-{self.league}-{self.club}'
 
+class TournamentPlayer:
+    """A class representing a player in a tournament"""
+    def __init__(
+        self,
+        id: int,
+        last_name: str,
+        first_name: str,
+        date_of_birth: date | None,
+        gender: PlayerGender,
+        fide_id: int,
+        federation: str,
+        title: PlayerTitle,
+        pairings: dict[int, Pairing],
+        estimation: int | None = None
+    ):
+        self.id = id
+        self.last_name = last_name
+        self.first_name = first_name
+        self.date_of_birth = date_of_birth
+        self.gender = gender
+        self.fide_id = fide_id
+        self.federation = federation
+        self.title = title
+        self._estimation = estimation
+        self.pairings = pairings
+    
+    def points_before(self, max_round: int) -> float:
+        return sum(
+            pairing.result.point_value
+            for round_index, pairing in self.pairings.items()
+            if round_index < max_round
+        )
+    
+    def points_after(self, max_round: int) -> float:
+        return sum(
+            pairing.result.point_value
+            for round_index, pairing in self.pairings.items()
+            if round_index <= max_round
+        )
+    
+    def total_points(self) -> float:
+        return sum(pairing.result.point_value for pairing in self.pairings.values())
+    
+    @property
+    def estimation(self):
+        return self._estimation or 0
 
 @total_ordering
-class Player:
-    """A data class representing a player in a tournament."""
+class Player(TournamentPlayer):
+    """A class representing a player in papi-web."""
 
     def __init__(
         self,
@@ -180,20 +226,24 @@ class Player:
         tournament: 'Tournament | None' = None,
         errors: dict[str, str] | None = None,
     ):
-        self.id: int = id
-        self.last_name: str = last_name
-        self.first_name: str = first_name
-        self.date_of_birth: date | None = date_of_birth
-        self.gender: PlayerGender = gender
+        super().__init__(
+            id,
+            last_name,
+            first_name,
+            date_of_birth,
+            gender,
+            fide_id,
+            federation,
+            title,
+            pairings,
+        )
         self.mail: str = mail
         self.phone: str = phone
         self.comment: str = comment
         self.owed: float = owed
         self.paid: float = paid
-        self.title: PlayerTitle = title
         self.ratings: dict[TournamentRating, int] = ratings
         self.rating_types: dict[TournamentRating, PlayerRatingType] = rating_types
-        self.fide_id: int | None = fide_id
         self.ffe_id: int = ffe_id
         self.ffe_licence: PlayerFFELicence = ffe_licence
         self.ffe_licence_number: str | None = ffe_licence_number
@@ -202,7 +252,6 @@ class Player:
         self.club: str = club
         self.fixed: int = fixed
         self.check_in: bool = check_in
-        self.pairings: dict[int, Pairing] = pairings
         self.points: float | None = None
         self.vpoints: float | None = None
         self.board_id: int | None = None
@@ -235,6 +284,23 @@ class Player:
     @property
     def tournament_id(self) -> int:
         return self.player_tournament_id_from_papi_web_id(self.id)
+
+    @property
+    def estimation(self) -> int:
+        if not self.estimated:
+            return self.ratings[self.tournament.rating]
+        return self._estimation
+
+    @estimation.setter
+    def estimation(self, value: int):
+        if not self.estimated:
+            self._estimation = self.ratings[self.tournament.rating]
+        else:
+            self._estimation = value
+    
+    @property
+    def estimated(self) -> bool:
+        return self.rating_types[self.tournament.rating] == PlayerRatingType.ESTIMATED
 
     @property
     def year_of_birth(self) -> int:
@@ -274,13 +340,6 @@ class Player:
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
         self.points = self.points_before(max_round)
-
-    def points_before(self, max_round: int) -> float:
-        return sum(
-            pairing.result.point_value
-            for round_index, pairing in self.pairings.items()
-            if round_index < max_round
-        )
 
     def points_total(self) -> float:
         return sum(pairing.result.point_value for pairing in self.pairings.values())
