@@ -286,6 +286,8 @@
                                             hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                             hx-target="body"
                                             hx-indicator="#please-wait"
+                                            hx-trigger="click, keyup[key=='Enter']"
+                                            tabindex="0"
                                             {{ tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
                                         >
                                             <i class="bi-pencil-fill pe-1"></i>{{ _('Edit') }}
@@ -293,10 +295,12 @@
                                         {% if not player.has_real_pairings %}
                                             <li
                                                 class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
-                                                    hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                                    hx-target="body"
-                                                    hx-indicator="#please-wait"
-                                                    {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
+                                                hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                                hx-trigger="click, keyup[key=='Enter']"
+                                                tabindex="0"
+                                                {{ tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
                                             >
                                                 <i class="bi-trash-fill pe-1"></i>{{ _('Delete') }}
                                             </li>
