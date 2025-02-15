@@ -3683,7 +3683,7 @@ msgstr "Identifiant FIDE : %(fide_id)s (cliquer pour copier dans le presse-papie
 
 #: src/web/templates/admin/players/tab.html
 msgid "No FIDE ID."
-msgstr "Identifiant FIDE défini."
+msgstr "Identifiant FIDE non défini."
 
 #: src/web/templates/admin/players/tab.html
 #, python-format
