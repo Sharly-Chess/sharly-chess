@@ -276,6 +276,17 @@ body[data-bs-theme=light] .btn-primary {
     --bs-form-invalid-border-color: #ea868f;
 }
 
+[data-bs-theme=dark] *:focus, [data-bs-theme=light] *:focus {
+    box-shadow: none;
+    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
+    outline-offset: 4px;
+}
+
+.dropdown-item:focus {
+    outline: 0;
+    box-shadow: none;
+}
+
 [data-bs-theme=dark] .nav {
     --bs-nav-link-color: #fff;
     --bs-nav-link-hover-color: #fff;
@@ -363,7 +374,10 @@ body[data-bs-theme=light] .btn-primary {
     vertical-align: middle;
 }
 
-
 [data-bs-theme=dark] table.prominent thead td {
     padding: 5px;
+}
+
+[data-bs-theme=dark] table.prominent thead th *:focus {
+    outline: 0.15rem solid rgba(var(--bs-body-bg-rgb), 0.70);
 }

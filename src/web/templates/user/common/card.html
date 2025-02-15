@@ -2,10 +2,12 @@
     <div
             class="card {% if card_url %}btn{% endif %} p-1 w-100 {{ card_class }}"
             {% if card_url %}
-                hx-get="{{ card_url }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
+            hx-get="{{ card_url }}"
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+            hx-trigger="click, keyup[key=='Enter'], keyup[key==' ']"
+            tabindex="0"
             {% endif %}
     >
         <div class="card-header fw-bold text-center fs-5 border-dark">
