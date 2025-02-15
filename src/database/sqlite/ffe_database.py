@@ -258,9 +258,8 @@ class FfeDatabase(SQLiteDatabase):
             for row in self._fetchall()
         )
 
-    def get_player_by_ffe_id(self, player_ffe_id: int) -> Player:
-        self._execute(f'SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
-        row = self._fetchone()
+    @staticmethod
+    def get_player_from_row(row: dict[str, Any]) -> Player | None:
         return Player(
             id=0,
             first_name=row['first_name'],
@@ -298,4 +297,12 @@ class FfeDatabase(SQLiteDatabase):
             check_in=False,  # not taken into account when updating/creating/deleting the player
             pairings={},  # Pairings are read from Papi but not used
             tournament=None,
-        )
+        ) if row else None
+
+    def get_player_by_ffe_id(self, player_ffe_id: int) -> Player | None:
+        self._execute(f'SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
+        return self.get_player_from_row(self._fetchone())
+
+    def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
+        self._execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
+        return self.get_player_from_row(self._fetchone())

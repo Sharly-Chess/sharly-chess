@@ -67,11 +67,46 @@ class PlayerAdminWebContext(EventAdminWebContext):
                 self._redirect_error(f'Player [{player_id}] not found.')
                 return
         elif player_fide_id:
+            # player_fide_id is set when is a player is to be imported from the FIDE database
             with FideDatabase() as fide_database:
                 self.admin_player = fide_database.get_player_by_fide_id(player_fide_id)
+                # Try to get more information by requesting the FFE database
+                if FfeDatabase().exists():
+                    with FfeDatabase() as ffe_database:
+                        if ffe_player := ffe_database.get_player_by_fide_id(self.admin_player.fide_id):
+                            self.admin_player.ffe_id = ffe_player.ffe_id
+                            for rating_type in [
+                                TournamentRating.STANDARD,
+                                TournamentRating.RAPID,
+                                TournamentRating.BLITZ,
+                            ]:
+                                if self.admin_player.rating_types[rating_type] == PlayerRatingType.ESTIMATED:
+                                    self.admin_player.ratings[rating_type] = ffe_player.ratings[rating_type]
+                                    self.admin_player.rating_types[rating_type] = ffe_player.rating_types[rating_type]
+                            if ffe_player.date_of_birth and self.admin_player.year_of_birth == ffe_player.year_of_birth:
+                                self.admin_player.date_of_birth = ffe_player.date_of_birth
+                            self.admin_player.ffe_licence = ffe_player.ffe_licence
+                            self.admin_player.ffe_licence_number = ffe_player.ffe_licence_number
+                            self.admin_player.club = ffe_player.club
+                            self.admin_player.league = ffe_player.league
+                            self.admin_player.comment = ffe_player.comment
         elif player_ffe_id:
+            # player_ffe_id is set when is a player is to be imported from the FFE database
             with FfeDatabase() as ffe_database:
                 self.admin_player = ffe_database.get_player_by_ffe_id(player_ffe_id)
+                # Try to get more information by requesting the FIDE database
+                with FideDatabase() as fide_database:
+                    if fide_player := fide_database.get_player_by_fide_id(self.admin_player.fide_id):
+                        self.admin_player.federation = fide_player.federation
+                        self.admin_player.title = fide_player.title
+                        for rating_type in [
+                            TournamentRating.STANDARD,
+                            TournamentRating.RAPID,
+                            TournamentRating.BLITZ,
+                        ]:
+                            if self.admin_player.rating_types[rating_type] == PlayerRatingType.ESTIMATED and fide_player.rating_types[rating_type] != PlayerRatingType.ESTIMATED:
+                                self.admin_player.ratings[rating_type] = fide_player.ratings[rating_type]
+                                self.admin_player.rating_types[rating_type] = fide_player.rating_types[rating_type]
         if tournament_id:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
