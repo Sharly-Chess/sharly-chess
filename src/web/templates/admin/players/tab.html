@@ -298,7 +298,7 @@
                                                 class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
                                                 hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                                 hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                                                hx-swap="multi:#players-table:outerHTML,#messages:afterbegin"
+                                                hx-target="body"
                                                 hx-indicator="#please-wait"
                                                 hx-trigger="click, keyup[key=='Enter']"
                                                 tabindex="0"
