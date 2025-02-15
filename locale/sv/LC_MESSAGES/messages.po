@@ -1128,11 +1128,15 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
+# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
+# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
+# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1169,6 +1173,12 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
+# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
@@ -1179,6 +1189,9 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
+# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
+# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
+# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -2091,8 +2104,9 @@ msgid "Only estimated rankings are optional."
 msgstr "Endast uppskattade rankningar är valfria."
 
 #: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
-msgstr ""
+msgstr "Spelaren med FIDE ID [{fide_id}] spelar redan turnering [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2100,8 +2114,9 @@ msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Ogiltigt FIDE-ID [{fide_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
-msgstr ""
+msgstr "Spelaren med FFE ID [{ffe_id}] spelar redan turnering [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2114,8 +2129,9 @@ msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Ogiltigt FFE-tillståndsnummer [{ffe_licence_number}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
-msgstr ""
+msgstr "Spelaren med FFE-licensnummer [{ffe_licence_number}] spelar redan turnering [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -3216,6 +3232,8 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -3671,6 +3689,8 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
+# Error: translation [Ej tillämpligt] is much too long compared to initial
+# [No]
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "No"
@@ -3901,8 +3921,9 @@ msgstr "Ladda ner informationen för de valda spelarna (XLSX-format)."
 
 #: src/web/templates/admin/players/ffe_search_results.html
 #: src/web/templates/admin/players/fide_search_results.html
+#, ai_translation
 msgid "No results."
-msgstr ""
+msgstr "Inga resultat."
 
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
@@ -4085,28 +4106,34 @@ msgid "Warning: the deletion of a player is permanent!"
 msgstr "Varning: raderingen av en spelare är permanent!"
 
 #: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "Search"
-msgstr ""
+msgstr "Sök"
 
 #: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "FIDE database:"
-msgstr ""
+msgstr "FIDE- databas:"
 
 #: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "E.g.: john doe"
-msgstr ""
+msgstr "T.ex. John Doe"
 
 #: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "The FIDE database is not available."
-msgstr ""
+msgstr "FIDE-databasen är inte tillgänglig."
 
 #: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "FFE database:"
-msgstr ""
+msgstr "Databas för FFE:"
 
 #: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "The FFE database is not available."
-msgstr ""
+msgstr "FFE-databasen är inte tillgänglig."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4486,9 +4513,9 @@ msgid "No FIDE ID."
 msgstr "Inget FID-ID."
 
 #: src/web/templates/admin/players/tab.html
-#, python-format
+#, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr ""
+msgstr "FFE-licens: %(ffe_licence_number)s (utfärdad)."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
@@ -5764,6 +5791,8 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
+# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
+# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
