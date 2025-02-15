@@ -180,7 +180,6 @@ class PlayerAdminController(AbstractEventAdminController):
         fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
-            print(f'action={action}, fide_id={fide_id}, tournament.players_by_fide_id.keys={tournament.players_by_fide_id.keys()}')
             if action == 'create' and fide_id and fide_id in tournament.players_by_fide_id:
                     errors[field] = _(
                         'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
