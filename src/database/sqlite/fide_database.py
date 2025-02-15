@@ -178,7 +178,8 @@ class FideDatabase(SQLiteDatabase):
             if save:
                 save.rename(self.file)
             return False
-        save.unlink(missing_ok=True)
+        if save:
+            save.unlink(missing_ok=True)
         print_interactive_success(
             _('{number} players written.').format(number=players_number)
         )
