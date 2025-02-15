@@ -3606,7 +3606,7 @@ msgstr "Le pointage est fermé pour le tournoi [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
 #, python-format
-msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Le·la joueur·euse [%(last_name)s %(first_name)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html

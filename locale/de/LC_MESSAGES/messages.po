@@ -4453,7 +4453,7 @@ msgstr "Der Check-in ist für Turniere geschlossen [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
-msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Spieler [%(last_name)s %(first_name)s] wenn für die nächste Runde im Turnier verfällt [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
