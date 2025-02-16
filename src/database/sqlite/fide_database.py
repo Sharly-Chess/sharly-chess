@@ -265,10 +265,11 @@ class FideDatabase(SQLiteDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        self._execute(
-            f'SELECT * FROM player WHERE {conditions}' + (f' LIMIT {limit}' if limit else ''),
-            tuple(params),
-        )
+        query: str = f'SELECT * FROM player WHERE {conditions}'
+        if limit:
+            query += ' LIMIT ?'
+            params += [limit, ]
+        self._execute(query, tuple(params), )
         return (
             self.get_player_from_row(row)
             for row in self._fetchall()
