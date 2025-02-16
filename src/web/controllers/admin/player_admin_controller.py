@@ -407,12 +407,10 @@ class PlayerAdminController(AbstractEventAdminController):
                     match action:
                         case 'update' | 'delete':
                             tournament_id = admin_player.tournament.id
-                            pass
                         case 'create':
                             tournament_id = admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id[
                                 0
                             ].id
-                            pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     data = (
