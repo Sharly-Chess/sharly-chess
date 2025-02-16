@@ -1,4 +1,5 @@
 import os.path
+from string import capwords
 from xml.etree import ElementTree
 import zipfile
 from contextlib import suppress
@@ -192,89 +193,12 @@ class FideDatabase(SQLiteDatabase):
         )
         yield from map(lambda row: row['federation'], self._fetchall())
 
-    def search_player(
-            self,
-            string: str,
-            limit: int = 0
-    ) -> Iterator[Player]:
-        tokens: list[str] = list(
-            map(lambda s: s.replace("'", "''"), string.split(' '))
-        )
-        str_fields: tuple[str, ...] = (
-            'last_name',
-            'first_name',
-        )
-        int_fields: tuple[str, ...] = ('fide_id',)
-        token_conditions: dict[str, str] = {}
-        for token in tokens:
-            expressions = list(
-                map(lambda field: f"({field} LIKE '%{token}%')", str_fields)
-            )
-            int_value: int
-            with suppress(ValueError):
-                int_value = int(token.strip())
-                expressions += list(
-                    map(lambda field: f'({field} = {int_value})', int_fields)
-                )
-            token_conditions[token] = ' OR '.join(expressions)
-        conditions: str = ' AND '.join(
-            map(lambda condition: f'({condition})', token_conditions.values())
-        )
-        self._execute(f'SELECT * FROM player WHERE {conditions}' + (f'LIMIT {limit}' if limit else ''))
-        return (
-            Player(
-                id=0,
-                first_name=row['first_name'],
-                last_name=row['last_name'],
-                date_of_birth=datetime.strptime(
-                    f'{row["year_of_birth"]}-01-01', '%Y-%m-%d'
-                ).date()
-                if row['year_of_birth']
-                else None,
-                gender=PlayerGender(row['gender']),
-                mail='',
-                phone='',
-                comment='',
-                owed=0.0,
-                paid=0.0,
-                title=PlayerTitle(row['fide_title']),
-                ratings={
-                    TournamentRating.STANDARD: row['standard_rating'],
-                    TournamentRating.RAPID: row['rapid_rating'],
-                    TournamentRating.BLITZ: row['blitz_rating'],
-                },
-                rating_types={
-                    TournamentRating.STANDARD: PlayerRatingType.FIDE
-                    if row['standard_rating']
-                    else PlayerRatingType.ESTIMATED,
-                    TournamentRating.RAPID: PlayerRatingType.FIDE
-                    if row['rapid_rating']
-                    else PlayerRatingType.ESTIMATED,
-                    TournamentRating.BLITZ: PlayerRatingType.FIDE
-                    if row['blitz_rating']
-                    else PlayerRatingType.ESTIMATED,
-                },
-                fide_id=row['fide_id'],
-                ffe_id=0,
-                ffe_licence=PlayerFFELicence.NONE,
-                ffe_licence_number=None,
-                federation=row['federation'],
-                league='',
-                club='',
-                fixed=0,
-                check_in=False,  # not taken into account when updating/creating/deleting the player
-                pairings={},  # Pairings are read from Papi but not used
-                tournament=None,
-            )
-            for row in self._fetchall()
-        )
-
     @staticmethod
     def get_player_from_row(row: dict[str, Any]) -> Player | None:
         return Player(
             id=0,
-            first_name=row['first_name'],
-            last_name=row['last_name'],
+            first_name=capwords(row['first_name']),
+            last_name=row['last_name'].upper(),
             date_of_birth=datetime.strptime(
                 f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
             ).date(),
@@ -310,6 +234,45 @@ class FideDatabase(SQLiteDatabase):
             pairings={},  # Pairings are read from Papi but not used
             tournament=None,
         ) if row else None
+
+
+    def search_player(
+            self,
+            string: str,
+            limit: int = 0,  # no limit set if no param or null param passed
+    ) -> Iterator[Player]:
+        tokens: list[str] = string.split(' ')
+        str_fields: tuple[str, ...] = (
+            'last_name',
+            'first_name',
+        )
+        int_fields: tuple[str, ...] = ('fide_id',)
+        token_conditions: dict[str, str] = {}
+        params: list[Any] = []
+        for token in tokens:
+            expressions = list(
+                map(lambda field: f'({field} LIKE ?)', str_fields)
+            )
+            params += [f'%{token}%', ] * len(str_fields)
+            int_value: int
+            with suppress(ValueError):
+                int_value = int(token.strip())
+                expressions += list(
+                    map(lambda field: f'({field} = ?)', int_fields)
+                )
+                params += [f'%{int_value}%', ] * len(int_fields)
+            token_conditions[token] = ' OR '.join(expressions)
+        conditions: str = ' AND '.join(
+            map(lambda condition: f'({condition})', token_conditions.values())
+        )
+        self._execute(
+            f'SELECT * FROM player WHERE {conditions}' + (f' LIMIT {limit}' if limit else ''),
+            tuple(params),
+        )
+        return (
+            self.get_player_from_row(row)
+            for row in self._fetchall()
+        )
 
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
