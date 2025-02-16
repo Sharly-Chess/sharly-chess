@@ -2094,8 +2094,18 @@ msgstr "Solo le classifiche stimate sono facoltative."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Il giocatore con ID FIDE [{fide_id}] gioca già il torneo [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "ID FIDE non valido [{fide_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Il giocatore con FFE ID [{ffe_id}] gioca già il torneo [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2106,6 +2116,11 @@ msgstr "ID FFE non valido [{ffe_id}]."
 #, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Numero di licenza FFE non valido [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Il giocatore con il numero di licenza FFE [{ffe_licence_number}] gioca già il torneo [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -3885,6 +3900,12 @@ msgstr "Scarica le informazioni dei giocatori selezionati (formato ODS)."
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Scarica le informazioni dei giocatori selezionati (formato XLSX)."
 
+#: src/web/templates/admin/players/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+#, ai_translation
+msgid "No results."
+msgstr "Nessun risultato."
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4064,6 +4085,36 @@ msgstr "Cancellazione del giocatore [%(last_name)s %(first_name)s]"
 #, ai_translation
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attenzione: la cancellazione di un giocatore è permanente!"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Search"
+msgstr "Cerca"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE database:"
+msgstr "Database FIDE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "E.g.: john doe"
+msgstr "E.g.: John Doe"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FIDE database is not available."
+msgstr "Il database FIDE non è disponibile."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE database:"
+msgstr "Database FFE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FFE database is not available."
+msgstr "Il database FFE non è disponibile."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4399,7 +4450,7 @@ msgstr "Il check-in è chiuso per il torneo [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
-msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Giocatore [%(last_name)s %(first_name)s] se perde per il round successivo nel torneo [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
@@ -4441,6 +4492,11 @@ msgstr "ID FIDE: %(fide_id)s (clicca per copiare negli appunti)."
 #, ai_translation
 msgid "No FIDE ID."
 msgstr "Nessun documento di identità."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr "Licenza FFE: %(ffe_licence_number)s (scaduto)."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format

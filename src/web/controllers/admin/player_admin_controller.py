@@ -26,6 +26,8 @@ from data.util import (
     PlayerTitle,
     PlayerFFELicence,
 )
+from database.sqlite.ffe_database import FfeDatabase
+from database.sqlite.fide_database import FideDatabase
 from web.controllers.admin.event_admin_controller import (
     EventAdminWebContext,
     AbstractEventAdminController,
@@ -42,6 +44,8 @@ class PlayerAdminWebContext(EventAdminWebContext):
         request: HTMXRequest,
         event_uniq_id: str,
         player_id: int | None,
+        player_fide_id: int | None,
+        player_ffe_id: int | None,
         tournament_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -62,6 +66,47 @@ class PlayerAdminWebContext(EventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Player [{player_id}] not found.')
                 return
+        elif player_fide_id:
+            # player_fide_id is set when is a player is to be imported from the FIDE database
+            with FideDatabase() as fide_database:
+                self.admin_player = fide_database.get_player_by_fide_id(player_fide_id)
+                # Try to get more information by requesting the FFE database
+                if FfeDatabase().exists():
+                    with FfeDatabase() as ffe_database:
+                        if ffe_player := ffe_database.get_player_by_fide_id(self.admin_player.fide_id):
+                            self.admin_player.ffe_id = ffe_player.ffe_id
+                            for rating_type in [
+                                TournamentRating.STANDARD,
+                                TournamentRating.RAPID,
+                                TournamentRating.BLITZ,
+                            ]:
+                                if self.admin_player.rating_types[rating_type] == PlayerRatingType.ESTIMATED:
+                                    self.admin_player.ratings[rating_type] = ffe_player.ratings[rating_type]
+                                    self.admin_player.rating_types[rating_type] = ffe_player.rating_types[rating_type]
+                            if ffe_player.date_of_birth and self.admin_player.year_of_birth == ffe_player.year_of_birth:
+                                self.admin_player.date_of_birth = ffe_player.date_of_birth
+                            self.admin_player.ffe_licence = ffe_player.ffe_licence
+                            self.admin_player.ffe_licence_number = ffe_player.ffe_licence_number
+                            self.admin_player.club = ffe_player.club
+                            self.admin_player.league = ffe_player.league
+                            self.admin_player.comment = ffe_player.comment
+        elif player_ffe_id:
+            # player_ffe_id is set when is a player is to be imported from the FFE database
+            with FfeDatabase() as ffe_database:
+                self.admin_player = ffe_database.get_player_by_ffe_id(player_ffe_id)
+                # Try to get more information by requesting the FIDE database
+                with FideDatabase() as fide_database:
+                    if fide_player := fide_database.get_player_by_fide_id(self.admin_player.fide_id):
+                        self.admin_player.federation = fide_player.federation
+                        self.admin_player.title = fide_player.title
+                        for rating_type in [
+                            TournamentRating.STANDARD,
+                            TournamentRating.RAPID,
+                            TournamentRating.BLITZ,
+                        ]:
+                            if self.admin_player.rating_types[rating_type] == PlayerRatingType.ESTIMATED and fide_player.rating_types[rating_type] != PlayerRatingType.ESTIMATED:
+                                self.admin_player.ratings[rating_type] = fide_player.ratings[rating_type]
+                                self.admin_player.rating_types[rating_type] = fide_player.rating_types[rating_type]
         if tournament_id:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
@@ -170,6 +215,13 @@ class PlayerAdminController(AbstractEventAdminController):
         fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
+            if action == 'create' and fide_id and fide_id in tournament.players_by_fide_id:
+                    errors[field] = _(
+                        'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
+                    ).format(
+                        fide_id=fide_id,
+                        tournament_uniq_id=tournament.uniq_id
+                    )
         except ValueError:
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
@@ -177,8 +229,15 @@ class PlayerAdminController(AbstractEventAdminController):
         ffe_id: int | None = None
         try:
             ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
+            if action == 'create' and ffe_id and ffe_id in tournament.players_by_ffe_id:
+                    errors[field] = _(
+                        'The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}].'
+                    ).format(
+                        ffe_id=ffe_id,
+                        tournament_uniq_id=tournament.uniq_id
+                    )
         except ValueError:
-            errors[field] = _('Invalid FFE ID [{ffe_id}].').format(fide_id=data[field])
+            errors[field] = _('Invalid FFE ID [{ffe_id}].').format(ffe_id=data[field])
         ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
         try:
             ffe_licence = PlayerFFELicence(
@@ -194,6 +253,13 @@ class PlayerAdminController(AbstractEventAdminController):
                 errors[field] = _(
                     'Invalid FFE licence number [{ffe_licence_number}].'
                 ).format(ffe_licence_number=data[field])
+            if action == 'create' and ffe_licence_number in tournament.players_by_ffe_licence_number:
+                errors[field] = _(
+                    'The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}].'
+                ).format(
+                    ffe_licence_number=ffe_licence_number,
+                    tournament_uniq_id=tournament.uniq_id
+                )
         mail: str | None = None
         try:
             mail = WebContext.form_data_to_mail(data, field := 'mail')
@@ -264,6 +330,8 @@ class PlayerAdminController(AbstractEventAdminController):
         modal: str | None = None,
         action: str | None = None,
         player_id: int | None = None,
+        player_fide_id: int | None = None,
+        player_ffe_id: int | None = None,
         tournament_id: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
@@ -272,6 +340,8 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
+            player_fide_id=player_fide_id,
+            player_ffe_id=player_ffe_id,
             tournament_id=tournament_id,
             data=data,
         )
@@ -304,6 +374,7 @@ class PlayerAdminController(AbstractEventAdminController):
                     club: str | None = None
                     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
                     ffe_licence_number: str | None = None
+                    fide_id: int | None = None
                     ffe_id: int | None = None
                     mail: str | None = None
                     phone: str | None = None
@@ -311,34 +382,35 @@ class PlayerAdminController(AbstractEventAdminController):
                     owed: float = 0.0
                     paid: float = 0.0
                     fixed: int = 0
+                    if admin_player:
+                        first_name = admin_player.first_name
+                        last_name = admin_player.last_name
+                        gender = admin_player.gender
+                        date_of_birth = admin_player.date_of_birth
+                        ratings = admin_player.ratings
+                        rating_types = admin_player.rating_types
+                        fide_id = admin_player.fide_id
+                        title = admin_player.title
+                        federation = admin_player.federation
+                        league = admin_player.league
+                        club = admin_player.club
+                        ffe_licence = admin_player.ffe_licence
+                        ffe_licence_number = admin_player.ffe_licence_number
+                        fide_id = admin_player.fide_id or None
+                        ffe_id = admin_player.ffe_id
+                        mail = admin_player.mail
+                        phone = admin_player.phone
+                        comment = admin_player.comment
+                        owed = admin_player.owed
+                        paid = admin_player.paid
+                        fixed = admin_player.fixed
                     match action:
                         case 'update' | 'delete':
-                            first_name = admin_player.first_name
-                            last_name = admin_player.last_name
-                            gender = admin_player.gender
                             tournament_id = admin_player.tournament.id
-                            date_of_birth = admin_player.date_of_birth
-                            ratings = admin_player.ratings
-                            rating_types = admin_player.rating_types
-                            fide_id = admin_player.fide_id
-                            title = admin_player.title
-                            federation = admin_player.federation
-                            league = admin_player.league
-                            club = admin_player.club
-                            ffe_licence = admin_player.ffe_licence
-                            ffe_licence_number = admin_player.ffe_licence_number
-                            ffe_id = admin_player.ffe_id
-                            mail = admin_player.mail
-                            phone = admin_player.phone
-                            comment = admin_player.comment
-                            owed = admin_player.owed
-                            paid = admin_player.paid
-                            fixed = admin_player.fixed
                         case 'create':
                             tournament_id = admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id[
                                 0
                             ].id
-                            pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     data = (
@@ -436,6 +508,8 @@ class PlayerAdminController(AbstractEventAdminController):
                         federation_id: PapiWebConfig.federations[federation_id]
                         for federation_id in federation_ids
                     },
+                    'fide_search_available': FideDatabase().exists(),
+                    'ffe_search_available': FfeDatabase().exists(),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -465,7 +539,44 @@ class PlayerAdminController(AbstractEventAdminController):
             event_uniq_id=event_uniq_id,
             modal='player',
             action='create',
-            player_id=None,
+        )
+
+    @get(
+        path='/admin/player-modal/create-from-fide/{event_uniq_id:str}/{player_fide_id:int}',
+        name='admin-player-create-from-fide-modal',
+        cache=1,
+    )
+    async def htmx_admin_player_create_from_fide_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        player_fide_id: int | None,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_players_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='player',
+            action='create',
+            player_fide_id=player_fide_id,
+        )
+
+    @get(
+        path='/admin/player-modal/create-from-ffe/{event_uniq_id:str}/{player_ffe_id:int}',
+        name='admin-player-create-from-ffe-modal',
+        cache=1,
+    )
+    async def htmx_admin_player_create_from_ffe_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        player_ffe_id: int | None,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_players_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='player',
+            action='create',
+            player_ffe_id=player_ffe_id,
         )
 
     @get(
@@ -505,6 +616,8 @@ class PlayerAdminController(AbstractEventAdminController):
                     request,
                     event_uniq_id=event_uniq_id,
                     player_id=player_id,
+                    player_fide_id=None,
+                    player_ffe_id=None,
                     tournament_id=None,
                     data=data,
                 )
@@ -522,6 +635,8 @@ class PlayerAdminController(AbstractEventAdminController):
                 modal='player',
                 action=action,
                 player_id=player_id,
+                player_fide_id=None,
+                player_ffe_id=None,
                 data=data,
                 errors=player.errors,
             )
@@ -545,9 +660,7 @@ class PlayerAdminController(AbstractEventAdminController):
                     return self._admin_event_players_render(
                         request,
                         event_uniq_id=event_uniq_id,
-                        modal=None,
                         action=action,
-                        player_id=None,
                         data=data,
                     )
                 if not tournament.file_exists:
@@ -562,7 +675,6 @@ class PlayerAdminController(AbstractEventAdminController):
                         event_uniq_id=event_uniq_id,
                         modal='player',
                         action=action,
-                        player_id=None,
                         data=data,
                     )
                 tournament.add_player(player)
@@ -608,6 +720,8 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
+            player_fide_id=None,
+            player_ffe_id=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -763,6 +877,8 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=None,
+            player_fide_id=None,
+            player_ffe_id=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -797,6 +913,8 @@ class PlayerAdminController(AbstractEventAdminController):
             modal='close_check_in',
             action=None,
             player_id=None,
+            player_fide_id=None,
+            player_ffe_id=None,
             tournament_id=tournament_id,
         )
 
@@ -815,6 +933,8 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=None,
+            player_fide_id=None,
+            player_ffe_id=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -891,6 +1011,8 @@ class PlayerAdminController(AbstractEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
+            player_fide_id=None,
+            player_ffe_id=None,
             tournament_id=None,
             data=data,
         )

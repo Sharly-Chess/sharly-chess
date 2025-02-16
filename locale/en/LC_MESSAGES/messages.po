@@ -1681,7 +1681,15 @@ msgid "Only estimated rankings are optional."
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid FIDE ID [{fide_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
@@ -1690,6 +1698,10 @@ msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr ""
+
+#: src/web/controllers/admin/player_admin_controller.py
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
@@ -3191,6 +3203,11 @@ msgstr ""
 msgid "Download the information of the selected players (XLSX format)."
 msgstr ""
 
+#: src/web/templates/admin/players/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+msgid "No results."
+msgstr ""
+
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."
 msgstr ""
@@ -3335,6 +3352,30 @@ msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "Warning: the deletion of a player is permanent!"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "Search"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FIDE database:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "E.g.: john doe"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The FIDE database is not available."
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "FFE database:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The FFE database is not available."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
@@ -3606,7 +3647,7 @@ msgstr ""
 
 #: src/web/templates/admin/players/tab.html
 #, python-format
-msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
 #: src/web/templates/admin/players/tab.html
@@ -3642,6 +3683,11 @@ msgstr ""
 
 #: src/web/templates/admin/players/tab.html
 msgid "No FIDE ID."
+msgstr ""
+
+#: src/web/templates/admin/players/tab.html
+#, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
 msgstr ""
 
 #: src/web/templates/admin/players/tab.html

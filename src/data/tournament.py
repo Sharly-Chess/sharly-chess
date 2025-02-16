@@ -1,10 +1,13 @@
+from datetime import datetime, timedelta
 from itertools import groupby
-import time
+from time import time
 from collections import Counter
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
+
+from dateutil.relativedelta import relativedelta
 from trf import Tournament as TrfTournament
 from typing import TYPE_CHECKING
 
@@ -931,7 +934,7 @@ class Tournament:
                 # last version already uploaded
                 return NeedsUpload.NO_CHANGE
             if (
-                time.time()
+                time()
                 < self.stored_tournament.last_ffe_upload
                 + PapiWebConfig().ffe_upload_delay
             ):
@@ -1064,8 +1067,8 @@ class Tournament:
         """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
             data: dict[str, str | int | float | None] = {
-                'Ref': player.ref_id,
-                'RefFFE': player.ffe_id,
+                'Ref': (max(p.ref_id for p in self.players_by_id.values()) if self.players_by_id else 1) + 1,
+                'RefFFE': player.ffe_id or (datetime.now() - relativedelta(years=30)),  # like Papi does :-(
                 'NrFFE': player.ffe_licence_number
                 if player.ffe_licence_number
                 else None,

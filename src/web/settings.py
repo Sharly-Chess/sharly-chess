@@ -26,6 +26,8 @@ from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
 from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
+from web.controllers.search.ffe_search_controller import FfeSearchController
+from web.controllers.search.fide_search_controller import FideSearchController
 from web.controllers.user.event_user_controller import EventUserController
 from web.controllers.user.index_user_controller import IndexUserController
 from web.controllers.user.screen_user_controller import ScreenUserController
@@ -70,6 +72,8 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     FamilyAdminController,
     RotatorAdminController,
     PlayerAdminController,
+    FideSearchController,
+    FfeSearchController,
     static_files_router,
 ]
 

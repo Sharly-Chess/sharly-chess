@@ -2082,8 +2082,18 @@ msgstr "Alleen geschatte rankings zijn optioneel."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "De speler met FIDE ID [{fide_id}] speelt al toernooi [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Ongeldige FIDE ID [{fide_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "De speler met FFE ID [{ffe_id}] speelt al toernooi [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2094,6 +2104,11 @@ msgstr "Ongeldige FFE ID [{ffe_id}]."
 #, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Ongeldig FFE-licentienummer [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr "De speler met FFE licentienummer [{ffe_licence_number}] speelt al toernooi [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -3873,6 +3888,12 @@ msgstr "Download de informatie van de geselecteerde spelers (ODS-formaat)."
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Download de informatie van de geselecteerde spelers (XLSX-formaat)."
 
+#: src/web/templates/admin/players/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+#, ai_translation
+msgid "No results."
+msgstr "Geen resultaten."
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4052,6 +4073,36 @@ msgstr "Schrapping van speler [%(last_name)s %(first_name)s]"
 #, ai_translation
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Waarschuwing: het verwijderen van een speler is permanent!"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Search"
+msgstr "Zoeken"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE database:"
+msgstr "FIDE-database:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "E.g.: john doe"
+msgstr "Bijv.: John Doe"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FIDE database is not available."
+msgstr "De FIDE-database is niet beschikbaar."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE database:"
+msgstr "FFE-database:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FFE database is not available."
+msgstr "De FFE-database is niet beschikbaar."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4387,7 +4438,7 @@ msgstr "Check-in is gesloten voor toernooi [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
-msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Speler [%(last_name)s %(first_name)s] indien verbeurd voor de volgende ronde in toernooi [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
@@ -4429,6 +4480,11 @@ msgstr "FIDE ID: %(fide_id)s (klik om te kopiëren naar het klembord)."
 #, ai_translation
 msgid "No FIDE ID."
 msgstr "Geen FIDE ID."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr "FFE-licentie: %(ffe_licence_number)s (verlopen)."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format

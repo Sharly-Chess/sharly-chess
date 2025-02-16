@@ -390,10 +390,13 @@ class PapiWebConfig(metaclass=Singleton):
     event_path: Path = Path() / 'events'
 
     """ The extension of event databases. """
-    event_ext: str = 'db'
+    event_database_ext: str = 'db'
 
     """ The extension of archives event databases. """
-    arch_ext: str = 'arch'
+    event_archive_ext: str = 'arch'
+
+    """ The extension of federation databases. """
+    federation_database_ext: str = 'db'
 
     """ The path to the user custom files. """
     custom_path: Path = Path().absolute() / 'custom'

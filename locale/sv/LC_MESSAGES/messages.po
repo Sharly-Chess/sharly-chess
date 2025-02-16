@@ -2105,8 +2105,18 @@ msgstr "Endast uppskattade rankningar är valfria."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Spelaren med FIDE ID [{fide_id}] spelar redan turnering [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Ogiltigt FIDE-ID [{fide_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Spelaren med FFE ID [{ffe_id}] spelar redan turnering [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2117,6 +2127,11 @@ msgstr "Ogiltigt FFE-ID [{ffe_id}]."
 #, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Ogiltigt FFE-tillståndsnummer [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Spelaren med FFE-licensnummer [{ffe_licence_number}] spelar redan turnering [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -3904,6 +3919,12 @@ msgstr "Ladda ner informationen om de utvalda spelarna (ODS-format)."
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Ladda ner informationen för de valda spelarna (XLSX-format)."
 
+#: src/web/templates/admin/players/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+#, ai_translation
+msgid "No results."
+msgstr "Inga resultat."
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4083,6 +4104,36 @@ msgstr "Borttagning av spelare [%(last_name)s %(first_name)s]"
 #, ai_translation
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Varning: raderingen av en spelare är permanent!"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Search"
+msgstr "Sök"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE database:"
+msgstr "FIDE- databas:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "E.g.: john doe"
+msgstr "T.ex. John Doe"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FIDE database is not available."
+msgstr "FIDE-databasen är inte tillgänglig."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE database:"
+msgstr "Databas för FFE:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FFE database is not available."
+msgstr "FFE-databasen är inte tillgänglig."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4418,7 +4469,7 @@ msgstr "Incheckningen är stängd för turnering [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
-msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Spelare [%(last_name)s %(first_name)s] om förverkad för nästa omgång i turneringen [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
@@ -4460,6 +4511,11 @@ msgstr "FIDE ID: %(fide_id)s (klicka för att kopiera till klippbordet)."
 #, ai_translation
 msgid "No FIDE ID."
 msgstr "Inget FID-ID."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr "FFE-licens: %(ffe_licence_number)s (utfärdad)."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format

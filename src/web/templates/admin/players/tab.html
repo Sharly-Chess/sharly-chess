@@ -58,6 +58,7 @@
 
     <section class="pt-1 pb-1">
         <table
+            id="players-table"
             class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
         >
             <thead
@@ -296,6 +297,7 @@
                                             <li
                                                 class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
                                                 hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                                hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
                                                 hx-target="body"
                                                 hx-indicator="#please-wait"
                                                 hx-trigger="click, keyup[key=='Enter']"
@@ -334,7 +336,7 @@
                                             {{ tooltip_attributes('warning', _('Check-in is closed for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=player.tournament.uniq_id), 'right') }}
                                         {% elif not player.can_check_in_out %}
                                             class="bi-ban text-secondary"
-                                            {{ tooltip_attributes('warning', _('Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s].', last_name=player.last_name, first_name=player.first_name, tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                                            {{ tooltip_attributes('warning', _('Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s].', last_name=player.last_name, first_name=player.first_name, tournament_uniq_id=player.tournament.uniq_id), 'right') }}
                                         {% else %}
                                             {% if player.check_in %}
                                                 class="bi-check-circle-fill text-success cursor-pointer"
@@ -444,7 +446,9 @@
                                         {% if player.ffe_licence.value == 0 %}
                                             {{ tooltip_attributes('error', player.ffe_licence.name, 'right') }}
                                         {% elif player.ffe_licence.value == 1 %}
-                                            {{ tooltip_attributes('warning', player.ffe_licence.name, 'right') }}
+                                            {{ tooltip_attributes('warning', _('FFE licence: %(ffe_licence_number)s (expired).', ffe_licence_number=player.ffe_licence_number), 'right') }}
+                                            class="cursor-pointer"
+                                            onclick="navigator.clipboard.writeText('{{ player.ffe_licence_number }}')"
                                         {% elif player.ffe_licence.value in [2, 3] %}
                                             {{ tooltip_attributes('info', _('FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).', ffe_licence_number=player.ffe_licence_number), 'right') }}
                                             class="cursor-pointer"
@@ -488,8 +492,7 @@
                                                             {% if enable %}
                                                                 hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
                                                                 hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                                                                xhx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML"
-                                                                hx-target="body"
+                                                                hx-swap="multi:#players-table:outerHTML,#messages:afterbegin"
                                                                 hx-indicator="#please-wait"
                                                             {% else %}
                                                                 disabled

@@ -48,7 +48,7 @@ class EventDatabase(SQLiteDatabase):
 
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
-        return PapiWebConfig.event_path / f'{uniq_id}.{PapiWebConfig.event_ext}'
+        return PapiWebConfig.event_path / f'{uniq_id}.{PapiWebConfig.event_database_ext}'
 
     @staticmethod
     def _check_populate_dict(
@@ -802,7 +802,7 @@ class EventDatabase(SQLiteDatabase):
         file: Path = EventDatabase(self.uniq_id).file
         index: int = 0
         date_str: str = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M')
-        arch: Path = file.parent / f'{file.stem}_{date_str}.{PapiWebConfig.arch_ext}'
+        arch: Path = file.parent / f'{file.stem}_{date_str}.{PapiWebConfig.event_archive_ext}'
         while True:
             try:
                 file.rename(arch)

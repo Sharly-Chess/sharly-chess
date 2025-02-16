@@ -1127,96 +1127,36 @@ msgstr "FFE-Genehmigung B (Freizeit)"
 msgid "FFE licence A (competition)"
 msgstr "FFE-Lizenz A (Wettbewerb)"
 
-# Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
-# Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
-# Error: translation [U10
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U10]
-# Error: translation [U10
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U10]
 #: src/data/util.py
 #, ai_translation
 msgid "U10"
 msgstr ""
 
-# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
-# is much too long compared to initial [U12]
-# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
-# is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
 msgstr ""
 
-# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
-# is much too long compared to initial [U14]
-# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
-# is much too long compared to initial [U14]
 #: src/data/util.py
 #, ai_translation
 msgid "U14"
 msgstr ""
 
-# Error: translation [U16
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U16]
-# Error: translation [U16
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
 msgstr ""
 
-# Error: translation [U18
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U18]
-# Error: translation [U18
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U18]
 #: src/data/util.py
 #, ai_translation
 msgid "U18"
 msgstr ""
 
-# Error: translation [U20
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U20]
-# Error: translation [U20
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U20]
 #: src/data/util.py
 #, ai_translation
 msgid "U20"
@@ -1633,8 +1573,6 @@ msgstr "Inhalt der URL [{url}] ist nicht gültig (input[id=[{id]] nicht gefunden
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisieren einer Sitzung auf [{url}]..."
 
-# Error: translation [In Ordnung.] is much too long compared to initial [OK]
-# Error: translation [In Ordnung.] is much too long compared to initial [OK]
 #: src/ffe/ffe_session.py
 #: src/web/templates/admin/players/filter_categories.html
 #: src/web/templates/admin/players/filter_check_ins.html
@@ -2144,8 +2082,18 @@ msgstr "Nur geschätzte Rankings sind optional."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Der Spieler mit FIDE ID [{fide_id}] spielt bereits Turnier [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Ungültige FIDE-ID [{fide_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Der Spieler mit FFE ID [{ffe_id}] spielt bereits Turnier [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2156,6 +2104,11 @@ msgstr "Ungültige FFE-ID [{ffe_id}]."
 #, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Ungültige FFE-Lizenznummer [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr "Der Spieler mit der FFE-Lizenznummer [{ffe_licence_number}] spielt bereits Turniere [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -3935,6 +3888,12 @@ msgstr "Laden Sie die Informationen der ausgewählten Player (ODS-Format) herunt
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Laden Sie die Informationen der ausgewählten Player herunter (XLSX-Format)."
 
+#: src/web/templates/admin/players/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+#, ai_translation
+msgid "No results."
+msgstr "Keine Ergebnisse."
+
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4114,6 +4073,36 @@ msgstr "Löschen des Spielers [%(last_name)s %(first_name)s]"
 #, ai_translation
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Warnung: Das Löschen eines Spielers ist dauerhaft!"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "Search"
+msgstr "Suchen"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE database:"
+msgstr "FIDE-Datenbank:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "E.g.: john doe"
+msgstr "Z.B.: John Doe"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FIDE database is not available."
+msgstr "Die FIDE-Datenbank ist nicht verfügbar."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE database:"
+msgstr "FFE-Datenbank:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FFE database is not available."
+msgstr "Die FFE-Datenbank ist nicht verfügbar."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4311,10 +4300,6 @@ msgstr "Telefonnummer:"
 msgid "The player's phone number."
 msgstr "Die Telefonnummer des Spielers."
 
-# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
-# compared to initial [Owed:]
-# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
-# compared to initial [Owed:]
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "Owed:"
@@ -4453,7 +4438,7 @@ msgstr "Der Check-in ist für Turniere geschlossen [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
-msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Spieler [%(last_name)s %(first_name)s] wenn für die nächste Runde im Turnier verfällt [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
@@ -4495,6 +4480,11 @@ msgstr "FIDE-ID: %(fide_id)s (Klicken Sie zum Kopieren in die Zwischenablage)."
 #, ai_translation
 msgid "No FIDE ID."
 msgstr "Keine FIDE-ID."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr "FFE-Lizenz: %(ffe_licence_number)s (abgelaufen)."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
