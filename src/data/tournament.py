@@ -15,7 +15,7 @@ from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.pairing import Pairing
-from data.util import TrfType, performance_bonus, round_fide
+from data.util import TrfType, performance_bonus, round_fide, TournamentTieBreak
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -106,6 +106,9 @@ class Tournament:
         self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
+        self._tie_breaks: list[TournamentTieBreak] = [
+            TournamentTieBreak.NONE,
+        ] * 3
         self._papi_read = False
 
     @property
@@ -346,9 +349,22 @@ class Tournament:
         return self._arbiter
 
     @property
+    def tie_breaks(self) -> list[TournamentTieBreak]:
+        self.read_papi()
+        return self._tie_breaks
+
+    @property
     def players_by_id(self) -> dict[int, Player]:
         self.read_papi()
         return self._players_by_id
+
+    @property
+    def players_by_rank(self) -> dict[int, Player]:
+        return {
+            player.rank: player
+            for player in self.players_by_id.values()
+            if player.rank
+        }
 
     @cached_property
     def players_by_ffe_licence_number(self) -> dict[str, Player]:
@@ -376,14 +392,11 @@ class Tournament:
 
     @cached_property
     def players_by_trf_id(self) -> dict[int, Player]:
-        players = [player for id_, player in self.players_by_id.items() if id_ != 1]
-        le_method = Player.__le__
-        try:
-            Player.__le__ = lambda self_, other: self_.starting_rank_comparison(other)
-            ordered_players = sorted(players, reverse=True)
-            return {index + 1: player for index, player in enumerate(ordered_players)}
-        finally:
-            Player.__le__ = le_method
+        ordered_players = sorted(
+            self.players_by_id.values(),
+            key=lambda player: player.starting_rank_sort_key,
+        )
+        return {index + 1: player for index, player in enumerate(ordered_players)}
 
     @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
@@ -523,6 +536,7 @@ class Tournament:
                 )
                 for id_, player in self.players_by_trf_id.items()
             ],
+            federation=self.event.federation,
             xx_fields=(
                 self._trf_xx_fields(first_round_pairing)
                 if trf_type == TrfType.PAIRING
@@ -589,6 +603,7 @@ class Tournament:
                     self._rating,
                     self._rating_limit1,
                     self._rating_limit2,
+                    self._tie_breaks,
                     self._location,
                     self._start_date,
                     self._end_date,
@@ -612,6 +627,7 @@ class Tournament:
         self._papi_read = True
         self._calculate_current_round()
         self._set_players_illegal_moves()  # load illegal moves for the current round
+        self._set_player_ranks()
         self._calculate_points()
         self._build_boards()
         self.estimate_players(papi_legacy=True)
@@ -856,6 +872,15 @@ class Tournament:
             if player.id == 1:
                 continue
             player.illegal_moves = illegal_moves[player.id]
+
+    def _set_player_ranks(self):
+        """set the ranks of all players"""
+        ranked_players = sorted(
+            self.players_by_id.values(),
+            key=lambda player_: player_.rank_sort_key(self, self.current_round),
+        )
+        for index, player in enumerate(ranked_players):
+            player.rank = index + 1
 
     def _build_boards(self):
         if not self._current_round:

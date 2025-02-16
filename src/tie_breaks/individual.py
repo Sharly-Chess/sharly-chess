@@ -3,13 +3,12 @@ from collections import namedtuple
 from collections.abc import Iterable
 from contextlib import suppress
 from decimal import Decimal
-from itertools import groupby
-from math import floor, isclose
+from math import isclose
 from typing import Literal
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
 from data.pairing import Pairing
-from data.util import Result, BoardColor, TournamentPairing, TournamentRating, performance_bonus, round_fide
+from data.util import Result, BoardColor, TournamentPairing, performance_bonus, round_fide
 
 
 def wins(player: Player, _tournament: Tournament, /, *, max_round: int | None = None) -> int:
@@ -225,7 +224,7 @@ def buchholz(
     See FIDE Handbook C.07.8.1
     Setting *cut_top* will remove the *cut_top* highest contributions, and
     *cut_btm* the lowest contributions.
-    When cutting the lowest contriibutions, all Voluntary Unplayed Rounds
+    When cutting the lowest contributions, all Voluntary Unplayed Rounds
     (requested byes and forfeit losses) are cut before any other round is cut.
     Both values must be non-negative, and *cut_top* must be at most equal to *cut_btm*.
     When *played_modifier* is True, forfeit losses and wins are considered
@@ -382,8 +381,7 @@ def sum_of_buchholz(
     """Computes the sum of Buchholz scores of the opponents before *max_round*
     If *max_round* is not provided, it will be set to the maximum round index
     of the player.
-    If *fore_modifier* is True, will use Fore Bochholz instead of total Buchholz.
-    If *papi_legacy* is True, will use the backwards compatible computation."""
+    If *fore_modifier* is True, will use Fore Bochholz instead of total Buchholz."""
     if max_round is None:
         max_round = max(player.pairings) + 1
     opponents: list[Player] = [
@@ -649,6 +647,8 @@ def tournament_performance_rating(
                 rating = opponent.estimation
             ratings.append(rating)
             score += pairing.result.point_value
+    if not ratings:
+        return 0
     max_score = len(ratings) * Result.GAIN.point_value
     average = sum(ratings) / len(ratings)
     if not papi_legacy:

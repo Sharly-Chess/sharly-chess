@@ -6,13 +6,16 @@ from enum import Enum, StrEnum, IntEnum, auto
 from itertools import islice
 from logging import Logger
 from math import floor
-from typing import Self
+from typing import Self, TYPE_CHECKING
 
 from common.i18n import _
 from common.logger import get_logger
 
 logger: Logger = get_logger()
 
+if TYPE_CHECKING:
+    from data.player import Player
+    from data.tournament import Tournament
 
 try:
     import itertools
@@ -568,6 +571,64 @@ class TournamentTieBreak(IntEnum):
                 return 'Sonnenborn-Berger'
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
+
+    def compute_player_value(
+            self,
+            player: 'Player',
+            tournament: 'Tournament',
+            max_round: int | None = None,
+    ) -> float:
+        from tie_breaks import individual
+
+        match self:
+            case TournamentTieBreak.NONE:
+                return 0
+            case TournamentTieBreak.BUCHHOLZ:
+                return individual.buchholz(
+                    player, tournament, max_round=max_round, papi_legacy=True
+                )
+            case TournamentTieBreak.BUCHHOLZ_CUT_TOP:
+                return individual.buchholz(
+                    player,
+                    tournament,
+                    max_round=max_round,
+                    cut_top=1,
+                    papi_legacy=True,
+                )
+            case TournamentTieBreak.BUCHHOLZ_CUT_TOP_BOTTOM:
+                return individual.buchholz(
+                    player,
+                    tournament,
+                    max_round=max_round,
+                    cut_top=1,
+                    cut_btm=1,
+                    papi_legacy=True,
+                )
+            case TournamentTieBreak.PERFORMANCE:
+                return individual.tournament_performance_rating(
+                    player, tournament, max_round=max_round, papi_legacy=True,
+                )
+            case TournamentTieBreak.BUCHHOLZ_SUM:
+                return individual.sum_of_buchholz(
+                    player, tournament, max_round=max_round,
+                )
+            case TournamentTieBreak.WINS:
+                return individual.wins(
+                    player, tournament, max_round=max_round,
+                )
+            case TournamentTieBreak.KOYA:
+                return individual.koya(player,tournament, max_round=max_round)
+            case TournamentTieBreak.SONNENBORN_BERGER:
+                return individual.sonneborn_berger(
+                    player, tournament, max_round=max_round,
+                )
+            case TournamentTieBreak.CUMULATIVE, TournamentTieBreak.KASHDAN:
+                raise NotImplementedError(
+                    f'Computation of tie-break "{self}" not implemented'
+                )
+            case _:
+                raise ValueError(f'Unknown tie break: {self}')
+
 
     def __str__(self) -> str:
         # TODO Translate this (if used)!
