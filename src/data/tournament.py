@@ -106,7 +106,6 @@ class Tournament:
         self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
-        self._tie_breaks: list[TournamentTieBreak] = [
         self._tie_breaks: list[TournamentTieBreak] = []
         self._papi_read = False
 
