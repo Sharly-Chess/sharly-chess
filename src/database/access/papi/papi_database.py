@@ -484,14 +484,14 @@ class PapiDatabase(AccessDatabase):
         params = tuple(data.values()) + (player_papi_id,)
         self._execute(query, params)
 
-    def open_check_in(self, round: int):
+    def open_check_in(self, round_: int):
         """Sets all the present players (at the given round) as not checked-in."""
         data: dict[str, str | int | float | None] = {
             'Pointe': False,
         }
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
         query: str = (
-            f'UPDATE `joueur` SET {actions} WHERE Ref > 1 AND Rd{round:0>2}Cl <> ?'
+            f'UPDATE `joueur` SET {actions} WHERE Ref > 1 AND Rd{round_:0>2}Cl <> ?'
         )
         params = tuple(
             list(data.values())
@@ -501,16 +501,16 @@ class PapiDatabase(AccessDatabase):
         )
         self._execute(query, params)
 
-    def close_check_in(self, round: int, last_round: int | None):
+    def close_check_in(self, round_: int, last_round: int | None):
         """Sets all the players present at the given round as not checked-in for the given round
         (and for the rest of the rounds if last_round is set)."""
         data: dict[str, str | int | float | None] = {
-            f'Rd{round:0>2}Cl': 'F',
+            f'Rd{round_:0>2}Cl': 'F',
         }
         if last_round:
-            data |= {f'Rd{r:0>2}Cl': 'F' for r in range(round, last_round + 1)}
+            data |= {f'Rd{r:0>2}Cl': 'F' for r in range(round_, last_round + 1)}
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
-        query: str = f'UPDATE `joueur` SET {actions} WHERE (Ref > 1) AND NOT (`Pointe`) AND (`Rd{round:0>2}Cl` = ?)'
+        query: str = f'UPDATE `joueur` SET {actions} WHERE (Ref > 1) AND NOT (`Pointe`) AND (`Rd{round_:0>2}Cl` = ?)'
         params = tuple(
             list(data.values())
             + [
