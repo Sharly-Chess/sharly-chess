@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from itertools import groupby
 from time import time
 from collections import Counter
@@ -219,6 +219,22 @@ class Tournament:
     @property
     def check_in_open(self) -> bool:
         return self.stored_tournament.check_in_open
+
+    @property
+    def first_board_number(self) -> int:
+        return self.stored_tournament.first_board_number or PapiWebConfig.default_first_board_number
+
+    @property
+    def paired_bye_points(self) -> float:
+        return self.stored_tournament.paired_bye_points or PapiWebConfig.default_paired_bye_points
+
+    @property
+    def max_byes(self) -> int:
+        return self.stored_tournament.max_byes or PapiWebConfig.default_max_byes
+
+    @property
+    def last_rounds_no_byes(self) -> int:
+        return self.stored_tournament.last_rounds_no_byes or PapiWebConfig.default_last_rounds_no_byes
 
     @cached_property
     def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
@@ -765,11 +781,11 @@ class Tournament:
             while not inferior_ratings:
                 i -= 1
                 try:
-                    inferiror_points = point_keys[test_group_index + i]
-                    inferiror_group = players_by_points[inferiror_points]
+                    inferior_points = point_keys[test_group_index + i]
+                    inferior_group = players_by_points[inferior_points]
                     ratings = [
                         player.estimation
-                        for player in inferiror_group
+                        for player in inferior_group
                         if not player.estimated
                     ]
                     if ratings:
@@ -787,18 +803,18 @@ class Tournament:
                     )
             test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
             if superior_ratings:
-                superiror_group_bonus = performance_bonus(
+                superior_group_bonus = performance_bonus(
                     superior_points / max_possible_points,
                     papi_legacy=papi_legacy
                 )
             if inferior_ratings:
                 inferior_group_bonus = performance_bonus(
-                    inferiror_points / max_possible_points,
+                    inferior_points / max_possible_points,
                     papi_legacy=papi_legacy
                 )
             if not inferior_ratings and superior_ratings:
                 average_rating = sum(superior_ratings) / len(superior_ratings)
-                bonus_difference = superiror_group_bonus - test_group_bonus
+                bonus_difference = superior_group_bonus - test_group_bonus
                 for player in test_group:
                     player.estimation = round_function(average_rating + bonus_difference)
                 continue
@@ -809,14 +825,14 @@ class Tournament:
                     player.estimation = round_function(average_rating + bonus_difference)
                 continue
             assert len(superior_ratings) > 0 and len(inferior_ratings) > 0
-            superiror_average = sum(superior_ratings) / len(superior_ratings)
+            superior_average = sum(superior_ratings) / len(superior_ratings)
             inferior_average = sum(inferior_ratings) / len(inferior_ratings)
             for player in test_group:
                 player.estimation = round_function(
                     inferior_average
-                    + (superiror_average - inferior_average)
+                    + (superior_average - inferior_average)
                     * (test_group_bonus - inferior_group_bonus)
-                    / (superiror_group_bonus - inferior_group_bonus)
+                    / (superior_group_bonus - inferior_group_bonus)
                 )
 
 
