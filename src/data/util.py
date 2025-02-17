@@ -572,7 +572,7 @@ class TournamentTieBreak(IntEnum):
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
-    def compute_player_value(
+    def compute_papi_player_value(
             self,
             player: 'Player',
             tournament: 'Tournament',
@@ -622,7 +622,11 @@ class TournamentTieBreak(IntEnum):
                 return individual.sonneborn_berger(
                     player, tournament, max_round=max_round,
                 )
-            case TournamentTieBreak.CUMULATIVE, TournamentTieBreak.KASHDAN:
+            case TournamentTieBreak.CUMULATIVE:
+                return individual.progressive_scores(
+                    player, tournament, max_round=max_round,
+                )
+            case TournamentTieBreak.KASHDAN:
                 raise NotImplementedError(
                     f'Computation of tie-break "{self}" not implemented'
                 )

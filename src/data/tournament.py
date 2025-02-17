@@ -107,8 +107,7 @@ class Tournament:
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
         self._tie_breaks: list[TournamentTieBreak] = [
-            TournamentTieBreak.NONE,
-        ] * 3
+        self._tie_breaks: list[TournamentTieBreak] = []
         self._papi_read = False
 
     @property
@@ -358,14 +357,6 @@ class Tournament:
         self.read_papi()
         return self._players_by_id
 
-    @property
-    def players_by_rank(self) -> dict[int, Player]:
-        return {
-            player.rank: player
-            for player in self.players_by_id.values()
-            if player.rank
-        }
-
     @cached_property
     def players_by_ffe_licence_number(self) -> dict[str, Player]:
         return {
@@ -396,7 +387,10 @@ class Tournament:
             self.players_by_id.values(),
             key=lambda player: player.starting_rank_sort_key,
         )
-        return {index + 1: player for index, player in enumerate(ordered_players)}
+        return {
+            trf_id: player for trf_id, player
+            in enumerate(ordered_players, start=1)
+        }
 
     @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
@@ -415,6 +409,17 @@ class Tournament:
             ],
             key=lambda p: (p.last_name, p.first_name),
         )
+
+    @cached_property
+    def players_by_rank(self) -> dict[int, Player]:
+        ranked_players = sorted(
+            self.players_by_id.values(),
+            key=lambda player: player.rank_sort_key(self, self.current_round),
+        )
+        return {
+            rank: player for rank, player in
+            enumerate(ranked_players, start=1)
+        }
 
     @cached_property
     def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
@@ -530,11 +535,12 @@ class Tournament:
             players=[
                 player.to_trf(
                     self._player_id_to_trf_id,
+                    self._player_id_to_rank(player.id),
                     self.current_round + 1
                     if trf_type == TrfType.PAIRING
                     else self.rounds,
                 )
-                for id_, player in self.players_by_trf_id.items()
+                for player in self.players_by_trf_id.values()
             ],
             federation=self.event.federation,
             xx_fields=(
@@ -545,11 +551,19 @@ class Tournament:
             bb_fields=(self._trf_bb_fields() if trf_type == TrfType.PAIRING else {}),
         )
 
-    def _player_id_to_trf_id(self, player_id: int) -> int:
-        for trf_id, player in self.players_by_trf_id.items():
+    def _find_player_value_by_id(
+        self, player_id: int, players_by_value: dict[any, Player]
+    ) -> any:
+        for value, player in players_by_value.items():
             if player.id == player_id:
-                return trf_id
+                return value
         raise KeyError(f'Id of unknown player: {player_id}')
+
+    def _player_id_to_trf_id(self, player_id: int) -> int:
+        return self._find_player_value_by_id(player_id, self.players_by_trf_id)
+
+    def _player_id_to_rank(self, player_id: int) -> int:
+        return self._find_player_value_by_id(player_id, self.players_by_rank)
 
     def _trf_xx_fields(self, first_round_pairing: BoardColor):
         next_round = self.current_round + 1
@@ -627,7 +641,6 @@ class Tournament:
         self._papi_read = True
         self._calculate_current_round()
         self._set_players_illegal_moves()  # load illegal moves for the current round
-        self._set_player_ranks()
         self._calculate_points()
         self._build_boards()
         self.estimate_players(papi_legacy=True)
@@ -872,15 +885,6 @@ class Tournament:
             if player.id == 1:
                 continue
             player.illegal_moves = illegal_moves[player.id]
-
-    def _set_player_ranks(self):
-        """set the ranks of all players"""
-        ranked_players = sorted(
-            self.players_by_id.values(),
-            key=lambda player_: player_.rank_sort_key(self, self.current_round),
-        )
-        for index, player in enumerate(ranked_players):
-            player.rank = index + 1
 
     def _build_boards(self):
         if not self._current_round:

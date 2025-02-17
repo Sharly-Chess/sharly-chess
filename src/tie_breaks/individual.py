@@ -236,7 +236,7 @@ def buchholz(
         max_round = max(player.pairings) + 1
     if cut_top < 0 or cut_btm < 0:
         raise ValueError(
-            f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
+            f'Cut values must be non-negative, got {cut_top=}, {cut_btm=}')
     elif cut_top + cut_btm >= max_round:
         return 0
     pairings: dict[Pairing] = {
@@ -377,11 +377,13 @@ def sum_of_buchholz(
     *,
     max_round: int | None = None,
     fore_modifier: bool = False,
+    papi_legacy: bool = False,
 ) -> float:
     """Computes the sum of Buchholz scores of the opponents before *max_round*
     If *max_round* is not provided, it will be set to the maximum round index
     of the player.
-    If *fore_modifier* is True, will use Fore Bochholz instead of total Buchholz."""
+    If *fore_modifier* is True, will use Fore Bochholz instead of total Buchholz.
+    If *papi_legacy* is True, will use the backwards compatible computation."""
     if max_round is None:
         max_round = max(player.pairings) + 1
     opponents: list[Player] = [
@@ -389,16 +391,14 @@ def sum_of_buchholz(
         for round_index, pairing in player.pairings.items()
         if round_index < max_round
     ]
+    kwargs = {'max_round': max_round}
     if fore_modifier:
         buchholz_function = fore_buchholz
     else:
         buchholz_function = buchholz
+        kwargs['papi_legacy'] = papi_legacy
     return sum(
-        buchholz_function(
-            opponent,
-            tournament,
-            max_round=max_round,
-        )
+        buchholz_function(opponent, tournament, **kwargs)
         for opponent in opponents
         if opponent is not None
     )

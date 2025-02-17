@@ -161,7 +161,6 @@ class TournamentPlayer:
         title: PlayerTitle,
         pairings: dict[int, Pairing],
         estimation: int | None = None,
-        rank: int | None = None,
     ):
         self.id = id
         self.last_name = last_name
@@ -173,7 +172,6 @@ class TournamentPlayer:
         self.title = title
         self._estimation = estimation
         self.pairings = pairings
-        self.rank = rank
 
     def points_before(self, max_round: int) -> float:
         return sum(
@@ -361,7 +359,7 @@ class Player(TournamentPlayer):
             self.points += points
 
     def to_trf(
-        self, player_id_to_trf_id: Callable[[int], int], max_round: int
+        self, player_id_to_trf_id: Callable[[int], int], rank: int, max_round: int,
     ) -> TrfPlayer:
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
@@ -374,8 +372,8 @@ class Player(TournamentPlayer):
             birthdate=self.date_of_birth.strftime('%Y/%m/%d')
             if self.date_of_birth
             else '',
-            points=self.points_total(),
-            rank=self.rank,
+            points=self.points_after(max_round),
+            rank=rank,
             games=[
                 result.to_trf(round_nb, player_id_to_trf_id)
                 for round_nb, result in self.pairings.items()
@@ -489,9 +487,9 @@ class Player(TournamentPlayer):
     def rank_sort_key(
             self, tournament: 'Tournament', max_round: int | None = None
     ) -> tuple:
-        rank = (-self.points_before(max_round),)
+        rank = (-self.points_after(max_round),)
         for tie_break in tournament.tie_breaks:
-            rank += (-tie_break.compute_player_value(self, tournament, max_round),)
+            rank += (-tie_break.compute_papi_player_value(self, tournament, max_round),)
         return rank + self.starting_rank_sort_key
 
     def __le__(self, other: 'Player') -> bool:
