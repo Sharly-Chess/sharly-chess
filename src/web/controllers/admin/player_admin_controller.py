@@ -369,7 +369,6 @@ class PlayerAdminController(AbstractEventAdminController):
                     }
                     title: PlayerTitle = PlayerTitle.NONE
                     federation: str | None = None
-                    fide_id: int | None = None
                     league: str | None = None
                     club: str | None = None
                     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
@@ -389,7 +388,6 @@ class PlayerAdminController(AbstractEventAdminController):
                         date_of_birth = admin_player.date_of_birth
                         ratings = admin_player.ratings
                         rating_types = admin_player.rating_types
-                        fide_id = admin_player.fide_id
                         title = admin_player.title
                         federation = admin_player.federation
                         league = admin_player.league
