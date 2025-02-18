@@ -215,7 +215,7 @@ class PlayerAdminController(AbstractEventAdminController):
         fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
-            if action == 'create' and fide_id and fide_id in tournament.players_by_fide_id:
+            if action == 'create' and tournament and fide_id and fide_id in tournament.players_by_fide_id:
                     errors[field] = _(
                         'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
                     ).format(
@@ -229,7 +229,7 @@ class PlayerAdminController(AbstractEventAdminController):
         ffe_id: int | None = None
         try:
             ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
-            if action == 'create' and ffe_id and ffe_id in tournament.players_by_ffe_id:
+            if action == 'create' and tournament and ffe_id and ffe_id in tournament.players_by_ffe_id:
                     errors[field] = _(
                         'The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}].'
                     ).format(
@@ -253,7 +253,7 @@ class PlayerAdminController(AbstractEventAdminController):
                 errors[field] = _(
                     'Invalid FFE licence number [{ffe_licence_number}].'
                 ).format(ffe_licence_number=data[field])
-            if action == 'create' and ffe_licence_number in tournament.players_by_ffe_licence_number:
+            if action == 'create' and tournament and ffe_licence_number in tournament.players_by_ffe_licence_number:
                 errors[field] = _(
                     'The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}].'
                 ).format(
@@ -408,9 +408,10 @@ class PlayerAdminController(AbstractEventAdminController):
                         case 'update' | 'delete':
                             tournament_id = admin_player.tournament.id
                         case 'create':
-                            tournament_id = admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id[
-                                0
-                            ].id
+                            if len(admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id) == 1:
+                                tournament_id = admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id[0].id
+                            else:
+                                tournament_id = None
                         case _:
                             raise ValueError(f'action=[{action}]')
                     data = (
