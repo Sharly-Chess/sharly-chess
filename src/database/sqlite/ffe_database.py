@@ -230,33 +230,29 @@ class FfeDatabase(SQLiteDatabase):
         ) if row else None
 
     def search_player(
-            self,
-            string: str,
-            limit: int = 0,  # no limit set if no param or null param passed
+        self,
+        string: str,
+        limit: int = 0,  # no limit set if no param or null param passed
     ) -> Iterator[Player]:
         tokens: list[str] = string.split(' ')
-        str_fields: tuple[str, ...] = (
-            'last_name',
-            'first_name',
-            'club',
-            'city',
-            'ffe_licence_number',
+        str_fields: tuple[tuple[str, str, str], ...] = (
+            ('last_name', '', '%'),
+            ('first_name', '', '%'),
+            ('club', '%', '%'),
+            ('city', '%', '%'),
+            ('ffe_licence_number', '', '')
         )
         int_fields: tuple[str, ...] = ('fide_id',)
         token_conditions: dict[str, str] = {}
         params: list[Any] = []
         for token in tokens:
-            expressions = list(
-                map(lambda field: f'({field} LIKE ?)', str_fields)
-            )
-            params += [f'%{token}%', ] * len(str_fields)
+            expressions = [f'({field[0]} LIKE ?)' for field in str_fields]
+            params += [f'{field[1]}{token}{field[2]}' for field in str_fields]
             int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
-                expressions += list(
-                    map(lambda field: f'({field} = ?)', int_fields)
-                )
-                params += [f'%{int_value}%', ] * len(int_fields)
+                expressions += [f'({field} = ?)' for field in int_fields]
+                params += [int_value, ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())

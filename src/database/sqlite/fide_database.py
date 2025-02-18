@@ -160,11 +160,11 @@ class FideDatabase(SQLiteDatabase):
                         if field_function:
                             data[field_name] = field_function(data[field_name])
                     if ',' in data['name']:
-                        data['last_name'], data['first_name'] = data['name'].split(
-                            ',', maxsplit=1
-                        )
+                        first_name, last_name = data['name'].split(',', maxsplit=1)
+                        data['last_name'] = last_name.strip()
+                        data['first_name'] = first_name.strip()
                     else:
-                        data['last_name'] = data['name']
+                        data['last_name'] = data['name'].strip()
                         data['first_name'] = None
                     del data['name']
                     query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?"] * len(data))})'
@@ -242,25 +242,21 @@ class FideDatabase(SQLiteDatabase):
             limit: int = 0,  # no limit set if no param or null param passed
     ) -> Iterator[Player]:
         tokens: list[str] = string.split(' ')
-        str_fields: tuple[str, ...] = (
-            'last_name',
-            'first_name',
+        str_fields: tuple[tuple[str, str, str], ...] = (
+            ('last_name', '', '%'),
+            ('first_name', '', '%'),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
         token_conditions: dict[str, str] = {}
         params: list[Any] = []
         for token in tokens:
-            expressions = list(
-                map(lambda field: f'({field} LIKE ?)', str_fields)
-            )
-            params += [f'%{token}%', ] * len(str_fields)
+            expressions = [f'({field[0]} LIKE ?)' for field in str_fields]
+            params += [f'{field[1]}{token}{field[2]}' for field in str_fields]
             int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
-                expressions += list(
-                    map(lambda field: f'({field} = ?)', int_fields)
-                )
-                params += [f'%{int_value}%', ] * len(int_fields)
+                expressions += [f'({field} = ?)' for field in int_fields]
+                params += [int_value, ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
