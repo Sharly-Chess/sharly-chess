@@ -356,7 +356,9 @@ class PlayerAdminController(AbstractEventAdminController):
             case None:
                 pass
             case 'player':
+                do_validate: bool = True
                 if data is None:
+                    do_validate = False
                     first_name: str | None = None
                     last_name: str | None = None
                     date_of_birth: float | None = None
@@ -455,10 +457,10 @@ class PlayerAdminController(AbstractEventAdminController):
                             for tr in TournamentRating
                         }
                     )
-                    player: Player = cls._admin_validate_player_update_data(
-                        action, web_context, data
-                    )
-                    errors = player.errors
+                player: Player = cls._admin_validate_player_update_data(
+                    action, web_context, data
+                )
+                errors = player.errors if do_validate else None
                 if errors is None:
                     errors = {}
                 federation_ids: list[str] = [
