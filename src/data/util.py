@@ -506,7 +506,7 @@ class TournamentTieBreak(IntEnum):
 
     NONE = 0
     BUCHHOLZ = 1
-    BUCHHOLZ_CUT_TOP = 2
+    BUCHHOLZ_CUT_BOTTOM = 2
     BUCHHOLZ_CUT_TOP_BOTTOM = 3
     CUMULATIVE = 4
     PERFORMANCE = 5
@@ -524,7 +524,7 @@ class TournamentTieBreak(IntEnum):
             case 'Solkoff':
                 return cls.BUCHHOLZ
             case 'Brésilien':
-                return cls.BUCHHOLZ_CUT_TOP
+                return cls.BUCHHOLZ_CUT_BOTTOM
             case 'Harkness':
                 return cls.BUCHHOLZ_CUT_TOP_BOTTOM
             case 'Cumulatif':
@@ -551,7 +551,7 @@ class TournamentTieBreak(IntEnum):
                 return ''
             case TournamentTieBreak.BUCHHOLZ:
                 return 'Solkoff'
-            case TournamentTieBreak.BUCHHOLZ_CUT_TOP:
+            case TournamentTieBreak.BUCHHOLZ_CUT_BOTTOM:
                 return 'Brésilien'
             case TournamentTieBreak.BUCHHOLZ_CUT_TOP_BOTTOM:
                 return 'Harkness'
@@ -587,21 +587,22 @@ class TournamentTieBreak(IntEnum):
                 return individual.buchholz(
                     player, tournament, max_round=max_round, papi_legacy=True
                 )
-            case TournamentTieBreak.BUCHHOLZ_CUT_TOP:
+            case TournamentTieBreak.BUCHHOLZ_CUT_BOTTOM:
                 return individual.buchholz(
                     player,
                     tournament,
                     max_round=max_round,
-                    cut_top=1,
+                    cut_btm=self._papi_buchholz_cut(tournament),
                     papi_legacy=True,
                 )
             case TournamentTieBreak.BUCHHOLZ_CUT_TOP_BOTTOM:
+                buchholz_cut = self._papi_buchholz_cut(tournament)
                 return individual.buchholz(
                     player,
                     tournament,
                     max_round=max_round,
-                    cut_top=1,
-                    cut_btm=1,
+                    cut_top=buchholz_cut,
+                    cut_btm=buchholz_cut,
                     papi_legacy=True,
                 )
             case TournamentTieBreak.PERFORMANCE:
@@ -633,6 +634,12 @@ class TournamentTieBreak(IntEnum):
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
+    def _papi_buchholz_cut(self, tournament: 'Tournament') -> int:
+        if tournament.rounds <= 7:
+            return 1
+        elif tournament.rounds <= 12:
+            return 2
+        return 3
 
     def __str__(self) -> str:
         # TODO Translate this (if used)!
@@ -641,7 +648,7 @@ class TournamentTieBreak(IntEnum):
                 return 'Aucun'
             case TournamentTieBreak.BUCHHOLZ:
                 return 'Buchholz'
-            case TournamentTieBreak.BUCHHOLZ_CUT_TOP:
+            case TournamentTieBreak.BUCHHOLZ_CUT_BOTTOM:
                 return 'Buchholz tronqué'
             case TournamentTieBreak.BUCHHOLZ_CUT_TOP_BOTTOM:
                 return 'Buchholz médian'
