@@ -457,10 +457,10 @@ class PlayerAdminController(AbstractEventAdminController):
                             for tr in TournamentRating
                         }
                     )
-                player: Player = cls._admin_validate_player_update_data(
-                    action, web_context, data
-                )
-                errors = player.errors if do_validate else None
+                    player: Player = cls._admin_validate_player_update_data(
+                        action, web_context, data
+                    )
+                    errors = player.errors if do_validate else None
                 if errors is None:
                     errors = {}
                 federation_ids: list[str] = [
