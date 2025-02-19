@@ -162,7 +162,7 @@ class TournamentPlayer:
         title: PlayerTitle,
         pairings: dict[int, Pairing],
         estimation: int | None = None,
-        point_values: dict[Result, float] | None,
+        point_values: dict[Result, float] | None = None,
     ):
         self.id = id
         self.last_name = last_name
