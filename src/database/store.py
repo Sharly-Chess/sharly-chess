@@ -61,6 +61,7 @@ class StoredTournament:
     last_ffe_rules_upload: float = field(default=0.0)
     last_chessevent_download_md5: str | None = field(default=None)
     errors: dict[str, str] = field(default_factory=dict[str, str])
+    point_values: dict[str, float] = field(default_factory=dict[str, float])
 
 
 @dataclass

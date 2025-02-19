@@ -501,6 +501,13 @@ class Tournament:
                 return self._current_round <= self._rounds - 2
             case _:
                 return False
+    
+    @cached_property
+    def point_values(self) -> dict[Result, float]:
+        return {
+            Result.from_trf(result_type): value 
+            for result_type, value in self.stored_tournament.point_values.items()
+        }
 
     def to_trf(
         self,
@@ -573,7 +580,7 @@ class Tournament:
             result_class.PAIRING_ALLOCATED_BYE,
             result_class.ZERO_POINT_BYE,
         ]:
-            fields[result.bbp_field] = f'{result.point_value:>4}'
+            fields[result.bbp_field] = f'{result.points(self.point_values):>4}'
         return fields
 
     def read_papi(self, update: bool = False):
@@ -667,10 +674,10 @@ class Tournament:
     def _calculate_player_virtual_points(
         self, player: Player, round_number: int
     ) -> float:
-        vpoints = Result.LOSS.point_value
+        vpoints = Result.LOSS.point(self.point_values)
         if self._pairing == TournamentPairing.HALEY:
             if round_number <= 2 and player.rating >= self._rating_limit1:
-                vpoints = Result.GAIN.point_value
+                vpoints = Result.GAIN.points(self.point_values)
         elif self._pairing == TournamentPairing.HALEY_SOFT:
             # Round 1: All players above rating_limit1 get 1 vpoint
             # Round 2: All players above rating_limit1 get 1 vpoint
@@ -679,9 +686,9 @@ class Tournament:
             # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
             # please remove if OK
             if round_number <= 2 and player.rating >= self.rating_limit1:
-                vpoints = Result.GAIN.point_value
+                vpoints = Result.GAIN.points(self.point_values)
             elif round_number == 2 and player.rating < self.rating_limit1:
-                vpoints = Result.DRAW.point_value
+                vpoints = Result.DRAW.points(self.point_values)
         elif self._pairing == TournamentPairing.SAD:
             # Before the second to last round, we remove the virtual
             # points, and use a simple Swiss Dutch system.
@@ -700,23 +707,30 @@ class Tournament:
                 # way simpler to implement than by applying the algorithm
                 # step by step.
                 points = player.points_before(round_number)
-                potential_vpoints = Result.DRAW.point_value * (points // (3 * Result.DRAW.point_value))
+                potential_vpoints = (
+                    draw_points := (Result.DRAW.points(self.point_values))
+                    * (points // (3 *draw_points))
+                )
                 if player.rating >= self.rating_limit1:
                     # Group A players get 2 virtual points
-                    vpoints = 2 * Result.GAIN.point_value
+                    vpoints = 2 * Result.GAIN.points(self.point_values)
                 elif player.rating >= self.rating_limit2:
                     # Group B players start with 1 point
                     # Players cannot have more than 2 points
-                    vpoints = min(2 * Result.GAIN.point_value, Result.GAIN.point_value + potential_vpoints)
+                    vpoints = min(
+                        2 * Result.GAIN.points(self.point_values),
+                        Result.GAIN.points(self.point_values) + potential_vpoints
+                    )
                 else:
                     # Group C players start with 0 points
                     # Players cannot have more than 2 points
-                    vpoints = min(2 * Result.GAIN.point_value, potential_vpoints)
-                if 2 * points >= self._rounds * Result.GAIN.point_value:
+                    vpoints = min(
+                        2 * Result.GAIN.points(self.point_values), potential_vpoints)
+                if 2 * points >= self._rounds * Result.GAIN.points(self.point_values):
                     # If a player gets at least half the possible score,
                     # their capital is set at 2 points.
                     # Assumes a 0-0.5-1 scoring system.
-                    vpoints = 2 * Result.GAIN.point_value
+                    vpoints = 2 * Result.GAIN.points(self.point_values)
         return vpoints
     
     def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True):
@@ -743,7 +757,7 @@ class Tournament:
             ]
             if group_ratings:
                 return sum(group_ratings) / len(group_ratings)
-            max_possible_points = Result.GAIN.point_value * (max_round - 1)
+            max_possible_points = Result.GAIN.points(self.point_values) * (max_round - 1)
             superior_ratings = []
             i = 0
             while not superior_ratings:

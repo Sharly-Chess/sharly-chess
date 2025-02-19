@@ -18,6 +18,7 @@ from data.util import (
     PlayerTitle,
     BoardColor,
     PlayerFFELicence,
+    Result,
     TournamentRating,
     PlayerRatingType,
     PlayerCategory,
@@ -160,7 +161,8 @@ class TournamentPlayer:
         federation: str,
         title: PlayerTitle,
         pairings: dict[int, Pairing],
-        estimation: int | None = None
+        estimation: int | None = None,
+        point_values: dict[Result, float] | None,
     ):
         self.id = id
         self.last_name = last_name
@@ -172,23 +174,24 @@ class TournamentPlayer:
         self.title = title
         self._estimation = estimation
         self.pairings = pairings
+        self.point_values = point_values
     
     def points_before(self, max_round: int) -> float:
         return sum(
-            pairing.result.point_value
+            pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index < max_round
         )
     
     def points_after(self, max_round: int) -> float:
         return sum(
-            pairing.result.point_value
+            pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index <= max_round
         )
     
     def total_points(self) -> float:
-        return sum(pairing.result.point_value for pairing in self.pairings.values())
+        return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
     
     @property
     def estimation(self):
@@ -263,6 +266,7 @@ class Player(TournamentPlayer):
         self.time_control_modified: bool | None = None
         self.tournament: Tournament | None = tournament
         self.errors: dict[str, str] = errors or {}
+        self.point_values = self.tournament.point_values
 
     @staticmethod
     def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
@@ -342,7 +346,7 @@ class Player(TournamentPlayer):
         self.points = self.points_before(max_round)
 
     def points_total(self) -> float:
-        return sum(pairing.result.point_value for pairing in self.pairings.values())
+        return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
 
     @staticmethod
     def _points_str(points: float | None) -> str:

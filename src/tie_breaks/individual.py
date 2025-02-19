@@ -12,7 +12,7 @@ from data.pairing import Pairing
 from data.util import Result, BoardColor, TournamentPairing, TournamentRating, performance_bonus, round_fide
 
 
-def wins(player: Player, _tournament: Tournament, /, *, max_round: int | None = None) -> int:
+def wins(player: Player, tournament: Tournament, /, *, max_round: int | None = None) -> int:
     """Computes the number of rounds where a participant obtains,
     with or without playing, as many points as awarded for a win
     before round *max_round*.
@@ -20,7 +20,7 @@ def wins(player: Player, _tournament: Tournament, /, *, max_round: int | None = 
     if max_round is None:
         max_round = max(player.pairings) + 1
     return sum(
-        pairing.result.point_value == Result.GAIN.point_value
+        pairing.result.points(tournament.point_values) == Result.GAIN.points(tournament.point_values)
         for round_index, pairing in player.pairings.items()
         if round_index < max_round
     )
@@ -129,16 +129,16 @@ def adjusted_score(
         if round_index > max_round:
             continue
         if papi_legacy and pairing.unplayed:
-            score += Result.DRAW.point_value
+            score += Result.DRAW.points(tournament.point_values)
             continue
         if adjust_fore and round_index == max_round - 1:
             if pairing.result in (
                 Result.FULL_POINT_BYE,
                 Result.PAIRING_ALLOCATED_BYE,
             ):
-                score += pairing.result.point_value
+                score += pairing.result.points(tournament.point_values)
             else:
-                score += Result.DRAW.point_value
+                score += Result.DRAW.points(tournament.point_values)
             continue
         if pairing.requested_bye:
             if all(
@@ -146,11 +146,11 @@ def adjusted_score(
                 for index, p in player.pairings.items()
                 if round_index < index < max_round
             ):
-                score += Result.DRAW.point_value
+                score += Result.DRAW.points(tournament.point_values)
             else:
-                score += pairing.result.point_value
+                score += pairing.result.points(tournament.point_values)
         else:
-            score += pairing.result.point_value
+            score += pairing.result.points(tournament.point_values)
     return score
 
 
@@ -184,18 +184,21 @@ def dummy_score(
                 Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE,
                 Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE
             ):
-                dummy += last_pairing.result.point_value
+                dummy += last_pairing.result.points(player.point_values)
             else:
-                dummy += Result.DRAW.point_value
+                dummy += Result.DRAW.points(player.point_values)
             return dummy
-        dummy = player.points_before(round_index) + Result.DRAW.point_value * (max_round - round_index - 1)
+        dummy = (
+            player.points_before(round_index)
+            + Result.DRAW.points(player.point_values) * (max_round - round_index - 1)
+        )
         match pairing.result:
             case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
-                return dummy + Result.LOSS.point_value
+                return dummy + Result.LOSS.points(player.point_values)
             case Result.HALF_POINT_BYE:
-                return dummy + Result.DRAW.point_value
+                return dummy + Result.DRAW.points(player.point_values)
             case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
-                return dummy + Result.GAIN.point_value
+                return dummy + Result.GAIN.points(player.point_values)
     elif dummy_type == 'SB':
         dummy = player.points_before(max_round)
         match pairing.result:
@@ -206,7 +209,7 @@ def dummy_score(
             case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
                 return dummy, Result.LOSS
             case _:
-                return pairing.result
+                return dummy, pairing.result
 
 
 def buchholz(
@@ -481,7 +484,7 @@ def sonneborn_berger(
                 max_round=max_round,
                 round_index=round_index,
                 dummy_type='SB')
-            value = dummy * result.point_value
+            value = dummy * result.points(tournament.point_values)
             if not pairing.voluntary_unplayed:
                 general_contributions.append(SBContribution(dummy, value))                
             else:
@@ -495,7 +498,7 @@ def sonneborn_berger(
                 tournament,
                 max_round=max_round
             )
-            contribution = pairing.result.point_value * opponent_score
+            contribution = pairing.result.points(tournament.point_values) * opponent_score
             general_contributions.append(SBContribution(opponent_score, contribution))
     voluntary_unplayed = sorted(voluntary_unplayed)
     general_contributions = sorted(general_contributions)
@@ -550,7 +553,7 @@ def koya(
     if max_round is None:
         max_round = max(player.pairings) + 1
     if limit is None:
-        limit = 0.5 * Result.GAIN.point_value * (max_round - 1)
+        limit = 0.5 * Result.GAIN.points(tournament.point_values) * (max_round - 1)
     pairings: dict[int, Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
@@ -563,7 +566,7 @@ def koya(
         opponent = tournament.players_by_id[pairing.opponent_id]
         opponent_score = opponent.points_before(max_round)
         if opponent_score >= limit:
-            score += pairing.result.point_value
+            score += pairing.result.points(tournament.point_values)
     return score
 
 
@@ -648,8 +651,8 @@ def tournament_performance_rating(
             else:
                 rating = opponent.estimation
             ratings.append(rating)
-            score += pairing.result.point_value
-    max_score = len(ratings) * Result.GAIN.point_value
+            score += pairing.result.points(tournament.point_values)
+    max_score = len(ratings) * Result.GAIN.points(tournament.point_values)
     average = sum(ratings) / len(ratings)
     if not papi_legacy:
         fractional_score = round(score / max_score, 2)
@@ -711,14 +714,18 @@ def win_chances(player_rating: int, opponent_rating: int) -> tuple[Decimal, Deci
         return low, high
 
 
-def expected_score(player_rating: int, opponent_ratings: Iterable[int]) -> Decimal:
+def expected_score(
+    player_rating: int,
+    opponent_ratings: Iterable[int],
+    point_values: dict[Result, float] | None = None,
+) -> Decimal:
     chances = [
         win_chances(player_rating, opponent_rating)
         for opponent_rating in opponent_ratings
     ]
     computed_score = sum(
-        chance[0] * Decimal(Result.GAIN.point_value) 
-        + chance[1] * Decimal(Result.LOSS.point_value)
+        chance[0] * Decimal(Result.GAIN.points(point_values)) 
+        + chance[1] * Decimal(Result.LOSS.points(point_values))
         for chance in chances
     )
     return computed_score
@@ -742,24 +749,24 @@ def perfect_tournament_performance(
     played_rounds: list[Pairing] = [
         pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round and pairing.played 
+        if round_index < max_round and pairing.played
     ]
-    actual_score = Decimal(sum(pairing.result.point_value for pairing in played_rounds))
+    actual_score = Decimal(sum(pairing.result.points(tournament.point_values) for pairing in played_rounds))
     if not played_rounds:
         return 0
-    if actual_score == len(played_rounds) * Result.LOSS.point_value:
+    if actual_score == len(played_rounds) * Result.LOSS.points(tournament.point_values):
         return -800 + min(tournament.players_by_id[pairing.opponent_id].estimation for pairing in played_rounds)
     ratings: list[int] = [
         tournament.players_by_id[pairing.opponent_id].estimation
         for pairing in played_rounds
     ]
     first_estimation = tournament_performance_rating(player, tournament, max_round=max_round)
-    first_expected_score = expected_score(first_estimation, ratings)
+    first_expected_score = expected_score(first_estimation, ratings, tournament.point_values)
     if isclose(first_expected_score, actual_score, abs_tol=0.01):
         return round_fide(first_estimation)
     second_estimation = first_estimation * actual_score / first_expected_score
     second_estimation = round_fide(second_estimation)
-    second_expected_score = expected_score(second_estimation, ratings)
+    second_expected_score = expected_score(second_estimation, ratings, tournament.point_values)
 
     if first_expected_score >= second_expected_score:
         low, high = second_estimation, first_estimation
@@ -767,7 +774,7 @@ def perfect_tournament_performance(
         low, high = first_estimation, second_estimation
     while not isclose(
         actual_score,
-        mid_score := expected_score((mid := (low + high) / 2), ratings),
+        mid_score := expected_score((mid := (low + high) / 2), ratings, tournament.point_values),
         abs_tol=0.01
     ):
         if mid_score >= actual_score:
@@ -775,9 +782,9 @@ def perfect_tournament_performance(
         else:
             low = mid
     mid = round_fide(mid)
-    while (mid_score := expected_score(mid, ratings)) >= actual_score:
+    while (mid_score := expected_score(mid, ratings, tournament.point_values)) >= actual_score:
         mid -= 1
-    while (mid_score := expected_score(mid, ratings)) < actual_score:
+    while (mid_score := expected_score(mid, ratings, tournament.point_values)) < actual_score:
         mid += 1
     return round_fide(mid)
 
@@ -847,7 +854,7 @@ def direct_encounter(
     tied_opponents = {
         opponent_id: opponent
         for opponent_id, opponent in tied_opponents.items()
-        if opponent_id is not None 
+        if opponent_id is not None
         and opponent.points_before(max_round) == final_points
     }
     if exclude_ids is not None:
@@ -869,7 +876,7 @@ def direct_encounter(
         }
     if len(tied_pairings) == len(tied_opponents):
         return sum(
-            pairing.result.point_value
+            pairing.result.points(tournament.point_values)
             for pairing in tied_pairings.values()
         ), True
     virtual_pairings: dict[int, Pairing] = {
@@ -878,6 +885,6 @@ def direct_encounter(
         if opponent_id not in tied_pairings
     }
     return sum(
-        pairing.result.point_value
+        pairing.result.points(tournament.point_values)
         for pairing in list(tied_pairings.values()) + list(virtual_pairings.values())
     ), False
