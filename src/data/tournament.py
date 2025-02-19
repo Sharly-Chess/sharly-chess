@@ -535,7 +535,7 @@ class Tournament:
                 if trf_type == TrfType.PAIRING
                 else {}
             ),
-            bb_fields=(self._trf_bb_fields() if trf_type == TrfType.PAIRING else {}),
+            bb_fields=(self._trf_bb_fields(point_values=self.point_values) if trf_type == TrfType.PAIRING else {}),
         )
 
     def _player_id_to_trf_id(self, player_id: int) -> int:
@@ -570,8 +570,13 @@ class Tournament:
         return fields
 
     @staticmethod
-    def _trf_bb_fields(result_class: type[Result] = Result) -> dict[str, str]:
+    def _trf_bb_fields(result_class: type[Result] = Result, point_values: dict[str, float] | None = None) -> dict[str, str]:
         fields: dict[str, str] = {}
+        if isinstance(point_values, dict):
+            point_values = {
+                result_class.from_trf(trf_result): value
+                for trf_result, value in point_values.items()
+            }
         for result in [
             result_class.GAIN,
             result_class.DRAW,
@@ -580,7 +585,7 @@ class Tournament:
             result_class.PAIRING_ALLOCATED_BYE,
             result_class.ZERO_POINT_BYE,
         ]:
-            fields[result.bbp_field] = f'{result.points(self.point_values):>4}'
+            fields[result.bbp_field] = f'{result.points(point_values):>4}'
         return fields
 
     def read_papi(self, update: bool = False):
@@ -674,7 +679,7 @@ class Tournament:
     def _calculate_player_virtual_points(
         self, player: Player, round_number: int
     ) -> float:
-        vpoints = Result.LOSS.point(self.point_values)
+        vpoints = Result.LOSS.points(self.point_values)
         if self._pairing == TournamentPairing.HALEY:
             if round_number <= 2 and player.rating >= self._rating_limit1:
                 vpoints = Result.GAIN.points(self.point_values)
