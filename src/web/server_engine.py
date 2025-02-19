@@ -9,15 +9,14 @@ import uvicorn
 from litestar import Litestar
 from litestar.contrib.htmx.request import HTMXRequest
 
+from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from common import DEVEL_ENV, EXPERIMENTAL_FEATURES
-from common.bbp_pairings import BbpPairings
 from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import (
     get_logger,
     print_interactive_info,
     print_interactive_error,
-    print_interactive_warning,
 )
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.ffe_database import FfeDatabase
@@ -71,12 +70,10 @@ class ServerEngine(Engine):
             print_interactive_error(_('Error while updating the FIDE database.'))
         if not FfeDatabase().check():
             print_interactive_error(_('Error while updating the FFE database.'))
-        if EXPERIMENTAL_FEATURES and not BbpPairings().is_installed:
+        if EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed:
             if DEVEL_ENV:
-                print_interactive_warning(
-                    'BBP Pairings not installed. To install, run: '
-                    'python utils/install/install_bbp_pairings.py'
-                )
+                print_interactive_info(_('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.'))
+                BbpPairingsInstaller().install()
             else:
                 raise FileNotFoundError('BBP Pairings not installed.')
         if self.__port_in_use(papi_web_config.web_port):

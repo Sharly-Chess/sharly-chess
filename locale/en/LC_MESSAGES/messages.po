@@ -1385,6 +1385,10 @@ msgid "Error while updating the FFE database."
 msgstr ""
 
 #: src/web/server_engine.py
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr ""
+
+#: src/web/server_engine.py
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr ""
 
@@ -2433,7 +2437,6 @@ msgstr ""
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
@@ -4057,6 +4060,11 @@ msgstr ""
 msgid "Add a set"
 msgstr ""
 
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal.html
+msgid "Close"
+msgstr ""
+
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 msgid "The tournament of which you want to show the pairings, mandatory."
 msgstr ""
@@ -4220,10 +4228,6 @@ msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal.html
 msgid "Add a hour"
-msgstr ""
-
-#: src/web/templates/admin/timers/timer_hours_modal.html
-msgid "Close"
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
@@ -4827,5 +4831,8 @@ msgid "vs"
 msgstr ""
 
 #~ msgid "pairings by board"
+#~ msgstr ""
+
+#~ msgid "BBP Pairings is not installed."
 #~ msgstr ""
 

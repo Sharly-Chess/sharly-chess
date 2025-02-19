@@ -12,7 +12,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
-from common.bbp_pairings import BbpPairings
+from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
