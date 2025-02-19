@@ -1385,6 +1385,10 @@ msgid "Error while updating the FFE database."
 msgstr ""
 
 #: src/web/server_engine.py
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
+
+#: src/web/server_engine.py
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr ""
 
@@ -4872,22 +4876,4 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
-
-#~ msgid "pairings by board"
-#~ msgstr ""
-
-#~ msgid "Zero point bye"
-#~ msgstr ""
-
-#~ msgid "The number of points by players who are paired bye."
-#~ msgstr ""
-
-#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
-#~ msgstr ""
-
-#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
-#~ msgstr ""
-
-#~ msgid "The number of points scored by players who are paired bye."
-#~ msgstr ""
 

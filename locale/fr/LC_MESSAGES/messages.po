@@ -1385,6 +1385,10 @@ msgid "Error while updating the FFE database."
 msgstr "Erreur pendant la mise à jour de la base de données FFE."
 
 #: src/web/server_engine.py
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr "Installation automatique de BBP Pairings pour les développeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
+
+#: src/web/server_engine.py
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Le port [{port}] est déjà utilisé, impossible de démarrer le serveur web."
 
