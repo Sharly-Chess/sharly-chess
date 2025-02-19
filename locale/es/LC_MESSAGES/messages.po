@@ -1843,6 +1843,14 @@ msgid "By default - {option}"
 msgstr "Por defecto - {option}"
 
 #: src/web/controllers/admin/index_admin_controller.py
+msgid "Full point bye"
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Half point bye"
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr "El color #1 se utiliza hasta {delay_1} minutos antes del inicio de las rondas (retraso #1), el color cambia gradualmente hasta el color #2 ({delay_2} minutos antes del inicio de las rondas)."
@@ -2971,7 +2979,6 @@ msgstr "Eliminar"
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
@@ -4898,6 +4905,12 @@ msgstr "Arrastra los sets para ordenarlos."
 msgid "Add a set"
 msgstr "Añadir un conjunto"
 
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal.html
+#, ai_translation
+msgid "Close"
+msgstr "Cerrar"
+
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
 msgid "The tournament of which you want to show the pairings, mandatory."
@@ -5098,11 +5111,6 @@ msgstr "Arrastrar las horas para ordenarlas."
 #, ai_translation
 msgid "Add a hour"
 msgstr "Añadir una hora"
-
-#: src/web/templates/admin/timers/timer_hours_modal.html
-#, ai_translation
-msgid "Close"
-msgstr "Cerrar"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
@@ -5542,6 +5550,45 @@ msgid "The maximum number of illegal moves that can be recorded per round for a 
 msgstr "El número máximo de movimientos ilegales que se pueden registrar por ronda para un jugador (de 0 a 3, por defecto %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Pairings"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "First board number:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Paired bye points:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "The points scored by players who are paired bye."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Max byes:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Last rounds no byes:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Crear y añadir pantallas predeterminadas"
@@ -5824,4 +5871,19 @@ msgstr "vs."
 
 #~ msgid "pairings by board"
 #~ msgstr "emparejamientos a bordo"
+
+#~ msgid "Zero point bye"
+#~ msgstr ""
+
+#~ msgid "The number of points by players who are paired bye."
+#~ msgstr ""
+
+#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
+#~ msgstr ""
+
+#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
+#~ msgstr ""
+
+#~ msgid "The number of points scored by players who are paired bye."
+#~ msgstr ""
 

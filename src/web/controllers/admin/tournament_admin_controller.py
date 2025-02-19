@@ -221,12 +221,12 @@ class TournamentAdminController(AbstractEventAdminController):
             chessevent_tournament_name=chessevent_tournament_name,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
-            check_in_open=check_in_open,
-            errors=errors,
             first_board_number=first_board_number,
             paired_bye_points=paired_bye_points,
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
+            check_in_open=check_in_open,
+            errors=errors,
         )
 
     @classmethod
@@ -396,6 +396,7 @@ class TournamentAdminController(AbstractEventAdminController):
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
                     ),
+                    'paired_bye_points_options': cls._get_paired_bye_points_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,

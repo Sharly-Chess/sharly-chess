@@ -19,6 +19,7 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader, ArchiveLoader
+from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
@@ -96,6 +97,17 @@ class AbstractAdminController(AbstractController):
             for i in range(1, 4)
         }
         options[''] = _('By default - {option}').format(option=options[str(default)])
+        return options
+
+    @staticmethod
+    def _get_paired_bye_points_options() -> dict[str, str]:
+        options: dict[str, str] = {
+            '': '',
+            str(Result.FULL_POINT_BYE.point_value): _('Full point bye'),
+            str(Result.HALF_POINT_BYE.point_value): _('Half point bye'),
+        }
+        default_option: str = str(PapiWebConfig.default_paired_bye_points.point_value)
+        options[''] = _('By default - {option}').format(option=options[default_option])
         return options
 
     @staticmethod

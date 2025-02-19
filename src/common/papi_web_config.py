@@ -31,6 +31,7 @@ from common.logger import (
     print_interactive_success,
 )
 from common.singleton import Singleton
+from data.util import Result
 
 logger: Logger = get_logger()
 
@@ -574,8 +575,8 @@ class PapiWebConfig(metaclass=Singleton):
     """ The default first board number for tournaments. """
     default_first_board_number: int = 1
 
-    """ The default number of points for players paired bye. """
-    default_paired_bye_points: float = 1.0
+    """ The points scored by players paired bye. """
+    default_paired_bye_points: Result = Result.FULL_POINT_BYE
 
     """ The default maximum number of byes for a player in a tournament. """
     default_max_byes: int = 1

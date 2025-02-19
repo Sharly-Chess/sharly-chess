@@ -1139,8 +1139,6 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
-# Error: translation [U12City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
@@ -1153,8 +1151,6 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
-# Error: translation [U16City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1165,8 +1161,6 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
-# Error: translation [U20City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #: src/data/util.py
@@ -1872,6 +1866,14 @@ msgstr[1] "{num} movimenti illegali max"
 #, ai_translation
 msgid "By default - {option}"
 msgstr "Per impostazione predefinita - {option}"
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Full point bye"
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Half point bye"
+msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -3002,7 +3004,6 @@ msgstr "Elimina"
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
@@ -4929,6 +4930,12 @@ msgstr "Trascinare i set per ordinarli."
 msgid "Add a set"
 msgstr "Aggiungi un insieme"
 
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal.html
+#, ai_translation
+msgid "Close"
+msgstr "Chiudi"
+
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
 msgid "The tournament of which you want to show the pairings, mandatory."
@@ -5129,11 +5136,6 @@ msgstr "Trascina le ore per ordinarle."
 #, ai_translation
 msgid "Add a hour"
 msgstr "Aggiungi un'ora"
-
-#: src/web/templates/admin/timers/timer_hours_modal.html
-#, ai_translation
-msgid "Close"
-msgstr "Chiudi"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
@@ -5573,6 +5575,45 @@ msgid "The maximum number of illegal moves that can be recorded per round for a 
 msgstr "Il numero massimo di mosse illegali che possono essere registrate per turno per un giocatore (da 0 a 3, per impostazione predefinita %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Pairings"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "First board number:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Paired bye points:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "The points scored by players who are paired bye."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Max byes:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Last rounds no byes:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Crea e aggiungi schermate predefinite"
@@ -5774,8 +5815,6 @@ msgstr "Immagine:"
 
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
-# Error: translation [Rnd.BoaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
 #, ai_translation
 msgid "Rnd.Boa"
@@ -5859,4 +5898,19 @@ msgstr "vs"
 
 #~ msgid "pairings by board"
 #~ msgstr "Abbinamenti a bordo"
+
+#~ msgid "Zero point bye"
+#~ msgstr ""
+
+#~ msgid "The number of points by players who are paired bye."
+#~ msgstr ""
+
+#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
+#~ msgstr ""
+
+#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
+#~ msgstr ""
+
+#~ msgid "The number of points scored by players who are paired bye."
+#~ msgstr ""
 

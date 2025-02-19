@@ -1503,6 +1503,14 @@ msgid "By default - {option}"
 msgstr "Par défaut - {option}"
 
 #: src/web/controllers/admin/index_admin_controller.py
+msgid "Full point bye"
+msgstr "Points de victoire"
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Half point bye"
+msgstr "Points de match nul (bye)"
+
+#: src/web/controllers/admin/index_admin_controller.py
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr "La couleur n°1 est utilisée jusqu'à {delay_1} minutes avant le début des rondes (délai n°1), la couleur change ensuite progressivement jusqu'à la couleur n°2 ({delay_2} minutes avant le début des rondes)."
 
@@ -2433,7 +2441,6 @@ msgstr "Supprimer"
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
@@ -4057,6 +4064,11 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Add a set"
 msgstr "Ajouter un ensemble"
 
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal.html
+msgid "Close"
+msgstr "Fermer"
+
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 msgid "The tournament of which you want to show the pairings, mandatory."
 msgstr "Le tournoi dont on souhaite afficher les appariements, obligatoire."
@@ -4221,10 +4233,6 @@ msgstr "Faites glisser les horaires pour les ordonner."
 #: src/web/templates/admin/timers/timer_hours_modal.html
 msgid "Add a hour"
 msgstr "Ajouter un horaire"
-
-#: src/web/templates/admin/timers/timer_hours_modal.html
-msgid "Close"
-msgstr "Fermer"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 msgid "Date:"
@@ -4593,6 +4601,45 @@ msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (f
 #, python-format
 msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
 msgstr "Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde pour un·e joueur·euse (de 0 à 3, par défaut %(default)d)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Pairings"
+msgstr "Appariements"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "First board number:"
+msgstr "Numéro du premier échiquier :"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgstr "Le numéro du premier échiquier du tournoi (si non défini, %(default)d par défaut)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Paired bye points:"
+msgstr "Points d'exemption :"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "The points scored by players who are paired bye."
+msgstr "Les points marqués par les joueur·euses exempt·es."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Max byes:"
+msgstr "Nombre maximum de byes :"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgstr "Le nombre maximum de byes auquel un·e joueur·euse peut prétendre (si non défini, %(default)d par défaut)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Last rounds no byes:"
+msgstr "Dernières rondes sans bye :"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye (si non défini, %(default)d par défaut)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"

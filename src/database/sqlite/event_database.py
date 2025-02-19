@@ -1663,6 +1663,11 @@ class EventDatabase(SQLiteDatabase):
             record_illegal_moves=row['record_illegal_moves'],
             # needed to open event databases when version < 2.4.11 before checking the version
             rules=row.get('rules', None),
+            # needed to open event databases when version < 2.4.21 before checking the version
+            first_board_number=row.get('first_board_number', None),
+            paired_bye_points=row.get('paired_bye_points', None),
+            max_byes=row.get('max_byes', None),
+            last_rounds_no_byes=row.get('last_rounds_no_byes', None),
             # needed to open event databases when version < 2.4.20 before checking the version
             check_in_open=cls.load_bool_from_database_field(
                 row.get('check_in_open', None)
@@ -1675,11 +1680,6 @@ class EventDatabase(SQLiteDatabase):
             # needed to open event databases when version < 2.4.11 before checking the version
             last_ffe_rules_upload=row.get('last_ffe_rules_upload', 0.0),
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
-            # needed to open event databases when version < 2.4.22 before checking the version
-            first_board_number=row.get('first_board_number', None),
-            paired_bye_points=row.get('paired_bye_points', None),
-            max_byes=row.get('max_byes', None),
-            last_rounds_no_byes=row.get('last_rounds_no_byes', None),
         )
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
@@ -1722,6 +1722,10 @@ class EventDatabase(SQLiteDatabase):
             'chessevent_tournament_name',
             'record_illegal_moves',
             'rules',
+            'first_board_number',
+            'paired_bye_points',
+            'max_byes',
+            'last_rounds_no_byes',
             'last_update',
             'last_result_update',
             'last_illegal_move_update',
@@ -1748,6 +1752,10 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.chessevent_tournament_name,
             stored_tournament.record_illegal_moves,
             stored_tournament.rules,
+            stored_tournament.first_board_number,
+            stored_tournament.paired_bye_points,
+            stored_tournament.max_byes,
+            stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,
             stored_tournament.last_illegal_move_update,
