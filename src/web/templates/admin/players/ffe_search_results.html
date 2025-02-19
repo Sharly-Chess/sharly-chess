@@ -14,7 +14,11 @@
                     class="player-federation-flag pe-1"
                     src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
                 />
-                {{ player.ffe_licence_number }}
+                {% if player.ffe_licence_number %}
+                    {{ player.ffe_licence_number }}
+                {% else %}
+                    -
+                {% endif %}
                 <span class="fw-bold">
                     {{ player.last_name }}
                     {{ player.first_name }}
