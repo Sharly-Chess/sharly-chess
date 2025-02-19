@@ -9,7 +9,7 @@ from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
 from trf import Tournament as TrfTournament
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from common import format_timestamp_date_time
 from common.i18n import _
@@ -551,7 +551,7 @@ class Tournament:
         )
 
     def _find_player_value_by_id(
-        self, player_id: int, players_by_value: dict[any, Player]
+        self, player_id: int, players_by_value: dict[Any, Player]
     ) -> any:
         for value, player in players_by_value.items():
             if player.id == player_id:
