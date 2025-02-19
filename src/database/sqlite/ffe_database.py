@@ -192,7 +192,7 @@ class FfeDatabase(SQLiteDatabase):
     def get_player_from_row(row: dict[str, Any]) -> Player | None:
         return Player(
             id=0,
-            first_name=capwords(row['first_name']),
+            first_name=capwords(row['first_name']) if row['first_name'] else '',
             last_name=row['last_name'].upper(),
             date_of_birth=datetime.strptime(
                 row['date_of_birth'], '%Y-%m-%d'
@@ -236,7 +236,7 @@ class FfeDatabase(SQLiteDatabase):
     ) -> Iterator[Player]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
-            ('last_name', '', '%'),
+            ('last_name', '%', '%'),
             ('first_name', '', '%'),
             ('club', '%', '%'),
             ('city', '%', '%'),
@@ -257,7 +257,9 @@ class FfeDatabase(SQLiteDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        query: str = f'SELECT * FROM player WHERE {conditions}'
+        order_conditions = ' OR '.join([f'(last_name LIKE ?)', ] * len(tokens))
+        params += [f'{token}%' for token in tokens]
+        query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
             query += ' LIMIT ?'
             params += [limit, ]
