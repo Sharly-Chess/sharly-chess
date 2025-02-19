@@ -228,7 +228,7 @@ class ScreenSet:
                 and all(isinstance(item, list) for item in self.items_lists)
                 and all(
                     isinstance(item, Board)
-                    for item in chain.from_iterable(*self.items_lists)
+                    for item in chain(*self.items_lists)
                 )
             )
         return self.items_lists
@@ -264,7 +264,7 @@ class ScreenSet:
                 and all(isinstance(item, list) for item in self.items_lists)
                 and all(
                     isinstance(item, Player)
-                    for item in chain.from_iterable(*self.items_lists)
+                    for item in chain(*self.items_lists)
                 )
             )
         return self.items_lists
@@ -280,7 +280,7 @@ class ScreenSet:
                 and all(isinstance(item, list) for item in self.items_lists)
                 and all(
                     isinstance(item, Player)
-                    for item in chain.from_iterable(*self.items_lists)
+                    for item in chain(*self.items_lists)
                 )
             )
         players_by_name_lists: list[list[Player]] = self.items_lists

@@ -78,7 +78,8 @@ class Tournament:
         if not self.stored_tournament.ffe_id or not self.stored_tournament.ffe_password:
             self.event.add_debug(
                 _(
-                    'Qualification number and FFE password not set, operations on the FFE website will not be available.'
+                    'Qualification number and FFE password not set, '
+                    'operations on the FFE website will not be available.'
                 ),
                 tournament=self,
             )
@@ -712,10 +713,8 @@ class Tournament:
                 # way simpler to implement than by applying the algorithm
                 # step by step.
                 points = player.points_before(round_number)
-                potential_vpoints = (
-                    draw_points := (Result.DRAW.points(self.point_values))
-                    * (points // (3 *draw_points))
-                )
+                draw_points = Result.DRAW.points(self.point_values)
+                potential_vpoints = draw_points * (points // (3 * draw_points))
                 if player.rating >= self.rating_limit1:
                     # Group A players get 2 virtual points
                     vpoints = 2 * Result.GAIN.points(self.point_values)

@@ -860,7 +860,7 @@ def direct_encounter(
     if exclude_ids is not None:
         tied_opponents = {
             opponent.id: opponent
-            for opponent in tied_opponents
+            for opponent in tied_opponents.values()
             if opponent.id not in exclude_ids
         }
     tied_pairings: dict[int, Pairing] = {

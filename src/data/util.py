@@ -183,7 +183,9 @@ class Result(IntEnum):
                 | Result.FULL_POINT_BYE
             ):
                 return 1.0
-    
+            case _:
+                raise ValueError(f'{self=}')
+ 
     def points(self, values: dict[Self, float] | None = None) -> float:
         """
         The value in points, according to rules defined in *values*.
@@ -295,7 +297,7 @@ class Result(IntEnum):
                 return ' '
             case _:
                 raise ValueError(f'Unknown value: {self}')
-    
+ 
     @classmethod
     def from_trf(cls, value: str):
         match value.upper():
@@ -544,7 +546,7 @@ class TournamentPairing(IntEnum):
                 return 'Berger'
             case _:
                 raise ValueError(f'Unknown pairing type: {self}')
-    
+ 
     @property
     def swiss(self):
         return self in (
