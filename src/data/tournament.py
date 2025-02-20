@@ -539,7 +539,10 @@ class Tournament:
         self,
         trf_type: TrfType,
         first_round_pairing: BoardColor = BoardColor.WHITE,
+        papi_legacy: bool = True,
     ) -> TrfTournament:
+        # Estimate pairings to ensure we have a defined rank for everyone
+        self.estimate_players(papi_legacy=papi_legacy)
         return TrfTournament(
             name=self.name,
             city=self.location,
