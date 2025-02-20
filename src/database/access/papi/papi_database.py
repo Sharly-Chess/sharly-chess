@@ -20,6 +20,7 @@ from data.util import (
     PlayerFFELicence,
     PlayerRatingType,
     BoardColor,
+    TournamentTieBreak,
 )
 from database.access.access_database import AccessDatabase
 
@@ -34,6 +35,7 @@ class TournamentInfo(NamedTuple):
     rating: TournamentRating
     rating_limit1: int
     rating_limit2: int
+    tie_breaks: list[TournamentTieBreak]
     location: str
     start_date: str
     end_date: str
@@ -72,12 +74,17 @@ class PapiDatabase(AccessDatabase):
         start_date: str = self._read_var('DateDebut')
         end_date: str = self._read_var('DateFin')
         arbiter: str = self._read_var('Arbitre')
+        tie_breaks: list[TournamentTieBreak] = [
+            TournamentTieBreak.from_papi_value(self._read_var(key))
+            for key in ('Dep1', 'Dep2', 'Dep3')
+        ]
         return TournamentInfo(
             rounds,
             pairing,
             rating,
             rating_limit1,
             rating_limit2,
+            tie_breaks,
             location,
             start_date,
             end_date,

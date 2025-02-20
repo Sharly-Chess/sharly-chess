@@ -3,13 +3,12 @@ from collections import namedtuple
 from collections.abc import Iterable
 from contextlib import suppress
 from decimal import Decimal
-from itertools import groupby
-from math import floor, isclose
+from math import isclose
 from typing import Literal
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
 from data.pairing import Pairing
-from data.util import Result, BoardColor, TournamentPairing, TournamentRating, performance_bonus, round_fide
+from data.util import Result, BoardColor, TournamentPairing, performance_bonus, round_fide
 
 
 def wins(player: Player, _tournament: Tournament, /, *, max_round: int | None = None) -> int:
@@ -225,7 +224,7 @@ def buchholz(
     See FIDE Handbook C.07.8.1
     Setting *cut_top* will remove the *cut_top* highest contributions, and
     *cut_btm* the lowest contributions.
-    When cutting the lowest contriibutions, all Voluntary Unplayed Rounds
+    When cutting the lowest contributions, all Voluntary Unplayed Rounds
     (requested byes and forfeit losses) are cut before any other round is cut.
     Both values must be non-negative, and *cut_top* must be at most equal to *cut_btm*.
     When *played_modifier* is True, forfeit losses and wins are considered
@@ -237,7 +236,7 @@ def buchholz(
         max_round = max(player.pairings) + 1
     if cut_top < 0 or cut_btm < 0:
         raise ValueError(
-            f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
+            f'Cut values must be non-negative, got {cut_top=}, {cut_btm=}')
     elif cut_top + cut_btm >= max_round:
         return 0
     pairings: dict[Pairing] = {
@@ -378,6 +377,7 @@ def sum_of_buchholz(
     *,
     max_round: int | None = None,
     fore_modifier: bool = False,
+    papi_legacy: bool = False,
 ) -> float:
     """Computes the sum of Buchholz scores of the opponents before *max_round*
     If *max_round* is not provided, it will be set to the maximum round index
@@ -391,16 +391,14 @@ def sum_of_buchholz(
         for round_index, pairing in player.pairings.items()
         if round_index < max_round
     ]
+    kwargs = {'max_round': max_round}
     if fore_modifier:
         buchholz_function = fore_buchholz
     else:
         buchholz_function = buchholz
+        kwargs['papi_legacy'] = papi_legacy
     return sum(
-        buchholz_function(
-            opponent,
-            tournament,
-            max_round=max_round,
-        )
+        buchholz_function(opponent, tournament, **kwargs)
         for opponent in opponents
         if opponent is not None
     )
@@ -649,6 +647,8 @@ def tournament_performance_rating(
                 rating = opponent.estimation
             ratings.append(rating)
             score += pairing.result.point_value
+    if not ratings:
+        return 0
     max_score = len(ratings) * Result.GAIN.point_value
     average = sum(ratings) / len(ratings)
     if not papi_legacy:
