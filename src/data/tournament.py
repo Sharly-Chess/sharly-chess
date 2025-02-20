@@ -9,13 +9,13 @@ from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
 from trf import Tournament as TrfTournament
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.pairing import Pairing
-from data.util import TrfType, performance_bonus, round_fide
+from data.util import TrfType, performance_bonus, round_fide, TournamentTieBreak
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -106,6 +106,7 @@ class Tournament:
         self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
+        self._tie_breaks: list[TournamentTieBreak] = []
         self._papi_read = False
 
     @property
@@ -362,6 +363,11 @@ class Tournament:
         return self._arbiter
 
     @property
+    def tie_breaks(self) -> list[TournamentTieBreak]:
+        self.read_papi()
+        return self._tie_breaks
+
+    @property
     def players_by_id(self) -> dict[int, Player]:
         self.read_papi()
         return self._players_by_id
@@ -392,14 +398,14 @@ class Tournament:
 
     @cached_property
     def players_by_trf_id(self) -> dict[int, Player]:
-        players = [player for id_, player in self.players_by_id.items() if id_ != 1]
-        le_method = Player.__le__
-        try:
-            Player.__le__ = lambda self_, other: self_.starting_rank_comparison(other)
-            ordered_players = sorted(players, reverse=True)
-            return {index + 1: player for index, player in enumerate(ordered_players)}
-        finally:
-            Player.__le__ = le_method
+        ordered_players = sorted(
+            self.players_by_id.values(),
+            key=lambda player: player.starting_rank_sort_key,
+        )
+        return {
+            trf_id: player for trf_id, player
+            in enumerate(ordered_players, start=1)
+        }
 
     @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
@@ -418,6 +424,17 @@ class Tournament:
             ],
             key=lambda p: (p.last_name, p.first_name),
         )
+
+    @cached_property
+    def players_by_rank(self) -> dict[int, Player]:
+        ranked_players = sorted(
+            self.players_by_id.values(),
+            key=lambda player: player.rank_sort_key(self, self.current_round),
+        )
+        return {
+            rank: player for rank, player in
+            enumerate(ranked_players, start=1)
+        }
 
     @cached_property
     def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
@@ -533,12 +550,14 @@ class Tournament:
             players=[
                 player.to_trf(
                     self._player_id_to_trf_id,
+                    self._player_id_to_rank(player.id),
                     self.current_round + 1
                     if trf_type == TrfType.PAIRING
                     else self.rounds,
                 )
-                for id_, player in self.players_by_trf_id.items()
+                for player in self.players_by_trf_id.values()
             ],
+            federation=self.event.federation,
             xx_fields=(
                 self._trf_xx_fields(first_round_pairing)
                 if trf_type == TrfType.PAIRING
@@ -547,11 +566,19 @@ class Tournament:
             bb_fields=(self._trf_bb_fields() if trf_type == TrfType.PAIRING else {}),
         )
 
-    def _player_id_to_trf_id(self, player_id: int) -> int:
-        for trf_id, player in self.players_by_trf_id.items():
+    def _find_player_value_by_id(
+        self, player_id: int, players_by_value: dict[Any, Player]
+    ) -> any:
+        for value, player in players_by_value.items():
             if player.id == player_id:
-                return trf_id
+                return value
         raise KeyError(f'Id of unknown player: {player_id}')
+
+    def _player_id_to_trf_id(self, player_id: int) -> int:
+        return self._find_player_value_by_id(player_id, self.players_by_trf_id)
+
+    def _player_id_to_rank(self, player_id: int) -> int:
+        return self._find_player_value_by_id(player_id, self.players_by_rank)
 
     def _trf_xx_fields(self, first_round_pairing: BoardColor):
         next_round = self.current_round + 1
@@ -605,6 +632,7 @@ class Tournament:
                     self._rating,
                     self._rating_limit1,
                     self._rating_limit2,
+                    self._tie_breaks,
                     self._location,
                     self._start_date,
                     self._end_date,
@@ -796,11 +824,12 @@ class Tournament:
                 round_function = round
             else:
                 round_function = round_fide
-            if superior_ratings == inferior_ratings == []:
+            if len(superior_ratings) == len(inferior_ratings) == 0:
                 for player in test_group:
                     player.estimation = round_function(
                         performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
                     )
+                return
             test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
             if superior_ratings:
                 superior_group_bonus = performance_bonus(
