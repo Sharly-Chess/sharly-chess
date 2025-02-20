@@ -1512,7 +1512,7 @@ msgstr "Points de victoire"
 
 #: src/web/controllers/admin/index_admin_controller.py
 msgid "Half point bye"
-msgstr "Points de match nul (bye)"
+msgstr "Points de match nul"
 
 #: src/web/controllers/admin/index_admin_controller.py
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
