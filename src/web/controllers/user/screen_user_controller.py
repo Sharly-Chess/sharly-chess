@@ -386,9 +386,11 @@ class ScreenUserController(AbstractScreenUserController):
             return Reswap(
                 content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
             )
-
     @get(
-        path='/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
+        path=[
+            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
+            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}',
+        ],
         name='user-rotator',
     )
     async def htmx_user_rotator(
@@ -396,7 +398,7 @@ class ScreenUserController(AbstractScreenUserController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int,
-        rotator_screen_index: int,
+        rotator_screen_index: int = 0,
     ) -> Template | ClientRedirect:
         web_context: RotatorUserWebContext = RotatorUserWebContext(
             request,
