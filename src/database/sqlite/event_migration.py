@@ -37,15 +37,15 @@ class EventMigrationManager:
     def migrate(self, event_database: EventDatabase, target_version: Version):
         if event_database.version < self.FIRST_UPGRADABLE_VERSION:
             logger.error(
-                'Database %s impossible to upgrade: version %s '
-                'is prior to the first upgradable version %s',
+                'Database %s (%s) impossible to upgrade: version'
+                'is prior to the first upgradable version (%s)',
                 event_database.file.name,
                 event_database.version,
                 self.FIRST_UPGRADABLE_VERSION
             )
             return
         if event_database.version > target_version:
-            raise NotImplementedError('Backwards compatibility not implemented')
+            raise NotImplementedError('Migrations rollback not implemented')
 
         while migration_version := self._next_migration_version(
             event_database.version, target_version
@@ -58,12 +58,12 @@ class EventMigrationManager:
                 logger.debug(
                     'Database %s has been upgraded to version %s.',
                     event_database.file.name,
-                    target_version,
+                    migration_version,
                 )
             else:
                 raise PapiWebException(
                     f'Database {event_database.file.name} ({event_database.version})'
-                    f' could not be upgraded to version {target_version}.'
+                    f' could not be upgraded to version {migration_version}.'
                 )
 
     def _next_migration_version(
