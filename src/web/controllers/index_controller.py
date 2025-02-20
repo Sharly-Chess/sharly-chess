@@ -279,7 +279,7 @@ class WebContext:
         if isinstance(value, int):
             return str(value)
         if isinstance(value, float):
-            return f'{value:.8f}'
+            return f'{value:.2f}'
         if isinstance(value, Path):
             return str(value)
         raise ValueError(f'unknown type for value [{value}]')
