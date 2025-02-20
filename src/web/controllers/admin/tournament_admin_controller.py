@@ -129,6 +129,10 @@ class TournamentAdminController(AbstractEventAdminController):
         chessevent_tournament_name: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
+        first_board_number: int | None = None
+        paired_bye_points: float | None = None
+        max_byes: int | None = None
+        last_rounds_no_byes: int | None = None
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
@@ -176,6 +180,18 @@ class TournamentAdminController(AbstractEventAdminController):
                     cls._admin_validate_record_illegal_moves_update_data(data, errors)
                 )
                 rules = cls._admin_validate_rules_update_data(data, errors)
+                first_board_number = WebContext.form_data_to_int(
+                    data, 'first_board_number'
+                )
+                paired_bye_points = WebContext.form_data_to_float(
+                    data, 'paired_bye_points'
+                )
+                max_byes = WebContext.form_data_to_int(
+                    data, 'max_byes'
+                )
+                last_rounds_no_byes = WebContext.form_data_to_int(
+                    data, 'last_rounds_no_byes'
+                )
             case 'delete':
                 pass
             case _:
@@ -205,6 +221,10 @@ class TournamentAdminController(AbstractEventAdminController):
             chessevent_tournament_name=chessevent_tournament_name,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
+            first_board_number=first_board_number,
+            paired_bye_points=paired_bye_points,
+            max_byes=max_byes,
+            last_rounds_no_byes=last_rounds_no_byes,
             check_in_open=check_in_open,
             errors=errors,
         )
@@ -274,6 +294,10 @@ class TournamentAdminController(AbstractEventAdminController):
                     chessevent_tournament_name: str | None = None
                     record_illegal_moves: int | None = None
                     rules: str | None = None
+                    first_board_number: int | None = None
+                    paired_bye_points: float | None = None
+                    max_byes: int | None = None
+                    last_rounds_no_byes: int | None = None
                     match action:
                         case 'update' | 'clone':
                             path = web_context.admin_tournament.stored_tournament.path
@@ -296,6 +320,10 @@ class TournamentAdminController(AbstractEventAdminController):
                                 admin_tournament.stored_tournament.record_illegal_moves
                             )
                             rules = admin_tournament.stored_tournament.rules
+                            first_board_number = admin_tournament.stored_tournament.first_board_number
+                            paired_bye_points = admin_tournament.stored_tournament.paired_bye_points
+                            max_byes = admin_tournament.stored_tournament.max_byes
+                            last_rounds_no_byes = admin_tournament.stored_tournament.last_rounds_no_byes
                         case 'create' | 'delete':
                             pass
                         case _:
@@ -349,6 +377,10 @@ class TournamentAdminController(AbstractEventAdminController):
                             record_illegal_moves
                         ),
                         'rules': WebContext.value_to_form_data(rules),
+                        'first_board_number': WebContext.value_to_form_data(first_board_number),
+                        'paired_bye_points': WebContext.value_to_form_data(paired_bye_points),
+                        'max_byes': WebContext.value_to_form_data(max_byes),
+                        'last_rounds_no_byes': WebContext.value_to_form_data(last_rounds_no_byes),
                         'ffe_id': WebContext.value_to_form_data(ffe_id),
                         'ffe_password': WebContext.value_to_form_data(ffe_password),
                     }
@@ -364,6 +396,7 @@ class TournamentAdminController(AbstractEventAdminController):
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
                     ),
+                    'paired_bye_points_options': cls._get_paired_bye_points_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,

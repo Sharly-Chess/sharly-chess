@@ -440,6 +440,10 @@ class EventDatabase(SQLiteDatabase):
                                     ),
                                     record_illegal_moves=None,
                                     rules=None,
+                                    first_board_number=None,
+                                    paired_bye_points=None,
+                                    max_byes=None,
+                                    last_rounds_no_byes=None,
                                 )
                             )
                             tournament_ids_by_uniq_id[tournament_uniq_id] = (
@@ -1237,6 +1241,30 @@ class EventDatabase(SQLiteDatabase):
                         self.file.name,
                         target_version,
                     )
+                case '2.4.21':
+                    target_version = Version('2.4.22')
+                    self._execute(
+                        'ALTER TABLE `tournament` ADD `first_board_number` INTEGER'
+                    )
+                    self._execute(
+                        'ALTER TABLE `tournament` ADD `paired_bye_points` FLOAT'
+                    )
+                    self._execute(
+                        'ALTER TABLE `tournament` ADD `max_byes` INTEGER'
+                    )
+                    self._execute(
+                        'ALTER TABLE `tournament` ADD `last_rounds_no_byes` INTEGER'
+                    )
+                    # Drop table chessevent since the SQL code of the creation of the table
+                    # had been left by error in create_event.sql
+                    self._execute('DROP TABLE IF EXISTS `chessevent`')
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(
+                        'Database %s has been upgraded to version %s.',
+                        self.file.name,
+                        target_version,
+                    )
                 case _:
                     break
         if self.version == target_version:
@@ -1635,6 +1663,11 @@ class EventDatabase(SQLiteDatabase):
             record_illegal_moves=row['record_illegal_moves'],
             # needed to open event databases when version < 2.4.11 before checking the version
             rules=row.get('rules', None),
+            # needed to open event databases when version < 2.4.21 before checking the version
+            first_board_number=row.get('first_board_number', None),
+            paired_bye_points=row.get('paired_bye_points', None),
+            max_byes=row.get('max_byes', None),
+            last_rounds_no_byes=row.get('last_rounds_no_byes', None),
             # needed to open event databases when version < 2.4.20 before checking the version
             check_in_open=cls.load_bool_from_database_field(
                 row.get('check_in_open', None)
@@ -1689,6 +1722,10 @@ class EventDatabase(SQLiteDatabase):
             'chessevent_tournament_name',
             'record_illegal_moves',
             'rules',
+            'first_board_number',
+            'paired_bye_points',
+            'max_byes',
+            'last_rounds_no_byes',
             'last_update',
             'last_result_update',
             'last_illegal_move_update',
@@ -1715,6 +1752,10 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.chessevent_tournament_name,
             stored_tournament.record_illegal_moves,
             stored_tournament.rules,
+            stored_tournament.first_board_number,
+            stored_tournament.paired_bye_points,
+            stored_tournament.max_byes,
+            stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,
             stored_tournament.last_illegal_move_update,

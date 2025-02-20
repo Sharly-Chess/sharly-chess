@@ -206,6 +206,7 @@ class I18nTranslator:
             if (index := message.id.find(' ***')) != -1:
                 message.string = message.id[:index]
                 self.flag_message(message, 'fuzzy')
+                return True
             else:
                 message.string = self.translate_string(message.id, percent)
                 if message.string:

@@ -1718,6 +1718,10 @@ msgid "Error while updating the FFE database."
 msgstr "Fout bij het bijwerken van de FFE-database."
 
 #: src/web/server_engine.py
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr ""
+
+#: src/web/server_engine.py
 #, ai_translation
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Poort [{port}] al in gebruik, kan Papi-webserver niet starten."
@@ -1860,6 +1864,14 @@ msgstr[1] "{num} illegale bewegingen max"
 #, ai_translation
 msgid "By default - {option}"
 msgstr "Standaard - {option}"
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Full point bye"
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Half point bye"
+msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -2990,7 +3002,6 @@ msgstr "Verwijderen"
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
@@ -4917,6 +4928,12 @@ msgstr "Sleep de sets om ze te bestellen."
 msgid "Add a set"
 msgstr "Een set toevoegen"
 
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal.html
+#, ai_translation
+msgid "Close"
+msgstr "Sluiten"
+
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
 msgid "The tournament of which you want to show the pairings, mandatory."
@@ -5117,11 +5134,6 @@ msgstr "Sleep de uren om ze te bestellen."
 #, ai_translation
 msgid "Add a hour"
 msgstr "Voeg een uur toe"
-
-#: src/web/templates/admin/timers/timer_hours_modal.html
-#, ai_translation
-msgid "Close"
-msgstr "Sluiten"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
@@ -5561,6 +5573,45 @@ msgid "The maximum number of illegal moves that can be recorded per round for a 
 msgstr "Het maximale aantal illegale bewegingen dat per ronde kan worden geregistreerd voor een speler (van 0 naar 3, standaard %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Pairings"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "First board number:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Paired bye points:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "The points scored by players who are paired bye."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Max byes:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Last rounds no byes:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Standaardschermen aanmaken en toevoegen"
@@ -5843,4 +5894,19 @@ msgstr "vs"
 
 #~ msgid "pairings by board"
 #~ msgstr "paringen per bord"
+
+#~ msgid "Zero point bye"
+#~ msgstr ""
+
+#~ msgid "The number of points by players who are paired bye."
+#~ msgstr ""
+
+#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
+#~ msgstr ""
+
+#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
+#~ msgstr ""
+
+#~ msgid "The number of points scored by players who are paired bye."
+#~ msgstr ""
 

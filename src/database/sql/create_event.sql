@@ -31,16 +31,6 @@ INSERT INTO `info`(
     '{version}', '{name}', '{start}', '{stop}', '{now}'
 );
 
-CREATE TABLE `chessevent` (
-    `id` INTEGER NOT NULL,
-    `uniq_id` TEXT NOT NULL,
-    `user_id` TEXT NOT NULL,
-    `password` TEXT NOT NULL,
-    `event_id` TEXT NOT NULL,
-    PRIMARY KEY(`id` AUTOINCREMENT),
-    UNIQUE(`uniq_id`)
-);
-
 CREATE TABLE `timer_hour` (
     `id` INTEGER NOT NULL,
     `uniq_id` TEXT NOT NULL,
@@ -83,6 +73,10 @@ CREATE TABLE `tournament` (
     `chessevent_tournament_name` TEXT,
     `record_illegal_moves` INTEGER,
     `rules` TEXT,
+    `first_board_number` INTEGER,
+    `paired_bye_points` FLOAT,
+    `max_byes` INTEGER,
+    `last_rounds_no_byes` INTEGER,
     `check_in_open` INTEGER NOT NULL DEFAULT 0,
     `last_update` FLOAT NOT NULL,
     `last_illegal_move_update` FLOAT NOT NULL DEFAULT 0.0,

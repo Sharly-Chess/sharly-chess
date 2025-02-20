@@ -78,19 +78,19 @@ class FamilyAdminController(AbstractEventAdminController):
         if data is None:
             data = {}
         field: str
-        type: str
+        type_: str
         match action:
             case 'create':
-                type = web_context.family_type
+                type_ = web_context.family_type
             case 'update' | 'clone' | 'delete':
-                type = web_context.admin_family.stored_family.type
+                type_ = web_context.admin_family.stored_family.type
             case _:
                 raise ValueError(f'action=[{action}]')
-        match type:
+        match type_:
             case 'boards' | 'input' | 'players':
                 pass
             case _:
-                raise ValueError(f'type=[{type}]')
+                raise ValueError(f'type=[{type_}]')
         field = 'uniq_id'
         uniq_id: str = WebContext.form_data_to_str(data, field)
         name: str | None = None
@@ -197,7 +197,7 @@ class FamilyAdminController(AbstractEventAdminController):
                     ).format(first=first, last=last)
                     errors['first'] = error
                     errors['last'] = error
-                match type:
+                match type_:
                     case 'boards':
                         pass
                     case 'input':
@@ -209,7 +209,7 @@ class FamilyAdminController(AbstractEventAdminController):
                             data, 'players_show_unpaired'
                         )
                     case _:
-                        raise ValueError(f'type=[{type}]')
+                        raise ValueError(f'type=[{type_}]')
                 field: str = 'parts'
                 try:
                     parts = WebContext.form_data_to_int(data, field, minimum=1)
@@ -247,7 +247,7 @@ class FamilyAdminController(AbstractEventAdminController):
             ]
             else None,
             uniq_id=uniq_id,
-            type=type,
+            type=type_,
             public=public,
             tournament_id=tournament_id,
             name=name,

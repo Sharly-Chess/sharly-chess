@@ -1386,7 +1386,7 @@ msgstr ""
 
 #: src/web/server_engine.py
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr ""
+msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
 
 #: src/web/server_engine.py
 msgid "Port [{port}] already in use, can not start Papi-web server."
@@ -1504,6 +1504,14 @@ msgstr[1] ""
 
 #: src/web/controllers/admin/index_admin_controller.py
 msgid "By default - {option}"
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Full point bye"
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Half point bye"
 msgstr ""
 
 #: src/web/controllers/admin/index_admin_controller.py
@@ -4599,6 +4607,45 @@ msgid "The maximum number of illegal moves that can be recorded per round for a 
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Pairings"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "First board number:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Paired bye points:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "The points scored by players who are paired bye."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Max byes:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Last rounds no byes:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"
 msgstr ""
 
@@ -4829,10 +4876,4 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
-
-#~ msgid "pairings by board"
-#~ msgstr ""
-
-#~ msgid "BBP Pairings is not installed."
-#~ msgstr ""
 

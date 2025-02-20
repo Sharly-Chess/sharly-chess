@@ -183,6 +183,8 @@ class Result(IntEnum):
                 | Result.FULL_POINT_BYE
             ):
                 return 1.0
+            case _:
+                raise ValueError(f'{self=}')
 
     @property
     def opposite_result(self) -> Self:

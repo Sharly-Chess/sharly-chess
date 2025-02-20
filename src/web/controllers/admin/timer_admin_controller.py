@@ -223,8 +223,8 @@ class TimerAdminController(AbstractEventAdminController):
         text_before: str = WebContext.form_data_to_str(data, 'text_before')
         text_after: str = WebContext.form_data_to_str(data, 'text_after')
         try:
-            round: int = int(uniq_id)
-            if round <= 0:
+            round_: int = int(uniq_id)
+            if round_ <= 0:
                 errors['uniq_id'] = _('Round numbers must be positive integers.')
         except (TypeError, ValueError, AssertionError):
             if not text_before:
