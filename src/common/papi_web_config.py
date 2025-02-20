@@ -576,7 +576,7 @@ class PapiWebConfig(metaclass=Singleton):
     default_first_board_number: int = 1
 
     """ The points scored by players paired bye. """
-    default_paired_bye_points: Result = Result.FULL_POINT_BYE
+    default_paired_bye_points: Result = Result.GAIN
 
     """ The default maximum number of byes for a player in a tournament. """
     default_max_byes: int = 1

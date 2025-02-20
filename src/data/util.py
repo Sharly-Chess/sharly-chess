@@ -184,7 +184,7 @@ class Result(IntEnum):
             ):
                 return 1.0
             case _:
-                raise ValueError(f'self={self}')
+                raise ValueError(f'{self=}')
 
     @property
     def opposite_result(self) -> Self:
