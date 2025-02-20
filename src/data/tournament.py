@@ -571,13 +571,8 @@ class Tournament:
         return fields
 
     @staticmethod
-    def _trf_bb_fields(result_class: type[Result] = Result, point_values: dict[str, float] | None = None) -> dict[str, str]:
+    def _trf_bb_fields(result_class: type[Result] = Result, point_values: dict[Result, float] | None = None) -> dict[str, str]:
         fields: dict[str, str] = {}
-        if isinstance(point_values, dict):
-            point_values = {
-                result_class.from_trf(trf_result): value
-                for trf_result, value in point_values.items()
-            }
         for result in [
             result_class.GAIN,
             result_class.DRAW,

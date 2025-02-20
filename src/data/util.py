@@ -2,6 +2,7 @@
 PlayerSex, TournamentPairing, TournamentRating"""
 
 from datetime import datetime
+from decimal import Decimal
 from enum import Enum, StrEnum, IntEnum, auto
 from itertools import islice
 from logging import Logger
@@ -185,7 +186,7 @@ class Result(IntEnum):
                 return 1.0
             case _:
                 raise ValueError(f'{self=}')
- 
+
     def points(self, values: dict[Self, float] | None = None) -> float:
         """
         The value in points, according to rules defined in *values*.
@@ -297,7 +298,7 @@ class Result(IntEnum):
                 return ' '
             case _:
                 raise ValueError(f'Unknown value: {self}')
- 
+
     @classmethod
     def from_trf(cls, value: str):
         match value.upper():
@@ -546,7 +547,7 @@ class TournamentPairing(IntEnum):
                 return 'Berger'
             case _:
                 raise ValueError(f'Unknown pairing type: {self}')
- 
+
     @property
     def swiss(self):
         return self in (
@@ -1348,7 +1349,7 @@ class TrfType(StrEnum):
                 raise ValueError(f'Unknown value: {self}')
 
 
-def round_fide(num: float):
+def round_fide(num: float | Decimal):
     lowest_int = int(num)
     if num - lowest_int >= 0.5:
         return lowest_int + 1

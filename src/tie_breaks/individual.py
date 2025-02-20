@@ -3,13 +3,13 @@ from collections import namedtuple
 from collections.abc import Iterable
 from contextlib import suppress
 from decimal import Decimal
-from itertools import groupby
-from math import floor, isclose
+from math import isclose
 from typing import Literal
+
+from data.pairing import Pairing
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
-from data.pairing import Pairing
-from data.util import Result, BoardColor, TournamentPairing, TournamentRating, performance_bonus, round_fide
+from data.util import Result, BoardColor, TournamentPairing, performance_bonus, round_fide
 
 
 def wins(player: Player, tournament: Tournament, /, *, max_round: int | None = None) -> int:
@@ -115,7 +115,7 @@ def adjusted_score(
     adjust_fore: bool = False,
     papi_legacy: bool = False,
 ) -> float:
-    """Computes the adjusted score of the player for the purposes of ther opponents' tie-breaks
+    """Computes the adjusted score of the player for the purposes of their opponents' tie-breaks
     Only adjusts them in case of requested byes followed by all VUR.
     If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
     games not already determined are considered a draw.
@@ -197,9 +197,11 @@ def dummy_score(
                 return dummy + Result.LOSS.points(player.point_values)
             case Result.HALF_POINT_BYE:
                 return dummy + Result.DRAW.points(player.point_values)
-            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
+            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
                 return dummy + Result.GAIN.points(player.point_values)
-    elif dummy_type == 'SB':
+            case _:
+                raise ValueError(f'{pairing.result} is played.')
+    else:  # if dummy_type == 'SB':
         dummy = player.points_before(max_round)
         match pairing.result:
             case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
@@ -243,7 +245,7 @@ def buchholz(
             f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
     elif cut_top + cut_btm >= max_round:
         return 0
-    pairings: dict[Pairing] = {
+    pairings: dict[int, Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
         if round_index < max_round
@@ -330,7 +332,7 @@ def fore_buchholz(
             f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
     elif cut_top + cut_btm >= max_round:
         return 0
-    pairings: dict[Pairing] = {
+    pairings: dict[int, Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
         if round_index < max_round
@@ -723,11 +725,11 @@ def expected_score(
         win_chances(player_rating, opponent_rating)
         for opponent_rating in opponent_ratings
     ]
-    computed_score = sum(
+    computed_score = Decimal(sum(
         chance[0] * Decimal(Result.GAIN.points(point_values)) 
         + chance[1] * Decimal(Result.LOSS.points(point_values))
         for chance in chances
-    )
+    ))
     return computed_score
 
 
@@ -782,9 +784,9 @@ def perfect_tournament_performance(
         else:
             low = mid
     mid = round_fide(mid)
-    while (mid_score := expected_score(mid, ratings, tournament.point_values)) >= actual_score:
+    while expected_score(mid, ratings, tournament.point_values) >= actual_score:
         mid -= 1
-    while (mid_score := expected_score(mid, ratings, tournament.point_values)) < actual_score:
+    while expected_score(mid, ratings, tournament.point_values) < actual_score:
         mid += 1
     return round_fide(mid)
 

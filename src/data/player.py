@@ -64,13 +64,6 @@ class FederationTuple:
         )
         return self.federation <= other.federation
 
-    def __eq__(self, other: Self):
-        # p1 == p2 calls p1.__eq__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return self.federation == other.federation
-
     def __str__(self) -> str:
         return self.federation
 
@@ -95,13 +88,6 @@ class LeagueTuple(FederationTuple):
             f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
         return (self.federation, self.league) <= (other.federation, other.league)
-
-    def __eq__(self, other: Self):
-        # p1 == p2 calls p1.__eq__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return self.federation == other.federation and self.league == other.league
 
     def __str__(self) -> str:
         return f'{self.federation}-{self.league}'
@@ -132,17 +118,6 @@ class ClubTuple(LeagueTuple):
             other.federation,
             other.league,
             other.club,
-        )
-
-    def __eq__(self, other: Self):
-        # p1 == p2 calls p1.__eq__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return (
-            self.federation == other.federation
-            and self.league == other.league
-            and self.club == other.club
         )
 
     def __str__(self) -> str:
