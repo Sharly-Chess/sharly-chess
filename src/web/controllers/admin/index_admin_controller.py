@@ -23,7 +23,7 @@ from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
-from web.controllers.index_controller import AbstractController, WebContext, IndexController
+from web.controllers.index_controller import AbstractController, WebContext
 from web.messages import Message
 from web.urls import admin_event_url
 
@@ -103,8 +103,8 @@ class AbstractAdminController(AbstractController):
     def _get_paired_bye_points_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(Result.FULL_POINT_BYE.point_value): _('Full point bye'),
-            WebContext.value_to_form_data(Result.HALF_POINT_BYE.point_value): _('Half point bye'),
+            WebContext.value_to_form_data(Result.GAIN.point_value): _('Full point bye'),
+            WebContext.value_to_form_data(Result.DRAW.point_value): _('Half point bye'),
         }
         default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_points.point_value)
         options[''] = _('By default - {option}').format(option=options[default_option])
