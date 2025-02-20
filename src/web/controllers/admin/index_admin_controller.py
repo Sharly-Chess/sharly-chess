@@ -23,7 +23,7 @@ from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
-from web.controllers.index_controller import AbstractController, WebContext
+from web.controllers.index_controller import AbstractController, WebContext, IndexController
 from web.messages import Message
 from web.urls import admin_event_url
 
@@ -89,9 +89,9 @@ class AbstractAdminController(AbstractController):
     ) -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            '0': _('No recording'),
+            WebContext.value_to_form_data(0): _('No recording'),
         } | {
-            str(i): ngettext(
+            WebContext.value_to_form_data(i): ngettext(
                 '{num} illegal move max', '{num} illegal moves max', i
             ).format(num=i)
             for i in range(1, 4)
@@ -103,10 +103,10 @@ class AbstractAdminController(AbstractController):
     def _get_paired_bye_points_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            str(Result.FULL_POINT_BYE.point_value): _('Full point bye'),
-            str(Result.HALF_POINT_BYE.point_value): _('Half point bye'),
+            WebContext.value_to_form_data(Result.FULL_POINT_BYE.point_value): _('Full point bye'),
+            WebContext.value_to_form_data(Result.HALF_POINT_BYE.point_value): _('Half point bye'),
         }
-        default_option: str = str(PapiWebConfig.default_paired_bye_points.point_value)
+        default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_points.point_value)
         options[''] = _('By default - {option}').format(option=options[default_option])
         return options
 
@@ -143,7 +143,7 @@ class AbstractAdminController(AbstractController):
             '': _('Use no timer') if event.timers_by_id else _('No timer defined'),
         }
         for timer in event.timers_by_id.values():
-            options[str(timer.id)] = _('Timer {timer_uniq_id}').format(
+            options[WebContext.value_to_form_data(timer.id)] = _('Timer {timer_uniq_id}').format(
                 timer_uniq_id=timer.uniq_id
             )
         return options

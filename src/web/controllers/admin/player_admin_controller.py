@@ -320,7 +320,7 @@ class PlayerAdminController(AbstractEventAdminController):
 
     @staticmethod
     def _get_gender_options() -> dict[str, str]:
-        return {str(gender.value): gender.name for gender in PlayerGender}
+        return {WebContext.value_to_form_data(gender.value): gender.name for gender in PlayerGender}
 
     @classmethod
     def _admin_event_players_render(

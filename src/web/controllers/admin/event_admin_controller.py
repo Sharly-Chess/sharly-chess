@@ -75,7 +75,7 @@ class EventAdminWebContext(AdminWebContext):
 
     def get_tournament_options(self) -> dict[str, str]:
         return {
-            str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
+            self.value_to_form_data(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
         }
 
