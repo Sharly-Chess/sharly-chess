@@ -289,7 +289,7 @@ class Player(TournamentPlayer):
     def estimation(self) -> int:
         if not self.estimated:
             return self.ratings[self.tournament.rating]
-        return self._estimation
+        return self._estimation or 0
 
     @estimation.setter
     def estimation(self, value: int):
