@@ -780,11 +780,12 @@ class Tournament:
                 round_function = round
             else:
                 round_function = round_fide
-            if superior_ratings == inferior_ratings == []:
+            if len(superior_ratings) == len(inferior_ratings) == 0:
                 for player in test_group:
                     player.estimation = round_function(
                         performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
                     )
+                return
             test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
             if superior_ratings:
                 superiror_group_bonus = performance_bonus(

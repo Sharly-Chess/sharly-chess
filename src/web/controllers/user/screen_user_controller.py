@@ -2,7 +2,7 @@ from contextlib import suppress
 from logging import Logger
 from typing import Annotated, Any
 
-from litestar import post, get
+from litestar import head, post, get
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import Reswap, HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -386,6 +386,20 @@ class ScreenUserController(AbstractScreenUserController):
             return Reswap(
                 content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
             )
+
+    @head(
+        path='/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
+        name='user-screen-head',
+        status_code=HTTP_304_NOT_MODIFIED,
+    )
+    async def htmx_user_screen_head(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        screen_uniq_id: str,
+    ) -> None:
+        pass
+    
     @get(
         path=[
             '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
@@ -410,3 +424,20 @@ class ScreenUserController(AbstractScreenUserController):
         if web_context.error:
             return web_context.error
         return self._user_screen_render(web_context)
+
+    @head(
+        path=[
+            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
+            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}',
+        ],
+        name='user-rotator-head',
+        status_code=HTTP_304_NOT_MODIFIED,
+    )
+    async def htmx_user_rotator_head(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        rotator_id: int,
+        rotator_screen_index: int = 0,
+    ) -> None:
+        pass
