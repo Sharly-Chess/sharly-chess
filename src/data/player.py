@@ -489,7 +489,7 @@ class Player(TournamentPlayer):
     ) -> tuple:
         rank = (-self.points_before(max_round),)
         for tie_break in tournament.tie_breaks:
-            rank += (-tie_break.compute_papi_player_value(self, tournament, max_round),)
+            rank += (-tie_break.player_value(self, tournament, max_round),)
         return rank + self.starting_rank_sort_key
 
     def __le__(self, other: 'Player') -> bool:

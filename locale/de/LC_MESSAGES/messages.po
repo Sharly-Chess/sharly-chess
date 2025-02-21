@@ -997,6 +997,110 @@ msgstr "{board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Turnier {tournament_uniq_id} ({numbers_str})"
 
+#: src/data/tie_break.py
+msgid "Cut"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut top"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut Bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Played modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Papi legacy"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Limit"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Exclude players"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of Wins"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of Games Won"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of Games Played with Black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of Games Won with Black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Progressive Scores"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Rounds one Elected to Play"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average of Opponents Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonneborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Koya System"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average Rating of Opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Tournament Performance Rating"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average Performance Rating of Opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Perfect Tournament Performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average Perfect Performance of Opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Direct Encounter"
+msgstr ""
+
 #: src/data/timer.py
 #, ai_translation
 msgid "Time is not defined."

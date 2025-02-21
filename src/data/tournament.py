@@ -15,7 +15,8 @@ from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.pairing import Pairing
-from data.util import TrfType, performance_bonus, round_fide, TournamentTieBreak
+from data.tie_break import TieBreak
+from data.util import TrfType, performance_bonus, round_fide
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -106,7 +107,6 @@ class Tournament:
         self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
-        self._tie_breaks: list[TournamentTieBreak] = []
         self._papi_read = False
 
     @property
@@ -306,6 +306,10 @@ class Tournament:
         return self.stored_tournament.last_chessevent_download_md5
 
     @property
+    def tie_breaks(self) -> list[TieBreak]:
+        return self.stored_tournament.tie_breaks
+
+    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
@@ -361,11 +365,6 @@ class Tournament:
     def arbiter(self) -> str:
         self.read_papi()
         return self._arbiter
-
-    @property
-    def tie_breaks(self) -> list[TournamentTieBreak]:
-        self.read_papi()
-        return self._tie_breaks
 
     @property
     def players_by_id(self) -> dict[int, Player]:
@@ -635,7 +634,6 @@ class Tournament:
                     self._rating,
                     self._rating_limit1,
                     self._rating_limit2,
-                    self._tie_breaks,
                     self._location,
                     self._start_date,
                     self._end_date,

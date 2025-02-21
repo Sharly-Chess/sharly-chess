@@ -2,10 +2,10 @@ from logging import Logger
 
 from common.logger import get_logger
 from data.chessevent_player import ChessEventPlayer
+from data.tie_break import PapiTieBreak, TieBreak
 from data.util import (
     TournamentType,
     TournamentPairing,
-    TournamentTieBreak,
     TournamentRating,
 )
 
@@ -34,9 +34,7 @@ class ChessEventTournament:
         self.arbiter: str = ''
         self.start: float = 0.0
         self.end: float = 0.0
-        self.tie_breaks: list[TournamentTieBreak] = [
-            TournamentTieBreak.NONE,
-        ] * 3
+        self.tie_breaks: list[TieBreak] = []
         self.rating: TournamentRating = TournamentRating.STANDARD
         self.ffe_id: int = 0
         self.players: list[ChessEventPlayer] = []
@@ -60,8 +58,10 @@ class ChessEventTournament:
             for tie_break_index in range(3):
                 key = f'tie_break_{tie_break_index + 1}'
                 if chessevent_tournament_info[key]:
-                    self.tie_breaks[tie_break_index] = TournamentTieBreak(
-                        int(chessevent_tournament_info[key])
+                    self.tie_breaks.append(
+                        PapiTieBreak(
+                            int(chessevent_tournament_info[key])
+                        ).to_tie_break(self.rounds)
                     )
             self.rating = TournamentRating(
                 int(chessevent_tournament_info[key := 'rating'])

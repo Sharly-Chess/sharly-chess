@@ -804,6 +804,110 @@ msgstr "échiquiers {board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
 
+#: src/data/tie_break.py
+msgid "Cut"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut top"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut Bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Played modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Papi legacy"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Limit"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Exclude players"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of Wins"
+msgstr "Nombre de victoires"
+
+#: src/data/tie_break.py
+msgid "Number of Games Won"
+msgstr "Nombre de parties gagnées"
+
+#: src/data/tie_break.py
+msgid "Number of Games Played with Black"
+msgstr "Nombre de parties jouées avec les noirs"
+
+#: src/data/tie_break.py
+msgid "Number of Games Won with Black"
+msgstr "Nombre de parties gagnées avec les noirs"
+
+#: src/data/tie_break.py
+msgid "Progressive Scores"
+msgstr "Cumulatif"
+
+#: src/data/tie_break.py
+msgid "Rounds one Elected to Play"
+msgstr "Rondes jouées"
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr "Buchholz"
+
+#: src/data/tie_break.py
+msgid "Average of Opponents Buchholz"
+msgstr "Moyenne du Buchholz des adversaires"
+
+#: src/data/tie_break.py
+msgid "Fore Buchholz"
+msgstr "Fore Buchholz"
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr "Somme des Buchholz"
+
+#: src/data/tie_break.py
+msgid "Sonneborn-Berger"
+msgstr "Sonneborn-Berger"
+
+#: src/data/tie_break.py
+msgid "Koya System"
+msgstr "Koya"
+
+#: src/data/tie_break.py
+msgid "Average Rating of Opponents"
+msgstr "Moyenne ELO des adversaires"
+
+#: src/data/tie_break.py
+msgid "Tournament Performance Rating"
+msgstr "Performance ELO"
+
+#: src/data/tie_break.py
+msgid "Average Performance Rating of Opponents"
+msgstr "Moyenne des performances ELO des adversaires"
+
+#: src/data/tie_break.py
+msgid "Perfect Tournament Performance"
+msgstr "Performance ELO parfaite"
+
+#: src/data/tie_break.py
+msgid "Average Perfect Performance of Opponents"
+msgstr "Moyenne des performances ELO parfaites des adversaires"
+
+#: src/data/tie_break.py
+msgid "Direct Encounter"
+msgstr "Confrontation directe"
+
 #: src/data/timer.py
 msgid "Time is not defined."
 msgstr "L'heure n'est pas définie"
@@ -2256,7 +2360,7 @@ msgstr "La date et l'heure de fin de l'évènement."
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "Default directory of the Papi files:"
-msgstr "Répertoire par défaut des fichierf Papi :"
+msgstr "Répertoire par défaut des fichiers Papi :"
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: c:\\chess\tournaments"

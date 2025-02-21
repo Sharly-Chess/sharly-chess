@@ -18,7 +18,9 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
+from data.tie_break import TieBreak, TieBreakType, TieBreakOption, PapiTieBreak
 from data.util import Result as UtilResult
+from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 from database.store import (
     StoredTournament,
@@ -1278,6 +1280,35 @@ class EventDatabase(SQLiteDatabase):
                         self.file.name,
                         target_version,
                     )
+                case '2.4.22':
+                    target_version = Version('2.4.23')
+                    from data.event import Event
+                    from data.tournament import Tournament
+
+                    self._execute(
+                        'ALTER TABLE `tournament` ADD `tie_breaks` '
+                        "TEXT NOT NULL DEFAULT '[]'"
+                    )
+                    event = Event(self._get_stored_event())
+                    for stored_tournament in self.load_stored_tournaments():
+                        tournament = Tournament(event, stored_tournament)
+                        if not tournament.file_exists:
+                            break
+                        tie_breaks = []
+                        with PapiDatabase(tournament.file) as papi_database:
+                            rounds = papi_database.read_rounds()
+                            for papi_tie_break in papi_database.read_tie_breaks():
+                                if tie_break := papi_tie_break.to_tie_break(rounds):
+                                    tie_breaks.append(tie_break)
+                        stored_tournament.tie_breaks = tie_breaks
+                        self.update_stored_tournament(stored_tournament)
+                    self.set_version(target_version)
+                    self.commit()
+                    logger.debug(
+                        'Database %s has been upgraded to version %s.',
+                        self.file.name,
+                        target_version,
+                    )
                 case _:
                     break
         if self.version == target_version:
@@ -1695,6 +1726,7 @@ class EventDatabase(SQLiteDatabase):
             # needed to open event databases when version < 2.4.11 before checking the version
             last_ffe_rules_upload=row.get('last_ffe_rules_upload', 0.0),
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
+            tie_breaks=cls._load_tie_breaks_from_database_field(row['tie_breaks']),
         )
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
@@ -1740,6 +1772,7 @@ class EventDatabase(SQLiteDatabase):
             'first_board_number',
             'paired_bye_points',
             'max_byes',
+            'tie_breaks',
             'last_rounds_no_byes',
             'last_update',
             'last_result_update',
@@ -1770,6 +1803,7 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.first_board_number,
             stored_tournament.paired_bye_points,
             stored_tournament.max_byes,
+            self._dump_to_json_database_tie_breaks(stored_tournament.tie_breaks),
             stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,
@@ -1888,6 +1922,33 @@ class EventDatabase(SQLiteDatabase):
                 tournament_id,
             ),
         )
+
+    @classmethod
+    def _load_tie_breaks_from_database_field(cls, tie_breaks_field: str) -> list[TieBreak]:
+        """load tie breaks from the database field"""
+        return [
+            TieBreak(
+                TieBreakType(tie_break_dict['type']),
+                {
+                    TieBreakOption(option): value
+                    for option, value in tie_break_dict['options'].items()
+                }
+            ) for tie_break_dict in
+            cls.load_json_from_database_field(tie_breaks_field, [])
+        ]
+
+    @classmethod
+    def _dump_to_json_database_tie_breaks(
+            cls, tie_breaks: list[TieBreak]
+    ) -> str | None:
+        """Serializes the tie breaks into JSON. Returns a serialization
+        with format [{'type': str, 'options': {str: value}}]."""
+        return cls.dump_to_json_database_field([
+            {
+                'type': tie_break.type,
+                'options': tie_break.options,
+            } for tie_break in tie_breaks
+        ])
 
     """
     ---------------------------------------------------------------------------------
