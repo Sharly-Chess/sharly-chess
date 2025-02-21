@@ -998,6 +998,50 @@ msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Torneo {tournament_uniq_id} ({numbers_str})"
 
 #: src/data/tie_break.py
+msgid "None"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz cut bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Median Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Progressive scores"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of wins"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Kashdan"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Koya"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
 msgid "Cut"
 msgstr ""
 
@@ -1030,23 +1074,15 @@ msgid "Exclude players"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Number of Wins"
+msgid "Number of games won"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Number of Games Won"
+msgid "Games played with black"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Number of Games Played with Black"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Number of Games Won with Black"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Progressive Scores"
+msgid "Games won with black"
 msgstr ""
 
 #: src/data/tie_break.py
@@ -1054,11 +1090,7 @@ msgid "Rounds one Elected to Play"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Buchholz"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Average of Opponents Buchholz"
+msgid "Average of opponents Buchholz"
 msgstr ""
 
 #: src/data/tie_break.py
@@ -1066,39 +1098,31 @@ msgid "Fore Buchholz"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Sum of Buchholz"
-msgstr ""
-
-#: src/data/tie_break.py
 msgid "Sonneborn-Berger"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Koya System"
+msgid "Average rating of opponents"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Average Rating of Opponents"
+msgid "Tournament performance rating"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Tournament Performance Rating"
+msgid "Average performance rating of opponents"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Average Performance Rating of Opponents"
+msgid "Perfect tournament performance"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Perfect Tournament Performance"
+msgid "Average perfect performance of opponents"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Average Perfect Performance of Opponents"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Direct Encounter"
+msgid "Direct encounter"
 msgstr ""
 
 #: src/data/timer.py
@@ -5735,6 +5759,15 @@ msgstr "Ultimi giri senza byes:"
 #, ai_translation, python-format
 msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
 msgstr "Il numero degli ultimi round per i quali un giocatore non può ottenere byes (se non impostato, default a %(default)d)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Tie-Breaks"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "Tie-Break %(index)d:"
+msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation

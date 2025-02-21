@@ -12,6 +12,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from data.tie_break import PapiTieBreak, TieBreak
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
@@ -133,6 +134,7 @@ class TournamentAdminController(AbstractEventAdminController):
         paired_bye_points: float | None = None
         max_byes: int | None = None
         last_rounds_no_byes: int | None = None
+        tie_breaks: list[TieBreak] | None = None
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
@@ -196,6 +198,25 @@ class TournamentAdminController(AbstractEventAdminController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
+
+        if action == 'update':
+            tournament = web_context.admin_tournament
+            if (
+                tournament.stored_tournament.path == path
+                and tournament.stored_tournament.filename == filename
+                and tournament.file_exists
+            ):
+                tournament.update_tie_breaks(
+                    tuple([
+                        PapiTieBreak(
+                            WebContext.form_data_to_int(
+                                data, f'tie_break_{index}'
+                            )
+                        ) for index in range(1, 4)
+                    ])
+                )
+                tie_breaks = tournament.tie_breaks
+
         return StoredTournament(
             id=web_context.admin_tournament.id
             if action
@@ -226,6 +247,7 @@ class TournamentAdminController(AbstractEventAdminController):
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
             check_in_open=check_in_open,
+            tie_breaks=tie_breaks,
             errors=errors,
         )
 
@@ -298,6 +320,9 @@ class TournamentAdminController(AbstractEventAdminController):
                     paired_bye_points: float | None = None
                     max_byes: int | None = None
                     last_rounds_no_byes: int | None = None
+                    tie_break_1: PapiTieBreak | None = None
+                    tie_break_2: PapiTieBreak | None = None
+                    tie_break_3: PapiTieBreak | None = None
                     match action:
                         case 'update' | 'clone':
                             path = web_context.admin_tournament.stored_tournament.path
@@ -337,6 +362,10 @@ class TournamentAdminController(AbstractEventAdminController):
                                 web_context.admin_tournament.stored_tournament.ffe_id
                             )
                             ffe_password = web_context.admin_tournament.stored_tournament.ffe_password
+                            if web_context.admin_tournament.file_exists:
+                                (
+                                    tie_break_1, tie_break_2, tie_break_3
+                                ) = web_context.admin_tournament.papi_tie_breaks
                         case 'clone' | 'create' | 'delete':
                             pass
                         case _:
@@ -383,6 +412,9 @@ class TournamentAdminController(AbstractEventAdminController):
                         'last_rounds_no_byes': WebContext.value_to_form_data(last_rounds_no_byes),
                         'ffe_id': WebContext.value_to_form_data(ffe_id),
                         'ffe_password': WebContext.value_to_form_data(ffe_password),
+                        'tie_break_1': WebContext.value_to_form_data(tie_break_1),
+                        'tie_break_2': WebContext.value_to_form_data(tie_break_2),
+                        'tie_break_3': WebContext.value_to_form_data(tie_break_3),
                     }
                     stored_tournament: StoredTournament = (
                         cls._admin_validate_tournament_update_data(
@@ -397,6 +429,11 @@ class TournamentAdminController(AbstractEventAdminController):
                         admin_event.record_illegal_moves
                     ),
                     'paired_bye_points_options': cls._get_paired_bye_points_options(),
+                    'tie_break_options': cls._get_tie_break_options(),
+                    'edit_tie_breaks': (
+                        action == 'update' and
+                        web_context.admin_tournament.file_exists
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,

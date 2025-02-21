@@ -35,6 +35,7 @@ class TournamentInfo(NamedTuple):
     rating: TournamentRating
     rating_limit1: int
     rating_limit2: int
+    tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
     location: str
     start_date: str
     end_date: str
@@ -57,6 +58,10 @@ class PapiDatabase(AccessDatabase):
         self._execute(query, (name,))
         return self._fetchval()
 
+    def _update_var(self, name: str, value: str):
+        query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
+        self._execute(query, (value, name))
+
     def read_info(self) -> TournamentInfo:
         """Reads the database and returns basic information about the
         tournament."""
@@ -69,6 +74,11 @@ class PapiDatabase(AccessDatabase):
         )
         rating_limit1: int = int(self._read_var('EloBase1'))
         rating_limit2: int = int(self._read_var('EloBase2'))
+        tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak] = (
+            PapiTieBreak.from_papi_value(self._read_var('Dep1')),
+            PapiTieBreak.from_papi_value(self._read_var('Dep2')),
+            PapiTieBreak.from_papi_value(self._read_var('Dep3')),
+        )
         location: str = self._read_var('Lieu')
         start_date: str = self._read_var('DateDebut')
         end_date: str = self._read_var('DateFin')
@@ -79,20 +89,12 @@ class PapiDatabase(AccessDatabase):
             rating,
             rating_limit1,
             rating_limit2,
+            tie_breaks,
             location,
             start_date,
             end_date,
             arbiter,
         )
-
-    def read_tie_breaks(self) -> list[PapiTieBreak]:
-        return [
-            PapiTieBreak.from_papi_value(self._read_var(key))
-            for key in ('Dep1', 'Dep2', 'Dep3')
-        ]
-
-    def read_rounds(self) -> int:
-        return int(self._read_var('NbrRondes'))
 
     def read_player_dict(
         self, player_papi_id: int
@@ -205,6 +207,12 @@ class PapiDatabase(AccessDatabase):
             f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
             (pairing.color_papi_value, opponent_id, result, player.ref_id),
         )
+
+    def update_tie_breaks(
+        self, tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
+    ):
+        for index, key in enumerate(('Dep1', 'Dep2', 'Dep3')):
+            self._update_var(key, tie_breaks[index].to_papi_value)
 
     def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.

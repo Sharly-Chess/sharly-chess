@@ -15,7 +15,7 @@ from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.pairing import Pairing
-from data.tie_break import TieBreak
+from data.tie_break import PapiTieBreak, TieBreak
 from data.util import TrfType, performance_bonus, round_fide
 
 if TYPE_CHECKING:
@@ -107,6 +107,9 @@ class Tournament:
         self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
+        self._papi_tie_breaks: tuple[
+            PapiTieBreak, PapiTieBreak, PapiTieBreak
+        ] | None = None
         self._papi_read = False
 
     @property
@@ -306,10 +309,6 @@ class Tournament:
         return self.stored_tournament.last_chessevent_download_md5
 
     @property
-    def tie_breaks(self) -> list[TieBreak]:
-        return self.stored_tournament.tie_breaks
-
-    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
@@ -365,6 +364,13 @@ class Tournament:
     def arbiter(self) -> str:
         self.read_papi()
         return self._arbiter
+
+    @property
+    def papi_tie_breaks(
+        self
+    ) -> tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]:
+        self.read_papi()
+        return self._papi_tie_breaks
 
     @property
     def players_by_id(self) -> dict[int, Player]:
@@ -534,6 +540,14 @@ class Tournament:
             case _:
                 return False
 
+    @property
+    def tie_breaks(self) -> list[TieBreak]:
+        tie_breaks: list[TieBreak] = []
+        for papi_tie_break in self.papi_tie_breaks:
+            if tie_break := papi_tie_break.to_tie_break(self.rounds):
+                tie_breaks.append(tie_break)
+        return tie_breaks
+
     def to_trf(
         self,
         trf_type: TrfType,
@@ -634,6 +648,7 @@ class Tournament:
                     self._rating,
                     self._rating_limit1,
                     self._rating_limit2,
+                    self._papi_tie_breaks,
                     self._location,
                     self._start_date,
                     self._end_date,
@@ -648,6 +663,7 @@ class Tournament:
             self._current_round = 0
             self._rating_limit1 = None
             self._rating_limit2 = None
+            self._papi_tie_breaks = (PapiTieBreak.NONE,) * 3
             self._location = ''
             self._start_date = ''
             self._end_date = ''
@@ -1181,6 +1197,15 @@ class Tournament:
                         player, round_nb, player.pairings[round_nb]
                     )
             papi_database.commit()
+
+    def update_tie_breaks(
+        self, papi_tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
+    ):
+        """Update the tie breaks in the papi database"""
+        with PapiDatabase(self.file, write=True) as papi_database:
+            papi_database.update_tie_breaks(papi_tie_breaks)
+            papi_database.commit()
+        self._papi_tie_breaks = papi_tie_breaks
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players

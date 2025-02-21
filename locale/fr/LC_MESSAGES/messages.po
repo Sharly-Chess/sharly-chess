@@ -805,6 +805,50 @@ msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
 
 #: src/data/tie_break.py
+msgid "None"
+msgstr "Aucun"
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr "Buchholz"
+
+#: src/data/tie_break.py
+msgid "Buchholz cut bottom"
+msgstr "Buchholz tronqué"
+
+#: src/data/tie_break.py
+msgid "Median Buchholz"
+msgstr "Buchholz médian"
+
+#: src/data/tie_break.py
+msgid "Progressive scores"
+msgstr "Cumulatif"
+
+#: src/data/tie_break.py
+msgid "Performance"
+msgstr "Performance"
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr "Somme des Buchholz"
+
+#: src/data/tie_break.py
+msgid "Number of wins"
+msgstr "Nombre de victiores"
+
+#: src/data/tie_break.py
+msgid "Kashdan"
+msgstr "Kashdan"
+
+#: src/data/tie_break.py
+msgid "Koya"
+msgstr "Koya"
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr "Sonnenborn-Berger"
+
+#: src/data/tie_break.py
 msgid "Cut"
 msgstr ""
 
@@ -837,35 +881,23 @@ msgid "Exclude players"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Number of Wins"
-msgstr "Nombre de victoires"
-
-#: src/data/tie_break.py
-msgid "Number of Games Won"
+msgid "Number of games won"
 msgstr "Nombre de parties gagnées"
 
 #: src/data/tie_break.py
-msgid "Number of Games Played with Black"
+msgid "Games played with black"
 msgstr "Nombre de parties jouées avec les noirs"
 
 #: src/data/tie_break.py
-msgid "Number of Games Won with Black"
+msgid "Games won with black"
 msgstr "Nombre de parties gagnées avec les noirs"
-
-#: src/data/tie_break.py
-msgid "Progressive Scores"
-msgstr "Cumulatif"
 
 #: src/data/tie_break.py
 msgid "Rounds one Elected to Play"
 msgstr "Rondes jouées"
 
 #: src/data/tie_break.py
-msgid "Buchholz"
-msgstr "Buchholz"
-
-#: src/data/tie_break.py
-msgid "Average of Opponents Buchholz"
+msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
 
 #: src/data/tie_break.py
@@ -873,39 +905,31 @@ msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
 #: src/data/tie_break.py
-msgid "Sum of Buchholz"
-msgstr "Somme des Buchholz"
-
-#: src/data/tie_break.py
 msgid "Sonneborn-Berger"
 msgstr "Sonneborn-Berger"
 
 #: src/data/tie_break.py
-msgid "Koya System"
-msgstr "Koya"
-
-#: src/data/tie_break.py
-msgid "Average Rating of Opponents"
+msgid "Average rating of opponents"
 msgstr "Moyenne ELO des adversaires"
 
 #: src/data/tie_break.py
-msgid "Tournament Performance Rating"
+msgid "Tournament performance rating"
 msgstr "Performance ELO"
 
 #: src/data/tie_break.py
-msgid "Average Performance Rating of Opponents"
+msgid "Average performance rating of opponents"
 msgstr "Moyenne des performances ELO des adversaires"
 
 #: src/data/tie_break.py
-msgid "Perfect Tournament Performance"
+msgid "Perfect tournament performance"
 msgstr "Performance ELO parfaite"
 
 #: src/data/tie_break.py
-msgid "Average Perfect Performance of Opponents"
+msgid "Average perfect performance of opponents"
 msgstr "Moyenne des performances ELO parfaites des adversaires"
 
 #: src/data/tie_break.py
-msgid "Direct Encounter"
+msgid "Direct encounter"
 msgstr "Confrontation directe"
 
 #: src/data/timer.py
@@ -4748,6 +4772,15 @@ msgstr "Dernières rondes sans bye :"
 #, python-format
 msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
 msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye (si non défini, %(default)d par défaut)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Tie-Breaks"
+msgstr "Départages"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "Tie-Break %(index)d:"
+msgstr "Départage %(index)d:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"

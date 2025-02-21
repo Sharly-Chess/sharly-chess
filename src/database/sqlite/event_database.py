@@ -18,9 +18,8 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
-from data.tie_break import TieBreak, TieBreakType, TieBreakOption, PapiTieBreak
+from data.tie_break import TieBreak, TieBreakType, TieBreakOption
 from data.util import Result as UtilResult
-from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 from database.store import (
     StoredTournament,
@@ -1282,26 +1281,10 @@ class EventDatabase(SQLiteDatabase):
                     )
                 case '2.4.22':
                     target_version = Version('2.4.23')
-                    from data.event import Event
-                    from data.tournament import Tournament
-
                     self._execute(
                         'ALTER TABLE `tournament` ADD `tie_breaks` '
                         "TEXT NOT NULL DEFAULT '[]'"
                     )
-                    event = Event(self._get_stored_event())
-                    for stored_tournament in self.load_stored_tournaments():
-                        tournament = Tournament(event, stored_tournament)
-                        if not tournament.file_exists:
-                            break
-                        tie_breaks = []
-                        with PapiDatabase(tournament.file) as papi_database:
-                            rounds = papi_database.read_rounds()
-                            for papi_tie_break in papi_database.read_tie_breaks():
-                                if tie_break := papi_tie_break.to_tie_break(rounds):
-                                    tie_breaks.append(tie_break)
-                        stored_tournament.tie_breaks = tie_breaks
-                        self.update_stored_tournament(stored_tournament)
                     self.set_version(target_version)
                     self.commit()
                     logger.debug(

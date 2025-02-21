@@ -147,6 +147,7 @@ class ClubTuple(LeagueTuple):
     def __str__(self) -> str:
         return f'{self.federation}-{self.league}-{self.club}'
 
+
 class TournamentPlayer:
     """A class representing a player in a tournament"""
     def __init__(
@@ -179,17 +180,17 @@ class TournamentPlayer:
             for round_index, pairing in self.pairings.items()
             if round_index < max_round
         )
-    
+
     def points_after(self, max_round: int) -> float:
         return sum(
             pairing.result.point_value
             for round_index, pairing in self.pairings.items()
             if round_index <= max_round
         )
-    
+
     def total_points(self) -> float:
         return sum(pairing.result.point_value for pairing in self.pairings.values())
-    
+
     @property
     def estimation(self):
         return self._estimation or 0
@@ -297,7 +298,7 @@ class Player(TournamentPlayer):
             self._estimation = self.ratings[self.tournament.rating]
         else:
             self._estimation = value
-    
+
     @property
     def estimated(self) -> bool:
         return self.rating_types[self.tournament.rating] == PlayerRatingType.ESTIMATED

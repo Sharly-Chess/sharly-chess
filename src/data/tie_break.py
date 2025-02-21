@@ -18,14 +18,42 @@ class PapiTieBreak(IntEnum):
     NONE = 0
     BUCHHOLZ = 1
     BUCHHOLZ_CUT_BOTTOM = 2
-    BUCHHOLZ_CUT_TOP_BOTTOM = 3
-    CUMULATIVE = 4
+    MEDIAN_BUCHHOLZ = 3
+    PROGRESSIVE = 4
     PERFORMANCE = 5
     BUCHHOLZ_SUM = 6
     WINS = 7
     KASHDAN = 8
     KOYA = 9
     SONNENBORN_BERGER = 10
+
+    @property
+    def name(self) -> str:
+        match self:
+            case PapiTieBreak.NONE:
+                return _('None')
+            case PapiTieBreak.BUCHHOLZ:
+                return _('Buchholz')
+            case PapiTieBreak.BUCHHOLZ_CUT_BOTTOM:
+                return _('Buchholz cut bottom')
+            case PapiTieBreak.MEDIAN_BUCHHOLZ:
+                return _('Median Buchholz')
+            case PapiTieBreak.PROGRESSIVE:
+                return _('Progressive scores')
+            case PapiTieBreak.PERFORMANCE:
+                return _('Performance')
+            case PapiTieBreak.BUCHHOLZ_SUM:
+                return _('Sum of Buchholz')
+            case PapiTieBreak.WINS:
+                return _('Number of wins')
+            case PapiTieBreak.KASHDAN:
+                return _('Kashdan')
+            case PapiTieBreak.KOYA:
+                return _('Koya')
+            case PapiTieBreak.SONNENBORN_BERGER:
+                return _('Sonnenborn-Berger')
+            case _:
+                raise ValueError(f'Unknown tie break: {self}')
 
     @classmethod
     def from_papi_value(cls, value) -> Self:
@@ -37,9 +65,9 @@ class PapiTieBreak(IntEnum):
             case 'Brésilien':
                 return cls.BUCHHOLZ_CUT_BOTTOM
             case 'Harkness':
-                return cls.BUCHHOLZ_CUT_TOP_BOTTOM
+                return cls.MEDIAN_BUCHHOLZ
             case 'Cumulatif':
-                return cls.CUMULATIVE
+                return cls.PROGRESSIVE
             case 'Performance':
                 return cls.PERFORMANCE
             case 'SommeDesBuchholz':
@@ -64,9 +92,9 @@ class PapiTieBreak(IntEnum):
                 return 'Solkoff'
             case PapiTieBreak.BUCHHOLZ_CUT_BOTTOM:
                 return 'Brésilien'
-            case PapiTieBreak.BUCHHOLZ_CUT_TOP_BOTTOM:
+            case PapiTieBreak.MEDIAN_BUCHHOLZ:
                 return 'Harkness'
-            case PapiTieBreak.CUMULATIVE:
+            case PapiTieBreak.PROGRESSIVE:
                 return 'Cumulatif'
             case PapiTieBreak.PERFORMANCE:
                 return 'Performance'
@@ -102,7 +130,7 @@ class PapiTieBreak(IntEnum):
                         TieBreakOption.PAPI_LEGACY: True,
                     }
                 )
-            case PapiTieBreak.BUCHHOLZ_CUT_TOP_BOTTOM:
+            case PapiTieBreak.MEDIAN_BUCHHOLZ:
                 buchholz_cut = self._papi_buchholz_cut(tournament_rounds)
                 return TieBreak(
                     TieBreakType.BUCHHOLZ,
@@ -131,7 +159,7 @@ class PapiTieBreak(IntEnum):
                 return TieBreak(TieBreakType.KOYA, {})
             case PapiTieBreak.SONNENBORN_BERGER:
                 return TieBreak(TieBreakType.SONNENBORN_BERGER, {})
-            case PapiTieBreak.CUMULATIVE:
+            case PapiTieBreak.PROGRESSIVE:
                 return TieBreak(TieBreakType.PROGRESSIVE_SCORES, {})
             case PapiTieBreak.KASHDAN:
                 # TODO implement Kashdan tie break
@@ -154,9 +182,9 @@ class PapiTieBreak(IntEnum):
                     return cls.BUCHHOLZ
                 elif TieBreakOption.CUT_TOP not in tie_break.options.keys():
                     return cls.BUCHHOLZ_CUT_BOTTOM
-                return cls.BUCHHOLZ_CUT_TOP_BOTTOM
+                return cls.MEDIAN_BUCHHOLZ
             case TieBreakType.PROGRESSIVE_SCORES:
-                return cls.CUMULATIVE
+                return cls.PROGRESSIVE
             case TieBreakType.TOURNAMENT_PERFORMANCE_RATING:
                 return cls.PERFORMANCE
             case TieBreakType.SUM_OF_BUCHHOLZ:
@@ -255,21 +283,21 @@ class TieBreakType(StrEnum):
     def name(self) -> str:
         match self:
             case TieBreakType.WINS:
-                return _('Number of Wins')
+                return _('Number of wins')
             case TieBreakType.GAMES_WON:
-                return _('Number of Games Won')
+                return _('Number of games won')
             case TieBreakType.GAMES_PLAYED_WITH_BLACK:
-                return _('Number of Games Played with Black')
+                return _('Games played with black')
             case TieBreakType.GAMES_WON_WITH_BLACK:
-                return _('Number of Games Won with Black')
+                return _('Games won with black')
             case TieBreakType.PROGRESSIVE_SCORES:
-                return _('Progressive Scores')
+                return _('Progressive scores')
             case TieBreakType.ROUNDS_ELECTED_TO_PLAY:
                 return _('Rounds one Elected to Play')
             case TieBreakType.BUCHHOLZ:
                 return _('Buchholz')
             case TieBreakType.AVERAGE_OF_BUCHHOLZ:
-                return _('Average of Opponents Buchholz')
+                return _('Average of opponents Buchholz')
             case TieBreakType.FORE_BUCHHOLZ:
                 return _('Fore Buchholz')
             case TieBreakType.SUM_OF_BUCHHOLZ:
@@ -277,19 +305,19 @@ class TieBreakType(StrEnum):
             case TieBreakType.SONNENBORN_BERGER:
                 return _('Sonneborn-Berger')
             case TieBreakType.KOYA:
-                return _('Koya System')
+                return _('Koya')
             case TieBreakType.AVERAGE_RATING_OPPONENTS:
-                return _('Average Rating of Opponents')
+                return _('Average rating of opponents')
             case TieBreakType.TOURNAMENT_PERFORMANCE_RATING:
-                return _('Tournament Performance Rating')
+                return _('Tournament performance rating')
             case TieBreakType.AVERAGE_PERFORMANCE_RATING_OPPONENTS:
-                return _('Average Performance Rating of Opponents')
+                return _('Average performance rating of opponents')
             case TieBreakType.PERFECT_TOURNAMENT_PERFORMANCE:
-                return _('Perfect Tournament Performance')
+                return _('Perfect tournament performance')
             case TieBreakType.AVERAGE_PERFECT_PERFORMANCE:
-                return _('Average Perfect Performance of Opponents')
+                return _('Average perfect performance of opponents')
             case TieBreakType.DIRECT_ENCOUNTER:
-                return _('Direct Encounter')
+                return _('Direct encounter')
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
@@ -382,18 +410,8 @@ class TieBreakType(StrEnum):
     @property
     def options(self) -> list[TieBreakOption]:
         match self:
-            case TieBreakType.WINS:
-                return []
-            case TieBreakType.GAMES_WON:
-                return []
-            case TieBreakType.GAMES_PLAYED_WITH_BLACK:
-                return []
-            case TieBreakType.GAMES_WON_WITH_BLACK:
-                return []
             case TieBreakType.PROGRESSIVE_SCORES:
                 return [TieBreakOption.CUT]
-            case TieBreakType.ROUNDS_ELECTED_TO_PLAY:
-                return []
             case TieBreakType.BUCHHOLZ:
                 return [
                     TieBreakOption.CUT_TOP,
@@ -428,19 +446,13 @@ class TieBreakType(StrEnum):
                 ]
             case TieBreakType.TOURNAMENT_PERFORMANCE_RATING:
                 return [TieBreakOption.PAPI_LEGACY]
-            case TieBreakType.AVERAGE_PERFORMANCE_RATING_OPPONENTS:
-                return []
-            case TieBreakType.PERFECT_TOURNAMENT_PERFORMANCE:
-                return []
-            case TieBreakType.AVERAGE_PERFECT_PERFORMANCE:
-                return []
             case TieBreakType.DIRECT_ENCOUNTER:
                 return [
                     TieBreakOption.EXCLUDE_IDS,
                     TieBreakOption.PLAYED_MODIFIER,
                 ]
             case _:
-                raise ValueError(f'Unknown tie break: {self}')
+                return []
 
 
 @dataclass
