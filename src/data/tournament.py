@@ -495,8 +495,8 @@ class Tournament:
         if self.finished:
             return None
         if self.playing:
-            return self.current_round
-        return self.current_round + 1
+            return self.current_round - 1
+        return self.current_round
 
     @property
     def started(self) -> bool:

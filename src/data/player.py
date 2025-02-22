@@ -490,7 +490,7 @@ class Player(TournamentPlayer):
     ) -> tuple:
         points = (
             self.total_points() if max_round is None
-            else self.points_before(max_round)
+            else self.points_after(max_round)
         )
         rank = (-points,)
         for tie_break in tournament.tie_breaks:
