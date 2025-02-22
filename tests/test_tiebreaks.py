@@ -976,7 +976,30 @@ class SwissTieBreaks(unittest.TestCase):
             self.tournament.players_by_id[13],
             self.tournament
         ) == 1908 # NOTE(Amaras): should be 1909
-    
+
+    def test_kashdan(self):
+        assert {
+            player.id: individual.kashdan(player, self.tournament)
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 16,
+            4: 12,
+            3: 14,
+            1: 14,
+            16: 15,
+            6: 10,
+            11: 8,
+            8: 12,
+            5: 12,
+            14: 9,
+            15: 11,
+            12: 1,
+            13: 9,
+            7: 9,
+            9: 2,
+            10: 8,
+        }
+
     def test_direct_encounter(self):
         assert {
             i: individual.direct_encounter(

@@ -155,15 +155,14 @@ class PapiTieBreak(IntEnum):
                 )
             case PapiTieBreak.WINS:
                 return TieBreak(TieBreakType.WINS, {})
+            case PapiTieBreak.KASHDAN:
+                return TieBreak(TieBreakType.KASHDAN, {})
             case PapiTieBreak.KOYA:
                 return TieBreak(TieBreakType.KOYA, {})
             case PapiTieBreak.SONNENBORN_BERGER:
                 return TieBreak(TieBreakType.SONNENBORN_BERGER, {})
             case PapiTieBreak.PROGRESSIVE:
                 return TieBreak(TieBreakType.PROGRESSIVE_SCORES, {})
-            case PapiTieBreak.KASHDAN:
-                # TODO implement Kashdan tie break
-                return None
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
@@ -191,6 +190,8 @@ class PapiTieBreak(IntEnum):
                 return cls.BUCHHOLZ_SUM
             case TieBreakType.WINS:
                 return cls.WINS
+            case TieBreakType.KASHDAN:
+                return cls.KASHDAN
             case TieBreakType.KOYA:
                 return cls.KOYA
             case TieBreakType.SONNENBORN_BERGER:
@@ -271,6 +272,7 @@ class TieBreakType(StrEnum):
     FORE_BUCHHOLZ = 'FORE_BUCHHOLZ'
     SUM_OF_BUCHHOLZ = 'SUM_OF_BUCHHOLZ'
     SONNENBORN_BERGER = 'SONNENBORN_BERGER'
+    KASHDAN = 'KASHDAN'
     KOYA = 'KOYA'
     AVERAGE_RATING_OPPONENTS = 'AVERAGE_RATING_OPPONENTS'
     TOURNAMENT_PERFORMANCE_RATING = 'TOURNAMENT_PERFORMANCE_RATING'
@@ -304,6 +306,8 @@ class TieBreakType(StrEnum):
                 return _('Sum of Buchholz')
             case TieBreakType.SONNENBORN_BERGER:
                 return _('Sonneborn-Berger')
+            case TieBreakType.KASHDAN:
+                return _('Kashdan')
             case TieBreakType.KOYA:
                 return _('Koya')
             case TieBreakType.AVERAGE_RATING_OPPONENTS:
@@ -348,6 +352,8 @@ class TieBreakType(StrEnum):
                 return individual.sum_of_buchholz
             case TieBreakType.SONNENBORN_BERGER:
                 return individual.sonneborn_berger
+            case TieBreakType.KASHDAN:
+                return individual.kashdan
             case TieBreakType.KOYA:
                 return individual.koya
             case TieBreakType.AVERAGE_RATING_OPPONENTS:
@@ -390,6 +396,8 @@ class TieBreakType(StrEnum):
                 return 'SOB'
             case TieBreakType.SONNENBORN_BERGER:
                 return 'SB'
+            case TieBreakType.KASHDAN:
+                return 'KA'
             case TieBreakType.KOYA:
                 return 'KS'
             case TieBreakType.AVERAGE_RATING_OPPONENTS:

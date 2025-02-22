@@ -538,7 +538,7 @@ def koya(
     the number of points achieved against all participants
     who have scored at 50% of the maximum possible
     score before *max_round* (if *limit* is not set).
-    See FIDE Hanbook C.07.9.2.
+    See FIDE Handbook C.07.9.2.
     This is only used in Round-Robin tournaments, but is still
     defined for Swiss tournaments.
     If *max_round* is None, will compute the score for the whole
@@ -564,6 +564,36 @@ def koya(
             score += pairing.result.point_value
     return score
 
+def kashdan(
+    player: Player,
+    _tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+) -> float:
+    """Computes the Kashdan score for the *player* before *max_round*.
+    Awards 4 tiebreak points for a win, 2 for a draw, 1 for a loss,
+    and 0 for an unplayed game. See USCF Handbook section 34E7.
+    If *max_round* is None, will compute the score for the whole
+    tournament so far.
+    """
+    if max_round is None:
+        max_round = max(player.pairings) + 1
+
+    pairings: list[Pairing] = [
+        pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index < max_round
+    ]
+    score = 0
+    for pairing in pairings:
+        if pairing.gain:
+            score += 4
+        if pairing.draw:
+            score += 2
+        if pairing.loss:
+            score += 1
+    return score
 
 def average_rating_opponents(
     player: Player,
