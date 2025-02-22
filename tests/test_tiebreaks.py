@@ -1000,6 +1000,31 @@ class SwissTieBreaks(unittest.TestCase):
             10: 8,
         }
 
+    def test_kashdan_legacy(self):
+        assert {
+            player.id: individual.kashdan(
+                player, self.tournament, papi_legacy=True
+            )
+            for player in self.tournament.players_by_id.values()
+        } == {
+            2: 16,
+            4: 14,
+            3: 14,
+            1: 14,
+            16: 15,
+            6: 14,
+            11: 12,
+            8: 12,
+            5: 12,
+            14: 11,
+            15: 11,
+            12: 11,
+            13: 9,
+            7: 9,
+            9: 9,
+            10: 8,
+        }
+
     def test_direct_encounter(self):
         assert {
             i: individual.direct_encounter(

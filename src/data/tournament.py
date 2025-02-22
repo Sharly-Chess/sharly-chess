@@ -434,7 +434,9 @@ class Tournament:
     def players_by_rank(self) -> dict[int, Player]:
         ranked_players = sorted(
             self.players_by_id.values(),
-            key=lambda player: player.rank_sort_key(self, self.current_round),
+            key=lambda player: player.rank_sort_key(
+                self, self.max_ranking_round
+            ),
         )
         return {
             rank: player for rank, player in
@@ -485,6 +487,16 @@ class Tournament:
     def current_round(self) -> int | None:
         self.read_papi()
         return self._current_round
+
+    @property
+    def max_ranking_round(self) -> int | None:
+        if not self.started:
+            return 0
+        if self.finished:
+            return None
+        if self.playing:
+            return self.current_round
+        return self.current_round + 1
 
     @property
     def started(self) -> bool:

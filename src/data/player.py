@@ -488,7 +488,11 @@ class Player(TournamentPlayer):
     def rank_sort_key(
             self, tournament: 'Tournament', max_round: int | None = None
     ) -> tuple:
-        rank = (-self.points_before(max_round),)
+        points = (
+            self.total_points() if max_round is None
+            else self.points_before(max_round)
+        )
+        rank = (-points,)
         for tie_break in tournament.tie_breaks:
             rank += (-tie_break.player_value(self, tournament, max_round),)
         return rank + self.starting_rank_sort_key

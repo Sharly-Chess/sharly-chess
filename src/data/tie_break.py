@@ -445,6 +445,8 @@ class TieBreakType(StrEnum):
                     TieBreakOption.CUT,
                     TieBreakOption.PLAYED_MODIFIER,
                 ]
+            case TieBreakType.KASHDAN:
+                return [TieBreakOption.PAPI_LEGACY]
             case TieBreakType.KOYA:
                 return [TieBreakOption.LIMIT]
             case TieBreakType.AVERAGE_RATING_OPPONENTS:

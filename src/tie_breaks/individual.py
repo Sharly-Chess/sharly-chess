@@ -570,13 +570,14 @@ def kashdan(
     /,
     *,
     max_round: int | None = None,
+    papi_legacy: bool = False,
 ) -> float:
     """Computes the Kashdan score for the *player* before *max_round*.
     Awards 4 tiebreak points for a win, 2 for a draw, 1 for a loss,
     and 0 for an unplayed game. See USCF Handbook section 34E7.
     If *max_round* is None, will compute the score for the whole
     tournament so far.
-    """
+    If *papi_legacy* is True, will use the backwards compatible computation."""
     if max_round is None:
         max_round = max(player.pairings) + 1
 
@@ -587,13 +588,22 @@ def kashdan(
     ]
     score = 0
     for pairing in pairings:
-        if pairing.gain:
-            score += 4
-        if pairing.draw:
-            score += 2
-        if pairing.loss:
-            score += 1
+        if papi_legacy:
+            if pairing.full_point_value:
+                score += 4
+            elif pairing.half_point_value:
+                score += 2
+            elif pairing.no_point_value:
+                score += 1
+        else:
+            if pairing.gain:
+                score += 4
+            elif pairing.draw:
+                score += 2
+            elif pairing.loss:
+                score += 1
     return score
+
 
 def average_rating_opponents(
     player: Player,
