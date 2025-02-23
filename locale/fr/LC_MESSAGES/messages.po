@@ -1252,8 +1252,8 @@ msgstr "Aucun résultat à mettre à jour sur le site web FFE (à jour)."
 #: src/ffe/action_selector.py
 msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
 msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
-msgstr[0] "{recent_updates} tournoi a été mis à jour depuis moins de {ffe_upload_delay} secondes ago, en attente."
-msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_upload_delay} secondes ago, en attente."
+msgstr[0] "{recent_updates} tournoi a été mis à jour depuis moins de {ffe_upload_delay} secondes, en attente."
+msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_upload_delay} secondes, en attente."
 
 #: src/ffe/action_selector.py
 msgid "End of upload (Ctrl-C)"
