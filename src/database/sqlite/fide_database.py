@@ -122,8 +122,6 @@ class FideDatabase(SQLiteDatabase):
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
         print_interactive_info(_('Storing data...'))
-        tree = ElementTree.parse(local_xml_file)
-        root = tree.getroot()
         # if the file already exists, save it to restore it on error.
         save: Path | None = None
         if self.file.exists():
@@ -136,41 +134,54 @@ class FideDatabase(SQLiteDatabase):
             ) as f:
                 self._create(f.read())
             fields: dict[str, tuple[str, FunctionType | None]] = {
-                'fide_id': ('fideid', lambda s: int(s.strip())),
+                'fideid': ('fide_id', lambda s: int(s.strip())),
                 'name': ('name', None),
-                'federation': ('country', lambda s: s.upper()),
-                'gender': ('sex', lambda s: PlayerGender.from_fide_value(s)),
+                'country': ('federation', lambda s: s.upper()),
+                'sex': ('gender', lambda s: PlayerGender.from_fide_value(s)),
                 # exception for 1001710 Vreeken, Corry
-                'fide_title': (
-                    'title',
+                'title': (
+                    'fide_title',
                     lambda s: PlayerTitle.from_fide_value('' if s == 'WH' else s),
                 ),
-                'standard_rating': ('rating', int),
+                'rating': ('standard_rating', int),
                 'rapid_rating': ('rapid_rating', int),
                 'blitz_rating': ('blitz_rating', int),
-                'year_of_birth': ('birthday', lambda s: int(s) if s else 0),
+                'birthday': ('year_of_birth', lambda s: int(s) if s else 0),
             }
             players_number: int = 0
             self.write = True
+            start = time()
             with self:
-                for player_item in root.findall('./player'):
-                    data: dict[str, Any] = {}
-                    for field_name, (field_xml_tag, field_function) in fields.items():
-                        data[field_name] = player_item.find(field_xml_tag).text or ''
+                for event, elem in ElementTree.iterparse(local_xml_file, events=("start", "end")):
+                    if event == 'start' and elem.tag == 'player':
+                        data: dict[str, Any] = {}
+                        
+                    if event == 'end' and elem.tag == 'player':
+                        query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?"] * len(data))})'
+                        self._execute(query, tuple(data.values()))
+                        players_number += 1
+                        if players_number % 1000 == 0:
+                            print_interactive_info(_('{number} players written.').format(number=players_number), end='\r')
+                        
+                    elif event == 'end' and elem.tag in fields:
+                        (field_name, field_function) = fields[elem.tag]
+                        data[field_name] = elem.text or ''
                         if field_function:
                             data[field_name] = field_function(data[field_name])
-                    if ',' in data['name']:
-                        last_name, first_name = data['name'].split(',', maxsplit=1)
-                        data['last_name'] = last_name.strip()
-                        data['first_name'] = first_name.strip()
-                    else:
-                        data['last_name'] = data['name'].strip()
-                        data['first_name'] = None
-                    del data['name']
-                    query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?"] * len(data))})'
-                    self._execute(query, tuple(data.values()))
-                    players_number += 1
+                        
+                        if field_name == 'name':
+                            if ',' in data['name']:
+                                last_name, first_name = data['name'].split(',', maxsplit=1)
+                                data['last_name'] = last_name.strip()
+                                data['first_name'] = first_name.strip()
+                            else:
+                                data['last_name'] = data['name'].strip()
+                                data['first_name'] = None
+                            del data['name']
+                    
                 self.commit()
+            end = time()
+            print_interactive_info(f"{end - start} seconds")
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
                 _('Error while creating the database: {ex}.').format(ex=ex)
