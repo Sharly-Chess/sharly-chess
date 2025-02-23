@@ -45,7 +45,7 @@ class FfeAccessDatabase(AccessDatabase):
             'league': 'club.Ligue',  # str
             'city': 'club.Commune',  # str
         }
-        # the fields for players with a club
+        # the fields for players without a club
         no_club_fields: dict[str, tuple[str, types.FunctionType]] = common_fields | {
             'club': "''",  # str
             'league': "''",  # str
