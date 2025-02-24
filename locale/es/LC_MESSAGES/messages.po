@@ -1699,8 +1699,9 @@ msgid "Error while updating the FFE database."
 msgstr "Error al actualizar la base de datos FFE."
 
 #: src/web/server_engine.py
+#, ai_translation
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr ""
+msgstr "Instalación automática de emparejamientos BBP para desarrolladores con PAPI_WEB_EXPERIMENTAL=1."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -1847,12 +1848,14 @@ msgid "By default - {option}"
 msgstr "Por defecto - {option}"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Full point bye"
-msgstr ""
+msgstr "Adios punto completo"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Half point bye"
-msgstr ""
+msgstr "Medio punto adios"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -5554,43 +5557,49 @@ msgid "The maximum number of illegal moves that can be recorded per round for a 
 msgstr "El número máximo de movimientos ilegales que se pueden registrar por ronda para un jugador (de 0 a 3, por defecto %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Pairings"
-msgstr ""
+msgstr "Maridajes"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "First board number:"
-msgstr ""
+msgstr "Primer número del tablero:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "El número del primer tablero del torneo (si no se establece, por defecto a %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Paired bye points:"
-msgstr ""
+msgstr "Puntos de bye emparejados:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "The points scored by players who are paired bye."
-msgstr ""
+msgstr "Los puntos anotados por los jugadores que se emparejan adiós."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Max byes:"
-msgstr ""
+msgstr "Max Byes:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "El número máximo de byes que un jugador puede pretender (si no se establece, por defecto a %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Last rounds no byes:"
-msgstr ""
+msgstr "Últimas rondas sin despedidas:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "El número de las últimas rondas para las que un jugador no puede obtener ningún byes (si no se establece, por defecto a %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation

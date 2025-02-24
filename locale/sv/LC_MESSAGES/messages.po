@@ -1128,11 +1128,15 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
+# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
+# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
+# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1169,6 +1173,12 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
+# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
@@ -1179,6 +1189,9 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
+# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
+# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
+# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -1728,8 +1741,9 @@ msgid "Error while updating the FFE database."
 msgstr "Fel vid uppdatering av FFE- databasen."
 
 #: src/web/server_engine.py
+#, ai_translation
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr ""
+msgstr "Automatiskt installera BBP parningar för utvecklare med PAPI_WEB_EXPERIMENTAL=1."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -1876,12 +1890,14 @@ msgid "By default - {option}"
 msgstr "Som standard - {option}"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Full point bye"
-msgstr ""
+msgstr "Fullständigt led-efter-datum"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Half point bye"
-msgstr ""
+msgstr "Halva ledet efter"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -3230,6 +3246,8 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -3683,6 +3701,8 @@ msgstr "Starta webbläsaren vid serverstart"
 msgid "Yes"
 msgstr "Ja, det är jag."
 
+# Error: translation [Ej tillämpligt] is much too long compared to initial
+# [No]
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
 #: src/web/templates/admin/index/config_tab.html
@@ -5587,43 +5607,49 @@ msgid "The maximum number of illegal moves that can be recorded per round for a 
 msgstr "Det maximala antalet olagliga drag som kan spelas in per runda för en spelare (från 0 till 3, som standard %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Pairings"
-msgstr ""
+msgstr "Paraplyer"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "First board number:"
-msgstr ""
+msgstr "Första brädnumret:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Antalet första styrelse i turneringen (om inte satt, standard till %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Paired bye points:"
-msgstr ""
+msgstr "Parad bye punkter:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "The points scored by players who are paired bye."
-msgstr ""
+msgstr "Poängen som görs av spelare som är parade bye."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Max byes:"
-msgstr ""
+msgstr "Max hej då:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Maximalt antal byten en spelare kan låtsas att (om inte satt, standard till %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Last rounds no byes:"
-msgstr ""
+msgstr "Sista ronden inga avfarter:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Antalet sista rundor där en spelare inte kan få några avies (om inte satt, standard till %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
@@ -5825,6 +5851,8 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
+# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
+# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html

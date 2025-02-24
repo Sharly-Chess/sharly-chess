@@ -1718,8 +1718,9 @@ msgid "Error while updating the FFE database."
 msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FFE."
 
 #: src/web/server_engine.py
+#, ai_translation
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr ""
+msgstr "Αυτόματη εγκατάσταση BBP Ζευγάρια για προγραμματιστές με PAPI_WEB_EXPERIMENTAL=1."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -1866,12 +1867,14 @@ msgid "By default - {option}"
 msgstr "Από προεπιλογή - {option}"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Full point bye"
-msgstr ""
+msgstr "Πλήρες σημείο αντίο"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Half point bye"
-msgstr ""
+msgstr "Μισός πόντος αντίο"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -3023,6 +3026,8 @@ msgstr "Επεξεργασία"
 
 # Error: translation [ΚλώνοςCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Clone]
+# Error: translation [ΚλώνοςCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Clone]
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
 msgid "Clone"
@@ -3507,6 +3512,8 @@ msgstr "Ο χρονοδιακόπτης εμφανίζεται στις οθόν
 msgid "The number of columns used to display data."
 msgstr "Ο αριθμός των στηλών που χρησιμοποιούνται για την εμφάνιση δεδομένων."
 
+# Error: translation [ΜενούCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Menus]
 # Error: translation [ΜενούCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Menus]
 #: src/web/templates/admin/families/family_modal.html
@@ -4197,6 +4204,8 @@ msgstr "Αξιολογήσεις"
 
 # Error: translation [ΦΙΝΤΕConstellation name (optional, probably does not
 # need a translation)] is much too long compared to initial [FIDE]
+# Error: translation [ΦΙΝΤΕConstellation name (optional, probably does not
+# need a translation)] is much too long compared to initial [FIDE]
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "FIDE"
@@ -4317,6 +4326,9 @@ msgstr "Αριθμός τηλεφώνου:"
 msgid "The player's phone number."
 msgstr "Το τηλέφωνο του παίκτη."
 
+# Error: translation [Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ,
+# ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!] is much
+# too long compared to initial [Owed:]
 # Error: translation [Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ,
 # ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!] is much
 # too long compared to initial [Owed:]
@@ -5582,43 +5594,49 @@ msgid "The maximum number of illegal moves that can be recorded per round for a 
 msgstr "Ο μέγιστος αριθμός παράνομων κινήσεων που μπορούν να καταγραφούν ανά γύρο για έναν παίκτη (από 0 έως 3, από προεπιλογή %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Pairings"
-msgstr ""
+msgstr "Ζευγάρωμα"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "First board number:"
-msgstr ""
+msgstr "Πρώτος αριθμός σκάφους:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Ο αριθμός του πρώτου διοικητικού συμβουλίου του τουρνουά (εάν δεν έχει οριστεί, προεπιλογές στο %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Paired bye points:"
-msgstr ""
+msgstr "Ζευγαρωμένα αντίστροφα σημεία:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "The points scored by players who are paired bye."
-msgstr ""
+msgstr "Οι πόντοι σκοράρονται από παίκτες που είναι ζευγάρωμα αντίο."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Max byes:"
-msgstr ""
+msgstr "Max byes:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Ο μέγιστος αριθμός byes που μπορεί να προσποιηθεί ένας παίκτης (εάν δεν έχει οριστεί, προεπιλογές σε %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Last rounds no byes:"
-msgstr ""
+msgstr "Τελευταίοι γύροι χωρίς αντίο:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Ο αριθμός των τελευταίων γύρους για τους οποίους ένας παίκτης δεν μπορεί να πάρει byes (εάν δεν είναι set, προεπιλογές σε %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation

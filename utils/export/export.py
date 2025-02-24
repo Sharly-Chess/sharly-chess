@@ -67,6 +67,8 @@ def build_exe():
         '--hiddenimport=database',
         '--hiddenimport=ffe',
         '--hiddenimport=web',
+        '--hiddenimport=babel.numbers',
+        '--hiddenimport=pyexcel_io.writers',
         '--paths=.',
         '--icon=src/web/static/images/papi-web.ico',
         'src/papi_web.py',
@@ -75,6 +77,9 @@ def build_exe():
     web_dir = SOURCE_DIR / 'web'
     files += [file for file in (web_dir / 'templates').glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
+    files += [
+        file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()
+    ]
     files += [
         file for file in Path(static_dir, 'images').glob('**/*') if file.is_file()
     ]
@@ -120,6 +125,8 @@ def build_exe():
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [
         sql_dir / 'create_event.sql',
+        sql_dir / 'create_fide.sql',
+        sql_dir / 'create_ffe.sql',
     ]
     yml_dir: Path = SOURCE_DIR / 'database' / 'yml'
     files += list(yml_dir.glob('*.yml'))
@@ -128,6 +135,7 @@ def build_exe():
     files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
     files += [BbpPairings().executable_path]
     for file in files:
+        print(file)
         pyinstaller_params.append(
             f'--add-data={file};{file.parent.relative_to(BASE_DIR)}'
         )

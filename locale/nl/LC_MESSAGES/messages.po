@@ -1718,8 +1718,9 @@ msgid "Error while updating the FFE database."
 msgstr "Fout bij het bijwerken van de FFE-database."
 
 #: src/web/server_engine.py
+#, ai_translation
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr ""
+msgstr "Automatische installatie van BBP-paringen voor ontwikkelaars met PAPI_WEB_EXPERIMENTAL=1."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -1866,12 +1867,14 @@ msgid "By default - {option}"
 msgstr "Standaard - {option}"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Full point bye"
-msgstr ""
+msgstr "Volledig punt bye"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Half point bye"
-msgstr ""
+msgstr "Halve punt bye"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -5572,44 +5575,52 @@ msgstr "Een URL, of het pad naar het regelsbestand op de server, in PDF-formaat 
 msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
 msgstr "Het maximale aantal illegale bewegingen dat per ronde kan worden geregistreerd voor een speler (van 0 naar 3, standaard %(default)d)."
 
+# Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
+# long compared to initial [Pairings]
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Pairings"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "First board number:"
-msgstr ""
+msgstr "Eerste bordnummer:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Het nummer van het eerste bord van het toernooi (indien niet ingesteld, defaults to %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Paired bye points:"
-msgstr ""
+msgstr "Gepaarde bye punten:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "The points scored by players who are paired bye."
-msgstr ""
+msgstr "De punten gescoord door spelers die zijn gekoppeld bye."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Max byes:"
-msgstr ""
+msgstr "Max. byes:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Het maximum aantal byes dat een speler kan doen alsof (indien niet ingesteld, defaults to %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Last rounds no byes:"
-msgstr ""
+msgstr "Laatste rondes geen byes:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Het aantal laatste rondes waarvoor een speler geen byes kan krijgen (indien niet ingesteld, defaults to %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation

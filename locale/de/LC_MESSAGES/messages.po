@@ -1127,36 +1127,72 @@ msgstr "FFE-Genehmigung B (Freizeit)"
 msgid "FFE licence A (competition)"
 msgstr "FFE-Lizenz A (Wettbewerb)"
 
+# Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U10]
 #: src/data/util.py
 #, ai_translation
 msgid "U10"
 msgstr ""
 
+# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
+# is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
 msgstr ""
 
+# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
+# is much too long compared to initial [U14]
 #: src/data/util.py
 #, ai_translation
 msgid "U14"
 msgstr ""
 
+# Error: translation [U16
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
 msgstr ""
 
+# Error: translation [U18
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U18]
 #: src/data/util.py
 #, ai_translation
 msgid "U18"
 msgstr ""
 
+# Error: translation [U20
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U20]
 #: src/data/util.py
 #, ai_translation
 msgid "U20"
@@ -1573,6 +1609,7 @@ msgstr "Inhalt der URL [{url}] ist nicht gültig (input[id=[{id]] nicht gefunden
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisieren einer Sitzung auf [{url}]..."
 
+# Error: translation [In Ordnung.] is much too long compared to initial [OK]
 #: src/ffe/ffe_session.py
 #: src/web/templates/admin/players/filter_categories.html
 #: src/web/templates/admin/players/filter_check_ins.html
@@ -1718,8 +1755,9 @@ msgid "Error while updating the FFE database."
 msgstr "Fehler beim Aktualisieren der FFE-Datenbank."
 
 #: src/web/server_engine.py
+#, ai_translation
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr ""
+msgstr "Automatische Installation von BBP-Paarings für Entwickler mit PAPI_WEB_EXPERIMENTAL=1."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -1866,12 +1904,14 @@ msgid "By default - {option}"
 msgstr "Standardmäßig - {option}"
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Full point bye"
-msgstr ""
+msgstr "Auf Wiedersehen."
 
 #: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
 msgid "Half point bye"
-msgstr ""
+msgstr "Halber Schlussstrich"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -4311,6 +4351,8 @@ msgstr "Telefonnummer:"
 msgid "The player's phone number."
 msgstr "Die Telefonnummer des Spielers."
 
+# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
+# compared to initial [Owed:]
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "Owed:"
@@ -5573,43 +5615,49 @@ msgid "The maximum number of illegal moves that can be recorded per round for a 
 msgstr "Die maximale Anzahl illegaler Züge, die pro Runde für einen Spieler aufgezeichnet werden können (von 0 bis 3, standardmäßig %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Pairings"
-msgstr ""
+msgstr "Paarungen"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "First board number:"
-msgstr ""
+msgstr "Nummer des ersten Boards:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Die Nummer des ersten Brettes des Turniers (falls nicht festgelegt, Standardeinstellung %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Paired bye points:"
-msgstr ""
+msgstr "Gepaart bis zu den Punkten:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "The points scored by players who are paired bye."
-msgstr ""
+msgstr "Die Punkte, die von Spielern, die paarweise."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Max byes:"
-msgstr ""
+msgstr "Max byes:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Die maximale Anzahl von Byes, auf die ein Spieler vorgeben kann (falls nicht gesetzt, Standardeinstellung %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Last rounds no byes:"
-msgstr ""
+msgstr "Letzte Runde ohne Abschiede:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
-msgstr ""
+msgstr "Die Anzahl der letzten Runden, für die ein Spieler keine Byes erhalten kann (falls nicht gesetzt, Standardeinstellung %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
