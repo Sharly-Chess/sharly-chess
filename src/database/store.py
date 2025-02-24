@@ -57,6 +57,7 @@ class StoredTournament:
     paired_bye_points: float | None
     max_byes: int | None
     last_rounds_no_byes: int | None
+    tie_breaks: list[TieBreak] | None
     check_in_open: bool = field(default=False)
     last_update: float = field(default=0.0)
     last_result_update: float = field(default=0.0)
@@ -65,7 +66,6 @@ class StoredTournament:
     last_ffe_upload: float = field(default=0.0)
     last_ffe_rules_upload: float = field(default=0.0)
     last_chessevent_download_md5: str | None = field(default=None)
-    tie_breaks: list[TieBreak] = field(default_factory=list[TieBreak])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

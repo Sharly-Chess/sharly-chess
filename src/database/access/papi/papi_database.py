@@ -369,9 +369,15 @@ class PapiDatabase(AccessDatabase):
             'Arbitre': chessevent_tournament.arbiter,
             'DateDebut': self.timestamp_to_papi_date(chessevent_tournament.start),
             'DateFin': self.timestamp_to_papi_date(chessevent_tournament.end),
-            'Dep1': chessevent_tournament.tie_breaks[0].to_papi_value,
-            'Dep2': chessevent_tournament.tie_breaks[1].to_papi_value,
-            'Dep3': chessevent_tournament.tie_breaks[2].to_papi_value,
+            'Dep1': PapiTieBreak.from_tie_break(
+                chessevent_tournament.tie_breaks[0]
+            ).to_papi_value,
+            'Dep2': PapiTieBreak.from_tie_break(
+                chessevent_tournament.tie_breaks[1]
+            ).to_papi_value,
+            'Dep3': PapiTieBreak.from_tie_break(
+                chessevent_tournament.tie_breaks[2]
+            ).to_papi_value,
             'ClassElo': chessevent_tournament.rating.to_papi_value,
             'Homologation': str(chessevent_tournament.ffe_id),
         }

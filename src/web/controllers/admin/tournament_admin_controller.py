@@ -200,22 +200,14 @@ class TournamentAdminController(AbstractEventAdminController):
                 raise ValueError(f'action=[{action}]')
 
         if action == 'update':
-            tournament = web_context.admin_tournament
-            if (
-                tournament.stored_tournament.path == path
-                and tournament.stored_tournament.filename == filename
-                and tournament.file_exists
-            ):
-                tournament.update_tie_breaks(
-                    tuple([
-                        PapiTieBreak(
-                            WebContext.form_data_to_int(
-                                data, f'tie_break_{index}'
-                            )
-                        ) for index in range(1, 4)
-                    ])
-                )
-                tie_breaks = tournament.tie_breaks
+            tie_breaks = []
+            for index in range(1, 4):
+                if tie_break := PapiTieBreak(
+                    WebContext.form_data_to_int(
+                        data, f'tie_break_{index}', PapiTieBreak.NONE
+                    )
+                ).to_tie_break(web_context.admin_tournament.rounds):
+                    tie_breaks.append(tie_break)
 
         return StoredTournament(
             id=web_context.admin_tournament.id
@@ -430,10 +422,6 @@ class TournamentAdminController(AbstractEventAdminController):
                     ),
                     'paired_bye_points_options': cls._get_paired_bye_points_options(),
                     'tie_break_options': cls._get_tie_break_options(),
-                    'edit_tie_breaks': (
-                        action == 'update' and
-                        web_context.admin_tournament.file_exists
-                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -634,6 +622,9 @@ class TournamentAdminController(AbstractEventAdminController):
                     stored_tournament = event_database.update_stored_tournament(
                         stored_tournament
                     )
+                    Tournament(
+                        web_context.admin_event, stored_tournament
+                    ).update_papi_database_from_stored_tournament()
                     event_database.commit()
                     Message.success(
                         request,

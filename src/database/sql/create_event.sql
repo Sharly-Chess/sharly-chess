@@ -85,7 +85,7 @@ CREATE TABLE `tournament` (
     `last_ffe_upload` FLOAT NOT NULL DEFAULT 0.0,
     `last_ffe_rules_upload` FLOAT NOT NULL DEFAULT 0.0,
     `last_chessevent_download_md5` TEXT,
-    `tie_breaks` TEXT NOT NULL DEFAULT '[]',
+    `tie_breaks` TEXT,
     PRIMARY KEY(`id` AUTOINCREMENT),
     UNIQUE(`uniq_id`)
 );

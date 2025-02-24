@@ -910,11 +910,11 @@ msgstr "Sonneborn-Berger"
 
 #: src/data/tie_break.py
 msgid "Average rating of opponents"
-msgstr "Moyenne ELO des adversaires"
+msgstr "Classement ELO moyen des adversaires"
 
 #: src/data/tie_break.py
 msgid "Tournament performance rating"
-msgstr "Performance ELO"
+msgstr "Performance sur le tournoi"
 
 #: src/data/tie_break.py
 msgid "Average performance rating of opponents"
@@ -930,7 +930,7 @@ msgstr "Moyenne des performances ELO parfaites des adversaires"
 
 #: src/data/tie_break.py
 msgid "Direct encounter"
-msgstr "Confrontation directe"
+msgstr "Rencontre directe"
 
 #: src/data/timer.py
 msgid "Time is not defined."
@@ -4774,13 +4774,13 @@ msgid "The number of last rounds for which a player can get no byes (if not set,
 msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye (si non défini, %(default)d par défaut)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Tie-Breaks"
+msgid "Tie-breaks"
 msgstr "Départages"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, python-format
-msgid "Tie-Break %(index)d:"
-msgstr "Départage %(index)d:"
+msgid "Tie-break #%(index)d:"
+msgstr "Départage n°%(index)d :"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"

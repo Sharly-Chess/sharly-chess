@@ -285,15 +285,15 @@
                             ) }}
                         </div>
                     </div>
-                    {% if edit_tie_breaks %}
+                    {% if action == 'update' %}
                         <h4>
-                            {{ _('Tie-Breaks') }}
+                            {{ _('Tie-breaks') }}
                         </h4>
                         <div class="row">
                             <div class="col-12 col-md-4 mb-3">
                                 {{ select_input(
                                     name='tie_break_1',
-                                    label=_('Tie-Break %(index)d:', index=1),
+                                    label=_('Tie-break #%(index)d:', index=1),
                                     select_options=tie_break_options,
                                     help_text='',
                                     data=data, errors=errors
@@ -302,7 +302,7 @@
                             <div class="col-12 col-md-4 mb-3">
                                 {{ select_input(
                                     name='tie_break_2',
-                                    label=_('Tie-Break %(index)d:', index=2),
+                                    label=_('Tie-break #%(index)d:', index=2),
                                     select_options=tie_break_options,
                                     help_text='',
                                     data=data, errors=errors
@@ -311,7 +311,7 @@
                             <div class="col-12 col-md-4 mb-3">
                                 {{ select_input(
                                     name='tie_break_3',
-                                    label=_('Tie-Break %(index)d:', index=3),
+                                    label=_('Tie-break #%(index)d:', index=3),
                                     select_options=tie_break_options,
                                     help_text='',
                                     data=data, errors=errors

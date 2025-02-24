@@ -5751,12 +5751,12 @@ msgid "The number of last rounds for which a player can get no byes (if not set,
 msgstr "Het aantal laatste rondes waarvoor een speler geen byes kan krijgen (indien niet ingesteld, defaults to %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Tie-Breaks"
+msgid "Tie-breaks"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, python-format
-msgid "Tie-Break %(index)d:"
+msgid "Tie-break #%(index)d:"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html

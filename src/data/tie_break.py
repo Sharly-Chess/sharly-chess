@@ -156,7 +156,9 @@ class PapiTieBreak(IntEnum):
             case PapiTieBreak.WINS:
                 return TieBreak(TieBreakType.WINS, {})
             case PapiTieBreak.KASHDAN:
-                return TieBreak(TieBreakType.KASHDAN, {})
+                return TieBreak(
+                    TieBreakType.KASHDAN, {TieBreakOption.PAPI_LEGACY: True}
+                )
             case PapiTieBreak.KOYA:
                 return TieBreak(TieBreakType.KOYA, {})
             case PapiTieBreak.SONNENBORN_BERGER:

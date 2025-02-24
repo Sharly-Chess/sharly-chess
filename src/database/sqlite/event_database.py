@@ -1282,8 +1282,7 @@ class EventDatabase(SQLiteDatabase):
                 case '2.4.22':
                     target_version = Version('2.4.23')
                     self._execute(
-                        'ALTER TABLE `tournament` ADD `tie_breaks` '
-                        "TEXT NOT NULL DEFAULT '[]'"
+                        'ALTER TABLE `tournament` ADD `tie_breaks` TEXT'
                     )
                     self.set_version(target_version)
                     self.commit()
@@ -1907,8 +1906,13 @@ class EventDatabase(SQLiteDatabase):
         )
 
     @classmethod
-    def _load_tie_breaks_from_database_field(cls, tie_breaks_field: str) -> list[TieBreak]:
+    def _load_tie_breaks_from_database_field(
+        cls, tie_breaks_field: str
+    ) -> list[TieBreak] | None:
         """load tie breaks from the database field"""
+        tie_break_list = cls.load_json_from_database_field(tie_breaks_field)
+        if not tie_break_list:
+            return None
         return [
             TieBreak(
                 TieBreakType(tie_break_dict['type']),
@@ -1916,16 +1920,17 @@ class EventDatabase(SQLiteDatabase):
                     TieBreakOption(option): value
                     for option, value in tie_break_dict['options'].items()
                 }
-            ) for tie_break_dict in
-            cls.load_json_from_database_field(tie_breaks_field, [])
+            ) for tie_break_dict in tie_break_list
         ]
 
     @classmethod
     def _dump_to_json_database_tie_breaks(
-            cls, tie_breaks: list[TieBreak]
+            cls, tie_breaks: list[TieBreak] | None
     ) -> str | None:
         """Serializes the tie breaks into JSON. Returns a serialization
         with format [{'type': str, 'options': {str: value}}]."""
+        if tie_breaks is None:
+            return None
         return cls.dump_to_json_database_field([
             {
                 'type': tie_break.type,

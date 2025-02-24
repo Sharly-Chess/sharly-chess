@@ -309,6 +309,10 @@ class Tournament:
         return self.stored_tournament.last_chessevent_download_md5
 
     @property
+    def stored_tie_breaks(self) -> list[TieBreak] | None:
+        return self.stored_tournament.tie_breaks
+
+    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
@@ -1210,14 +1214,27 @@ class Tournament:
                     )
             papi_database.commit()
 
-    def update_tie_breaks(
-        self, papi_tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
-    ):
-        """Update the tie breaks in the papi database"""
-        with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.update_tie_breaks(papi_tie_breaks)
+    def update_papi_database_from_stored_tournament(self):
+        """Updates the papi database with all the
+        values in common with the stored tournament."""
+        if not self.file_exists:
+            return
+        with (PapiDatabase(self.file, write=True) as papi_database):
+            if tie_breaks := self._update_papi_tie_breaks():
+                papi_database.update_tie_breaks(tie_breaks)
             papi_database.commit()
-        self._papi_tie_breaks = papi_tie_breaks
+
+    def _update_papi_tie_breaks(
+        self
+    ) -> tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak] | None:
+        if self.stored_tie_breaks is None:
+            return None
+        tie_breaks: list[PapiTieBreak] = [
+            PapiTieBreak.from_tie_break(tie_break)
+            for tie_break in self.stored_tie_breaks[:3]
+        ] + [PapiTieBreak.NONE] * (3 - len(self.stored_tie_breaks))
+        self._papi_tie_breaks = (tie_breaks[0], tie_breaks[1], tie_breaks[2])
+        return self._papi_tie_breaks
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
