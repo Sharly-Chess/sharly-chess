@@ -150,7 +150,6 @@ class FideDatabase(SQLiteDatabase):
             }
             players_number: int = 0
             self.write = True
-            start = time()
             with self:
                 for event, elem in ElementTree.iterparse(local_xml_file, events=("start", "end")):
                     if event == 'start' and elem.tag == 'player':
@@ -180,8 +179,6 @@ class FideDatabase(SQLiteDatabase):
                             del data['name']
                     
                 self.commit()
-            end = time()
-            print_interactive_info(f"{end - start} seconds")
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
                 _('Error while creating the database: {ex}.').format(ex=ex)
