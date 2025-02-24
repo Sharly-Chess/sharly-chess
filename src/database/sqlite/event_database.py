@@ -7,12 +7,12 @@ from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError
-from typing import Self, Any
+from typing import Self, Any, TYPE_CHECKING
 
 import yaml
 from packaging.version import Version
 
-from common import format_timestamp_date, format_timestamp_time
+from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV
 from common.exception import PapiWebException
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
@@ -32,6 +32,9 @@ from database.store import (
     StoredScreenSet,
     StoredScreen,
 )
+
+if TYPE_CHECKING:
+    from data.loader import EventBackup
 
 logger: Logger = get_logger()
 
@@ -842,6 +845,16 @@ class EventDatabase(SQLiteDatabase):
             event_database.set_last_update()
             event_database.commit()
 
+    def create_backup(self) -> 'EventBackup':
+        """Creates a backup of the event database.
+        If a backup already exists for the same version, overwrite it. """
+        from data.loader import EventBackup
+
+        backup = EventBackup(self.uniq_id, self.version)
+        backup.file.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(self.file, backup.file)
+        return backup
+
     def __enter__(self) -> Self:
         if not self.exists():
             raise PapiWebException(
@@ -1288,6 +1301,8 @@ class EventDatabase(SQLiteDatabase):
                 f'Your Papi-web version ({papi_web_version}) can not open database {self.file.name} (version '
                 f'{self.version}), please upgrade.'
             )
+        if DEVEL_ENV:
+            self.create_backup()
         logger.info(f'Upgrading database {self.file.name}...')
         self._upgrade()
 
