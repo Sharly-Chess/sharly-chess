@@ -5,28 +5,30 @@
             last_illegal_move_updated
         {% endif %}"
     >
-        {% for _ in range([player.illegal_moves, tournament.record_illegal_moves]|min) %}
-            <span class="illegal-move-flag-wrapper">
-                <i
-                    class="
-                        {% if board.result_str %}bi-file-fill{% else %}bi-file-excel-fill{% endif %}
-                        illegal-move-flag
-                        {% if not board.result_str %}delete{% endif %}"
-                    hx-target="body"
-                    hx-delete="{{ url_for('user-delete-illegal-move', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
-                    hx-indicator="#please-wait"
-                ></i>
-            </span>
-        {% endfor %}
-        {% if not board.result_str and player.illegal_moves < tournament.record_illegal_moves %}
-            <span class="illegal-move-flag-wrapper">
-                <i
-                    class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ player.id }}"
-                    hx-target="body"
-                    hx-put="{{ url_for('user-add-illegal-move', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
-                    hx-indicator="#please-wait"
-                ></i>
-            </span>
-        {% endif %}
+        {% if player %}
+            {% for _ in range([player.illegal_moves, tournament.record_illegal_moves]|min) %}
+                <span class="illegal-move-flag-wrapper">
+                    <i
+                        class="
+                            {% if board.result_str %}bi-file-fill{% else %}bi-file-excel-fill{% endif %}
+                            illegal-move-flag
+                            {% if not board.result_str %}delete{% endif %}"
+                        hx-target="body"
+                        hx-delete="{{ url_for('user-delete-illegal-move', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
+                        hx-indicator="#please-wait"
+                    ></i>
+                </span>
+            {% endfor %}
+            {% if not board.result_str and player.illegal_moves < tournament.record_illegal_moves %}
+                <span class="illegal-move-flag-wrapper">
+                    <i
+                        class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ player.id }}"
+                        hx-target="body"
+                        hx-put="{{ url_for('user-add-illegal-move', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
+                        hx-indicator="#please-wait"
+                    ></i>
+                </span>
+            {% endif %}
+        {%endif %}
     </td>
 {% endif %}
