@@ -267,8 +267,8 @@ class ArchiveLoader:
 
 
 @dataclass
-class BackUp:
-    """This class implements back-ups (copies of event databases)."""
+class EventBackup:
+    """This class implements backups (copies of event databases)."""
 
     name: str
     version: Version
@@ -286,56 +286,54 @@ class BackUp:
         return self.file.exists()
 
     def restore(self):
-        """ Restores the back-up of the event. If another event
+        """ Restores the backup of the event. If another event
         with the same name exists, overwrites it """
         assert self.exists
         shutil.copy(self.file, EventDatabase.event_database_path(self.name))
 
 
-class BackUpLoader:
-    """This class helps loading back-ups (copied events). """
+class EventBackupLoader:
+    """This class helps loading backups (copied events). """
 
-    @staticmethod
-    def event_backups(event_id: str) -> list[BackUp]:
-        backups: list[BackUp] = []
+    def __init__(self):
+        PapiWebConfig.event_backup_base_path.mkdir(exist_ok=True, parents=True)
+
+    def event_backups(self, event_id: str) -> list[EventBackup]:
+        backups: list[EventBackup] = []
         for version_dir in PapiWebConfig.event_backup_base_path.iterdir():
             if not version_dir.is_dir():
                 continue
-            backup = BackUp(event_id, Version(version_dir.name))
+            backup = EventBackup(event_id, Version(version_dir.name))
             if backup.exists:
                 backups.append(backup)
         return backups
 
-    @staticmethod
-    def version_backups(version: Version) -> list[BackUp]:
+    def version_backups(self, version: Version) -> list[EventBackup]:
         version_dir: Path = (
             PapiWebConfig.event_backup_base_path / version.public
         )
         return [
-            BackUp(file.stem, version) for file in
+            EventBackup(file.stem, version) for file in
             version_dir.glob(f'*.{PapiWebConfig.event_backup_ext}')
         ]
 
-    @staticmethod
-    def versions(event_id: str | None = None) -> list[Version]:
+    def versions(self, event_id: str | None = None) -> list[Version]:
+        if not PapiWebConfig.event_backup_base_path.exists():
+            return []
         if event_id:
-            return [
-                backup.version for backup in
-                BackUpLoader.event_backups(event_id)
-            ]
+            return [backup.version for backup in self.event_backups(event_id)]
         return [
             Version(version_dir.name) for version_dir in
             PapiWebConfig.event_backup_base_path.iterdir()
             if version_dir.is_dir()
         ]
 
-    @staticmethod
     def latest_compatible_version(
-        event_id: str | None = None
+        self, event_id: str | None = None
     ) -> Version | None:
 
         compatible_versions = [
-            version for version in BackUpLoader.versions(event_id)
+            version for version in self.versions(event_id)
             if version <= PapiWebConfig.version
         ]
         if not compatible_versions:
