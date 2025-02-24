@@ -396,6 +396,12 @@ class PapiWebConfig(metaclass=Singleton):
     """ The extension of archives event databases. """
     event_archive_ext: str = 'arch'
 
+    """ The base path where event database backups are stored. """
+    event_backup_base_path: Path = event_path / 'backups'
+
+    """ The extension of backup event databases. """
+    event_backup_ext: str = 'backup'
+
     """ The extension of federation databases. """
     federation_database_ext: str = 'db'
 
