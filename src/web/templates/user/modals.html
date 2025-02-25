@@ -98,19 +98,22 @@
                     <div class="modal-footer row d-flex align-items-center justify-content-center">
                         {% if admin_auth and board.result_str %}
                             <button
-                                    hx-trigger="click"
-                                    class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                    hx-delete="{{ url_for('user-delete-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
+                                hx-trigger="click"
+                                class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                                hx-delete="{{ url_for('user-delete-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
                             >{{ _('CLEAR THE RESULT') }}</button>
                         {% endif %}
                         <button
                             type="button"
                             data-bs-dismiss="modal"
+                            hx-get="{{ url_for('close-modal') }}"
                             hx-trigger="click, keyup[key=='Escape'] from:body"
                             class="result-button btn-secondary col-3 ms-auto me-auto btn fs-4 p-3"
-                        >Annuler</button>
+                        >
+                            {{ _('Cancel') }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -139,10 +142,11 @@
                     <button
                         type="button"
                         data-bs-dismiss="modal"
+                        hx-get="{{ url_for('close-modal') }}"
                         hx-trigger="click, keyup[key=='Escape'] from:body"
                         class="result-button btn-secondary col-3 ms-auto me-auto btn fs-4 p-3"
                     >
-                        Annuler
+                        {{ _('Cancel') }}
                     </button>
                 </div>
             </div>

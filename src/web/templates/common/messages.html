@@ -11,6 +11,8 @@
             type="button"
             class="btn-close p-2"
             data-bs-dismiss="alert"
+            hx-get="{{ url_for('close-modal') }}"
+            hx-trigger="click, keyup[key=='Escape'] from:body"
             aria-label="_('Hide') }}"
         ></button>
         {{ message.text }}

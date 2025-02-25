@@ -115,9 +115,7 @@
             data-bs-backdrop="static"
             tabindex="-1"
         >
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content"></div>
-            </div>
+            {% include 'empty_modal.html' %}
         </div>
         {{ macros.tooltip_script() }}
         {{ macros.background_script(background_info) }}
