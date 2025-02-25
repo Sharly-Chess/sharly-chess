@@ -53,12 +53,15 @@
                 <div class="col col-6 text-end">
                     <button
                         type="button"
-                        data-bs-dismiss="modal"
-                        hx-get="{{ url_for('close-modal') }}"
-                        hx-trigger="click, keyup[key=='Escape'] from:body"
                         class="btn btn-secondary text-nowrap"
                         {% if admin_screen_set %}
                             disabled
+                        {% else %}
+                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+                            preload
+                            hx-target="body"
+                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                            hx-indicator="#please-wait"
                         {% endif %}
                     >
                         <i class="bi-x-circle-fill"></i>

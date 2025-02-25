@@ -1,12 +1,7 @@
 <div class="admin-screen-sets-modal-screen-set-div {% if not admin_screen_set and admin_screen.screen_sets_sorted_by_order|length > 1 %}cursor-grab{% endif %}">
     <input type='hidden' name='item' value='{{ screen_set.id }}'/>
     {% if admin_screen_set.id == screen_set.id %}
-        <form
-            hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
-            hx-target="body"
-            hx-trigger="end"
-            hx-indicator="#please-wait"
-        >
+        <form>
             <div class="admin-screen-set-div edit border border-secondary p-2 mb-1">
                 <h4>
                     {{ _('Properties') }}
@@ -82,7 +77,10 @@
 
                 <div class="mt-4 col-12 text-end">
                     <button
+                        type="button"
                         class="btn btn-sm btn-primary text-nowrap mb-1"
+                        hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
+                        hx-indicator="#please-wait"
                     >
                         <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Update') }}
