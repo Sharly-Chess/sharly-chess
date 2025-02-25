@@ -1,4 +1,7 @@
-import importlib
+from functools import cached_property
+from importlib import import_module
+from pkgutil import iter_modules
+import re
 from abc import abstractmethod
 from logging import Logger
 
@@ -6,6 +9,7 @@ from packaging.version import Version
 
 from common.exception import PapiWebException
 from common.logger import get_logger
+from database.migrations import events
 from database.sqlite.event_database import EventDatabase
 
 logger: Logger = get_logger()
@@ -19,25 +23,30 @@ class AbstractEventMigration(EventDatabase):
 
 class EventMigrationManager:
     FIRST_UPGRADABLE_VERSION: Version = Version('2.4.0')
-    MIGRATION_BASE_MODULE_PATH: list[str] = ['database', 'migrations', 'events']
-    MIGRATION_MODULES: dict[Version, str] = {
-        Version('2.4.2'): 'migration_001',
-        Version('2.4.4'): 'migration_002',
-        Version('2.4.5'): 'migration_003',
-        Version('2.4.8'): 'migration_004',
-        Version('2.4.12'): 'migration_005',
-        Version('2.4.13'): 'migration_006',
-        Version('2.4.16'): 'migration_007',
-        Version('2.4.20'): 'migration_008',
-        Version('2.4.21'): 'migration_009',
-        Version('2.4.22'): 'migration_010',
-    }
     MIGRATION_CLASS_NAME: str = 'EventMigration'
+
+    @property
+    def migration_modules(self) -> list[str]:
+        return [
+            f'{events.__name__}.{module}'
+            for module in self._migration_module_names
+        ]
+
+    @property
+    def _migration_module_names(self) -> list[str]:
+        return [module for _, module, _ in iter_modules(events.__path__)]
+
+    @cached_property
+    def _ordered_migration_versions(self) -> list[Version]:
+        return sorted([
+            self._module_name_to_version(module)
+            for module in self._migration_module_names
+        ])
 
     def migrate(self, event_database: EventDatabase, target_version: Version):
         if event_database.version < self.FIRST_UPGRADABLE_VERSION:
             logger.error(
-                'Database %s (%s) impossible to upgrade: version'
+                'Database %s (%s) impossible to upgrade: version '
                 'is prior to the first upgradable version (%s)',
                 event_database.file.name,
                 event_database.version,
@@ -46,7 +55,6 @@ class EventMigrationManager:
             return
         if event_database.version > target_version:
             raise NotImplementedError('Migrations rollback not implemented')
-
         while migration_version := self._next_migration_version(
             event_database.version, target_version
         ):
@@ -71,7 +79,7 @@ class EventMigrationManager:
     ) -> Version | None:
         return next(
             (
-                version for version in sorted(self.MIGRATION_MODULES.keys())
+                version for version in self._ordered_migration_versions
                 if current_version < version <= max_version
             ),
             None,
@@ -81,10 +89,22 @@ class EventMigrationManager:
         self, version: Version
     ) -> type[AbstractEventMigration]:
         return getattr(
-            importlib.import_module(
-                '.'.join(
-                    self.MIGRATION_BASE_MODULE_PATH + [self.MIGRATION_MODULES[version]]
-                ),
-            ),
+            import_module(self._version_to_module(version)),
             self.MIGRATION_CLASS_NAME,
         )
+
+    @staticmethod
+    def _version_to_module(version: Version) -> str:
+        return (
+            f'{events.__name__}.'
+            f'v{version.major}_{version.minor}_{version.micro}'
+        )
+
+    @staticmethod
+    def _module_name_to_version(module_name: str) -> Version:
+        if not re.match(r'^v\d+_\d+_\d+$', module_name):
+            raise ValueError(
+                f'Module name "{module_name}" does '
+                'not match pattern "v{int}_{int}_{int}"'
+            )
+        return Version(module_name[1:].replace('_', '.'))

@@ -7,6 +7,7 @@ from logging import Logger
 from PyInstaller.__main__ import run
 
 from common import BASE_DIR
+from database.sqlite.event_migration import EventMigrationManager
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import trusted_locales, untrusted_locales
 from common.papi_web_config import PapiWebConfig
@@ -73,6 +74,9 @@ def build_exe():
         '--icon=src/web/static/images/papi-web.ico',
         'src/papi_web.py',
     ]
+    for module in EventMigrationManager().migration_modules:
+        pyinstaller_params.append(f'--hiddenimport={module}')
+
     files: list[Path] = []
     web_dir = SOURCE_DIR / 'web'
     files += [file for file in (web_dir / 'templates').glob('**/*') if file.is_file()]
