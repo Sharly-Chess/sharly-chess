@@ -43,7 +43,7 @@
                        {{ _('Properties') }}
                     </h4>
                     <div class="row">
-                        <div class="col-12 col-md-8 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
@@ -52,7 +52,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-4 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {# can not use admin_macros.select_input() here because of dynamic-select #}
                             {% with id='federation', name='federation' %}
                                 <div>
@@ -61,35 +61,33 @@
                                             {{ _('Federation:') }}
                                         </label>
                                     </div>
-                                    <div class="input-group">
-                                        <select
-                                            name="{{ name }}"
-                                            class="form-control {% if name in errors or action == 'delete' %}is-invalid{% else %}is-valid{% endif %}"
-                                            {% if action == 'delete' %}
-                                                disabled
-                                            {% else %}
-                                                data-dynamic-select
-                                            {% endif %}
-                                        >
-                                            {% for federation_id, federation_name in federations.items() %}
-                                                <option
-                                                        value="{{ federation_id }}"
-                                                        {% if federation_id == data[name] %}selected{%endif %}
-                                                        data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
-                                                >
-                                                    {{ federation_id }} - {{ federation_name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                        <div id="{{ id }}-help" class="form-text">
-                                            {{ _('The federation that organizes the event.') }}
-                                        </div>
-                                        {% if name in errors %}
-                                            <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                                {{ errors[name] }}
-                                            </div>
+                                    <select
+                                        name="{{ name }}"
+                                        class="form-control {% if name in errors or action == 'delete' %}is-invalid{% else %}is-valid{% endif %}"
+                                        {% if action == 'delete' %}
+                                            disabled
+                                        {% else %}
+                                            data-dynamic-select
                                         {% endif %}
+                                    >
+                                        {% for federation_id, federation_name in federations.items() %}
+                                            <option
+                                                    value="{{ federation_id }}"
+                                                    {% if federation_id == data[name] %}selected{%endif %}
+                                                    data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
+                                            >
+                                                {{ federation_id }} - {{ federation_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div id="{{ id }}-help" class="form-text">
+                                        {{ _('The federation that organizes the event.') }}
                                     </div>
+                                    {% if name in errors %}
+                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                            {{ errors[name] }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                             {% endwith %}
                         </div>

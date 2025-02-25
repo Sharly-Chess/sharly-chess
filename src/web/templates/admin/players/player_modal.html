@@ -188,12 +188,12 @@
                             %}
                                 <label for="{{ id }}" class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
                                 <input
-                                        name="{{ name }}"
-                                        type="number" id="{{ id }}"
-                                        class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        value="{{ data[name] }}"
-                                        {% if action == 'delete' %}disabled{% endif %}
+                                    name="{{ name }}"
+                                    type="number" id="{{ id }}"
+                                    class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}"
+                                    {% if action == 'delete' %}disabled{% endif %}
                                 />
                                 <select
                                     name="{{ name2 }}"
@@ -252,37 +252,35 @@
                         {% with id='federation', name='federation' %}
                             <div>
                                 <label for="{{ id }}" class="mb-1 form-check-label d-block">{{ _('Federation:') }}</label>
-                                <div class="input-group">
-                                    <select
-                                        name="{{ name }}"
-                                        class="form-control {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                        {% if action == 'delete' %}
-                                            disabled
-                                        {% else %}
-                                            data-dynamic-select
-                                        {% endif %}
-                                    >
-                                        {% for federation_id, federation_name in federations.items() %}
-                                            <option
-                                                value="{{ federation_id }}"
-                                                {% if federation_id == data[name] %}selected{%endif %}
-                                                data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
-                                            >
-                                                {{ federation_id }} - {{ federation_name }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                    {% if action != 'delete' %}
-                                        <div id="{{ id }}-help" class="form-text">
-                                            {{ _('The player\'s federation.') }}
-                                        </div>
+                                <select
+                                    name="{{ name }}"
+                                    class="form-control {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                    {% if action == 'delete' %}
+                                        disabled
+                                    {% else %}
+                                        data-dynamic-select
                                     {% endif %}
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
+                                >
+                                    {% for federation_id, federation_name in federations.items() %}
+                                        <option
+                                            value="{{ federation_id }}"
+                                            {% if federation_id == data[name] %}selected{%endif %}
+                                            data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
+                                        >
+                                            {{ federation_id }} - {{ federation_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if action != 'delete' %}
+                                    <div id="{{ id }}-help" class="form-text">
+                                        {{ _('The player\'s federation.') }}
+                                    </div>
+                                {% endif %}
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
                             </div>
                         {% endwith %}
                     </div>
