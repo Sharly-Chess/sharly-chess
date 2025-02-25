@@ -205,7 +205,7 @@ def dummy_score(
             case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
                 return dummy, Result.LOSS
             case _:
-                return pairing.result
+                return dummy, pairing.result
 
 
 def buchholz(
@@ -756,10 +756,12 @@ def expected_score(player_rating: int, opponent_ratings: Iterable[int]) -> Decim
         win_chances(player_rating, opponent_rating)
         for opponent_rating in opponent_ratings
     ]
-    computed_score = sum(
-        chance[0] * Decimal(Result.GAIN.point_value) 
-        + chance[1] * Decimal(Result.LOSS.point_value)
-        for chance in chances
+    computed_score = Decimal(
+        sum(
+            chance[0] * Decimal(Result.GAIN.point_value)
+            + chance[1] * Decimal(Result.LOSS.point_value)
+            for chance in chances
+        )
     )
     return computed_score
 
@@ -798,7 +800,7 @@ def perfect_tournament_performance(
     if isclose(first_expected_score, actual_score, abs_tol=0.01):
         return round_fide(first_estimation)
     second_estimation = first_estimation * actual_score / first_expected_score
-    second_estimation = round_fide(second_estimation)
+    second_estimation = round_fide(float(second_estimation))
     second_expected_score = expected_score(second_estimation, ratings)
 
     if first_expected_score >= second_expected_score:
@@ -893,7 +895,7 @@ def direct_encounter(
     if exclude_ids is not None:
         tied_opponents = {
             opponent.id: opponent
-            for opponent in tied_opponents
+            for opponent in tied_opponents.values()
             if opponent.id not in exclude_ids
         }
     tied_pairings: dict[int, Pairing] = {
