@@ -288,11 +288,11 @@
                 {% endif %}
             </div>
             <div class="modal-footer d-block">
-                <div class="row">
-                    <div class="col col-6 text-start">
+                <div class="d-flex flex-wrap gap-4">
+                    <div class="d-flex gap-2 flex-grow-1">
                         <button
-                                type="submit"
-                                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                            type="submit"
+                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                         >
                             <i class="bi-floppy-fill pe-1"></i>
                             {% if action in ['create', 'clone', ] %}
@@ -307,9 +307,9 @@
                         </button>
                         {% if action in ['create', 'clone', ] %}
                             <button
-                                    type="submit"
-                                    name="add_screens"
-                                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                                type="submit"
+                                name="add_screens"
+                                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                             >
                                 <i class="bi-floppy-fill"></i>
                                 <i class="bi-plus-square-fill pe-1"></i>
@@ -317,14 +317,11 @@
                             </button>
                         {% endif %}
                     </div>
-                    <div class="col col-6 text-end">
+                    <div>
                         <button
-                                class="btn btn-secondary text-nowrap"
-                                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='tournaments') }}"
-                                preload
-                                hx-target="body"
-                                hx-trigger="click, keyup[key=='Escape'] from:body"
-                                hx-indicator="#please-wait"
+                            type="button"
+                            data-bs-dismiss="modal"
+                            class="btn btn-secondary text-nowrap"
                         >
                             <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
@@ -335,6 +332,3 @@
         </div>
     </form>
 </div>
-<script>
-    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
-</script>

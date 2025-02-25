@@ -42,9 +42,10 @@
                 <button
                     class="btn btn-primary text-nowrap ms-1"
                     hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                    preload
-                    hx-target="body"
+                    hx-target="#modal-wrapper"
                     hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
                     {% if not admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
                         disabled
                     {% endif %}
@@ -288,8 +289,10 @@
                                         <li
                                             class="dropdown-item btn text-start"
                                             hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                            hx-target="body"
+                                            hx-target="#modal-wrapper"
                                             hx-indicator="#please-wait"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-wrapper"
                                             hx-trigger="click, keyup[key=='Enter']"
                                             tabindex="0"
                                             {{ macros.tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
@@ -301,8 +304,10 @@
                                                 class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
                                                 hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                                 hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                                                hx-target="body"
+                                                hx-target="#modal-wrapper"
                                                 hx-indicator="#please-wait"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-wrapper"
                                                 hx-trigger="click, keyup[key=='Enter']"
                                                 tabindex="0"
                                                 {{ macros.tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}

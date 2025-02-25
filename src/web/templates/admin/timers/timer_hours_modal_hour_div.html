@@ -3,12 +3,10 @@
     {% if admin_timer_hour.id == timer_hour.id %}
         <form
             hx-patch="{{ url_for('admin-timer-hour-update', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-            hx-target="body"
-            hx-trigger="end"
             hx-indicator="#please-wait"
         >
             <div class="admin-timer-hour-div edit border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
-                <div class="d-flex p-2 gap-4">
+                <div class="d-flex p-2 gap-4 flex-column">
                     <div>
                         <div class="row">
                             <div class="col-12 col-md-8 mb-3">
@@ -60,22 +58,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex flex-column gap-1">
+                    <div class="d-flex gap-2 justify-content-end">
                         <button
-                                class="btn btn-sm btn-primary text-nowrap mb-1"
-                                hx-patch="{{ url_for('admin-timer-hour-update', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait">
+                            class="btn btn-sm btn-primary text-nowrap mb-1"
+                        >
                             <i class="bi-floppy-fill pe-1"></i>
                             {{ _('Update') }}
                         </button>
                         <button
-                                class="btn btn-sm btn-secondary text-nowrap mb-1"
-                                hx-get="{{ url_for('admin-timer-hours-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id) }}"
-                                preload
-                                hx-target="body"
-                                hx-trigger="click, keyup[key=='Escape'] from:body"
-                                hx-indicator="#please-wait">
+                            type="button"
+                            class="btn btn-sm btn-secondary text-nowrap mb-1"
+                            hx-get="{{ url_for('admin-timer-hours-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id) }}"
+                            preload
+                            hx-target="body"
+                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                            hx-indicator="#please-wait"
+                        >
                             <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
                         </button>

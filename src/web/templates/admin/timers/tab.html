@@ -21,9 +21,10 @@
         <button
             class="btn btn-primary text-nowrap"
             hx-get="{{ url_for('admin-timer-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-plus-square pe-1"></i>
             {{ _('Create a timer') }}

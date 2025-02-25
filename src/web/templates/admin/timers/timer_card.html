@@ -36,9 +36,10 @@
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for('admin-timer-modal', action='update', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
@@ -48,9 +49,10 @@
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for('admin-timer-hours-modal', action='update', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-collection-fill pe-1"></i>
             {{ _('Hours') }}
@@ -63,9 +65,10 @@
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for('admin-timer-modal', action='clone', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-copy"></i>
         </button>
@@ -74,9 +77,10 @@
         <button
             class="btn btn-sm btn-outline-danger"
             hx-get="{{ url_for('admin-timer-modal', action='delete', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-trash-fill"></i>
         </button>

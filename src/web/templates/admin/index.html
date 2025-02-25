@@ -54,11 +54,3 @@
         {% endwith %}
     {% endfor %}
 {% endblock admin_content %}
-
-{% block admin_modal %}
-    {% if modal == 'event' %}
-        {% include 'event/event_modal.html' %}
-    {% elif modal %}
-        {% include modal ~ '_modal_not_found.html' %}
-    {% endif %}
-{% endblock admin_modal %}

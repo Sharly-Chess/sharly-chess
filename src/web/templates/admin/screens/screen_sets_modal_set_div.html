@@ -2,16 +2,17 @@
     <input type='hidden' name='item' value='{{ screen_set.id }}'/>
     {% if admin_screen_set.id == screen_set.id %}
         <form
-                hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
-                hx-target="body"
-                hx-trigger="end"
-                hx-indicator="#please-wait">
-            <div class="admin-screen-set-div edit border border-secondary px-1 mb-1">
-                <h3>
+            hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
+            hx-target="body"
+            hx-trigger="end"
+            hx-indicator="#please-wait"
+        >
+            <div class="admin-screen-set-div edit border border-secondary p-2 mb-1">
+                <h4>
                     {{ _('Properties') }}
-                </h3>
+                </h4>
                 <div class="row">
-                    <div class="col-5">
+                    <div class="col-12 col-md-6 mb-2">
                         {{ admin_macros.select_input(
                             name='tournament_id',
                             label=_('Tournament:'),
@@ -20,7 +21,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-5">
+                    <div class="col-12 col-md-6 mb-2">
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('Name:'),
@@ -29,37 +30,15 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-2 text-end">
-                        <button
-                            class="btn btn-sm btn-primary text-nowrap mb-1"
-                            hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            <i class="bi-floppy-fill pe-1"></i>
-                            {{ _('Update') }}
-                        </button>
-                        <button
-                            class="btn btn-sm btn-secondary text-nowrap mb-1"
-                            hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-                            preload
-                            hx-target="body"
-                            hx-trigger="click, keyup[key=='Escape'] from:body"
-                            hx-indicator="#please-wait"
-                        >
-                            <i class="bi-x-circle-fill pe-1"></i>
-                            {{ _('Cancel') }}
-                        </button>
-                    </div>
                 </div>
                 {% if admin_screen.type in ['boards', 'input', 'players'] %}
-                    <h3>
+                    <h4 class="mt-4">
                         {% if admin_screen.type in ['boards', 'input'] %}
                             {{ _('Board selection (by number)') }}
                         {% else %}
                             {{ _('Player selection (by alphabetical order)') }}
                         {% endif %}
-                    </h3>
+                    </h4>
                     <div class="row">
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
                             {{ admin_macros.number_input(
@@ -100,15 +79,33 @@
                         {% endif %}
                     </div>
                 {% endif %}
+
+                <div class="mt-4 col-12 text-end">
+                    <button
+                        class="btn btn-sm btn-primary text-nowrap mb-1"
+                    >
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Update') }}
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-secondary text-nowrap mb-1"
+                        hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                        hx-indicator="#please-wait"
+                        hx-trigger="click, keyup[key=='Escape'] from:body"
+                    >
+                        <i class="bi-x-circle-fill pe-1"></i>
+                        {{ _('Cancel') }}
+                    </button>
+                </div>
             </div>
         </form>
     {% else %}
         <div class="admin-screen-set-div border border-secondary p-1 mb-1">
-            <div class="row">
-                <div class="col-10">
+            <div class="d-flex gap-4 px-2">
+                <div class="flex-grow-1">
                     <div>
                         <b>
-
                             {% if screen_set.tournament %}
                                 {{ _('Tournament: %(tournament_name)s', tournament_name=screen_set.tournament.name) }}
                             {% else %}
@@ -131,7 +128,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="col-2 text-nowrap text-end">
+                <div class="d-flex gap-2 align-items-center">
                     {% if not admin_screen_set %}
                         {% if admin_screen.screen_sets_sorted_by_order|length > 1 %}
                             <i class="bi-arrows-move"></i>
@@ -139,9 +136,10 @@
                         <button
                             class="btn btn-sm btn-primary text-nowrap"
                             hx-get="{{ url_for('admin-screen-sets-set-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                            preload
-                            hx-target="body"
+                            hx-target="#modal-wrapper"
                             hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
                         >
                             <i class="bi-pencil-fill"></i>
                         </button>

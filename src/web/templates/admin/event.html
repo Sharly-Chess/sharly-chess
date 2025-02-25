@@ -64,31 +64,3 @@
         {% endwith %}
     {% endfor %}
 {% endblock admin_content %}
-
-{% block admin_modal %}
-    {% if modal == 'event' %}
-        {% include 'event/event_modal.html' %}
-    {% elif modal == 'tournament' %}
-        {% include 'tournaments/tournament_modal.html' %}
-    {% elif modal == 'player' %}
-        {% include 'players/player_modal.html' %}
-    {% elif modal == 'screen' %}
-        {% include 'screens/screen_modal.html' %}
-    {% elif modal == 'screen_sets' %}
-        {% include 'screens/screen_sets_modal.html' %}
-    {% elif modal == 'family' %}
-        {% include 'families/family_modal.html' %}
-    {% elif modal == 'rotator' %}
-        {% include 'rotators/rotator_modal.html' %}
-    {% elif modal == 'timer' %}
-        {% include 'timers/timer_modal.html' %}
-    {% elif modal == 'timer_hours' %}
-        {% include 'timers/timer_hours_modal.html' %}
-    {% elif modal == 'chessevent' %}
-        {% include 'chessevents/chessevent_modal.html' %}
-    {% elif modal == 'close_check_in' %}
-        {% include 'players/close_check_in_modal.html' %}
-    {% elif modal %}
-        {% include modal ~ '_modal_not_found.html' %}
-    {% endif %}
-{% endblock admin_modal %}

@@ -86,9 +86,10 @@
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for('admin-rotator-modal', action='update', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
@@ -101,8 +102,10 @@
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for('admin-rotator-modal', action='clone', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-copy"></i>
         </button>
@@ -111,9 +114,10 @@
         <button
             class="btn btn-sm btn-outline-danger"
             hx-get="{{ url_for('admin-rotator-modal', action='delete', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-trash-fill"></i>
         </button>

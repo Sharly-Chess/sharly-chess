@@ -9,9 +9,10 @@
         {% endif %}"
     {% if screen.type == 'input' %}
         hx-get="{{ url_for('user-checkin-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
-        preload
-        hx-target="body"
+        hx-target="#modal-wrapper"
         hx-indicator="#please-wait"
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
     {% endif %}
 >
     <i

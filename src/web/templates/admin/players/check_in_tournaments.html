@@ -33,11 +33,15 @@
                                 {% if tournament.file_exists and not tournament.finished and not tournament.playing %}
                                     {% if tournament.check_in_open %}
                                         hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                        hx-target="#modal-wrapper"
+                                        hx-indicator="#please-wait"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-wrapper"
                                     {% else %}
                                         hx-patch="{{ url_for('admin-tournament-open-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
                                     {% endif %}
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
                                 {% else %}
                                     disabled
                                 {% endif %}

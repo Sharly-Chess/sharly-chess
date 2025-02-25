@@ -101,12 +101,9 @@
                     </div>
                     <div class="col col-6 text-end">
                         <button
-                                class="btn btn-secondary text-nowrap"
-                                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='timers') }}"
-                                preload
-                                hx-target="body"
-                                hx-trigger="click, keyup[key=='Escape'] from:body"
-                                hx-indicator="#please-wait"
+                            type="button"
+                            data-bs-dismiss="modal"
+                            class="btn btn-secondary text-nowrap"
                         >
                             <i class="bi-x-circle-fill"></i>
                                 {{ _('Cancel') }}
@@ -117,6 +114,3 @@
         </div>
     </form>
 </div>
-<script>
-    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
-</script>
