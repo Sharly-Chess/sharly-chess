@@ -446,8 +446,6 @@ class IndexController(AbstractController):
     )
     async def close_modal(
         self,
-        request: HTMXRequest,
-        locale: str | None,
     ) -> Template:
         return HTMXTemplate(
             template_name='common/empty_modal.html',
