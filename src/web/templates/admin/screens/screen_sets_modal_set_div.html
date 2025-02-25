@@ -136,6 +136,7 @@
                             hx-get="{{ url_for('admin-screen-sets-set-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="#modal-wrapper"
                             hx-indicator="#please-wait"
+                            preload
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                         >
@@ -146,6 +147,7 @@
                             hx-post="{{ url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
+                            preload
                         >
                             <i class="bi-copy"></i>
                         </button>
@@ -154,6 +156,7 @@
                             hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
+                            preload
                             {% if admin_screen.screen_sets_sorted_by_order|length <= 1 %}
                                 disabled
                             {% endif %}
