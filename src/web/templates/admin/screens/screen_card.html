@@ -1,11 +1,11 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ screen_visibility_icon(screen, 'pe-1') }}{{ screen.name }}
+    {{ macros.screen_visibility_icon(screen, 'pe-1') }}{{ screen.name }}
 {% endblock %}
 
 {% block card_title %}
-    <span class="pe-1">{{ screen_type_icon(screen.type, true) }}</span>{{ screen.uniq_id }}
+    <span class="pe-1">{{ macros.screen_type_icon(screen.type, true) }}</span>{{ screen.uniq_id }}
 {% endblock %}
 
 {% block card_text %}
@@ -13,7 +13,7 @@
         {% if admin_screens_show_details %}
             {% if screen.type in ['input', 'boards', 'players', 'results'] %}
                 <div>
-                    <span class="pe-1">{{ screen_type_icon(screen.type, true) }}</span>
+                    <span class="pe-1">{{ macros.screen_type_icon(screen.type, true) }}</span>
                     {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
                 </div>
                 <div>
@@ -149,7 +149,7 @@
 {% block card_buttons_left %}
     {% if not screen.family  %}
         <span
-            {{ tooltip_attributes('info', _('Edit the properties of the screen.'), 'top') }}
+            {{ macros.tooltip_attributes('info', _('Edit the properties of the screen.'), 'top') }}
         >
             <button
                 class="btn btn-sm btn-outline-primary"
@@ -165,7 +165,7 @@
     {% endif %}
     {% if not screen.family and screen.type in ['boards', 'input', 'players'] %}
         <span
-            {{ tooltip_attributes(
+            {{ macros.tooltip_attributes(
                 'info',
                 _('Edit the sets of boards displayed on the screen.')
                 if screen.type in ['boards', 'input'] else
@@ -193,7 +193,7 @@
 
 {% block card_buttons_right %}
     {% if not screen.family %}
-        <span {{ tooltip_attributes('info', 'Clone the screen.', 'top') }}>
+        <span {{ macros.tooltip_attributes('info', 'Clone the screen.', 'top') }}>
             <button
                 class="btn btn-sm btn-outline-primary"
                 hx-get="{{ url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
@@ -204,7 +204,7 @@
                 <i class="bi-copy"></i>
             </button>
         </span>
-        <span {{ tooltip_attributes('info', 'Delete the screen.', 'top') }}>
+        <span {{ macros.tooltip_attributes('info', 'Delete the screen.', 'top') }}>
             <button
                 class="btn btn-sm btn-outline-danger"
                 hx-get="{{ url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"

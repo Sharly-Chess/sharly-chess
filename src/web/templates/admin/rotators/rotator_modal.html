@@ -37,7 +37,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-4 mb-3">
-                            {{ switch_input(
+                            {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
                                 placeholder=_('Public rotator'),
@@ -46,7 +46,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-4 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
                                 placeholder=_('E.g.: my-rotator'),
@@ -55,7 +55,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-4 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='delay',
                                 label=_('Delay:'),
                                 placeholder=_('E.g.: %(seconds)d (seconds)', seconds=papi_web_config.default_rotator_delay),

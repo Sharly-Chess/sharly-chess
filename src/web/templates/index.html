@@ -31,7 +31,7 @@
                                         hx-trigger="click, keyup[key=='Enter']"
                                         tabindex="0"
                                     {% endif %}
-                                    {{ tooltip_attributes('warning' if l_info.experimental else 'info', l_info.name_and_warning, 'right') }}
+                                    {{ macros.tooltip_attributes('warning' if l_info.experimental else 'info', l_info.name_and_warning, 'right') }}
                                 >
                                     <img
                                         src="{{l_info.flag_url}}"
@@ -80,15 +80,15 @@
                     hx-target="body"
                     hx-indicator="#please-wait"
                     class="btn btn-outline-primary btn-lg p-4 w-100"
-                    {{ tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
+                    {{ macros.tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
                 >
                     {{ _('Events (public access)') }}
                 </button>
                 <div
                     {% if admin_auth %}
-                        {{ tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
+                        {{ macros.tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
                     {% else %}
-                        {{ tooltip_attributes('error', _('Access to the arbiter interface is not allowed from this client.'), 'right') }}
+                        {{ macros.tooltip_attributes('error', _('Access to the arbiter interface is not allowed from this client.'), 'right') }}
                     {% endif %}
                 >
                     <button

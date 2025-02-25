@@ -56,7 +56,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ switch_input(
+                            {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
                                 placeholder=_('Public family'),
@@ -65,7 +65,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
                                 placeholder=_('E.g.: %(family_type)s-family', family_type=family_type),
@@ -74,7 +74,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
                                 placeholder=_('E.g.: My screen family'),
@@ -83,7 +83,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ select_input(
+                            {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
                                 help_text=_('The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens).'),
@@ -102,7 +102,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if family_type in ['boards', 'input'] else _('First player:'),
                                 placeholder=_('E.g.: %(num)d', num=15),
@@ -115,7 +115,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if family_type in ['boards', 'input'] else _('Last player:'),
                                 placeholder=_('E.g.: %(num)d', num=40),
@@ -128,7 +128,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='parts',
                                 label=_('On a given number of screens:'),
                                 placeholder=
@@ -143,7 +143,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='number',
                                 label=_('On fixed size screens:'),
                                 placeholder=
@@ -164,7 +164,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ select_input(
+                            {{ admin_macros.select_input(
                                 name='timer_id',
                                 label=_('Timer:'),
                                 help_text=_('The timer displayed on the screens of the family.'),
@@ -173,7 +173,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='columns',
                                 label=_('Columns:'),
                                 placeholder=_('E.g.: %(num)d', num=2),
@@ -188,7 +188,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-xl-5 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='menu',
                                 label=_('Links displayed on the screen menu:'),
                                 placeholder=_('E.g.: @boards, @family, another-screen'),
@@ -197,7 +197,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 col-xl-3 mb-3">
-                            {{ switch_input(
+                            {{ admin_macros.switch_input(
                                 name='menu_link',
                                 label=_('Links to this screen:'),
                                 placeholder=_('Allow'),
@@ -206,7 +206,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 col-xl-4 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='menu_text',
                                 label=_('Menu link label:'),
                                 placeholder=_('E.g.: Boards %%f-%%l') if family_type in ['input', 'boards', ] else _('E.g.: Players %%f-%%l'),

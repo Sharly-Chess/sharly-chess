@@ -47,7 +47,7 @@
                                     '',
                             #}
                             <span class="dropdown">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='search_fide',
                                     label=_('FIDE database:'),
                                     help_text='',
@@ -74,7 +74,7 @@
                                         '',
                             #}
                             <span class="dropdown">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='search_ffe',
                                     label=_('FFE database:'),
                                     help_text='',
@@ -100,7 +100,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='last_name',
                             label=_('Name:'),
                             placeholder=_('E.g.: DOE'),
@@ -111,7 +111,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='first_name',
                             label=_('First name:'),
                             placeholder=_('E.g.: John'),
@@ -122,7 +122,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 col-lg-2 mb-3">
-                        {{ date_input(
+                        {{ admin_macros.date_input(
                             name='date_of_birth',
                             label=_('Date of birth:'),
                             help_text=_('The player\'s birth date.') if action != 'delete' else '',
@@ -132,7 +132,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 col-lg-2 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='gender',
                             label=_('Gender:'),
                             help_text=_('The player\'s gender.') if action != 'delete' else '',
@@ -149,7 +149,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-sm-8 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='tournament_id',
                             label=_('Tournament:'),
                             help_text=_('The player\'s tournament.') if action != 'delete' else '',
@@ -161,7 +161,7 @@
                     </div>
 
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='fixed',
                             label=_('Fixed board:'),
                             help_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
@@ -226,7 +226,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='fide_id',
                             label=_('FIDE ID:'),
                             help_text=_('The player\'s FIDE ID (do not change).') if action != 'delete' else '',
@@ -237,7 +237,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='title',
                             label=_('FIDE Title:'),
                             help_text=_('The player\'s FIDE title.') if action != 'delete' else '',
@@ -248,7 +248,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {# can not use select_input() here because of dynamic-select #}
+                        {# can not use admin_macros.select_input() here because of dynamic-select #}
                         {% with id='federation', name='federation' %}
                             <div>
                                 <label for="{{ id }}" class="mb-1 form-check-label d-block">{{ _('Federation:') }}</label>
@@ -293,7 +293,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='ffe_licence_number',
                             label=_('Licence number:'),
                             placeholder=_('E.g.: %(string)s', string='R08943'),
@@ -304,7 +304,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='ffe_licence',
                             label=_('Licence:'),
                             help_text=_('The player\'s licence.') if action != 'delete' else '',
@@ -315,7 +315,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='ffe_id',
                             label=_('FFE Uniq ID:'),
                             help_text=_('The player\'s Uniq ID for the French federation (do not change).') if action != 'delete' else '',
@@ -328,7 +328,7 @@
                 </div>
                 </div class="row">
                     <div class="col-12 col-md-6 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='league',
                             label=_('League:'),
                             help_text=_('The player\'s league.') if action != 'delete' else '',
@@ -339,7 +339,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='club',
                             label=_('Club:'),
                             placeholder=_('E.g.: My favourite club!'),
@@ -356,7 +356,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='mail',
                             label=_('Email:'),
                             placeholder=_('E.g.: john.doe@chess.com'),
@@ -367,7 +367,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='phone',
                             label=_('Phone number:'),
                             help_text=_('The player\'s phone number.') if action != 'delete' else '',
@@ -380,7 +380,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='owed',
                             label=_('Owed:'),
                             help_text=_('The price the player pays to register.') if action != 'delete' else '',
@@ -390,7 +390,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='paid',
                             label=_('Paid:'),
                             help_text=_('The price the player already paid.') if action != 'delete' else '',
@@ -400,7 +400,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-lg-6 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='comment',
                             label=_('Comment:'),
                             help_text=_('Any comment on the player (comments are visible only by the arbiters).') if action != 'delete' else '',

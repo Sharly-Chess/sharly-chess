@@ -2,13 +2,13 @@
 
 {% block card_header %}
     {% if admin_auth %}
-        {{ screen_visibility_icon(screen) }}
+        {{ macros.screen_visibility_icon(screen) }}
     {% endif %}
     {{ screen.name }}
 {% endblock %}
 
 {% block card_title %}
-    {{ screen_type_icon(screen.type, true) }}
+    {{ macros.screen_type_icon(screen.type, true) }}
     {{ screen.uniq_id }}
 {% endblock %}
 

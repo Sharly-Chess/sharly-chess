@@ -12,7 +12,7 @@
                 </h3>
                 <div class="row">
                     <div class="col-5">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='tournament_id',
                             label=_('Tournament:'),
                             help_text=_('The tournament of which you want to show the pairings, mandatory.'),
@@ -21,7 +21,7 @@
                         ) }}
                     </div>
                     <div class="col-5">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='name',
                             label=_('Name:'),
                             placeholder=_('E.g.: Boards %%f to %%l') if admin_screen.type in ['boards', 'input'] else _('E.g.: Players %%f to %%l'),
@@ -62,7 +62,7 @@
                     </h3>
                     <div class="row">
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if admin_screen.type in ['boards', 'input'] else _('First player:'),
                                 placeholder=_('E.g.: %(num)d', num=15),
@@ -75,7 +75,7 @@
                             ) }}
                         </div>
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if admin_screen.type in ['boards', 'input'] else _('Last player:'),
                                 placeholder=_('E.g.: %(num)d', num=40),
@@ -89,7 +89,7 @@
                         </div>
                         {% if admin_screen.type in ['boards', 'input'] %}
                             <div class="col-4">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='fixed_boards_str',
                                     label=_('Fixed boards:'),
                                     placeholder=_('E.g.: %(string)s', string='501, 502'),

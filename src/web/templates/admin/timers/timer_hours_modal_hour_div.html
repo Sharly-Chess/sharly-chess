@@ -12,7 +12,7 @@
                     <div>
                         <div class="row">
                             <div class="col-12 col-md-8 mb-3">
-                                {{ date_input(
+                                {{ admin_macros.date_input(
                                     name='date_str',
                                     label=_('Date:'),
                                     help_text=_('Mandatory for the first hour, optional for next hours.'),
@@ -20,7 +20,7 @@
                                 ) }}
                             </div>
                             <div class="col-12 col-md-4 mb-3">
-                                {{ time_input(
+                                {{ admin_macros.time_input(
                                     name='time_str',
                                     label=_('Hour:'),
                                     help_text=_('E.g.: Start of check-in'),
@@ -30,7 +30,7 @@
                                 ) }}
                             </div>
                             <div class="col-12 mb-3">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='uniq_id',
                                     label=_('Round number or text:'),
                                     placeholder=_('E.g.: Start of check-in'),
@@ -41,7 +41,7 @@
                         </div>
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='text_before',
                                     label=_('Text before the hour:'),
                                     placeholder=_('E.g.: Check-in started for %%s'),
@@ -50,7 +50,7 @@
                                 ) }}
                             </div>
                             <div class="col-12 col-md-6 mb-3">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='text_after',
                                     label=_('Text after the hour:'),
                                     placeholder=_('E.g.: Start of check-in in %%s'),

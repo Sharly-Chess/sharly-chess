@@ -31,7 +31,7 @@
                     <h4 class="text-danger">
                         {{ _('Warning: the deletion of an event is permanent!') }}
                     </h4>
-                    {{ text_input(
+                    {{ admin_macros.text_input(
                         name='uniq_id',
                         label=_('Enter the event ID to confirm its deletion:'),
                         placeholder=_('Enter here the event ID'),
@@ -44,7 +44,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-8 mb-3">
-                            {{ switch_input(
+                            {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
                                 placeholder=_('Public event'),
@@ -53,7 +53,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-4 mb-3">
-                            {# can not use select_input() here because of dynamic-select #}
+                            {# can not use admin_macros.select_input() here because of dynamic-select #}
                             {% with id='federation', name='federation' %}
                                 <div>
                                     <div class="d-flex align-items-center">
@@ -94,7 +94,7 @@
                             {% endwith %}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
                                 placeholder=_('E.g.: world-championship'),
@@ -103,7 +103,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
                                 placeholder=_('E.g.: World championship'),
@@ -114,7 +114,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 col-md-6 col-lg-3 mb-3">
-                            {{ datetime_input(
+                            {{ admin_macros.dateadmin_macros.time_input(
                                 name='start',
                                 label=_('Start:'),
                                 help_text=_('The start date and time of the event.'),
@@ -122,7 +122,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 mb-3">
-                            {{ datetime_input(
+                            {{ admin_macros.dateadmin_macros.time_input(
                                 name='stop',
                                 label=_('End:'),
                                 help_text=_('The end date and time of the event.'),
@@ -130,7 +130,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-lg-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='path',
                                 label=_('Default directory of the Papi files:'),
                                 placeholder=_('E.g.: c:\chess\tournaments'),
@@ -145,7 +145,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='chessevent_user_id',
                                 label=_('Chessevent ID:'),
                                 placeholder=_('E.g.: %(string)s', string='Z00000'),
@@ -154,7 +154,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ password_input(
+                            {{ admin_macros.password_input(
                                 name='chessevent_password',
                                 label=_('ChessEvent Password:'),
                                 placeholder=_('E.g.: my_password'),
@@ -163,7 +163,7 @@
                             ) }}
                         </div>
                         <div class="col-12 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='chessevent_event_id',
                                 label=_('ChessEvent event:'),
                                 placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
@@ -178,7 +178,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ password_input(
+                            {{ admin_macros.password_input(
                                 name='update_password',
                                 label=_('Password to enter results:'),
                                 placeholder=_('E.g.: my_password'),
@@ -187,7 +187,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ select_input(
+                            {{ admin_macros.select_input(
                                 name='record_illegal_moves',
                                 label=_('Illegal moves recording:'),
                                 help_text=_(
@@ -205,7 +205,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='rules',
                                 label=_('Rules file location:'),
                                 placeholder=_('E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf'),
@@ -221,7 +221,7 @@
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
                             <div>
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='background_image',
                                 label=_('Background image:'),
                                 help_text=_('The URL or the path of the image to display (by default the Papi-web logo).'),
@@ -265,7 +265,7 @@
                             </script>
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ color_input(
+                            {{ admin_macros.color_input(
                                 name='background_color',
                                 label=_('Background colour:'),
                                 help_text=_('The background colour is used when the image does not fill the whole screen.'),
@@ -310,7 +310,7 @@
                     <div class="row">
                         {% for num in [1, 2, 3] %}
                             <div class="col-12 col-md-6 mb-3">
-                                {{ color_input(
+                                {{ admin_macros.color_input(
                                     name='color_'~num,
                                     label=_('Colour #%(num)d:', num=num),
                                     help_text=timer_color_texts[num],
@@ -322,7 +322,7 @@
 
                             <div class="col-12 col-md-6 mb-3">
                                 {% with id='delay-'~num, name='delay_'~num %}
-                                    {{ number_input(
+                                    {{ admin_macros.number_input(
                                         name='delay_'~num,
                                         label=_('Delay #%(num)d:', num=num),
                                         placeholder=_('By default: %(minutes)d minutes', minutes=papi_web_config.default_timer_delays[num]),
@@ -339,7 +339,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 col-xl-3 mb-3">
-                            {{ color_input(
+                            {{ admin_macros.color_input(
                                 name='message_background_color',
                                 label=_('Background colour:'),
                                 help_text=_('The background colour of the alert messages.'),
@@ -349,7 +349,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 col-xl-3 mb-3">
-                            {{ color_input(
+                            {{ admin_macros.color_input(
                                 name='message_color',
                                 label=_('Text colour:'),
                                 help_text=_('The text colour of the alert messages.'),

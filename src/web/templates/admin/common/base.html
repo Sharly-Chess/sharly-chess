@@ -1,13 +1,5 @@
 {% extends '../../common/base.html' %}
-
-{% from 'macros.j2' import
-    family_visibility_icon,
-    tournament_status_icon,
-    player_history,
-    admin_players_sort_link,
-    gender_icon,
-    text_input, password_input, number_input, color_input, select_input, switch_input, datetime_input, date_input, time_input
-%}
+{% import 'macros.j2' as admin_macros %}
 
 {% block header %}
     <div

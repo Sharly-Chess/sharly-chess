@@ -16,7 +16,7 @@
         hx-indicator="#please-wait"
         hx-trigger="click, keyup[key=='Escape'] from:body"
         hx-indicator="#please-wait"
-        {{ tooltip_attributes('info', _('Go back to the events page.'), 'top') }}
+        {{ macros.tooltip_attributes('info', _('Go back to the events page.'), 'top') }}
     >
         <i class="bi-arrow-left-circle-fill"></i>
     </button>
@@ -51,9 +51,9 @@
             <div class="d-flex align-items-center">
                 <div class="pe-2">
                     {% if nav_id == 'rotators' %}
-                        {{ rotator_icon() }}
+                        {{ macros.rotator_icon() }}
                     {% else %}
-                        {{ screen_type_icon(nav_id, true) }}
+                        {{ macros.screen_type_icon(nav_id, true) }}
                     {% endif %}
                 </div>
                 {{ nav_tab.title }}
@@ -79,11 +79,11 @@
                             class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
                             style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
                         >
-                            {% call() section_title() %}
+                            {% call() macros.section_title() %}
                                 {% if user_event_tab == 'rotators' %}
-                                    {{ rotator_icon() }} {{ user_event.name }} - {{ nav_tab.title }}
+                                    {{ macros.rotator_icon() }} {{ user_event.name }} - {{ nav_tab.title }}
                                 {% else %}
-                                    {{ screen_type_icon(nav_id, true) }} {{ user_event.name }} - {{ nav_tab.title }}
+                                    {{ macros.screen_type_icon(nav_id, true) }} {{ user_event.name }} - {{ nav_tab.title }}
                                 {% endif %}
                             {% endcall %}
                         </div>

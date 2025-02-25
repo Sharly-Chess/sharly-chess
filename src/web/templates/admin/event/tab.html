@@ -2,8 +2,8 @@
     class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
     style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
 >
-    {% call() section_title() %}
-        {{ event_visibility_icon(admin_event, 'pe-1') }}
+    {% call() macros.section_title() %}
+        {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
         {{ admin_event.name }}
     {% endcall %}
     <div class="d-flex flex-grow-1 gap-1 ms-auto justify-content-end">
@@ -72,7 +72,7 @@
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
             <td class="">
-                {{ event_visibility_icon(admin_event, 'pe-1') }}
+                {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
                 {{ _('Public event') if admin_event.public else _('Private event') }}
             </td>
         </tr>

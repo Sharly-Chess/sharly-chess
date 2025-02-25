@@ -1,7 +1,7 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ event_visibility_icon(admin_event, 'pe-1') }}
+    {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
     {{ admin_event.name }} - {{ _('Screens') }}
 {% endblock %}
 
@@ -9,7 +9,7 @@
     {% with id='admin-screens-show-family-screens', name='admin_screens_show_family_screens', show=admin_screens_show_family_screens %}
         <div
             class="form-check form-switch d-inline-block pe-2"
-            {{ tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
+            {{ macros.tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
         >
             <input
                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
@@ -27,7 +27,7 @@
     {% with id='admin-screens-show-details', name='admin_screens_show_details', show=admin_screens_show_details %}
         <div
             class="form-check form-switch d-inline-block pe-2"
-            {{ tooltip_attributes('info', _('Enable/disable the details of the screens on the cards below.'), 'top') }}
+            {{ macros.tooltip_attributes('info', _('Enable/disable the details of the screens on the cards below.'), 'top') }}
         >
             <input
                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
@@ -42,7 +42,7 @@
             <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
-    <span {{ tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
+    <span {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
             hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
@@ -56,7 +56,7 @@
     <span
         class="dropdown-end"
         {% if not admin_event.tournaments_by_id %}
-            {{ tooltip_attributes(
+            {{ macros.tooltip_attributes(
                 'info',
                 _('You must create a tournament before creating screens.'),
                 'left'
@@ -91,7 +91,7 @@
                     hx-indicator="#please-wait"
                     hx-trigger="click, keyup[key=='Enter']"
                     tabindex="0
-                    {{ tooltip_attributes('info', screen_data.tooltip_text, 'left') }}
+                    {{ macros.tooltip_attributes('info', screen_data.tooltip_text, 'left') }}
                 >
                     <i class="{{ screen_data['icon_class'] }}"></i>
                     {{ screen_data['title'] }}
@@ -135,7 +135,7 @@
                     {% with id='admin-screens-show-'~screen_type, name='admin_screens_show_'~screen_type %}
                         <span
                             class="form-check form-switch"
-                            {{ tooltip_attributes('info', screen_data.checkbox_tooltip_text, 'top') }}
+                            {{ macros.tooltip_attributes('info', screen_data.checkbox_tooltip_text, 'top') }}
                         >
                             <input
                                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
@@ -148,7 +148,7 @@
                                 {% if screen_type in admin_screens_screen_types %}checked{% endif %} />
 
                             <label for="{{ id }}" class="form-check-label d-inline-flex align-items-center gap-2">
-                                {{ screen_type_icon(screen_type, false) }}
+                                {{ macros.screen_type_icon(screen_type, false) }}
                                 {{ screen_data.title }}
                             </label>
                         </span>

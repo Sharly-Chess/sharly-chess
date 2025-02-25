@@ -39,7 +39,7 @@
                     </h4>
                     <div class="row">
                         <div class="col">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
                                 placeholder=_('E.g.: timer'),
@@ -55,7 +55,7 @@
                     <div class="row">
                         {% for num in [1, 2, 3] %}
                             <div class="col-12 col-md-6 mb-3">
-                                {{ color_input(
+                                {{ admin_macros.color_input(
                                     name='color_'~num,
                                     label=_('Colour #%(num)d:', num=num),
                                     help_text=timer_color_texts[num],
@@ -67,7 +67,7 @@
 
                             <div class="col-12 col-md-6 mb-3">
                                 {% with id='delay-'~num, name='delay_'~num %}
-                                    {{ number_input(
+                                    {{ admin_macros.number_input(
                                         name='delay_'~num,
                                         label=_('Delay #%(num)d:', num=num),
                                         placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
