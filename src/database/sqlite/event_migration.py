@@ -97,7 +97,7 @@ class EventMigrationManager:
     def _version_to_module(version: Version) -> str:
         return (
             f'{events.__name__}.'
-            f'v{version.major}_{version.minor}_{version.micro}'
+            f'v{version.major}_{version.minor:02d}_{version.micro:02d}'
         )
 
     @staticmethod
