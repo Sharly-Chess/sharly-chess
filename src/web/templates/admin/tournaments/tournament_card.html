@@ -181,6 +181,19 @@
 {% endblock %}
 
 {% block card_buttons_right %}
+    <span {{ macros.tooltip_attributes('info', _('Print players, results, etc.'), 'top') }}>
+        <button
+            class="btn btn-sm btn-outline-primary text-nowrap"
+            hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}?tournament_id={{ tournament.id }}"
+            hx-target="#modal-wrapper"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi bi-printer-fill"></i>
+        </button> 
+    </span>  
     <span {{ macros.tooltip_attributes('info', _('Clone the tournament.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary text-nowrap"

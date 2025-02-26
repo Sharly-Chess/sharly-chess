@@ -551,6 +551,7 @@ class EventAdminController(AbstractEventAdminController):
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
+        tournament_id: str | None = None,
         admin_event_tab: str | None = None,
         modal: str | None = None,
         action: str | None = None,
@@ -608,8 +609,6 @@ class EventAdminController(AbstractEventAdminController):
                 if data is None:
                     if len(web_context.admin_event.tournaments_sorted_by_uniq_id) == 1:
                         tournament_id = web_context.admin_event.tournaments_sorted_by_uniq_id[0].id
-                    else:
-                        tournament_id = None
                         
                     data = (
                         {
@@ -633,6 +632,7 @@ class EventAdminController(AbstractEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
+        tournament_id: str | None = None,
         admin_event_tab: str | None = None,
         locale: str | None = None,
         modal: str | None = None,
@@ -645,6 +645,7 @@ class EventAdminController(AbstractEventAdminController):
             request,
             admin_event_tab=admin_event_tab,
             event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
             modal=modal,
             action=action,
             data=data,
@@ -897,17 +898,19 @@ class EventAdminController(AbstractEventAdminController):
     @get(
         path='/admin/print-modal/{event_uniq_id:str}',
         name='admin-print-modal',
-        cache=1,
     )
     async def htmx_admin_print_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
+        tournament_id: str | None = None,
     ) -> Template | ClientRedirect:
+        logger.warning(f'event_uniq_id={event_uniq_id}, tournament_id={tournament_id}')
         return self._admin_event(
             request,
             modal='print',
             event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
         )
 
     def _admin_event_update(
