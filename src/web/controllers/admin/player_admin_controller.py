@@ -1106,10 +1106,11 @@ class PlayerAdminController(AbstractEventAdminController):
             return
         
         template_context: dict[str, Any] = self._get_admin_event_render_context(web_context)
-        
+
+        playersInTournament = [ player for player in template_context["admin_players"].values() if player.tournament.id == tournament_id ]
         splitBy = PrintSplit.from_str(split) if split else PrintSplit.NoSplit
         if splitBy == PrintSplit.NoSplit:
-            splitPlayers = { "": template_context["admin_players"].values() }
+            splitPlayers = { "": playersInTournament }
         else:
             splitFns = {
                 PrintSplit.Category: lambda p: p.category.short_name,
@@ -1117,20 +1118,20 @@ class PlayerAdminController(AbstractEventAdminController):
                 PrintSplit.League: lambda p: p.league_tuple.league,
                 PrintSplit.Federation: lambda p: p.federation_tuple.federation,
             }
-            
+
             if splitBy == PrintSplit.Category:
                 splitPlayers = { category.short_name: [] for category in PlayerCategory }
             else:
                 splitPlayers = defaultdict(list)
-            
+
             # Split players by group
-            for player in template_context["admin_players"].values():
+            for player in playersInTournament:
                 splitPlayers[splitFns[splitBy](player)].append(player)
-            
+
             # Sort players by last name
             for (split, players) in splitPlayers.items():
                 splitPlayers[split] = sorted(players, key=lambda p: p.last_name)
-            
+
             if splitBy == PrintSplit.Category:
                 # Filter out empty categories
                 splitPlayers = { key: splitPlayers[key] for key in splitPlayers.keys() if len(splitPlayers[key]) > 0 }
