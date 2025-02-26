@@ -6,6 +6,7 @@ from typing import Annotated, Any
 
 from litestar import get, patch, delete, post
 from litestar.contrib.htmx.request import HTMXRequest
+from litestar.contrib.htmx.response import HTMXTemplate
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -1068,3 +1069,41 @@ class PlayerAdminController(AbstractEventAdminController):
             player_id=player_id,
             check_in=False,
         )
+
+    @get(
+        path='/admin/player-print-view/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-player-print-view',
+    )
+    async def htmx_tournament_player_print_view(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: EventAdminWebContext = EventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab='players',
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        
+        if tournament_id:
+            try:
+                tournament = web_context.admin_event.tournaments_by_id[
+                    tournament_id
+                ]
+            except KeyError:
+                self._redirect_error(f'Tournament [{tournament_id}] not found.')
+                return
+        else:
+            self._redirect_error(f'Tournament not set.')
+            return
+        
+        template_context: dict[str, Any] = self._get_admin_event_render_context(web_context)
+        template_context |= {
+            'tournament': tournament,
+            'players': { id: player for (id, player) in template_context["admin_players"].items() if player.tournament.id == tournament_id},
+        }
+        return HTMXTemplate(template_name='admin/players/print_view.html', context=template_context)

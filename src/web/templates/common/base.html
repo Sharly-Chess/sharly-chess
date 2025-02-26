@@ -58,6 +58,8 @@
                 window.addEventListener("do_print", function(event) {
                     closeModal();
                     console.log(event);
+
+                    window.open(window.location.origin + '/admin/player-print-view/' + event.detail.event_uniq_id + '/' + event.detail.tournament_id, "PrintWindow");
                 })
             </script>
         {% endif %}
