@@ -48,6 +48,20 @@
     {% endfor %}
 {% endblock admin_header_nav %}
 
+{% block admin_header_action_buttons %}
+    <button
+        class="btn btn-link fw-bold fe-3 px-0 py-0"
+        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="#modal-wrapper"
+        hx-indicator="#please-wait"
+        preload
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    >
+        <i class="bi bi-printer-fill"></i>
+    </button>
+{% endblock admin_header_action_buttons %}
+
 {% block admin_content %}
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% with active=(admin_event_tab == nav_id) %}

@@ -3,6 +3,8 @@
 
 {% if modal == 'event' %}
     {% include 'event/event_modal.html' %}
+{% elif modal == 'print' %}
+    {% include 'event/print_modal.html' %}
 {% elif modal == 'tournament' %}
     {% include 'tournaments/tournament_modal.html' %}
 {% elif modal == 'player' %}

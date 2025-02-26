@@ -1241,6 +1241,26 @@ msgstr "Saisie des résultats"
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
+#: src/data/util.py
+msgid "No split"
+msgstr "Sans rupture"
+
+#: src/data/util.py
+msgid "Category"
+msgstr "Catégorie"
+
+#: src/data/util.py
+msgid "Club"
+msgstr "Club"
+
+#: src/data/util.py
+msgid "League"
+msgstr "Ligue"
+
+#: src/data/util.py src/web/templates/admin/event/tab.html
+msgid "Federation"
+msgstr "Fédération"
+
 #: src/database/sqlite/ffe_database.py
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "La base de données FFE [{file}] est introuvable, voulez-vous la créer (O/n) ? "
@@ -1571,6 +1591,13 @@ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch
 msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été archivée ({arch})."
 
 #: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+msgid "Please choose the tournament."
+msgstr "Veuillez choisir le tournoi."
+
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Personal"
 msgstr "Personnel"
 
@@ -1592,12 +1619,6 @@ msgstr "La caractère [{char}] n'est pas autorisé."
 #: src/web/controllers/admin/family_admin_controller.py
 msgid "Family [{uniq_id}] already exists."
 msgstr "La famille [{uniq_id}] existe déjà."
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/player_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-msgid "Please choose the tournament."
-msgstr "Veuillez choisir le tournoi."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
@@ -2568,6 +2589,7 @@ msgid "Delete"
 msgstr "Supprimer"
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
 #: src/web/templates/admin/players/player_modal.html
@@ -2580,6 +2602,40 @@ msgstr "Supprimer"
 #: src/web/templates/user/modals.html
 msgid "Cancel"
 msgstr "Annuler"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Print"
+msgstr "Imprimer"
+
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Tournament"
+msgstr "Tournoi"
+
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+msgid "Tournament:"
+msgstr "Tournoi :"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The tournament to print."
+msgstr "Le tournoi à imprimer."
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Options"
+msgstr "Options"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Split by:"
+msgstr "Rupture :"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "How to split the results."
+msgstr "Comment regrouper les résultats."
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
@@ -2606,10 +2662,6 @@ msgstr "Identifiant unique"
 #: src/web/templates/admin/event/tab.html
 msgid "Date"
 msgstr "Date"
-
-#: src/web/templates/admin/event/tab.html
-msgid "Federation"
-msgstr "Fédération"
 
 #: src/web/templates/admin/event/tab.html
 msgid "Visibility"
@@ -2875,13 +2927,6 @@ msgstr "Exemple : Ma famille d'écrans"
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr "Le nom de la famille d' écrans, facultatif. Les mots-clés suivants sont remplacés automatiquement par les numéros des échiquiers ou les noms des joueur·euses : %%f=first (premier), %%l=last (dernier), %%t=tournament (tournoi)."
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-msgid "Tournament:"
-msgstr "Tournoi :"
 
 #: src/web/templates/admin/families/family_modal.html
 msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
@@ -3559,11 +3604,6 @@ msgid "The player's gender."
 msgstr "Le genre du·de la joueur·euse."
 
 #: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/user/screen/results.html
-msgid "Tournament"
-msgstr "Tournoi"
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "The player's tournament."
 msgstr "Le tournoi du·de la joueur·euse."
 
@@ -3698,6 +3738,46 @@ msgstr "Commentaire :"
 #: src/web/templates/admin/players/player_modal.html
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
+
+#: src/web/templates/admin/players/print_view.html
+msgid "List of players"
+msgstr "Liste des participant·es"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nr"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Nom"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapide"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat."
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgstr "Féd."
+
+#: src/web/templates/admin/players/print_view.html
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr "Ligue"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
