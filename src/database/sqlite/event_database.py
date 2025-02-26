@@ -907,7 +907,7 @@ class EventDatabase(SQLiteDatabase):
             version=row['version'],
             name=row['name'],
             # needed to open event databases when version < 2.4.21 before checking the version
-            federation=row.get('federation', 'NON'),
+            federation=row.get('federation', PapiWebConfig().default_federation),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
