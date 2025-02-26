@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 
 from common.papi_web_config import PapiWebConfig
+from data.tie_break import TieBreak
 
 """
 All the classes of this module are basic data classes stored into event databases.
@@ -56,6 +57,7 @@ class StoredTournament:
     paired_bye_points: float | None
     max_byes: int | None
     last_rounds_no_byes: int | None
+    tie_breaks: list[TieBreak] | None
     check_in_open: bool = field(default=False)
     last_update: float = field(default=0.0)
     last_result_update: float = field(default=0.0)
