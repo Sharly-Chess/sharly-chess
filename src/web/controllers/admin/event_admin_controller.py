@@ -1089,9 +1089,10 @@ class EventAdminController(AbstractEventAdminController):
         if data is None:
             data = {}
         tournament: Tournament | None = None
+        field: str = 'tournament_id'
         try:
             tournament = web_context.admin_event.tournaments_by_id[
-                WebContext.form_data_to_int(data, field := 'tournament_id')
+                WebContext.form_data_to_int(data, field)
             ]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
