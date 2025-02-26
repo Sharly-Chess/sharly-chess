@@ -229,7 +229,7 @@ hx_indicator_img: the URL of the image of the indicator, optional
                             disabled
                         {% endif %}
                     >
-                        {% if not data[name] %}
+                        {% if not data[name] and '' not in select_options %}
                             <option value="" selected>
                                 -
                             </option>
