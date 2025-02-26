@@ -804,6 +804,134 @@ msgstr "échiquiers {board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
 
+#: src/data/tie_break.py
+msgid "None"
+msgstr "Aucun"
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr "Buchholz"
+
+#: src/data/tie_break.py
+msgid "Buchholz cut bottom"
+msgstr "Buchholz tronqué"
+
+#: src/data/tie_break.py
+msgid "Median Buchholz"
+msgstr "Buchholz médian"
+
+#: src/data/tie_break.py
+msgid "Progressive scores"
+msgstr "Cumulatif"
+
+#: src/data/tie_break.py
+msgid "Performance"
+msgstr "Performance"
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr "Somme des Buchholz"
+
+#: src/data/tie_break.py
+msgid "Number of wins"
+msgstr "Nombre de victiores"
+
+#: src/data/tie_break.py
+msgid "Kashdan"
+msgstr "Kashdan"
+
+#: src/data/tie_break.py
+msgid "Koya"
+msgstr "Koya"
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr "Sonnenborn-Berger"
+
+#: src/data/tie_break.py
+msgid "Cut"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut top"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut Bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Played modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Papi legacy"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Limit"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Exclude players"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of games won"
+msgstr "Nombre de parties gagnées"
+
+#: src/data/tie_break.py
+msgid "Games played with black"
+msgstr "Nombre de parties jouées avec les noirs"
+
+#: src/data/tie_break.py
+msgid "Games won with black"
+msgstr "Nombre de parties gagnées avec les noirs"
+
+#: src/data/tie_break.py
+msgid "Rounds one Elected to Play"
+msgstr "Rondes jouées"
+
+#: src/data/tie_break.py
+msgid "Average of opponents Buchholz"
+msgstr "Moyenne du Buchholz des adversaires"
+
+#: src/data/tie_break.py
+msgid "Fore Buchholz"
+msgstr "Fore Buchholz"
+
+#: src/data/tie_break.py
+msgid "Sonneborn-Berger"
+msgstr "Sonneborn-Berger"
+
+#: src/data/tie_break.py
+msgid "Average rating of opponents"
+msgstr "Classement ELO moyen des adversaires"
+
+#: src/data/tie_break.py
+msgid "Tournament performance rating"
+msgstr "Performance sur le tournoi"
+
+#: src/data/tie_break.py
+msgid "Average performance rating of opponents"
+msgstr "Moyenne des performances ELO des adversaires"
+
+#: src/data/tie_break.py
+msgid "Perfect tournament performance"
+msgstr "Performance ELO parfaite"
+
+#: src/data/tie_break.py
+msgid "Average perfect performance of opponents"
+msgstr "Moyenne des performances ELO parfaites des adversaires"
+
+#: src/data/tie_break.py
+msgid "Direct encounter"
+msgstr "Rencontre directe"
+
 #: src/data/timer.py
 msgid "Time is not defined."
 msgstr "L'heure n'est pas définie"
@@ -2256,7 +2384,7 @@ msgstr "La date et l'heure de fin de l'évènement."
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "Default directory of the Papi files:"
-msgstr "Répertoire par défaut des fichierf Papi :"
+msgstr "Répertoire par défaut des fichiers Papi :"
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: c:\\chess\tournaments"
@@ -4644,6 +4772,15 @@ msgstr "Dernières rondes sans bye :"
 #, python-format
 msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
 msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye (si non défini, %(default)d par défaut)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Tie-breaks"
+msgstr "Départages"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "Tie-break #%(index)d:"
+msgstr "Départage n°%(index)d :"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"
