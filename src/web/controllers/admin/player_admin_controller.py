@@ -1141,4 +1141,4 @@ class PlayerAdminController(AbstractEventAdminController):
             'tournament': tournament,
             'players': splitPlayers,
         }
-        return HTMXTemplate(template_name='admin/players/print_view.html', context=template_context)
+        return HTMXTemplate(template_name='admin/print/players.html', context=template_context)
