@@ -316,11 +316,11 @@ class AbstractIndexAdminController(AbstractAdminController):
         chessevent_event_id: str | None = None
         match action:
             case 'clone' | 'update' | 'create':
-                name: str | None = WebContext.form_data_to_str(data, field := 'name')
+                name = WebContext.form_data_to_str(data, field := 'name')
                 if not name:
                     errors[field] = _('Please enter the name of the event.')
-                federation: str | None = WebContext.form_data_to_str(
-                    data, field := 'federation'
+                federation = WebContext.form_data_to_str(
+                    data, field := 'federation', PapiWebConfig().default_federation
                 )
                 if federation not in PapiWebConfig.federations:
                     # should never happen, not translated.
@@ -347,7 +347,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 if 'start' not in errors and 'stop' not in errors and start > stop:
                     errors[field] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
-                path: str | None = WebContext.form_data_to_str(data, 'path')
+                path = WebContext.form_data_to_str(data, 'path')
                 update_password = WebContext.form_data_to_str(data, 'update_password')
                 field = 'background_image'
                 hide_background_image = WebContext.form_data_to_bool(
@@ -628,6 +628,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 chessevent_event_id = admin_event.stored_event.chessevent_event_id
             case 'create':
                 public = False
+                federation = PapiWebConfig().default_federation
                 hide_background_image = PapiWebConfig.default_hide_background_image
             case 'delete':
                 pass

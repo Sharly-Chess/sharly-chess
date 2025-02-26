@@ -30,12 +30,13 @@ class SQLiteDatabase:
         """Deletes the database if it exists."""
         self.file.unlink(missing_ok=True)
 
-    def _create(self, script: str):
+    def _create(self, script: str | None = None):
         database: Connection | None = None
         try:
             database = connect(database=self.file, detect_types=1, uri=True)
-            database.executescript(script)
-            database.commit()
+            if script:
+                database.executescript(script)
+                database.commit()
             database.close()
         except OperationalError as e:
             if database:
