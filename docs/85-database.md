@@ -94,6 +94,7 @@
 | `first_board_number`                  | `INTEGER` |                                            | Le numéro du premier échiquier.                                                                                                                                                         |
 | `paired_bye_points`                   | `FLOAT`   |                                            | Points attribués aux exempts.                                                                                                                                                           |
 | `max_byes`                            | `INTEGER` |                                            | Le nombre maximum de byes auquel un·e joueur·euse peut prétendre                                                                                                                        |
+| `last_rounds_no_byes`                 | `INTEGER` |                                            | Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye                                                                                                  |
 | `tie_breaks`                          | `TEXT`    |                                            | Les départages utilisés au format JSON (liste de dictionnaires au format {'type': str, 'options': dict[str,any]})                                                                       |
 
 ### table `illegal_move` (coups illégaux)
