@@ -3179,7 +3179,7 @@ msgid "Split by:"
 msgstr ""
 
 #: src/web/templates/admin/event/print_modal.html
-msgid "How to split the result."
+msgid "How to split the results."
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html

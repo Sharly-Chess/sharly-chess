@@ -2623,7 +2623,7 @@ msgstr "Tournoi :"
 
 #: src/web/templates/admin/event/print_modal.html
 msgid "The tournament to print."
-msgstr "Le tournoi à imprimer"
+msgstr "Le tournoi à imprimer."
 
 #: src/web/templates/admin/event/print_modal.html
 msgid "Options"
@@ -2631,11 +2631,11 @@ msgstr "Options"
 
 #: src/web/templates/admin/event/print_modal.html
 msgid "Split by:"
-msgstr "Rupture:"
+msgstr "Rupture :"
 
 #: src/web/templates/admin/event/print_modal.html
-msgid "How to split the result."
-msgstr "Comment regrouper les résultats"
+msgid "How to split the results."
+msgstr "Comment regrouper les résultats."
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
@@ -3741,7 +3741,7 @@ msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne 
 
 #: src/web/templates/admin/players/print_view.html
 msgid "List of players"
-msgstr "Liste des participants"
+msgstr "Liste des participant·es"
 
 #: src/web/templates/admin/players/print_view.html
 msgid "Nb. *** NB FOR PRINT VIEW"
@@ -3769,7 +3769,7 @@ msgstr "Cat."
 
 #: src/web/templates/admin/players/print_view.html
 msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
-msgstr "Fede"
+msgstr "Féd."
 
 #: src/web/templates/admin/players/print_view.html
 msgid "League *** LEAGUE FOR PRINT VIEW"
@@ -5094,7 +5094,4 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr "contre"
-
-#~ msgid "Screen families allow to group screens together."
-#~ msgstr ""
 
