@@ -1230,3 +1230,56 @@ def performance_bonus(
     if fractional_score < 0.5:
         bonus *= -1
     return bonus
+
+class PrintSplit(StrEnum):
+    NoSplit = auto()
+    Category = auto()
+    Club = auto()
+    League = auto()
+    Federation = auto()
+
+    def __str__(self) -> str:
+        match self:
+            case PrintSplit.NoSplit:
+                return _('No split')
+            case PrintSplit.Category:
+                return _('Category')
+            case PrintSplit.Club:
+                return _('Club')
+            case PrintSplit.League:
+                return _('League')
+            case PrintSplit.Federation:
+                return _('Federation')
+            case _:
+                raise ValueError(f'Invalid print split type: {self}')
+
+    @classmethod
+    def from_str(cls, value: str) -> Self:
+        match value:
+            case 'no-split':
+                return cls.NoSplit
+            case 'category':
+                return cls.Category
+            case 'club':
+                return cls.Club
+            case 'league':
+                return cls.League
+            case 'federation':
+                return cls.Federation
+            case _:
+                raise ValueError(f'Invalid print split type: {value}')
+
+    def to_str(self) -> Self:
+        match self:
+            case self.NoSplit:
+                return 'no-split'
+            case self.Category:
+                return 'category'
+            case self.Club:
+                return 'club'
+            case self.League:
+                return 'league'
+            case self.Federation:
+                return 'federation'
+            case _:
+                raise ValueError(f'Invalid screen type: {self}')

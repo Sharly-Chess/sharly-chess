@@ -48,6 +48,24 @@
                   window.addEventListener('resize', setSize);
                   window.addEventListener('htmx:afterSettle', setSize);
             </script>
+            <script>
+                function closeModal () {
+                    var myModalEl = document.getElementById('modal-wrapper');
+                    var modal = bootstrap.Modal.getInstance(myModalEl)
+                    modal.hide();
+                }
+
+                window.addEventListener("do_print", function(event) {
+                    closeModal();
+                    window.open(
+                        window.location.origin + 
+                        '/admin/player-print-view/' + 
+                        event.detail.event_uniq_id + '/' + 
+                        event.detail.tournament_id +
+                        '?split=' + event.detail.split
+                    , "PrintWindow");
+                })
+            </script>
         {% endif %}
     </head>
     <body
