@@ -19,8 +19,23 @@
                         {{ admin_macros.select_input(
                             name='tournament_id',
                             label=_('Tournament:'),
-                            help_text=_('The tournament to print.') if action != 'delete' else '',
+                            help_text=_('The tournament to print.'),
                             select_options=tournament_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+
+                <h4 class="mt-3">
+                    {{ _('Options') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        {{ admin_macros.select_input(
+                            name='split',
+                            label=_('Split by:'),
+                            help_text=_('How to split the result.'),
+                            select_options=split_options,
                             data=data, errors=errors
                         ) }}
                     </div>

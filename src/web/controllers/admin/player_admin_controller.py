@@ -3,6 +3,7 @@ import string
 from datetime import date
 from logging import Logger
 from typing import Annotated, Any
+from collections import defaultdict
 
 from litestar import get, patch, delete, post
 from litestar.contrib.htmx.request import HTMXRequest
@@ -21,7 +22,9 @@ from data.loader import EventLoader
 from data.player import Player
 from data.tournament import Tournament
 from data.util import (
+    PlayerCategory,
     PlayerGender,
+    PrintSplit,
     TournamentRating,
     PlayerRatingType,
     PlayerTitle,
@@ -1079,6 +1082,7 @@ class PlayerAdminController(AbstractEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
+        split: str | None = None,
     ) -> Template | ClientRedirect:
         web_context: EventAdminWebContext = EventAdminWebContext(
             request,
@@ -1102,8 +1106,41 @@ class PlayerAdminController(AbstractEventAdminController):
             return
         
         template_context: dict[str, Any] = self._get_admin_event_render_context(web_context)
+        
+        playersInTournament = [ player for player in template_context["admin_players"].values() if player.tournament.id == tournament_id ]
+        splitBy = PrintSplit.from_str(split) if split else PrintSplit.NoSplit
+        if splitBy == PrintSplit.NoSplit:
+            splitPlayers = { "": playersInTournament }
+        else:
+            splitFns = {
+                PrintSplit.Category: lambda p: p.category.short_name,
+                PrintSplit.Club: lambda p: p.club_tuple.club,
+                PrintSplit.League: lambda p: p.league_tuple.league,
+                PrintSplit.Federation: lambda p: p.federation_tuple.federation,
+            }
+            
+            if splitBy == PrintSplit.Category:
+                splitPlayers = { category.short_name: [] for category in PlayerCategory }
+            else:
+                splitPlayers = defaultdict(list)
+            
+            # Split players by group
+            for player in playersInTournament:
+                splitPlayers[splitFns[splitBy](player)].append(player)
+            
+            # Sort players by last name
+            for (split, players) in splitPlayers.items():
+                splitPlayers[split] = sorted(players, key=lambda p: p.last_name)
+            
+            if splitBy == PrintSplit.Category:
+                # Filter out empty categories
+                splitPlayers = { key: splitPlayers[key] for key in splitPlayers.keys() if len(splitPlayers[key]) > 0 }
+            else:
+                # Sort by key
+                splitPlayers = { key: splitPlayers[key] for key in sorted(splitPlayers.keys())}
+
         template_context |= {
             'tournament': tournament,
-            'players': { id: player for (id, player) in template_context["admin_players"].items() if player.tournament.id == tournament_id},
+            'players': splitPlayers,
         }
         return HTMXTemplate(template_name='admin/players/print_view.html', context=template_context)
