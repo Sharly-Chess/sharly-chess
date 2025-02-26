@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block card_title %}
-    {{ event_visibility_icon(event, 'pe-1') }}
+    {{ macros.event_visibility_icon(event, 'pe-1') }}
     {% if event.formatted_start_date == event.formatted_stop_date %}
         <span class="fw-bold">{{ event.formatted_start_date }}</span> {{ event.formatted_start_time }}-{{ event.formatted_stop_time }}
     {% else %}

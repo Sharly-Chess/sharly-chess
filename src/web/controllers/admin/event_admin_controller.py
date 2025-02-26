@@ -24,7 +24,8 @@ from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
-from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, TournamentRating
+from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, PrintSplit, TournamentRating
+from data.tournament import Tournament
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
 from web.controllers.admin.index_admin_controller import (
@@ -32,6 +33,7 @@ from web.controllers.admin.index_admin_controller import (
     AbstractIndexAdminController,
 )
 from web.controllers.index_controller import AbstractController
+from web.controllers.index_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -75,8 +77,14 @@ class EventAdminWebContext(AdminWebContext):
 
     def get_tournament_options(self) -> dict[str, str]:
         return {
-            str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
+            self.value_to_form_data(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
+        }
+        
+    def get_print_split_options(self) -> dict[str, str]:
+        return {
+            self.value_to_form_data(split.to_str()): str(split)
+            for split in PrintSplit
         }
 
 
@@ -529,8 +537,13 @@ class AbstractEventAdminController(AbstractIndexAdminController):
         cls,
         template_context: dict[str, Any],
     ) -> Template:
+        if "modal" in template_context:
+            return HTMXTemplate(
+                template_name='admin/modals.html',
+                context=template_context,
+                re_target='#modal-wrapper',
+            )
         return HTMXTemplate(template_name='admin/event.html', context=template_context)
-
 
 class EventAdminController(AbstractEventAdminController):
     @classmethod
@@ -538,6 +551,7 @@ class EventAdminController(AbstractEventAdminController):
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
+        tournament_id: str | None = None,
         admin_event_tab: str | None = None,
         modal: str | None = None,
         action: str | None = None,
@@ -591,6 +605,25 @@ class EventAdminController(AbstractEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
+            case 'print':
+                if data is None:
+                    if len(web_context.admin_event.tournaments_sorted_by_uniq_id) == 1:
+                        tournament_id = web_context.admin_event.tournaments_sorted_by_uniq_id[0].id
+                        
+                    data = (
+                        {
+                            'tournament_id': WebContext.value_to_form_data(tournament_id),
+                            'split': WebContext.value_to_form_data(PrintSplit.NoSplit.to_str()),
+                        }
+                    )
+
+                template_context |= {
+                    'modal': 'print',
+                    'tournament_options': web_context.get_tournament_options(),
+                    'split_options': web_context.get_print_split_options(),
+                    'data': data,
+                    'errors': errors or {},
+                }
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
@@ -599,6 +632,7 @@ class EventAdminController(AbstractEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
+        tournament_id: str | None = None,
         admin_event_tab: str | None = None,
         locale: str | None = None,
         modal: str | None = None,
@@ -611,6 +645,7 @@ class EventAdminController(AbstractEventAdminController):
             request,
             admin_event_tab=admin_event_tab,
             event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
             modal=modal,
             action=action,
             data=data,
@@ -859,6 +894,24 @@ class EventAdminController(AbstractEventAdminController):
             action=action,
             event_uniq_id=event_uniq_id,
         )
+        
+    @get(
+        path='/admin/print-modal/{event_uniq_id:str}',
+        name='admin-print-modal',
+    )
+    async def htmx_admin_print_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: str | None = None,
+    ) -> Template | ClientRedirect:
+        logger.warning(f'event_uniq_id={event_uniq_id}, tournament_id={tournament_id}')
+        return self._admin_event(
+            request,
+            modal='print',
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+        )
 
     def _admin_event_update(
         self,
@@ -1014,6 +1067,60 @@ class EventAdminController(AbstractEventAdminController):
             request, data=data, action='update', event_uniq_id=event_uniq_id
         )
 
+    @post(
+        path='/admin/event-print/{event_uniq_id:str}',
+        name='admin-event-print',
+    )
+    async def htmx_admin_event_print(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        web_context: EventAdminWebContext = EventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab=None,
+            data=data,
+        )
+        if web_context.error:
+            return web_context.error
+        errors: dict[str, str] = {}
+        if data is None:
+            data = {}
+        tournament: Tournament | None = None
+        field: str = 'tournament_id'
+        try:
+            tournament = web_context.admin_event.tournaments_by_id[
+                WebContext.form_data_to_int(data, field)
+            ]
+        except (ValueError, KeyError):
+            errors[field] = _('Please choose the tournament.')
+        if len(errors):
+            return self._admin_event(
+                request,
+                modal='print',
+                event_uniq_id=event_uniq_id,
+                data=data,
+                errors=errors,
+            )
+
+        # Clear the modal contents, and send an event
+        return HTMXTemplate(
+            template_name='common/empty_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event="do_print",
+            after="receive",
+            params={
+                "event_uniq_id": event_uniq_id,
+                "tournament_id": tournament.id,
+                "split": data['split'],
+            }
+        )
+            
     @staticmethod
     def download_players_as_vcf(
         event_uniq_id: str,

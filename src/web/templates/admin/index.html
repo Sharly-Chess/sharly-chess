@@ -8,7 +8,7 @@
         hx-target="body"
         hx-swap="transition:true"
         hx-indicator="#please-wait"
-        {{ tooltip_attributes('info', _('Go back to the home page.'), 'top') }}
+        {{ macros.tooltip_attributes('info', _('Go back to the home page.'), 'top') }}
     >
         <i class="bi-house-fill"></i>
     </button>
@@ -39,6 +39,9 @@
     {% endfor %}
 {% endblock admin_header_nav %}
 
+{% block admin_header_action_buttons %}
+{% endblock admin_header_action_buttons %}
+
 {% block admin_content %}
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% with active=(admin_tab == nav_id) %}
@@ -54,11 +57,3 @@
         {% endwith %}
     {% endfor %}
 {% endblock admin_content %}
-
-{% block admin_modal %}
-    {% if modal == 'event' %}
-        {% include 'event/event_modal.html' %}
-    {% elif modal %}
-        {% include modal ~ '_modal_not_found.html' %}
-    {% endif %}
-{% endblock admin_modal %}

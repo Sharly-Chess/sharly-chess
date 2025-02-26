@@ -6,7 +6,7 @@
 
 {% block card_title %}
     {% if admin_auth %}
-    {{ event_visibility_icon(event, 'pe-1') }}
+    {{ macros.event_visibility_icon(event, 'pe-1') }}
     {% endif %}
     {% if event.formatted_start_date == event.formatted_stop_date %}
     <span class="fw-bold">{{ event.formatted_start_date }}</span> {{ event.formatted_start_time }}-{{ event.formatted_stop_time }}

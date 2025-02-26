@@ -48,6 +48,20 @@
     {% endfor %}
 {% endblock admin_header_nav %}
 
+{% block admin_header_action_buttons %}
+    <button
+        class="btn btn-link fw-bold fe-3 px-0 py-0"
+        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="#modal-wrapper"
+        hx-indicator="#please-wait"
+        preload
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    >
+        <i class="bi bi-printer-fill"></i>
+    </button>
+{% endblock admin_header_action_buttons %}
+
 {% block admin_content %}
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% with active=(admin_event_tab == nav_id) %}
@@ -64,31 +78,3 @@
         {% endwith %}
     {% endfor %}
 {% endblock admin_content %}
-
-{% block admin_modal %}
-    {% if modal == 'event' %}
-        {% include 'event/event_modal.html' %}
-    {% elif modal == 'tournament' %}
-        {% include 'tournaments/tournament_modal.html' %}
-    {% elif modal == 'player' %}
-        {% include 'players/player_modal.html' %}
-    {% elif modal == 'screen' %}
-        {% include 'screens/screen_modal.html' %}
-    {% elif modal == 'screen_sets' %}
-        {% include 'screens/screen_sets_modal.html' %}
-    {% elif modal == 'family' %}
-        {% include 'families/family_modal.html' %}
-    {% elif modal == 'rotator' %}
-        {% include 'rotators/rotator_modal.html' %}
-    {% elif modal == 'timer' %}
-        {% include 'timers/timer_modal.html' %}
-    {% elif modal == 'timer_hours' %}
-        {% include 'timers/timer_hours_modal.html' %}
-    {% elif modal == 'chessevent' %}
-        {% include 'chessevents/chessevent_modal.html' %}
-    {% elif modal == 'close_check_in' %}
-        {% include 'players/close_check_in_modal.html' %}
-    {% elif modal %}
-        {% include modal ~ '_modal_not_found.html' %}
-    {% endif %}
-{% endblock admin_modal %}

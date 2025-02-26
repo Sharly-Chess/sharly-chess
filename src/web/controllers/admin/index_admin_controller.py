@@ -19,6 +19,8 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader, ArchiveLoader
+from data.tie_break import PapiTieBreak
+from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
@@ -88,15 +90,33 @@ class AbstractAdminController(AbstractController):
     ) -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            '0': _('No recording'),
+            WebContext.value_to_form_data(0): _('No recording'),
         } | {
-            str(i): ngettext(
+            WebContext.value_to_form_data(i): ngettext(
                 '{num} illegal move max', '{num} illegal moves max', i
             ).format(num=i)
             for i in range(1, 4)
         }
         options[''] = _('By default - {option}').format(option=options[str(default)])
         return options
+
+    @staticmethod
+    def _get_paired_bye_points_options() -> dict[str, str]:
+        options: dict[str, str] = {
+            '': '',
+            WebContext.value_to_form_data(Result.GAIN.point_value): _('Full point bye'),
+            WebContext.value_to_form_data(Result.DRAW.point_value): _('Half point bye'),
+        }
+        default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_points.point_value)
+        options[''] = _('By default - {option}').format(option=options[default_option])
+        return options
+
+    @staticmethod
+    def _get_tie_break_options() -> dict[str, str]:
+        return {
+            WebContext.value_to_form_data(tie_break): tie_break.name
+            for tie_break in iter(PapiTieBreak)
+        }
 
     @staticmethod
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
@@ -131,7 +151,7 @@ class AbstractAdminController(AbstractController):
             '': _('Use no timer') if event.timers_by_id else _('No timer defined'),
         }
         for timer in event.timers_by_id.values():
-            options[str(timer.id)] = _('Timer {timer_uniq_id}').format(
+            options[WebContext.value_to_form_data(timer.id)] = _('Timer {timer_uniq_id}').format(
                 timer_uniq_id=timer.uniq_id
             )
         return options
@@ -296,11 +316,11 @@ class AbstractIndexAdminController(AbstractAdminController):
         chessevent_event_id: str | None = None
         match action:
             case 'clone' | 'update' | 'create':
-                name: str | None = WebContext.form_data_to_str(data, field := 'name')
+                name = WebContext.form_data_to_str(data, field := 'name')
                 if not name:
                     errors[field] = _('Please enter the name of the event.')
-                federation: str | None = WebContext.form_data_to_str(
-                    data, field := 'federation'
+                federation = WebContext.form_data_to_str(
+                    data, field := 'federation', PapiWebConfig().default_federation
                 )
                 if federation not in PapiWebConfig.federations:
                     # should never happen, not translated.
@@ -327,7 +347,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 if 'start' not in errors and 'stop' not in errors and start > stop:
                     errors[field] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
-                path: str | None = WebContext.form_data_to_str(data, 'path')
+                path = WebContext.form_data_to_str(data, 'path')
                 update_password = WebContext.form_data_to_str(data, 'update_password')
                 field = 'background_image'
                 hide_background_image = WebContext.form_data_to_bool(
@@ -608,6 +628,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 chessevent_event_id = admin_event.stored_event.chessevent_event_id
             case 'create':
                 public = False
+                federation = PapiWebConfig().default_federation
                 hide_background_image = PapiWebConfig.default_hide_background_image
             case 'delete':
                 pass
@@ -774,6 +795,12 @@ class AbstractIndexAdminController(AbstractAdminController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
+        if "modal" in context:
+            return HTMXTemplate(
+                template_name='admin/modals.html',
+                context=context,
+                re_target='#modal-wrapper',
+            )
         return HTMXTemplate(template_name='admin/index.html', context=context)
 
 

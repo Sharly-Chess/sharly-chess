@@ -11,6 +11,7 @@ from data.chessevent_player import ChessEventPlayer
 from data.chessevent_tournament import ChessEventTournament
 from data.pairing import Pairing
 from data.player import Player
+from data.tie_break import PapiTieBreak
 from data.util import (
     Result,
     TournamentPairing,
@@ -34,6 +35,7 @@ class TournamentInfo(NamedTuple):
     rating: TournamentRating
     rating_limit1: int
     rating_limit2: int
+    tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
     location: str
     start_date: str
     end_date: str
@@ -56,6 +58,10 @@ class PapiDatabase(AccessDatabase):
         self._execute(query, (name,))
         return self._fetchval()
 
+    def _update_var(self, name: str, value: str):
+        query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
+        self._execute(query, (value, name))
+
     def read_info(self) -> TournamentInfo:
         """Reads the database and returns basic information about the
         tournament."""
@@ -68,6 +74,11 @@ class PapiDatabase(AccessDatabase):
         )
         rating_limit1: int = int(self._read_var('EloBase1'))
         rating_limit2: int = int(self._read_var('EloBase2'))
+        tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak] = (
+            PapiTieBreak.from_papi_value(self._read_var('Dep1')),
+            PapiTieBreak.from_papi_value(self._read_var('Dep2')),
+            PapiTieBreak.from_papi_value(self._read_var('Dep3')),
+        )
         location: str = self._read_var('Lieu')
         start_date: str = self._read_var('DateDebut')
         end_date: str = self._read_var('DateFin')
@@ -78,6 +89,7 @@ class PapiDatabase(AccessDatabase):
             rating,
             rating_limit1,
             rating_limit2,
+            tie_breaks,
             location,
             start_date,
             end_date,
@@ -195,6 +207,12 @@ class PapiDatabase(AccessDatabase):
             f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
             (pairing.color_papi_value, opponent_id, result, player.ref_id),
         )
+
+    def update_tie_breaks(
+        self, tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
+    ):
+        for index, key in enumerate(('Dep1', 'Dep2', 'Dep3')):
+            self._update_var(key, tie_breaks[index].to_papi_value)
 
     def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.
@@ -351,9 +369,15 @@ class PapiDatabase(AccessDatabase):
             'Arbitre': chessevent_tournament.arbiter,
             'DateDebut': self.timestamp_to_papi_date(chessevent_tournament.start),
             'DateFin': self.timestamp_to_papi_date(chessevent_tournament.end),
-            'Dep1': chessevent_tournament.tie_breaks[0].to_papi_value,
-            'Dep2': chessevent_tournament.tie_breaks[1].to_papi_value,
-            'Dep3': chessevent_tournament.tie_breaks[2].to_papi_value,
+            'Dep1': PapiTieBreak.from_tie_break(
+                chessevent_tournament.tie_breaks[0]
+            ).to_papi_value,
+            'Dep2': PapiTieBreak.from_tie_break(
+                chessevent_tournament.tie_breaks[1]
+            ).to_papi_value,
+            'Dep3': PapiTieBreak.from_tie_break(
+                chessevent_tournament.tie_breaks[2]
+            ).to_papi_value,
             'ClassElo': chessevent_tournament.rating.to_papi_value,
             'Homologation': str(chessevent_tournament.ffe_id),
         }
@@ -484,14 +508,14 @@ class PapiDatabase(AccessDatabase):
         params = tuple(data.values()) + (player_papi_id,)
         self._execute(query, params)
 
-    def open_check_in(self, round: int):
+    def open_check_in(self, round_: int):
         """Sets all the present players (at the given round) as not checked-in."""
         data: dict[str, str | int | float | None] = {
             'Pointe': False,
         }
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
         query: str = (
-            f'UPDATE `joueur` SET {actions} WHERE Ref > 1 AND Rd{round:0>2}Cl <> ?'
+            f'UPDATE `joueur` SET {actions} WHERE Ref > 1 AND Rd{round_:0>2}Cl <> ?'
         )
         params = tuple(
             list(data.values())
@@ -501,16 +525,16 @@ class PapiDatabase(AccessDatabase):
         )
         self._execute(query, params)
 
-    def close_check_in(self, round: int, last_round: int | None):
+    def close_check_in(self, round_: int, last_round: int | None):
         """Sets all the players present at the given round as not checked-in for the given round
         (and for the rest of the rounds if last_round is set)."""
         data: dict[str, str | int | float | None] = {
-            f'Rd{round:0>2}Cl': 'F',
+            f'Rd{round_:0>2}Cl': 'F',
         }
         if last_round:
-            data |= {f'Rd{r:0>2}Cl': 'F' for r in range(round, last_round + 1)}
+            data |= {f'Rd{r:0>2}Cl': 'F' for r in range(round_, last_round + 1)}
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
-        query: str = f'UPDATE `joueur` SET {actions} WHERE (Ref > 1) AND NOT (`Pointe`) AND (`Rd{round:0>2}Cl` = ?)'
+        query: str = f'UPDATE `joueur` SET {actions} WHERE (Ref > 1) AND NOT (`Pointe`) AND (`Rd{round_:0>2}Cl` = ?)'
         params = tuple(
             list(data.values())
             + [

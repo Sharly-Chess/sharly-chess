@@ -2,23 +2,26 @@ import re
 from logging import Logger
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
+from collections import defaultdict
 
 import trf
 from litestar import post, get, delete, patch
 from litestar.contrib.htmx.request import HTMXRequest
+from litestar.contrib.htmx.response import HTMXTemplate
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from data.tie_break import PapiTieBreak, TieBreak
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from data.util import TrfType
+from data.util import PlayerCategory, PrintSplit, TrfType
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament, StoredScreen
 from web.controllers.admin.event_admin_controller import (
@@ -129,6 +132,11 @@ class TournamentAdminController(AbstractEventAdminController):
         chessevent_tournament_name: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
+        first_board_number: int | None = None
+        paired_bye_points: float | None = None
+        max_byes: int | None = None
+        last_rounds_no_byes: int | None = None
+        tie_breaks: list[TieBreak] | None = None
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
@@ -176,10 +184,33 @@ class TournamentAdminController(AbstractEventAdminController):
                     cls._admin_validate_record_illegal_moves_update_data(data, errors)
                 )
                 rules = cls._admin_validate_rules_update_data(data, errors)
+                first_board_number = WebContext.form_data_to_int(
+                    data, 'first_board_number'
+                )
+                paired_bye_points = WebContext.form_data_to_float(
+                    data, 'paired_bye_points'
+                )
+                max_byes = WebContext.form_data_to_int(
+                    data, 'max_byes'
+                )
+                last_rounds_no_byes = WebContext.form_data_to_int(
+                    data, 'last_rounds_no_byes'
+                )
             case 'delete':
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
+
+        if action == 'update':
+            tie_breaks = []
+            for index in range(1, 4):
+                if tie_break := PapiTieBreak(
+                    WebContext.form_data_to_int(
+                        data, f'tie_break_{index}', PapiTieBreak.NONE
+                    )
+                ).to_tie_break(web_context.admin_tournament.rounds):
+                    tie_breaks.append(tie_break)
+
         return StoredTournament(
             id=web_context.admin_tournament.id
             if action
@@ -205,7 +236,12 @@ class TournamentAdminController(AbstractEventAdminController):
             chessevent_tournament_name=chessevent_tournament_name,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
+            first_board_number=first_board_number,
+            paired_bye_points=paired_bye_points,
+            max_byes=max_byes,
+            last_rounds_no_byes=last_rounds_no_byes,
             check_in_open=check_in_open,
+            tie_breaks=tie_breaks,
             errors=errors,
         )
 
@@ -274,6 +310,13 @@ class TournamentAdminController(AbstractEventAdminController):
                     chessevent_tournament_name: str | None = None
                     record_illegal_moves: int | None = None
                     rules: str | None = None
+                    first_board_number: int | None = None
+                    paired_bye_points: float | None = None
+                    max_byes: int | None = None
+                    last_rounds_no_byes: int | None = None
+                    tie_break_1: PapiTieBreak | None = None
+                    tie_break_2: PapiTieBreak | None = None
+                    tie_break_3: PapiTieBreak | None = None
                     match action:
                         case 'update' | 'clone':
                             path = web_context.admin_tournament.stored_tournament.path
@@ -296,6 +339,10 @@ class TournamentAdminController(AbstractEventAdminController):
                                 admin_tournament.stored_tournament.record_illegal_moves
                             )
                             rules = admin_tournament.stored_tournament.rules
+                            first_board_number = admin_tournament.stored_tournament.first_board_number
+                            paired_bye_points = admin_tournament.stored_tournament.paired_bye_points
+                            max_byes = admin_tournament.stored_tournament.max_byes
+                            last_rounds_no_byes = admin_tournament.stored_tournament.last_rounds_no_byes
                         case 'create' | 'delete':
                             pass
                         case _:
@@ -309,6 +356,10 @@ class TournamentAdminController(AbstractEventAdminController):
                                 web_context.admin_tournament.stored_tournament.ffe_id
                             )
                             ffe_password = web_context.admin_tournament.stored_tournament.ffe_password
+                            if web_context.admin_tournament.file_exists:
+                                (
+                                    tie_break_1, tie_break_2, tie_break_3
+                                ) = web_context.admin_tournament.papi_tie_breaks
                         case 'clone' | 'create' | 'delete':
                             pass
                         case _:
@@ -349,8 +400,15 @@ class TournamentAdminController(AbstractEventAdminController):
                             record_illegal_moves
                         ),
                         'rules': WebContext.value_to_form_data(rules),
+                        'first_board_number': WebContext.value_to_form_data(first_board_number),
+                        'paired_bye_points': WebContext.value_to_form_data(paired_bye_points),
+                        'max_byes': WebContext.value_to_form_data(max_byes),
+                        'last_rounds_no_byes': WebContext.value_to_form_data(last_rounds_no_byes),
                         'ffe_id': WebContext.value_to_form_data(ffe_id),
                         'ffe_password': WebContext.value_to_form_data(ffe_password),
+                        'tie_break_1': WebContext.value_to_form_data(tie_break_1),
+                        'tie_break_2': WebContext.value_to_form_data(tie_break_2),
+                        'tie_break_3': WebContext.value_to_form_data(tie_break_3),
                     }
                     stored_tournament: StoredTournament = (
                         cls._admin_validate_tournament_update_data(
@@ -364,6 +422,8 @@ class TournamentAdminController(AbstractEventAdminController):
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
                     ),
+                    'paired_bye_points_options': cls._get_paired_bye_points_options(),
+                    'tie_break_options': cls._get_tie_break_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -564,6 +624,9 @@ class TournamentAdminController(AbstractEventAdminController):
                     stored_tournament = event_database.update_stored_tournament(
                         stored_tournament
                     )
+                    Tournament(
+                        web_context.admin_event, stored_tournament
+                    ).update_papi_database_from_stored_tournament()
                     event_database.commit()
                     Message.success(
                         request,
@@ -658,3 +721,66 @@ class TournamentAdminController(AbstractEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
+
+    @get(
+        path='/admin/player-print-view/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-player-print-view',
+    )
+    async def htmx_tournament_player_print_view(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        split: str | None = None,
+    ) -> Template | ClientRedirect:
+        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            admin_event_tab='tournaments',
+            tournament_id=tournament_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        
+        admin_tournament: Tournament = web_context.admin_tournament
+        
+        template_context: dict[str, Any] = self._get_admin_event_render_context(web_context)
+
+        playersInTournament = [ player for player in admin_tournament.players_by_id.values() if player.tournament.id == tournament_id ]
+        splitBy = PrintSplit.from_str(split) if split else PrintSplit.NoSplit
+        if splitBy == PrintSplit.NoSplit:
+            splitPlayers = { "": playersInTournament }
+        else:
+            splitFns = {
+                PrintSplit.Category: lambda p: p.category.short_name,
+                PrintSplit.Club: lambda p: p.club_tuple.club,
+                PrintSplit.League: lambda p: p.league_tuple.league,
+                PrintSplit.Federation: lambda p: p.federation_tuple.federation,
+            }
+
+            if splitBy == PrintSplit.Category:
+                splitPlayers = { category.short_name: [] for category in PlayerCategory }
+            else:
+                splitPlayers = defaultdict(list)
+
+            # Split players by group
+            for player in playersInTournament:
+                splitPlayers[splitFns[splitBy](player)].append(player)
+
+            # Sort players by last name
+            for (split, players) in splitPlayers.items():
+                splitPlayers[split] = sorted(players, key=lambda p: p.last_name)
+
+            if splitBy == PrintSplit.Category:
+                # Filter out empty categories
+                splitPlayers = { key: splitPlayers[key] for key in splitPlayers.keys() if len(splitPlayers[key]) > 0 }
+            else:
+                # Sort by key
+                splitPlayers = { key: splitPlayers[key] for key in sorted(splitPlayers.keys())}
+
+        template_context |= {
+            'tournament': admin_tournament,
+            'players': splitPlayers,
+        }
+        return HTMXTemplate(template_name='admin/print/players.html', context=template_context)

@@ -1,7 +1,7 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ event_visibility_icon(admin_event, 'pe-1') }}
+    {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
     {{ admin_event.name }} - {{ _('Rotators') }}
 {% endblock %}
 
@@ -9,7 +9,7 @@
     {% with id='show-details-on-rotator-list', name='admin_rotators_show_details', show=admin_rotators_show_details %}
         <div
             class="form-check form-switch d-inline-block pe-2"
-            {{ tooltip_attributes('info', _('Enable/disable the details of the rotators on the cards below.'), 'top') }}
+            {{ macros.tooltip_attributes('info', _('Enable/disable the details of the rotators on the cards below.'), 'top') }}
         >
             <input
                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
@@ -24,7 +24,7 @@
             <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
-    <span {{ tooltip_attributes('info', 'Refresh this page.', 'top') }}>
+    <span {{ macros.tooltip_attributes('info', 'Refresh this page.', 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
             hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='rotators') }}"
@@ -36,7 +36,7 @@
         </button>
     </span>
     <span
-        {{ tooltip_attributes(
+        {{ macros.tooltip_attributes(
             'info',
             _('Add a rotator to the event.')
             if admin_event.screens_by_uniq_id else
@@ -47,9 +47,11 @@
         <button
             class="btn btn-primary text-nowrap ms-1"
             hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
             {% if not admin_event.screens_by_uniq_id %}
                 disabled
             {% endif %}

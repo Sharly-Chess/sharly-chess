@@ -4,7 +4,7 @@
                 class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
         ><i
                 class="bi-funnel {% if admin_players_filter_clubs|length not in [0, (admin_players_clubs|length)] %}text-danger{% endif %}"
-                {{ tooltip_attributes('info', _('Filter the clubs.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Filter the clubs.'), 'top') }}
         ></i></button>
         <ul class="dropdown-menu players-filter-club p-0">
             {% with name='admin_players_filter_clubs' %}

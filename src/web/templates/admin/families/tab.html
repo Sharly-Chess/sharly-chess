@@ -1,7 +1,7 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ event_visibility_icon(admin_event, 'pe-1') }}
+    {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
     {{ admin_event.name }} - {{ _('Screen families') }}
 {% endblock %}
 
@@ -9,7 +9,7 @@
     {% with id='admin-families-show-details', name='admin_families_show_details', show=admin_families_show_details %}
         <div
                 class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ tooltip_attributes('info', _('Enable/disable the details of the screen families on the cards below.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Enable/disable the details of the screen families on the cards below.'), 'top') }}
         >
             <input
                 hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
@@ -22,7 +22,7 @@
                 {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
-    <span class="pe-3" {{ tooltip_attributes('info', 'Refresh this page.', 'top') }}>
+    <span class="pe-3" {{ macros.tooltip_attributes('info', 'Refresh this page.', 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
             hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='families') }}"
@@ -36,7 +36,7 @@
     <span
             class="dropdown-end pe-0"
             {% if not admin_event.tournaments_by_id %}
-                {{ tooltip_attributes(
+                {{ macros.tooltip_attributes(
                     'info',
                     _('You must create a tournament before creating a screen family.'),
                     'left'
@@ -64,10 +64,12 @@
                 <li
                     class="dropdown-item text-start cursor-pointer"
                     hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
-                    preload
-                    hx-target="body"
+                    hx-target="#modal-wrapper"
                     hx-indicator="#please-wait"
-                    {{ tooltip_attributes('info', family_data.tooltip_text, 'left') }}
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                    {{ macros.tooltip_attributes('info', family_data.tooltip_text, 'left') }}
                 >
                     <i class="{{ family_data['icon_class'] }}"></i>
                     {{ family_data['title'] }}

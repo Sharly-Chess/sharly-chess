@@ -200,6 +200,8 @@ class ScreenSet:
             last = self.last if self.last is not None else len(items)
             selected_slice = slice(first, last)
             selected_items = items[selected_slice]
+            if not selected_items:
+                return
             self.first_item = selected_items[0]
             self.last_item = selected_items[-1]
         # now split in columns

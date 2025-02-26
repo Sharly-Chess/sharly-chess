@@ -7,13 +7,16 @@ from enum import Enum, StrEnum, IntEnum, auto
 from itertools import islice
 from logging import Logger
 from math import floor
-from typing import Self
+from typing import Self, TYPE_CHECKING
 
 from common.i18n import _
 from common.logger import get_logger
 
 logger: Logger = get_logger()
 
+if TYPE_CHECKING:
+    from data.player import Player
+    from data.tournament import Tournament
 
 try:
     import itertools
@@ -557,107 +560,6 @@ class TournamentPairing(IntEnum):
             TournamentPairing.SAD,
             TournamentPairing.STANDARD
         )
-
-
-class TournamentTieBreak(IntEnum):
-    """An enumeration representing the supported types of tournament
-    tie breaks."""
-
-    NONE = 0
-    BUCHHOLZ = 1
-    BUCHHOLZ_CUT_TOP = 2
-    BUCHHOLZ_CUT_TOP_BOTTOM = 3
-    CUMULATIVE = 4
-    PERFORMANCE = 5
-    BUCHHOLZ_SUM = 6
-    WINS = 7
-    KASHDAN = 8
-    KOYA = 9
-    SONNENBORN_BERGER = 10
-
-    @classmethod
-    def from_papi_value(cls, value) -> Self:
-        match value:
-            case '':
-                return cls.NONE
-            case 'Solkoff':
-                return cls.BUCHHOLZ
-            case 'Brésilien':
-                return cls.BUCHHOLZ_CUT_TOP
-            case 'Harkness':
-                return cls.BUCHHOLZ_CUT_TOP_BOTTOM
-            case 'Cumulatif':
-                return cls.CUMULATIVE
-            case 'Performance':
-                return cls.PERFORMANCE
-            case 'SommeDesBuchholz':
-                return cls.BUCHHOLZ_SUM
-            case 'Nombre de Victoires':
-                return cls.WINS
-            case 'Kashdan':
-                return cls.KASHDAN
-            case 'Koya':
-                return cls.KOYA
-            case 'Sonnenborn-Berger':
-                return cls.SONNENBORN_BERGER
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case TournamentTieBreak.NONE:
-                return ''
-            case TournamentTieBreak.BUCHHOLZ:
-                return 'Solkoff'
-            case TournamentTieBreak.BUCHHOLZ_CUT_TOP:
-                return 'Brésilien'
-            case TournamentTieBreak.BUCHHOLZ_CUT_TOP_BOTTOM:
-                return 'Harkness'
-            case TournamentTieBreak.CUMULATIVE:
-                return 'Cumulatif'
-            case TournamentTieBreak.PERFORMANCE:
-                return 'Performance'
-            case TournamentTieBreak.BUCHHOLZ_SUM:
-                return 'SommeDesBuchholz'
-            case TournamentTieBreak.WINS:
-                return 'Nombre de Victoires'
-            case TournamentTieBreak.KASHDAN:
-                return 'Kashdan'
-            case TournamentTieBreak.KOYA:
-                return 'Koya'
-            case TournamentTieBreak.SONNENBORN_BERGER:
-                return 'Sonnenborn-Berger'
-            case _:
-                raise ValueError(f'Unknown tie break: {self}')
-
-    def __str__(self) -> str:
-        # TODO Translate this (if used)!
-        match self:
-            case TournamentTieBreak.NONE:
-                return 'Aucun'
-            case TournamentTieBreak.BUCHHOLZ:
-                return 'Buchholz'
-            case TournamentTieBreak.BUCHHOLZ_CUT_TOP:
-                return 'Buchholz tronqué'
-            case TournamentTieBreak.BUCHHOLZ_CUT_TOP_BOTTOM:
-                return 'Buchholz médian'
-            case TournamentTieBreak.CUMULATIVE:
-                return 'Cumulatif'
-            case TournamentTieBreak.PERFORMANCE:
-                return 'Performance'
-            case TournamentTieBreak.BUCHHOLZ_SUM:
-                return 'Somme des buchholz'
-            case TournamentTieBreak.WINS:
-                return 'Nombre de victoire'
-            case TournamentTieBreak.KASHDAN:
-                return 'Kashdan'
-            case TournamentTieBreak.KOYA:
-                return 'Koya'
-            case TournamentTieBreak.SONNENBORN_BERGER:
-                return 'Sonnenborn-Berger'
-            case _:
-                raise ValueError(f'Unknown tie break: {self}')
 
 
 class PlayerGender(IntEnum):
@@ -1388,3 +1290,56 @@ def performance_bonus(
     if fractional_score < 0.5:
         bonus *= -1
     return bonus
+
+class PrintSplit(StrEnum):
+    NoSplit = auto()
+    Category = auto()
+    Club = auto()
+    League = auto()
+    Federation = auto()
+
+    def __str__(self) -> str:
+        match self:
+            case PrintSplit.NoSplit:
+                return _('No split')
+            case PrintSplit.Category:
+                return _('Category')
+            case PrintSplit.Club:
+                return _('Club')
+            case PrintSplit.League:
+                return _('League')
+            case PrintSplit.Federation:
+                return _('Federation')
+            case _:
+                raise ValueError(f'Invalid print split type: {self}')
+
+    @classmethod
+    def from_str(cls, value: str) -> Self:
+        match value:
+            case 'no-split':
+                return cls.NoSplit
+            case 'category':
+                return cls.Category
+            case 'club':
+                return cls.Club
+            case 'league':
+                return cls.League
+            case 'federation':
+                return cls.Federation
+            case _:
+                raise ValueError(f'Invalid print split type: {value}')
+
+    def to_str(self) -> Self:
+        match self:
+            case self.NoSplit:
+                return 'no-split'
+            case self.Category:
+                return 'category'
+            case self.Club:
+                return 'club'
+            case self.League:
+                return 'league'
+            case self.Federation:
+                return 'federation'
+            case _:
+                raise ValueError(f'Invalid screen type: {self}')

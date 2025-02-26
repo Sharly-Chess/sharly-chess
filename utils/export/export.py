@@ -7,6 +7,7 @@ from logging import Logger
 from PyInstaller.__main__ import run
 
 from common import BASE_DIR
+from database.sqlite.event_migration import EventMigrationManager
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import trusted_locales, untrusted_locales
 from common.papi_web_config import PapiWebConfig
@@ -67,14 +68,22 @@ def build_exe():
         '--hiddenimport=database',
         '--hiddenimport=ffe',
         '--hiddenimport=web',
+        '--hiddenimport=babel.numbers',
+        '--hiddenimport=pyexcel_io.writers',
         '--paths=.',
         '--icon=src/web/static/images/papi-web.ico',
         'src/papi_web.py',
     ]
+    for module in EventMigrationManager().migration_modules:
+        pyinstaller_params.append(f'--hiddenimport={module}')
+
     files: list[Path] = []
     web_dir = SOURCE_DIR / 'web'
     files += [file for file in (web_dir / 'templates').glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
+    files += [
+        file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()
+    ]
     files += [
         file for file in Path(static_dir, 'images').glob('**/*') if file.is_file()
     ]
@@ -115,11 +124,18 @@ def build_exe():
     files += [
         htmx_sortable_file,
     ]
+    dynamic_select_dir = lib_dir / 'dynamic-select'
+    files += [
+        dynamic_select_dir / 'dynamic-select.js',
+        dynamic_select_dir / 'dynamic-select.css',
+    ]
     jstree_dir = lib_dir / 'jstree' / f'jstree-{PapiWebConfig.jstree_version}-dist'
     files += [file for file in jstree_dir.glob('**/*') if file.is_file()]
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [
         sql_dir / 'create_event.sql',
+        sql_dir / 'create_fide.sql',
+        sql_dir / 'create_ffe.sql',
     ]
     yml_dir: Path = SOURCE_DIR / 'database' / 'yml'
     files += list(yml_dir.glob('*.yml'))
@@ -128,6 +144,7 @@ def build_exe():
     files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
     files += [BbpPairings().executable_path]
     for file in files:
+        print(file)
         pyinstaller_params.append(
             f'--add-data={file};{file.parent.relative_to(BASE_DIR)}'
         )

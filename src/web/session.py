@@ -35,14 +35,14 @@ class SessionHandler:
         cls,
         request: HTMXRequest,
         tournament_id: int,
-        round: int,
+        round_: int,
         board_id: int,
     ):
         request.session[cls.LAST_RESULT_UPDATED_SESSION_KEY]: dict[
             str, int | str | float
         ] = {
             'tournament_id': tournament_id,
-            'round': round,
+            'round': round_,
             'board_id': board_id,
             'expiration': time.time() + 20,
         }

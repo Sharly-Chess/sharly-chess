@@ -1,18 +1,5 @@
 <!DOCTYPE html>
-{% from 'macros.j2' import
-    section_title,
-    tooltip_attributes,
-    event_visibility_icon,
-    screen_type_icon,
-    screen_visibility_icon,
-    ffe_licence,
-    rotator_icon,
-    rotator_visibility_icon,
-    tooltip_script,
-    background_script,
-    theme_script,
-    copyright_script
-%}
+{% import 'macros.j2' as macros %}
 <html>
     <head>
         {% if not request.htmx %}
@@ -61,6 +48,24 @@
                   window.addEventListener('resize', setSize);
                   window.addEventListener('htmx:afterSettle', setSize);
             </script>
+            <script>
+                function closeModal () {
+                    var myModalEl = document.getElementById('modal-wrapper');
+                    var modal = bootstrap.Modal.getInstance(myModalEl)
+                    modal.hide();
+                }
+
+                window.addEventListener("do_print", function(event) {
+                    closeModal();
+                    window.open(
+                        window.location.origin + 
+                        '/admin/player-print-view/' + 
+                        event.detail.event_uniq_id + '/' + 
+                        event.detail.tournament_id +
+                        '?split=' + event.detail.split
+                    , "PrintWindow");
+                })
+            </script>
         {% endif %}
     </head>
     <body
@@ -105,7 +110,7 @@
                 class="flex-grow-1 d-flex align-items-end justify-content-center start-0 position-sticky"
                 style="width: var(--vw, 100vw);"
             >
-                {# copyright may be hidden by the copyright_script_macro #}
+                {# copyright may be hidden by the macros.copyright_script_macro #}
                 <div
                     id="copyright"
                     class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
@@ -126,17 +131,13 @@
             style="display: none"
             aria-hidden="false"
             data-bs-backdrop="static"
-            data-bs-keyboard="false"
-            tabindex="-1">
-            <!-- block modal -->
-            {% block modal %}
-                MODAL
-            {% endblock modal %}
-            <!-- end block modal -->
+            tabindex="-1"
+        >
+            {% include 'empty_modal.html' %}
         </div>
-        {{ tooltip_script() }}
-        {{ background_script(background_info) }}
-        {{ theme_script(theme) }}
+        {{ macros.tooltip_script() }}
+        {{ macros.background_script(background_info) }}
+        {{ macros.theme_script(theme) }}
         <script>
             $('body').css('padding-right', '0');
         </script>
@@ -144,7 +145,7 @@
     {% if not request.htmx %}
         <script src="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js') }}"></script>
         {# call this again here once Bootstrap is initialized since the first call did nothing #}
-        {{ tooltip_script() }}
+        {{ macros.tooltip_script() }}
         <script>
             var confirm_when_leaving = true;
             document.addEventListener('htmx:beforeOnLoad', function(evt) {

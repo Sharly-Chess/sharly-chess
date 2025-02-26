@@ -67,7 +67,7 @@ class AccessDatabase:
         """Returns an iterator of dictionaries from the last executed query.
         Each dictionary is of the format {column_name : value, ...}."""
         columns = [column[0] for column in self.cursor.description]
-        for row in self.cursor.fetchall():
+        while row := self.cursor.fetchone():
             yield dict(zip(columns, row))
 
     def _fetchone(self) -> dict[str, Any]:

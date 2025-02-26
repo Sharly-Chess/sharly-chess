@@ -997,6 +997,134 @@ msgstr "styrelser {board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Turnering {tournament_uniq_id} ({numbers_str})"
 
+#: src/data/tie_break.py
+msgid "None"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz cut bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Median Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Progressive scores"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of wins"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Kashdan"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Koya"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut top"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut Bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Played modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Papi legacy"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Limit"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Exclude players"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of games won"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Games played with black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Games won with black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Rounds one Elected to Play"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average of opponents Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonneborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average rating of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Tournament performance rating"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average performance rating of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Perfect tournament performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average perfect performance of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Direct encounter"
+msgstr ""
+
 #: src/data/timer.py
 #, ai_translation
 msgid "Time is not defined."
@@ -1128,15 +1256,11 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
-# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
-# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
-# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
-# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1173,12 +1297,6 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
-# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
@@ -1189,9 +1307,6 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
-# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
-# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
-# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -1403,6 +1518,27 @@ msgstr "Resultatinmatning"
 #, ai_translation
 msgid "Parings by player"
 msgstr "Parningar per spelare"
+
+#: src/data/util.py
+msgid "No split"
+msgstr ""
+
+#: src/data/util.py
+msgid "Category"
+msgstr ""
+
+#: src/data/util.py
+msgid "Club"
+msgstr ""
+
+#: src/data/util.py
+msgid "League"
+msgstr ""
+
+#: src/data/util.py src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "Federation"
+msgstr "Förbund"
 
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
@@ -1742,6 +1878,11 @@ msgstr "Fel vid uppdatering av FFE- databasen."
 
 #: src/web/server_engine.py
 #, ai_translation
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr "Automatiskt installera BBP parningar för utvecklare med PAPI_WEB_EXPERIMENTAL=1."
+
+#: src/web/server_engine.py
+#, ai_translation
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
 
@@ -1808,6 +1949,14 @@ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch
 msgstr "Evenemanget [{uniq_id}] har raderats, databasen har arkiverats ({arch})."
 
 #: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Please choose the tournament."
+msgstr "Välj turneringen."
+
+#: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
 msgid "Personal"
 msgstr "Personligt"
@@ -1834,13 +1983,6 @@ msgstr "Tecken [{char}] är inte tillåtet."
 #, ai_translation
 msgid "Family [{uniq_id}] already exists."
 msgstr "Familjen [{uniq_id}] finns redan."
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/player_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "Please choose the tournament."
-msgstr "Välj turneringen."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
@@ -1883,6 +2025,16 @@ msgstr[1] "{num} olagliga förflyttningar max"
 #, ai_translation
 msgid "By default - {option}"
 msgstr "Som standard - {option}"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Full point bye"
+msgstr "Fullständigt led-efter-datum"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Half point bye"
+msgstr "Halva ledet efter"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -3008,19 +3160,56 @@ msgid "Delete"
 msgstr "Ta bort"
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Cancel"
 msgstr "Avbryt"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Print"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Turnering"
+
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Tournament:"
+msgstr "Turnering:"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The tournament to print."
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Options"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Split by:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "How to split the results."
+msgstr ""
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
@@ -3052,11 +3241,6 @@ msgstr "Unikt ID"
 #, ai_translation
 msgid "Date"
 msgstr "Datum"
-
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Federation"
-msgstr "Förbund"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -3232,8 +3416,6 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
-# Error: translation [Ingen känd frekvens:] is much too long compared to
-# initial [no]
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -3365,14 +3547,6 @@ msgstr "T.ex. min skärmfamilj"
 #, ai_translation, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr "Namn på skärmfamiljen, valfritt. Följande polletter ersätts automatiskt med brädnummer eller spelarnas namn: %%f=först, %%l=senaste, %%t=turnering."
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#, ai_translation
-msgid "Tournament:"
-msgstr "Turnering:"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3689,8 +3863,6 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
-# Error: translation [Ej tillämpligt] is much too long compared to initial
-# [No]
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "No"
@@ -3817,7 +3989,7 @@ msgid "Open/close check-in."
 msgstr "Öppna/stänga incheckningen."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Check-in"
 msgstr "Incheckning"
@@ -4186,12 +4358,6 @@ msgid "The player's gender."
 msgstr "Spelarens kön."
 
 #: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/user/screen/results.html
-#, ai_translation
-msgid "Tournament"
-msgstr "Turnering"
-
-#: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "The player's tournament."
 msgstr "Spelarens turnering."
@@ -4360,6 +4526,46 @@ msgstr "Anmärkning:"
 #, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
+
+#: src/web/templates/admin/players/print_view.html
+msgid "List of players"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr ""
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -4948,6 +5154,12 @@ msgstr "Dra uppsättningarna för att beställa dem."
 msgid "Add a set"
 msgstr "Lägg till en uppsättning"
 
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal.html
+#, ai_translation
+msgid "Close"
+msgstr "Stäng"
+
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
 msgid "The tournament of which you want to show the pairings, mandatory."
@@ -5148,11 +5360,6 @@ msgstr "Dra timmarna för att beställa dem."
 #, ai_translation
 msgid "Add a hour"
 msgstr "Lägg till en timme"
-
-#: src/web/templates/admin/timers/timer_hours_modal.html
-#, ai_translation
-msgid "Close"
-msgstr "Stäng"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
@@ -5593,6 +5800,60 @@ msgstr "Det maximala antalet olagliga drag som kan spelas in per runda för en s
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
+msgid "Pairings"
+msgstr "Paraplyer"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "First board number:"
+msgstr "Första brädnumret:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgstr "Antalet första styrelse i turneringen (om inte satt, standard till %(default)d)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Paired bye points:"
+msgstr "Parad bye punkter:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "The points scored by players who are paired bye."
+msgstr "Poängen som görs av spelare som är parade bye."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Max byes:"
+msgstr "Max hej då:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgstr "Maximalt antal byten en spelare kan låtsas att (om inte satt, standard till %(default)d)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Last rounds no byes:"
+msgstr "Sista ronden inga avfarter:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgstr "Antalet sista rundor där en spelare inte kan få några avies (om inte satt, standard till %(default)d)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Tie-breaks"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "Tie-break #%(index)d:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Create and add default screens"
 msgstr "Skapa och lägg till standardskärmar"
 
@@ -5671,77 +5932,77 @@ msgstr "Rotator roterar automatiskt mellan flera skärmar."
 msgid "Go back to the events page."
 msgstr "Gå tillbaka till händelsesidan."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please enter the password to enter results:"
 msgstr "Ange lösenordet för att ange resultat:"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Event"
 msgstr "Händelse"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Ett lösenord krävs för att ange resultat för evenemanget %(event_uniq_id)s."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Password"
 msgstr "Lösenord"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please ask the organizer to get the password."
 msgstr "Be arrangören att få lösenordet."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Enter the result"
 msgstr "Skriv in resultatet"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "WHITE WINS"
 msgstr "VITA VINSTER"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DRAW"
 msgstr "DRÅK"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BLACK WINS"
 msgstr "SVARTA VINSEN"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BY FORFEIT"
 msgstr "GENOM UTFÄRDANDE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DOUBLE"
 msgstr "DUBBEL"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "FORFEIT"
 msgstr "UTFÄRDANDE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CLEAR THE RESULT"
 msgstr "GODKÄNN RESULTATET"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-IN"
 msgstr "KONTROLLINSTRUMENT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-OUT"
 msgstr "KONTROLL AV KONTROLLEN"
@@ -5791,8 +6052,6 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
-# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
-# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
@@ -5878,4 +6137,22 @@ msgstr "vs"
 
 #~ msgid "pairings by board"
 #~ msgstr "Parningar per plan"
+
+#~ msgid "Zero point bye"
+#~ msgstr ""
+
+#~ msgid "The number of points by players who are paired bye."
+#~ msgstr ""
+
+#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
+#~ msgstr ""
+
+#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
+#~ msgstr ""
+
+#~ msgid "The number of points scored by players who are paired bye."
+#~ msgstr ""
+
+#~ msgid "Screen families allow to group screens together."
+#~ msgstr ""
 

@@ -20,7 +20,7 @@
                     hx-trigger="click, keyup[key=='Enter']"
                     tabindex="0"
                 {% endif %}
-                {{ tooltip_attributes('warning' if l_info.experimental else 'info', l_info.name_and_warning, 'left') }}
+                {{ macros.tooltip_attributes('warning' if l_info.experimental else 'info', l_info.name_and_warning, 'left') }}
             >
                 <img
                     src="{{l_info.flag_url}}"

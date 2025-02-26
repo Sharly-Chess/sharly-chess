@@ -64,12 +64,12 @@ def run_babel_command(
 class LocaleInfo:
     def __init__(
         self,
-        id: str,
+        id_: str,
         locale_dir: Path,
         trusted: bool,
     ):
-        self.id: str = id
-        self.default: bool = id == default_locale
+        self.id: str = id_
+        self.default: bool = id_ == default_locale
         self.locale_dir: Path = locale_dir
         self.po_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.po'
         self.mo_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.mo'

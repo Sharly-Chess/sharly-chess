@@ -19,11 +19,12 @@
             </p>
             {% if not admin_screen_set and admin_screen.screen_sets_sorted_by_order|length > 1 %}
                 <form
-                        class="sortable"
-                        hx-patch="{{ url_for('admin-screen-reorder-sets', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-                        hx-target="body"
-                        hx-trigger="end"
-                        hx-indicator="#please-wait">
+                    class="sortable"
+                    hx-patch="{{ url_for('admin-screen-reorder-sets', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                    hx-target="body"
+                    hx-trigger="end"
+                    hx-indicator="#please-wait"
+                >
             {% endif %}
                 {% for screen_set in admin_screen.screen_sets_sorted_by_order %}
                     {% include 'screen_sets_modal_set_div.html' %}
@@ -36,14 +37,14 @@
             <div class="row">
                 <div class="col col-6 text-start">
                     <button
-                            class="btn btn-primary text-nowrap"
-                            {% if admin_screen_set %}
-                                disabled
-                            {% else %}
-                                hx-post="{{ url_for('admin-screen-set-add', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            {% endif %}
+                        class="btn btn-primary text-nowrap"
+                        {% if admin_screen_set %}
+                            disabled
+                        {% else %}
+                            hx-post="{{ url_for('admin-screen-set-add', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% endif %}
                     >
                         <i class="bi-plus-square-fill pe-1"></i>
                         {{ _('Add a set') }}
@@ -51,16 +52,17 @@
                 </div>
                 <div class="col col-6 text-end">
                     <button
-                            class="btn btn-secondary text-nowrap"
-                            {% if admin_screen_set %}
-                                disabled
-                            {% else %}
-                                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
-                                preload
-                                hx-target="body"
-                                hx-trigger="click, keyup[key=='Escape'] from:body"
-                                hx-indicator="#please-wait"
-                            {% endif %}
+                        type="button"
+                        class="btn btn-secondary text-nowrap"
+                        {% if admin_screen_set %}
+                            disabled
+                        {% else %}
+                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+                            preload
+                            hx-target="body"
+                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                            hx-indicator="#please-wait"
+                        {% endif %}
                     >
                         <i class="bi-x-circle-fill"></i>
                         {{ _('Close') }}
@@ -70,6 +72,4 @@
         </div>
     </div>
 </div>
-<script>
-    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
-</script>
+

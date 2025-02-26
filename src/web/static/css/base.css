@@ -18,11 +18,10 @@ body {
 	overflow: auto !important;
 }
 
-.input-group:has(.is-invalid) ~ .invalid-feedback,
-.input-group:has(.is-invalid) ~ .invalid-tooltip {
+.pw-input-group:has(.is-invalid) ~ .invalid-feedback,
+.pw-input-group:has(.is-invalid) ~ .invalid-tooltip {
   display: block;
 }
-
 
 .nav-underline .nav-link.active, .nav-underline .show > .nav-link {
     font-weight: 400;

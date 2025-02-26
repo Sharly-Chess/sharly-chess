@@ -114,15 +114,15 @@
         {% set _tooltip_text='Unknown sort [%(sort)s]'|format(sort=sort) %}
     {% endif %}
     <i
-            class="{{ icon }} {% if admin_players_sort != sort %}cursor-pointer{% else %}text-danger{%endif %}"
-            {% if admin_players_sort != sort %}
-                hx-get="{{ url }}"
-                hx-vals='{"admin_players_sort": "{{ sort }}"}'
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
-            {% endif %}
-            {{ tooltip_attributes('info', _tooltip_text, 'top') }}
+        class="{{ icon }} {% if admin_players_sort != sort %}cursor-pointer{% else %}text-danger{%endif %}"
+        {% if admin_players_sort != sort %}
+            hx-get="{{ url }}"
+            hx-vals='{"admin_players_sort": "{{ sort }}"}'
+            preload
+            hx-target="body"
+            hx-indicator="#please-wait"
+        {% endif %}
+        {{ tooltip_attributes('info', _tooltip_text, 'top') }}
     ></i>
     <!-- end admin_players_sort_link() -->
 {% endmacro %}
@@ -213,8 +213,10 @@ hx_indicator_img: the URL of the image of the indicator, optional
             
             <div
                 class="
-                input-group
-                {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
+                    pw-input-group
+                    {% if input_type == 'password' %}input-group{% endif %}
+                    {% if hx_indicator_img %}d-flex align-items-center{% endif %}
+                    {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
                 "
             >
                 {% if input_type == 'select' %}
@@ -292,15 +294,15 @@ hx_indicator_img: the URL of the image of the indicator, optional
                     {% if input_type == 'password' %}
                         <i
                             id="{{ id }}-toggle-password"
-                            class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %}"
+                            class="input-group-text bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %}"
                         ></i>
                     {% endif %}
                     {% if hx_indicator_img %}
                         <img
-                                id="{{ id }}_indicator"
-                                class="htmx-indicator"
-                                src="{{ hx_indicator_img }}"
-                                style="height: 2em; margin-left: -45px; margin-top: 5px; z-index: 3;"
+                            id="{{ id }}_indicator"
+                            class="htmx-indicator"
+                            src="{{ hx_indicator_img }}"
+                            style="height: 1.5em; margin-left: -40px; z-index: 3;"
                         />
                     {% endif %}
                 {% endif %}
