@@ -448,6 +448,7 @@ class EventDatabase(SQLiteDatabase):
                                     paired_bye_points=None,
                                     max_byes=None,
                                     last_rounds_no_byes=None,
+                                    tie_breaks=None,
                                 )
                             )
                             tournament_ids_by_uniq_id[tournament_uniq_id] = (
@@ -963,7 +964,7 @@ class EventDatabase(SQLiteDatabase):
         EventMigrationManager().migrate(self, PapiWebConfig.version)
         if initial_version != self.version:
             logger.info(
-                'Database %s has been upgraded to from version %s to version %s.',
+                'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
                 initial_version,
                 self.version,
@@ -1373,7 +1374,8 @@ class EventDatabase(SQLiteDatabase):
             # needed to open event databases when version < 2.4.11 before checking the version
             last_ffe_rules_upload=row.get('last_ffe_rules_upload', 0.0),
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
-            tie_breaks=cls._load_tie_breaks_from_database_field(row['tie_breaks']),
+            # needed to open event databases when version < 2.4.23 before checking the version
+            tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
         )
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
@@ -1572,7 +1574,7 @@ class EventDatabase(SQLiteDatabase):
 
     @classmethod
     def _load_tie_breaks_from_database_field(
-        cls, tie_breaks_field: str
+        cls, tie_breaks_field: str | None
     ) -> list[TieBreak] | None:
         """load tie breaks from the database field"""
         tie_break_list = cls.load_json_from_database_field(tie_breaks_field)

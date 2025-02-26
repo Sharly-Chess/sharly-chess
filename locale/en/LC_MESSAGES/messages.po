@@ -2577,6 +2577,7 @@ msgstr ""
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 msgid "Cancel"
 msgstr ""
 
@@ -3254,7 +3255,7 @@ msgid "Open/close check-in."
 msgstr ""
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Check-in"
 msgstr ""
 
@@ -4846,64 +4847,64 @@ msgstr ""
 msgid "Go back to the events page."
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Please enter the password to enter results:"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Event"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Password"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Please ask the organizer to get the password."
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Enter the result"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "WHITE WINS"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "DRAW"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "BLACK WINS"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "BY FORFEIT"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "DOUBLE"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "FORFEIT"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CLEAR THE RESULT"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CHECK-IN"
 msgstr ""
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CHECK-OUT"
 msgstr ""
 
