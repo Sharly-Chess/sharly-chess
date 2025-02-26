@@ -45,9 +45,15 @@ class EventDatabase(SQLiteDatabase):
     The SQLite database class for Papi-web events.
     """
 
-    def __init__(self, uniq_id: str, write: bool = False):
+    def __init__(
+        self,
+        uniq_id: str,
+        write: bool = False,
+        database_initialized: bool = True,
+    ):
         self.uniq_id = uniq_id
         self._version: Version | None = None
+        self._database_initialized: bool = database_initialized
         super().__init__(self.event_database_path(self.uniq_id), write)
 
     @staticmethod
@@ -150,19 +156,26 @@ class EventDatabase(SQLiteDatabase):
             event_stop = time.mktime(
                 datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple()
             )
-            with open(
-                PapiWebConfig.database_sql_path / 'create_event.sql', encoding='utf-8'
-            ) as f:
-                papi_web_version: Version = PapiWebConfig.version
-                self._create(
-                    f.read().format(
-                        version=f'{papi_web_version.major}.{papi_web_version.minor}.{papi_web_version.micro}',
-                        name=self.uniq_id,
-                        start=event_start,
-                        stop=event_stop,
-                        now=time.time(),
+
+            self._create()
+            with EventDatabase(self.uniq_id, True, False) as event_database:
+                from database.sqlite.event_migration import EventMigrationManager
+
+                version = PapiWebConfig.version
+                EventMigrationManager().migrate(event_database, version)
+                event_database._execute(
+                    "INSERT INTO `info` "
+                    "(`version`, `name`, `start`, `stop`, `last_update`) "
+                    "VALUES(?, ?, ?, ?, ?)",
+                    (
+                        f'{version.major}.{version.minor}.{version.micro}',
+                        self.uniq_id,
+                        event_start,
+                        event_stop,
+                        time.time(),
                     )
                 )
+                event_database.commit()
             logger.info('Database [%s] has been created.', self.file)
             if populate:
                 with EventDatabase(self.uniq_id, write=True) as event_database:
@@ -863,10 +876,14 @@ class EventDatabase(SQLiteDatabase):
                 f'Database could not be opened because file [{self.file.resolve()}] does not exist.'
             )
         super().__enter__()
-        papi_web_version: Version = PapiWebConfig.version
-        if self.version != Version(
-            f'{papi_web_version.major}.{papi_web_version.minor}.{papi_web_version.micro}'
-        ):
+
+        from database.sqlite.event_migration import EventMigrationManager
+
+        migration_manager = EventMigrationManager()
+        if not self._database_initialized:
+            self._version = migration_manager.EMPTY_DATABASE_VERSION
+            return self
+        if self.version < migration_manager.last_migration_version:
             if self.write:
                 self.upgrade()
             else:
@@ -890,7 +907,7 @@ class EventDatabase(SQLiteDatabase):
             version=row['version'],
             name=row['name'],
             # needed to open event databases when version < 2.4.21 before checking the version
-            federation=row.get('federation', 'NON'),
+            federation=row.get('federation', PapiWebConfig().default_federation),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),

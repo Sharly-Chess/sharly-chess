@@ -200,7 +200,7 @@ class PlayerAdminController(AbstractEventAdminController):
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
         federation: str | None = WebContext.form_data_to_str(
-            data, field := 'federation'
+            data, field := 'federation', PapiWebConfig().default_federation
         )
         if federation not in PapiWebConfig.federations:
             # should never happen, not translated.

@@ -1241,6 +1241,26 @@ msgstr ""
 msgid "Parings by player"
 msgstr ""
 
+#: src/data/util.py
+msgid "No split"
+msgstr ""
+
+#: src/data/util.py
+msgid "Category"
+msgstr ""
+
+#: src/data/util.py
+msgid "Club"
+msgstr ""
+
+#: src/data/util.py
+msgid "League"
+msgstr ""
+
+#: src/data/util.py src/web/templates/admin/event/tab.html
+msgid "Federation"
+msgstr ""
+
 #: src/database/sqlite/ffe_database.py
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
@@ -1571,6 +1591,13 @@ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+msgid "Please choose the tournament."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Personal"
 msgstr ""
 
@@ -1591,12 +1618,6 @@ msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py
 msgid "Family [{uniq_id}] already exists."
-msgstr ""
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/player_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-msgid "Please choose the tournament."
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py
@@ -2568,6 +2589,7 @@ msgid "Delete"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
 #: src/web/templates/admin/players/player_modal.html
@@ -2579,6 +2601,40 @@ msgstr ""
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #: src/web/templates/user/modals.html
 msgid "Cancel"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Print"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Tournament"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+msgid "Tournament:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The tournament to print."
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Options"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Split by:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "How to split the results."
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
@@ -2605,10 +2661,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/tab.html
 msgid "Date"
-msgstr ""
-
-#: src/web/templates/admin/event/tab.html
-msgid "Federation"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
@@ -2874,13 +2926,6 @@ msgstr ""
 #: src/web/templates/admin/families/family_modal.html
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-msgstr ""
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-msgid "Tournament:"
 msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
@@ -3559,11 +3604,6 @@ msgid "The player's gender."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/user/screen/results.html
-msgid "Tournament"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "The player's tournament."
 msgstr ""
 
@@ -3698,6 +3738,46 @@ msgstr ""
 #: src/web/templates/admin/players/player_modal.html
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "List of players"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat."
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgstr "Fed."
+
+#: src/web/templates/admin/players/print_view.html
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr "League"
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -5014,4 +5094,7 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
+
+#~ msgid "Screen families allow to group screens together."
+#~ msgstr ""
 

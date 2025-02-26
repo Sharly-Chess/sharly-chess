@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1">
+        <title>{{ tournament.name }}</title>
+        <style type="text/css">
+            .odd {font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #000000; background-color: #FFFFFF;}
+            .even {font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #000000; background-color: #E0E0E0;}
+            .column-heading {font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #000000; background-color: #FFFFFF;}
+            .title {font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: bold; color: #000000; margin: 16px 0 12px; border: thin none; background-color: #FFFFFF;}
+            .title_big {font-family: Arial, Helvetica, sans-serif; font-size: 24pt; font-weight: bold;}
+            .title_medium {font-family: Arial, Helvetica, sans-serif; font-size: 16pt; font-weight: bold;}
+            .left {border-style: solid; border-color: black; border-width:0px; text-align:left;}
+            .right {border-style: solid; border-color: black; border-width:0px; text-align:right;}
+            .center {border-style: solid; border-color: black; border-width:0px; text-align:center;}
+            .border_l {border-style: solid; border-color: black; border-width:1px; text-align:left;}
+            .border_r {border-style: solid; border-color: black; border-width:1px; text-align:right;}
+            .border_c {border-style: solid; border-color: black; border-width:1px; text-align:center;}
+        </style>
+    </head>
+    <body topmargin="4" leftmargin="4">
+        <div align="center">
+            <div class="title_big">{{ tournament.name }}</div>
+            <div class="title_medium">{{ _('List of players') }}</div>
+            
+            {% set n = [1] %}     
+            {% if players %}
+                {% for splitBy in players.keys() %}
+                    <div class="title">
+                        {{ splitBy }}
+                    </div>
+
+                    <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
+                        <thead>
+                            <tr class="column-heading">
+                                <th class="right">{{ _('Nb. *** NB FOR PRINT VIEW') }}</th>
+                                <th class="right">&nbsp;</th>
+                                <th class="left">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                                <th class="center">
+                                    {% if tournament.rating == 1 %}
+                                        {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
+                                    {% elif tournament.rating == 2 %}
+                                        {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
+                                    {% elif tournament.rating == 3 %}
+                                        {{ _('Blitz *** BLIZT ELO FOR PRINT VIEW') }}
+                                    {% endif %}
+                                </th>
+                                <th class="center">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
+                                <th class="center">{{ _('Fed *** FEDEFRATION FOR PRINT VIEW') }}</th>
+                                <th class="center">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
+                                <th class="left">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for player in players[splitBy] %}
+                                <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
+                                    <td class="right">{{ n|length }}</td>
+                                    <td class="right">{{ player.title.short_name }}</td>
+                                    <td class="left">{{ player.last_name }} {{ player.first_name }}</td>
+                                    <td class="right">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+                                    <td class="center">{{ player.category.short_name }}</td>
+                                    <td class="center">{{ player.federation }}</td>
+                                    <td class="center">{{ player.league }}</td>
+                                    <td class="left">{{ player.club }}</td>
+                                </tr>
+                                
+                                {% set __ = n.append(1) %} 
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </body>
+</html>

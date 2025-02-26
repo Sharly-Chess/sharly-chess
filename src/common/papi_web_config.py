@@ -608,6 +608,10 @@ class PapiWebConfig(metaclass=Singleton):
         'history',
     ]
 
+    # The default fédération when creating events or players
+    # TODO make this hard-coded value configurable
+    default_federation: str = 'FRA'
+
     """ The federation names. """
     federations: dict[str, str] = {
         'NON': 'None',

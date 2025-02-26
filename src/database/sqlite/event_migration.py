@@ -22,7 +22,7 @@ class AbstractEventMigration(EventDatabase):
 
 
 class EventMigrationManager:
-    FIRST_UPGRADABLE_VERSION: Version = Version('2.4.0')
+    EMPTY_DATABASE_VERSION: Version = Version('0.0.0')
     MIGRATION_CLASS_NAME: str = 'EventMigration'
 
     @property
@@ -36,6 +36,14 @@ class EventMigrationManager:
     def _migration_module_names(self) -> list[str]:
         return [module for _, module, _ in iter_modules(events.__path__)]
 
+    @property
+    def first_migration_version(self) -> Version:
+        return self._ordered_migration_versions[0]
+
+    @property
+    def last_migration_version(self) -> Version:
+        return self._ordered_migration_versions[-1]
+
     @cached_property
     def _ordered_migration_versions(self) -> list[Version]:
         return sorted([
@@ -43,14 +51,22 @@ class EventMigrationManager:
             for module in self._migration_module_names
         ])
 
-    def migrate(self, event_database: EventDatabase, target_version: Version):
-        if event_database.version < self.FIRST_UPGRADABLE_VERSION:
+    def migrate(
+            self,
+            event_database: EventDatabase,
+            target_version: Version,
+            skip_commits: bool = False,
+    ):
+        if (
+            event_database.version != self.EMPTY_DATABASE_VERSION
+            and event_database.version < self.first_migration_version
+        ):
             logger.error(
                 'Database %s (%s) impossible to upgrade: version '
                 'is prior to the first upgradable version (%s)',
                 event_database.file.name,
                 event_database.version,
-                self.FIRST_UPGRADABLE_VERSION
+                self.first_migration_version,
             )
             return
         if event_database.version > target_version:
@@ -61,7 +77,8 @@ class EventMigrationManager:
             migration_class = self._version_to_migration_class(migration_version)
             migration_class.forward(event_database)
             event_database.set_version(migration_version)
-            event_database.commit()
+            if not skip_commits:
+                event_database.commit()
             if event_database.version == migration_version:
                 logger.debug(
                     'Database %s has been upgraded to version %s.',
