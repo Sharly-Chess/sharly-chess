@@ -1,7 +1,7 @@
 <div class="row">
     {% for num in [1, 2, 3] %}
         <div class="col-4">
-            {{ color_input(
+            {{ admin_macros.color_input(
                 name='color_'~num,
                 label=_('Colour #%(num)d:', num=num),
                 help_text=timer_color_texts[num],

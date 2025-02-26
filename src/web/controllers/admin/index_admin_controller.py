@@ -786,6 +786,12 @@ class AbstractIndexAdminController(AbstractAdminController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
+        if "modal" in context:
+            return HTMXTemplate(
+                template_name='admin/modals.html',
+                context=context,
+                re_target='#modal-wrapper',
+            )
         return HTMXTemplate(template_name='admin/index.html', context=context)
 
 

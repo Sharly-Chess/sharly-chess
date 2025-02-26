@@ -2,19 +2,21 @@
     class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
     style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
 >
-    {% call() section_title() %}
+    {% call() macros.section_title() %}
         <i class="bi-gear pe-1"></i>
         {{ _('Papi-web configuration') }}
     {% endcall %}
     <div class="flex-grow-1"></div>
     <div class="d-flex gap-2 ms-auto align-items-center">
-        <span {{ tooltip_attributes('info', _('Add an event.'), 'top') }}>
+        <span {{ macros.tooltip_attributes('info', _('Add an event.'), 'top') }}>
             <button
                 class="btn btn-primary text-nowrap"
                 hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-                hx-target="body"
-                preload
+                hx-target="#modal-wrapper"
                 hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
             >
                 <i class="bi-plus-square-fill pe-1"></i>
                 {{ _('Create an event') }}

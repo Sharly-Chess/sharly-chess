@@ -529,8 +529,13 @@ class AbstractEventAdminController(AbstractIndexAdminController):
         cls,
         template_context: dict[str, Any],
     ) -> Template:
+        if "modal" in template_context:
+            return HTMXTemplate(
+                template_name='admin/modals.html',
+                context=template_context,
+                re_target='#modal-wrapper',
+            )
         return HTMXTemplate(template_name='admin/event.html', context=template_context)
-
 
 class EventAdminController(AbstractEventAdminController):
     @classmethod
