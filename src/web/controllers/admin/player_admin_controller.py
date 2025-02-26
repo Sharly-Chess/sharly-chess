@@ -1099,12 +1099,10 @@ class PlayerAdminController(AbstractEventAdminController):
                     tournament_id
                 ]
             except KeyError:
-                self._redirect_error(f'Tournament [{tournament_id}] not found.')
-                return
+                return self.redirect_error(request, f'Tournament [{tournament_id}] not found.')
         else:
-            self._redirect_error(f'Tournament not set.')
-            return
-        
+            return self.redirect_error(request, 'Tournament not set.')
+
         template_context: dict[str, Any] = self._get_admin_event_render_context(web_context)
 
         playersInTournament = [ player for player in template_context["admin_players"].values() if player.tournament.id == tournament_id ]
