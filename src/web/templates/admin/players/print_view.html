@@ -9,7 +9,7 @@
             .papi_small_f {font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #000000; background-color: #E0E0E0;}
             .papi_small_t {font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #000000; background-color: #FFFFFF;}
             .papi_liste_t {font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #000000; background-color: #FFFFFF;}
-            .papi_titre {font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: bold; color: #000000; margin-bottom: 12px; border: thin none; background-color: #FFFFFF;}
+            .papi_titre {font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: bold; color: #000000; margin: 16px 0 12px; border: thin none; background-color: #FFFFFF;}
             .papi_titre_big {font-family: Arial, Helvetica, sans-serif; font-size: 24pt; font-weight: bold;}
             .papi_titre_medium {font-family: Arial, Helvetica, sans-serif; font-size: 16pt; font-weight: bold;}
             .papi_l {border-style: solid; border-color: black; border-width:0px; text-align:left;}
@@ -26,47 +26,56 @@
     </head>
     <body topmargin="4" leftmargin="4">
         <div align="center">
-            <div class="papi_titre">
-                <td colspan="8" align="center">{{ tournament.name }}<br>{{ _('List of players') }}</td>
-            </div>
-            <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
-                <thead>
-                    <tr class="papi_liste_t">
-                        <th class="papi_r">{{ _('Nb. *** NB FOR PRINT VIEW') }}</th>
-                        <th class="papi_r">&nbsp;</th>
-                        <th class="papi_l">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
-                        <th class="papi_c">
-                            {% if tournament.rating == 1 %}
-                                {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
-                            {% elif tournament.rating == 2 %}
-                                {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
-                            {% elif tournament.rating == 3 %}
-                                {{ _('Blitz *** BLIZT ELO FOR PRINT VIEW') }}
-                            {% endif %}
-                        </th>
-                        <th class="papi_c">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
-                        <th class="papi_c">{{ _('Fed *** FEDEFRATION FOR PRINT VIEW') }}</th>
-                        <th class="papi_c">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
-                        <th class="papi_l">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if players %}
-                        {% for player in players.values() %}
-                            <tr id="player-{{ player.id }}" class="papi_liste_{% if loop.index is even %}c{% else %}f{% endif %}">
-                                <td class="papi_r">{{ loop.index }}</td>
-                                <td class="papi_r">{{ player.title.short_name }}</td>
-                                <td class="papi_l">{{ player.last_name }} {{ player.first_name }}</td>
-                                <td class="papi_r">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
-                                <td class="papi_c">{{ player.category.short_name }}</td>
-                                <td class="papi_c">{{ player.federation }}</td>
-                                <td class="papi_c">{{ player.league }}</td>
-                                <td class="papi_l">{{ player.club }}</td>
+            <div class="papi_titre_big">{{ tournament.name }}</div>
+            <div class="papi_titre_medium">{{ _('List of players') }}</div>
+            
+            {% set n = [1] %}     
+            {% if players %}
+                {% for splitBy in players.keys() %}
+                    <div class="papi_titre">
+                        {{ splitBy }}
+                    </div>
+
+                    <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
+                        <thead>
+                            <tr class="papi_liste_t">
+                                <th class="papi_r">{{ _('Nb. *** NB FOR PRINT VIEW') }}</th>
+                                <th class="papi_r">&nbsp;</th>
+                                <th class="papi_l">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                                <th class="papi_c">
+                                    {% if tournament.rating == 1 %}
+                                        {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
+                                    {% elif tournament.rating == 2 %}
+                                        {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
+                                    {% elif tournament.rating == 3 %}
+                                        {{ _('Blitz *** BLIZT ELO FOR PRINT VIEW') }}
+                                    {% endif %}
+                                </th>
+                                <th class="papi_c">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
+                                <th class="papi_c">{{ _('Fed *** FEDEFRATION FOR PRINT VIEW') }}</th>
+                                <th class="papi_c">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
+                                <th class="papi_l">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
                             </tr>
-                        {% endfor %}
-                    {% endif %}
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            {% for player in players[splitBy] %}
+                                <tr id="player-{{ player.id }}" class="papi_liste_{% if loop.index is even %}c{% else %}f{% endif %}">
+                                    <td class="papi_r">{{ n|length }}</td>
+                                    <td class="papi_r">{{ player.title.short_name }}</td>
+                                    <td class="papi_l">{{ player.last_name }} {{ player.first_name }}</td>
+                                    <td class="papi_r">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+                                    <td class="papi_c">{{ player.category.short_name }}</td>
+                                    <td class="papi_c">{{ player.federation }}</td>
+                                    <td class="papi_c">{{ player.league }}</td>
+                                    <td class="papi_l">{{ player.club }}</td>
+                                </tr>
+                                
+                                {% set __ = n.append(1) %} 
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endfor %}
+            {% endif %}
         </div>
     </body>
 </html>

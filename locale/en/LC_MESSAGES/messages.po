@@ -1241,6 +1241,26 @@ msgstr ""
 msgid "Parings by player"
 msgstr ""
 
+#: src/data/util.py
+msgid "No split"
+msgstr ""
+
+#: src/data/util.py
+msgid "Category"
+msgstr ""
+
+#: src/data/util.py
+msgid "Club"
+msgstr ""
+
+#: src/data/util.py
+msgid "League"
+msgstr ""
+
+#: src/data/util.py src/web/templates/admin/event/tab.html
+msgid "Federation"
+msgstr ""
+
 #: src/database/sqlite/ffe_database.py
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
@@ -2605,6 +2625,18 @@ msgstr ""
 msgid "The tournament to print."
 msgstr ""
 
+#: src/web/templates/admin/event/print_modal.html
+msgid "Options"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Split by:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "How to split the result."
+msgstr ""
+
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/players/tab.html
@@ -2629,10 +2661,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/tab.html
 msgid "Date"
-msgstr ""
-
-#: src/web/templates/admin/event/tab.html
-msgid "Federation"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
@@ -4895,10 +4923,6 @@ msgstr ""
 msgid "Rotator automatically rotate between multiple screens."
 msgstr ""
 
-#: src/web/templates/common/macros.j2
-msgid "Screen families allow to group screens together."
-msgstr ""
-
 #: src/web/templates/user/event.html
 msgid "Go back to the events page."
 msgstr ""
@@ -5070,4 +5094,7 @@ msgstr ""
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr ""
+
+#~ msgid "Screen families allow to group screens together."
+#~ msgstr ""
 

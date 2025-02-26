@@ -1533,6 +1533,27 @@ msgstr "Ergebniseintrag"
 msgid "Parings by player"
 msgstr "Parings nach Spieler"
 
+#: src/data/util.py
+msgid "No split"
+msgstr ""
+
+#: src/data/util.py
+msgid "Category"
+msgstr ""
+
+#: src/data/util.py
+msgid "Club"
+msgstr ""
+
+#: src/data/util.py
+msgid "League"
+msgstr ""
+
+#: src/data/util.py src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "Federation"
+msgstr "Verband"
+
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -3193,6 +3214,18 @@ msgstr "Turnier:"
 msgid "The tournament to print."
 msgstr ""
 
+#: src/web/templates/admin/event/print_modal.html
+msgid "Options"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Split by:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "How to split the result."
+msgstr ""
+
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/players/tab.html
@@ -3223,11 +3256,6 @@ msgstr "Eindeutige ID"
 #, ai_translation
 msgid "Date"
 msgstr "Zeitpunkt"
-
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Federation"
-msgstr "Verband"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -5912,10 +5940,6 @@ msgstr "Bildbildschirme zeigen ein Bild (lokal oder entfernt)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator rotiert automatisch zwischen mehreren Bildschirmen."
 
-#: src/web/templates/common/macros.j2
-msgid "Screen families allow to group screens together."
-msgstr ""
-
 #: src/web/templates/user/event.html
 #, ai_translation
 msgid "Go back to the events page."
@@ -6138,5 +6162,8 @@ msgstr "vs."
 #~ msgstr ""
 
 #~ msgid "The number of points scored by players who are paired bye."
+#~ msgstr ""
+
+#~ msgid "Screen families allow to group screens together."
 #~ msgstr ""
 

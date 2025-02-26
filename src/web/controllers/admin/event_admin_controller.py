@@ -24,7 +24,7 @@ from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
-from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, TournamentRating
+from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, PrintSplit, TournamentRating
 from data.tournament import Tournament
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
@@ -79,6 +79,12 @@ class EventAdminWebContext(AdminWebContext):
         return {
             self.value_to_form_data(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
+        }
+        
+    def get_print_split_options(self) -> dict[str, str]:
+        return {
+            self.value_to_form_data(split.to_str()): str(split)
+            for split in PrintSplit
         }
 
 
@@ -607,14 +613,15 @@ class EventAdminController(AbstractEventAdminController):
                         
                     data = (
                         {
-                            'tournament_id': WebContext.value_to_form_data(
-                                tournament_id
-                            )
+                            'tournament_id': WebContext.value_to_form_data(tournament_id),
+                            'split': WebContext.value_to_form_data(PrintSplit.NoSplit.to_str()),
                         }
                     )
+
                 template_context |= {
                     'modal': 'print',
                     'tournament_options': web_context.get_tournament_options(),
+                    'split_options': web_context.get_print_split_options(),
                     'data': data,
                     'errors': errors or {},
                 }
@@ -1093,8 +1100,10 @@ class EventAdminController(AbstractEventAdminController):
                 request,
                 modal='print',
                 event_uniq_id=event_uniq_id,
+                data=data,
                 errors=errors,
             )
+
         # Clear the modal contents, and send an event
         return HTMXTemplate(
             template_name='common/empty_modal.html',
@@ -1103,7 +1112,8 @@ class EventAdminController(AbstractEventAdminController):
             after="receive",
             params={
                 "event_uniq_id": event_uniq_id,
-                "tournament_id": tournament.id
+                "tournament_id": tournament.id,
+                "split": data['split'],
             }
         )
             

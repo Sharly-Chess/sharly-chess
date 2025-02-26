@@ -1241,6 +1241,26 @@ msgstr "Saisie des résultats"
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
+#: src/data/util.py
+msgid "No split"
+msgstr "Sans rupture"
+
+#: src/data/util.py
+msgid "Category"
+msgstr "Catégorie"
+
+#: src/data/util.py
+msgid "Club"
+msgstr "Club"
+
+#: src/data/util.py
+msgid "League"
+msgstr "Ligue"
+
+#: src/data/util.py src/web/templates/admin/event/tab.html
+msgid "Federation"
+msgstr "Fédération"
+
 #: src/database/sqlite/ffe_database.py
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "La base de données FFE [{file}] est introuvable, voulez-vous la créer (O/n) ? "
@@ -2605,6 +2625,18 @@ msgstr "Tournoi :"
 msgid "The tournament to print."
 msgstr "Le tournoi à imprimer"
 
+#: src/web/templates/admin/event/print_modal.html
+msgid "Options"
+msgstr "Options"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Split by:"
+msgstr "Rupture:"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "How to split the result."
+msgstr "Comment regrouper les résultats"
+
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/players/tab.html
@@ -2630,10 +2662,6 @@ msgstr "Identifiant unique"
 #: src/web/templates/admin/event/tab.html
 msgid "Date"
 msgstr "Date"
-
-#: src/web/templates/admin/event/tab.html
-msgid "Federation"
-msgstr "Fédération"
 
 #: src/web/templates/admin/event/tab.html
 msgid "Visibility"
@@ -4895,10 +4923,6 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusieurs écrans."
 
-#: src/web/templates/common/macros.j2
-msgid "Screen families allow to group screens together."
-msgstr ""
-
 #: src/web/templates/user/event.html
 msgid "Go back to the events page."
 msgstr "Revenir à la page des évènements."
@@ -5070,4 +5094,7 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 #: src/web/templates/user/screen/players/set.html
 msgid "vs"
 msgstr "contre"
+
+#~ msgid "Screen families allow to group screens together."
+#~ msgstr ""
 
