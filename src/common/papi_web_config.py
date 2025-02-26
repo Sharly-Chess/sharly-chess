@@ -31,6 +31,7 @@ from common.logger import (
     print_interactive_success,
 )
 from common.singleton import Singleton
+from data.util import Result
 
 logger: Logger = get_logger()
 
@@ -368,7 +369,7 @@ class PapiWebConfig(metaclass=Singleton):
         return self._ffe_upload_delay or self._default_ffe_upload_delay
 
     """ The version of the application. """
-    version: Version = Version('2.4.21')
+    version: Version = Version('2.4.23')
 
     """ The URL of the project. """
     url: str = 'https://github.com/papi-web-org/papi-web'
@@ -390,10 +391,19 @@ class PapiWebConfig(metaclass=Singleton):
     event_path: Path = Path() / 'events'
 
     """ The extension of event databases. """
-    event_ext: str = 'db'
+    event_database_ext: str = 'db'
 
     """ The extension of archives event databases. """
-    arch_ext: str = 'arch'
+    event_archive_ext: str = 'arch'
+
+    """ The base path where event database backups are stored. """
+    event_backup_base_path: Path = event_path / 'backups'
+
+    """ The extension of backup event databases. """
+    event_backup_ext: str = 'backup'
+
+    """ The extension of federation databases. """
+    federation_database_ext: str = 'db'
 
     """ The path to the user custom files. """
     custom_path: Path = Path().absolute() / 'custom'
@@ -568,8 +578,20 @@ class PapiWebConfig(metaclass=Singleton):
     """ The ChessEvent download URL. """
     chessevent_download_url: str = 'https://chessevent.echecs-bretagne.fr/download'
 
+    """ The default first board number for tournaments. """
+    default_first_board_number: int = 1
+
+    """ The points scored by players paired bye. """
+    default_paired_bye_points: Result = Result.GAIN
+
+    """ The default maximum number of byes for a player in a tournament. """
+    default_max_byes: int = 1
+
+    """ The default last rounds of tournaments where byes are not allowed anymore. """
+    default_last_rounds_no_byes: int = 3
+
     """ The default filter for the players columns. """
-    default_players_filter_columns: list['str'] = [
+    default_players_filter_columns: list[str] = [
         'federation',
         'league',
         'club',
@@ -585,6 +607,10 @@ class PapiWebConfig(metaclass=Singleton):
         'tournament',
         'history',
     ]
+
+    # The default fédération when creating events or players
+    # TODO make this hard-coded value configurable
+    default_federation: str = 'FRA'
 
     """ The federation names. """
     federations: dict[str, str] = {

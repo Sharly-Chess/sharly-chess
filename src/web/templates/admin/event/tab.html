@@ -2,17 +2,19 @@
     class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
     style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
 >
-    {% call() section_title() %}
-        {{ event_visibility_icon(admin_event, 'pe-1') }}
+    {% call() macros.section_title() %}
+        {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
         {{ admin_event.name }}
     {% endcall %}
     <div class="d-flex flex-grow-1 gap-1 ms-auto justify-content-end">
         <button
             class="btn btn-outline-primary text-nowrap ms-1"
             hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-pencil-fill pe-1"></i>
             {{ _('Edit') }}
@@ -20,9 +22,11 @@
         <button
             class="btn btn-outline-primary text-nowrap ms-1"
             hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-copy pe-1"></i>
             {{ _('Clone') }}
@@ -30,9 +34,11 @@
         <button
             class="btn btn-outline-danger text-nowrap ms-1"
             hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
-            preload
-            hx-target="body"
+            hx-target="#modal-wrapper"
             hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         >
             <i class="bi-trash-fill pe-1"></i>
             {{ _('Delete') }}
@@ -58,7 +64,7 @@
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Federation') }}</th>
             <td class="">
-                <span class="player-federation_flag">
+                <span>
                     <img
                             class="player-federation-flag ms-1 ps-1 pe-1"
                             src="{{ url_for('static', file_path='/images/federations/' ~ admin_event.federation ~ '.svg') }}"
@@ -72,7 +78,7 @@
         <tr>
             <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
             <td class="">
-                {{ event_visibility_icon(admin_event, 'pe-1') }}
+                {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
                 {{ _('Public event') if admin_event.public else _('Private event') }}
             </td>
         </tr>

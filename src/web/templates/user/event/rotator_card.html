@@ -2,7 +2,7 @@
 
 {% block card_header %}
     {% if admin_auth %}
-        {{ rotator_visibility_icon(rotator, 'pe-1') }}
+        {{ macros.rotator_visibility_icon(rotator, 'pe-1') }}
     {% endif %}
     {{ rotator.uniq_id }}
 {% endblock %}
@@ -25,7 +25,7 @@
                 {{ _('Screens:') }}
                 {% for screen in rotator.screens %}
                     <div>
-                        {# screen_visibility_icon(screen, '') #} {{ screen_type_icon(screen.type, true) }} {{ screen.name }}
+                        {# macros.screen_visibility_icon(screen, '') #} {{ macros.screen_type_icon(screen.type, true) }} {{ screen.name }}
                     </div>
                 {% endfor %}
             {% endif %}
@@ -36,7 +36,7 @@
                 {{ _('Screen families:') }}
                 {% for family in rotator.families %}
                     <div>
-                        {{ screen_type_icon(family.type, true) }}
+                        {{ macros.screen_type_icon(family.type, true) }}
                         {{ _(
                             '%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)',
                             family_uniq_id=family.uniq_id,

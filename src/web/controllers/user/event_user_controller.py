@@ -33,10 +33,9 @@ class EventUserWebContext(UserWebContext):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None,
+        ],
         event_uniq_id: str,
         user_event_tab: str | None,
     ):

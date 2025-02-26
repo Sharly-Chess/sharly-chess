@@ -1,4 +1,5 @@
 import os.path
+from string import capwords
 from xml.etree import ElementTree
 import zipfile
 from contextlib import suppress
@@ -47,8 +48,8 @@ class FideDatabase(SQLiteDatabase):
             ...
     """
 
-    def __init__(self, basename: str = 'fide', write: bool = False):
-        super().__init__(TMP_DIR / f'{basename}.{PapiWebConfig.event_ext}', write)
+    def __init__(self, write: bool = False):
+        super().__init__(TMP_DIR / f'fide.{PapiWebConfig.federation_database_ext}', write)
 
     def check(self) -> bool:
         """Check if the database exists and proposes to create it if not, or update it if too old,
@@ -121,8 +122,6 @@ class FideDatabase(SQLiteDatabase):
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
         print_interactive_info(_('Storing data...'))
-        tree = ElementTree.parse(local_xml_file)
-        root = tree.getroot()
         # if the file already exists, save it to restore it on error.
         save: Path | None = None
         if self.file.exists():
@@ -135,43 +134,50 @@ class FideDatabase(SQLiteDatabase):
             ) as f:
                 self._create(f.read())
             fields: dict[str, tuple[str, FunctionType | None]] = {
-                'fide_id': ('fideid', lambda s: int(s.strip())),
+                'fideid': ('fide_id', lambda s: int(s.strip())),
                 'name': ('name', None),
-                'federation': ('country', lambda s: s.upper()),
-                'gender': ('sex', lambda s: PlayerGender.from_fide_value(s)),
+                'country': ('federation', lambda s: s.upper()),
+                'sex': ('gender', lambda s: PlayerGender.from_fide_value(s)),
                 # exception for 1001710 Vreeken, Corry
-                'fide_title': (
-                    'title',
+                'title': (
+                    'fide_title',
                     lambda s: PlayerTitle.from_fide_value('' if s == 'WH' else s),
                 ),
-                'standard_rating': ('rating', int),
+                'rating': ('standard_rating', int),
                 'rapid_rating': ('rapid_rating', int),
                 'blitz_rating': ('blitz_rating', int),
-                'year_of_birth': ('birthday', lambda s: int(s) if s else 0),
+                'birthday': ('year_of_birth', lambda s: int(s) if s else 0),
             }
             players_number: int = 0
             self.write = True
             with self:
-                for player_item in root.findall('./player'):
-                    data: dict[str, Any] = {}
-                    for field_name, (field_xml_tag, field_function) in fields.items():
-                        data[field_name] = player_item.find(field_xml_tag).text or ''
+                for event, elem in ElementTree.iterparse(local_xml_file, events=("start", "end")):
+                    if event == 'start' and elem.tag == 'player':
+                        data: dict[str, Any] = {}
+                        
+                    if event == 'end' and elem.tag == 'player':
+                        query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?"] * len(data))})'
+                        self._execute(query, tuple(data.values()))
+                        players_number += 1
+                        if players_number % 1000 == 0:
+                            print_interactive_info(_('{number} players written.').format(number=players_number), end='\r')
+                        
+                    elif event == 'end' and elem.tag in fields:
+                        (field_name, field_function) = fields[elem.tag]
+                        data[field_name] = elem.text or ''
                         if field_function:
                             data[field_name] = field_function(data[field_name])
-                    if ',' in data['name']:
-                        name_parts: list[str] = data['name'].split(',', maxsplit=2)
-                        data['last_name'] = name_parts[0]
-                        data['first_name'] = name_parts[1]
-                        data['last_name'], data['first_name'] = data['name'].split(
-                            ',', maxsplit=1
-                        )
-                    else:
-                        data['last_name'] = data['name']
-                        data['first_name'] = None
-                    del data['name']
-                    query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?"] * len(data))})'
-                    self._execute(query, tuple(data.values()))
-                    players_number += 1
+                        
+                        if field_name == 'name':
+                            if ',' in data['name']:
+                                last_name, first_name = data['name'].split(',', maxsplit=1)
+                                data['last_name'] = last_name.strip()
+                                data['first_name'] = first_name.strip()
+                            else:
+                                data['last_name'] = data['name'].strip()
+                                data['first_name'] = None
+                            del data['name']
+                    
                 self.commit()
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
@@ -181,7 +187,8 @@ class FideDatabase(SQLiteDatabase):
             if save:
                 save.rename(self.file)
             return False
-        save.unlink(missing_ok=True)
+        if save:
+            save.unlink(missing_ok=True)
         print_interactive_success(
             _('{number} players written.').format(number=players_number)
         )
@@ -194,73 +201,87 @@ class FideDatabase(SQLiteDatabase):
         )
         yield from map(lambda row: row['federation'], self._fetchall())
 
-    def search_player(self, string: str) -> Iterator[Player]:
+    @staticmethod
+    def get_player_from_row(row: dict[str, Any]) -> Player | None:
+        return Player(
+            id=0,
+            first_name=capwords(row['first_name']) if row['first_name'] else '',
+            last_name=row['last_name'].upper(),
+            date_of_birth=datetime.strptime(
+                f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
+            ).date(),
+            gender=PlayerGender(row['gender']),
+            mail='',
+            phone='',
+            comment='',
+            owed=0.0,
+            paid=0.0,
+            title=PlayerTitle(row['fide_title']),
+            ratings={
+                TournamentRating.STANDARD: row['standard_rating'],
+                TournamentRating.RAPID: row['rapid_rating'],
+                TournamentRating.BLITZ: row['blitz_rating'],
+            },
+            rating_types={
+                TournamentRating.STANDARD:
+                    PlayerRatingType.FIDE if row['standard_rating'] else PlayerRatingType.ESTIMATED,
+                TournamentRating.RAPID:
+                    PlayerRatingType.FIDE if row['rapid_rating'] else PlayerRatingType.ESTIMATED,
+                TournamentRating.BLITZ:
+                    PlayerRatingType.FIDE if row['blitz_rating'] else PlayerRatingType.ESTIMATED,
+            },
+            fide_id=row['fide_id'],
+            ffe_id=None,
+            ffe_licence=PlayerFFELicence.NONE,
+            ffe_licence_number=None,
+            federation=row['federation'],
+            league='',
+            club='',
+            fixed=0,
+            check_in=False,  # not taken into account when updating/creating/deleting the player
+            pairings={},  # Pairings are read from Papi but not used
+            tournament=None,
+        ) if row else None
+
+
+    def search_player(
+            self,
+            string: str,
+            limit: int = 0,  # no limit set if no param or null param passed
+    ) -> Iterator[Player]:
         tokens: list[str] = string.split(' ')
-        str_fields: tuple[str, ...] = (
-            'last_name',
-            'first_name',
+        str_fields: tuple[tuple[str, str, str], ...] = (
+            ('last_name', '%', '%'),
+            ('first_name', '', '%'),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
         token_conditions: dict[str, str] = {}
+        params: list[Any] = []
         for token in tokens:
-            expressions = list(
-                map(lambda field: f"({field} LIKE '%{token}%')", str_fields)
-            )
+            expressions = [f'({field[0]} LIKE ?)' for field in str_fields]
+            params += [f'{field[1]}{token}{field[2]}' for field in str_fields]
             int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
-                expressions += list(
-                    map(lambda field: f'({field} = {int_value})', int_fields)
-                )
+                expressions += [f'({field} = ?)' for field in int_fields]
+                params += [int_value, ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        self._execute(f'SELECT * FROM player WHERE {conditions}')
+        order_conditions = ' OR '.join([f'(last_name LIKE ?)', ] * len(tokens))
+        params += [f'{token}%' for token in tokens]
+        query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
+        if limit:
+            query += ' LIMIT ?'
+            params += [limit, ]
+        self._execute(query, tuple(params), )
         return (
-            Player(
-                id=0,
-                first_name=row['first_name'],
-                last_name=row['last_name'],
-                date_of_birth=datetime.strptime(
-                    f'{row["year_of_birth"]}-01-01', '%Y-%m-%d'
-                ).date()
-                if row['year_of_birth']
-                else None,
-                gender=PlayerGender(row['gender']),
-                mail='',
-                phone='',
-                comment='',
-                owed=0.0,
-                paid=0.0,
-                title=PlayerTitle(row['fide_title']),
-                ratings={
-                    TournamentRating.STANDARD: row['standard_rating'],
-                    TournamentRating.RAPID: row['rapid_rating'],
-                    TournamentRating.BLITZ: row['blitz_rating'],
-                },
-                rating_types={
-                    TournamentRating.STANDARD: PlayerRatingType.FIDE
-                    if row['standard_rating']
-                    else PlayerRatingType.ESTIMATED,
-                    TournamentRating.RAPID: PlayerRatingType.FIDE
-                    if row['rapid_rating']
-                    else PlayerRatingType.ESTIMATED,
-                    TournamentRating.BLITZ: PlayerRatingType.FIDE
-                    if row['blitz_rating']
-                    else PlayerRatingType.ESTIMATED,
-                },
-                fide_id=row['fide_id'],
-                ffe_id=0,
-                ffe_licence=PlayerFFELicence.NONE,
-                ffe_licence_number=None,
-                federation=row['federation'],
-                league='',
-                club='',
-                fixed=0,
-                check_in=False,  # not taken into account when updating/creating/deleting the player
-                pairings={},  # Pairings are read from Papi but not used
-                tournament=None,
-            )
+            self.get_player_from_row(row)
             for row in self._fetchall()
         )
+
+
+    def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
+        self._execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
+        return self.get_player_from_row(self._fetchone())

@@ -4,7 +4,7 @@
                 class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
         ><i
                 class="bi-funnel {% if admin_players_filter_leagues|length not in [0, (admin_players_leagues|length)] %}text-danger{% endif %}"
-                {{ tooltip_attributes('info', _('Filter the leagues.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Filter the leagues.'), 'top') }}
         ></i></button>
         <ul class="dropdown-menu players-filter-league p-0">
             {% with name='admin_players_filter_leagues' %}
@@ -33,7 +33,7 @@
                             class="{{ name }}"
                         />
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                            <span class="player-federation_flag">
+                            <span>
                                 <img
                                     class="player-federation-flag pe-1"
                                     src="{{ url_for('static', file_path='/images/federations/' ~ league_tuple.federation ~ '.svg') }}"

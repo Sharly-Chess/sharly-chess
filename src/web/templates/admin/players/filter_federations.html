@@ -5,7 +5,7 @@
         >
             <i
                 class="bi-funnel {% if admin_players_filter_federations|length not in [0, (admin_players_federations|length)] %}text-danger{% endif %}"
-                {{ tooltip_attributes('info', _('Filter the federations.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Filter the federations.'), 'top') }}
             ></i>
         </button>
         <ul class="dropdown-menu players-filter-federation p-0">
@@ -35,7 +35,7 @@
                             class="{{ name }}"
                         />
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                            <span class="player-federation_flag">
+                            <span>
                                 <img
                                     class="player-federation-flag pe-1"
                                     src="{{ url_for('static', file_path='/images/federations/' ~ federation_tuple.federation ~ '.svg') }}"

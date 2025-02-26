@@ -1,12 +1,12 @@
 <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
     {{ _('Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS') }}
-    {{ admin_players_sort_link(url, 'bi-sort-alpha-down', 'tournament', admin_players_sort) }}
+    {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'tournament', admin_players_sort) }}
     <span class="dropdown-center" >
         <button
                 class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
         ><i
                 class="bi-funnel {% if admin_players_filter_tournaments|length not in [0, (admin_event.players_tournaments|length)] %}text-danger{% endif %}"
-                {{ tooltip_attributes('info', _('Filter the tournaments.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Filter the tournaments.'), 'top') }}
         ></i></button>
         <ul class="dropdown-menu players-filter-tournament p-0">
             {% with name='admin_players_filter_tournaments' %}

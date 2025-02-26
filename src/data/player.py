@@ -147,6 +147,7 @@ class ClubTuple(LeagueTuple):
     def __str__(self) -> str:
         return f'{self.federation}-{self.league}-{self.club}'
 
+
 class TournamentPlayer:
     """A class representing a player in a tournament"""
     def __init__(
@@ -160,7 +161,7 @@ class TournamentPlayer:
         federation: str,
         title: PlayerTitle,
         pairings: dict[int, Pairing],
-        estimation: int | None = None
+        estimation: int | None = None,
     ):
         self.id = id
         self.last_name = last_name
@@ -172,24 +173,24 @@ class TournamentPlayer:
         self.title = title
         self._estimation = estimation
         self.pairings = pairings
-    
+
     def points_before(self, max_round: int) -> float:
         return sum(
             pairing.result.point_value
             for round_index, pairing in self.pairings.items()
             if round_index < max_round
         )
-    
+
     def points_after(self, max_round: int) -> float:
         return sum(
             pairing.result.point_value
             for round_index, pairing in self.pairings.items()
             if round_index <= max_round
         )
-    
+
     def total_points(self) -> float:
         return sum(pairing.result.point_value for pairing in self.pairings.values())
-    
+
     @property
     def estimation(self):
         return self._estimation or 0
@@ -214,7 +215,7 @@ class Player(TournamentPlayer):
         ratings: dict[TournamentRating, int],
         rating_types: dict[TournamentRating, PlayerRatingType],
         fide_id: int | None,
-        ffe_id: int,
+        ffe_id: int | None,
         ffe_licence: PlayerFFELicence,
         ffe_licence_number: str | None,
         federation: str,
@@ -289,7 +290,7 @@ class Player(TournamentPlayer):
     def estimation(self) -> int:
         if not self.estimated:
             return self.ratings[self.tournament.rating]
-        return self._estimation
+        return self._estimation or 0
 
     @estimation.setter
     def estimation(self, value: int):
@@ -297,7 +298,7 @@ class Player(TournamentPlayer):
             self._estimation = self.ratings[self.tournament.rating]
         else:
             self._estimation = value
-    
+
     @property
     def estimated(self) -> bool:
         return self.rating_types[self.tournament.rating] == PlayerRatingType.ESTIMATED
@@ -359,7 +360,7 @@ class Player(TournamentPlayer):
             self.points += points
 
     def to_trf(
-        self, player_id_to_trf_id: Callable[[int], int], max_round: int
+        self, player_id_to_trf_id: Callable[[int], int], rank: int, max_round: int,
     ) -> TrfPlayer:
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
@@ -372,7 +373,8 @@ class Player(TournamentPlayer):
             birthdate=self.date_of_birth.strftime('%Y/%m/%d')
             if self.date_of_birth
             else '',
-            points=self.points_total(),
+            points=self.points_after(max_round),
+            rank=rank,
             games=[
                 result.to_trf(round_nb, player_id_to_trf_id)
                 for round_nb, result in self.pairings.items()
@@ -475,37 +477,38 @@ class Player(TournamentPlayer):
         self.time_control_increment = increment
         self.time_control_modified = modified
 
-    def starting_rank_comparison(self, other: 'Player') -> bool:
-        return (self.rating, self.title, other.last_name, other.first_name) <= (
-            other.rating,
-            other.title,
-            self.last_name,
-            self.first_name,
-        )
+    @property
+    def starting_rank_sort_key(self) -> tuple[int, int, str, str]:
+        return -self.rating, -self.title, self.last_name, self.first_name
 
-    def __le__(self, other):
+    @property
+    def board_number_sort_key(self) -> tuple[float, int, int, str, str]:
+        return -self.vpoints, -self.rating, -self.title, self.last_name, self.first_name
+
+    def rank_sort_key(
+            self, tournament: 'Tournament', max_round: int | None = None
+    ) -> tuple:
+        points = (
+            self.total_points() if max_round is None
+            else self.points_after(max_round)
+        )
+        rank = (-points,)
+        for tie_break in tournament.tie_breaks:
+            rank += (-tie_break.player_value(self, tournament, max_round),)
+        return rank + self.starting_rank_sort_key
+
+    def __le__(self, other: 'Player') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
         if not isinstance(other, Player):
             return NotImplemented
-        return (
-            self.vpoints,
-            self.rating,
-            self.title,
-            other.last_name,
-            other.first_name,
-        ) <= (other.vpoints, other.rating, other.title, self.last_name, self.first_name)
+        # A false positive warning is raised in PyCharm, cf https://youtrack.jetbrains.com/issue/PY-76256
+        return self.board_number_sort_key > other.board_number_sort_key
 
     def __eq__(self, other):
         # p1 == p2 calls p1.__eq__(p2)
         if not isinstance(other, Player):
             return NotImplemented
-        return (
-            self.vpoints == other.vpoints
-            and self.rating == other.rating
-            and self.title == other.title
-            and self.last_name == other.last_name
-            and self.first_name == other.first_name
-        )
+        return self.board_number_sort_key == other.board_number_sort_key
 
     def __repr__(self):
         if self.ref_id == 1:

@@ -206,7 +206,9 @@ class CheckInUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name='user/screen.html', context=web_context.template_context | {}
+            template_name='user/modals.html',
+            context=web_context.template_context | {},
+            re_target='#modal-wrapper',
         )
 
     @patch(
@@ -370,7 +372,9 @@ class ResultUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name='user/screen.html', context=web_context.template_context | {}
+            template_name='user/modals.html',
+            context=web_context.template_context | {},
+            re_target='#modal-wrapper',
         )
 
     def _user_update_result(
@@ -379,7 +383,7 @@ class ResultUserController(AbstractInputUserController):
         event_uniq_id: str,
         screen_uniq_id: str,
         tournament_id: int,
-        round: int,
+        round_: int,
         board_id: int,
         result: int | None,
     ) -> Template | ClientRedirect:
@@ -393,9 +397,9 @@ class ResultUserController(AbstractInputUserController):
         )
         if web_context.error:
             return web_context.error
-        if round not in range(1, web_context.tournament.rounds + 1):
+        if round_ not in range(1, web_context.tournament.rounds + 1):
             return AbstractController.redirect_error(
-                request, f'Invalid round number [{round}].'
+                request, f'Invalid round number [{round_}].'
             )
         if result is None:
             if not web_context.admin_auth:
@@ -417,7 +421,7 @@ class ResultUserController(AbstractInputUserController):
                 web_context.board, Result.from_papi_value(result)
             )
         SessionHandler.set_session_last_result_updated(
-            request, web_context.tournament.id, round, web_context.board.id
+            request, web_context.tournament.id, round_, web_context.board.id
         )
         EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
         web_context: BasicScreenOrFamilyUserWebContext = (
@@ -452,7 +456,7 @@ class ResultUserController(AbstractInputUserController):
             event_uniq_id=event_uniq_id,
             screen_uniq_id=screen_uniq_id,
             tournament_id=tournament_id,
-            round=round,
+            round_=round,
             board_id=board_id,
             result=result,
         )
@@ -477,7 +481,7 @@ class ResultUserController(AbstractInputUserController):
             event_uniq_id=event_uniq_id,
             screen_uniq_id=screen_uniq_id,
             tournament_id=tournament_id,
-            round=round,
+            round_=round,
             board_id=board_id,
             result=None,
         )

@@ -174,27 +174,27 @@ class FFESession(Session):
         """Reads the main state variables of a request and stores them into self.ffe_state.
         Returns True on success, False otherwise."""
         self.ffe_state: dict[str, str] = {}
-        for id in [
+        for id_ in [
             VIEW_STATE_INPUT_ID,
             VIEW_STATE_GENERATOR_INPUT_ID,
             EVENT_VALIDATION_INPUT_ID,
         ]:
-            tag: AdvancedTag = parser.getElementById(id)
+            tag: AdvancedTag = parser.getElementById(id_)
             if not tag:
                 print_interactive_error(
                     _(
                         'Content of URL [{url}] is not valid (input[id=[{id]] not found).'
-                    ).format(url=url, id=id)
+                    ).format(url=url, id=id_)
                 )
                 return False
-            self.ffe_state[id] = tag.attributesDict['value']
+            self.ffe_state[id_] = tag.attributesDict['value']
             if self.debug:
                 logger.info(
                     '> ffe_state[%s]=[%s]',
-                    id,
-                    self.ffe_state[id][:64]
-                    + ('...' if len(self.ffe_state[id]) > 64 else '')
-                    if self.ffe_state[id]
+                    id_,
+                    self.ffe_state[id_][:64]
+                    + ('...' if len(self.ffe_state[id_]) > 64 else '')
+                    if self.ffe_state[id_]
                     else 'None',
                 )
         return True
@@ -241,21 +241,21 @@ class FFESession(Session):
         if not self.read_ffe_state(parser, url):
             return False
         self.auth_state = {}
-        for id in [
+        for id_ in [
             SET_VISIBLE_LINK_ID,
             FEES_LINK_ID,
             UPLOAD_LINK_ID,
             UPLOAD_RULES_LINK_ID,
         ]:
-            tag: AdvancedTag = parser.getElementById(id)
-            self.auth_state[id] = tag.innerText if tag else None
+            tag: AdvancedTag = parser.getElementById(id_)
+            self.auth_state[id_] = tag.innerText if tag else None
             if self.debug:
                 logger.info(
                     '> auth_state[%s]=[%s]',
-                    id,
-                    self.auth_state[id][:64]
-                    + ('...' if len(self.auth_state[id]) > 64 else '')
-                    if self.auth_state[id]
+                    id_,
+                    self.auth_state[id_][:64]
+                    + ('...' if len(self.auth_state[id_]) > 64 else '')
+                    if self.auth_state[id_]
                     else 'None',
                 )
         tag: AdvancedTag = parser.getElementById(VIEW_LINK_ID)

@@ -4,13 +4,17 @@
 
 ## Version 2.5.0 - Février 2025
 - Passage en multilingue anglais et français
-- Refonte de l'interface d'arbitrage
-- Ajout de l'onglet « Joueur·euses » (ajout/suppression, importation FFE/FIDE (TODO), pointage, changement de tournoi...)
-- Suppression de l'onglet « ChessEvent »
+- Refonte complète de l'interface web
+- Ajout de l'onglet « Joueur·euses »
+- Ajout de la possibilité d'ajouter/supprimer/modifier les joueur·euses, de les changer de tournoi
+- Ajout de la possibilité d'importer des joueur·euses depuis les bases de données de la FIDE et de la FFE
+- Ajout de la gestion du pointage
+- Suppression de l'onglet « ChessEvent » (la configuration des connexions à ChessEvent se fait désormais au niveau des évènements et des tournois)
 - Ajout d'une fédération sur les évènements
 - Correction du calcul des points virtuels en Système Accéléré Dégressif 
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
 - Correction d'un bug sur la duplication des écrans, familles et tournois
+- Correction d'un bug empêchant l'affichage et la modification des écrans lorsque le numéro du premier échiquier est supérieur au nombre d'échiquiers
 
 ## Version 2.4.18 - 23 décembre 2024
 - Ajout de la possibilité d'ajouter des écrans par défaut à la création d'un tournoi

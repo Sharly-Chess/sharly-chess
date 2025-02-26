@@ -8,7 +8,7 @@
             data-bs-auto-close="outside"
         >
             <span
-                {{ tooltip_attributes('info', _('Choose the columns displayed.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Choose the columns displayed.'), 'top') }}
             >
                 <i class="bi-layout-three-columns pe-1"></i>
                 {{ _('Columns') }}
@@ -71,13 +71,13 @@
                                 {{ _('Fixed board *** FIXED FOR PLAYERS COLUMNS') }}
                             {% elif column == 'fide' %}
                                 <img
-                                        src="{{ url_for('static', file_path='/images/federations/fide.svg') }}"
-                                        style="height: 1.2em"
+                                        src="{{ url_for('static', file_path='/images/fide-light.svg') }}"
+                                        style="height: 1em"
                                         class="p-0"
                                 /> {{ _('FIDE *** FIDE FOR PLAYERS COLUMNS') }}
                             {% elif column == 'ffe' %}
                                 <img
-                                        src="{{ url_for('static', file_path='/images/federations/ffe.png') }}"
+                                        src="{{ url_for('static', file_path='/images/ffe.png') }}"
                                         style="height: 1.2em"
                                         class="p-0"
                                 /> {{ _('FFE *** FFE FOR PLAYERS COLUMNS') }}

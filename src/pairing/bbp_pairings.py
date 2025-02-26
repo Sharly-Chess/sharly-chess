@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import TextIO
 
 import trf
+from packaging.version import Version
 
 from common import TMP_DIR, BASE_DIR
 from data.pairing import Pairing
@@ -12,21 +13,22 @@ from data.util import TrfType, Result, BoardColor
 
 
 class BbpPairings:
-    EXEMPT_ID = 0
-    PROJECT_URL = 'https://github.com/BieremaBoyzProgramming/bbpPairings'
-    VERSION = 'v5.0.1'
-    WINDOWS_BUILD = 'x86_64-pc-windows.zip'
-    LINUX_BUILD = 'x86_64-pc-linux.tar.gz'
+
+    version: Version = Version('5.0.1')
 
     @property
     def is_installed(self) -> bool:
         return self.executable_path.exists()
 
+    bbp_pairings_dir: Path = BASE_DIR / 'bin' / 'bbpPairings'
+
+    @property
+    def executable_dir(self) -> Path:
+        return self.bbp_pairings_dir / f'bbpPairings-v{self.version}'
+
     @property
     def executable_path(self) -> Path:
-        return (
-            BASE_DIR / 'resources' / f'bbpPairings-{self.VERSION}' / 'bbpPairings.exe'
-        )
+        return self.executable_dir / 'bbpPairings.exe'
 
     def generate_pairings(self, tournament: Tournament):
         """Generate the pairings of a tournament's next round"""
@@ -61,13 +63,15 @@ class BbpPairings:
             os.remove(pairings_file_path)
         tournament.update_round_pairings(tournament.current_round + 1)
 
-    def _pairings_from_file(self, file: TextIO, tournament: Tournament):
+    @staticmethod
+    def _pairings_from_file(file: TextIO, tournament: Tournament):
+        exempt_id: int = 0
         file.readline()  # table_count
         next_round = tournament.current_round + 1
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
             white_player = tournament.players_by_trf_id[white_trf_id]
-            if black_trf_id != self.EXEMPT_ID:
+            if black_trf_id != exempt_id:
                 black_player = tournament.players_by_trf_id[black_trf_id]
                 white_player.pairings[next_round] = Pairing(
                     BoardColor.WHITE, black_player.id, Result.NO_RESULT

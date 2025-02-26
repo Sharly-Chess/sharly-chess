@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="modal-footer d-block">
-            <div class="d-flex gap-4">
+            <div class="d-flex gap-4 flex-wrap">
                 <div class="d-flex gap-2 flex-grow-1">
                     {% if admin_tournament.players_by_check_in_status[false] %}
                         <button
@@ -66,12 +66,14 @@
                 </div>
                 <div>
                     <button
-                            class="btn btn-secondary text-nowrap"
-                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
-                            preload
-                            hx-target="body"
-                            hx-trigger="click, keyup[key=='Escape'] from:body"
-                            hx-indicator="#please-wait"
+                        type="button"
+                        data-bs-dismiss="modal"
+                        class="btn btn-secondary text-nowrap"
+                        hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
+                        preload
+                        hx-target="body"
+                        hx-trigger="click, keyup[key=='Escape'] from:body"
+                        hx-indicator="#please-wait"
                     >
                         <i class="bi-x-circle-fill pe-1"></i>
                         {{ _('Cancel') }}
@@ -81,7 +83,3 @@
         </div>
     </div>
 </div>
-<script>
-    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
-    document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
-</script>

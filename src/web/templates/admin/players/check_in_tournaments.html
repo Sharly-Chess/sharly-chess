@@ -4,7 +4,7 @@
             class="btn btn-outline-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
         >
             <span
-                {{ tooltip_attributes('info', _('Open/close check-in.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Open/close check-in.'), 'top') }}
             >
                 <i class="bi-circle"></i>
                 <i class="bi-check-circle pe-1"></i>
@@ -17,15 +17,15 @@
                     <li
                         class="dropdown-item text-nowrap my-0 d-inline-flex align-items-center gap-2"
                         {% if not tournament.file_exists %}
-                            {{ tooltip_attributes('warning', _('No Papi file for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('warning', _('No Papi file for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% elif tournament.finished %}
-                            {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% elif tournament.playing %}
-                            {{ tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is playing.', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is playing.', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% elif tournament.check_in_open %}
-                            {{ tooltip_attributes('info', _('Close check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% else %}
-                            {{ tooltip_attributes('info', _('Open check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('info', _('Open check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
                         {% endif %}
                     >
                         <div class="form-check form-switch d-inline-block my-0">
@@ -33,11 +33,16 @@
                                 {% if tournament.file_exists and not tournament.finished and not tournament.playing %}
                                     {% if tournament.check_in_open %}
                                         hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                        hx-target="#modal-wrapper"
+                                        hx-indicator="#please-wait"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-wrapper"
                                     {% else %}
                                         hx-patch="{{ url_for('admin-tournament-open-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
                                     {% endif %}
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
+                                    preload
                                 {% else %}
                                     disabled
                                 {% endif %}

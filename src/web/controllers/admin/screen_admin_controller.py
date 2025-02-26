@@ -95,12 +95,12 @@ class ScreenAdminController(AbstractEventAdminController):
         if data is None:
             data = {}
         field: str
-        type: str
+        type_: str
         init_set_tournament_id: int | None = None
         match action:
             case 'create':
-                type = web_context.screen_type
-                match type:
+                type_ = web_context.screen_type
+                match type_:
                     case 'boards' | 'input' | 'players':
                         field = 'init_set_tournament_id'
                         init_set_tournament_id = WebContext.form_data_to_int(
@@ -114,9 +114,9 @@ class ScreenAdminController(AbstractEventAdminController):
                     case 'results' | 'image':
                         pass
                     case _:
-                        raise ValueError(f'type=[{type}]')
+                        raise ValueError(f'type=[{type_}]')
             case 'update' | 'clone' | 'delete':
-                type = web_context.admin_screen.stored_screen.type
+                type_ = web_context.admin_screen.stored_screen.type
             case _:
                 raise ValueError(f'action=[{action}]')
         field = 'uniq_id'
@@ -170,7 +170,7 @@ class ScreenAdminController(AbstractEventAdminController):
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                if type != ScreenType.Image:
+                if type_ != ScreenType.Image:
                     menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
                     menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                     menu = WebContext.form_data_to_str(data, 'menu', '')
@@ -186,7 +186,7 @@ class ScreenAdminController(AbstractEventAdminController):
                         )
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                match type:
+                match type_:
                     case ScreenType.Boards:
                         pass
                     case ScreenType.Input:
@@ -265,7 +265,7 @@ class ScreenAdminController(AbstractEventAdminController):
             ]
             else None,
             uniq_id=uniq_id,
-            type=type,
+            type=type_,
             public=public,
             name=name,
             columns=columns,

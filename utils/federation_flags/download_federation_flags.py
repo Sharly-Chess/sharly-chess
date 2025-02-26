@@ -44,7 +44,6 @@ def download_federation_flags(federation_ids: set[str]):
 
 
 def run():
-    papi_web_config: PapiWebConfig = PapiWebConfig()
     if not FideDatabase(write=True).check():
         print_interactive_error(
             _('Error while updating the FIDE database.')

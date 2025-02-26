@@ -997,6 +997,134 @@ msgstr "boards {board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Toernooi {tournament_uniq_id} ({numbers_str})"
 
+#: src/data/tie_break.py
+msgid "None"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz cut bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Median Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Progressive scores"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of wins"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Kashdan"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Koya"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut top"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut Bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Played modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Papi legacy"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Limit"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Exclude players"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of games won"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Games played with black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Games won with black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Rounds one Elected to Play"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average of opponents Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonneborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average rating of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Tournament performance rating"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average performance rating of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Perfect tournament performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average perfect performance of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Direct encounter"
+msgstr ""
+
 #: src/data/timer.py
 #, ai_translation
 msgid "Time is not defined."
@@ -1381,6 +1509,27 @@ msgstr "Resultaten entry"
 msgid "Parings by player"
 msgstr "Parings by player"
 
+#: src/data/util.py
+msgid "No split"
+msgstr ""
+
+#: src/data/util.py
+msgid "Category"
+msgstr ""
+
+#: src/data/util.py
+msgid "Club"
+msgstr ""
+
+#: src/data/util.py
+msgid "League"
+msgstr ""
+
+#: src/data/util.py src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "Federation"
+msgstr "Federatie"
+
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -1719,6 +1868,11 @@ msgstr "Fout bij het bijwerken van de FFE-database."
 
 #: src/web/server_engine.py
 #, ai_translation
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr "Automatische installatie van BBP-paringen voor ontwikkelaars met PAPI_WEB_EXPERIMENTAL=1."
+
+#: src/web/server_engine.py
+#, ai_translation
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Poort [{port}] al in gebruik, kan Papi-webserver niet starten."
 
@@ -1785,6 +1939,14 @@ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch
 msgstr "Gebeurtenis [{uniq_id}] is verwijderd, de database is gearchiveerd ({arch})."
 
 #: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/player_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "Please choose the tournament."
+msgstr "Kies alstublieft het toernooi."
+
+#: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
 msgid "Personal"
 msgstr "Persoonlijk"
@@ -1811,13 +1973,6 @@ msgstr "Karakter [{char}] is niet toegestaan."
 #, ai_translation
 msgid "Family [{uniq_id}] already exists."
 msgstr "Familie [{uniq_id}] bestaat al."
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/player_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "Please choose the tournament."
-msgstr "Kies alstublieft het toernooi."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
@@ -1860,6 +2015,16 @@ msgstr[1] "{num} illegale bewegingen max"
 #, ai_translation
 msgid "By default - {option}"
 msgstr "Standaard - {option}"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Full point bye"
+msgstr "Volledig punt bye"
+
+#: src/web/controllers/admin/index_admin_controller.py
+#, ai_translation
+msgid "Half point bye"
+msgstr "Halve punt bye"
 
 #: src/web/controllers/admin/index_admin_controller.py
 #, ai_translation
@@ -2082,8 +2247,18 @@ msgstr "Alleen geschatte rankings zijn optioneel."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "De speler met FIDE ID [{fide_id}] speelt al toernooi [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Ongeldige FIDE ID [{fide_id}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "De speler met FFE ID [{ffe_id}] speelt al toernooi [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2094,6 +2269,11 @@ msgstr "Ongeldige FFE ID [{ffe_id}]."
 #, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Ongeldig FFE-licentienummer [{ffe_licence_number}]."
+
+#: src/web/controllers/admin/player_admin_controller.py
+#, ai_translation
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr "De speler met FFE licentienummer [{ffe_licence_number}] speelt al toernooi [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2970,19 +3150,56 @@ msgid "Delete"
 msgstr "Verwijderen"
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Cancel"
 msgstr "Annuleren"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Print"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Tournament"
+msgstr "Toernooi"
+
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#, ai_translation
+msgid "Tournament:"
+msgstr "Toernooi:"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The tournament to print."
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Options"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Split by:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "How to split the results."
+msgstr ""
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
@@ -3014,11 +3231,6 @@ msgstr "Uniek ID"
 #, ai_translation
 msgid "Date"
 msgstr "Datum"
-
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Federation"
-msgstr "Federatie"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -3323,14 +3535,6 @@ msgstr "B.v.: Mijn schermfamilie"
 #, ai_translation, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr "De naam van de schermfamilie, optioneel. De volgende tokens worden automatisch vervangen door de bordnummers of spelersnamen: %%f=eerste, %%l=laatste, %%t=toernooi."
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#, ai_translation
-msgid "Tournament:"
-msgstr "Toernooi:"
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3771,7 +3975,7 @@ msgid "Open/close check-in."
 msgstr "Open/sluiten check-in."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Check-in"
 msgstr "Check-in"
@@ -3872,6 +4076,12 @@ msgstr "Download de informatie van de geselecteerde spelers (ODS-formaat)."
 #, ai_translation
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Download de informatie van de geselecteerde spelers (XLSX-formaat)."
+
+#: src/web/templates/admin/players/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+#, ai_translation
+msgid "No results."
+msgstr "Geen resultaten."
 
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
@@ -4055,6 +4265,36 @@ msgstr "Waarschuwing: het verwijderen van een speler is permanent!"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
+msgid "Search"
+msgstr "Zoeken"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FIDE database:"
+msgstr "FIDE-database:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "E.g.: john doe"
+msgstr "Bijv.: John Doe"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FIDE database is not available."
+msgstr "De FIDE-database is niet beschikbaar."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "FFE database:"
+msgstr "FFE-database:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The FFE database is not available."
+msgstr "De FFE-database is niet beschikbaar."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "Identity"
 msgstr "Identiteit"
 
@@ -4102,12 +4342,6 @@ msgstr "Geslacht:"
 #, ai_translation
 msgid "The player's gender."
 msgstr "Het geslacht van de speler."
-
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/user/screen/results.html
-#, ai_translation
-msgid "Tournament"
-msgstr "Toernooi"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4279,6 +4513,46 @@ msgstr "Opmerking:"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Enig commentaar op de speler (opmerkingen zijn alleen zichtbaar door de arbiters)."
 
+#: src/web/templates/admin/players/print_view.html
+msgid "List of players"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/players/print_view.html
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr ""
+
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -4387,7 +4661,7 @@ msgstr "Check-in is gesloten voor toernooi [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
-msgid "Player [%(last_name)s %(first_name)s] if forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Speler [%(last_name)s %(first_name)s] indien verbeurd voor de volgende ronde in toernooi [%(tournament_uniq_id)s]."
 
 #: src/web/templates/admin/players/tab.html
@@ -4429,6 +4703,11 @@ msgstr "FIDE ID: %(fide_id)s (klik om te kopiëren naar het klembord)."
 #, ai_translation
 msgid "No FIDE ID."
 msgstr "Geen FIDE ID."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr "FFE-licentie: %(ffe_licence_number)s (verlopen)."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation, python-format
@@ -4861,6 +5140,12 @@ msgstr "Sleep de sets om ze te bestellen."
 msgid "Add a set"
 msgstr "Een set toevoegen"
 
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal.html
+#, ai_translation
+msgid "Close"
+msgstr "Sluiten"
+
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
 msgid "The tournament of which you want to show the pairings, mandatory."
@@ -5061,11 +5346,6 @@ msgstr "Sleep de uren om ze te bestellen."
 #, ai_translation
 msgid "Add a hour"
 msgstr "Voeg een uur toe"
-
-#: src/web/templates/admin/timers/timer_hours_modal.html
-#, ai_translation
-msgid "Close"
-msgstr "Sluiten"
 
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #, ai_translation
@@ -5504,6 +5784,62 @@ msgstr "Een URL, of het pad naar het regelsbestand op de server, in PDF-formaat 
 msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
 msgstr "Het maximale aantal illegale bewegingen dat per ronde kan worden geregistreerd voor een speler (van 0 naar 3, standaard %(default)d)."
 
+# Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
+# long compared to initial [Pairings]
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Pairings"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "First board number:"
+msgstr "Eerste bordnummer:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgstr "Het nummer van het eerste bord van het toernooi (indien niet ingesteld, defaults to %(default)d)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Paired bye points:"
+msgstr "Gepaarde bye punten:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "The points scored by players who are paired bye."
+msgstr "De punten gescoord door spelers die zijn gekoppeld bye."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Max byes:"
+msgstr "Max. byes:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgstr "Het maximum aantal byes dat een speler kan doen alsof (indien niet ingesteld, defaults to %(default)d)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
+msgid "Last rounds no byes:"
+msgstr "Laatste rondes geen byes:"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgstr "Het aantal laatste rondes waarvoor een speler geen byes kan krijgen (indien niet ingesteld, defaults to %(default)d)."
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Tie-breaks"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "Tie-break #%(index)d:"
+msgstr ""
+
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
 msgid "Create and add default screens"
@@ -5584,77 +5920,77 @@ msgstr "Rotator draait automatisch tussen meerdere schermen."
 msgid "Go back to the events page."
 msgstr "Ga terug naar de evenementen pagina."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please enter the password to enter results:"
 msgstr "Voer het wachtwoord in om resultaten in te voeren:"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Event"
 msgstr "Gebeurtenis"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Er is een wachtwoord nodig om resultaten in te voeren voor het evenement %(event_uniq_id)s."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please ask the organizer to get the password."
 msgstr "Vraag de organisator om het wachtwoord te krijgen."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Enter the result"
 msgstr "Voer het resultaat in"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "WHITE WINS"
 msgstr "WITTE WIJNEN"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DRAW"
 msgstr "DRAW"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BLACK WINS"
 msgstr "BLACK WINS"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BY FORFEIT"
 msgstr "DOOR FORFEIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "FORFEIT"
 msgstr "FORFEIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CLEAR THE RESULT"
 msgstr "KEUR DE RESULTAAT GOED"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-IN"
 msgstr "check-in"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-OUT"
 msgstr "check-out"
@@ -5787,4 +6123,22 @@ msgstr "vs"
 
 #~ msgid "pairings by board"
 #~ msgstr "paringen per bord"
+
+#~ msgid "Zero point bye"
+#~ msgstr ""
+
+#~ msgid "The number of points by players who are paired bye."
+#~ msgstr ""
+
+#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
+#~ msgstr ""
+
+#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
+#~ msgstr ""
+
+#~ msgid "The number of points scored by players who are paired bye."
+#~ msgstr ""
+
+#~ msgid "Screen families allow to group screens together."
+#~ msgstr ""
 

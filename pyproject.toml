@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "Papi-web"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.11.0"
-version = "2.4.19"
+version = "2.4.23"
 authors = [
   {name = "Pascal Aubry", email = "papi-web@echecs-bretagne.fr"},
   {name = "Sammy Plat", email = "papi-web@echecs-bretagne.fr"},
@@ -22,6 +22,7 @@ dependencies = [
   "colorama ~= 0.4.6",
   "colorlog ~= 6.9.0",
   "cryptography ~= 44.0.0",
+  "python-dateutil ~= 2.9.0",
   "httpdate ~= 1.2.0",
   "Jinja2 ~= 3.1.5",
   "litestar ~= 2.14.0",
