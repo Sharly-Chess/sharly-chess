@@ -206,7 +206,9 @@ class CheckInUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name='user/screen.html', context=web_context.template_context | {}
+            template_name='user/modals.html',
+            context=web_context.template_context | {},
+            re_target='#modal-wrapper',
         )
 
     @patch(
@@ -370,7 +372,9 @@ class ResultUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         return HTMXTemplate(
-            template_name='user/screen.html', context=web_context.template_context | {}
+            template_name='user/modals.html',
+            context=web_context.template_context | {},
+            re_target='#modal-wrapper',
         )
 
     def _user_update_result(

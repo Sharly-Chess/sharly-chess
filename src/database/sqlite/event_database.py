@@ -18,6 +18,7 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
+from data.tie_break import TieBreak, TieBreakType, TieBreakOption
 from data.util import Result as UtilResult
 from database.sqlite.sqlite_database import SQLiteDatabase
 from database.store import (
@@ -447,6 +448,7 @@ class EventDatabase(SQLiteDatabase):
                                     paired_bye_points=None,
                                     max_byes=None,
                                     last_rounds_no_byes=None,
+                                    tie_breaks=None,
                                 )
                             )
                             tournament_ids_by_uniq_id[tournament_uniq_id] = (
@@ -956,340 +958,17 @@ class EventDatabase(SQLiteDatabase):
         self._version = version
 
     def _upgrade(self):
-        target_version: Version = Version('2.4.0')
-        while True:
-            match self.version.public:
-                case '2.4.0' | '2.4.1':
-                    target_version: Version = Version('2.4.2')
-                    self._execute('ALTER TABLE `screen` ADD `results_max_age` INTEGER')
-                    self._execute(
-                        'ALTER TABLE `info` DROP COLUMN `allow_results_deletion_on_input_screens`'
-                    )
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.2' | '2.4.3':
-                    target_version = Version('2.4.4')
-                    self._execute(
-                        'ALTER TABLE `screen` ADD `input_exit_button` INTEGER'
-                    )
-                    self._execute(
-                        'ALTER TABLE `family` ADD `input_exit_button` INTEGER'
-                    )
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.4':
-                    target_version = Version('2.4.5')
-                    self._execute('ALTER TABLE `rotator` DROP COLUMN `show_menus`')
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.5' | '2.4.6' | '2.4.7':
-                    target_version = Version('2.4.8')
-                    self._execute(
-                        'ALTER TABLE `info` ADD `hide_background_image` INTEGER'
-                    )
-                    self._execute(
-                        'UPDATE `info` SET `hide_background_image` = ?',
-                        (1 if PapiWebConfig.default_hide_background_image else 0,),
-                    )
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.8' | '2.4.9' | '2.4.10' | '2.4.11':
-                    target_version = Version('2.4.12')
-                    self._execute('ALTER TABLE `info` ADD `rules` TEXT')
-                    self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.12':
-                    target_version = Version('2.4.13')
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT'
-                    )
-                    self._execute(
-                        'UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0'
-                    )
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.13' | '2.4.14' | '2.4.15':
-                    target_version = Version('2.4.16')
-                    self._execute('ALTER TABLE `info` ADD `message_text` TEXT')
-                    self._execute('ALTER TABLE `info` ADD `message_color` TEXT')
-                    self._execute(
-                        'ALTER TABLE `info` ADD `message_background_color` TEXT'
-                    )
-                    self._execute(
-                        'ALTER TABLE `screen` ADD `message_default` INTEGER NOT NULL DEFAULT 1'
-                    )
-                    self._execute('ALTER TABLE `screen` ADD `message_text` TEXT')
-                    self._execute(
-                        'ALTER TABLE `family` ADD `message_default` INTEGER NOT NULL DEFAULT 1'
-                    )
-                    self._execute('ALTER TABLE `family` ADD `message_text` TEXT')
-                    self._execute(
-                        'ALTER TABLE `rotator` ADD `message_default` INTEGER NOT NULL DEFAULT 1'
-                    )
-                    self._execute('ALTER TABLE `rotator` ADD `message_text` TEXT')
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.16' | '2.4.17' | '2.4.18':
-                    target_version = Version('2.4.19')
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.19':
-                    target_version = Version('2.4.20')
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `check_in_open` INTEGER NOT NULL DEFAULT 0'
-                    )
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.20':
-                    target_version = Version('2.4.21')
-                    # No need to store the rounds skipped by the users since pairing information is stored
-                    # at player-level after the ChessEvent import. IF EXISTS is used because the table is not
-                    # created since 2.4.20
-                    self._execute('DROP TABLE IF EXISTS `skipped_round`')
-                    self._execute(
-                        "ALTER TABLE `info` ADD `federation` TEXT NOT NULL DEFAULT 'NON'"
-                    )
-                    # Assume that the events before 2.4.21 were all in France
-                    self._execute('UPDATE `info` SET `federation` = ?', ('FRA',))
-                    # Add ChessEvent information at event-level and tournament-level
-                    self._execute('ALTER TABLE `info` ADD `chessevent_user_id` TEXT')
-                    self._execute('ALTER TABLE `info` ADD `chessevent_password` TEXT')
-                    self._execute('ALTER TABLE `info` ADD `chessevent_event_id` TEXT')
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `chessevent_user_id` TEXT'
-                    )
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `chessevent_password` TEXT'
-                    )
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `chessevent_event_id` TEXT'
-                    )
-                    # Read all the ChessEvent connections
-                    self._execute('SELECT * FROM `chessevent` ORDER BY `id`')
-                    chessevent_connections: dict[int, dict[str, Any]] = {
-                        row['id']: {
-                            'chessevent_user_id': row['user_id'],
-                            'chessevent_password': row['password'],
-                            'chessevent_event_id': row['event_id'],
-                        }
-                        for row in self._fetchall()
-                    }
-                    if len(chessevent_connections) == 1:
-                        # Set the ChessEvent connection as the event default ChessEvent connection
-                        event_chessevent_connection: dict[str, Any] = list(
-                            chessevent_connections.values()
-                        )[0]
-                        self._execute(
-                            f'UPDATE `info` SET {", ".join(f"`{field}` = ?" for field in event_chessevent_connection)}',
-                            tuple(event_chessevent_connection.values()),
-                        )
-                    else:
-                        # Read the tournaments and set the ChessEvent information of the tournament
-                        self._execute(
-                            'SELECT `id`, `chessevent_id` FROM `tournament` WHERE `chessevent_id` IS NOT NULL'
-                        )
-                        for row in self._fetchall():
-                            chessevent_connection: dict[str, Any] = (
-                                chessevent_connections[row['chessevent_id']]
-                            )
-                            self._execute(
-                                f'UPDATE `tournament` SET {", ".join(f"`{field}` = ?" for field in chessevent_connection)} WHERE `id` = ?',
-                                tuple(
-                                    list(chessevent_connection.values()) + [row['id']]
-                                ),
-                            )
-                    # Simply running ALTER TABLE `tournament` DROP COLUMN `chessevent_id` fails with sqlite3.OperationalError:
-                    # error in table tournament after drop column: unknown column "chessevent_id" in foreign key definition
-                    # Since there is no simple way in SQlite to remove a constraint (https://sqlite.org/lang_altertable.html part 7),
-                    # copy the table and rename:
-                    self._execute('PRAGMA foreign_keys=off')
-                    # self._execute('BEGIN TRANSACTION')
-                    self._execute(
-                        'ALTER TABLE `tournament` RENAME TO `tournament_copy`'
-                    )
-                    self._execute(
-                        'CREATE TABLE `tournament` ('
-                        '    `id` INTEGER NOT NULL,'
-                        '    `uniq_id` TEXT NOT NULL,'
-                        '    `name` TEXT NOT NULL,'
-                        '    `path` TEXT,'
-                        '    `filename` TEXT,'
-                        '    `ffe_id` INTEGER,'
-                        '    `ffe_password` TEXT,'
-                        '    `time_control_initial_time` INTEGER,'
-                        '    `time_control_increment` INTEGER,'
-                        '    `time_control_handicap_penalty_step` INTEGER,'
-                        '    `time_control_handicap_penalty_value` INTEGER,'
-                        '    `time_control_handicap_min_time` INTEGER,'
-                        '    `chessevent_user_id` TEXT,'
-                        '    `chessevent_password` TEXT,'
-                        '    `chessevent_event_id` TEXT,'
-                        '    `chessevent_tournament_name` TEXT,'
-                        '    `record_illegal_moves` INTEGER,'
-                        '    `rules` TEXT,'
-                        '    `check_in_open` INTEGER NOT NULL DEFAULT 0,'
-                        '    `last_update` FLOAT NOT NULL,'
-                        '    `last_illegal_move_update` FLOAT NOT NULL DEFAULT 0.0,'
-                        '    `last_result_update` FLOAT NOT NULL DEFAULT 0.0,'
-                        '    `last_check_in_update` FLOAT NOT NULL DEFAULT 0.0,'
-                        '    `last_ffe_upload` FLOAT NOT NULL DEFAULT 0.0,'
-                        '    `last_ffe_rules_upload` FLOAT NOT NULL DEFAULT 0.0,'
-                        '    `last_chessevent_download_md5` TEXT,'
-                        '    PRIMARY KEY(`id` AUTOINCREMENT),'
-                        '    UNIQUE(`uniq_id`)'
-                        ')'
-                    )
-                    self._execute(
-                        'INSERT INTO `tournament`('
-                        '    `id`, '
-                        '    `uniq_id`, '
-                        '    `name`, '
-                        '    `path`, '
-                        '    `filename`, '
-                        '    `ffe_id`, '
-                        '    `ffe_password`,'
-                        '    `time_control_initial_time`, '
-                        '    `time_control_increment`, '
-                        '    `time_control_handicap_penalty_step`, '
-                        '    `time_control_handicap_penalty_value`, '
-                        '    `time_control_handicap_min_time`, '
-                        '    `chessevent_user_id`, '
-                        '    `chessevent_password`, '
-                        '    `chessevent_event_id`, '
-                        '    `chessevent_tournament_name`, '
-                        '    `record_illegal_moves`, '
-                        '    `rules`, '
-                        '    `check_in_open`, '
-                        '    `last_update`, '
-                        '    `last_illegal_move_update`, '
-                        '    `last_result_update`, '
-                        '    `last_check_in_update`, '
-                        '    `last_ffe_upload`, '
-                        '    `last_ffe_rules_upload`, '
-                        '    `last_chessevent_download_md5`'
-                        ') SELECT'
-                        '    `id`, '
-                        '    `uniq_id`, '
-                        '    `name`, '
-                        '    `path`, '
-                        '    `filename`, '
-                        '    `ffe_id`, '
-                        '    `ffe_password`,'
-                        '    `time_control_initial_time`,'
-                        '    `time_control_increment`,'
-                        '    `time_control_handicap_penalty_step`,'
-                        '    `time_control_handicap_penalty_value`,'
-                        '    `time_control_handicap_min_time`,'
-                        '    NULL,'
-                        '    NULL,'
-                        '    NULL,'
-                        '    `chessevent_tournament_name`,'
-                        '    `record_illegal_moves`,'
-                        '    `rules`,'
-                        '    `check_in_open`,'
-                        '    `last_update`,'
-                        '    `last_illegal_move_update`,'
-                        '    `last_result_update`,'
-                        '    `last_check_in_update`,'
-                        '    `last_ffe_upload`,'
-                        '    `last_ffe_rules_upload`,'
-                        '    `last_chessevent_download_md5`'
-                        'FROM `tournament_copy`'
-                    )
-                    # self._execute('COMMIT')
-                    self._execute('DROP TABLE `tournament_copy`')
-                    self._execute('PRAGMA foreign_keys=on')
-                    # Eventually drop the now useless chessevent table
-                    self._execute('DROP TABLE `chessevent`')
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case '2.4.21':
-                    target_version = Version('2.4.22')
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `first_board_number` INTEGER'
-                    )
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `paired_bye_points` FLOAT'
-                    )
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `max_byes` INTEGER'
-                    )
-                    self._execute(
-                        'ALTER TABLE `tournament` ADD `last_rounds_no_byes` INTEGER'
-                    )
-                    # Drop table chessevent since the SQL code of the creation of the table
-                    # had been left by error in create_event.sql
-                    self._execute('DROP TABLE IF EXISTS `chessevent`')
-                    self.set_version(target_version)
-                    self.commit()
-                    logger.debug(
-                        'Database %s has been upgraded to version %s.',
-                        self.file.name,
-                        target_version,
-                    )
-                case _:
-                    break
-        if self.version == target_version:
+        from database.sqlite.event_migration import EventMigrationManager
+
+        initial_version = self.version
+        EventMigrationManager().migrate(self, PapiWebConfig.version)
+        if initial_version != self.version:
             logger.info(
-                'Database %s has been upgraded to version %s.',
+                'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
-                target_version,
+                initial_version,
+                self.version,
             )
-            return
-        raise PapiWebException(
-            f'Database {self.file.name} ({self.version}) could not be upgraded to version {target_version}.'
-        )
 
     def upgrade(self):
         """Upgrades the database version from the stored database version to
@@ -1695,6 +1374,8 @@ class EventDatabase(SQLiteDatabase):
             # needed to open event databases when version < 2.4.11 before checking the version
             last_ffe_rules_upload=row.get('last_ffe_rules_upload', 0.0),
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
+            # needed to open event databases when version < 2.4.23 before checking the version
+            tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
         )
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
@@ -1740,6 +1421,7 @@ class EventDatabase(SQLiteDatabase):
             'first_board_number',
             'paired_bye_points',
             'max_byes',
+            'tie_breaks',
             'last_rounds_no_byes',
             'last_update',
             'last_result_update',
@@ -1770,6 +1452,7 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.first_board_number,
             stored_tournament.paired_bye_points,
             stored_tournament.max_byes,
+            self._dump_to_json_database_tie_breaks(stored_tournament.tie_breaks),
             stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,
@@ -1888,6 +1571,39 @@ class EventDatabase(SQLiteDatabase):
                 tournament_id,
             ),
         )
+
+    @classmethod
+    def _load_tie_breaks_from_database_field(
+        cls, tie_breaks_field: str | None
+    ) -> list[TieBreak] | None:
+        """load tie breaks from the database field"""
+        tie_break_list = cls.load_json_from_database_field(tie_breaks_field)
+        if not tie_break_list:
+            return None
+        return [
+            TieBreak(
+                TieBreakType(tie_break_dict['type']),
+                {
+                    TieBreakOption(option): value
+                    for option, value in tie_break_dict['options'].items()
+                }
+            ) for tie_break_dict in tie_break_list
+        ]
+
+    @classmethod
+    def _dump_to_json_database_tie_breaks(
+            cls, tie_breaks: list[TieBreak] | None
+    ) -> str | None:
+        """Serializes the tie breaks into JSON. Returns a serialization
+        with format [{'type': str, 'options': {str: value}}]."""
+        if tie_breaks is None:
+            return None
+        return cls.dump_to_json_database_field([
+            {
+                'type': tie_break.type,
+                'options': tie_break.options,
+            } for tie_break in tie_breaks
+        ])
 
     """
     ---------------------------------------------------------------------------------

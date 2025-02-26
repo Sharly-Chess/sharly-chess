@@ -44,18 +44,22 @@
                                             class="board-number bg-transparent text-end"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                preload
-                                                hx-target="body"
+                                                hx-target="#modal-wrapper"
                                                 hx-indicator="#please-wait"
+                                                preload
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-wrapper"
                                             {% endif %}
                                         >{{ board.number }}.</th>
                                         <td
                                             class="points bg-transparent text-center"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                preload
-                                                hx-target="body"
+                                                hx-target="#modal-wrapper"
                                                 hx-indicator="#please-wait"
+                                                preload
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-wrapper"
                                             {% endif %}
                                         >
                                             {{ wp.vpoints_str }}
@@ -65,9 +69,11 @@
                                                 class="points bg-transparent text-center"
                                                 {% if editable %}
                                                     hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                    preload
-                                                    hx-target="body"
+                                                    hx-target="#modal-wrapper"
                                                     hx-indicator="#please-wait"
+                                                    preload
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modal-wrapper"
                                                 {% endif %}
                                             >
                                                 [{{ wp.points_str }}]
@@ -81,9 +87,11 @@
                                             class="score bg-transparent text-center"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                preload
-                                                hx-target="body"
+                                                hx-target="#modal-wrapper"
                                                 hx-indicator="#please-wait"
+                                                preload
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-wrapper"
                                             {% endif %}
                                         >
                                             {% if board.result_str %}{{ board.result_str }}{% else %}{{ _('#%(board_number)d', board_number=board.number) }}{% endif %}
@@ -97,9 +105,11 @@
                                                 class="points bg-transparent text-center"
                                                 {% if editable %}
                                                     hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                    preload
-                                                    hx-target="body"
+                                                    hx-target="#modal-wrapper"
                                                     hx-indicator="#please-wait"
+                                                    preload
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modal-wrapper"
                                                 {% endif %}
                                             >
                                                 {% if bp.ref_id != 1 %}
@@ -111,9 +121,11 @@
                                             class="points bg-transparent text-center"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                preload
-                                                hx-target="body"
+                                                hx-target="#modal-wrapper"
                                                 hx-indicator="#please-wait"
+                                                preload
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-wrapper"
                                             {% endif %}
                                         >
                                             {% if bp.ref_id != 1 %}

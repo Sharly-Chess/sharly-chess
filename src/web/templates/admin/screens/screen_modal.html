@@ -65,7 +65,7 @@
                     {% set col = 6 if action == 'create' and screen_type in ['input', 'boards', 'players'] else 4 %}
                     <div class="row">
                         <div class="col-12 col-xl-{{col}} mb-3">
-                            {{ switch_input(
+                            {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
                                 placeholder=_('Public screen'),
@@ -74,7 +74,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 col-xl-{{col}} mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
                                 placeholder=_('E.g.: %(screen_type)s-screen', screen_type=screen_type),
@@ -83,7 +83,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 col-xl-{{col}} mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
                                 placeholder=_('E.g.: My screen'),
@@ -93,7 +93,7 @@
                         </div>
                         {% if action == 'create' and screen_type in ['input', 'boards', 'players'] %}
                             <div class="col-12 col-xl-{{col}} mb-3">
-                                {{ select_input(
+                                {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
                                     label=_('Tournament:'),
                                     help_text=_('The first tournament of the screen, mandatory (it is possible to add other tournaments later).'),
@@ -110,7 +110,7 @@
                         </h4>
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
-                                {{ select_input(
+                                {{ admin_macros.select_input(
                                     name='timer_id',
                                     label=_('Timer:'),
                                     help_text=_('The timer displayed on the screen.'),
@@ -119,7 +119,7 @@
                                 ) }}
                             </div>
                             <div class="col-12 col-md-6 mb-3">
-                                {{ number_input(
+                                {{ admin_macros.number_input(
                                     name='columns',
                                     label=_('Columns:'),
                                     placeholder=_('E.g.: %(num)d', num=2),
@@ -134,7 +134,7 @@
                         </h4>
                         <div class="row">
                             <div class="col-12 col-xl-5 mb-3">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='menu',
                                     label=_('Links displayed on the screen menu:'),
                                     placeholder=_('E.g.: @boards, @family, another-screen'),
@@ -143,7 +143,7 @@
                                 ) }}
                             </div>
                             <div class="col-12 col-md-6 col-xl-3 mb-3">
-                                {{ switch_input(
+                                {{ admin_macros.switch_input(
                                     name='menu_link',
                                     label=_('Links to this screen:'),
                                     placeholder=_('Allow'),
@@ -152,7 +152,7 @@
                                 ) }}
                             </div>
                             <div class="col-12 col-md-6 col-xl-4 mb-3">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='menu_text',
                                     label=_('Menu link label:'),
                                     placeholder=_('E.g.: Link to my screen'),
@@ -212,7 +212,7 @@
                         {% if screen_type == 'results' %}
                             <div class="row">
                                 <div class="col-12 col-md-6 mb-3">
-                                    {{ number_input(
+                                    {{ admin_macros.number_input(
                                         name='results_limit',
                                         label=_('Maximum number of results displayed:'),
                                         placeholder=_('E.g.: %(num)d', num=30),
@@ -221,7 +221,7 @@
                                     ) }}
                                 </div>
                                 <div class="col-12 col-md-6 mb-3">
-                                    {{ number_input(
+                                    {{ admin_macros.number_input(
                                         name='results_max_age',
                                         label=_('Maximum age of the results:'),
                                         placeholder=_('E.g.: %(minutes)d (minutes)', minutes=45),
@@ -262,7 +262,7 @@
                         {% if screen_type == 'image' %}
                             <div class="row">
                                 <div class="col-12 col-md-6 mb-3">
-                                    {{ text_input(
+                                    {{ admin_macros.text_input(
                                         name='background_image',
                                         label=_('Background image:'),
                                         placeholder=_('E.g.: https://my.club.us/tournament.jpg'),
@@ -273,7 +273,7 @@
                                     ) }}
                                 </div>
                                 <div class="col-12 col-md-6 mb-3">
-                                    {{ color_input(
+                                    {{ admin_macros.color_input(
                                         name='background_color',
                                         label=_('Background colour:'),
                                         help_text=_('The background colour is used when the image does not fill the whole screen.'),
@@ -313,12 +313,11 @@
                     </div>
                     <div class="col col-6 text-end">
                         <button
-                            class="btn btn-secondary text-nowrap"
-                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
-                            preload
-                            hx-target="body"
+                            type="button"
+                            data-bs-dismiss="modal"
+                            hx-get="{{ url_for('close-modal') }}"
                             hx-trigger="click, keyup[key=='Escape'] from:body"
-                            hx-indicator="#please-wait"
+                            class="btn btn-secondary text-nowrap"
                         >
                             <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
@@ -329,6 +328,3 @@
         </div>
     </form>
 </div>
-<script>
-    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
-</script>

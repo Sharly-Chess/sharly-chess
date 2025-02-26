@@ -47,7 +47,7 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-                    {{ text_input(
+                    {{ admin_macros.text_input(
                         name='uniq_id',
                         label=_('Enter the tournament ID to confirm its deletion:'),
                         placeholder=_('Enter here the tournament ID'),
@@ -60,7 +60,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
                                 placeholder=_('E.g.: main'),
@@ -69,7 +69,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
                                 placeholder=_('E.g.: Main tournament'),
@@ -78,7 +78,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='path',
                                 label=_('Directory of the Papi file:'),
                                 placeholder=_('E.g.: c:\\chess\\tournaments\\papi'),
@@ -87,7 +87,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='filename',
                                 label=_('Name of the Papi file (with no extension):'),
                                 placeholder=_('E.g.: main'),
@@ -102,7 +102,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='ffe_id',
                                 label=_('FFE qualification number (optional):'),
                                 placeholder=_('E.g.: %(num)d', num=68991),
@@ -111,7 +111,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ password_input(
+                            {{ admin_macros.password_input(
                                 name='ffe_password',
                                 label=_('FFE password:'),
                                 placeholder=_('E.g.: %(string)s', string='KYNPRTZMHX'),
@@ -120,7 +120,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='chessevent_user_id',
                                 label=_('Chessevent ID:'),
                                 placeholder=_('E.g.: %(string)s', string='Z00000'),
@@ -129,7 +129,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ password_input(
+                            {{ admin_macros.password_input(
                                 name='chessevent_password',
                                 label=_('ChessEvent Password:'),
                                 placeholder=_('E.g.: my_password'),
@@ -138,7 +138,7 @@
                             ) }}
                         </div>
                         <div class="col-12 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='chessevent_event_id',
                                 label=_('ChessEvent event:'),
                                 placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
@@ -147,7 +147,7 @@
                             ) }}
                         </div>
                         <div class="col-12 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='chessevent_tournament_name',
                                 label=_('ChessEvent tournament:'),
                                 placeholder=_('E.g.: Tournoi A'),
@@ -162,7 +162,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='time_control_initial_time',
                                 label=_('Initial time (optional):'),
                                 placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5),
@@ -171,7 +171,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='time_control_increment',
                                 label=_('Increment (optional):'),
                                 placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5),
@@ -180,7 +180,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-4 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='time_control_handicap_penalty_value',
                                 label=_('Penalty (handicap):'),
                                 placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
@@ -189,7 +189,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-4 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='time_control_handicap_penalty_step',
                                 label=_('Elo step (handicap):'),
                                 placeholder=_('E.g.: 50 (Elo)'),
@@ -198,7 +198,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-4 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='time_control_handicap_min_time',
                                 label=_('Minimal time (handicap):'),
                                 placeholder=_('E.g.: %(seconds)d (seconds)', seconds=60),
@@ -213,7 +213,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='rules',
                                 label=_('Rules file location:'),
                                 placeholder=_('E.g.: c:\\chess\\tournaments\\main\\rules.pdf'),
@@ -222,7 +222,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ select_input(
+                            {{ admin_macros.select_input(
                                 name='record_illegal_moves',
                                 label=_('Illegal moves recording:'),
                                 help_text=_(
@@ -240,7 +240,7 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='first_board_number',
                                 label=_('First board number:'),
                                 placeholder=_('E.g.: %(num)d', num=20),
@@ -252,7 +252,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ select_input(
+                            {{ admin_macros.select_input(
                                 name='paired_bye_points',
                                 label=_('Paired bye points:'),
                                 help_text=_('The points scored by players who are paired bye.'),
@@ -261,7 +261,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='max_byes',
                                 label=_('Max byes:'),
                                 placeholder=_('E.g.: %(num)d', num=2),
@@ -273,7 +273,7 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
-                            {{ number_input(
+                            {{ admin_macros.number_input(
                                 name='last_rounds_no_byes',
                                 label=_('Last rounds no byes:'),
                                 placeholder=_('E.g.: %(num)d', num=3),
@@ -285,14 +285,48 @@
                             ) }}
                         </div>
                     </div>
+                    {% if action == 'update' %}
+                        <h4>
+                            {{ _('Tie-breaks') }}
+                        </h4>
+                        <div class="row">
+                            <div class="col-12 col-md-4 mb-3">
+                                {{ admin_macros.select_input(
+                                    name='tie_break_1',
+                                    label=_('Tie-break #%(index)d:', index=1),
+                                    select_options=tie_break_options,
+                                    help_text='',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-4 mb-3">
+                                {{ admin_macros.select_input(
+                                    name='tie_break_2',
+                                    label=_('Tie-break #%(index)d:', index=2),
+                                    select_options=tie_break_options,
+                                    help_text='',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-4 mb-3">
+                                {{ admin_macros.select_input(
+                                    name='tie_break_3',
+                                    label=_('Tie-break #%(index)d:', index=3),
+                                    select_options=tie_break_options,
+                                    help_text='',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="modal-footer d-block">
-                <div class="row">
-                    <div class="col col-6 text-start">
+                <div class="d-flex flex-wrap gap-4">
+                    <div class="d-flex gap-2 flex-grow-1">
                         <button
-                                type="submit"
-                                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                            type="submit"
+                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                         >
                             <i class="bi-floppy-fill pe-1"></i>
                             {% if action in ['create', 'clone', ] %}
@@ -307,9 +341,9 @@
                         </button>
                         {% if action in ['create', 'clone', ] %}
                             <button
-                                    type="submit"
-                                    name="add_screens"
-                                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                                type="submit"
+                                name="add_screens"
+                                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                             >
                                 <i class="bi-floppy-fill"></i>
                                 <i class="bi-plus-square-fill pe-1"></i>
@@ -317,14 +351,13 @@
                             </button>
                         {% endif %}
                     </div>
-                    <div class="col col-6 text-end">
+                    <div>
                         <button
-                                class="btn btn-secondary text-nowrap"
-                                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='tournaments') }}"
-                                preload
-                                hx-target="body"
-                                hx-trigger="click, keyup[key=='Escape'] from:body"
-                                hx-indicator="#please-wait"
+                            type="button"
+                            data-bs-dismiss="modal"
+                            hx-get="{{ url_for('close-modal') }}"
+                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                            class="btn btn-secondary text-nowrap"
                         >
                             <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
@@ -335,6 +368,3 @@
         </div>
     </form>
 </div>
-<script>
-    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
-</script>

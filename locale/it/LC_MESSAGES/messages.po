@@ -997,6 +997,134 @@ msgstr "schede {board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Torneo {tournament_uniq_id} ({numbers_str})"
 
+#: src/data/tie_break.py
+msgid "None"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz cut bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Median Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Progressive scores"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of wins"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Kashdan"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Koya"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut top"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut Bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Played modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Papi legacy"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Limit"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Exclude players"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of games won"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Games played with black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Games won with black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Rounds one Elected to Play"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average of opponents Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonneborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average rating of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Tournament performance rating"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average performance rating of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Perfect tournament performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average perfect performance of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Direct encounter"
+msgstr ""
+
 #: src/data/timer.py
 #, ai_translation
 msgid "Time is not defined."
@@ -1139,8 +1267,6 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
-# Error: translation [U12City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
@@ -1153,8 +1279,6 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
-# Error: translation [U16City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1165,8 +1289,6 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
-# Error: translation [U20City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #: src/data/util.py
@@ -3021,6 +3143,7 @@ msgstr "Elimina"
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Cancel"
 msgstr "Annulla"
@@ -3812,7 +3935,7 @@ msgid "Open/close check-in."
 msgstr "Apri/chiudi il check-in."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Check-in"
 msgstr "Check-in"
@@ -5633,6 +5756,15 @@ msgid "The number of last rounds for which a player can get no byes (if not set,
 msgstr "Il numero degli ultimi round per i quali un giocatore non può ottenere byes (se non impostato, default a %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Tie-breaks"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "Tie-break #%(index)d:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Crea e aggiungi schermate predefinite"
@@ -5712,77 +5844,77 @@ msgstr "Rotator ruota automaticamente tra più schermi."
 msgid "Go back to the events page."
 msgstr "Torna alla pagina degli eventi."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please enter the password to enter results:"
 msgstr "Inserire la password per inserire i risultati:"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Event"
 msgstr "Evento"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Per inserire i risultati dell'evento è necessaria una password %(event_uniq_id)s."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Password"
 msgstr "Password"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please ask the organizer to get the password."
 msgstr "Chiedere all'organizzatore di ottenere la password."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Enter the result"
 msgstr "Inserisci il risultato"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "WHITE WINS"
 msgstr "WINS BIANCO"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DRAW"
 msgstr "DISPONIBILE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BLACK WINS"
 msgstr "VINCE NERO"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BY FORFEIT"
 msgstr "PER FORFEIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DOUBLE"
 msgstr "DOPPIA"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "FORFEIT"
 msgstr "DISTRIBUZIONE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CLEAR THE RESULT"
 msgstr "CREARE IL RISULTATO"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-IN"
 msgstr "CHECK-IN"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-OUT"
 msgstr "CHECK-OUT"
@@ -5832,8 +5964,6 @@ msgstr "Numero massimo di risultati: illimitato"
 msgid "Image:"
 msgstr "Immagine:"
 
-# Error: translation [Rnd.BoaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Rnd.Boa]
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html

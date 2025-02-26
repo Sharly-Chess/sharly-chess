@@ -147,6 +147,7 @@ class ClubTuple(LeagueTuple):
     def __str__(self) -> str:
         return f'{self.federation}-{self.league}-{self.club}'
 
+
 class TournamentPlayer:
     """A class representing a player in a tournament"""
     def __init__(
@@ -179,17 +180,17 @@ class TournamentPlayer:
             for round_index, pairing in self.pairings.items()
             if round_index < max_round
         )
-    
+
     def points_after(self, max_round: int) -> float:
         return sum(
             pairing.result.point_value
             for round_index, pairing in self.pairings.items()
             if round_index <= max_round
         )
-    
+
     def total_points(self) -> float:
         return sum(pairing.result.point_value for pairing in self.pairings.values())
-    
+
     @property
     def estimation(self):
         return self._estimation or 0
@@ -297,7 +298,7 @@ class Player(TournamentPlayer):
             self._estimation = self.ratings[self.tournament.rating]
         else:
             self._estimation = value
-    
+
     @property
     def estimated(self) -> bool:
         return self.rating_types[self.tournament.rating] == PlayerRatingType.ESTIMATED
@@ -487,9 +488,13 @@ class Player(TournamentPlayer):
     def rank_sort_key(
             self, tournament: 'Tournament', max_round: int | None = None
     ) -> tuple:
-        rank = (-self.points_before(max_round),)
+        points = (
+            self.total_points() if max_round is None
+            else self.points_after(max_round)
+        )
+        rank = (-points,)
         for tie_break in tournament.tie_breaks:
-            rank += (-tie_break.compute_papi_player_value(self, tournament, max_round),)
+            rank += (-tie_break.player_value(self, tournament, max_round),)
         return rank + self.starting_rank_sort_key
 
     def __le__(self, other: 'Player') -> bool:

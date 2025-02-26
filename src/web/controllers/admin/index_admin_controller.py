@@ -19,6 +19,7 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader, ArchiveLoader
+from data.tie_break import PapiTieBreak
 from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
 from database.sqlite.event_database import EventDatabase
@@ -109,6 +110,13 @@ class AbstractAdminController(AbstractController):
         default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_points.point_value)
         options[''] = _('By default - {option}').format(option=options[default_option])
         return options
+
+    @staticmethod
+    def _get_tie_break_options() -> dict[str, str]:
+        return {
+            WebContext.value_to_form_data(tie_break): tie_break.name
+            for tie_break in iter(PapiTieBreak)
+        }
 
     @staticmethod
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
@@ -786,6 +794,12 @@ class AbstractIndexAdminController(AbstractAdminController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
+        if "modal" in context:
+            return HTMXTemplate(
+                template_name='admin/modals.html',
+                context=context,
+                re_target='#modal-wrapper',
+            )
         return HTMXTemplate(template_name='admin/index.html', context=context)
 
 

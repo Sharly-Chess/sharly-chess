@@ -319,10 +319,11 @@ class SwissTieBreaks(unittest.TestCase):
         )
 
     def test_points(self):
-        assert {
+        results = {
             player.id: player.total_points()
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 4,
             1: 3.5,
             3: 3.5,
@@ -340,12 +341,14 @@ class SwissTieBreaks(unittest.TestCase):
             13: 1.5,
             10: 1,
         }
+        self.assertEquals(results, expected)
 
     def test_win(self):
-        assert {
+        results = {
             player.id: individual.wins(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 3,
             16: 3,
             1: 2,
@@ -363,12 +366,14 @@ class SwissTieBreaks(unittest.TestCase):
             13: 1,
             10: 1,
         }
+        self.assertEquals(results, expected)
 
     def test_won(self):
-        assert {
+        results = {
             player.id: individual.games_won(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 3,
             16: 3,
             1: 2,
@@ -386,12 +391,14 @@ class SwissTieBreaks(unittest.TestCase):
             9: 0,
             10: 1,
         }
+        self.assertEquals(results, expected)
 
     def test_played_with_black(self):
-        assert {
+        results = {
             player.id: individual.games_played_with_black(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 3,
             1: 2,
             3: 2,
@@ -409,12 +416,14 @@ class SwissTieBreaks(unittest.TestCase):
             9: 1,
             10: 3,
         }
+        self.assertEquals(results, expected)
 
     def test_won_with_black(self):
-        assert {
+        results = {
             player.id: individual.games_won_with_black(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 1,
             1: 1,
             3: 1,
@@ -432,12 +441,14 @@ class SwissTieBreaks(unittest.TestCase):
             13: 1,
             10: 1,
         }
+        self.assertEquals(results, expected)
 
     def test_games_elected_to_play(self):
-        assert {
+        results = {
             player.id: individual.rounds_elected_to_play(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 5,
             1: 5,
             3: 5,
@@ -455,12 +466,14 @@ class SwissTieBreaks(unittest.TestCase):
             9: 3,
             10: 5,
         }
+        self.assertEquals(results, expected)
 
     def test_progressive_scores(self):
-        assert {
+        results = {
             player.id: individual.progressive_scores(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 13,
             4: 11.5,
             1: 11,
@@ -478,12 +491,16 @@ class SwissTieBreaks(unittest.TestCase):
             9: 2.5,
             10: 4,
         }
+        self.assertEquals(results, expected)
 
     def test_progressive_cut1(self):
-        assert {
-            player.id: individual.progressive_scores(player, self.tournament, cut=1)
+        results = {
+            player.id: individual.progressive_scores(
+                player, self.tournament,  cut=1
+            )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 12,
             3: 10.5,
             4: 10.5,
@@ -501,15 +518,14 @@ class SwissTieBreaks(unittest.TestCase):
             9: 2.5,
             10: 4,
         }
+        self.assertEquals(results, expected)
 
     def test_buchholz(self):
-        assert {
-            player.id: individual.buchholz(
-                player,
-                self.tournament,
-            )
+        results = {
+            player.id: individual.buchholz(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 13,  # No problem exercise
             3: 15.5,  # 1 unplayed round in opponent each
             4: 15,
@@ -525,16 +541,18 @@ class SwissTieBreaks(unittest.TestCase):
             7: 14.5,
             13: 14,
             9: 9,
-            10: 13, 
+            10: 13,
         }
+        self.assertEquals(results, expected)
 
     def test_buchholz_cut1(self):
-        assert {
+        results = {
             i: individual.buchholz(
                 self.tournament.players_by_id[i], self.tournament, cut_btm=1
             )
             for i in (5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15)
-        } == {
+        }
+        expected = {
             5: 7.5,
             8: 12,
             11: 12,  # 2.5 group
@@ -549,37 +567,41 @@ class SwissTieBreaks(unittest.TestCase):
             14: 9,
             15: 11,  # 2 group
         }
+        self.assertEquals(results, expected)
 
     def test_adjusted_score(self):
-        assert {
+        results = {
             player.id: individual.adjusted_score(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             1: 3.5,
-            2: 4,
+            2: 4.0,
             3: 3.5,
             4: 3.5,
             5: 2.5,
-            6: 3,
+            6: 3.0,
             7: 1.5,
             8: 2.5,
             9: 1.5,
-            10: 1,
+            10: 1.0,
             11: 2.5,
-            12: 3,
+            12: 3.0,
             13: 1.5,
-            14: 2,
-            15: 2,
+            14: 2.0,
+            15: 2.0,
             16: 3.5,
         }
-    
+        self.assertEquals(results, expected)
+
     def test_adjusted_score_fore(self):
-        assert {
+        results = {
             player.id: individual.adjusted_score(
                 player, self.tournament, adjust_fore=True
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 4,
             1: 3.5,
             3: 3.5,
@@ -597,14 +619,14 @@ class SwissTieBreaks(unittest.TestCase):
             13: 2,
             10: 1.5
         }
-    
+        self.assertEquals(results, expected)
+
     def test_fore_buchholz(self):
-        assert {
-            player.id: individual.fore_buchholz(
-                player, self.tournament,
-            )
+        results = {
+            player.id: individual.fore_buchholz(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 13.5,
             3: 15,
             4: 15.5,
@@ -622,55 +644,64 @@ class SwissTieBreaks(unittest.TestCase):
             13: 13.5,
             10: 12.5
         }
-    
+        self.assertEquals(results, expected)
+
     def test_buchholz_legacy(self):
-        assert {
-            player.id: individual.buchholz(player, self.tournament, papi_legacy=True)
+        results = {
+            player.id: individual.buchholz(
+                player, self.tournament, papi_legacy=True
+            )
             for player in self.tournament.players_by_id.values()
-        } == {
-            2: 13,
+        }
+        expected = {
+            2: 13.0,
             3: 14.5,
             4: 13.5,
             1: 12.5,
-            16: 12,
-            6: 11,
-            8: 14,
-            11: 12,
-            5: 8,
+            16: 12.0,
+            6: 11.0,
+            8: 14.0,
+            11: 12.0,
+            5: 8.0,
             12: 13.5,
-            15: 12,
-            14: 12,
-            13: 15,
-            7: 14,
+            15: 12.0,
+            14: 12.0,
+            13: 15.0,
+            7: 14.0,
             9: 8.5,
             10: 12.5
         }
-    
+        self.assertEquals(results, expected)
+
     def test_buchholz_cut_legacy(self):
-        assert {
-            player.id: individual.buchholz(player, self.tournament, papi_legacy=True, cut_btm=1)
+        results = {
+            player.id: individual.buchholz(
+                player, self.tournament, papi_legacy=True, cut_btm=1
+            )
             for player in self.tournament.players_by_id.values()
-        } == {
-            2: 12,
+        }
+        expected = {
+            2: 12.0,
             3: 12.5,
-            4: 12,
-            1: 11,
+            4: 12.0,
+            1: 11.0,
             16: 10.5,
-            6: 10,
+            6: 10.0,
             8: 12.5,
-            11: 11,
-            5: 7,
-            12: 12,
-            15: 11,
+            11: 11.0,
+            5: 7.0,
+            12: 12.0,
+            15: 11.0,
             14: 10.5,
             13: 12.5,
-            7: 12,
-            9: 8,
-            10: 11,
+            7: 12.0,
+            9: 8.0,
+            10: 11.0,
         }
+        self.assertEquals(results, expected)
 
     def test_buchholz_median_legacy(self):
-        assert {
+        results = {
             player.id: individual.buchholz(
                 player,
                 self.tournament,
@@ -679,31 +710,34 @@ class SwissTieBreaks(unittest.TestCase):
                 cut_top=1,
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 8.5,
             3: 8.5,
             4: 8.5,
-            1: 7,
+            1: 7.0,
             16: 6.5,
             6: 6.5,
-            8: 9,
+            8: 9.0,
             11: 7.5,
-            5: 5,
+            5: 5.0,
             12: 8.5,
             15: 7.5,
             14: 7.5,
-            13: 9,
-            7: 8,
+            13: 9.0,
+            7: 8.0,
             9: 4.5,
-            10: 7,
+            10: 7.0,
         }
- 
+        self.assertEquals(results, expected)
+
     def test_aob(self):
         aob = individual.average_of_buchholz
-        assert {
+        results = {
             player.id: round(aob(player, self.tournament), 2)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 13.6,
             3: 13.4,
             4: 13.38,
@@ -721,64 +755,68 @@ class SwissTieBreaks(unittest.TestCase):
             7: 11.9,
             10: 10.9,
         }
-    
+        self.assertEquals(results, expected)
+
     def test_sonneborn_berger_swiss(self):
-        assert {
-            player.id: individual.sonneborn_berger(
-                player, self.tournament
-            )
+        results = {
+            player.id: individual.sonneborn_berger(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 9.5,
             3: 10.5,
             4: 9.75,
-            1: 8,
+            1: 8.0,
             16: 7.25,
             6: 6.5,
             11: 5.75,
             8: 5.25,
             5: 4.25,
             14: 4.5,
-            12: 4,
+            12: 4.0,
             15: 3.5,
             13: 4.25,
             7: 3.25,
             9: 2.25,
             10: 1.5
         }
-    
+        self.assertEquals(results, expected)
+
     def test_sb_cut1_swiss(self):
-        assert {
-            player.id : individual.sonneborn_berger(
+        results = {
+            player.id: individual.sonneborn_berger(
                 player, self.tournament, cut=1
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 8.5,
             3: 9.25,
-            4: 8,
+            4: 8.0,
             1: 7.25,
             16: 5.75,
             6: 5.5,
             11: 4.25,
             8: 3.75,
             5: 3.25,
-            12: 4,
-            14: 3,
+            12: 4.0,
+            14: 3.0,
             15: 2.5,
             13: 4.25,
             7: 1.25,
             9: 2.25,
-            10: 0,
+            10: 0.0,
         }
-    
+        self.assertEquals(results, expected)
+
     def test_aro(self):
-        assert {
+        results = {
             player.id: individual.average_rating_opponents(
                 player, self.tournament
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 1880,
             3: 1940,
             4: 1888,
@@ -796,14 +834,16 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1760,
             10: 1880,
         }
+        self.assertEquals(results, expected)
 
     def test_aro_cut1(self):
-        assert {
+        results = {
             player.id: individual.average_rating_opponents(
                 player, self.tournament, cut_btm=1
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 1988,
             3: 2000,
             4: 1983,
@@ -821,14 +861,16 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1838,
             10: 1975,
         }
+        self.assertEquals(results, expected)
 
     def test_tpr(self):
-        assert {
+        results = {
             player.id: individual.tournament_performance_rating(
                 player, self.tournament
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 2120,
             3: 2089,
             4: 2081,
@@ -846,14 +888,16 @@ class SwissTieBreaks(unittest.TestCase):
             9: 1175,
             10: 1640,
         }
-    
+        self.assertEquals(results, expected)
+
     def test_tpr_legacy(self):
-        assert {
+        results = {
             player.id: individual.tournament_performance_rating(
                 player, self.tournament, papi_legacy=True
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 2180,
             4: 2093,
             3: 2089,
@@ -871,15 +915,16 @@ class SwissTieBreaks(unittest.TestCase):
             9: 1298,
             10: 1640,
         }
-    
+        self.assertEquals(results, expected)
+
     def test_apro(self):
-        assert {
+        results = {
             player.id: individual.average_performance_rating_opponents(
-                player,
-                self.tournament,
+                player, self.tournament
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             2: 1856,
             3: 1904,
             4: 1772,
@@ -897,24 +942,28 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1869,
             10: 1717,
         }
-    
+        self.assertEquals(results, expected)
+
     def test_win_chances(self):
         ratings = [1700, 1950, 1850, 2050, 2150]
-        assert [
+        results = [
             individual.win_chances(2089, rating)[0]
             for rating in ratings
-        ] == [
+        ]
+        expected = [
             Decimal('0.91'), Decimal('0.69'), Decimal('0.80'), Decimal('0.55'), Decimal('0.42')
         ]
+        self.assertEquals(results, expected)
 
     def test_ptp(self):
-        assert {
+        results = {
             player.id: individual.perfect_tournament_performance(
                 player, self.tournament
             )
             for player in self.tournament.players_by_id.values()
             if player.id not in (2, 14)
-        } == {
+        }
+        expected = {
             3: 2112,
             4: 2168,
             1: 2029,
@@ -930,29 +979,36 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1531,
             10: 1575,
         }
+        self.assertEquals(results, expected)
 
         # NOTE(Amaras): the following two players do not have the
         # correct PTP, according to the tie-break exercices.
         # I do not know why this happens, but it's the closest I got
         # to having all correct values
-        assert individual.perfect_tournament_performance(
+        self.assertEquals(
+            individual.perfect_tournament_performance(
                 self.tournament.players_by_id[2],
                 self.tournament
-        ) == 2217 # NOTE(Amaras): this should be 2216
-        assert individual.perfect_tournament_performance(
-            self.tournament.players_by_id[14],
-            self.tournament
-        ) == 1940 # NOTE(Amaras): this should be 1942
-    
-    def test_average_perfect_performance_opponents(self):
-        assert {
-            player.id: individual.average_perfect_performance(
-                player,
+            ),
+            2217 # NOTE(Amaras): this should be 2216
+        )
+        self.assertEquals(
+            individual.perfect_tournament_performance(
+                self.tournament.players_by_id[14],
                 self.tournament
+            ),
+            1940 # NOTE(Amaras): this should be 1942
+        )
+
+    def test_average_perfect_performance_opponents(self):
+        results = {
+            player.id: individual.average_perfect_performance(
+                player, self.tournament
             )
             for player in self.tournament.players_by_id.values()
             if player.id not in (3, 13)
-        } == {
+        }
+        expected = {
             2: 1852,
             4: 1784,
             1: 1769,
@@ -968,31 +1024,92 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1890,
             10: 1687,
         }
-        assert individual.average_perfect_performance(
-            self.tournament.players_by_id[3],
-            self.tournament
-        ) == 1935 # NOTE(Amaras): should be 1934
-        assert individual.average_perfect_performance(
-            self.tournament.players_by_id[13],
-            self.tournament
-        ) == 1908 # NOTE(Amaras): should be 1909
-    
-    def test_direct_encounter(self):
-        assert {
-            i: individual.direct_encounter(
-                self.tournament.players_by_id[i],
+        self.assertEquals(results, expected)
+        self.assertEquals(
+            individual.average_perfect_performance(
+                self.tournament.players_by_id[3],
                 self.tournament
+            ),
+            1935 # NOTE(Amaras): should be 1934
+        )
+        self.assertEquals(
+            individual.average_perfect_performance(
+                self.tournament.players_by_id[13],
+                self.tournament
+            ),
+            1908 # NOTE(Amaras): should be 1909
+        )
+
+    def test_kashdan(self):
+        results = {
+            player.id: individual.kashdan(player, self.tournament)
+            for player in self.tournament.players_by_id.values()
+        }
+        expected = {
+            2: 16,
+            4: 12,
+            3: 14,
+            1: 14,
+            16: 15,
+            6: 10,
+            11: 8,
+            8: 12,
+            5: 12,
+            14: 9,
+            15: 11,
+            12: 1,
+            13: 9,
+            7: 9,
+            9: 2,
+            10: 8,
+        }
+        self.assertEquals(results, expected)
+
+    def test_kashdan_legacy(self):
+        results = {
+            player.id: individual.kashdan(
+                player, self.tournament, papi_legacy=True
+            )
+            for player in self.tournament.players_by_id.values()
+        }
+        expected = {
+            2: 16,
+            4: 14,
+            3: 14,
+            1: 14,
+            16: 15,
+            6: 14,
+            11: 12,
+            8: 12,
+            5: 12,
+            14: 11,
+            15: 11,
+            12: 11,
+            13: 9,
+            7: 9,
+            9: 9,
+            10: 8,
+        }
+        self.assertEquals(expected, results)
+
+    def test_direct_encounter(self):
+        results = {
+            i: individual.direct_encounter(
+                self.tournament.players_by_id[i], self.tournament
             )
             for i in (1, 3, 4, 16, 5, 8, 11)
-        } == {
+        }
+        expected = {
             1: (2.5, False),
             3: (2.5, False),
-            4: (2, False),
-            16: (3, False),
-            5: (2, False),
-            8: (2, False),
-            11: (1, False),
+            4: (2.0, False),
+            16: (3.0, False),
+            5: (2.0, False),
+            8: (2.0, False),
+            11: (1.0, False),
         }
+        self.assertEquals(results, expected)
+
 
 class RoundRobinTieBreaks(unittest.TestCase):
     def setUp(self):
@@ -1067,12 +1184,13 @@ class RoundRobinTieBreaks(unittest.TestCase):
                 )
             }
         )
-    
+
     def test_all_players_met_each_other(self):
-        assert {
+        results = {
             player.id: [pairing.opponent_id for pairing in player.pairings.values()]
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             1: [5, 2, 3, 4, 6],
             2: [6, 1, 5, 3, 4],
             3: [4, 6, 1, 2, 5],
@@ -1080,55 +1198,64 @@ class RoundRobinTieBreaks(unittest.TestCase):
             5: [1, 4, 2, 6, 3],
             6: [2, 3, 4, 5, 1],
         }
+        self.assertEquals(results, expected)
 
     def test_points_are_correct(self):
-        assert {
+        results = {
             player.id: player.total_points()
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             1: 3.5, 2: 3.5, 3: 3.5, 4: 1.5, 5: 1.5, 6: 1.5
         }
-    
+        self.assertEquals(results, expected)
+
     def test_sonneborn_berger_round_robin(self):
-        assert {
+        results = {
             player.id: individual.sonneborn_berger(
                 player, self.tournament
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             1: 9.25, 2: 6.25, 3: 6.25,
             4: 4.25, 5: 3.25, 6: 2.25
         }
-    
+        self.assertEquals(results, expected)
+
     def test_sb_cut1_round_robin(self):
-        assert {
+        results = {
             player.id: individual.sonneborn_berger(
                 player, self.tournament, cut=1
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             1: 9.25, 2: 4.75, 3: 4.75,
             4: 4.25, 5: 3.25, 6: 1.5
         }
-    
+        self.assertEquals(results, expected)
+
     def test_koya(self):
-        assert {
-            player.id: individual.koya(
-                player, self.tournament
-            )
+        results = {
+            player.id: individual.koya(player, self.tournament)
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             1: 2, 2: 0.5, 3: 0.5,
             4: 1, 5: 0.5, 6: 0
         }
-    
+        self.assertEquals(results, expected)
+
     def test_direct_encounter(self):
-        assert {
+        results = {
             player.id: individual.direct_encounter(
                 player, self.tournament
             )
             for player in self.tournament.players_by_id.values()
-        } == {
+        }
+        expected = {
             1: (2, True), 2: (0.5, True), 3: (0.5, True),
             4: (0.5, True), 6: (1.5, True), 5: (1, True),
         }
+        self.assertEquals(results, expected)

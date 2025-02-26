@@ -47,7 +47,7 @@
                                     '',
                             #}
                             <span class="dropdown">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='search_fide',
                                     label=_('FIDE database:'),
                                     help_text='',
@@ -67,14 +67,14 @@
                         </div>
                         <div class="col-12 col-md-6 mb-3">
                             {#
-                                    TODO Can not use a help text because the dropdown ul is placed under the help div
-                                    help_text=
-                                        _('Search the FFE database for names, FIDE ID, FFE licence number, federation, league, club...')
-                                        if ffe_search_available else
-                                        '',
+                                TODO Can not use a help text because the dropdown ul is placed under the help div
+                                help_text=
+                                    _('Search the FFE database for names, FIDE ID, FFE licence number, federation, league, club...')
+                                    if ffe_search_available else
+                                    '',
                             #}
                             <span class="dropdown">
-                                {{ text_input(
+                                {{ admin_macros.text_input(
                                     name='search_ffe',
                                     label=_('FFE database:'),
                                     help_text='',
@@ -100,7 +100,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='last_name',
                             label=_('Name:'),
                             placeholder=_('E.g.: DOE'),
@@ -111,7 +111,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='first_name',
                             label=_('First name:'),
                             placeholder=_('E.g.: John'),
@@ -122,7 +122,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 col-lg-2 mb-3">
-                        {{ date_input(
+                        {{ admin_macros.date_input(
                             name='date_of_birth',
                             label=_('Date of birth:'),
                             help_text=_('The player\'s birth date.') if action != 'delete' else '',
@@ -132,7 +132,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 col-lg-2 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='gender',
                             label=_('Gender:'),
                             help_text=_('The player\'s gender.') if action != 'delete' else '',
@@ -149,7 +149,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-sm-8 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='tournament_id',
                             label=_('Tournament:'),
                             help_text=_('The player\'s tournament.') if action != 'delete' else '',
@@ -161,7 +161,7 @@
                     </div>
 
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='fixed',
                             label=_('Fixed board:'),
                             help_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
@@ -188,12 +188,12 @@
                             %}
                                 <label for="{{ id }}" class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
                                 <input
-                                        name="{{ name }}"
-                                        type="number" id="{{ id }}"
-                                        class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        value="{{ data[name] }}"
-                                        {% if action == 'delete' %}disabled{% endif %}
+                                    name="{{ name }}"
+                                    type="number" id="{{ id }}"
+                                    class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                    aria-describedby="{{ id }}-help {{ id }}-error"
+                                    value="{{ data[name] }}"
+                                    {% if action == 'delete' %}disabled{% endif %}
                                 />
                                 <select
                                     name="{{ name2 }}"
@@ -226,7 +226,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='fide_id',
                             label=_('FIDE ID:'),
                             help_text=_('The player\'s FIDE ID (do not change).') if action != 'delete' else '',
@@ -237,7 +237,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='title',
                             label=_('FIDE Title:'),
                             help_text=_('The player\'s FIDE title.') if action != 'delete' else '',
@@ -248,41 +248,39 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {# can not use select_input() here because of dynamic-select #}
+                        {# can not use admin_macros.select_input() here because of dynamic-select #}
                         {% with id='federation', name='federation' %}
                             <div>
                                 <label for="{{ id }}" class="mb-1 form-check-label d-block">{{ _('Federation:') }}</label>
-                                <div class="input-group">
-                                    <select
-                                        name="{{ name }}"
-                                        class="form-control {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                        {% if action == 'delete' %}
-                                            disabled
-                                        {% else %}
-                                            data-dynamic-select
-                                        {% endif %}
-                                    >
-                                        {% for federation_id, federation_name in federations.items() %}
-                                            <option
-                                                value="{{ federation_id }}"
-                                                {% if federation_id == data[name] %}selected{%endif %}
-                                                data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
-                                            >
-                                                {{ federation_id }} - {{ federation_name }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                    {% if action != 'delete' %}
-                                        <div id="{{ id }}-help" class="form-text">
-                                            {{ _('The player\'s federation.') }}
-                                        </div>
+                                <select
+                                    name="{{ name }}"
+                                    class="form-control {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                    {% if action == 'delete' %}
+                                        disabled
+                                    {% else %}
+                                        data-dynamic-select
                                     {% endif %}
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
-                                        </div>
-                                    {% endif %}
-                                </div>
+                                >
+                                    {% for federation_id, federation_name in federations.items() %}
+                                        <option
+                                            value="{{ federation_id }}"
+                                            {% if federation_id == data[name] %}selected{%endif %}
+                                            data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
+                                        >
+                                            {{ federation_id }} - {{ federation_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if action != 'delete' %}
+                                    <div id="{{ id }}-help" class="form-text">
+                                        {{ _('The player\'s federation.') }}
+                                    </div>
+                                {% endif %}
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
                             </div>
                         {% endwith %}
                     </div>
@@ -293,7 +291,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='ffe_licence_number',
                             label=_('Licence number:'),
                             placeholder=_('E.g.: %(string)s', string='R08943'),
@@ -304,7 +302,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='ffe_licence',
                             label=_('Licence:'),
                             help_text=_('The player\'s licence.') if action != 'delete' else '',
@@ -315,7 +313,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='ffe_id',
                             label=_('FFE Uniq ID:'),
                             help_text=_('The player\'s Uniq ID for the French federation (do not change).') if action != 'delete' else '',
@@ -328,7 +326,7 @@
                 </div>
                 </div class="row">
                     <div class="col-12 col-md-6 mb-3">
-                        {{ select_input(
+                        {{ admin_macros.select_input(
                             name='league',
                             label=_('League:'),
                             help_text=_('The player\'s league.') if action != 'delete' else '',
@@ -339,7 +337,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='club',
                             label=_('Club:'),
                             placeholder=_('E.g.: My favourite club!'),
@@ -356,7 +354,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='mail',
                             label=_('Email:'),
                             placeholder=_('E.g.: john.doe@chess.com'),
@@ -367,7 +365,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='phone',
                             label=_('Phone number:'),
                             help_text=_('The player\'s phone number.') if action != 'delete' else '',
@@ -380,7 +378,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='owed',
                             label=_('Owed:'),
                             help_text=_('The price the player pays to register.') if action != 'delete' else '',
@@ -390,7 +388,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                        {{ number_input(
+                        {{ admin_macros.number_input(
                             name='paid',
                             label=_('Paid:'),
                             help_text=_('The price the player already paid.') if action != 'delete' else '',
@@ -400,7 +398,7 @@
                         ) }}
                     </div>
                     <div class="col-12 col-lg-6 mb-3">
-                        {{ text_input(
+                        {{ admin_macros.text_input(
                             name='comment',
                             label=_('Comment:'),
                             help_text=_('Any comment on the player (comments are visible only by the arbiters).') if action != 'delete' else '',
@@ -433,12 +431,11 @@
                     </div>
                     <div class="col col-6 text-end">
                         <button
+                            type="button"
                             class="btn btn-secondary text-nowrap"
-                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
-                            preload
-                            hx-target="body"
+                            data-bs-dismiss="modal"
+                            hx-get="{{ url_for('close-modal') }}"
                             hx-trigger="click, keyup[key=='Escape'] from:body"
-                            hx-indicator="#please-wait"
                         >
                             <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}
@@ -449,7 +446,3 @@
         </div>
     </form>
 </div>
-<script>
-    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
-    document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
-</script>

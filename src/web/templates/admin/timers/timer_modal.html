@@ -39,7 +39,7 @@
                     </h4>
                     <div class="row">
                         <div class="col">
-                            {{ text_input(
+                            {{ admin_macros.text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
                                 placeholder=_('E.g.: timer'),
@@ -55,7 +55,7 @@
                     <div class="row">
                         {% for num in [1, 2, 3] %}
                             <div class="col-12 col-md-6 mb-3">
-                                {{ color_input(
+                                {{ admin_macros.color_input(
                                     name='color_'~num,
                                     label=_('Colour #%(num)d:', num=num),
                                     help_text=timer_color_texts[num],
@@ -67,7 +67,7 @@
 
                             <div class="col-12 col-md-6 mb-3">
                                 {% with id='delay-'~num, name='delay_'~num %}
-                                    {{ number_input(
+                                    {{ admin_macros.number_input(
                                         name='delay_'~num,
                                         label=_('Delay #%(num)d:', num=num),
                                         placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
@@ -101,15 +101,14 @@
                     </div>
                     <div class="col col-6 text-end">
                         <button
-                                class="btn btn-secondary text-nowrap"
-                                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='timers') }}"
-                                preload
-                                hx-target="body"
-                                hx-trigger="click, keyup[key=='Escape'] from:body"
-                                hx-indicator="#please-wait"
+                            type="button"
+                            data-bs-dismiss="modal"
+                            hx-get="{{ url_for('close-modal') }}"
+                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                            class="btn btn-secondary text-nowrap"
                         >
                             <i class="bi-x-circle-fill"></i>
-                                {{ _('Cancel') }}
+                            {{ _('Cancel') }}
                         </button>
                     </div>
                 </div>
@@ -117,6 +116,3 @@
         </div>
     </form>
 </div>
-<script>
-    (new bootstrap.Modal(document.getElementById('modal-wrapper'))).show();
-</script>

@@ -7,7 +7,7 @@
     <span class="dropdown-center" >
         <button class="btn btn-outline-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
             <span
-                {{ tooltip_attributes('info', _('Download the players.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Download the players.'), 'top') }}
             >
                 <i class="bi-person-vcard"></i>
                 <i class="bi-download"></i>
@@ -33,7 +33,7 @@
                                 'xlsx': _('Download the information of the selected players (XLSX format).'),
                             }.items() %}
                                 <span
-                                    {{ tooltip_attributes('top', tooltip_text, 'top') }}
+                                    {{ macros.tooltip_attributes('top', tooltip_text, 'top') }}
                                 >
                                     <button type="submit" name="download_format" value="{{ format }}" class="btn py-0" data-bs-dismiss="modal" >
                                         <i class="bi-download"></i>
@@ -62,7 +62,7 @@
                             <img
                                 class="player-federation-flag ms-1 ps-1 pe-1"
                                 src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
-                                {{ tooltip_attributes('info', player.federation, 'left') }}
+                                {{ macros.tooltip_attributes('info', player.federation, 'left') }}
                             />
                             {{ player.last_name }}
                             {{ player.first_name }}

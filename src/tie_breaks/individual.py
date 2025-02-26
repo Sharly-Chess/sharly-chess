@@ -14,27 +14,27 @@ from data.util import Result, BoardColor, TournamentPairing, performance_bonus, 
 def wins(player: Player, _tournament: Tournament, /, *, max_round: int | None = None) -> int:
     """Computes the number of rounds where a participant obtains,
     with or without playing, as many points as awarded for a win
-    before round *max_round*.
+    after round *max_round*.
     See FIDE Handbook C.07.7.1"""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     return sum(
         pairing.result.point_value == Result.GAIN.point_value
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     )
 
 
 def games_won(player: Player, _tournament: Tournament, /, *, max_round: int | None = None) -> int:
-    """Computes the number of games a participant won 'over the board' before
+    """Computes the number of games a participant won 'over the board' after
     round *max_round*.
     See FIDE Handbook C.07.7.2"""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     return sum(
         pairing.result == Result.GAIN
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     )
 
 
@@ -42,14 +42,14 @@ def games_played_with_black(
     player: Player, _tournament: Tournament, /, *, max_round: int | None = None
 ) -> int:
     """Computes the number of games played over the board with the
-    black pieces before round *max_round*.
+    black pieces after round *max_round*.
     See FIDE Handbook C.07.7.3"""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     return sum(
         pairing.color == BoardColor.BLACK and pairing.played
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     )
 
 
@@ -57,29 +57,29 @@ def games_won_with_black(
     player: Player, _tournament: Tournament, /, *, max_round: int | None = None
 ) -> int:
     """Computes the number of games won over the board with the
-    black pieces before round *max_round*.
+    black pieces after round *max_round*.
     See FIDE Handbook C.07.7.4"""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     return sum(
         pairing.color == BoardColor.BLACK and pairing.result == Result.GAIN
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     )
 
 
 def progressive_scores(
     player: Player, _tournament: Tournament, /, *, max_round: int | None = None, cut: int = 0
 ) -> float:
-    """Computes the sum of progressive scores.
+    """Computes the sum of progressive scores after round *max_round*.
     After each round, a participant has a certain tournament score.
     This tie-break is calculated adding the score of the participant at the end of each round.
     Cutting *cut* rounds excludes the score achieved after the first
     *cut* rounds. By default, this value is 0.
     See FIDE Handbook C.07.7.5 and C.07.14.1"""
     if max_round is None:
-        max_round = max(player.pairings) + 1
-    return sum(player.points_after(r) for r in range(1 + cut, max_round))
+        max_round = max(player.pairings)
+    return sum(player.points_after(r) for r in range(1 + cut, max_round + 1))
 
 
 def rounds_elected_to_play(
@@ -90,7 +90,7 @@ def rounds_elected_to_play(
     (ZPB, HPB, or FPB)
     See FIDE Handbook C.07.7.6"""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     return sum(
         pairing.result
         not in (
@@ -101,7 +101,7 @@ def rounds_elected_to_play(
             Result.FULL_POINT_BYE,
         )
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     )
 
 
@@ -114,15 +114,15 @@ def adjusted_score(
     adjust_fore: bool = False,
     papi_legacy: bool = False,
 ) -> float:
-    """Computes the adjusted score of the player for the purposes of ther opponents' tie-breaks
+    """Computes the adjusted score of the player for the purposes of their opponents' tie-breaks
     Only adjusts them in case of requested byes followed by all VUR.
     If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
     games not already determined are considered a draw.
     When *papi_legacy* is True, all unplayed rounds are counted as draws."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     if tournament.pairing == TournamentPairing.BERGER:
-        return player.points_before(max_round)
+        return player.points_after(max_round)
     score = 0
     for round_index, pairing in player.pairings.items():
         if round_index > max_round:
@@ -130,7 +130,7 @@ def adjusted_score(
         if papi_legacy and pairing.unplayed:
             score += Result.DRAW.point_value
             continue
-        if adjust_fore and round_index == max_round - 1:
+        if adjust_fore and round_index == max_round:
             if pairing.result in (
                 Result.FULL_POINT_BYE,
                 Result.PAIRING_ALLOCATED_BYE,
@@ -143,7 +143,7 @@ def adjusted_score(
             if all(
                 p.voluntary_unplayed
                 for index, p in player.pairings.items()
-                if round_index < index < max_round
+                if round_index < index <= max_round
             ):
                 score += Result.DRAW.point_value
             else:
@@ -164,7 +164,7 @@ def dummy_score(
     fore_modifier: bool = False,
     dummy_type: Literal['BH'] | Literal['SB'] = 'BH',
 ) -> float | tuple[float, Result]:
-    """Computes the dummy score for the given pairing before *max_round*.
+    """Computes the dummy score for the given pairing after *max_round*.
     If *dummy_type* is 'BH', returns the dummy score alone.
     If *dummy_type* is 'SB', returns the dummy score and the equivalent result
     for the given *pairing*.
@@ -175,10 +175,10 @@ def dummy_score(
     """
     if dummy_type == 'BH':
         if not papi_legacy and not fore_modifier:
-            return player.points_before(max_round) 
+            return player.points_after(max_round)
         if fore_modifier:
-            dummy = player.points_before(max_round - 1)
-            last_pairing = player.pairings[max_round - 1]
+            dummy = player.points_before(max_round)
+            last_pairing = player.pairings[max_round]
             if last_pairing.result in (
                 Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE,
                 Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE
@@ -187,7 +187,7 @@ def dummy_score(
             else:
                 dummy += Result.DRAW.point_value
             return dummy
-        dummy = player.points_before(round_index) + Result.DRAW.point_value * (max_round - round_index - 1)
+        dummy = player.points_before(round_index) + Result.DRAW.point_value * (max_round - round_index)
         match pairing.result:
             case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 return dummy + Result.LOSS.point_value
@@ -196,7 +196,7 @@ def dummy_score(
             case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
                 return dummy + Result.GAIN.point_value
     elif dummy_type == 'SB':
-        dummy = player.points_before(max_round)
+        dummy = player.points_after(max_round)
         match pairing.result:
             case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 return dummy, Result.GAIN
@@ -205,7 +205,7 @@ def dummy_score(
             case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
                 return dummy, Result.LOSS
             case _:
-                return pairing.result
+                return dummy, pairing.result
 
 
 def buchholz(
@@ -220,7 +220,7 @@ def buchholz(
     papi_legacy: bool = False,
 ) -> float:
     """Computes the sum of the scores of each of the opponents of a participant,
-    before round *max_round*.
+    after round *max_round*.
     See FIDE Handbook C.07.8.1
     Setting *cut_top* will remove the *cut_top* highest contributions, and
     *cut_btm* the lowest contributions.
@@ -233,16 +233,16 @@ def buchholz(
     all unplayed games could for as much as a draw, and all contributions are used.
     """
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     if cut_top < 0 or cut_btm < 0:
         raise ValueError(
             f'Cut values must be non-negative, got {cut_top=}, {cut_btm=}')
     elif cut_top + cut_btm >= max_round:
         return 0
-    pairings: dict[Pairing] = {
+    pairings: dict[int, Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     }
     if tournament.pairing == TournamentPairing.BERGER:
         return sum(
@@ -307,8 +307,8 @@ def fore_buchholz(
     cut_btm: int = 0,
     played_modifier: bool = False,
 ) -> float:
-    """Computes the Buchholz score before round *max_round,
-    as if all paired games for the final round hadended in draws.
+    """Computes the Buchholz score after round *max_round*,
+    as if all paired games for the final round had ended in draws.
     See FIDE Handbook C.07.8.3
     When *cut_top* is set, will remove the *cut_top* highest contributions
     to the Buchholz score.
@@ -320,16 +320,16 @@ def fore_buchholz(
     as wins against the scheduled opponent.
     """
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     if cut_top < 0 or cut_btm < 0:
         raise ValueError(
             f'Cut values must be non-nagative, got {cut_top=}, {cut_btm=}')
     elif cut_top + cut_btm >= max_round:
         return 0
-    pairings: dict[Pairing] = {
+    pairings: dict[int, Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     }
     scores: list[float] = []
     voluntary_unplayed: list[float] = []
@@ -379,13 +379,13 @@ def sum_of_buchholz(
     fore_modifier: bool = False,
     papi_legacy: bool = False,
 ) -> float:
-    """Computes the sum of Buchholz scores of the opponents before *max_round*
+    """Computes the sum of Buchholz scores of the opponents after *max_round*
     If *max_round* is not provided, it will be set to the maximum round index
     of the player.
     If *fore_modifier* is True, will use Fore Bochholz instead of total Buchholz.
     If *papi_legacy* is True, will use the backwards compatible computation."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     opponents: list[Player] = [
         tournament.players_by_id.get(pairing.opponent_id)
         for round_index, pairing in player.pairings.items()
@@ -412,15 +412,15 @@ def average_of_buchholz(
     max_round: int | None = None,
     fore_modifier: bool = False,
 ) -> float:
-    """Computes the average of the opponents Buchholz scores before *max_round*.
+    """Computes the average of the opponents Buchholz scores after *max_round*.
     See FIDE Handbook C.07.8.2.
     If *fore_modifier* is True, uses Fore Buchholz instead of total score."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     opponents: list[Player] = [
         tournament.players_by_id[pairing.opponent_id]
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round and pairing.opponent_id is not None
+        if round_index <= max_round and pairing.opponent_id is not None
         and pairing.played
     ]
     if fore_modifier:
@@ -449,15 +449,15 @@ def sonneborn_berger(
     played_modifier: bool = False
 ) -> float:
     """Computes the Sonneborn-Berger score by adding, for each round,
-    a value given by multiplying their score before *max_round* of the opponent by
+    a value given by multiplying their score after *max_round* of the opponent by
     the points scored against them.
     See FIDE Handbook C.07.9.1.
     If *max_round* is None, the scores so far will be computed.
     If *cut* is more than zero, will cut the *cut* lowest contributions.
     If *played_modifier* is True, forfeit wins and losses will be counted
-    as played games (only relevant in Swiss tornaments)."""
+    as played games (only relevant in Swiss tournaments)."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     if cut < 0:
         raise ValueError(f"cut must be non-negative, got: {cut}")
     if cut >= max_round:
@@ -467,7 +467,7 @@ def sonneborn_berger(
     pairings: dict[int, Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     }
     general_contributions: list[SBContribution] = []
     voluntary_unplayed: list[SBContribution] = []
@@ -537,8 +537,8 @@ def koya(
     """Computes the Koya score for the *player*, i.e.
     the number of points achieved against all participants
     who have scored at 50% of the maximum possible
-    score before *max_round* (if *limit* is not set).
-    See FIDE Hanbook C.07.9.2.
+    score after *max_round* (if *limit* is not set).
+    See FIDE Handbook C.07.9.2.
     This is only used in Round-Robin tournaments, but is still
     defined for Swiss tournaments.
     If *max_round* is None, will compute the score for the whole
@@ -546,13 +546,13 @@ def koya(
     If *limit* is set, this function will compute the points obtained
     against opponents who have at least *limit* points."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     if limit is None:
         limit = 0.5 * Result.GAIN.point_value * (max_round - 1)
     pairings: dict[int, Pairing] = {
         round_index: pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     }
     score = 0
     for _round_index, pairing in pairings.items():
@@ -562,6 +562,46 @@ def koya(
         opponent_score = opponent.points_before(max_round)
         if opponent_score >= limit:
             score += pairing.result.point_value
+    return score
+
+def kashdan(
+    player: Player,
+    _tournament: Tournament,
+    /,
+    *,
+    max_round: int | None = None,
+    papi_legacy: bool = False,
+) -> float:
+    """Computes the Kashdan score for the *player* after *max_round*.
+    Awards 4 tiebreak points for a win, 2 for a draw, 1 for a loss,
+    and 0 for an unplayed game. See USCF Handbook section 34E7.
+    If *max_round* is None, will compute the score for the whole
+    tournament so far.
+    If *papi_legacy* is True, award points for unplayed games."""
+    if max_round is None:
+        max_round = max(player.pairings)
+
+    pairings: list[Pairing] = [
+        pairing
+        for round_index, pairing in player.pairings.items()
+        if round_index <= max_round
+    ]
+    score = 0
+    for pairing in pairings:
+        if papi_legacy:
+            if pairing.full_point_value:
+                score += 4
+            elif pairing.half_point_value:
+                score += 2
+            elif pairing.no_point_value:
+                score += 1
+        else:
+            if pairing.gain:
+                score += 4
+            elif pairing.draw:
+                score += 2
+            elif pairing.loss:
+                score += 1
     return score
 
 
@@ -574,7 +614,7 @@ def average_rating_opponents(
     cut_btm: int = 0,
     cut_top: int = 0,
 ) -> int:
-    """Computes the average rating of opponents for *player* before round
+    """Computes the average rating of opponents for *player* after round
     *max_round*. If *max_round* is None, computes the average of all opponents.
     Only opponents met over the board will be counted.
     See FIDE Handbook C.07.10.1
@@ -583,7 +623,7 @@ def average_rating_opponents(
     If *cut_btm* is set, will remove the lowest *cut_btm* ratings.
     If *cut_top* is set, will remove the highest *cut_top* ratings."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     if cut_btm < 0 or cut_top < 0:
         raise ValueError(
             f'Cut values must be non-negative, got: {cut_btm=}, {cut_top=}'
@@ -593,7 +633,7 @@ def average_rating_opponents(
     pairings: list[Pairing] = [
         pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     ]
     ratings = []
     for pairing in pairings:
@@ -621,17 +661,17 @@ def tournament_performance_rating(
     max_round: int | None = None,
     papi_legacy: bool = False,
 ) -> int:
-    """Computes the Tournament Performance Rating of the player before
+    """Computes the Tournament Performance Rating of the player after
     round *max_round*, i.e. the Average Rating of the Opponents, added
     to a number resulting from the conversion of the fractional score
-    into RD (see FIDE Rating Regulations for the Cnversion Table).
+    into RD (see FIDE Rating Regulations for the Conversion Table).
     See FIDE Handbook C.07.10.2."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     pairings: list[Pairing] = [
         pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round and pairing.played
+        if round_index <= max_round and pairing.played
     ]
     ratings = []
     score = 0
@@ -669,16 +709,16 @@ def average_performance_rating_opponents(
     max_round: int | None = None,
 ) -> float:
     """Computes the average of the tournament performance rating of the
-    opponents before *max_round*, only taking played games into account.
+    opponents after *max_round*, only taking played games into account.
     See FIDE Handbook C.07.10.4.
     If *max_round* is None, will compute the TRP of all the opponents so far.
     """
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     played_games: list[Pairing] = [
         pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round and pairing.played
+        if round_index <= max_round and pairing.played
     ]
     performance_ratings = []
     for pairing in played_games:
@@ -716,10 +756,12 @@ def expected_score(player_rating: int, opponent_ratings: Iterable[int]) -> Decim
         win_chances(player_rating, opponent_rating)
         for opponent_rating in opponent_ratings
     ]
-    computed_score = sum(
-        chance[0] * Decimal(Result.GAIN.point_value) 
-        + chance[1] * Decimal(Result.LOSS.point_value)
-        for chance in chances
+    computed_score = Decimal(
+        sum(
+            chance[0] * Decimal(Result.GAIN.point_value)
+            + chance[1] * Decimal(Result.LOSS.point_value)
+            for chance in chances
+        )
     )
     return computed_score
 
@@ -733,16 +775,16 @@ def perfect_tournament_performance(
 ) -> int:
     """Computes the Perfect Tournament Performance for the player, i.e.
     the lowest rating that a participant should have for their expected score
-    to be greater than or equal to their tournament score before *max_round*.
+    to be greater than or equal to their tournament score after *max_round*.
     See FIDE Handbook C.07.10.3.
     This assumes that all players are rated, or at least have an estimation.
     """
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     played_rounds: list[Pairing] = [
         pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round and pairing.played 
+        if round_index <= max_round and pairing.played
     ]
     actual_score = Decimal(sum(pairing.result.point_value for pairing in played_rounds))
     if not played_rounds:
@@ -758,7 +800,7 @@ def perfect_tournament_performance(
     if isclose(first_expected_score, actual_score, abs_tol=0.01):
         return round_fide(first_estimation)
     second_estimation = first_estimation * actual_score / first_expected_score
-    second_estimation = round_fide(second_estimation)
+    second_estimation = round_fide(float(second_estimation))
     second_expected_score = expected_score(second_estimation, ratings)
 
     if first_expected_score >= second_expected_score:
@@ -790,15 +832,15 @@ def average_perfect_performance(
     max_round: int | None = None
 ) -> int:
     """Computes the average of the Perfect Tournament Performances
-    of the opponents (only those who played) before round *max_round*.
+    of the opponents (only those who played) after round *max_round*.
     See FIDE Hand book C.07.10.5.
     If *max_round* is None, will compute for all the rounds so far."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
+        max_round = max(player.pairings)
     pairings: list[Pairing] = [
         pairing
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round and pairing.played
+        if round_index <= max_round and pairing.played
     ]
     ptp = [
         perfect_tournament_performance(
@@ -823,7 +865,7 @@ def direct_encounter(
     exclude_ids: Iterable[int] | None = None,
     played_modifier: bool = False,
 ) -> tuple[float, bool]:
-    """Computes the Direct Encounter score before *max_round*
+    """Computes the Direct Encounter score after *max_round*
     See FIDE Handbook C.07.6.
     If all players with the same number of points as *player* before round
     *max_round* have played each other, returns the score *player* achieved against
@@ -834,11 +876,11 @@ def direct_encounter(
     some players cannot be untied this way.
     If the second member is False, some ties might be broken, but there is no guarantee.
     If *exclude_ids* is not None, will not take the given player ids into account.
-    If *played_modifier* is False and the tourament is a Swiss tournament, all forfeit games
+    If *played_modifier* is False and the tournament is a Swiss tournament, all forfeit games
     will be excluded from consideration."""
     if max_round is None:
-        max_round = max(player.pairings) + 1
-    final_points = player.points_before(max_round)
+        max_round = max(player.pairings)
+    final_points = player.points_after(max_round)
     tied_opponents: dict[int, Player] = {
         opponent_id: opponent
         for opponent_id, opponent in tournament.players_by_id.items()
@@ -848,12 +890,12 @@ def direct_encounter(
         opponent_id: opponent
         for opponent_id, opponent in tied_opponents.items()
         if opponent_id is not None 
-        and opponent.points_before(max_round) == final_points
+        and opponent.points_after(max_round) == final_points
     }
     if exclude_ids is not None:
         tied_opponents = {
             opponent.id: opponent
-            for opponent in tied_opponents
+            for opponent in tied_opponents.values()
             if opponent.id not in exclude_ids
         }
     tied_pairings: dict[int, Pairing] = {

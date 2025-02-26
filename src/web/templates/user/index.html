@@ -8,7 +8,7 @@
         hx-target="body"
         hx-trigger="click, keyup[key=='Escape'] from:body"
         hx-indicator="#please-wait"
-        {{ tooltip_attributes('info', _('Go back to the home page.'), 'top') }}
+        {{ macros.tooltip_attributes('info', _('Go back to the home page.'), 'top') }}
     >
         <i class="bi-house-fill"></i>
     </button>
@@ -74,6 +74,3 @@
         {% endwith %}
     {% endfor %}
 {% endblock user_content %}
-
-{% block user_modal %}
-{% endblock user_modal %}

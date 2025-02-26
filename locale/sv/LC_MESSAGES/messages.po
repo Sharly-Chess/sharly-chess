@@ -997,6 +997,134 @@ msgstr "styrelser {board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Turnering {tournament_uniq_id} ({numbers_str})"
 
+#: src/data/tie_break.py
+msgid "None"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Buchholz cut bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Median Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Progressive scores"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of wins"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Kashdan"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Koya"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut top"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut Bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Played modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Papi legacy"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Limit"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Exclude players"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of games won"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Games played with black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Games won with black"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Rounds one Elected to Play"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average of opponents Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonneborn-Berger"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average rating of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Tournament performance rating"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average performance rating of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Perfect tournament performance"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Average perfect performance of opponents"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Direct encounter"
+msgstr ""
+
 #: src/data/timer.py
 #, ai_translation
 msgid "Time is not defined."
@@ -1128,15 +1256,11 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
-# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
-# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
-# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
-# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1173,12 +1297,6 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
-# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
@@ -1189,9 +1307,6 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
-# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
-# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
-# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -3032,6 +3147,7 @@ msgstr "Ta bort"
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Cancel"
 msgstr "Avbryt"
@@ -3244,8 +3360,6 @@ msgstr "Utgångsknapp:"
 msgid "yes"
 msgstr "Ja, det är jag."
 
-# Error: translation [Ingen känd frekvens:] is much too long compared to
-# initial [no]
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
 #: src/web/templates/admin/families/family_card.html
@@ -3703,8 +3817,6 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
-# Error: translation [Ej tillämpligt] is much too long compared to initial
-# [No]
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "No"
@@ -3831,7 +3943,7 @@ msgid "Open/close check-in."
 msgstr "Öppna/stänga incheckningen."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Check-in"
 msgstr "Incheckning"
@@ -5652,6 +5764,15 @@ msgid "The number of last rounds for which a player can get no byes (if not set,
 msgstr "Antalet sista rundor där en spelare inte kan få några avies (om inte satt, standard till %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Tie-breaks"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "Tie-break #%(index)d:"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
 msgid "Create and add default screens"
 msgstr "Skapa och lägg till standardskärmar"
@@ -5731,77 +5852,77 @@ msgstr "Rotator roterar automatiskt mellan flera skärmar."
 msgid "Go back to the events page."
 msgstr "Gå tillbaka till händelsesidan."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please enter the password to enter results:"
 msgstr "Ange lösenordet för att ange resultat:"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Event"
 msgstr "Händelse"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Ett lösenord krävs för att ange resultat för evenemanget %(event_uniq_id)s."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Password"
 msgstr "Lösenord"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please ask the organizer to get the password."
 msgstr "Be arrangören att få lösenordet."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Enter the result"
 msgstr "Skriv in resultatet"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "WHITE WINS"
 msgstr "VITA VINSTER"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DRAW"
 msgstr "DRÅK"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BLACK WINS"
 msgstr "SVARTA VINSEN"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BY FORFEIT"
 msgstr "GENOM UTFÄRDANDE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DOUBLE"
 msgstr "DUBBEL"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "FORFEIT"
 msgstr "UTFÄRDANDE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CLEAR THE RESULT"
 msgstr "GODKÄNN RESULTATET"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-IN"
 msgstr "KONTROLLINSTRUMENT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-OUT"
 msgstr "KONTROLL AV KONTROLLEN"
@@ -5851,8 +5972,6 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
-# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
-# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html

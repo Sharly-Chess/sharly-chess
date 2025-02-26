@@ -804,6 +804,134 @@ msgstr "échiquiers {board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
 
+#: src/data/tie_break.py
+msgid "None"
+msgstr "Aucun"
+
+#: src/data/tie_break.py
+msgid "Buchholz"
+msgstr "Buchholz"
+
+#: src/data/tie_break.py
+msgid "Buchholz cut bottom"
+msgstr "Buchholz tronqué"
+
+#: src/data/tie_break.py
+msgid "Median Buchholz"
+msgstr "Buchholz médian"
+
+#: src/data/tie_break.py
+msgid "Progressive scores"
+msgstr "Cumulatif"
+
+#: src/data/tie_break.py
+msgid "Performance"
+msgstr "Performance"
+
+#: src/data/tie_break.py
+msgid "Sum of Buchholz"
+msgstr "Somme des Buchholz"
+
+#: src/data/tie_break.py
+msgid "Number of wins"
+msgstr "Nombre de victiores"
+
+#: src/data/tie_break.py
+msgid "Kashdan"
+msgstr "Kashdan"
+
+#: src/data/tie_break.py
+msgid "Koya"
+msgstr "Koya"
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr "Sonnenborn-Berger"
+
+#: src/data/tie_break.py
+msgid "Cut"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut top"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Cut Bottom"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Played modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Papi legacy"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Fore modifier"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Limit"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Exclude players"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Number of games won"
+msgstr "Nombre de parties gagnées"
+
+#: src/data/tie_break.py
+msgid "Games played with black"
+msgstr "Nombre de parties jouées avec les noirs"
+
+#: src/data/tie_break.py
+msgid "Games won with black"
+msgstr "Nombre de parties gagnées avec les noirs"
+
+#: src/data/tie_break.py
+msgid "Rounds one Elected to Play"
+msgstr "Rondes jouées"
+
+#: src/data/tie_break.py
+msgid "Average of opponents Buchholz"
+msgstr "Moyenne du Buchholz des adversaires"
+
+#: src/data/tie_break.py
+msgid "Fore Buchholz"
+msgstr "Fore Buchholz"
+
+#: src/data/tie_break.py
+msgid "Sonneborn-Berger"
+msgstr "Sonneborn-Berger"
+
+#: src/data/tie_break.py
+msgid "Average rating of opponents"
+msgstr "Classement ELO moyen des adversaires"
+
+#: src/data/tie_break.py
+msgid "Tournament performance rating"
+msgstr "Performance sur le tournoi"
+
+#: src/data/tie_break.py
+msgid "Average performance rating of opponents"
+msgstr "Moyenne des performances ELO des adversaires"
+
+#: src/data/tie_break.py
+msgid "Perfect tournament performance"
+msgstr "Performance ELO parfaite"
+
+#: src/data/tie_break.py
+msgid "Average perfect performance of opponents"
+msgstr "Moyenne des performances ELO parfaites des adversaires"
+
+#: src/data/tie_break.py
+msgid "Direct encounter"
+msgstr "Rencontre directe"
+
 #: src/data/timer.py
 msgid "Time is not defined."
 msgstr "L'heure n'est pas définie"
@@ -2256,7 +2384,7 @@ msgstr "La date et l'heure de fin de l'évènement."
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "Default directory of the Papi files:"
-msgstr "Répertoire par défaut des fichierf Papi :"
+msgstr "Répertoire par défaut des fichiers Papi :"
 
 #: src/web/templates/admin/event/event_modal.html
 msgid "E.g.: c:\\chess\tournaments"
@@ -2449,6 +2577,7 @@ msgstr "Supprimer"
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -3126,7 +3255,7 @@ msgid "Open/close check-in."
 msgstr "Ouvrir/fermer le pointage."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Check-in"
 msgstr "Pointage"
 
@@ -4646,6 +4775,15 @@ msgid "The number of last rounds for which a player can get no byes (if not set,
 msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye (si non défini, %(default)d par défaut)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+msgid "Tie-breaks"
+msgstr "Départages"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "Tie-break #%(index)d:"
+msgstr "Départage n°%(index)d :"
+
+#: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Create and add default screens"
 msgstr "Créer et ajouter les écrans par défaut"
 
@@ -4709,64 +4847,64 @@ msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusie
 msgid "Go back to the events page."
 msgstr "Revenir à la page des évènements."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Please enter the password to enter results:"
 msgstr "Veuillez entrer le mot de passe pour saisir des résultats :"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Event"
 msgstr "Évènement"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Un mot de passe est requis pour saisir des résultats pour l'évènement %(event_uniq_id)s."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Password"
 msgstr "Mot de passe"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Please ask the organizer to get the password."
 msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Enter the result"
 msgstr "Saisir le résultat"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "WHITE WINS"
 msgstr "GAIN BLANCS"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "DRAW"
 msgstr "NULLE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "BLACK WINS"
 msgstr "GAIN NOIRS"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "BY FORFEIT"
 msgstr "PAR FORFAIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "FORFEIT"
 msgstr "FORFAIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CLEAR THE RESULT"
 msgstr "EFFACER LE RÉSULTAT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CHECK-IN"
 msgstr "Pointer"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CHECK-OUT"
 msgstr "Dépointer"
 

@@ -5,7 +5,7 @@
                 class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
             ><i
                     class="bi-funnel {% if admin_players_filter_licences|length not in [0, (admin_players_licences|length)] %}text-danger{% endif %}"
-                    {{ tooltip_attributes('info', _('Filter the licences.'), 'top') }}
+                    {{ macros.tooltip_attributes('info', _('Filter the licences.'), 'top') }}
             ></i></button>
             <ul class="dropdown-menu players-filter-licence p-0">
                 {% with name='admin_players_filter_licences' %}
@@ -34,7 +34,7 @@
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                {{ ffe_licence(licence) }} ({{ admin_event.ffe_licence_counts[licence] }})
+                                {{ macros.ffe_licence(licence) }} ({{ admin_event.ffe_licence_counts[licence] }})
                             </label>
                         </li>
                     {% endfor %}
