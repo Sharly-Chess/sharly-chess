@@ -166,6 +166,9 @@ class FfeDatabase(SQLiteDatabase):
                             query: str = f'INSERT INTO player({", ".join(map(lambda s: f"`{s}`", data.keys()))}) VALUES({", ".join(["?"] * len(data))})'
                             self._execute(query, tuple(data.values()))
                             players_number += 1
+                            if players_number % 1000 == 0:
+                                print_interactive_info(_('{number} players written.').format(number=players_number), end='\r')
+                    
                         except ValueError:
                             print_interactive_warning(
                                 _(
