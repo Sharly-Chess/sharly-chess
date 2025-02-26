@@ -2577,6 +2577,7 @@ msgstr "Supprimer"
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -3254,7 +3255,7 @@ msgid "Open/close check-in."
 msgstr "Ouvrir/fermer le pointage."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Check-in"
 msgstr "Pointage"
 
@@ -4846,64 +4847,64 @@ msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusie
 msgid "Go back to the events page."
 msgstr "Revenir à la page des évènements."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Please enter the password to enter results:"
 msgstr "Veuillez entrer le mot de passe pour saisir des résultats :"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Event"
 msgstr "Évènement"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Un mot de passe est requis pour saisir des résultats pour l'évènement %(event_uniq_id)s."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Password"
 msgstr "Mot de passe"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Please ask the organizer to get the password."
 msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "Enter the result"
 msgstr "Saisir le résultat"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "WHITE WINS"
 msgstr "GAIN BLANCS"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "DRAW"
 msgstr "NULLE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "BLACK WINS"
 msgstr "GAIN NOIRS"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "BY FORFEIT"
 msgstr "PAR FORFAIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "FORFEIT"
 msgstr "FORFAIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CLEAR THE RESULT"
 msgstr "EFFACER LE RÉSULTAT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CHECK-IN"
 msgstr "Pointer"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 msgid "CHECK-OUT"
 msgstr "Dépointer"
 

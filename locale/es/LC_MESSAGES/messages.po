@@ -3118,6 +3118,7 @@ msgstr "Eliminar"
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Cancel"
 msgstr "Cancelar"
@@ -3909,7 +3910,7 @@ msgid "Open/close check-in."
 msgstr "Abrir/cerrar el check-in."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Check-in"
 msgstr "Check-in"
@@ -5818,77 +5819,77 @@ msgstr "El rotador gira automáticamente entre múltiples pantallas."
 msgid "Go back to the events page."
 msgstr "Vuelve a la página de eventos."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please enter the password to enter results:"
 msgstr "Introduzca la contraseña para introducir los resultados:"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Event"
 msgstr "Acontecimiento"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Se requiere una contraseña para introducir los resultados del evento %(event_uniq_id)s."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Password"
 msgstr "Contraseña"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please ask the organizer to get the password."
 msgstr "Por favor, pídale al organizador que obtenga la contraseña."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Enter the result"
 msgstr "Introduzca el resultado"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "WHITE WINS"
 msgstr "GANADAS BLANCAS"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DRAW"
 msgstr "DRAW"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BLACK WINS"
 msgstr "Ganancias negras"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BY FORFEIT"
 msgstr "POR FUERZA"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DOUBLE"
 msgstr "DOBLE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "FORFEIT"
 msgstr "FORFEIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CLEAR THE RESULT"
 msgstr "CLEAR EL RESULTADO"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-IN"
 msgstr "COMPETENCIA"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-OUT"
 msgstr "COMPETENCIAS DE COMPETENCIA"

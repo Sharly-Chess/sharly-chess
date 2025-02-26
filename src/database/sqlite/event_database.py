@@ -448,6 +448,7 @@ class EventDatabase(SQLiteDatabase):
                                     paired_bye_points=None,
                                     max_byes=None,
                                     last_rounds_no_byes=None,
+                                    tie_breaks=None,
                                 )
                             )
                             tournament_ids_by_uniq_id[tournament_uniq_id] = (
@@ -963,7 +964,7 @@ class EventDatabase(SQLiteDatabase):
         EventMigrationManager().migrate(self, PapiWebConfig.version)
         if initial_version != self.version:
             logger.info(
-                'Database %s has been upgraded to from version %s to version %s.',
+                'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
                 initial_version,
                 self.version,

@@ -3137,6 +3137,7 @@ msgstr "Verwijderen"
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Cancel"
 msgstr "Annuleren"
@@ -3928,7 +3929,7 @@ msgid "Open/close check-in."
 msgstr "Open/sluiten check-in."
 
 #: src/web/templates/admin/players/check_in_tournaments.html
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Check-in"
 msgstr "Check-in"
@@ -5839,77 +5840,77 @@ msgstr "Rotator draait automatisch tussen meerdere schermen."
 msgid "Go back to the events page."
 msgstr "Ga terug naar de evenementen pagina."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please enter the password to enter results:"
 msgstr "Voer het wachtwoord in om resultaten in te voeren:"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Event"
 msgstr "Gebeurtenis"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Er is een wachtwoord nodig om resultaten in te voeren voor het evenement %(event_uniq_id)s."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Please ask the organizer to get the password."
 msgstr "Vraag de organisator om het wachtwoord te krijgen."
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "Enter the result"
 msgstr "Voer het resultaat in"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "WHITE WINS"
 msgstr "WITTE WIJNEN"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DRAW"
 msgstr "DRAW"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BLACK WINS"
 msgstr "BLACK WINS"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "BY FORFEIT"
 msgstr "DOOR FORFEIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "FORFEIT"
 msgstr "FORFEIT"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CLEAR THE RESULT"
 msgstr "KEUR DE RESULTAAT GOED"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-IN"
 msgstr "check-in"
 
-#: src/web/templates/user/screen.html
+#: src/web/templates/user/modals.html
 #, ai_translation
 msgid "CHECK-OUT"
 msgstr "check-out"
