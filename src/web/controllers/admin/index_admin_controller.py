@@ -629,6 +629,7 @@ class AbstractIndexAdminController(AbstractAdminController):
             case 'create':
                 public = False
                 hide_background_image = PapiWebConfig.default_hide_background_image
+                federation = PapiWebConfig.default_event_federation
             case 'delete':
                 pass
             case _:

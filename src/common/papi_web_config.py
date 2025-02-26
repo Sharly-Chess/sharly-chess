@@ -819,6 +819,9 @@ class PapiWebConfig(metaclass=Singleton):
         'ZIM': 'Zimbabwe',
     }
 
+    """ The default federation for events. """
+    default_event_federation = 'FRA'
+
     """ The FFE league names. """
     ffe_leagues: dict[str, str] = {
         '': '',
