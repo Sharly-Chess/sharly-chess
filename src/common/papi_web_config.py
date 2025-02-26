@@ -614,7 +614,6 @@ class PapiWebConfig(metaclass=Singleton):
 
     """ The federation names. """
     federations: dict[str, str] = {
-        'NON': 'None',
         'AFG': 'Afghanistan',
         'ALB': 'Albania',
         'ALG': 'Algeria',
@@ -821,6 +820,7 @@ class PapiWebConfig(metaclass=Singleton):
         'YEM': 'Yemen',
         'ZAM': 'Zambia',
         'ZIM': 'Zimbabwe',
+        'NON': 'None',
     }
 
     """ The FFE league names. """
