@@ -39,6 +39,9 @@
     {% endfor %}
 {% endblock admin_header_nav %}
 
+{% block admin_header_action_buttons %}
+{% endblock admin_header_action_buttons %}
+
 {% block admin_content %}
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% with active=(admin_tab == nav_id) %}

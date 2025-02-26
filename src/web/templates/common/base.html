@@ -48,6 +48,18 @@
                   window.addEventListener('resize', setSize);
                   window.addEventListener('htmx:afterSettle', setSize);
             </script>
+            <script>
+                function closeModal () {
+                    var myModalEl = document.getElementById('modal-wrapper');
+                    var modal = bootstrap.Modal.getInstance(myModalEl)
+                    modal.hide();
+                }
+
+                window.addEventListener("do_print", function(event) {
+                    closeModal();
+                    console.log(event);
+                })
+            </script>
         {% endif %}
     </head>
     <body
