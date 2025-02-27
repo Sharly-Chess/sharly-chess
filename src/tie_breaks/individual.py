@@ -586,24 +586,26 @@ def kashdan(
         for round_index, pairing in player.pairings.items()
         if round_index <= max_round
     ]
-    score = 0
-    for pairing in pairings:
-        if papi_legacy:
-            if pairing.full_point_value:
-                score += 4
-            elif pairing.half_point_value:
-                score += 2
-            elif pairing.no_point_value:
-                score += 1
-        else:
-            if pairing.gain:
-                score += 4
-            elif pairing.draw:
-                score += 2
-            elif pairing.loss:
-                score += 1
-    return score
-
+    score_by_result: dict[Result, int] = {
+        Result.GAIN: 4,
+        Result.UNRATED_GAIN: 4,
+        Result.DRAW: 2,
+        Result.UNRATED_DRAW: 2,
+        Result.LOSS: 1,
+        Result.UNRATED_LOSS: 1,
+    }
+    if papi_legacy:
+        score_by_result |= {
+            Result.FORFEIT_GAIN: 4,
+            Result.PAIRING_ALLOCATED_BYE: 4,
+            Result.FULL_POINT_BYE: 4,
+            Result.HALF_POINT_BYE: 2,
+            Result.NO_RESULT: 1,
+            Result.ZERO_POINT_BYE: 1,
+            Result.FORFEIT_LOSS: 1,
+            Result.DOUBLE_FORFEIT: 1,
+        }
+    return sum(score_by_result.get(pairing.result, 0) for pairing in pairings)
 
 def average_rating_opponents(
     player: Player,
