@@ -1475,6 +1475,14 @@ msgstr "WGM"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
+#: src/data/util.py
+msgid "W *** WHITE COLOR FOR RANKINGS"
+msgstr ""
+
+#: src/data/util.py
+msgid "B *** BLACK COLOR FOR RANKINGS"
+msgstr ""
+
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
 #, ai_translation
@@ -1530,6 +1538,28 @@ msgstr ""
 msgid "Federation"
 msgstr "Ομοσπονδία"
 
+#: src/data/util.py
+msgid "List of players"
+msgstr ""
+
+#: src/data/util.py
+#, python-format
+msgid "Rankings after round #%d"
+msgstr ""
+
+#: src/data/util.py
+#, python-format
+msgid "Tournament summary after round #%d"
+msgstr ""
+
+#: src/data/util.py
+msgid "Rankings"
+msgstr ""
+
+#: src/data/util.py
+msgid "Tournament summary"
+msgstr ""
+
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -1570,6 +1600,11 @@ msgstr "Αδύνατη η αποσύνδεση δεδομένων."
 msgid "Storing data..."
 msgstr "Αποθήκευση δεδομένων..."
 
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "{number} players written."
+msgstr "{number} παίκτες που γράφτηκαν."
+
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
@@ -1579,11 +1614,6 @@ msgstr "Σφάλμα ανάγνωσης της ακόλουθης σειράς (
 #, ai_translation
 msgid "Error while creating the database: {ex}."
 msgstr "Σφάλμα κατά τη δημιουργία της βάσης δεδομένων: {ex}."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "{number} players written."
-msgstr "{number} παίκτες που γράφτηκαν."
 
 #: src/database/sqlite/fide_database.py
 #, ai_translation
@@ -1945,6 +1975,24 @@ msgstr "Το γεγονός [{uniq_id}] έχει διαγραφεί, η βάση
 #, ai_translation
 msgid "Please choose the tournament."
 msgstr "Παρακαλώ επιλέξτε το τουρνουά."
+
+#: src/web/controllers/admin/event_admin_controller.py
+msgid "Please choose the document."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
+msgid "Positive integer expected."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, python-format
+msgid "Not part of the selected tournament (%d rounds)."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, python-format
+msgid "Round not finished (last finished: %d)."
+msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -3191,6 +3239,22 @@ msgstr ""
 
 #: src/web/templates/admin/event/print_modal.html
 msgid "Options"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Document:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The type of document to print."
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Round:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
 #: src/web/templates/admin/event/print_modal.html
@@ -4522,46 +4586,6 @@ msgstr "Σχόλιο:"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Κάθε σχόλιο για τον παίκτη (τα σχόλια είναι ορατά μόνο από τους arbiters)."
 
-#: src/web/templates/admin/players/print_view.html
-msgid "List of players"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "League *** LEAGUE FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr ""
-
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -4737,6 +4761,55 @@ msgstr "Αλλάξτε το τουρνουά του παίκτη."
 #, ai_translation
 msgid "No players."
 msgstr "Όχι παίκτες."
+
+#: src/web/templates/admin/print/players.html
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+#, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr ""
 
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/user/event/rotator_card.html
@@ -5557,6 +5630,10 @@ msgstr "Εξαγωγή σε TRF16 (βαθμολόγηση)"
 #, ai_translation
 msgid "Export to TRF(bx) (pairing)"
 msgstr "Εξαγωγή σε TRF (bx) (ζευγάρι)"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+msgid "Print players, results, etc."
+msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation

@@ -20,7 +20,7 @@
     <body topmargin="4" leftmargin="4">
         <div align="center">
             <div class="title_big">{{ tournament.name }}</div>
-            <div class="title_medium">{{ _('List of players') }}</div>
+            <div class="title_medium">{{ title }}</div>
             
             {% set n = [1] %}     
             {% if players %}
@@ -32,7 +32,13 @@
                     <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
                         <thead>
                             <tr class="column-heading">
-                                <th class="right">{{ _('Nb. *** NB FOR PRINT VIEW') }}</th>
+                                <th class="right">
+                                    {% if rank_players %}
+                                        {{ _('Rk. *** RANK FOR PRINT VIEW') }}
+                                    {% else %}
+                                        {{ _('Nb. *** NB FOR PRINT VIEW') }}
+                                    {% endif %}
+                                </th>
                                 <th class="right">&nbsp;</th>
                                 <th class="left">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
                                 <th class="center">
@@ -41,13 +47,27 @@
                                     {% elif tournament.rating == 2 %}
                                         {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
                                     {% elif tournament.rating == 3 %}
-                                        {{ _('Blitz *** BLIZT ELO FOR PRINT VIEW') }}
+                                        {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
                                     {% endif %}
                                 </th>
                                 <th class="center">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
-                                <th class="center">{{ _('Fed *** FEDEFRATION FOR PRINT VIEW') }}</th>
+                                <th class="center">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
                                 <th class="center">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
-                                <th class="left">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                                {% if tournament_summary %}
+                                    {% for round in range(1, max_round + 1) %}
+                                        <th class="right">{{ _('R %(round)d *** ROUND FOR PRINT VIEW', round=round) }}</th>
+                                    {% endfor %}
+                                {% else %}
+                                    <th class="left">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                                {% endif %}
+                                {% if rank_players %}
+                                    <th class="right">
+                                        <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
+                                    </th>
+                                    {% for tie_break in admin_tournament.tie_breaks %}
+                                        <th class="right">{{ tie_break.acronym }}</th>
+                                    {% endfor %}
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -60,9 +80,21 @@
                                     <td class="center">{{ player.category.short_name }}</td>
                                     <td class="center">{{ player.federation }}</td>
                                     <td class="center">{{ player.league }}</td>
-                                    <td class="left">{{ player.club }}</td>
+                                    {% if tournament_summary %}
+                                        {% for pairing in player.ranking_pairings %}
+                                            <td class="right">{{ pairing }}</td>
+                                        {% endfor %}
+                                    {% else %}
+                                        <td class="left">{{ player.club }}</td>
+                                    {% endif %}
+                                    {% if rank_players %}
+                                        <td class="right"><strong>{{ player.points_str }}</strong></td>
+                                        {% for tie_break in player.tie_break_values_display %}
+                                            <td class="center">{{ tie_break }}</td>
+                                        {% endfor %}
+                                    {% endif %}
                                 </tr>
-                                
+
                                 {% set __ = n.append(1) %} 
                             {% endfor %}
                         </tbody>

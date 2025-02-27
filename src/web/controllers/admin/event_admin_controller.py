@@ -24,7 +24,7 @@ from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
-from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, PrintSplit, TournamentRating
+from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, PrintSplit, TournamentRating, PrintDocument
 from data.tournament import Tournament
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
@@ -85,6 +85,12 @@ class EventAdminWebContext(AdminWebContext):
         return {
             self.value_to_form_data(split.to_str()): str(split)
             for split in PrintSplit
+        }
+
+    def get_print_document_options(self) -> dict[str, str]:
+        return {
+            self.value_to_form_data(type_.to_param()): str(type_)
+            for type_ in PrintDocument
         }
 
 
@@ -609,13 +615,22 @@ class EventAdminController(AbstractEventAdminController):
                 }
             case 'print':
                 if data is None:
-                    if len(web_context.admin_event.tournaments_sorted_by_uniq_id) == 1:
-                        tournament_id = web_context.admin_event.tournaments_sorted_by_uniq_id[0].id
-                        
+                    event = web_context.admin_event
+                    if len(event.tournaments_sorted_by_uniq_id) == 1:
+                        tournament_id = (
+                            event.tournaments_sorted_by_uniq_id[0].id
+                        )
                     data = (
                         {
-                            'tournament_id': WebContext.value_to_form_data(tournament_id),
-                            'split': WebContext.value_to_form_data(PrintSplit.NoSplit.to_str()),
+                            'tournament_id': WebContext.value_to_form_data(
+                                tournament_id
+                            ),
+                            'split': WebContext.value_to_form_data(
+                                PrintSplit.NoSplit.to_str()
+                            ),
+                            'document': WebContext.value_to_form_data(
+                                PrintDocument.PLAYER_LIST.to_param()
+                            )
                         }
                     )
 
@@ -623,6 +638,9 @@ class EventAdminController(AbstractEventAdminController):
                     'modal': 'print',
                     'tournament_options': web_context.get_tournament_options(),
                     'split_options': web_context.get_print_split_options(),
+                    'document_options': (
+                        web_context.get_print_document_options()
+                    ),
                     'data': data,
                     'errors': errors or {},
                 }
@@ -1092,6 +1110,7 @@ class EventAdminController(AbstractEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
+
         tournament: Tournament | None = None
         field: str = 'tournament_id'
         try:
@@ -1100,6 +1119,33 @@ class EventAdminController(AbstractEventAdminController):
             ]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
+
+        document: PrintDocument | None = None
+        field = 'document'
+        try:
+            document = PrintDocument.from_param(
+                WebContext.form_data_to_str(data, field)
+            )
+        except ValueError:
+            errors[field] = _('Please choose the document.')
+
+        field = 'round'
+        round_ = WebContext.form_data_to_int(data, field)
+        if round_ is not None:
+            if round_ < 1:
+                errors[field] = _('Positive integer expected.')
+            elif tournament:
+                if round_ > tournament.rounds:
+                    errors[field] = _(
+                        'Not part of the selected tournament (%d rounds).'
+                    ).format(tournament.rounds)
+                elif document and document.is_ranking:
+                    max_round = tournament.max_ranking_round
+                    if max_round is not None and round_ > max_round:
+                        errors[field] = _(
+                            'Round not finished (last finished: %d).'
+                        ).format(max_round)
+
         if len(errors):
             return self._admin_event(
                 request,
@@ -1119,6 +1165,8 @@ class EventAdminController(AbstractEventAdminController):
                 "event_uniq_id": event_uniq_id,
                 "tournament_id": tournament.id,
                 "split": data['split'],
+                "document": data['document'],
+                "round": data['round'],
             }
         )
             

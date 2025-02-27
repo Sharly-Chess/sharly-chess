@@ -55,6 +55,34 @@ class PapiTieBreak(IntEnum):
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
+    @property
+    def acronym(self) -> str | None:
+        match self:
+            case PapiTieBreak.NONE:
+                return None
+            case PapiTieBreak.BUCHHOLZ:
+                return 'Bu.'
+            case PapiTieBreak.BUCHHOLZ_CUT_BOTTOM:
+                return 'Tr.'
+            case PapiTieBreak.MEDIAN_BUCHHOLZ:
+                return 'Me.'
+            case PapiTieBreak.PROGRESSIVE:
+                return 'Cu.'
+            case PapiTieBreak.PERFORMANCE:
+                return 'Perf'
+            case PapiTieBreak.BUCHHOLZ_SUM:
+                return 'SBh'
+            case PapiTieBreak.WINS:
+                return 'NV'
+            case PapiTieBreak.KASHDAN:
+                return 'Ka.'
+            case PapiTieBreak.KOYA:
+                return 'Ko.'
+            case PapiTieBreak.SONNENBORN_BERGER:
+                return 'SB'
+            case _:
+                raise ValueError(f'Unknown tie break: {self}')
+
     @classmethod
     def from_papi_value(cls, value) -> Self:
         match value:
@@ -375,6 +403,7 @@ class TieBreakType(StrEnum):
 
     @property
     def acronym(self) -> str:
+        """Official FIDE acronym. See FIDE Handbook C.07.5"""
         match self:
             case TieBreakType.WINS:
                 return 'WIN'
@@ -498,3 +527,9 @@ class TieBreak:
                     f'Unexpected value for option "{option.value}": '
                     f'"{value}" (expected_type: {option.type})'
                 )
+
+    @property
+    def acronym(self) -> str:
+        if acronym := PapiTieBreak.from_tie_break(self).acronym:
+            return acronym
+        return self.type.acronym

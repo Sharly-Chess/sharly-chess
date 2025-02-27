@@ -337,6 +337,26 @@ class Result(IntEnum):
                 raise ValueError(f'Unknown value: {value}')
 
     @property
+    def to_rankings(self) -> str:
+        match self:
+            case Result.LOSS | Result.UNRATED_LOSS:
+                return '-'
+            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
+                return '='
+            case Result.GAIN | Result.UNRATED_GAIN:
+                return '+'
+            case Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+                return '<'
+            case Result.FORFEIT_GAIN | Result.FULL_POINT_BYE:
+                return '>'
+            case Result.PAIRING_ALLOCATED_BYE:
+                return 'EXE'
+            case Result.ZERO_POINT_BYE | Result.NO_RESULT:
+                return ' '
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
     def bbp_field(self) -> str:
         match self:
             case Result.LOSS:
@@ -1141,6 +1161,16 @@ class BoardColor(StrEnum):
             case _:
                 raise ValueError(f'Unknown value:  {self}')
 
+    @property
+    def to_rankings(self) -> str:
+        match self:
+            case BoardColor.WHITE:
+                return _('W *** WHITE COLOR FOR RANKINGS')
+            case BoardColor.BLACK:
+                return _('B *** BLACK COLOR FOR RANKINGS')
+            case _:
+                raise ValueError(f'Unknown value:  {self}')
+
     def __str__(self) -> str:
         match self:
             case BoardColor.WHITE:
@@ -1295,6 +1325,7 @@ def performance_bonus(
         bonus *= -1
     return bonus
 
+
 class PrintSplit(StrEnum):
     NoSplit = auto()
     Category = auto()
@@ -1346,4 +1377,63 @@ class PrintSplit(StrEnum):
             case self.Federation:
                 return 'federation'
             case _:
-                raise ValueError(f'Invalid screen type: {self}')
+                raise ValueError(f'Invalid print split type: {self}')
+
+
+class PrintDocument(StrEnum):
+    PLAYER_LIST = "PLAYER_LIST"
+    RANKINGS = "RANKINGS"
+    TOURNAMENT_SUMMARY = "TOURNAMENT_SUMMARY"
+
+    @classmethod
+    def from_param(cls, value: str) -> Self:
+        match value:
+            case 'player-list':
+                return cls.PLAYER_LIST
+            case 'rankings':
+                return cls.RANKINGS
+            case 'tournament-summary':
+                return cls.TOURNAMENT_SUMMARY
+            case _:
+                raise ValueError(f'Invalid print type: {value}')
+
+    def to_param(self) -> Self:
+        match self:
+            case self.PLAYER_LIST:
+                return 'player-list'
+            case self.RANKINGS:
+                return 'rankings'
+            case self.TOURNAMENT_SUMMARY:
+                return 'tournament-summary'
+            case _:
+                raise ValueError(f'Invalid print type: {self}')
+
+    def to_title(self, tournament_round: int) -> str:
+        match self:
+            case self.PLAYER_LIST:
+                return _('List of players')
+            case self.RANKINGS:
+                return _('Rankings after round #%d') % tournament_round
+            case self.TOURNAMENT_SUMMARY:
+                return _(
+                    'Tournament summary after round #%d'
+                ) % tournament_round
+            case _:
+                raise ValueError(f'Invalid print type: {self}')
+
+    @property
+    def is_ranking(self) -> bool:
+        return self in (
+            PrintDocument.RANKINGS, PrintDocument.TOURNAMENT_SUMMARY
+        )
+
+    def __str__(self) -> str:
+        match self:
+            case self.PLAYER_LIST:
+                return _('List of players')
+            case self.RANKINGS:
+                return _('Rankings')
+            case self.TOURNAMENT_SUMMARY:
+                return _('Tournament summary')
+            case _:
+                raise ValueError(f'Invalid print type: {self}')

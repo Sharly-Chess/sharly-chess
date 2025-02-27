@@ -21,7 +21,7 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from data.util import PlayerCategory, PrintSplit, TrfType
+from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament, StoredScreen
 from web.controllers.admin.event_admin_controller import (
@@ -732,6 +732,8 @@ class TournamentAdminController(AbstractEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         split: str | None = None,
+        document: str | None = None,
+        round: int | None = None,
     ) -> Template | ClientRedirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
@@ -744,43 +746,73 @@ class TournamentAdminController(AbstractEventAdminController):
             return web_context.error
         
         admin_tournament: Tournament = web_context.admin_tournament
-        
-        template_context: dict[str, Any] = self._get_admin_event_render_context(web_context)
-
-        playersInTournament = [ player for player in admin_tournament.players_by_id.values() if player.tournament.id == tournament_id ]
-        splitBy = PrintSplit.from_str(split) if split else PrintSplit.NoSplit
-        if splitBy == PrintSplit.NoSplit:
-            splitPlayers = { "": playersInTournament }
+        template_context: dict[str, Any] = (
+            self._get_admin_event_render_context(web_context)
+        )
+        print_document = (
+            PrintDocument.from_param(document)
+            if type else PrintDocument.PLAYER_LIST
+        )
+        if print_document.is_ranking:
+            admin_tournament.set_for_ranking(round)
+            round = (
+                round or
+                admin_tournament.max_ranking_round or
+                admin_tournament.rounds
+            )
+            ordered_players = admin_tournament.players_by_rank.values()
         else:
-            splitFns = {
+            ordered_players = admin_tournament.players_by_name_with_unpaired
+
+        players_in_tournament = [
+            player for player in ordered_players
+            if player.tournament.id == tournament_id
+        ]
+        split_by = PrintSplit.from_str(split) if split else PrintSplit.NoSplit
+        if split_by == PrintSplit.NoSplit:
+            split_players = {"": players_in_tournament}
+        else:
+            split_functions = {
                 PrintSplit.Category: lambda p: p.category.short_name,
                 PrintSplit.Club: lambda p: p.club_tuple.club,
                 PrintSplit.League: lambda p: p.league_tuple.league,
                 PrintSplit.Federation: lambda p: p.federation_tuple.federation,
             }
 
-            if splitBy == PrintSplit.Category:
-                splitPlayers = { category.short_name: [] for category in PlayerCategory }
+            if split_by == PrintSplit.Category:
+                split_players = {
+                    category.short_name: [] for category in PlayerCategory
+                }
             else:
-                splitPlayers = defaultdict(list)
+                split_players = defaultdict(list)
 
             # Split players by group
-            for player in playersInTournament:
-                splitPlayers[splitFns[splitBy](player)].append(player)
+            for player in players_in_tournament:
+                split_players[split_functions[split_by](player)].append(player)
 
-            # Sort players by last name
-            for (split, players) in splitPlayers.items():
-                splitPlayers[split] = sorted(players, key=lambda p: p.last_name)
-
-            if splitBy == PrintSplit.Category:
+            if split_by == PrintSplit.Category:
                 # Filter out empty categories
-                splitPlayers = { key: splitPlayers[key] for key in splitPlayers.keys() if len(splitPlayers[key]) > 0 }
+                split_players = {
+                    key: split_players[key] for key in split_players.keys()
+                    if len(split_players[key]) > 0
+                }
             else:
                 # Sort by key
-                splitPlayers = { key: splitPlayers[key] for key in sorted(splitPlayers.keys())}
+                split_players = {
+                    key: split_players[key]
+                    for key in sorted(split_players.keys())
+                }
 
         template_context |= {
             'tournament': admin_tournament,
-            'players': splitPlayers,
+            'players': split_players,
+            'title': print_document.to_title(round),
+            'rank_players': print_document.is_ranking,
+            'tournament_summary': (
+                print_document == PrintDocument.TOURNAMENT_SUMMARY
+            ),
+            'max_round': round,
         }
-        return HTMXTemplate(template_name='admin/print/players.html', context=template_context)
+        return HTMXTemplate(
+            template_name='admin/print/players.html', context=template_context
+        )
