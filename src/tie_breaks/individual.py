@@ -5,8 +5,6 @@ from contextlib import suppress
 from decimal import Decimal
 from math import isclose
 from typing import Literal
-
-from data.pairing import Pairing
 from data.player import TournamentPlayer as Player
 from data.tournament import Tournament
 from data.pairing import Pairing
@@ -189,27 +187,22 @@ def dummy_score(
             else:
                 dummy += Result.DRAW.points(player.point_values)
             return dummy
-        dummy = (
-            player.points_before(round_index)
-            + Result.DRAW.points(player.point_values) * (max_round - round_index - 1)
-        )
+        dummy = player.points_before(round_index) + Result.DRAW.points(player.point_values) * (max_round - round_index)
         match pairing.result:
             case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 return dummy + Result.LOSS.points(player.point_values)
             case Result.HALF_POINT_BYE:
                 return dummy + Result.DRAW.points(player.point_values)
-            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
                 return dummy + Result.GAIN.points(player.point_values)
-            case _:
-                raise ValueError(f'{pairing.result} is played.')
-    else:  # if dummy_type == 'SB':
+    elif dummy_type == 'SB':
         dummy = player.points_after(max_round)
         match pairing.result:
             case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
                 return dummy, Result.GAIN
             case Result.HALF_POINT_BYE:
                 return dummy, Result.DRAW
-            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS:
+            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
                 return dummy, Result.LOSS
             case _:
                 return dummy, pairing.result
@@ -488,7 +481,7 @@ def sonneborn_berger(
                 dummy_type='SB')
             value = dummy * result.points(tournament.point_values)
             if not pairing.voluntary_unplayed:
-                general_contributions.append(SBContribution(dummy, value))                
+                general_contributions.append(SBContribution(dummy, value))
             else:
                 voluntary_unplayed.append(SBContribution(dummy, value))
         elif pairing.played or (
@@ -601,18 +594,18 @@ def kashdan(
         Result.LOSS: 1,
         Result.UNRATED_LOSS: 1,
     }
-    if papi_legacy:
+    if not papi_legacy:
         score_by_result |= {
-            Result.FORFEIT_GAIN: 4,
-            Result.PAIRING_ALLOCATED_BYE: 4,
-            Result.FULL_POINT_BYE: 4,
-            Result.HALF_POINT_BYE: 2,
-            Result.NO_RESULT: 1,
-            Result.ZERO_POINT_BYE: 1,
-            Result.FORFEIT_LOSS: 1,
-            Result.DOUBLE_FORFEIT: 1,
+            Result.FORFEIT_GAIN: 0,
+            Result.PAIRING_ALLOCATED_BYE: 0,
+            Result.FULL_POINT_BYE: 0,
+            Result.HALF_POINT_BYE: 0,
+            Result.NO_RESULT: 0,
+            Result.ZERO_POINT_BYE: 0,
+            Result.FORFEIT_LOSS: 0,
+            Result.DOUBLE_FORFEIT: 0,
         }
-    return sum(score_by_result.get(pairing.result, 0) for pairing in pairings)
+    return sum(pairing.result.points(score_by_result) for pairing in pairings)
 
 def average_rating_opponents(
     player: Player,
@@ -697,7 +690,7 @@ def tournament_performance_rating(
             ratings.append(rating)
             score += pairing.result.points(tournament.point_values)
     if not ratings:
-      return 0
+        return 0
     max_score = len(ratings) * Result.GAIN.points(tournament.point_values)
     average = sum(ratings) / len(ratings)
     if not papi_legacy:
@@ -771,7 +764,7 @@ def expected_score(
     ]
     computed_score = Decimal(
         sum(
-            chance[0] * Decimal(Result.GAIN.points(point_values)) 
+            chance[0] * Decimal(Result.GAIN.points(point_values))
             + chance[1] * Decimal(Result.LOSS.points(point_values))
             for chance in chances
         )
@@ -813,7 +806,7 @@ def perfect_tournament_performance(
     if isclose(first_expected_score, actual_score, abs_tol=0.01):
         return round_fide(first_estimation)
     second_estimation = first_estimation * actual_score / first_expected_score
-    second_estimation = round_fide(second_estimation)
+    second_estimation = round_fide(float(second_estimation))
     second_expected_score = expected_score(second_estimation, ratings, tournament.point_values)
 
     if first_expected_score >= second_expected_score:

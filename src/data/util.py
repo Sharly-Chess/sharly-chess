@@ -201,11 +201,13 @@ class Result(IntEnum):
         if not isinstance(values, dict):
             return self.point_value
         value: float | None = values.get(self, None)
+        if value is not None:
+            return value
         match self:
             case Result.DOUBLE_FORFEIT:
                 value = value or values.get(Result.FORFEIT_LOSS)
                 value = value or values.get(Result.LOSS)
-            case Result.FORFEIT_LOSS | Result.UNRATED_LOSS:
+            case Result.FORFEIT_LOSS | Result.UNRATED_LOSS | Result.NO_RESULT | Result.ZERO_POINT_BYE:
                 value = value or values.get(Result.LOSS)
             case Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 value = value or values.get(Result.DRAW)
