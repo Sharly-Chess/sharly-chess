@@ -229,11 +229,6 @@ hx_indicator_img: the URL of the image of the indicator, optional
                             disabled
                         {% endif %}
                     >
-                        {% if not data[name] %}
-                            <option value="" selected>
-                                -
-                            </option>
-                        {% endif %}
                         {% for value, text in select_options.items() %}
                             <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
                                 {{ text }}
