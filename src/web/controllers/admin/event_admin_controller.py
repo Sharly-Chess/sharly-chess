@@ -907,7 +907,6 @@ class EventAdminController(AbstractEventAdminController):
         event_uniq_id: str,
         tournament_id: str | None = None,
     ) -> Template | ClientRedirect:
-        logger.warning(f'event_uniq_id={event_uniq_id}, tournament_id={tournament_id}')
         return self._admin_event(
             request,
             modal='print',
