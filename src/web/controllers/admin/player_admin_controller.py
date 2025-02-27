@@ -462,11 +462,23 @@ class PlayerAdminController(AbstractEventAdminController):
                 if errors is None:
                     errors = {}
                 federation_ids: list[str] = [
+                    admin_event.federation,
+                ] + [
                     federation_id
                     for federation_id in PapiWebConfig.federations
                     if federation_id != admin_event.federation
                 ]
-                federation_ids.insert(1, admin_event.federation)
+                tournament_options: dict[str, str] = (
+                    {  # force the choice of the tournament on player creation if several tournaments
+                        '': '-',
+                    } if (
+                         action == 'create' and len(admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id) > 1
+                    ) else {
+                    }
+                ) | {
+                    str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
+                    for tournament in admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
+                }
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
                     'tournament_ratings_strings': {
@@ -501,10 +513,7 @@ class PlayerAdminController(AbstractEventAdminController):
                     'licence_options': {
                         str(licence.value): licence.name for licence in PlayerFFELicence
                     },
-                    'tournament_options': {
-                        str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
-                        for tournament in admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
-                    },
+                    'tournament_options': tournament_options,
                     'federations': {
                         federation_id: PapiWebConfig.federations[federation_id]
                         for federation_id in federation_ids

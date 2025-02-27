@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.middleware.session.client_side import CookieBackendConfig
 from litestar.static_files import create_static_files_router
 from litestar.stores.file import FileStore
 from litestar.template import TemplateConfig
@@ -174,5 +174,5 @@ sessions_dir.mkdir(parents=True, exist_ok=True)
 stores: dict[str, FileStore] = {'sessions': FileStore(path=sessions_dir)}
 
 middlewares: Sequence[Middleware] = [
-    ServerSideSessionConfig().middleware,
+    CookieBackendConfig(secret=os.urandom(16)).middleware,
 ]

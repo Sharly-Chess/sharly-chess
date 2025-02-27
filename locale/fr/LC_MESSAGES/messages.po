@@ -850,15 +850,15 @@ msgstr "Sonnenborn-Berger"
 
 #: src/data/tie_break.py
 msgid "Cut"
-msgstr ""
+msgstr "Coupure"
 
 #: src/data/tie_break.py
 msgid "Cut top"
-msgstr ""
+msgstr "Coupure en haut"
 
 #: src/data/tie_break.py
 msgid "Cut Bottom"
-msgstr ""
+msgstr "Coupure en bas"
 
 #: src/data/tie_break.py
 msgid "Played modifier"
@@ -874,7 +874,7 @@ msgstr ""
 
 #: src/data/tie_break.py
 msgid "Limit"
-msgstr ""
+msgstr "Limite"
 
 #: src/data/tie_break.py
 msgid "Exclude players"
@@ -1293,6 +1293,10 @@ msgstr "Impossible de décompresser les données."
 msgid "Storing data..."
 msgstr "Enregistrement des données..."
 
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "{number} players written."
+msgstr "{number} joueur·euses enregistré·es."
+
 #: src/database/sqlite/ffe_database.py
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
@@ -1300,10 +1304,6 @@ msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{r
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 msgid "Error while creating the database: {ex}."
 msgstr "Erreur à la création de la base de données : {ex}."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "{number} players written."
-msgstr "{number} joueur·euses enregistré·es."
 
 #: src/database/sqlite/fide_database.py
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -3739,46 +3739,6 @@ msgstr "Commentaire :"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
-#: src/web/templates/admin/players/print_view.html
-msgid "List of players"
-msgstr "Liste des participant·es"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nr"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Nom"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapide"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat."
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
-msgstr "Féd."
-
-#: src/web/templates/admin/players/print_view.html
-msgid "League *** LEAGUE FOR PRINT VIEW"
-msgstr "Ligue"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
 msgid "Players"
@@ -3927,6 +3887,46 @@ msgstr "Changer le joueur de tournoi."
 #: src/web/templates/admin/players/tab.html
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
+
+#: src/web/templates/admin/print/players.html
+msgid "List of players"
+msgstr "Liste des participant·es"
+
+#: src/web/templates/admin/print/players.html
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nr"
+
+#: src/web/templates/admin/print/players.html
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Nom"
+
+#: src/web/templates/admin/print/players.html
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+#: src/web/templates/admin/print/players.html
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapide"
+
+#: src/web/templates/admin/print/players.html
+msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+#: src/web/templates/admin/print/players.html
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat."
+
+#: src/web/templates/admin/print/players.html
+msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgstr "Féd."
+
+#: src/web/templates/admin/print/players.html
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr "Ligue"
+
+#: src/web/templates/admin/print/players.html
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
 
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/user/event/rotator_card.html
@@ -4621,6 +4621,10 @@ msgstr "Exporter en TRF16 (classement)"
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Export to TRF(bx) (pairing)"
 msgstr "Exporter en TRF(bx) (appariements)"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+msgid "Print players, results, etc."
+msgstr "Imprimer les participant·es, les résultats, les classements..."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Clone the tournament."

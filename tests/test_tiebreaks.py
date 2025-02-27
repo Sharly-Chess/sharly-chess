@@ -341,7 +341,7 @@ class SwissTieBreaks(unittest.TestCase):
             13: 1.5,
             10: 1,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_win(self):
         results = {
@@ -366,7 +366,7 @@ class SwissTieBreaks(unittest.TestCase):
             13: 1,
             10: 1,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_won(self):
         results = {
@@ -391,7 +391,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 0,
             10: 1,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_played_with_black(self):
         results = {
@@ -416,7 +416,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 1,
             10: 3,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_won_with_black(self):
         results = {
@@ -441,7 +441,7 @@ class SwissTieBreaks(unittest.TestCase):
             13: 1,
             10: 1,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_games_elected_to_play(self):
         results = {
@@ -466,7 +466,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 3,
             10: 5,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_progressive_scores(self):
         results = {
@@ -491,7 +491,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 2.5,
             10: 4,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_progressive_cut1(self):
         results = {
@@ -518,7 +518,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 2.5,
             10: 4,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_buchholz(self):
         results = {
@@ -543,7 +543,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 9,
             10: 13,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_buchholz_cut1(self):
         results = {
@@ -567,7 +567,7 @@ class SwissTieBreaks(unittest.TestCase):
             14: 9,
             15: 11,  # 2 group
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_adjusted_score(self):
         results = {
@@ -592,7 +592,7 @@ class SwissTieBreaks(unittest.TestCase):
             15: 2.0,
             16: 3.5,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_adjusted_score_fore(self):
         results = {
@@ -619,7 +619,7 @@ class SwissTieBreaks(unittest.TestCase):
             13: 2,
             10: 1.5
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_fore_buchholz(self):
         results = {
@@ -644,7 +644,7 @@ class SwissTieBreaks(unittest.TestCase):
             13: 13.5,
             10: 12.5
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_buchholz_legacy(self):
         results = {
@@ -671,7 +671,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 8.5,
             10: 12.5
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_buchholz_cut_legacy(self):
         results = {
@@ -698,7 +698,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 8.0,
             10: 11.0,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_buchholz_median_legacy(self):
         results = {
@@ -729,7 +729,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 4.5,
             10: 7.0,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_aob(self):
         aob = individual.average_of_buchholz
@@ -755,7 +755,7 @@ class SwissTieBreaks(unittest.TestCase):
             7: 11.9,
             10: 10.9,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_sonneborn_berger_swiss(self):
         results = {
@@ -780,7 +780,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 2.25,
             10: 1.5
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_sb_cut1_swiss(self):
         results = {
@@ -807,7 +807,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 2.25,
             10: 0.0,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_aro(self):
         results = {
@@ -834,7 +834,7 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1760,
             10: 1880,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_aro_cut1(self):
         results = {
@@ -861,7 +861,7 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1838,
             10: 1975,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_tpr(self):
         results = {
@@ -888,7 +888,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 1175,
             10: 1640,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_tpr_legacy(self):
         results = {
@@ -915,7 +915,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 1298,
             10: 1640,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_apro(self):
         results = {
@@ -942,7 +942,7 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1869,
             10: 1717,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_win_chances(self):
         ratings = [1700, 1950, 1850, 2050, 2150]
@@ -953,7 +953,7 @@ class SwissTieBreaks(unittest.TestCase):
         expected = [
             Decimal('0.91'), Decimal('0.69'), Decimal('0.80'), Decimal('0.55'), Decimal('0.42')
         ]
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_ptp(self):
         results = {
@@ -979,20 +979,20 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1531,
             10: 1575,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
         # NOTE(Amaras): the following two players do not have the
         # correct PTP, according to the tie-break exercices.
         # I do not know why this happens, but it's the closest I got
         # to having all correct values
-        self.assertEquals(
+        self.assertEqual(
             individual.perfect_tournament_performance(
                 self.tournament.players_by_id[2],
                 self.tournament
             ),
             2217 # NOTE(Amaras): this should be 2216
         )
-        self.assertEquals(
+        self.assertEqual(
             individual.perfect_tournament_performance(
                 self.tournament.players_by_id[14],
                 self.tournament
@@ -1024,15 +1024,15 @@ class SwissTieBreaks(unittest.TestCase):
             7: 1890,
             10: 1687,
         }
-        self.assertEquals(results, expected)
-        self.assertEquals(
+        self.assertEqual(results, expected)
+        self.assertEqual(
             individual.average_perfect_performance(
                 self.tournament.players_by_id[3],
                 self.tournament
             ),
             1935 # NOTE(Amaras): should be 1934
         )
-        self.assertEquals(
+        self.assertEqual(
             individual.average_perfect_performance(
                 self.tournament.players_by_id[13],
                 self.tournament
@@ -1063,7 +1063,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 2,
             10: 8,
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_kashdan_legacy(self):
         results = {
@@ -1090,7 +1090,7 @@ class SwissTieBreaks(unittest.TestCase):
             9: 9,
             10: 8,
         }
-        self.assertEquals(expected, results)
+        self.assertEqual(expected, results)
 
     def test_direct_encounter(self):
         results = {
@@ -1108,7 +1108,7 @@ class SwissTieBreaks(unittest.TestCase):
             8: (2.0, False),
             11: (1.0, False),
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
 
 class RoundRobinTieBreaks(unittest.TestCase):
@@ -1198,7 +1198,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             5: [1, 4, 2, 6, 3],
             6: [2, 3, 4, 5, 1],
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_points_are_correct(self):
         results = {
@@ -1208,7 +1208,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
         expected = {
             1: 3.5, 2: 3.5, 3: 3.5, 4: 1.5, 5: 1.5, 6: 1.5
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_sonneborn_berger_round_robin(self):
         results = {
@@ -1221,7 +1221,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             1: 9.25, 2: 6.25, 3: 6.25,
             4: 4.25, 5: 3.25, 6: 2.25
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_sb_cut1_round_robin(self):
         results = {
@@ -1234,7 +1234,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             1: 9.25, 2: 4.75, 3: 4.75,
             4: 4.25, 5: 3.25, 6: 1.5
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_koya(self):
         results = {
@@ -1245,7 +1245,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             1: 2, 2: 0.5, 3: 0.5,
             4: 1, 5: 0.5, 6: 0
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_direct_encounter(self):
         results = {
@@ -1258,4 +1258,4 @@ class RoundRobinTieBreaks(unittest.TestCase):
             1: (2, True), 2: (0.5, True), 3: (0.5, True),
             4: (0.5, True), 6: (1.5, True), 5: (1, True),
         }
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
