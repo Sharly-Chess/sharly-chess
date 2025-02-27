@@ -751,7 +751,7 @@ class TournamentAdminController(AbstractEventAdminController):
         )
         print_document = (
             PrintDocument.from_param(document)
-            if type else PrintDocument.PLAYER_LIST
+            if document else PrintDocument.PLAYER_LIST
         )
         if print_document.is_ranking:
             admin_tournament.set_for_ranking(round)
