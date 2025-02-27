@@ -1130,11 +1130,13 @@ class EventAdminController(AbstractEventAdminController):
             errors[field] = _('Please choose the document.')
 
         field = 'round'
-        round_ = WebContext.form_data_to_int(data, field)
+        round_: int | None = None
+        try:
+            round_ = WebContext.form_data_to_int(data, field, minimum=1)
+        except ValueError:
+            errors[field] = _('A positive integer is expected.')
         if round_ is not None:
-            if round_ < 1:
-                errors[field] = _('Positive integer expected.')
-            elif tournament:
+            if tournament:
                 if round_ > tournament.rounds:
                     errors[field] = _(
                         'Not part of the selected tournament (%d rounds).'

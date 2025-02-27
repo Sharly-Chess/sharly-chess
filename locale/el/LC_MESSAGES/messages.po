@@ -1042,6 +1042,46 @@ msgid "Sonnenborn-Berger"
 msgstr ""
 
 #: src/data/tie_break.py
+msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Perf *** ACRONYM FOR PERFORMANCE"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Ka. *** ACRONYM FOR KASHDAN"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Ko. *** ACRONYM FOR KOYA"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+msgstr ""
+
+#: src/data/tie_break.py
 msgid "Cut"
 msgstr ""
 
@@ -1981,8 +2021,12 @@ msgid "Please choose the document."
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
-msgid "Positive integer expected."
-msgstr ""
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "A positive integer is expected."
+msgstr "Αναμένεται ένας θετικός ακέραιος αριθμός."
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, python-format
@@ -2027,13 +2071,6 @@ msgstr "Η οικογένεια [{uniq_id}] υπάρχει ήδη."
 #, ai_translation
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Τουρνουά [{tournament_id}] δεν βρέθηκε."
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/rotator_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "A positive integer is expected."
-msgstr "Αναμένεται ένας θετικός ακέραιος αριθμός."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py

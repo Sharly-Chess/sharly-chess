@@ -849,6 +849,46 @@ msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
 
 #: src/data/tie_break.py
+msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+msgstr "Bu."
+
+#: src/data/tie_break.py
+msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+#: src/data/tie_break.py
+msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+#: src/data/tie_break.py
+msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+msgstr "Cu."
+
+#: src/data/tie_break.py
+msgid "Perf *** ACRONYM FOR PERFORMANCE"
+msgstr "Perf"
+
+#: src/data/tie_break.py
+msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+msgstr "SBh"
+
+#: src/data/tie_break.py
+msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+msgstr "NV"
+
+#: src/data/tie_break.py
+msgid "Ka. *** ACRONYM FOR KASHDAN"
+msgstr "Ka."
+
+#: src/data/tie_break.py
+msgid "Ko. *** ACRONYM FOR KOYA"
+msgstr "Ko."
+
+#: src/data/tie_break.py
+msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+msgstr "SB"
+
+#: src/data/tie_break.py
 msgid "Cut"
 msgstr "Coupure"
 
@@ -1632,8 +1672,11 @@ msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
 #: src/web/controllers/admin/event_admin_controller.py
-msgid "Positive integer expected."
-msgstr "Entier positif attendu."
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+msgid "A positive integer is expected."
+msgstr "Un entier positif est attendu."
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, python-format
@@ -1672,12 +1715,6 @@ msgstr "La famille [{uniq_id}] existe déjà."
 #: src/web/controllers/admin/screen_admin_controller.py
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/rotator_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-msgid "A positive integer is expected."
-msgstr "Un entier positif est attendu."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py

@@ -61,25 +61,25 @@ class PapiTieBreak(IntEnum):
             case PapiTieBreak.NONE:
                 return None
             case PapiTieBreak.BUCHHOLZ:
-                return 'Bu.'
+                return _('Bu. *** ACRONYM FOR BUCHHOLZ')
             case PapiTieBreak.BUCHHOLZ_CUT_BOTTOM:
-                return 'Tr.'
+                return _('Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM')
             case PapiTieBreak.MEDIAN_BUCHHOLZ:
-                return 'Me.'
+                return _('Me. *** ACRONYM FOR MEDIAN BUCHHOLZ')
             case PapiTieBreak.PROGRESSIVE:
-                return 'Cu.'
+                return _('PS *** ACRONYM FOR PROGRESSIVE SCORE')
             case PapiTieBreak.PERFORMANCE:
-                return 'Perf'
+                return _('Perf *** ACRONYM FOR PERFORMANCE')
             case PapiTieBreak.BUCHHOLZ_SUM:
-                return 'SBh'
+                return _('SBh *** ACRONYM FOR SUM OF BUCHHOLZ')
             case PapiTieBreak.WINS:
-                return 'NV'
+                return _('NW *** ACRONYM FOR NUMBER OF WINS')
             case PapiTieBreak.KASHDAN:
-                return 'Ka.'
+                return _('Ka. *** ACRONYM FOR KASHDAN')
             case PapiTieBreak.KOYA:
-                return 'Ko.'
+                return _('Ko. *** ACRONYM FOR KOYA')
             case PapiTieBreak.SONNENBORN_BERGER:
-                return 'SB'
+                return _('SB *** ACRONYM FOR SONNENBORN BERGER')
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
