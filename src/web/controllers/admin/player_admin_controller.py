@@ -462,11 +462,12 @@ class PlayerAdminController(AbstractEventAdminController):
                 if errors is None:
                     errors = {}
                 federation_ids: list[str] = [
+                    admin_event.federation,
+                ] + [
                     federation_id
                     for federation_id in PapiWebConfig.federations
                     if federation_id != admin_event.federation
                 ]
-                federation_ids.insert(1, admin_event.federation)
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
                     'tournament_ratings_strings': {
