@@ -59,6 +59,11 @@
                     document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
                 });
 
+                window.addEventListener("close_modal", function(event) {
+                    console.log('close_modal');
+                    closeModal()
+                });
+
                 window.addEventListener("do_print", function(event) {
                     closeModal();
                     window.open(
@@ -138,6 +143,7 @@
             style="display: none"
             aria-hidden="false"
             data-bs-backdrop="static"
+            data-bs-keyboard="false"
             tabindex="-1"
         >
             {% include 'empty_modal.html' %}

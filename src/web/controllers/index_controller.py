@@ -450,6 +450,8 @@ class IndexController(AbstractController):
         return HTMXTemplate(
             template_name='common/empty_modal.html',
             re_target='#modal-wrapper',
+            trigger_event="close_modal",
+            after="receive"
         )
 
     @get(

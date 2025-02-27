@@ -107,7 +107,6 @@
                         {% endif %}
                         <button
                             type="button"
-                            data-bs-dismiss="modal"
                             hx-get="{{ url_for('close-modal') }}"
                             hx-trigger="click, keyup[key=='Escape'] from:body"
                             class="result-button btn-secondary col-3 ms-auto me-auto btn fs-4 p-3"
@@ -141,7 +140,6 @@
                 <div class="modal-footer row d-flex align-items-center justify-content-center">
                     <button
                         type="button"
-                        data-bs-dismiss="modal"
                         hx-get="{{ url_for('close-modal') }}"
                         hx-trigger="click, keyup[key=='Escape'] from:body"
                         class="result-button btn-secondary col-3 ms-auto me-auto btn fs-4 p-3"
