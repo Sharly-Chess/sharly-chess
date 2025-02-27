@@ -542,6 +542,8 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                 template_name='admin/modals.html',
                 context=template_context,
                 re_target='#modal-wrapper',
+                trigger_event="modal_opened",
+                after="settle"
             )
         return HTMXTemplate(template_name='admin/event.html', context=template_context)
 
