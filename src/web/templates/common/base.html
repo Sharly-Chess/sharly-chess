@@ -55,6 +55,10 @@
                     modal.hide();
                 }
 
+                window.addEventListener("modal_opened", function(event) {
+                    document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
+                });
+
                 window.addEventListener("do_print", function(event) {
                     closeModal();
                     window.open(
@@ -65,6 +69,7 @@
                         '?split=' + event.detail.split
                     , "PrintWindow");
                 })
+                
             </script>
         {% endif %}
     </head>
