@@ -803,13 +803,18 @@ class Tournament:
             return
         if not any(player.estimated for player in self.players_by_id.values()):
             return
-        players = sorted(self.players_by_id.values(), key=lambda player: player.points_before(max_round))
+        if papi_legacy:
+            round_function = round
+        else:
+            round_function = round_fide
+        players = sorted(self.players_by_id.values(), key=lambda player: player.points_after(max_round))
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
-            for points, group in groupby(players, key=lambda player: player.points_before(max_round))
+            for points, group in groupby(players, key=lambda player: player.points_after(max_round))
         }
-        point_keys = sorted(list(players_by_points.keys()))
-        for points, test_group in players_by_points.items():
+        point_keys = sorted(list(players_by_points.keys()), reverse=True)
+        for points in point_keys:
+            test_group = players_by_points[points]
             if not any(player.estimated for player in test_group):
                 continue
             test_group_index = point_keys.index(points)
@@ -819,8 +824,11 @@ class Tournament:
                 if not player.estimated
             ]
             if group_ratings:
-                return sum(group_ratings) / len(group_ratings)
-            max_possible_points = Result.GAIN.point_value * (max_round - 1)
+                average_rating = round_function(sum(group_ratings) / len(group_ratings))
+                for player in test_group:
+                    player.estimation = average_rating
+                continue
+            max_possible_points = Result.GAIN.point_value * (max_round)
             superior_ratings = []
             i = 0
             while not superior_ratings:
@@ -862,7 +870,7 @@ class Tournament:
                     player.estimation = round_function(
                         performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
                     )
-                return
+                continue
             test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
             if superior_ratings:
                 superior_group_bonus = performance_bonus(
