@@ -35,7 +35,7 @@ class Family:
 
     @property
     def type(self) -> ScreenType:
-        return ScreenType.from_str(self.stored_family.type)
+        return ScreenType(self.stored_family.type)
 
     @property
     def public(self) -> bool:
@@ -169,7 +169,7 @@ class Family:
             self.event.add_warning(self.error, family=self)
             return False
         players_instead_of_boards: bool
-        match ScreenType.from_str(self.type):
+        match ScreenType(self.type):
             case ScreenType.Boards | ScreenType.Input:
                 if self.tournament.current_round:
                     players_instead_of_boards = False

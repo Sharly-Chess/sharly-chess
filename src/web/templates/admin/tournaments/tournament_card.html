@@ -165,13 +165,13 @@
             <ul class="dropdown-menu locale">
                 <li
                     class="dropdown-item text-start cursor-pointer"
-                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=RATING', '_blank')"
+                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=rating', '_blank')"
                 >
                     {{ _('Export to TRF16 (rating)') }}
                 </li>
                 <li
                     class="dropdown-item text-start cursor-pointer"
-                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=PAIRING', '_blank')"
+                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=pairing', '_blank')"
                 >
                     {{ _('Export to TRF(bx) (pairing)') }}
                 </li>

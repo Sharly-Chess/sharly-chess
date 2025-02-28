@@ -320,7 +320,7 @@ class FamilyAdminController(AbstractEventAdminController):
                             name = web_context.admin_family.stored_family.name
                         case 'create':
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
-                                family_type=ScreenType.from_str(family_type)
+                                family_type=ScreenType(family_type)
                             )
                             # basic_name: str
                             # match family_type:
@@ -333,14 +333,14 @@ class FamilyAdminController(AbstractEventAdminController):
                             #     case _:
                             #         raise ValueError(f'family_type=[{family_type}]')
                             name = web_context.admin_event.get_unused_family_name(
-                                family_type=ScreenType.from_str(family_type)
+                                family_type=ScreenType(family_type)
                             )
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
                                 base_uniq_id=web_context.admin_family.stored_family.uniq_id
                             )
                             name = web_context.admin_event.get_unused_family_name(
-                                family_type=ScreenType.from_str(
+                                family_type=ScreenType(
                                     web_context.admin_family.type
                                 ),
                                 base_name=web_context.admin_family.stored_family.name,

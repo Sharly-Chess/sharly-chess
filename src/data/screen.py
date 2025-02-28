@@ -81,7 +81,7 @@ class Screen:
     @property
     def type(self) -> ScreenType:
         return (
-            ScreenType.from_str(self.stored_screen.type)
+            ScreenType(self.stored_screen.type)
             if self.stored_screen
             else self.family.type
         )

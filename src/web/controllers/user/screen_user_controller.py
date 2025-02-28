@@ -59,7 +59,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
                     f'Access denied for screen [{self.screen.uniq_id}].'
                 )
                 return
-            self.user_event_tab = self.screen.type.to_str()
+            self.user_event_tab = self.screen.type.value
         else:
             try:
                 self.rotator = self.user_event.rotators_by_id[rotator_id]

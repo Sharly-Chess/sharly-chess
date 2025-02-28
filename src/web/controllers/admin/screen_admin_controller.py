@@ -431,7 +431,7 @@ class ScreenAdminController(AbstractEventAdminController):
                                 case _:
                                     raise ValueError(f'screen_type=[{screen_type}]')
                             name = web_context.admin_event.get_unused_screen_name(
-                                screen_type=ScreenType.from_str(screen_type)
+                                screen_type=ScreenType(screen_type)
                             )
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
@@ -439,7 +439,7 @@ class ScreenAdminController(AbstractEventAdminController):
                             )
                             name = web_context.admin_event.get_unused_screen_name(
                                 base_name=web_context.admin_screen.name,
-                                screen_type=ScreenType.from_str(
+                                screen_type=ScreenType(
                                     web_context.admin_screen.type
                                 ),
                             )
