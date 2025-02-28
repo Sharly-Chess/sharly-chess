@@ -1381,32 +1381,9 @@ class PrintSplit(StrEnum):
 
 
 class PrintDocument(StrEnum):
-    PLAYER_LIST = "PLAYER_LIST"
-    RANKINGS = "RANKINGS"
-    TOURNAMENT_SUMMARY = "TOURNAMENT_SUMMARY"
-
-    @classmethod
-    def from_param(cls, value: str) -> Self:
-        match value:
-            case 'player-list':
-                return cls.PLAYER_LIST
-            case 'rankings':
-                return cls.RANKINGS
-            case 'tournament-summary':
-                return cls.TOURNAMENT_SUMMARY
-            case _:
-                raise ValueError(f'Invalid print type: {value}')
-
-    def to_param(self) -> Self:
-        match self:
-            case self.PLAYER_LIST:
-                return 'player-list'
-            case self.RANKINGS:
-                return 'rankings'
-            case self.TOURNAMENT_SUMMARY:
-                return 'tournament-summary'
-            case _:
-                raise ValueError(f'Invalid print type: {self}')
+    PLAYER_LIST = "player-list"
+    RANKINGS = "rankings"
+    TOURNAMENT_SUMMARY = "tournament-summary"
 
     def to_title(self, tournament_round: int) -> str:
         match self:
@@ -1427,7 +1404,8 @@ class PrintDocument(StrEnum):
             PrintDocument.RANKINGS, PrintDocument.TOURNAMENT_SUMMARY
         )
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         match self:
             case self.PLAYER_LIST:
                 return _('List of players')

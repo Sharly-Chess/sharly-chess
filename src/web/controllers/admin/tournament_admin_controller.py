@@ -750,8 +750,7 @@ class TournamentAdminController(AbstractEventAdminController):
             self._get_admin_event_render_context(web_context)
         )
         print_document = (
-            PrintDocument.from_param(document)
-            if document else PrintDocument.PLAYER_LIST
+            PrintDocument(document) if document else PrintDocument.PLAYER_LIST
         )
         if print_document.is_ranking:
             round = (

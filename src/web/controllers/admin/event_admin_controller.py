@@ -89,8 +89,8 @@ class EventAdminWebContext(AdminWebContext):
 
     def get_print_document_options(self) -> dict[str, str]:
         return {
-            self.value_to_form_data(type_.to_param()): str(type_)
-            for type_ in PrintDocument
+            self.value_to_form_data(document): PrintDocument(document).name
+            for document in PrintDocument
         }
 
 
@@ -629,7 +629,7 @@ class EventAdminController(AbstractEventAdminController):
                                 PrintSplit.NoSplit.to_str()
                             ),
                             'document': WebContext.value_to_form_data(
-                                PrintDocument.PLAYER_LIST.to_param()
+                                PrintDocument.PLAYER_LIST
                             )
                         }
                     )
@@ -1123,7 +1123,7 @@ class EventAdminController(AbstractEventAdminController):
         document: PrintDocument | None = None
         field = 'document'
         try:
-            document = PrintDocument.from_param(
+            document = PrintDocument(
                 WebContext.form_data_to_str(data, field)
             )
         except ValueError:
