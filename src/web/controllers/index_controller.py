@@ -438,21 +438,19 @@ class IndexController(AbstractController):
                 'messages': Message.messages(request),
             },
         )
-    
+        
     @get(
-        path='/close-modal',
-        name='close-modal',
+        path='/empty-modal',
+        name='empty-modal',
         cache=1,
     )
-    async def close_modal(
+    async def empty_modal(
         self,
     ) -> Template:
         return HTMXTemplate(
             template_name='common/empty_modal.html',
             re_target='#modal-wrapper',
-            trigger_event="close_modal",
-            after="receive"
-        )
+        )   
 
     @get(
         path='/favicon.ico',

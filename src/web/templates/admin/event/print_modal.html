@@ -90,8 +90,7 @@
                         <button
                             type="button"
                             class="btn btn-secondary text-nowrap"
-                            hx-get="{{ url_for('close-modal') }}"
-                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                            data-bs-dismiss="modal"
                         >
                             <i class="bi-x-circle-fill pe-1"></i>
                             {{ _('Cancel') }}

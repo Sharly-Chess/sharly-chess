@@ -60,7 +60,6 @@
                 });
 
                 window.addEventListener("close_modal", function(event) {
-                    console.log('close_modal');
                     closeModal()
                 });
 
@@ -142,9 +141,9 @@
             class="modal modal-blur overflow-auto"
             style="display: none"
             aria-hidden="false"
-            data-bs-backdrop="static"
-            data-bs-keyboard="false"
             tabindex="-1"
+            hx-trigger="hidden.bs.modal"
+            hx-get="{{ url_for('empty-modal') }}"
         >
             {% include 'empty_modal.html' %}
         </div>
