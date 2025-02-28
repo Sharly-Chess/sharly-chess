@@ -812,9 +812,8 @@ class Tournament:
             points: list(group)
             for points, group in groupby(players, key=lambda player: player.points_after(max_round))
         }
-        point_keys = sorted(list(players_by_points.keys()), reverse=True)
-        for points in point_keys:
-            test_group = players_by_points[points]
+        point_keys = sorted(list(players_by_points.keys()))
+        for points, test_group in players_by_points.items():
             if not any(player.estimated for player in test_group):
                 continue
             test_group_index = point_keys.index(points)
@@ -828,13 +827,13 @@ class Tournament:
                 for player in test_group:
                     player.estimation = average_rating
                 continue
-            max_possible_points = Result.GAIN.point_value * (max_round)
+            max_possible_points = Result.GAIN.point_value * max_round
             superior_ratings = []
             i = 0
             while not superior_ratings:
-                i -= 1
+                i += 1
                 try:
-                    superior_points = point_keys[test_group_index - i]
+                    superior_points = point_keys[test_group_index + i]
                     superior_group = players_by_points[superior_points]
                     ratings = [
                         player.estimation
@@ -848,9 +847,9 @@ class Tournament:
             inferior_ratings = []
             i = 0
             while not inferior_ratings:
-                i -= 1
+                i += 1
                 try:
-                    inferior_points = point_keys[test_group_index + i]
+                    inferior_points = point_keys[test_group_index - i]
                     inferior_group = players_by_points[inferior_points]
                     ratings = [
                         player.estimation
