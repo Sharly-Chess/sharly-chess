@@ -2636,6 +2636,10 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr "Lösenordet för turneringen på FFE webbplats är gjord av 10 stora bokstäver."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Tie-break already at use."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Turneringen [{tournament_uniq_id}] har skapats och standardskärmar har lagts till."
