@@ -849,6 +849,46 @@ msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
 
 #: src/data/tie_break.py
+msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+msgstr "Bu."
+
+#: src/data/tie_break.py
+msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+#: src/data/tie_break.py
+msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+#: src/data/tie_break.py
+msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+msgstr "Cu."
+
+#: src/data/tie_break.py
+msgid "Perf *** ACRONYM FOR PERFORMANCE"
+msgstr "Perf"
+
+#: src/data/tie_break.py
+msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+msgstr "SBh"
+
+#: src/data/tie_break.py
+msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+msgstr "NV"
+
+#: src/data/tie_break.py
+msgid "Ka. *** ACRONYM FOR KASHDAN"
+msgstr "Ka."
+
+#: src/data/tie_break.py
+msgid "Ko. *** ACRONYM FOR KOYA"
+msgstr "Ko."
+
+#: src/data/tie_break.py
+msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+msgstr "SB"
+
+#: src/data/tie_break.py
 msgid "Cut"
 msgstr "Coupure"
 
@@ -1212,6 +1252,14 @@ msgstr "GMF"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
 
+#: src/data/util.py
+msgid "W *** WHITE COLOR FOR RANKINGS"
+msgstr "B"
+
+#: src/data/util.py
+msgid "B *** BLACK COLOR FOR RANKINGS"
+msgstr "N"
+
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
 msgid "White"
@@ -1260,6 +1308,28 @@ msgstr "Ligue"
 #: src/data/util.py src/web/templates/admin/event/tab.html
 msgid "Federation"
 msgstr "Fédération"
+
+#: src/data/util.py
+msgid "List of players"
+msgstr "Liste des participant·es"
+
+#: src/data/util.py
+#, python-format
+msgid "Rankings after round #%d"
+msgstr "Classement après la ronde %d"
+
+#: src/data/util.py
+#, python-format
+msgid "Tournament summary after round #%d"
+msgstr "Grille américaine après la ronde %d"
+
+#: src/data/util.py
+msgid "Rankings"
+msgstr "Classement"
+
+#: src/data/util.py
+msgid "Tournament summary"
+msgstr "Grille américaine"
 
 #: src/database/sqlite/ffe_database.py
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -1598,6 +1668,27 @@ msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
 
 #: src/web/controllers/admin/event_admin_controller.py
+msgid "Please choose the document."
+msgstr "Veuillez choisir le document."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+msgid "A positive integer is expected."
+msgstr "Un entier positif est attendu."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, python-format
+msgid "Not part of the selected tournament (%d rounds)."
+msgstr "Ne fait pas partie du tournoi sélectionné (%d rondes)"
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, python-format
+msgid "Round not finished (last finished: %d)."
+msgstr "Ronde non terminée (dernière terminée: %d)"
+
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Personal"
 msgstr "Personnel"
 
@@ -1624,12 +1715,6 @@ msgstr "La famille [{uniq_id}] existe déjà."
 #: src/web/controllers/admin/screen_admin_controller.py
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/rotator_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-msgid "A positive integer is expected."
-msgstr "Un entier positif est attendu."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
@@ -2628,6 +2713,22 @@ msgstr "Le tournoi à imprimer."
 #: src/web/templates/admin/event/print_modal.html
 msgid "Options"
 msgstr "Options"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Document:"
+msgstr "Document :"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The type of document to print."
+msgstr "Le type de document à imprimer."
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Round:"
+msgstr "Ronde :"
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The round for which the document is printed (Defaults to the last possible round)."
+msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernière ronde possible)."
 
 #: src/web/templates/admin/event/print_modal.html
 msgid "Split by:"
@@ -3889,8 +3990,8 @@ msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
 #: src/web/templates/admin/print/players.html
-msgid "List of players"
-msgstr "Liste des participant·es"
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Pl."
 
 #: src/web/templates/admin/print/players.html
 msgid "Nb. *** NB FOR PRINT VIEW"
@@ -3909,7 +4010,7 @@ msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapide"
 
 #: src/web/templates/admin/print/players.html
-msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
 #: src/web/templates/admin/print/players.html
@@ -3917,7 +4018,7 @@ msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat."
 
 #: src/web/templates/admin/print/players.html
-msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Féd."
 
 #: src/web/templates/admin/print/players.html
@@ -3925,8 +4026,17 @@ msgid "League *** LEAGUE FOR PRINT VIEW"
 msgstr "Ligue"
 
 #: src/web/templates/admin/print/players.html
+#, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+#: src/web/templates/admin/print/players.html
 msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
+
+#: src/web/templates/admin/print/players.html
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
 
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/user/event/rotator_card.html

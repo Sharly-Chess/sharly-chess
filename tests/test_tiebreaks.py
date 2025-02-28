@@ -20,7 +20,7 @@ class TieBreakTournament:
     players_by_id: dict[int, TournamentPlayer] = field(default_factory=dict)
     pairing: TournamentPairing = TournamentPairing.UNKNOWN
     rating: TournamentRating = TournamentRating.STANDARD
-
+    point_values: dict[Result, float] | None = None
 
 class SwissTieBreaks(unittest.TestCase):
     def setUp(self):

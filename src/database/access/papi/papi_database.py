@@ -259,7 +259,7 @@ class PapiDatabase(AccessDatabase):
                 color_str: str = row[f'{round_str}Cl']
                 color: BoardColor | None = None
                 with suppress(ValueError):
-                    color = BoardColor.from_papi_value(color_str)
+                    color: BoardColor | None = BoardColor.from_papi_value(color_str)
                 opponent_papi_id: int | None = row[f'{round_str}Adv']
                 pairings[round_] = Pairing(
                     color,
