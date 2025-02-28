@@ -55,6 +55,34 @@ class PapiTieBreak(IntEnum):
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
+    @property
+    def acronym(self) -> str | None:
+        match self:
+            case PapiTieBreak.NONE:
+                return None
+            case PapiTieBreak.BUCHHOLZ:
+                return _('Bu. *** ACRONYM FOR BUCHHOLZ')
+            case PapiTieBreak.BUCHHOLZ_CUT_BOTTOM:
+                return _('Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM')
+            case PapiTieBreak.MEDIAN_BUCHHOLZ:
+                return _('Me. *** ACRONYM FOR MEDIAN BUCHHOLZ')
+            case PapiTieBreak.PROGRESSIVE:
+                return _('PS *** ACRONYM FOR PROGRESSIVE SCORE')
+            case PapiTieBreak.PERFORMANCE:
+                return _('Perf *** ACRONYM FOR PERFORMANCE')
+            case PapiTieBreak.BUCHHOLZ_SUM:
+                return _('SBh *** ACRONYM FOR SUM OF BUCHHOLZ')
+            case PapiTieBreak.WINS:
+                return _('NW *** ACRONYM FOR NUMBER OF WINS')
+            case PapiTieBreak.KASHDAN:
+                return _('Ka. *** ACRONYM FOR KASHDAN')
+            case PapiTieBreak.KOYA:
+                return _('Ko. *** ACRONYM FOR KOYA')
+            case PapiTieBreak.SONNENBORN_BERGER:
+                return _('SB *** ACRONYM FOR SONNENBORN BERGER')
+            case _:
+                raise ValueError(f'Unknown tie break: {self}')
+
     @classmethod
     def from_papi_value(cls, value) -> Self:
         match value:
@@ -375,6 +403,7 @@ class TieBreakType(StrEnum):
 
     @property
     def acronym(self) -> str:
+        """Official FIDE acronym. See FIDE Handbook C.07.5"""
         match self:
             case TieBreakType.WINS:
                 return 'WIN'
@@ -498,3 +527,9 @@ class TieBreak:
                     f'Unexpected value for option "{option.value}": '
                     f'"{value}" (expected_type: {option.type})'
                 )
+
+    @property
+    def acronym(self) -> str:
+        if acronym := PapiTieBreak.from_tie_break(self).acronym:
+            return acronym
+        return self.type.acronym

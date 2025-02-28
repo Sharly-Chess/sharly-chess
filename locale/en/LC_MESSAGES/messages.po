@@ -849,6 +849,46 @@ msgid "Sonnenborn-Berger"
 msgstr ""
 
 #: src/data/tie_break.py
+msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+msgstr "Bu."
+
+#: src/data/tie_break.py
+msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+#: src/data/tie_break.py
+msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+#: src/data/tie_break.py
+msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+msgstr "PS"
+
+#: src/data/tie_break.py
+msgid "Perf *** ACRONYM FOR PERFORMANCE"
+msgstr "Perf"
+
+#: src/data/tie_break.py
+msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+msgstr "Sbh"
+
+#: src/data/tie_break.py
+msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+msgstr "NW"
+
+#: src/data/tie_break.py
+msgid "Ka. *** ACRONYM FOR KASHDAN"
+msgstr "Ka."
+
+#: src/data/tie_break.py
+msgid "Ko. *** ACRONYM FOR KOYA"
+msgstr "Ko."
+
+#: src/data/tie_break.py
+msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+msgstr "SB"
+
+#: src/data/tie_break.py
 msgid "Cut"
 msgstr ""
 
@@ -1212,6 +1252,14 @@ msgstr "WGM"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
+#: src/data/util.py
+msgid "W *** WHITE COLOR FOR RANKINGS"
+msgstr "W"
+
+#: src/data/util.py
+msgid "B *** BLACK COLOR FOR RANKINGS"
+msgstr "B"
+
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
 msgid "White"
@@ -1261,6 +1309,28 @@ msgstr ""
 msgid "Federation"
 msgstr ""
 
+#: src/data/util.py
+msgid "List of players"
+msgstr ""
+
+#: src/data/util.py
+#, python-format
+msgid "Rankings after round #%d"
+msgstr ""
+
+#: src/data/util.py
+#, python-format
+msgid "Tournament summary after round #%d"
+msgstr ""
+
+#: src/data/util.py
+msgid "Rankings"
+msgstr ""
+
+#: src/data/util.py
+msgid "Tournament summary"
+msgstr ""
+
 #: src/database/sqlite/ffe_database.py
 msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
@@ -1293,16 +1363,16 @@ msgstr ""
 msgid "Storing data..."
 msgstr ""
 
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+msgid "{number} players written."
+msgstr ""
+
 #: src/database/sqlite/ffe_database.py
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
 
 #: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
 msgid "Error while creating the database: {ex}."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "{number} players written."
 msgstr ""
 
 #: src/database/sqlite/fide_database.py
@@ -1598,6 +1668,27 @@ msgid "Please choose the tournament."
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
+msgid "Please choose the document."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+msgid "A positive integer is expected."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, python-format
+msgid "Not part of the selected tournament (%d rounds)."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, python-format
+msgid "Round not finished (last finished: %d)."
+msgstr ""
+
+#: src/web/controllers/admin/event_admin_controller.py
 msgid "Personal"
 msgstr ""
 
@@ -1623,12 +1714,6 @@ msgstr ""
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 msgid "Tournament [{tournament_id}] not found."
-msgstr ""
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/rotator_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-msgid "A positive integer is expected."
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py
@@ -2627,6 +2712,22 @@ msgstr ""
 
 #: src/web/templates/admin/event/print_modal.html
 msgid "Options"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Document:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The type of document to print."
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "Round:"
+msgstr ""
+
+#: src/web/templates/admin/event/print_modal.html
+msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
 #: src/web/templates/admin/event/print_modal.html
@@ -3739,46 +3840,6 @@ msgstr ""
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
-#: src/web/templates/admin/players/print_view.html
-msgid "List of players"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nb."
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Name"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapid"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat."
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
-msgstr "Fed."
-
-#: src/web/templates/admin/players/print_view.html
-msgid "League *** LEAGUE FOR PRINT VIEW"
-msgstr "League"
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
 msgid "Players"
@@ -3927,6 +3988,55 @@ msgstr ""
 #: src/web/templates/admin/players/tab.html
 msgid "No players."
 msgstr ""
+
+#: src/web/templates/admin/print/players.html
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
+
+#: src/web/templates/admin/print/players.html
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+#: src/web/templates/admin/print/players.html
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+#: src/web/templates/admin/print/players.html
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+#: src/web/templates/admin/print/players.html
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+#: src/web/templates/admin/print/players.html
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+#: src/web/templates/admin/print/players.html
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat."
+
+#: src/web/templates/admin/print/players.html
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr "Fed."
+
+#: src/web/templates/admin/print/players.html
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr "League"
+
+#: src/web/templates/admin/print/players.html
+#, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+#: src/web/templates/admin/print/players.html
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
+
+#: src/web/templates/admin/print/players.html
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
 
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/user/event/rotator_card.html
@@ -4620,6 +4730,10 @@ msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Export to TRF(bx) (pairing)"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+msgid "Print players, results, etc."
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html

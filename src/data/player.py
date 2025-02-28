@@ -237,6 +237,8 @@ class Player(TournamentPlayer):
         self.board_number: int | None = None
         self.color: BoardColor | None = None
         self.illegal_moves: int = 0
+        self._tie_break_values: list[int | float] | None = None
+        self._ranking_pairings: list[str] | None = None
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
@@ -457,6 +459,47 @@ class Player(TournamentPlayer):
         self.time_control_modified = modified
 
     @property
+    def tie_break_values_display(self) -> list[str]:
+        if not self._tie_break_values:
+            return []
+        display_values = []
+        for tie_break_value in self._tie_break_values:
+            if isinstance(tie_break_value, int):
+                value = float(tie_break_value)
+            elif isinstance(tie_break_value, float):
+                value = tie_break_value
+            elif isinstance(tie_break_value, tuple):
+                value = tie_break_value[0]
+            else:
+                raise ValueError(
+                    f'Unrecognized tie-break value [{tie_break_value}]'
+                )
+
+            display_values.append(self._points_str(value))
+        return display_values
+
+    def set_tie_break_values(
+        self, tournament: 'Tournament', max_round: int | None = None
+    ):
+        self._tie_break_values = [
+            tie_break.player_value(self, tournament, max_round)
+            for tie_break in tournament.tie_breaks
+        ]
+
+    @property
+    def ranking_pairings(self) -> list[str]:
+        return self._ranking_pairings
+
+    def set_ranking_pairings(
+        self, max_round: int, player_id_to_rank: Callable[[int], int]
+    ):
+        self._ranking_pairings = [
+            self.pairings[round_].to_rankings(player_id_to_rank)
+            if round_ in self.pairings else ' '
+            for round_ in range(1, max_round + 1)
+        ]
+
+    @property
     def starting_rank_sort_key(self) -> tuple[int, int, str, str]:
         return -self.rating, -self.title, self.last_name, self.first_name
 
@@ -464,17 +507,12 @@ class Player(TournamentPlayer):
     def board_number_sort_key(self) -> tuple[float, int, int, str, str]:
         return -self.vpoints, -self.rating, -self.title, self.last_name, self.first_name
 
-    def rank_sort_key(
-            self, tournament: 'Tournament', max_round: int | None = None
-    ) -> tuple:
-        points = (
-            self.total_points() if max_round is None
-            else self.points_after(max_round)
+    @property
+    def rank_sort_key(self) -> tuple:
+        tie_breaks = tuple(
+            (-tie_break for tie_break in self._tie_break_values)
         )
-        rank = (-points,)
-        for tie_break in tournament.tie_breaks:
-            rank += (-tie_break.player_value(self, tournament, max_round),)
-        return rank + self.starting_rank_sort_key
+        return (-self.points,) + tie_breaks + self.starting_rank_sort_key
 
     def __le__(self, other: 'Player') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
