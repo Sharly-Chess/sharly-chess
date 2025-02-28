@@ -754,12 +754,12 @@ class TournamentAdminController(AbstractEventAdminController):
             if document else PrintDocument.PLAYER_LIST
         )
         if print_document.is_ranking:
-            admin_tournament.set_for_ranking(round)
             round = (
                 round or
                 admin_tournament.max_ranking_round or
                 admin_tournament.rounds
             )
+            admin_tournament.set_for_ranking(round)
             ordered_players = admin_tournament.players_by_rank.values()
         else:
             ordered_players = admin_tournament.players_by_name_with_unpaired

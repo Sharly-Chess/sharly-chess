@@ -958,6 +958,7 @@ class Tournament:
                 f'Impossible to generate rankings for round [{max_round}] '
                 f'(last finished round: [{self.max_ranking_round}])'
             )
+        max_round = max_round or self.max_ranking_round or self.rounds
         # Estimate pairings to ensure we have a defined rank for everyone
         self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
         for player in self.players_by_id.values():
@@ -967,9 +968,7 @@ class Tournament:
             )
             player.set_tie_break_values(self, max_round)
         for player in self.players_by_rank.values():
-            player.set_ranking_pairings(
-                max_round or self.rounds, self._player_id_to_rank
-            )
+            player.set_ranking_pairings(max_round, self._player_id_to_rank)
 
     def _build_boards(self):
         if not self._current_round:
