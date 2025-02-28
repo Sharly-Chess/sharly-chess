@@ -82,7 +82,7 @@ class Family:
             return self.menu_text
         single_tournament: bool = len(self.event.tournaments_by_id) == 1
         text: str
-        if self.type == ScreenType.Players or not self.tournament.current_round:
+        if self.type == ScreenType.PLAYERS or not self.tournament.current_round:
             text = Screen.default_players_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
@@ -170,7 +170,7 @@ class Family:
             return False
         players_instead_of_boards: bool
         match ScreenType(self.type):
-            case ScreenType.Boards | ScreenType.Input:
+            case ScreenType.BOARDS | ScreenType.INPUT:
                 if self.tournament.current_round:
                     players_instead_of_boards = False
                     total_items_number: int = len(self.tournament.boards)
@@ -202,7 +202,7 @@ class Family:
                     )
                     self._calculated_first = 1
                     self._calculated_last = cut_items_number
-            case ScreenType.Players:
+            case ScreenType.PLAYERS:
                 players_instead_of_boards = False
                 if self.tournament.current_round:
                     if self.players_show_unpaired:
@@ -299,7 +299,7 @@ class Family:
 
     @property
     def numbers_str(self):
-        if self.type in (ScreenType.Boards, ScreenType.Input):
+        if self.type in (ScreenType.BOARDS, ScreenType.INPUT):
             match (self.first, self.last, self.number, self.parts):
                 case (None, None, None, None):
                     return _('all the boards')

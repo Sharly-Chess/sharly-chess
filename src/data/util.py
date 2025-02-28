@@ -1185,24 +1185,24 @@ class BoardColor(StrEnum):
 
 
 class ScreenType(StrEnum):
-    Boards = 'boards'
-    Input = 'input'
-    Players = 'players'
-    Results = 'results'
-    Image = 'image'
+    BOARDS = 'boards'
+    INPUT = 'input'
+    PLAYERS = 'players'
+    RESULTS = 'results'
+    IMAGE = 'image'
 
     @property
     def name(self) -> str:
         match self:
-            case ScreenType.Boards:
+            case ScreenType.BOARDS:
                 return _('Pairings by board')
-            case ScreenType.Input:
+            case ScreenType.INPUT:
                 return _('Results entry')
-            case ScreenType.Players:
+            case ScreenType.PLAYERS:
                 return _('Parings by player')
-            case ScreenType.Results:
+            case ScreenType.RESULTS:
                 return _('Last results')
-            case ScreenType.Image:
+            case ScreenType.IMAGE:
                 return _('Image')
             case _:
                 raise ValueError(f'Invalid screen type: {self}')
@@ -1213,15 +1213,15 @@ class ScreenType(StrEnum):
     @property
     def icon_str(self) -> str:
         match self:
-            case self.Boards:
+            case self.BOARDS:
                 return 'bi-card-list'
-            case self.Input:
+            case self.INPUT:
                 return 'bi-pencil'
-            case self.Players:
+            case self.PLAYERS:
                 return 'bi-people'
-            case self.Results:
+            case self.RESULTS:
                 return 'bi-trophy'
-            case self.Image:
+            case self.IMAGE:
                 return 'bi-image'
             case _:
                 raise ValueError(f'Invalid screen type: {self}')

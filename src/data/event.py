@@ -461,23 +461,23 @@ class Event:
 
     @property
     def input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Input]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
 
     @property
     def boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Boards]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
 
     @property
     def players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Players]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
 
     @property
     def results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Results]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
 
     @property
     def image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Image]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
 
     @cached_property
     def public_screens_sorted_by_uniq_id(self) -> list[Screen]:
@@ -496,23 +496,23 @@ class Event:
 
     @property
     def public_input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Input]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
 
     @property
     def public_boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Boards]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
 
     @property
     def public_players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Players]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
 
     @property
     def public_results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Results]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
 
     @property
     def public_image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Image]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
 
     @cached_property
     def rotators_sorted_by_uniq_id(self) -> list[Rotator]:

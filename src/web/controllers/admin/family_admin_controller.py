@@ -363,11 +363,11 @@ class FamilyAdminController(AbstractEventAdminController):
                             first = web_context.admin_family.stored_family.first
                             last = web_context.admin_family.stored_family.last
                             match web_context.admin_family.type:
-                                case ScreenType.Boards:
+                                case ScreenType.BOARDS:
                                     pass
-                                case ScreenType.Input:
+                                case ScreenType.INPUT:
                                     input_exit_button = web_context.admin_family.stored_family.input_exit_button
-                                case ScreenType.Players:
+                                case ScreenType.PLAYERS:
                                     players_show_unpaired = web_context.admin_family.stored_family.players_show_unpaired
                                 case _:
                                     raise ValueError(
@@ -388,11 +388,11 @@ class FamilyAdminController(AbstractEventAdminController):
                                 web_context.admin_event.tournaments_by_id.keys()
                             )[0]
                             match family_type:
-                                case ScreenType.Boards:
+                                case ScreenType.BOARDS:
                                     menu = '@boards'
-                                case ScreenType.Input:
+                                case ScreenType.INPUT:
                                     menu = '@input'
-                                case ScreenType.Players:
+                                case ScreenType.PLAYERS:
                                     menu = '@players'
                                 case _:
                                     raise ValueError(f'family_type={family_type}')

@@ -170,7 +170,7 @@ class ScreenAdminController(AbstractEventAdminController):
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                if type_ != ScreenType.Image:
+                if type_ != ScreenType.IMAGE:
                     menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
                     menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                     menu = WebContext.form_data_to_str(data, 'menu', '')
@@ -187,17 +187,17 @@ class ScreenAdminController(AbstractEventAdminController):
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 match type_:
-                    case ScreenType.Boards:
+                    case ScreenType.BOARDS:
                         pass
-                    case ScreenType.Input:
+                    case ScreenType.INPUT:
                         input_exit_button = WebContext.form_data_to_bool(
                             data, 'input_exit_button'
                         )
-                    case ScreenType.Players:
+                    case ScreenType.PLAYERS:
                         players_show_unpaired = WebContext.form_data_to_bool(
                             data, 'players_show_unpaired'
                         )
-                    case ScreenType.Results:
+                    case ScreenType.RESULTS:
                         field = 'results_limit'
                         try:
                             results_limit = WebContext.form_data_to_int(data, field)
@@ -213,7 +213,7 @@ class ScreenAdminController(AbstractEventAdminController):
                             field = f'results_tournament_{tournament_id}'
                             if WebContext.form_data_to_bool(data, field):
                                 results_tournament_ids.append(tournament_id)
-                    case ScreenType.Image:
+                    case ScreenType.IMAGE:
                         field = 'background_image'
                         background_image = WebContext.form_data_to_str(data, field, '')
                         if not background_image:
@@ -337,7 +337,7 @@ class ScreenAdminController(AbstractEventAdminController):
             errors['first'] = error
             errors['last'] = error
         fixed_boards_str: str | None = None
-        if web_context.admin_screen.type in [ScreenType.Boards, ScreenType.Input]:
+        if web_context.admin_screen.type in [ScreenType.BOARDS, ScreenType.INPUT]:
             fixed_boards_str = WebContext.form_data_to_str(data, 'fixed_boards_str')
             if fixed_boards_str:
                 for fixed_board_str in list(
@@ -451,7 +451,7 @@ class ScreenAdminController(AbstractEventAdminController):
                         case 'update' | 'clone':
                             public = web_context.admin_screen.stored_screen.public
                             columns = web_context.admin_screen.stored_screen.columns
-                            if web_context.admin_screen.type != ScreenType.Image:
+                            if web_context.admin_screen.type != ScreenType.IMAGE:
                                 menu_link = (
                                     web_context.admin_screen.stored_screen.menu_link
                                 )
@@ -461,17 +461,17 @@ class ScreenAdminController(AbstractEventAdminController):
                                 menu = web_context.admin_screen.stored_screen.menu
                             timer_id = web_context.admin_screen.stored_screen.timer_id
                             match web_context.admin_screen.type:
-                                case ScreenType.Boards:
+                                case ScreenType.BOARDS:
                                     pass
-                                case ScreenType.Input:
+                                case ScreenType.INPUT:
                                     input_exit_button = web_context.admin_screen.stored_screen.input_exit_button
-                                case ScreenType.Players:
+                                case ScreenType.PLAYERS:
                                     players_show_unpaired = web_context.admin_screen.stored_screen.players_show_unpaired
-                                case ScreenType.Results:
+                                case ScreenType.RESULTS:
                                     results_limit = web_context.admin_screen.stored_screen.results_limit
                                     results_max_age = web_context.admin_screen.stored_screen.results_max_age
                                     results_tournament_ids = web_context.admin_screen.stored_screen.results_tournament_ids
-                                case ScreenType.Image:
+                                case ScreenType.IMAGE:
                                     background_image = web_context.admin_screen.stored_screen.background_image
                                     background_color = (
                                         web_context.admin_screen.background_color
@@ -489,16 +489,16 @@ class ScreenAdminController(AbstractEventAdminController):
                         case 'create':
                             public = True
                             message_default = True
-                            if screen_type != ScreenType.Image:
+                            if screen_type != ScreenType.IMAGE:
                                 menu_link = True
                             match screen_type:
-                                case ScreenType.Boards:
+                                case ScreenType.BOARDS:
                                     menu = '@boards'
-                                case ScreenType.Input:
+                                case ScreenType.INPUT:
                                     menu = '@input'
-                                case ScreenType.Players:
+                                case ScreenType.PLAYERS:
                                     menu = '@players'
-                                case ScreenType.Results | ScreenType.Image:
+                                case ScreenType.RESULTS | ScreenType.IMAGE:
                                     pass
                                 case _:
                                     raise ValueError(f'screen_type={screen_type}')
@@ -589,8 +589,8 @@ class ScreenAdminController(AbstractEventAdminController):
                             ),
                         }
                         if web_context.admin_screen.type in [
-                            ScreenType.Boards,
-                            ScreenType.Input,
+                            ScreenType.BOARDS,
+                            ScreenType.INPUT,
                         ]:
                             data['fixed_boards_str'] = WebContext.value_to_form_data(
                                 web_context.admin_screen_set.stored_screen_set.fixed_boards_str
@@ -705,9 +705,9 @@ class ScreenAdminController(AbstractEventAdminController):
                     init_set_tournament_id: int = stored_screen.init_set_tournament_id
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     if stored_screen.type in [
-                        ScreenType.Boards,
-                        ScreenType.Input,
-                        ScreenType.Players,
+                        ScreenType.BOARDS,
+                        ScreenType.INPUT,
+                        ScreenType.PLAYERS,
                     ]:
                         event_database.add_stored_screen_set(
                             stored_screen.id, init_set_tournament_id
@@ -722,9 +722,9 @@ class ScreenAdminController(AbstractEventAdminController):
                 case 'clone':
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     if stored_screen.type in [
-                        ScreenType.Boards,
-                        ScreenType.Input,
-                        ScreenType.Players,
+                        ScreenType.BOARDS,
+                        ScreenType.INPUT,
+                        ScreenType.PLAYERS,
                     ]:
                         for (
                             screen_set
