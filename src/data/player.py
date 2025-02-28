@@ -150,8 +150,12 @@ class TournamentPlayer:
         self.title = title
         self._estimation = estimation
         self.pairings = pairings
-        self.point_values = point_values
-    
+        self._point_values = point_values
+
+    @property
+    def point_values(self) -> dict[Result, float] | None:
+        return self._point_values
+
     def points_before(self, max_round: int) -> float:
         return sum(
             pairing.result.points(self.point_values)
@@ -244,7 +248,6 @@ class Player(TournamentPlayer):
         self.time_control_modified: bool | None = None
         self.tournament: Tournament | None = tournament
         self.errors: dict[str, str] = errors or {}
-        self.point_values = self.tournament.point_values
 
     @staticmethod
     def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
@@ -299,6 +302,10 @@ class Player(TournamentPlayer):
     @property
     def rating_type(self) -> PlayerRatingType:
         return self.rating_types[self.tournament.rating]
+
+    @property
+    def point_values(self) -> dict[Result, float] | None:
+        return self.tournament.point_values if self.tournament else None
 
     @cached_property
     def club_tuple(self) -> ClubTuple:
