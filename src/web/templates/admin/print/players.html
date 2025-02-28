@@ -9,12 +9,13 @@
             .title {font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: bold; color: #000000; margin: 16px 0 12px; border: thin none; background-color: #FFFFFF;}
             .title_big {font-family: Arial, Helvetica, sans-serif; font-size: 24pt; font-weight: bold;}
             .title_medium {font-family: Arial, Helvetica, sans-serif; font-size: 16pt; font-weight: bold;}
-            .left {border-style: solid; border-color: black; border-width:0px; text-align:left;}
-            .right {border-style: solid; border-color: black; border-width:0px; text-align:right;}
-            .center {border-style: solid; border-color: black; border-width:0px; text-align:center;}
-            .border_l {border-style: solid; border-color: black; border-width:1px; text-align:left;}
-            .border_r {border-style: solid; border-color: black; border-width:1px; text-align:right;}
-            .border_c {border-style: solid; border-color: black; border-width:1px; text-align:center;}
+            .small {font-size: 10px;}
+            .left {white-space: nowrap; border-style: solid; border-color: black; border-width:0px; text-align:left;}
+            .right {white-space: nowrap; border-style: solid; border-color: black; border-width:0px; text-align:right;}
+            .center {white-space: nowrap; border-style: solid; border-color: black; border-width:0px; text-align:center;}
+            .border_l {white-space: nowrap; border-style: solid; border-color: black; border-width:1px; text-align:left;}
+            .border_r {white-space: nowrap; border-style: solid; border-color: black; border-width:1px; text-align:right;}
+            .border_c {white-space: nowrap; border-style: solid; border-color: black; border-width:1px; text-align:center;}
         </style>
     </head>
     <body topmargin="4" leftmargin="4">
@@ -22,7 +23,9 @@
             <div class="title_big">{{ tournament.name }}</div>
             <div class="title_medium">{{ title }}</div>
             
-            {% set n = [1] %}     
+            {% set n = [1] %}
+            {% set extra_classes = "" %}
+            {% if tournament_summary %}{% set extra_classes = "small" %}{% endif %}
             {% if players %}
                 {% for splitBy in players.keys() %}
                     <div class="title">
@@ -32,16 +35,16 @@
                     <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
                         <thead>
                             <tr class="column-heading">
-                                <th class="right">
+                                <th class="right" {{ extra_classes}}>
                                     {% if rank_players %}
                                         {{ _('Rk. *** RANK FOR PRINT VIEW') }}
                                     {% else %}
                                         {{ _('Nb. *** NB FOR PRINT VIEW') }}
                                     {% endif %}
                                 </th>
-                                <th class="right">&nbsp;</th>
-                                <th class="left">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
-                                <th class="center">
+                                <th class="right {{ extra_classes}}">&nbsp;</th>
+                                <th class="left {{ extra_classes}}">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">
                                     {% if tournament.rating == 1 %}
                                         {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
                                     {% elif tournament.rating == 2 %}
@@ -50,18 +53,18 @@
                                         {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
                                     {% endif %}
                                 </th>
-                                <th class="center">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
-                                <th class="center">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
-                                <th class="center">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
                                 {% if tournament_summary %}
                                     {% for round in range(1, max_round + 1) %}
                                         <th class="right">{{ _('R %(round)d *** ROUND FOR PRINT VIEW', round=round) }}</th>
                                     {% endfor %}
                                 {% else %}
-                                    <th class="left">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                                    <th class="left {{ extra_classes}}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
                                 {% endif %}
                                 {% if rank_players %}
-                                    <th class="right">
+                                    <th class="right {{ extra_classes}}">
                                         <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
                                     </th>
                                     {% for tie_break in admin_tournament.tie_breaks %}
@@ -73,24 +76,24 @@
                         <tbody>
                             {% for player in players[splitBy] %}
                                 <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
-                                    <td class="right">{{ n|length }}</td>
-                                    <td class="right">{{ player.title.short_name }}</td>
-                                    <td class="left">{{ player.last_name }} {{ player.first_name }}</td>
-                                    <td class="right">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
-                                    <td class="center">{{ player.category.short_name }}</td>
-                                    <td class="center">{{ player.federation }}</td>
-                                    <td class="center">{{ player.league }}</td>
+                                    <td class="right {{ extra_classes}}">{{ n|length }}</td>
+                                    <td class="right {{ extra_classes}}">{{ player.title.short_name }}</td>
+                                    <td class="left {{ extra_classes}}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
+                                    <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+                                    <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
+                                    <td class="center {{ extra_classes}}">{{ player.federation }}</td>
+                                    <td class="center {{ extra_classes}}">{{ player.league }}</td>
                                     {% if tournament_summary %}
                                         {% for pairing in player.ranking_pairings %}
-                                            <td class="right">{{ pairing }}</td>
+                                            <td class="right {{ extra_classes}}">{{ pairing }}</td>
                                         {% endfor %}
                                     {% else %}
-                                        <td class="left">{{ player.club }}</td>
+                                        <td class="left {{ extra_classes}}">{{ player.club }}</td>
                                     {% endif %}
                                     {% if rank_players %}
-                                        <td class="right"><strong>{{ player.points_str }}</strong></td>
+                                        <td class="right {{ extra_classes}}"><strong>{{ player.points_str }}</strong></td>
                                         {% for tie_break in player.tie_break_values_display %}
-                                            <td class="center">{{ tie_break }}</td>
+                                            <td class="center {{ extra_classes}}">{{ tie_break }}</td>
                                         {% endfor %}
                                     {% endif %}
                                 </tr>
