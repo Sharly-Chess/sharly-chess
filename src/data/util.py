@@ -2,6 +2,7 @@
 PlayerSex, TournamentPairing, TournamentRating"""
 
 from datetime import datetime
+from decimal import Decimal
 from enum import Enum, StrEnum, IntEnum, auto
 from itertools import islice
 from logging import Logger
@@ -189,6 +190,39 @@ class Result(IntEnum):
             case _:
                 raise ValueError(f'{self=}')
 
+    def points(self, values: dict[Self, float] | None = None) -> float:
+        """
+        The value in points, according to rules defined in *values*.
+        If a result instance is not included in *values*, the closest result's
+        value will be used (e.g. `Result.PAIRING_ALLOCATED_BYE` will default to `Result.GAIN`'s value)
+        If the closest result's value is not given, will default to the default
+        value, as defined by FIDE rules (1-0.5-0)
+        """
+        if not isinstance(values, dict):
+            return self.point_value
+        value: float | None = values.get(self, None)
+        if value is not None:
+            return value
+        match self:
+            case Result.DOUBLE_FORFEIT:
+                value = (
+                    value or values.get(Result.FORFEIT_LOSS)
+                    or values.get(Result.LOSS)
+                )
+            case Result.FORFEIT_LOSS | Result.UNRATED_LOSS | Result.NO_RESULT | Result.ZERO_POINT_BYE:
+                value = value or values.get(Result.LOSS)
+            case Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
+                value = value or values.get(Result.DRAW)
+            case (
+                Result.FULL_POINT_BYE
+                | Result.FORFEIT_GAIN
+                | Result.UNRATED_GAIN
+                | Result.PAIRING_ALLOCATED_BYE
+            ):
+                value = value or values.get(Result.GAIN)
+        return value or self.point_value
+
+
     @property
     def opposite_result(self) -> Self:
         """Given a `Result` instance (white result), returns the result of the
@@ -271,6 +305,36 @@ class Result(IntEnum):
                 return ' '
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+    @classmethod
+    def from_trf(cls, value: str):
+        match value.upper():
+            case '' | 'Z':
+                return cls.ZERO_POINT_BYE
+            case '1':
+                return cls.GAIN
+            case '=':
+                return cls.DRAW
+            case '0':
+                return cls.LOSS
+            case 'W':
+                return cls.UNRATED_GAIN
+            case 'D':
+                return cls.UNRATED_DRAW
+            case 'L':
+                return cls.UNRATED_LOSS
+            case '+':
+                return cls.FORFEIT_GAIN
+            case '-':
+                return cls.FORFEIT_LOSS
+            case 'U':
+                return cls.PAIRING_ALLOCATED_BYE
+            case 'F':
+                return cls.FULL_POINT_BYE
+            case 'H':
+                return cls.HALF_POINT_BYE
+            case _:
+                raise ValueError(f'Unknown value: {value}')
 
     @property
     def bbp_field(self) -> str:
@@ -490,7 +554,7 @@ class TournamentPairing(IntEnum):
                 return 'Berger'
             case _:
                 raise ValueError(f'Unknown pairing type: {self}')
-    
+
     @property
     def swiss(self):
         return self in (
@@ -1191,7 +1255,7 @@ class TrfType(StrEnum):
                 raise ValueError(f'Unknown value: {self}')
 
 
-def round_fide(num: float):
+def round_fide(num: float | Decimal):
     lowest_int = int(num)
     if num - lowest_int >= 0.5:
         return lowest_int + 1
