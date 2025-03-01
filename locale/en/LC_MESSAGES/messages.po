@@ -849,46 +849,6 @@ msgid "Sonnenborn-Berger"
 msgstr ""
 
 #: src/data/tie_break.py
-msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-msgstr "Bu."
-
-#: src/data/tie_break.py
-msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-#: src/data/tie_break.py
-msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-#: src/data/tie_break.py
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "PS"
-
-#: src/data/tie_break.py
-msgid "Perf *** ACRONYM FOR PERFORMANCE"
-msgstr "Perf"
-
-#: src/data/tie_break.py
-msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "Sbh"
-
-#: src/data/tie_break.py
-msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NW"
-
-#: src/data/tie_break.py
-msgid "Ka. *** ACRONYM FOR KASHDAN"
-msgstr "Ka."
-
-#: src/data/tie_break.py
-msgid "Ko. *** ACRONYM FOR KOYA"
-msgstr "Ko."
-
-#: src/data/tie_break.py
-msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-msgstr "SB"
-
-#: src/data/tie_break.py
 msgid "Cut"
 msgstr ""
 
@@ -1252,14 +1212,6 @@ msgstr "WGM"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
-#: src/data/util.py
-msgid "W *** WHITE COLOR FOR RANKINGS"
-msgstr "W"
-
-#: src/data/util.py
-msgid "B *** BLACK COLOR FOR RANKINGS"
-msgstr "B"
-
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
 msgid "White"
@@ -1306,29 +1258,8 @@ msgid "League"
 msgstr ""
 
 #: src/data/util.py src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/players/history_modal.html
 msgid "Federation"
-msgstr ""
-
-#: src/data/util.py
-msgid "List of players"
-msgstr ""
-
-#: src/data/util.py
-#, python-format
-msgid "Rankings after round #%d"
-msgstr ""
-
-#: src/data/util.py
-#, python-format
-msgid "Tournament summary after round #%d"
-msgstr ""
-
-#: src/data/util.py
-msgid "Rankings"
-msgstr ""
-
-#: src/data/util.py
-msgid "Tournament summary"
 msgstr ""
 
 #: src/database/sqlite/ffe_database.py
@@ -1668,27 +1599,6 @@ msgid "Please choose the tournament."
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
-msgid "Please choose the document."
-msgstr ""
-
-#: src/web/controllers/admin/event_admin_controller.py
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/rotator_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-msgid "A positive integer is expected."
-msgstr ""
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, python-format
-msgid "Not part of the selected tournament (%d rounds)."
-msgstr ""
-
-#: src/web/controllers/admin/event_admin_controller.py
-#, python-format
-msgid "Round not finished (last finished: %d)."
-msgstr ""
-
-#: src/web/controllers/admin/event_admin_controller.py
 msgid "Personal"
 msgstr ""
 
@@ -1714,6 +1624,12 @@ msgstr ""
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 msgid "Tournament [{tournament_id}] not found."
+msgstr ""
+
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+msgid "A positive integer is expected."
 msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py
@@ -2677,6 +2593,7 @@ msgstr ""
 #: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
+#: src/web/templates/admin/players/history_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2712,22 +2629,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/print_modal.html
 msgid "Options"
-msgstr ""
-
-#: src/web/templates/admin/event/print_modal.html
-msgid "Document:"
-msgstr ""
-
-#: src/web/templates/admin/event/print_modal.html
-msgid "The type of document to print."
-msgstr ""
-
-#: src/web/templates/admin/event/print_modal.html
-msgid "Round:"
-msgstr ""
-
-#: src/web/templates/admin/event/print_modal.html
-msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
 #: src/web/templates/admin/event/print_modal.html
@@ -3622,6 +3523,102 @@ msgstr "Tournament"
 msgid "Filter the tournaments."
 msgstr ""
 
+#: src/web/templates/admin/players/history_modal.html
+#: src/web/templates/admin/players/tab.html
+msgid "History"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Round"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Score"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Result"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Color"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Opponent"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Rating"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Round skipped"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Playing"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Paired allocated bye"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Loss"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Draw"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Gain"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Half-point bye"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Full-point bye"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Forfeit loss"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Forfeit gain"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Skip round"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Full-point byes are deprecated."
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Bye not allowed"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+#, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+#, python-format
+msgid "Last rounds with no byes: %(last_rounds_no_byes)d"
+msgstr ""
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Save"
+msgstr ""
+
 #: src/web/templates/admin/players/player_modal.html
 msgid "Player creation"
 msgstr ""
@@ -3918,6 +3915,10 @@ msgid "Edit the player's properties."
 msgstr ""
 
 #: src/web/templates/admin/players/tab.html
+msgid "Edit the player's history."
+msgstr ""
+
+#: src/web/templates/admin/players/tab.html
 msgid "Remove the player from the event."
 msgstr ""
 
@@ -3990,8 +3991,8 @@ msgid "No players."
 msgstr ""
 
 #: src/web/templates/admin/print/players.html
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Rk."
+msgid "List of players"
+msgstr ""
 
 #: src/web/templates/admin/print/players.html
 msgid "Nb. *** NB FOR PRINT VIEW"
@@ -4010,7 +4011,7 @@ msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapid"
 
 #: src/web/templates/admin/print/players.html
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
 #: src/web/templates/admin/print/players.html
@@ -4018,7 +4019,7 @@ msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat."
 
 #: src/web/templates/admin/print/players.html
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
 msgstr "Fed."
 
 #: src/web/templates/admin/print/players.html
@@ -4026,17 +4027,8 @@ msgid "League *** LEAGUE FOR PRINT VIEW"
 msgstr "League"
 
 #: src/web/templates/admin/print/players.html
-#, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
-msgstr "R %(round)d"
-
-#: src/web/templates/admin/print/players.html
 msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
-
-#: src/web/templates/admin/print/players.html
-msgid "Pts *** POINTS FOR PRINT VIEW"
-msgstr "Pts"
 
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/user/event/rotator_card.html
@@ -5144,10 +5136,6 @@ msgstr ""
 msgid "Rnd.Boa"
 msgstr ""
 
-#: src/web/templates/user/screen/results.html
-msgid "Score"
-msgstr ""
-
 #: src/web/templates/user/screen/boards/board_row_player_cell.html
 msgid "EXEMPT"
 msgstr ""
@@ -5210,5 +5198,8 @@ msgid "vs"
 msgstr ""
 
 #~ msgid "Screen families allow to group screens together."
+#~ msgstr ""
+
+#~ msgid "%(last_name)s %(first_name)s"
 #~ msgstr ""
 
