@@ -11,9 +11,8 @@ from database.sqlite.event_migration import EventMigrationManager
 if __name__ == '__main__':
     parser = ArgumentParser(
         description=(
-            'Command restoring the event database backups. '
-            'If there already exists an event database with the same id '
-            'as a restored event, the existing database is overwritten.'
+            'Command migrating one or more '
+            'event databases to a specific version.'
         )
     )
     parser.add_argument(
