@@ -211,7 +211,7 @@ class TournamentAdminController(AbstractEventAdminController):
                 )
                 if tie_break != PapiTieBreak.NONE:
                     if tie_break in papi_tie_breaks:
-                        errors[field] = _('Tie-break already at use.')
+                        errors[field] = _('Tie-break already in use.')
                     papi_tie_breaks.append(tie_break)
                     tie_breaks.append(
                         tie_break.to_tie_break(

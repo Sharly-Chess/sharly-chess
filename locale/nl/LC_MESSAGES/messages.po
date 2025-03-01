@@ -2626,7 +2626,7 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr "Het wachtwoord van het toernooi op de FSFE website is gemaakt van 10 hoofdletters."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
-msgid "Tie-break already at use."
+msgid "Tie-break already in use."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
