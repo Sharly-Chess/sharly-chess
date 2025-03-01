@@ -161,7 +161,7 @@ class PlayerAdminController(AbstractEventAdminController):
         else:
             last_name = last_name.upper()
         first_name: str | None = WebContext.form_data_to_str(
-            data, field := 'first_name'
+            data, 'first_name'
         )
         if first_name:
             first_name = string.capwords(first_name)
