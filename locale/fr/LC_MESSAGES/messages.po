@@ -1258,6 +1258,7 @@ msgid "League"
 msgstr "Ligue"
 
 #: src/data/util.py src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/players/history_modal.html
 msgid "Federation"
 msgstr "Fédération"
 
@@ -2592,6 +2593,7 @@ msgstr "Supprimer"
 #: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
+#: src/web/templates/admin/players/history_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -3521,6 +3523,102 @@ msgstr "Tournoi"
 msgid "Filter the tournaments."
 msgstr "Filtrer les tournois."
 
+#: src/web/templates/admin/players/history_modal.html
+#: src/web/templates/admin/players/tab.html
+msgid "History"
+msgstr "Historique"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Round"
+msgstr "Ronde"
+
+#: src/web/templates/admin/players/history_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Score"
+msgstr "Score"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Result"
+msgstr "Résultat"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Color"
+msgstr "Couleur"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Opponent"
+msgstr "Adversaire"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Rating"
+msgstr "Elo"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Round skipped"
+msgstr "Absent·e"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Playing"
+msgstr "En cours"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Paired allocated bye"
+msgstr "Exempt·e"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Loss"
+msgstr "Perte"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Draw"
+msgstr "Nulle"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Gain"
+msgstr "Gain"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Half-point bye"
+msgstr "Demi-point joker"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Full-point bye"
+msgstr "Point joker entier"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Forfeit loss"
+msgstr "Perte par forfait"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Forfeit gain"
+msgstr "Gain par forfait"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Skip round"
+msgstr "Absence"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Full-point byes are deprecated."
+msgstr "Les points joket entiers sont obsolètes."
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Bye not allowed"
+msgstr "points joker non autorisés"
+
+#: src/web/templates/admin/players/history_modal.html
+#, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr "Nombre maximum de jokers : %(max_byes)d"
+
+#: src/web/templates/admin/players/history_modal.html
+#, python-format
+msgid "Last rounds with no byes: %(last_rounds_no_byes)d"
+msgstr "Dernières rondes sans joker : %(last_rounds_no_byes)d"
+
+#: src/web/templates/admin/players/history_modal.html
+msgid "Save"
+msgstr "Enregistrer"
+
 #: src/web/templates/admin/players/player_modal.html
 msgid "Player creation"
 msgstr "Création d'un·e joueur·euse"
@@ -3815,6 +3913,10 @@ msgstr "Payé"
 #: src/web/templates/admin/players/tab.html
 msgid "Edit the player's properties."
 msgstr "Éditer les propriétés du·de la joueur·euse."
+
+#: src/web/templates/admin/players/tab.html
+msgid "Edit the player's history."
+msgstr "Modifier l'historique du·de la joueur·euse."
 
 #: src/web/templates/admin/players/tab.html
 msgid "Remove the player from the event."
@@ -5033,10 +5135,6 @@ msgstr "Image :"
 #: src/web/templates/user/screen/results.html
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
-
-#: src/web/templates/user/screen/results.html
-msgid "Score"
-msgstr "Score"
 
 #: src/web/templates/user/screen/boards/board_row_player_cell.html
 msgid "EXEMPT"

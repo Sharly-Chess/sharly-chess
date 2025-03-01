@@ -998,132 +998,170 @@ msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Τουρνουά {tournament_uniq_id} ({numbers_str})"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "None"
-msgstr ""
+msgstr "Καμία"
 
+# Error: translation [ΜπούχχολζCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Buchholz]
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Buchholz"
 msgstr ""
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Buchholz cut bottom"
-msgstr ""
+msgstr "Buchholz κομμένο κάτω μέρος"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Median Buchholz"
-msgstr ""
+msgstr "Μέσος όρος Buchholz"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Progressive scores"
-msgstr ""
+msgstr "Προοδευτική βαθμολογία"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Performance"
-msgstr ""
+msgstr "Επιδόσεις"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Sum of Buchholz"
-msgstr ""
+msgstr "Σύνολο Buchholz"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Number of wins"
-msgstr ""
+msgstr "Αριθμός κερδών"
 
+# Error: translation [ΚασντάνCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Kashdan]
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Kashdan"
 msgstr ""
 
+# Error: translation [ΚόγιαCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Koya]
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Koya"
 msgstr ""
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Sonnenborn-Berger"
-msgstr ""
+msgstr "Sonnenborn-Berger"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Cut"
-msgstr ""
+msgstr "Κόψιμο"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Cut top"
-msgstr ""
+msgstr "Κόψτε το πάνω μέρος"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Cut Bottom"
-msgstr ""
+msgstr "Κόψτε το κάτω μέρος"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Played modifier"
-msgstr ""
+msgstr "Αναπαραγωγή τροποποιητή"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Papi legacy"
-msgstr ""
+msgstr "Κληρονομιά του μπαμπά"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Fore modifier"
-msgstr ""
+msgstr "Προσάρτημα τροποποιητή"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Limit"
-msgstr ""
+msgstr "Όριο"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Exclude players"
-msgstr ""
+msgstr "Αποκλείστε τους παίκτες"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Number of games won"
-msgstr ""
+msgstr "Αριθμός παιχνιδιών που κέρδισε"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Games played with black"
-msgstr ""
+msgstr "Παιχνίδια που παίζονται με το μαύρο"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Games won with black"
-msgstr ""
+msgstr "Παιχνίδια κέρδισε με το μαύρο"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Rounds one Elected to Play"
-msgstr ""
+msgstr "Rounds one Elected to Play"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Average of opponents Buchholz"
-msgstr ""
+msgstr "Μέσος όρος αντιπάλων Buchholz"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Fore Buchholz"
-msgstr ""
+msgstr "Fore Buchholz"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Sonneborn-Berger"
-msgstr ""
+msgstr "Σόνμπορν- ΜπέργκερCity name (optional, probably does not need a translation)"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Average rating of opponents"
-msgstr ""
+msgstr "Μέση βαθμολογία των αντιπάλων"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Tournament performance rating"
-msgstr ""
+msgstr "Αξιολόγηση απόδοσης τουρνουά"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Average performance rating of opponents"
-msgstr ""
+msgstr "Μέση βαθμολογία απόδοσης των αντιπάλων"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Perfect tournament performance"
-msgstr ""
+msgstr "Τέλεια απόδοση τουρνουά"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Average perfect performance of opponents"
-msgstr ""
+msgstr "Μέση τέλεια απόδοση των αντιπάλων"
 
 #: src/data/tie_break.py
+#, ai_translation
 msgid "Direct encounter"
-msgstr ""
+msgstr "Απευθείας συνάντηση"
 
 #: src/data/timer.py
 #, ai_translation
@@ -1510,22 +1548,29 @@ msgid "Parings by player"
 msgstr "Αποστολές από τον παίκτη"
 
 #: src/data/util.py
+#, ai_translation
 msgid "No split"
-msgstr ""
+msgstr "Δεν χωρίζονται"
 
 #: src/data/util.py
+#, ai_translation
 msgid "Category"
-msgstr ""
+msgstr "Κατηγορία"
 
+# Error: translation [ΚλαμπCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Club]
 #: src/data/util.py
+#, ai_translation
 msgid "Club"
 msgstr ""
 
 #: src/data/util.py
+#, ai_translation
 msgid "League"
-msgstr ""
+msgstr "Πρωτάθλημα"
 
 #: src/data/util.py src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/players/history_modal.html
 #, ai_translation
 msgid "Federation"
 msgstr "Ομοσπονδία"
@@ -1570,6 +1615,11 @@ msgstr "Αδύνατη η αποσύνδεση δεδομένων."
 msgid "Storing data..."
 msgstr "Αποθήκευση δεδομένων..."
 
+#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
+#, ai_translation
+msgid "{number} players written."
+msgstr "{number} παίκτες που γράφτηκαν."
+
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
@@ -1579,11 +1629,6 @@ msgstr "Σφάλμα ανάγνωσης της ακόλουθης σειράς (
 #, ai_translation
 msgid "Error while creating the database: {ex}."
 msgstr "Σφάλμα κατά τη δημιουργία της βάσης δεδομένων: {ex}."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "{number} players written."
-msgstr "{number} παίκτες που γράφτηκαν."
 
 #: src/database/sqlite/fide_database.py
 #, ai_translation
@@ -3153,6 +3198,7 @@ msgstr "Διαγραφή"
 #: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
+#: src/web/templates/admin/players/history_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -3166,8 +3212,9 @@ msgid "Cancel"
 msgstr "Ακύρωση"
 
 #: src/web/templates/admin/event/print_modal.html
+#, ai_translation
 msgid "Print"
-msgstr ""
+msgstr "Εκτύπωση"
 
 #: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/players/player_modal.html
@@ -3186,20 +3233,24 @@ msgid "Tournament:"
 msgstr "Τουρνουά:"
 
 #: src/web/templates/admin/event/print_modal.html
+#, ai_translation
 msgid "The tournament to print."
-msgstr ""
+msgstr "Το τουρνουά για εκτύπωση."
 
 #: src/web/templates/admin/event/print_modal.html
+#, ai_translation
 msgid "Options"
-msgstr ""
+msgstr "Επιλογές"
 
 #: src/web/templates/admin/event/print_modal.html
+#, ai_translation
 msgid "Split by:"
-msgstr ""
+msgstr "Διαχωρισμός με:"
 
 #: src/web/templates/admin/event/print_modal.html
+#, ai_translation
 msgid "How to split the results."
-msgstr ""
+msgstr "Πώς να μοιραστούμε τα αποτελέσματα."
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
@@ -4247,6 +4298,123 @@ msgstr "Tournament"
 msgid "Filter the tournaments."
 msgstr "Φίλτρο τα τουρνουά."
 
+#: src/web/templates/admin/players/history_modal.html
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "History"
+msgstr "Ιστορία"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Round"
+msgstr "Στρογγυλή"
+
+#: src/web/templates/admin/players/history_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Score"
+msgstr "Βαθμολογία"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Result"
+msgstr "Αποτέλεσμα"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Color"
+msgstr "Χρώμα"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Opponent"
+msgstr "Αντίπαλος"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Rating"
+msgstr "Βαθμολογία"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Round skipped"
+msgstr "Στρογγυλή αφαίρεση"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Playing"
+msgstr "Αναπαραγωγή"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Paired allocated bye"
+msgstr "Ζευγαρωμένος αποχαιρετισμός"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Loss"
+msgstr "Απώλεια"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Draw"
+msgstr "Σχεδίαση"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Gain"
+msgstr "Κέρδος"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Half-point bye"
+msgstr "Αντίο μισού σημείου"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Full-point bye"
+msgstr "Πλήρες σημείο αντίο"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Forfeit loss"
+msgstr "Αποφυγή απώλειας@ action: inmenu"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Forfeit gain"
+msgstr "Αποφυγή κέρδους"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Skip round"
+msgstr "Πήγαινε από 'κει."
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Full-point byes are deprecated."
+msgstr "Τα αποχαιρετιστήρια εξουθενώνονται."
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Bye not allowed"
+msgstr "Αντίο, δεν επιτρέπεται."
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr "Μέγιστος αριθμός byes: %(max_byes)d"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation, python-format
+msgid "Last rounds with no byes: %(last_rounds_no_byes)d"
+msgstr "Τελευταίοι γύροι χωρίς αντίο: %(last_rounds_no_byes)d"
+
+#: src/web/templates/admin/players/history_modal.html
+#, ai_translation
+msgid "Save"
+msgstr "Αποθήκευση"
+
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "Player creation"
@@ -4522,46 +4690,6 @@ msgstr "Σχόλιο:"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Κάθε σχόλιο για τον παίκτη (τα σχόλια είναι ορατά μόνο από τους arbiters)."
 
-#: src/web/templates/admin/players/print_view.html
-msgid "List of players"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "League *** LEAGUE FOR PRINT VIEW"
-msgstr ""
-
-#: src/web/templates/admin/players/print_view.html
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr ""
-
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -4660,6 +4788,11 @@ msgstr "Επεξεργασία των ιδιοτήτων του παίκτη."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
+msgid "Edit the player's history."
+msgstr "Επεξεργασία της ιστορίας του παίκτη."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
 msgid "Remove the player from the event."
 msgstr "Απομακρύνετε τον παίκτη από την εκδήλωση."
 
@@ -4737,6 +4870,56 @@ msgstr "Αλλάξτε το τουρνουά του παίκτη."
 #, ai_translation
 msgid "No players."
 msgstr "Όχι παίκτες."
+
+#: src/web/templates/admin/print/players.html
+#, ai_translation
+msgid "List of players"
+msgstr "Λίστα παικτών"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgstr "Fed"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr "League"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
 
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/user/event/rotator_card.html
@@ -5560,6 +5743,11 @@ msgstr "Εξαγωγή σε TRF (bx) (ζευγάρι)"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
+msgid "Print players, results, etc."
+msgstr "Εκτύπωση παικτών, αποτελεσμάτων, κλπ."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation
 msgid "Clone the tournament."
 msgstr "Κλώνε το τουρνουά."
 
@@ -5839,13 +6027,14 @@ msgid "The number of last rounds for which a player can get no byes (if not set,
 msgstr "Ο αριθμός των τελευταίων γύρους για τους οποίους ένας παίκτης δεν μπορεί να πάρει byes (εάν δεν είναι set, προεπιλογές σε %(default)d)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation
 msgid "Tie-breaks"
-msgstr ""
+msgstr "Σπασίματα γραβάτας"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
+#, ai_translation, python-format
 msgid "Tie-break #%(index)d:"
-msgstr ""
+msgstr "Tie-break #%(index)d:"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
@@ -6052,11 +6241,6 @@ msgstr "Εικόνα:"
 msgid "Rnd.Boa"
 msgstr "Rnd. Boa"
 
-#: src/web/templates/user/screen/results.html
-#, ai_translation
-msgid "Score"
-msgstr "Βαθμολογία"
-
 #: src/web/templates/user/screen/boards/board_row_player_cell.html
 #, ai_translation
 msgid "EXEMPT"
@@ -6148,4 +6332,7 @@ msgstr "vs"
 
 #~ msgid "Screen families allow to group screens together."
 #~ msgstr ""
+
+#~ msgid "%(last_name)s %(first_name)s"
+#~ msgstr "%(last_name)s %(first_name)s"
 

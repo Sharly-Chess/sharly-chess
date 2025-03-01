@@ -51,7 +51,7 @@
                             {% set bye_allowed = round <= admin_player.tournament.rounds - admin_player.tournament.last_rounds_no_byes %}
                             {% if pairing.opponent_id %}
                                 {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
-                                {% set opponent=_('%(last_name)s %(first_name)s', last_name=opponent_player.last_name, first_name=opponent_player.first_name) %}
+                                {% set opponent=opponent_player.last_name ~ ' ' ~ opponent_player.first_name %}
                                 {% set federation=opponent_player.federation %}
                                 {% set rating=opponent_player.rating %}
                                 {% set color=pairing.color %}
