@@ -195,6 +195,8 @@ def dummy_score(
                 return dummy + Result.DRAW.points(player.point_values)
             case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
                 return dummy + Result.GAIN.points(player.point_values)
+            case _:
+                raise ValueError(f'{pairing.result=}')
     elif dummy_type == 'SB':
         dummy = player.points_after(max_round)
         match pairing.result:
@@ -206,6 +208,7 @@ def dummy_score(
                 return dummy, Result.LOSS
             case _:
                 return dummy, pairing.result
+    raise ValueError(f'{dummy_type=}')
 
 
 def buchholz(
