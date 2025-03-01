@@ -3719,7 +3719,7 @@ msgstr "Nombre maximum de jokers : %(max_byes)d"
 
 #: src/web/templates/admin/players/history_modal.html
 #, python-format
-msgid "Last rounds with no byes: %(last_rounds_no_byes)d"
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr "Dernières rondes sans joker : %(last_rounds_no_byes)d"
 
 #: src/web/templates/admin/players/history_modal.html
