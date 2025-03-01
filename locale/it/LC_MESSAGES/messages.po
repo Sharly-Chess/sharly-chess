@@ -4409,7 +4409,7 @@ msgstr "Numero massimo di ciao: %(max_byes)d"
 
 #: src/web/templates/admin/players/history_modal.html
 #, ai_translation, python-format
-msgid "Last rounds with no byes: %(last_rounds_no_byes)d"
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr "Ultimi giri senza byes: %(last_rounds_no_byes)d"
 
 #: src/web/templates/admin/players/history_modal.html

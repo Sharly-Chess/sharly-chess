@@ -3612,7 +3612,7 @@ msgstr ""
 
 #: src/web/templates/admin/players/history_modal.html
 #, python-format
-msgid "Last rounds with no byes: %(last_rounds_no_byes)d"
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr ""
 
 #: src/web/templates/admin/players/history_modal.html
