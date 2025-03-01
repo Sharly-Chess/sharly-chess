@@ -1569,7 +1569,7 @@ class EventDatabase(SQLiteDatabase):
             ),
         )
 
-    def _set_tournament_last_result_update(self, tournament_id: int):
+    def set_tournament_last_result_update(self, tournament_id: int):
         self._execute(
             'UPDATE `tournament` SET `last_result_update` = ? WHERE `id` = ?',
             (
@@ -1756,7 +1756,7 @@ class EventDatabase(SQLiteDatabase):
     def add_stored_result(
         self, tournament_id: int, round_: int, board: Board, result: UtilResult
     ):
-        self._set_tournament_last_result_update(tournament_id)
+        self.set_tournament_last_result_update(tournament_id)
         self._execute(
             'INSERT INTO `result`('
             '    `tournament_id`, `round`, `board_id`, '
@@ -1775,7 +1775,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def delete_stored_result(self, tournament_id: int, round_: int, board_id: int):
-        self._set_tournament_last_result_update(tournament_id)
+        self.set_tournament_last_result_update(tournament_id)
         self._execute(
             'DELETE FROM `result` WHERE `tournament_id` = ? AND `round` = ? AND `board_id` = ?',
             (tournament_id, round_, board_id),

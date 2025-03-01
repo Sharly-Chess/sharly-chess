@@ -1,0 +1,248 @@
+<div id="player-modal" class="modal-dialog modal-dialog-centered admin-history-edit-modal d-block">
+    <form
+        hx-patch="{{ url_for('admin-player-history', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    {{ admin_player.last_name }}{% if admin_player.first_name %} {{ admin_player.first_name }}{% endif %}
+                </h2>
+            </div>
+            <div class="modal-body">
+                <h4>
+                    {{ _('History') }}
+                </h4>
+                <table
+                    id="history-table"
+                    class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+                >
+                    <thead
+                        id="history-table-header"
+                    >
+                        <tr>
+                            <th scope="col" class="text-nowrap text-center">
+                                {{ _('Round') }}
+                            </th>
+                            <th scope="col" class="text-nowrap text-center">
+                                {{ _('Score') }}
+                            </th>
+                            <th scope="col" class="text-nowrap text-start">
+                                {{ _('Result') }}
+                            </th>
+                            <th scope="col" class="text-nowrap text-start">
+                                {{ _('Color') }}
+                            </th>
+                            <th scope="col" class="text-nowrap text-start">
+                                {{ _('Opponent') }}
+                            </th>
+                            <th scope="col" class="text-nowrap text-center">
+                                {{ _('Federation') }}
+                            </th>
+                            <th scope="col" class="text-nowrap text-end">
+                                {{ _('Rating') }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        {% for round, pairing in admin_player.pairings.items() %}
+                            {% set editable = round > admin_player.tournament.current_round %}
+                            {% set bye_allowed = round <= admin_player.tournament.rounds - admin_player.tournament.last_rounds_no_byes %}
+                            {% if pairing.opponent_id %}
+                                {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
+                                {% set opponent=_('%(last_name)s %(first_name)s', last_name=opponent_player.last_name, first_name=opponent_player.first_name) %}
+                                {% set federation=opponent_player.federation %}
+                                {% set rating=opponent_player.rating %}
+                                {% set color=pairing.color %}
+                            {% else %}
+                                {% set opponent='' %}
+                                {% set federation='' %}
+                                {% set rating='' %}
+                                {% set color='' %}
+                            {% endif %}
+                            {% if editable or pairing.playing %}
+                                {% set score='' %}
+                            {% else %}
+                                {% set score=pairing.result.point_value %}
+                            {% endif %}
+                            {% set zero_point_bye = false %}
+                            {% set half_point_bye = false %}
+                            {% set full_point_bye = false %}
+                            {% if pairing.forfeit %}
+                                {% set text=_('Round skipped') %}
+                                {% set zero_point_bye = true %}
+                            {% elif pairing.not_paired %}
+                                {% set text = '' %}
+                            {% elif pairing.playing %}
+                                {% set text=_('Playing') %}
+                            {% elif pairing.exempt %}
+                                {% set text=_('Paired allocated bye') %}
+                            {% elif pairing.loss %}
+                                {% set text=_('Loss') %}
+                            {% elif pairing.draw %}
+                                {% set text=_('Draw') %}
+                            {% elif pairing.gain %}
+                                {% set text=_('Gain') %}
+                            {% elif pairing.half_point_bye %}
+                                {% set text=_('Half-point bye') %}
+                                {% set half_point_bye = true %}
+                            {% elif pairing.full_point_bye %}
+                                {% set text=_('Full-point bye') %}
+                                {% set full_point_bye = true %}
+                            {% elif pairing.forfeit_loss %}
+                                {% set text=_('Forfeit loss') %}
+                            {% elif pairing.double_forfeit %}
+                                {% set text=_('Forfeit loss') %}
+                            {% elif pairing.forfeit_gain %}
+                                {% set text=_('Forfeit gain') %}
+                            {% else %}
+                                {% set text='???' %}
+                            {% endif %}
+                            <tr id="round-{{ round }}">
+                                <th scope="row" class="text-nowrap text-center">
+                                    {{ round }}
+                                    {% if editable %}
+                                        <input
+                                                type="hidden"
+                                                name="edit_round_{{ round }}"
+                                                value="on"
+                                        />
+                                    {% endif %}
+                                </th>
+                                <td class="text-nowrap text-center">
+                                    {{ score }}
+                                </td>
+                                {% if editable %}
+                                    <td colspan="5" class="text-nowrap text-start">
+                                        <input
+                                            id="{{ 'zero-point-bye-' ~ round }}"
+                                            name="{{ 'zero_point_bye_' ~ round }}"
+                                            type="checkbox"
+                                            class="zero-point-bye"
+                                            onclick="
+                                                $('#half-point-bye-{{ round }}').prop('checked', false);
+                                                $('#full-point-bye-{{ round }}').prop('checked', false);
+                                                byes = $('.half-point-bye:checked').length + 2 * $('.full-point-bye:checked').length;
+                                                hpb_allowed = byes < {{ admin_player.tournament.max_byes }};
+                                                fpb_allowed = byes < {{ admin_player.tournament.max_byes - 1 }};
+                                                $('.half-point-bye:not(:checked)').prop('disabled', !hpb_allowed);
+                                                $('.full-point-bye:not(:checked)').prop('disabled', !fpb_allowed);
+                                            "
+                                            {% if data['zero_point_bye_' ~ round] == 'on' %}checked{% endif %}
+                                        /> {{ _('Skip round') }}
+                                        {% if bye_allowed %}
+                                            <input
+                                                id="{{ 'half-point-bye-' ~ round }}"
+                                                name="{{ 'half_point_bye_' ~ round }}"
+                                                type="checkbox"
+                                                class="half-point-bye ms-5"
+                                                onclick="
+                                                    $('#zero-point-bye-{{ round }}').prop('checked', false);
+                                                    $('#full-point-bye-{{ round }}').prop('checked', false);
+                                                    byes = $('.half-point-bye:checked').length + 2 * $('.full-point-bye:checked').length;
+                                                    hpb_allowed = byes < {{ admin_player.tournament.max_byes }};
+                                                    fpb_allowed = byes < {{ admin_player.tournament.max_byes - 1 }};
+                                                    $('.half-point-bye:not(:checked)').prop('disabled', !hpb_allowed);
+                                                    $('.full-point-bye:not(:checked)').prop('disabled', !fpb_allowed);
+                                                "
+                                                {% if data['half_point_bye_' ~ round] == 'on' %}checked{% endif %}
+                                            /> {{ _('Half-point bye') }}
+                                            <input
+                                                id="{{ 'full-point-bye-' ~ round }}"
+                                                name="{{ 'full_point_bye_' ~ round }}"
+                                                type="checkbox"
+                                                class="full-point-bye ms-5"
+                                                onclick="
+                                                    $('#zero-point-bye-{{ round }}').prop('checked', false);
+                                                    $('#half-point-bye-{{ round }}').prop('checked', false);
+                                                    byes = $('.half-point-bye:checked').length + 2 * $('.full-point-bye:checked').length;
+                                                    hpb_allowed = byes < {{ admin_player.tournament.max_byes }};
+                                                    fpb_allowed = byes < {{ admin_player.tournament.max_byes - 1 }};
+                                                    $('.half-point-bye:not(:checked)').prop('disabled', !hpb_allowed);
+                                                    $('.full-point-bye:not(:checked)').prop('disabled', !fpb_allowed);
+                                                "
+                                                {% if data['full_point_bye_' ~ round] == 'on' %}checked{% endif %}
+                                            />
+                                            <span
+                                                class="text-danger"
+                                                {{ macros.tooltip_attributes('warning', _('Full-point byes are deprecated.'), 'top') }}
+                                            >{{ _('Full-point bye') }}</span>
+                                        {% else %}
+                                            <span class="fst-italic ms-5">{{ _('Bye not allowed') }}</span>
+                                        {% endif %}
+                                    </td>
+                                {% else %}
+                                    <td class="text-nowrap text-start">
+                                        {{ text }}
+                                        {# add the checkboxes below for them to count in the total number of byes #}
+                                        {% if pairing.half_point_bye %}
+                                            <input
+                                                type="checkbox"
+                                                class="half-point-bye d-none"
+                                                checked
+                                            />
+                                        {% endif %}
+                                        {% if pairing.full_point_bye %}
+                                            <input
+                                                type="checkbox"
+                                                class="full-point-bye d-none"
+                                                checked
+                                            />
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-nowrap text-start">
+                                        {{ color }}
+                                    </td>
+                                    <td class="text-nowrap text-start">
+                                        {{ opponent }}
+                                    </td>
+                                    <td class="text-nowrap text-center">
+                                        {% if federation %}
+                                            <img
+                                                class="player-federation-flag pe-1"
+                                                src="{{ url_for('static', file_path='/images/federations/' ~ federation ~ '.svg') }}"
+                                            />
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-nowrap text-end">
+                                        {{ rating }}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="fst-italic">{{ _('Maximum number of byes: %(max_byes)d', max_byes=admin_player.tournament.max_byes) }}</div>
+                <div class="fst-italic">{{ _('Last rounds with no byes: %(last_rounds_no_byes)d', last_rounds_no_byes=admin_player.tournament.last_rounds_no_byes) }}</div>
+            </div>
+            <div class="modal-footer d-block">
+                <div class="row">
+                    <div class="col col-6 text-start">
+                        <button
+                            type="submit"
+                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                        >
+                            <i class="bi-floppy-fill pe-1"></i>
+                            {{ _('Save') }}
+                        </button>
+                    </div>
+                    <div class="col col-6 text-end">
+                        <button
+                            type="button"
+                            class="btn btn-secondary text-nowrap"
+                            data-bs-dismiss="modal"
+                            hx-get="{{ url_for('close-modal') }}"
+                            hx-trigger="click, keyup[key=='Escape'] from:body"
+                        >
+                            <i class="bi-x-circle-fill pe-1"></i>
+                            {{ _('Cancel') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{{ macros.tooltip_script() }}
+

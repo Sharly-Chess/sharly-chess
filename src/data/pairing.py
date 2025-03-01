@@ -93,7 +93,7 @@ class Pairing:
 
     @property
     def requested_bye(self) -> bool:
-        return self.result in (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE)
+        return self.result in (Result.FULL_POINT_BYE, Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE)
 
     @property
     def color_papi_value(self) -> str:
