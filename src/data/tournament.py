@@ -79,7 +79,8 @@ class Tournament:
         if not self.stored_tournament.ffe_id or not self.stored_tournament.ffe_password:
             self.event.add_debug(
                 _(
-                    'Qualification number and FFE password not set, operations on the FFE website will not be available.'
+                    'Qualification number and FFE password not set, '
+                    'operations on the FFE website will not be available.'
                 ),
                 tournament=self,
             )
@@ -1042,10 +1043,10 @@ class Tournament:
         Assumes that no asymmetric result was entered."""
         black_result = white_result.opposite_result
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.add_board_result(
+            papi_database.set_player_result(
                 board.white_player.ref_id, self._current_round, white_result
             )
-            papi_database.add_board_result(
+            papi_database.set_player_result(
                 board.black_player.ref_id, self._current_round, black_result
             )
             papi_database.commit()
@@ -1072,10 +1073,10 @@ class Tournament:
     def delete_result(self, board: Board):
         """Deletes the result for the given `board` in the current round."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.remove_board_result(
+            papi_database.reset_player_result(
                 board.white_player.ref_id, self._current_round
             )
-            papi_database.remove_board_result(
+            papi_database.reset_player_result(
                 board.black_player.ref_id, self._current_round
             )
             papi_database.commit()
@@ -1271,4 +1272,14 @@ class Tournament:
                 self.current_round + 1,
                 (self.rounds + 1) if forfeit_last_rounds else None,
             )
+            papi_database.commit()
+
+    def set_player_byes(self, player: Player, byes: dict[int, Result]):
+        """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
+        with EventDatabase(self.event.uniq_id, write=True) as event_database:
+            event_database.set_tournament_last_result_update(player.tournament_id)
+            event_database.commit()
+        with PapiDatabase(self.file, write=True) as papi_database:
+            for round_, result in byes.items():
+                papi_database.set_player_result(player_papi_id=player.ref_id, round_=round_, result=result)
             papi_database.commit()

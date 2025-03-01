@@ -17,6 +17,7 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
+from data.pairing import Pairing
 from data.player import Player
 from data.tournament import Tournament
 from data.util import (
@@ -25,6 +26,7 @@ from data.util import (
     PlayerRatingType,
     PlayerTitle,
     PlayerFFELicence,
+    Result,
 )
 from database.sqlite.ffe_database import FfeDatabase
 from database.sqlite.fide_database import FideDatabase
@@ -356,9 +358,7 @@ class PlayerAdminController(AbstractEventAdminController):
             case None:
                 pass
             case 'player':
-                do_validate: bool = True
                 if data is None:
-                    do_validate = False
                     first_name: str | None = None
                     last_name: str | None = None
                     date_of_birth: float | None = None
@@ -455,10 +455,6 @@ class PlayerAdminController(AbstractEventAdminController):
                             for tr in TournamentRating
                         }
                     )
-                    player: Player = cls._admin_validate_player_update_data(
-                        action, web_context, data
-                    )
-                    errors = player.errors if do_validate else None
                 if errors is None:
                     errors = {}
                 federation_ids: list[str] = [
@@ -525,11 +521,36 @@ class PlayerAdminController(AbstractEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
+            case 'history':
+                data = {}
+                for round_ in range(1, admin_player.tournament.rounds + 1):
+                    if round_ > admin_player.tournament.current_round:
+                        # unpaired round
+                        data |= {
+                            # set this flag to tell the server that byes are edited
+                            # (the other flags are not sent to the server if not checked so
+                            # receiving this flag only means that the player is just unpaired
+                            # for the round)
+                            f'edit_round_{round_}': WebContext.value_to_form_data(True),
+                            f'zero_point_bye_{round_}': WebContext.value_to_form_data(
+                                admin_player.pairings[round_].forfeit),
+                        }
+                        if round_ <= admin_player.tournament.rounds - admin_player.tournament.last_rounds_no_byes:
+                            # byes allowed
+                            data |= {
+                                f'half_point_bye_{round_}': WebContext.value_to_form_data(
+                                    admin_player.pairings[round_].half_point_bye),
+                                f'full_point_bye_{round_}': WebContext.value_to_form_data(
+                                    admin_player.pairings[round_].full_point_bye),
+                            }
+                template_context |= {
+                    'modal': modal,
+                    'data': data,
+                }
             case 'close_check_in':
                 template_context |= {
                     'modal': modal,
                 }
-                pass
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
@@ -606,6 +627,24 @@ class PlayerAdminController(AbstractEventAdminController):
             event_uniq_id=event_uniq_id,
             modal='player',
             action=action,
+            player_id=player_id,
+        )
+
+    @get(
+        path='/admin/history-modal/{event_uniq_id:str}/{player_id:int}',
+        name='admin-history-modal',
+        cache=1,
+    )
+    async def htmx_admin_history_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        player_id: int | None,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_players_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='history',
             player_id=player_id,
         )
 
@@ -845,6 +884,92 @@ class PlayerAdminController(AbstractEventAdminController):
             player_id=player_id,
             data=data,
         )
+
+    @staticmethod
+    def _new_byes(
+            web_context: PlayerAdminWebContext,
+            data: Annotated[
+                dict[str, str],
+                Body(media_type=RequestEncodingType.URL_ENCODED),
+            ],
+    ) -> dict[int, Result]:
+        """Returns a dict containing the byes that should be saved (changes only)."""
+        new_byes: dict[int, Result] = {}
+        admin_player: Player = web_context.admin_player
+        admin_tournament: Tournament = admin_player.tournament
+        pairings: dict[int, Pairing] = admin_player.pairings
+        for round_ in range(1, admin_tournament.rounds + 1):
+            if f'edit_round_{round_}' in data:
+                pairing: Pairing = pairings[round_]
+                if not (pairing.requested_bye or pairing.not_paired):
+                    # The player is already paired for this round
+                    logger.warning(f'Player [{admin_player}] already paired for round [{round_}].')
+                    return {}
+                if f'zero_point_bye_{round_}' in data:
+                    if pairings[round_].result != Result.ZERO_POINT_BYE:
+                        new_byes[round_] = Result.ZERO_POINT_BYE
+                    continue
+                bye_allowed: bool = round_ <= admin_tournament.rounds - admin_tournament.last_rounds_no_byes
+                if f'half_point_bye_{round_}' in data:
+                    if not bye_allowed:
+                        logger.warning(f'Bye not allowed for round [{round_}].')
+                        return {}
+                    if pairings[round_].result != Result.HALF_POINT_BYE:
+                        new_byes[round_] = Result.HALF_POINT_BYE
+                    continue
+                if f'full_point_bye_{round_}' in data:
+                    if not bye_allowed:
+                        logger.warning(f'Bye not allowed for round [{round_}].')
+                        return {}
+                    if pairings[round_].result != Result.FULL_POINT_BYE:
+                        new_byes[round_] = Result.FULL_POINT_BYE
+                    continue
+                # if no previous field found, set the player unpaired
+                if pairings[round_].result != Result.NO_RESULT:
+                    new_byes[round_] = Result.NO_RESULT
+        # check that the total number of byes is allowed
+        byes: int = 0
+        for round_ in pairings:
+            match new_byes.get(round_, pairings[round_].result):
+                case Result.HALF_POINT_BYE:
+                    byes += 1
+                case Result.FULL_POINT_BYE:
+                    byes += 2
+            if byes > admin_tournament.max_byes:
+                logger.warning(f'Too many byes.')
+                return {}
+        return new_byes
+
+    @patch(
+        path='/admin/player-history/{event_uniq_id:str}/{player_id:int}',
+        name='admin-player-history',
+    )
+    async def htmx_admin_player_history(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        player_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            player_id=player_id,
+            player_fide_id=None,
+            player_ffe_id=None,
+            tournament_id=None,
+            data=data,
+        )
+        if web_context.error:
+            return web_context.error
+        if new_byes := self._new_byes(web_context, data):
+            web_context.admin_player.tournament.set_player_byes(web_context.admin_player, new_byes)
+            event_loader: EventLoader = EventLoader.get(request=request)
+            event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
 
     @delete(
         path='/admin/player-delete/{event_uniq_id:str}/{player_id:int}',
