@@ -79,7 +79,7 @@ class Tournament:
         if not self.stored_tournament.ffe_id or not self.stored_tournament.ffe_password:
             self.event.add_debug(
                 _(
-                    'Qualification number and FFE password not set, '
+                    'Certification number and FFE password not set, '
                     'operations on the FFE website will not be available.'
                 ),
                 tournament=self,

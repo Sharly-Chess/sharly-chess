@@ -1212,7 +1212,7 @@ msgstr "De naam van het Papi-bestand is standaard niet ingesteld [{filename}]"
 
 #: src/data/tournament.py
 #, ai_translation
-msgid "Qualification number and FFE password not set, operations on the FFE website will not be available."
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
 msgstr "Kwalificatienummer en FFE-wachtwoord niet ingesteld, bewerkingen op de FFE-website zullen niet beschikbaar zijn."
 
 #: src/data/tournament.py
@@ -5760,7 +5760,7 @@ msgstr "Naam van het Papi-bestand (zonder extensie):"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
-msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
+msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
 msgstr "De naam van het Papi bestand, zonder de .papi extensie (standaard het FFE kwalificatienummer van het toernooi, dan De Unieke ID van het toernooi)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -5770,7 +5770,7 @@ msgstr "Verbindingen (FFE en ChessEvent)"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
-msgid "FFE qualification number (optional):"
+msgid "FFE certification number (optional):"
 msgstr "FFE-kwalificatienummer (facultatief):"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
