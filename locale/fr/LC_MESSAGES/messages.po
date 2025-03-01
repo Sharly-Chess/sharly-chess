@@ -3669,7 +3669,7 @@ msgid "Playing"
 msgstr "En cours"
 
 #: src/web/templates/admin/players/history_modal.html
-msgid "Paired allocated bye"
+msgid "Pairing allocated bye"
 msgstr "Exempt·e"
 
 #: src/web/templates/admin/players/history_modal.html
