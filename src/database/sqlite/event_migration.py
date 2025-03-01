@@ -4,6 +4,7 @@ from pkgutil import iter_modules
 import re
 from abc import abstractmethod
 from logging import Logger
+from sqlite3 import OperationalError
 
 from packaging.version import Version
 
@@ -20,6 +21,11 @@ class AbstractEventMigration(EventDatabase):
     def forward(self):
         pass
 
+    def backward(self):
+        raise NotImplementedError(
+            "Rollback not implemented for this migration"
+        )
+
 
 class EventMigrationManager:
     EMPTY_DATABASE_VERSION: Version = Version('0.0.0')
@@ -29,6 +35,13 @@ class EventMigrationManager:
     def migration_modules(self) -> list[str]:
         return [
             f'{events.__name__}.{module}'
+            for module in self._migration_module_names
+        ]
+
+    @cached_property
+    def migration_versions(self) -> list[Version]:
+        return [
+            self._module_name_to_version(module)
             for module in self._migration_module_names
         ]
 
@@ -46,49 +59,98 @@ class EventMigrationManager:
 
     @cached_property
     def _ordered_migration_versions(self) -> list[Version]:
-        return sorted([
-            self._module_name_to_version(module)
-            for module in self._migration_module_names
-        ])
+        return sorted(self.migration_versions)
+
+    @cached_property
+    def _reverse_ordered_migration_versions(self) -> list[Version]:
+        return sorted(self.migration_versions, reverse=True)
 
     def migrate(
             self,
-            event_database: EventDatabase,
+            database: EventDatabase,
             target_version: Version,
             skip_commits: bool = False,
     ):
         if (
-            event_database.version != self.EMPTY_DATABASE_VERSION
-            and event_database.version < self.first_migration_version
+            database.version != self.EMPTY_DATABASE_VERSION
+            and database.version < self.first_migration_version
         ):
             logger.error(
                 'Database %s (%s) impossible to upgrade: version '
                 'is prior to the first upgradable version (%s)',
-                event_database.file.name,
-                event_database.version,
+                database.file.name,
+                database.version,
                 self.first_migration_version,
             )
             return
-        if event_database.version > target_version:
-            raise NotImplementedError('Migrations rollback not implemented')
+        if database.version > target_version:
+            self._rollback(database, target_version, skip_commits)
+        else:
+            self._upgrade(database, target_version, skip_commits)
+
+    def _upgrade(
+        self,
+        database: EventDatabase,
+        target_version: Version,
+        skip_commits: bool,
+    ):
         while migration_version := self._next_migration_version(
-            event_database.version, target_version
+            database.version, target_version
         ):
-            migration_class = self._version_to_migration_class(migration_version)
-            migration_class.forward(event_database)
-            event_database.set_version(migration_version)
-            if not skip_commits:
-                event_database.commit()
-            if event_database.version == migration_version:
+            migration_class = self._version_to_migration_class(
+                migration_version
+            )
+            try:
+                migration_class.forward(database)
+                database.set_version(migration_version)
+                if not skip_commits:
+                    database.commit()
                 logger.debug(
                     'Database %s has been upgraded to version %s.',
-                    event_database.file.name,
+                    database.file.name,
                     migration_version,
                 )
-            else:
+            except OperationalError as e:
                 raise PapiWebException(
-                    f'Database {event_database.file.name} ({event_database.version})'
-                    f' could not be upgraded to version {migration_version}.'
+                    f'Database {database.file.name} '
+                    f'({database.version}) could not be upgraded '
+                    f'to version {migration_version}: "{e}"'
+                )
+
+    def _rollback(
+        self,
+        database: EventDatabase,
+        target_version: Version,
+        skip_commits: bool,
+    ):
+        while database.version > target_version:
+            if database.version not in self.migration_versions:
+                raise PapiWebException(
+                    'No migration for current database version, '
+                    'impossible to rollback.'
+                )
+
+            migration_class = self._version_to_migration_class(
+                database.version
+            )
+            previous_version = self._previous_migration_version(
+                database.version
+            )
+            try:
+                migration_class.backward(database)
+                database.set_version(previous_version)
+                if not skip_commits:
+                    database.commit()
+                logger.debug(
+                    'Database %s has been downgraded to version %s.',
+                    database.file.name,
+                    previous_version,
+                )
+            except (OperationalError, NotImplementedError) as e:
+                raise PapiWebException(
+                    f'Database {database.file.name} '
+                    f'({database.version}) could not be downgraded '
+                    f'to version {previous_version}: "{e}"'
                 )
 
     def _next_migration_version(
@@ -100,6 +162,18 @@ class EventMigrationManager:
                 if current_version < version <= max_version
             ),
             None,
+        )
+
+    def _previous_migration_version(
+        self, current_version: Version
+    ) -> Version:
+        return next(
+            (
+                version for version in
+                self._reverse_ordered_migration_versions
+                if version < current_version
+            ),
+            self.EMPTY_DATABASE_VERSION,
         )
 
     def _version_to_migration_class(

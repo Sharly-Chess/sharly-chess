@@ -3,11 +3,9 @@ from argparse import ArgumentParser
 
 from packaging.version import Version
 
-from common import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventBackup, EventBackupLoader
 
-logger = get_logger()
 
 if __name__ == '__main__':
     parser = ArgumentParser(
@@ -42,38 +40,38 @@ if __name__ == '__main__':
     if args.version:
         version = Version(args.version)
         if version > PapiWebConfig.version:
-            logger.error(
+            sys.stderr.write(
                 f'Impossible to restore: Version selected ({version}) is newer'
-                f' than the latest Papi Web version {PapiWebConfig.version}'
+                f' than the latest Papi Web version {PapiWebConfig.version}\n'
             )
             sys.exit(1)
     else:
         version = loader.latest_compatible_version(event_id)
         if not version:
-            logger.error('No compatible backup to restore')
+            sys.stderr.write('No compatible backup to restore\n')
             sys.exit(1)
 
     to_restore: list[EventBackup] = []
     if event_id:
         backup = EventBackup(event_id, version)
         if not backup.exists:
-            logger.error(
+            sys.stderr.write(
                 'No backup to restore for event '
-                f'{event_id} and version {version.public}'
+                f'{event_id} and version {version.public}\n'
             )
             sys.exit(1)
         to_restore.append(backup)
     else:
         to_restore = loader.version_backups(version)
         if not to_restore:
-            logger.error(
-                f'No backup to restore for version {version.public}'
+            sys.stderr.write(
+                f'No backup to restore for version {version.public}\n'
             )
             sys.exit(1)
 
     for backup in to_restore:
         backup.restore()
-        logger.info(
-            f'Database "{backup.name}" '
-            f'restored to version {backup.version.public}'
+        sys.stdout.write(
+            f'Database "{backup.name}" restored to '
+            f'version {backup.version.public}\n'
         )
