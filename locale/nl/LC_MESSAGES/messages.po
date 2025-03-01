@@ -4335,7 +4335,7 @@ msgstr "Afspelen"
 
 #: src/web/templates/admin/players/history_modal.html
 #, ai_translation
-msgid "Paired allocated bye"
+msgid "Pairing allocated bye"
 msgstr "Gehele toegewezen bye"
 
 #: src/web/templates/admin/players/history_modal.html

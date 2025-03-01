@@ -4347,7 +4347,7 @@ msgstr "Αναπαραγωγή"
 
 #: src/web/templates/admin/players/history_modal.html
 #, ai_translation
-msgid "Paired allocated bye"
+msgid "Pairing allocated bye"
 msgstr "Ζευγαρωμένος αποχαιρετισμός"
 
 #: src/web/templates/admin/players/history_modal.html

@@ -4349,7 +4349,7 @@ msgstr "Riproduci"
 
 #: src/web/templates/admin/players/history_modal.html
 #, ai_translation
-msgid "Paired allocated bye"
+msgid "Pairing allocated bye"
 msgstr "Abbinamenti assegnati bye"
 
 #: src/web/templates/admin/players/history_modal.html

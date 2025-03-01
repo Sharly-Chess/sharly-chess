@@ -4352,7 +4352,7 @@ msgstr "Spel"
 
 #: src/web/templates/admin/players/history_modal.html
 #, ai_translation
-msgid "Paired allocated bye"
+msgid "Pairing allocated bye"
 msgstr "Tilldelad parad"
 
 #: src/web/templates/admin/players/history_modal.html

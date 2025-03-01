@@ -4316,7 +4316,7 @@ msgstr "Jugando"
 
 #: src/web/templates/admin/players/history_modal.html
 #, ai_translation
-msgid "Paired allocated bye"
+msgid "Pairing allocated bye"
 msgstr "Asignado por emparejado"
 
 #: src/web/templates/admin/players/history_modal.html

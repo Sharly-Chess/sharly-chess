@@ -3562,7 +3562,7 @@ msgid "Playing"
 msgstr ""
 
 #: src/web/templates/admin/players/history_modal.html
-msgid "Paired allocated bye"
+msgid "Pairing allocated bye"
 msgstr ""
 
 #: src/web/templates/admin/players/history_modal.html
