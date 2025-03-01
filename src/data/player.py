@@ -18,6 +18,7 @@ from data.util import (
     PlayerTitle,
     BoardColor,
     PlayerFFELicence,
+    Result,
     TournamentRating,
     PlayerRatingType,
     PlayerCategory,
@@ -63,13 +64,6 @@ class FederationTuple:
         )
         return self.federation <= other.federation
 
-    def __eq__(self, other: Self):
-        # p1 == p2 calls p1.__eq__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return self.federation == other.federation
-
     def __str__(self) -> str:
         return self.federation
 
@@ -94,13 +88,6 @@ class LeagueTuple(FederationTuple):
             f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
         return (self.federation, self.league) <= (other.federation, other.league)
-
-    def __eq__(self, other: Self):
-        # p1 == p2 calls p1.__eq__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return self.federation == other.federation and self.league == other.league
 
     def __str__(self) -> str:
         return f'{self.federation}-{self.league}'
@@ -133,17 +120,6 @@ class ClubTuple(LeagueTuple):
             other.club,
         )
 
-    def __eq__(self, other: Self):
-        # p1 == p2 calls p1.__eq__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return (
-            self.federation == other.federation
-            and self.league == other.league
-            and self.club == other.club
-        )
-
     def __str__(self) -> str:
         return f'{self.federation}-{self.league}-{self.club}'
 
@@ -162,6 +138,7 @@ class TournamentPlayer:
         title: PlayerTitle,
         pairings: dict[int, Pairing],
         estimation: int | None = None,
+        point_values: dict[Result, float] | None = None,
     ):
         self.id = id
         self.last_name = last_name
@@ -173,24 +150,29 @@ class TournamentPlayer:
         self.title = title
         self._estimation = estimation
         self.pairings = pairings
+        self._point_values = point_values
+
+    @property
+    def point_values(self) -> dict[Result, float] | None:
+        return self._point_values
 
     def points_before(self, max_round: int) -> float:
         return sum(
-            pairing.result.point_value
+            pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index < max_round
         )
 
     def points_after(self, max_round: int) -> float:
         return sum(
-            pairing.result.point_value
+            pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index <= max_round
         )
 
     def total_points(self) -> float:
-        return sum(pairing.result.point_value for pairing in self.pairings.values())
-
+        return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
+    
     @property
     def estimation(self):
         return self._estimation or 0
@@ -259,6 +241,8 @@ class Player(TournamentPlayer):
         self.board_number: int | None = None
         self.color: BoardColor | None = None
         self.illegal_moves: int = 0
+        self._tie_break_values: list[int | float] | None = None
+        self._ranking_pairings: list[str] | None = None
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
@@ -319,6 +303,10 @@ class Player(TournamentPlayer):
     def rating_type(self) -> PlayerRatingType:
         return self.rating_types[self.tournament.rating]
 
+    @property
+    def point_values(self) -> dict[Result, float] | None:
+        return self.tournament.point_values if self.tournament else None
+
     @cached_property
     def club_tuple(self) -> ClubTuple:
         return ClubTuple(self.federation, self.league, self.club)
@@ -343,7 +331,7 @@ class Player(TournamentPlayer):
         self.points = self.points_before(max_round)
 
     def points_total(self) -> float:
-        return sum(pairing.result.point_value for pairing in self.pairings.values())
+        return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
 
     @staticmethod
     def _points_str(points: float | None) -> str:
@@ -478,6 +466,47 @@ class Player(TournamentPlayer):
         self.time_control_modified = modified
 
     @property
+    def tie_break_values_display(self) -> list[str]:
+        if not self._tie_break_values:
+            return []
+        display_values = []
+        for tie_break_value in self._tie_break_values:
+            if isinstance(tie_break_value, int):
+                value = float(tie_break_value)
+            elif isinstance(tie_break_value, float):
+                value = tie_break_value
+            elif isinstance(tie_break_value, tuple):
+                value = tie_break_value[0]
+            else:
+                raise ValueError(
+                    f'Unrecognized tie-break value [{tie_break_value}]'
+                )
+
+            display_values.append(self._points_str(value))
+        return display_values
+
+    def set_tie_break_values(
+        self, tournament: 'Tournament', max_round: int | None = None
+    ):
+        self._tie_break_values = [
+            tie_break.player_value(self, tournament, max_round)
+            for tie_break in tournament.tie_breaks
+        ]
+
+    @property
+    def ranking_pairings(self) -> list[str]:
+        return self._ranking_pairings
+
+    def set_ranking_pairings(
+        self, max_round: int, player_id_to_rank: Callable[[int], int]
+    ):
+        self._ranking_pairings = [
+            self.pairings[round_].to_rankings(player_id_to_rank)
+            if round_ in self.pairings else ' '
+            for round_ in range(1, max_round + 1)
+        ]
+
+    @property
     def starting_rank_sort_key(self) -> tuple[int, int, str, str]:
         return -self.rating, -self.title, self.last_name, self.first_name
 
@@ -485,17 +514,12 @@ class Player(TournamentPlayer):
     def board_number_sort_key(self) -> tuple[float, int, int, str, str]:
         return -self.vpoints, -self.rating, -self.title, self.last_name, self.first_name
 
-    def rank_sort_key(
-            self, tournament: 'Tournament', max_round: int | None = None
-    ) -> tuple:
-        points = (
-            self.total_points() if max_round is None
-            else self.points_after(max_round)
+    @property
+    def rank_sort_key(self) -> tuple:
+        tie_breaks = tuple(
+            (-tie_break for tie_break in self._tie_break_values)
         )
-        rank = (-points,)
-        for tie_break in tournament.tie_breaks:
-            rank += (-tie_break.player_value(self, tournament, max_round),)
-        return rank + self.starting_rank_sort_key
+        return (-self.points,) + tie_breaks + self.starting_rank_sort_key
 
     def __le__(self, other: 'Player') -> bool:
         # p1 <= p2 calls p1.__le__(p2)

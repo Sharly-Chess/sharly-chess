@@ -32,6 +32,28 @@
                 <div class="row">
                     <div class="col-12 mb-3">
                         {{ admin_macros.select_input(
+                            name='document',
+                            label=_('Document:'),
+                            help_text=_('The type of document to print.'),
+                            select_options=document_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row" id="round_input" style="display:none">
+                    <div class="col-12 mb-3">
+                        {{ admin_macros.number_input(
+                            name='round',
+                            label=_('Round:'),
+                            help_text=_('The round for which the document is printed (Defaults to the last possible round).'),
+                            number_min=1,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        {{ admin_macros.select_input(
                             name='split',
                             label=_('Split by:'),
                             help_text=_('How to split the results.'),
@@ -40,6 +62,17 @@
                         ) }}
                     </div>
                 </div>
+                <script>
+                    const documentSelect = document.getElementById('document');
+                    const roundInput = document.getElementById('round_input');
+                    documentSelect.addEventListener('change', () => {
+                        if (['rankings', 'tournament-summary'].includes(documentSelect.value)) {
+                            roundInput.style.display = 'block';
+                        } else {
+                            roundInput.style.display = 'none';
+                        }
+                    });
+                </script>
             </div> 
 
             <div class="modal-footer d-block">
