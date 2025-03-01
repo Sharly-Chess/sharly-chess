@@ -49,14 +49,31 @@
                   window.addEventListener('htmx:afterSettle', setSize);
             </script>
             <script>
+                function closeTooltips () {
+                    $('body .tooltip').remove();
+                    $('body .tooltip-inner').remove();
+                    $('body .tooltip-arrow').remove();
+                }
+
+                {# Enable Bootstrap tooltips cf https://getbootstrap.com/docs/5.3/components/tooltips/ #}
+                function activateTooltips () {
+                    if (typeof bootstrap !== 'undefined') {
+                        tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                        tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+                    }
+                }
+
                 function closeModal () {
                     var myModalEl = document.getElementById('modal-wrapper');
                     var modal = bootstrap.Modal.getInstance(myModalEl)
                     modal.hide();
+                    closeTooltips();
                 }
 
                 window.addEventListener("modal_opened", function(event) {
+                    closeTooltips();
                     document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
+                    activateTooltips();
                 });
 
                 window.addEventListener("close_modal", function(event) {
@@ -147,7 +164,10 @@
         >
             {% include 'empty_modal.html' %}
         </div>
-        {{ macros.tooltip_script() }}
+        <script>
+            closeTooltips();
+            activateTooltips();
+        </script>
         {{ macros.background_script(background_info) }}
         {{ macros.theme_script(theme) }}
         <script>
@@ -156,9 +176,9 @@
     </body>
     {% if not request.htmx %}
         <script src="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js') }}"></script>
-        {# call this again here once Bootstrap is initialized since the first call did nothing #}
-        {{ macros.tooltip_script() }}
         <script>
+            closeTooltips();
+            activateTooltips();
             var confirm_when_leaving = true;
             document.addEventListener('htmx:beforeOnLoad', function(evt) {
                 if (evt.detail.xhr.getResponseHeader('hx-redirect')) {
