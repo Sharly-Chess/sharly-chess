@@ -8,8 +8,7 @@ from sqlite3 import OperationalError
 
 from packaging.version import Version
 
-from common.exception import PapiWebException
-from common.logger import get_logger
+from common.logger import get_logger, print_interactive_error
 from database.migrations import events
 from database.sqlite.event_database import EventDatabase
 
@@ -30,6 +29,11 @@ class AbstractEventMigration(EventDatabase):
 class EventMigrationManager:
     EMPTY_DATABASE_VERSION: Version = Version('0.0.0')
     MIGRATION_CLASS_NAME: str = 'EventMigration'
+
+    def __init__(self, cli_usage: bool = False):
+        self._log_error = (
+            print_interactive_error if cli_usage else logger.error
+        )
 
     @property
     def migration_modules(self) -> list[str]:
@@ -66,34 +70,32 @@ class EventMigrationManager:
         return sorted(self.migration_versions, reverse=True)
 
     def migrate(
-            self,
-            database: EventDatabase,
-            target_version: Version,
-            skip_commits: bool = False,
-    ):
+        self,
+        database: EventDatabase,
+        target_version: Version,
+        skip_commits: bool = False,
+    ) -> bool:
         if (
             database.version != self.EMPTY_DATABASE_VERSION
             and database.version < self.first_migration_version
         ):
-            logger.error(
-                'Database %s (%s) impossible to upgrade: version '
-                'is prior to the first upgradable version (%s)',
-                database.file.name,
-                database.version,
-                self.first_migration_version,
+            self._log_error(
+                f'Database %{database.file.name} ({database.version}) '
+                'impossible to upgrade: version is prior to the first '
+                f'upgradable version ({self.first_migration_version})'
             )
-            return
+            return False
         if database.version > target_version:
-            self._rollback(database, target_version, skip_commits)
+            return self._rollback(database, target_version, skip_commits)
         else:
-            self._upgrade(database, target_version, skip_commits)
+            return self._upgrade(database, target_version, skip_commits)
 
     def _upgrade(
         self,
         database: EventDatabase,
         target_version: Version,
         skip_commits: bool,
-    ):
+    ) -> bool:
         while migration_version := self._next_migration_version(
             database.version, target_version
         ):
@@ -111,24 +113,27 @@ class EventMigrationManager:
                     migration_version,
                 )
             except OperationalError as e:
-                raise PapiWebException(
+                self._log_error(
                     f'Database {database.file.name} '
                     f'({database.version}) could not be upgraded '
                     f'to version {migration_version}: "{e}"'
                 )
+                return False
+        return True
 
     def _rollback(
         self,
         database: EventDatabase,
         target_version: Version,
         skip_commits: bool,
-    ):
+    ) -> bool:
         while database.version > target_version:
             if database.version not in self.migration_versions:
-                raise PapiWebException(
+                self._log_error(
                     'No migration for current database version, '
                     'impossible to rollback.'
                 )
+                return False
 
             migration_class = self._version_to_migration_class(
                 database.version
@@ -147,11 +152,13 @@ class EventMigrationManager:
                     previous_version,
                 )
             except (OperationalError, NotImplementedError) as e:
-                raise PapiWebException(
+                self._log_error(
                     f'Database {database.file.name} '
                     f'({database.version}) could not be downgraded '
                     f'to version {previous_version}: "{e}"'
                 )
+                return False
+        return True
 
     def _next_migration_version(
         self, current_version: Version, max_version: Version

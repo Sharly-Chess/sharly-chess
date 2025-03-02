@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 
 from packaging.version import Version
 
+from common.logger import print_interactive_error, print_interactive_info
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventBackup, EventBackupLoader
 
@@ -40,38 +41,38 @@ if __name__ == '__main__':
     if args.version:
         version = Version(args.version)
         if version > PapiWebConfig.version:
-            sys.stderr.write(
+            print_interactive_error(
                 f'Impossible to restore: Version selected ({version}) is newer'
-                f' than the latest Papi Web version {PapiWebConfig.version}\n'
+                f' than the latest Papi Web version {PapiWebConfig.version}'
             )
             sys.exit(1)
     else:
         version = loader.latest_compatible_version(event_id)
         if not version:
-            sys.stderr.write('No compatible backup to restore\n')
+            print_interactive_error('No compatible backup to restore')
             sys.exit(1)
 
     to_restore: list[EventBackup] = []
     if event_id:
         backup = EventBackup(event_id, version)
         if not backup.exists:
-            sys.stderr.write(
+            print_interactive_error(
                 'No backup to restore for event '
-                f'{event_id} and version {version.public}\n'
+                f'{event_id} and version {version.public}'
             )
             sys.exit(1)
         to_restore.append(backup)
     else:
         to_restore = loader.version_backups(version)
         if not to_restore:
-            sys.stderr.write(
-                f'No backup to restore for version {version.public}\n'
+            print_interactive_error(
+                f'No backup to restore for version {version.public}'
             )
             sys.exit(1)
 
     for backup in to_restore:
         backup.restore()
-        sys.stdout.write(
+        print_interactive_info(
             f'Database "{backup.name}" restored to '
-            f'version {backup.version.public}\n'
+            f'version {backup.version.public}'
         )

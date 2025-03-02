@@ -978,8 +978,7 @@ class EventDatabase(SQLiteDatabase):
         from database.sqlite.event_migration import EventMigrationManager
 
         initial_version = self.version
-        EventMigrationManager().migrate(self, PapiWebConfig.version)
-        if initial_version != self.version:
+        if EventMigrationManager().migrate(self, PapiWebConfig.version):
             logger.info(
                 'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
