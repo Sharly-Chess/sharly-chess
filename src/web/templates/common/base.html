@@ -59,6 +59,10 @@
                     document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
                 });
 
+                window.addEventListener("close_modal", function(event) {
+                    closeModal()
+                });
+
                 window.addEventListener("do_print", function(event) {
                     closeModal();
                     window.open(
@@ -137,8 +141,9 @@
             class="modal modal-blur overflow-auto"
             style="display: none"
             aria-hidden="false"
-            data-bs-backdrop="static"
             tabindex="-1"
+            hx-trigger="hidden.bs.modal"
+            hx-get="{{ url_for('empty-modal') }}"
         >
             {% include 'empty_modal.html' %}
         </div>
