@@ -1160,7 +1160,6 @@ class BoardColor(StrEnum):
                 return 'black1'
             case _:
                 raise ValueError(f'Unknown value:  {self}')
-
     @property
     def to_rankings(self) -> str:
         match self:
@@ -1171,7 +1170,8 @@ class BoardColor(StrEnum):
             case _:
                 raise ValueError(f'Unknown value:  {self}')
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         match self:
             case BoardColor.WHITE:
                 return _('White')
@@ -1180,76 +1180,48 @@ class BoardColor(StrEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class ScreenType(StrEnum):
-    Boards = auto()
-    Input = auto()
-    Players = auto()
-    Results = auto()
-    Image = auto()
+    BOARDS = 'boards'
+    INPUT = 'input'
+    PLAYERS = 'players'
+    RESULTS = 'results'
+    IMAGE = 'image'
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         match self:
-            case ScreenType.Boards:
+            case ScreenType.BOARDS:
                 return _('Pairings by board')
-            case ScreenType.Input:
+            case ScreenType.INPUT:
                 return _('Results entry')
-            case ScreenType.Players:
+            case ScreenType.PLAYERS:
                 return _('Parings by player')
-            case ScreenType.Results:
+            case ScreenType.RESULTS:
                 return _('Last results')
-            case ScreenType.Image:
+            case ScreenType.IMAGE:
                 return _('Image')
             case _:
                 raise ValueError(f'Invalid screen type: {self}')
 
-    @property
-    def default_screen_name(self) -> str:
-        return str(self)
-
-    @classmethod
-    def from_str(cls, value: str) -> Self:
-        match value:
-            case 'boards':
-                return cls.Boards
-            case 'input':
-                return cls.Input
-            case 'players':
-                return cls.Players
-            case 'results':
-                return cls.Results
-            case 'image':
-                return cls.Image
-            case _:
-                raise ValueError(f'Invalid screen type: {value}')
-
-    def to_str(self) -> Self:
-        match self:
-            case self.Boards:
-                return 'boards'
-            case self.Input:
-                return 'input'
-            case self.Players:
-                return 'players'
-            case self.Results:
-                return 'results'
-            case self.Image:
-                return 'image'
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
+    def __str__(self) -> str:
+        return self.name
 
     @property
     def icon_str(self) -> str:
         match self:
-            case self.Boards:
+            case self.BOARDS:
                 return 'bi-card-list'
-            case self.Input:
+            case self.INPUT:
                 return 'bi-pencil'
-            case self.Players:
+            case self.PLAYERS:
                 return 'bi-people'
-            case self.Results:
+            case self.RESULTS:
                 return 'bi-trophy'
-            case self.Image:
+            case self.IMAGE:
                 return 'bi-image'
             case _:
                 raise ValueError(f'Invalid screen type: {self}')
@@ -1271,8 +1243,8 @@ class NeedsUpload(Enum):
 
 
 class TrfType(StrEnum):
-    PAIRING = 'PAIRING'
-    RATING = 'RATING'
+    PAIRING = 'pairing'
+    RATING = 'rating'
 
     @property
     def file_extension(self) -> str:
@@ -1327,55 +1299,25 @@ def performance_bonus(
 
 
 class PrintSplit(StrEnum):
-    NoSplit = auto()
-    Category = auto()
-    Club = auto()
-    League = auto()
-    Federation = auto()
+    NO_SPLIT = 'no-split'
+    CATEGORY = 'category'
+    CLUB = 'club'
+    LEAGUE = 'league'
+    FEDERATION = 'federation'
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         match self:
-            case PrintSplit.NoSplit:
+            case PrintSplit.NO_SPLIT:
                 return _('No split')
-            case PrintSplit.Category:
+            case PrintSplit.CATEGORY:
                 return _('Category')
-            case PrintSplit.Club:
+            case PrintSplit.CLUB:
                 return _('Club')
-            case PrintSplit.League:
+            case PrintSplit.LEAGUE:
                 return _('League')
-            case PrintSplit.Federation:
+            case PrintSplit.FEDERATION:
                 return _('Federation')
-            case _:
-                raise ValueError(f'Invalid print split type: {self}')
-
-    @classmethod
-    def from_str(cls, value: str) -> Self:
-        match value:
-            case 'no-split':
-                return cls.NoSplit
-            case 'category':
-                return cls.Category
-            case 'club':
-                return cls.Club
-            case 'league':
-                return cls.League
-            case 'federation':
-                return cls.Federation
-            case _:
-                raise ValueError(f'Invalid print split type: {value}')
-
-    def to_str(self) -> Self:
-        match self:
-            case self.NoSplit:
-                return 'no-split'
-            case self.Category:
-                return 'category'
-            case self.Club:
-                return 'club'
-            case self.League:
-                return 'league'
-            case self.Federation:
-                return 'federation'
             case _:
                 raise ValueError(f'Invalid print split type: {self}')
 

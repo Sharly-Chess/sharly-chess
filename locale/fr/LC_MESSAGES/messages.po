@@ -2163,6 +2163,10 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Tie-break already in use."
+msgstr "Départage déjà utilisé."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Le tournoi [{tournament_uniq_id}] a été créé et les écrans par défaut ont été ajoutés."
 

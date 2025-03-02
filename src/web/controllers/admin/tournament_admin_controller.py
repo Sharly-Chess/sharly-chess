@@ -203,13 +203,21 @@ class TournamentAdminController(AbstractEventAdminController):
 
         if action == 'update':
             tie_breaks = []
+            papi_tie_breaks: list[PapiTieBreak] = []
             for index in range(1, 4):
-                if tie_break := PapiTieBreak(
-                    WebContext.form_data_to_int(
-                        data, f'tie_break_{index}', PapiTieBreak.NONE
+                field = f'tie_break_{index}'
+                tie_break = PapiTieBreak(
+                    WebContext.form_data_to_int(data, field, PapiTieBreak.NONE)
+                )
+                if tie_break != PapiTieBreak.NONE:
+                    if tie_break in papi_tie_breaks:
+                        errors[field] = _('Tie-break already in use.')
+                    papi_tie_breaks.append(tie_break)
+                    tie_breaks.append(
+                        tie_break.to_tie_break(
+                            web_context.admin_tournament.rounds
+                        )
                     )
-                ).to_tie_break(web_context.admin_tournament.rounds):
-                    tie_breaks.append(tie_break)
 
         return StoredTournament(
             id=web_context.admin_tournament.id
@@ -767,18 +775,18 @@ class TournamentAdminController(AbstractEventAdminController):
             player for player in ordered_players
             if player.tournament.id == tournament_id
         ]
-        split_by = PrintSplit.from_str(split) if split else PrintSplit.NoSplit
-        if split_by == PrintSplit.NoSplit:
+        split_by = PrintSplit(split) if split else PrintSplit.NO_SPLIT
+        if split_by == PrintSplit.NO_SPLIT:
             split_players = {"": players_in_tournament}
         else:
             split_functions = {
-                PrintSplit.Category: lambda p: p.category.short_name,
-                PrintSplit.Club: lambda p: p.club_tuple.club,
-                PrintSplit.League: lambda p: p.league_tuple.league,
-                PrintSplit.Federation: lambda p: p.federation_tuple.federation,
+                PrintSplit.CATEGORY: lambda p: p.category.short_name,
+                PrintSplit.CLUB: lambda p: p.club_tuple.club,
+                PrintSplit.LEAGUE: lambda p: p.league_tuple.league,
+                PrintSplit.FEDERATION: lambda p: p.federation_tuple.federation,
             }
 
-            if split_by == PrintSplit.Category:
+            if split_by == PrintSplit.CATEGORY:
                 split_players = {
                     category.short_name: [] for category in PlayerCategory
                 }
@@ -789,7 +797,7 @@ class TournamentAdminController(AbstractEventAdminController):
             for player in players_in_tournament:
                 split_players[split_functions[split_by](player)].append(player)
 
-            if split_by == PrintSplit.Category:
+            if split_by == PrintSplit.CATEGORY:
                 # Filter out empty categories
                 split_players = {
                     key: split_players[key] for key in split_players.keys()

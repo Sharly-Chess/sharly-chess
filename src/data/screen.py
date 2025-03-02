@@ -51,7 +51,7 @@ class Screen:
     @cached_property
     def screen_sets_by_id(self) -> dict[int | None, ScreenSet]:
         match self.type:
-            case ScreenType.Boards | ScreenType.Input | ScreenType.Players:
+            case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS:
                 if self.stored_screen:
                     return {
                         stored_screen_set.id: ScreenSet(
@@ -65,7 +65,7 @@ class Screen:
                             self, family=self.family, family_part=self.family_part
                         )
                     }
-            case ScreenType.Results | ScreenType.Image:
+            case ScreenType.RESULTS | ScreenType.IMAGE:
                 return {}
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -81,7 +81,7 @@ class Screen:
     @property
     def type(self) -> ScreenType:
         return (
-            ScreenType.from_str(self.stored_screen.type)
+            ScreenType(self.stored_screen.type)
             if self.stored_screen
             else self.family.type
         )
@@ -104,13 +104,13 @@ class Screen:
             if self.stored_screen.name:
                 return self.stored_screen.name
         match self.type:
-            case ScreenType.Boards | ScreenType.Input:
+            case ScreenType.BOARDS | ScreenType.INPUT:
                 return self.screen_sets_sorted_by_order[0].name_for_boards
-            case ScreenType.Players:
+            case ScreenType.PLAYERS:
                 return self.screen_sets_sorted_by_order[0].name_for_players
-            case ScreenType.Results:
+            case ScreenType.RESULTS:
                 return _('Last results')
-            case ScreenType.Image:
+            case ScreenType.IMAGE:
                 return _('Image')
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -176,13 +176,13 @@ class Screen:
         if not self.menu_link:
             return None
         match self.type:
-            case ScreenType.Boards | ScreenType.Input | ScreenType.Players:
+            case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS:
                 single_tournament = len(self.event.tournaments_by_id) == 1
                 screen_set: ScreenSet = self.screen_sets_sorted_by_order[0]
                 first_last = screen_set.first is not None or screen_set.last is not None
                 text: str
                 if (
-                    self.type == ScreenType.Players
+                    self.type == ScreenType.PLAYERS
                     or not screen_set.tournament.current_round
                 ):
                     text = self.menu_text or self.default_players_screen_menu_text(
@@ -194,7 +194,7 @@ class Screen:
                     )
                 text = text.replace('%t', screen_set.tournament.name)
                 if (
-                    self.type == ScreenType.Players
+                    self.type == ScreenType.PLAYERS
                     or not screen_set.tournament.current_round
                 ):
                     if screen_set.first_player_by_name:
@@ -213,7 +213,7 @@ class Screen:
                     if '%l' in text:
                         text = text.replace('%l', str(screen_set.last_board.id))
                 return text
-            case ScreenType.Results:
+            case ScreenType.RESULTS:
                 return self.stored_screen.menu_text or _('Last results')
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -357,7 +357,7 @@ class Screen:
     @property
     def input_exit_button(self) -> bool:
         match self.type:
-            case ScreenType.Input:
+            case ScreenType.INPUT:
                 if self.stored_screen:
                     if self.stored_screen.input_exit_button is not None:
                         return self.stored_screen.input_exit_button
@@ -371,10 +371,10 @@ class Screen:
     @property
     def players_show_unpaired(self) -> bool:
         match self.type:
-            case ScreenType.Boards | ScreenType.Input:
+            case ScreenType.BOARDS | ScreenType.INPUT:
                 # Needed to display the players before the first round is paired
                 return True
-            case ScreenType.Players:
+            case ScreenType.PLAYERS:
                 if self.stored_screen:
                     if self.stored_screen.players_show_unpaired is not None:
                         return self.stored_screen.players_show_unpaired
@@ -396,7 +396,7 @@ class Screen:
     @cached_property
     def results_limit(self) -> int:
         match self.type:
-            case ScreenType.Results:
+            case ScreenType.RESULTS:
                 if not self.stored_screen.results_limit:
                     return PapiWebConfig.default_results_screen_limit
                 elif (
@@ -421,7 +421,7 @@ class Screen:
     @cached_property
     def results_max_age(self) -> int:
         match self.type:
-            case ScreenType.Results:
+            case ScreenType.RESULTS:
                 return (
                     self.stored_screen.results_max_age
                     or PapiWebConfig.default_results_screen_max_age
@@ -432,7 +432,7 @@ class Screen:
     @cached_property
     def results_tournament_ids(self) -> list[int]:
         match self.type:
-            case ScreenType.Results:
+            case ScreenType.RESULTS:
                 return [
                     tournament_id
                     for tournament_id in self.stored_screen.results_tournament_ids

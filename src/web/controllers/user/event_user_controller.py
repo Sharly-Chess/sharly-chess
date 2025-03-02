@@ -190,8 +190,8 @@ class EventUserController(AbstractUserController):
                 if screen_set.tournament.last_update > date:
                     return True
                 if screen.type in [
-                    ScreenType.Boards,
-                    ScreenType.Input,
+                    ScreenType.BOARDS,
+                    ScreenType.INPUT,
                 ]:
                     if screen_set.tournament.last_illegal_move_update > date:
                         return True
@@ -201,7 +201,7 @@ class EventUserController(AbstractUserController):
                         return True
                 if screen_set.tournament.last_check_in_update > date:
                     return True
-            if screen.type == ScreenType.Results:
+            if screen.type == ScreenType.RESULTS:
                 results_tournament_ids: list[int] = (
                     screen.results_tournament_ids
                     if screen.results_tournament_ids
@@ -222,14 +222,14 @@ class EventUserController(AbstractUserController):
             if family.tournament.last_update > date:
                 return True
             match family.type:
-                case ScreenType.Boards | ScreenType.Input:
+                case ScreenType.BOARDS | ScreenType.INPUT:
                     if family.tournament.last_illegal_move_update > date:
                         return True
                     if family.tournament.last_result_update > date:
                         return True
                     if family.tournament.last_check_in_update > date:
                         return True
-                case ScreenType.Players:
+                case ScreenType.PLAYERS:
                     if family.tournament.last_check_in_update > date:
                         return True
                 case _:
