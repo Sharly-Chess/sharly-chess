@@ -6096,8 +6096,6 @@ msgstr "Het maximale aantal illegale bewegingen dat per ronde kan worden geregis
 
 # Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
 # long compared to initial [Pairings]
-# Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
-# long compared to initial [Pairings]
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
 msgid "Pairings"

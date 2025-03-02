@@ -1341,22 +1341,11 @@ msgstr "FFE-Lizenz A (Wettbewerb)"
 # ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
 # DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
-# Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
-# Error: translation [U10
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U10]
 # Error: translation [U10
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U10]
@@ -1369,28 +1358,12 @@ msgstr ""
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
 # is much too long compared to initial [U12]
-# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
-# is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
 msgstr ""
 
 # Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
-# is much too long compared to initial [U14]
-# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
 # is much too long compared to initial [U14]
@@ -1402,9 +1375,6 @@ msgstr ""
 # Error: translation [U16
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U16]
-# Error: translation [U16
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1413,17 +1383,11 @@ msgstr ""
 # Error: translation [U18
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U18]
-# Error: translation [U18
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U18]
 #: src/data/util.py
 #, ai_translation
 msgid "U18"
 msgstr ""
 
-# Error: translation [U20
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U20]
 # Error: translation [U20
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U20]
@@ -1904,7 +1868,6 @@ msgstr "Inhalt der URL [{url}] ist nicht gültig (input[id=[{id]] nicht gefunden
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisieren einer Sitzung auf [{url}]..."
 
-# Error: translation [In Ordnung.] is much too long compared to initial [OK]
 # Error: translation [In Ordnung.] is much too long compared to initial [OK]
 #: src/ffe/ffe_session.py
 #: src/web/templates/admin/players/filter_categories.html
@@ -4714,8 +4677,6 @@ msgstr "Telefonnummer:"
 msgid "The player's phone number."
 msgstr "Die Telefonnummer des Spielers."
 
-# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
-# compared to initial [Owed:]
 # Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
 # compared to initial [Owed:]
 #: src/web/templates/admin/players/player_modal.html
