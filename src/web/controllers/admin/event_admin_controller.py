@@ -461,7 +461,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
                         'owed_paid',
                         'tournament',
                         'comment',
-                        'history',
+                        'record',
                     ],
                     'admin_players_sort': SessionHandler.get_session_admin_players_sort(
                         web_context.request

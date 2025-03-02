@@ -1053,6 +1053,56 @@ msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
 
 #: src/data/tie_break.py
+#, fuzzy
+msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+msgstr "Bu."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+msgstr "PS"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Perf *** ACRONYM FOR PERFORMANCE"
+msgstr "Perf"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+msgstr "SBh"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+msgstr "NW"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Ka. *** ACRONYM FOR KASHDAN"
+msgstr "Ka."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Ko. *** ACRONYM FOR KOYA"
+msgstr "Ko."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+msgstr "SB"
+
+#: src/data/tie_break.py
 #, ai_translation
 msgid "Cut"
 msgstr "Styckningsdelar"
@@ -1288,11 +1338,15 @@ msgid "FFE licence A (competition)"
 msgstr "FFE-licens A (tävling)"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
+# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
+# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
+# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -1329,6 +1383,12 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
+# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #: src/data/util.py
 #, ai_translation
 msgid "20+"
@@ -1339,6 +1399,9 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
+# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
+# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
+# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -1517,6 +1580,16 @@ msgstr "WGM"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
+#: src/data/util.py
+#, fuzzy
+msgid "W *** WHITE COLOR FOR RANKINGS"
+msgstr "W"
+
+#: src/data/util.py
+#, fuzzy
+msgid "B *** BLACK COLOR FOR RANKINGS"
+msgstr "B"
+
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
 #, ai_translation
@@ -1559,6 +1632,9 @@ msgstr "Ingen uppdelning"
 # Error: translation [Denna förordning träder i kraft den tjugonde dagen efter
 # det att den har offentliggjorts i Europeiska unionens officiella tidning.]
 # is much too long compared to initial [Category]
+# Error: translation [Denna förordning träder i kraft den tjugonde dagen efter
+# det att den har offentliggjorts i Europeiska unionens officiella tidning.]
+# is much too long compared to initial [Category]
 #: src/data/util.py
 #, ai_translation
 msgid "Category"
@@ -1575,10 +1651,35 @@ msgid "League"
 msgstr "Förbundet"
 
 #: src/data/util.py src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/players/history_modal.html
+#: src/web/templates/admin/players/record_modal.html
 #, ai_translation
 msgid "Federation"
 msgstr "Förbund"
+
+#: src/data/util.py
+#, ai_translation
+msgid "List of players"
+msgstr "Förteckning över spelare"
+
+#: src/data/util.py
+#, ai_translation, python-format
+msgid "Rankings after round #%d"
+msgstr "Rankings efter omgång #% d"
+
+#: src/data/util.py
+#, ai_translation, python-format
+msgid "Tournament summary after round #%d"
+msgstr "Sammanfattning av turneringen efter omgång #% d"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Rankings"
+msgstr "Placering"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Tournament summary"
+msgstr "Sammanfattning av turneringen"
 
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
@@ -1998,6 +2099,29 @@ msgstr "Välj turneringen."
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
+msgid "Please choose the document."
+msgstr "Välj dokumentet."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "A positive integer is expected."
+msgstr "Ett positivt heltal förväntas."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation, python-format
+msgid "Not part of the selected tournament (%d rounds)."
+msgstr "Inte en del av den valda turneringen (% d rundor)."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation, python-format
+msgid "Round not finished (last finished: %d)."
+msgstr "Rund ej färdig (senast färdig: %d)."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
 msgid "Personal"
 msgstr "Personligt"
 
@@ -2029,13 +2153,6 @@ msgstr "Familjen [{uniq_id}] finns redan."
 #, ai_translation
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Turneringen [{tournament_id}] hittades inte."
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/rotator_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "A positive integer is expected."
-msgstr "Ett positivt heltal förväntas."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
@@ -3203,8 +3320,8 @@ msgstr "Ta bort"
 #: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
-#: src/web/templates/admin/players/history_modal.html
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/record_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
@@ -3246,6 +3363,26 @@ msgstr "Turneringen att skriva ut."
 #, ai_translation
 msgid "Options"
 msgstr "Inställningar"
+
+#: src/web/templates/admin/event/print_modal.html
+#, ai_translation
+msgid "Document:"
+msgstr "Dokument:"
+
+#: src/web/templates/admin/event/print_modal.html
+#, ai_translation
+msgid "The type of document to print."
+msgstr "Typ av dokument att skriva ut."
+
+#: src/web/templates/admin/event/print_modal.html
+#, ai_translation
+msgid "Round:"
+msgstr "Omgång:"
+
+#: src/web/templates/admin/event/print_modal.html
+#, ai_translation
+msgid "The round for which the document is printed (Defaults to the last possible round)."
+msgstr "Den runda för vilken dokumentet trycks (förvaltar till den sista möjliga omgången)."
 
 #: src/web/templates/admin/event/print_modal.html
 #, ai_translation
@@ -3460,6 +3597,8 @@ msgstr "Utgångsknapp:"
 msgid "yes"
 msgstr "Ja, det är jag."
 
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
 #: src/web/templates/admin/families/family_card.html
@@ -3909,6 +4048,8 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
+# Error: translation [Ej tillämpligt] is much too long compared to initial
+# [No]
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "No"
@@ -4154,6 +4295,7 @@ msgid "Filter the check-in status."
 msgstr "Filtrera incheckningsstatusen."
 
 #: src/web/templates/admin/players/filter_check_ins.html
+#: src/web/templates/admin/players/record_modal.html
 #, ai_translation
 msgid "Absent"
 msgstr "Frånvarande"
@@ -4270,8 +4412,8 @@ msgstr "Comment"
 
 #: src/web/templates/admin/players/filter_columns.html
 #, fuzzy
-msgid "History *** HISTORY FOR PLAYERS COLUMNS"
-msgstr "History"
+msgid "Record *** RECORD FOR PLAYERS COLUMNS"
+msgstr "Record"
 
 #: src/web/templates/admin/players/filter_federations.html
 #, ai_translation
@@ -4302,123 +4444,6 @@ msgstr "Tournament"
 #, ai_translation
 msgid "Filter the tournaments."
 msgstr "Filtrera turneringarna."
-
-#: src/web/templates/admin/players/history_modal.html
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "History"
-msgstr "Bakgrund"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Round"
-msgstr "Omgång"
-
-#: src/web/templates/admin/players/history_modal.html
-#: src/web/templates/user/screen/results.html
-#, ai_translation
-msgid "Score"
-msgstr "Poäng"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Result"
-msgstr "Resultat"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Color"
-msgstr "Färg"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Opponent"
-msgstr "Motståndare"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Rating"
-msgstr "Betyg"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Round skipped"
-msgstr "Rund hoppat över"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Playing"
-msgstr "Spel"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Pairing allocated bye"
-msgstr "Tilldelad parad"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Loss"
-msgstr "Förlust"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Draw"
-msgstr "Rita"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Gain"
-msgstr "Vinst"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Half-point bye"
-msgstr "Halvpunktsbyttor"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Full-point bye"
-msgstr "Fullständigt farväl"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Forfeit loss"
-msgstr "Förlust"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Forfeit gain"
-msgstr "Förfalskningsvinst"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Skip round"
-msgstr "Hoppa över runda"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Full-point byes are deprecated."
-msgstr "Fullpoint-byar är nedvärderade."
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Bye not allowed"
-msgstr "Hej då inte tillåtet"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation, python-format
-msgid "Maximum number of byes: %(max_byes)d"
-msgstr "Maximalt antal byten: %(max_byes)d"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation, python-format
-msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
-msgstr "Sista omgången utan avgång: %(last_rounds_no_byes)d"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Save"
-msgstr "Spara"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4690,6 +4715,112 @@ msgstr "Anmärkning:"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
 
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Tournament record"
+msgstr "Turneringsrekord"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Round"
+msgstr "Omgång"
+
+#: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Score"
+msgstr "Poäng"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Result"
+msgstr "Resultat"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Color"
+msgstr "Färg"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Opponent"
+msgstr "Motståndare"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Rating"
+msgstr "Betyg"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Round skipped"
+msgstr "Rund hoppat över"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Playing"
+msgstr "Spel"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Pairing allocated bye"
+msgstr "Tilldelad parad"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Loss"
+msgstr "Förlust"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Draw"
+msgstr "Rita"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Gain"
+msgstr "Vinst"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Half-point bye"
+msgstr "Halvpunktsbyttor"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Full-point bye (deprecated)"
+msgstr "Full-point bye (avråds)"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Forfeit loss"
+msgstr "Förlust"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Forfeit gain"
+msgstr "Förfalskningsvinst"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Present"
+msgstr "Närvarande"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr "Maximalt antal byten: %(max_byes)d"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation, python-format
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
+msgstr "Sista omgången utan avgång: %(last_rounds_no_byes)d"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Save"
+msgstr "Spara"
+
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -4788,8 +4919,13 @@ msgstr "Redigera spelarens egenskaper."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
-msgid "Edit the player's history."
+msgid "Edit the player's tournament record."
 msgstr "Redigera spelarens historia."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Record"
+msgstr "Bokföring"
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -4872,9 +5008,9 @@ msgid "No players."
 msgstr "Inga spelare."
 
 #: src/web/templates/admin/print/players.html
-#, ai_translation
-msgid "List of players"
-msgstr "Förteckning över spelare"
+#, fuzzy
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
 
 #: src/web/templates/admin/print/players.html
 #, fuzzy
@@ -4898,7 +5034,7 @@ msgstr "Rapid"
 
 #: src/web/templates/admin/print/players.html
 #, fuzzy
-msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
 #: src/web/templates/admin/print/players.html
@@ -4908,7 +5044,7 @@ msgstr "Cat"
 
 #: src/web/templates/admin/print/players.html
 #, fuzzy
-msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Fed"
 
 #: src/web/templates/admin/print/players.html
@@ -4917,9 +5053,19 @@ msgid "League *** LEAGUE FOR PRINT VIEW"
 msgstr "League"
 
 #: src/web/templates/admin/print/players.html
+#, fuzzy, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+#: src/web/templates/admin/print/players.html
 #, fuzzy
 msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
 
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/user/event/rotator_card.html
@@ -6238,6 +6384,8 @@ msgstr "Bild:"
 
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
+# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
+# much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html
 #, ai_translation
 msgid "Rnd.Boa"
@@ -6337,4 +6485,22 @@ msgstr "vs"
 
 #~ msgid "%(last_name)s %(first_name)s"
 #~ msgstr "%(last_name)s %(first_name)s"
+
+#~ msgid "Skip round"
+#~ msgstr "Hoppa över runda"
+
+#~ msgid "Full-point byes are deprecated."
+#~ msgstr "Fullpoint-byar är nedvärderade."
+
+#~ msgid "Bye not allowed"
+#~ msgstr "Hej då inte tillåtet"
+
+#~ msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+#~ msgstr "Blitz"
+
+#~ msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+#~ msgstr "Fed"
+
+#~ msgid "Full-point bye"
+#~ msgstr "Fullständigt farväl"
 

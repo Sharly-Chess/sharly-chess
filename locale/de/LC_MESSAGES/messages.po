@@ -1053,6 +1053,56 @@ msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
 
 #: src/data/tie_break.py
+#, fuzzy
+msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+msgstr "Bu."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+msgstr "PS"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Perf *** ACRONYM FOR PERFORMANCE"
+msgstr "Perf"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+msgstr "SBh"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+msgstr "NW"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Ka. *** ACRONYM FOR KASHDAN"
+msgstr "Ka."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Ko. *** ACRONYM FOR KOYA"
+msgstr "Ko."
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+msgstr "SB"
+
+#: src/data/tie_break.py
 #, ai_translation
 msgid "Cut"
 msgstr "Ausschneiden"
@@ -1291,11 +1341,22 @@ msgstr "FFE-Lizenz A (Wettbewerb)"
 # ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
 # DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
+# Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
+# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
+# ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
 #: src/data/util.py
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U10]
 # Error: translation [U10
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U10]
@@ -1308,12 +1369,28 @@ msgstr ""
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
 # is much too long compared to initial [U12]
+# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
+# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
+# is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
 msgstr ""
 
 # Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
+# is much too long compared to initial [U14]
+# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
 # is much too long compared to initial [U14]
@@ -1325,6 +1402,9 @@ msgstr ""
 # Error: translation [U16
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U16]
+# Error: translation [U16
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1333,11 +1413,17 @@ msgstr ""
 # Error: translation [U18
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U18]
+# Error: translation [U18
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U18]
 #: src/data/util.py
 #, ai_translation
 msgid "U18"
 msgstr ""
 
+# Error: translation [U20
+# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
+# is much too long compared to initial [U20]
 # Error: translation [U20
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U20]
@@ -1531,6 +1617,16 @@ msgstr "WGM"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
+#: src/data/util.py
+#, fuzzy
+msgid "W *** WHITE COLOR FOR RANKINGS"
+msgstr "W"
+
+#: src/data/util.py
+#, fuzzy
+msgid "B *** BLACK COLOR FOR RANKINGS"
+msgstr "B"
+
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
 #, ai_translation
@@ -1586,10 +1682,35 @@ msgid "League"
 msgstr "Liga"
 
 #: src/data/util.py src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/players/history_modal.html
+#: src/web/templates/admin/players/record_modal.html
 #, ai_translation
 msgid "Federation"
 msgstr "Verband"
+
+#: src/data/util.py
+#, ai_translation
+msgid "List of players"
+msgstr "Liste der Spieler"
+
+#: src/data/util.py
+#, ai_translation, python-format
+msgid "Rankings after round #%d"
+msgstr "Rankings nach Runde #%d"
+
+#: src/data/util.py
+#, ai_translation, python-format
+msgid "Tournament summary after round #%d"
+msgstr "Turnierübersicht nach Runde #%d"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Rankings"
+msgstr "Rankings"
+
+#: src/data/util.py
+#, ai_translation
+msgid "Tournament summary"
+msgstr "Zusammenfassung des Turniers"
 
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
@@ -1783,6 +1904,7 @@ msgstr "Inhalt der URL [{url}] ist nicht gültig (input[id=[{id]] nicht gefunden
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisieren einer Sitzung auf [{url}]..."
 
+# Error: translation [In Ordnung.] is much too long compared to initial [OK]
 # Error: translation [In Ordnung.] is much too long compared to initial [OK]
 #: src/ffe/ffe_session.py
 #: src/web/templates/admin/players/filter_categories.html
@@ -2010,6 +2132,29 @@ msgstr "Bitte wählen Sie das Turnier aus."
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
+msgid "Please choose the document."
+msgstr "Bitte wählen Sie das Dokument aus."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/rotator_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "A positive integer is expected."
+msgstr "Eine positive Ganzzahl wird erwartet."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation, python-format
+msgid "Not part of the selected tournament (%d rounds)."
+msgstr "Nicht Teil des ausgewählten Turniers (%d Runden)."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation, python-format
+msgid "Round not finished (last finished: %d)."
+msgstr "Runde noch nicht fertig (letzter Fertigstrich: %d)."
+
+#: src/web/controllers/admin/event_admin_controller.py
+#, ai_translation
 msgid "Personal"
 msgstr "Persönlich"
 
@@ -2041,13 +2186,6 @@ msgstr "Familie [{uniq_id}] existiert bereits."
 #, ai_translation
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Turnier [{tournament_id}] nicht gefunden."
-
-#: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/rotator_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "A positive integer is expected."
-msgstr "Eine positive Ganzzahl wird erwartet."
 
 #: src/web/controllers/admin/family_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
@@ -3215,8 +3353,8 @@ msgstr "Löschen"
 #: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
-#: src/web/templates/admin/players/history_modal.html
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/record_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
@@ -3258,6 +3396,26 @@ msgstr "Das Turnier zu drucken."
 #, ai_translation
 msgid "Options"
 msgstr "Einstellungen"
+
+#: src/web/templates/admin/event/print_modal.html
+#, ai_translation
+msgid "Document:"
+msgstr "Dokument:"
+
+#: src/web/templates/admin/event/print_modal.html
+#, ai_translation
+msgid "The type of document to print."
+msgstr "Die Art des zu druckenden Dokuments."
+
+#: src/web/templates/admin/event/print_modal.html
+#, ai_translation
+msgid "Round:"
+msgstr "Runde:"
+
+#: src/web/templates/admin/event/print_modal.html
+#, ai_translation
+msgid "The round for which the document is printed (Defaults to the last possible round)."
+msgstr "Die Runde, für die das Dokument gedruckt wird (Standards für die letzte mögliche Runde)."
 
 #: src/web/templates/admin/event/print_modal.html
 #, ai_translation
@@ -4162,6 +4320,7 @@ msgid "Filter the check-in status."
 msgstr "Filtern Sie den Check-in-Status."
 
 #: src/web/templates/admin/players/filter_check_ins.html
+#: src/web/templates/admin/players/record_modal.html
 #, ai_translation
 msgid "Absent"
 msgstr "Nicht vorhanden"
@@ -4278,8 +4437,8 @@ msgstr "Comment"
 
 #: src/web/templates/admin/players/filter_columns.html
 #, fuzzy
-msgid "History *** HISTORY FOR PLAYERS COLUMNS"
-msgstr "History"
+msgid "Record *** RECORD FOR PLAYERS COLUMNS"
+msgstr "Record"
 
 #: src/web/templates/admin/players/filter_federations.html
 #, ai_translation
@@ -4310,123 +4469,6 @@ msgstr "Tournament"
 #, ai_translation
 msgid "Filter the tournaments."
 msgstr "Filtern Sie die Turniere."
-
-#: src/web/templates/admin/players/history_modal.html
-#: src/web/templates/admin/players/tab.html
-#, ai_translation
-msgid "History"
-msgstr "Geschichte"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Round"
-msgstr "Runde"
-
-#: src/web/templates/admin/players/history_modal.html
-#: src/web/templates/user/screen/results.html
-#, ai_translation
-msgid "Score"
-msgstr "Ergebnis"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Result"
-msgstr "Ergebnis"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Color"
-msgstr "Farbe"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Opponent"
-msgstr "Einsprechender"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Rating"
-msgstr "Bewertung"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Round skipped"
-msgstr "Runde übersprungen"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Playing"
-msgstr "Spielen"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Pairing allocated bye"
-msgstr "Verpaart von"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Loss"
-msgstr "Verlust"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Draw"
-msgstr "Zeichnen"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Gain"
-msgstr "Gewinn"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Half-point bye"
-msgstr "Halber Punkt auf Wiedersehen"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Full-point bye"
-msgstr "Vollständiges Wiedersehen"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Forfeit loss"
-msgstr "Verlustverlust"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Forfeit gain"
-msgstr "Gewinnverzicht"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Skip round"
-msgstr "Runde überspringen"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Full-point byes are deprecated."
-msgstr "Vollständige Byes werden missbilligt."
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Bye not allowed"
-msgstr "Tschüss nicht erlaubt"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation, python-format
-msgid "Maximum number of byes: %(max_byes)d"
-msgstr "Maximale Anzahl von Byes: %(max_byes)d"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation, python-format
-msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
-msgstr "Letzte Runden ohne Abschiede: %(last_rounds_no_byes)d"
-
-#: src/web/templates/admin/players/history_modal.html
-#, ai_translation
-msgid "Save"
-msgstr "Speichern"
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4670,6 +4712,8 @@ msgstr "Die Telefonnummer des Spielers."
 
 # Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
 # compared to initial [Owed:]
+# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
+# compared to initial [Owed:]
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "Owed:"
@@ -4699,6 +4743,112 @@ msgstr "Bemerkung:"
 #, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Jeder Kommentar zum Spieler (Kommentare sind nur von den Schiedsrichtern sichtbar)."
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Tournament record"
+msgstr "Turnierrekord"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Round"
+msgstr "Runde"
+
+#: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/user/screen/results.html
+#, ai_translation
+msgid "Score"
+msgstr "Ergebnis"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Result"
+msgstr "Ergebnis"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Color"
+msgstr "Farbe"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Opponent"
+msgstr "Einsprechender"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Rating"
+msgstr "Bewertung"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Round skipped"
+msgstr "Runde übersprungen"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Playing"
+msgstr "Spielen"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Pairing allocated bye"
+msgstr "Verpaart von"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Loss"
+msgstr "Verlust"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Draw"
+msgstr "Zeichnen"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Gain"
+msgstr "Gewinn"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Half-point bye"
+msgstr "Halber Punkt auf Wiedersehen"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Full-point bye (deprecated)"
+msgstr "Vollständig (verabscheut)"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Forfeit loss"
+msgstr "Verlustverlust"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Forfeit gain"
+msgstr "Gewinnverzicht"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Present"
+msgstr "Gegenwart"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr "Maximale Anzahl von Byes: %(max_byes)d"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation, python-format
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
+msgstr "Letzte Runden ohne Abschiede: %(last_rounds_no_byes)d"
+
+#: src/web/templates/admin/players/record_modal.html
+#, ai_translation
+msgid "Save"
+msgstr "Speichern"
 
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -4798,8 +4948,13 @@ msgstr "Bearbeiten Sie die Eigenschaften des Spielers."
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
-msgid "Edit the player's history."
+msgid "Edit the player's tournament record."
 msgstr "Bearbeiten Sie die Geschichte des Spielers."
+
+#: src/web/templates/admin/players/tab.html
+#, ai_translation
+msgid "Record"
+msgstr "Aufzeichnung"
 
 #: src/web/templates/admin/players/tab.html
 #, ai_translation
@@ -4882,9 +5037,9 @@ msgid "No players."
 msgstr "Keine Spieler."
 
 #: src/web/templates/admin/print/players.html
-#, ai_translation
-msgid "List of players"
-msgstr "Liste der Spieler"
+#, fuzzy
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
 
 #: src/web/templates/admin/print/players.html
 #, fuzzy
@@ -4908,7 +5063,7 @@ msgstr "Rapid"
 
 #: src/web/templates/admin/print/players.html
 #, fuzzy
-msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
 #: src/web/templates/admin/print/players.html
@@ -4918,7 +5073,7 @@ msgstr "Cat"
 
 #: src/web/templates/admin/print/players.html
 #, fuzzy
-msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Fed"
 
 #: src/web/templates/admin/print/players.html
@@ -4927,9 +5082,19 @@ msgid "League *** LEAGUE FOR PRINT VIEW"
 msgstr "League"
 
 #: src/web/templates/admin/print/players.html
+#, fuzzy, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+#: src/web/templates/admin/print/players.html
 #, fuzzy
 msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
+
+#: src/web/templates/admin/print/players.html
+#, fuzzy
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
 
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/user/event/rotator_card.html
@@ -6345,4 +6510,22 @@ msgstr "vs."
 
 #~ msgid "%(last_name)s %(first_name)s"
 #~ msgstr "%(last_name)s %(first_name)s"
+
+#~ msgid "Skip round"
+#~ msgstr "Runde überspringen"
+
+#~ msgid "Full-point byes are deprecated."
+#~ msgstr "Vollständige Byes werden missbilligt."
+
+#~ msgid "Bye not allowed"
+#~ msgstr "Tschüss nicht erlaubt"
+
+#~ msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
+#~ msgstr "Blitz"
+
+#~ msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
+#~ msgstr "Fed"
+
+#~ msgid "Full-point bye"
+#~ msgstr "Vollständiges Wiedersehen"
 

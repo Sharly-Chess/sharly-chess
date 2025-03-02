@@ -521,28 +521,14 @@ class PlayerAdminController(AbstractEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
-            case 'history':
-                data = {}
-                for round_ in range(1, admin_player.tournament.rounds + 1):
-                    if round_ > admin_player.tournament.current_round:
-                        # unpaired round
-                        data |= {
-                            # set this flag to tell the server that byes are edited
-                            # (the other flags are not sent to the server if not checked so
-                            # receiving this flag only means that the player is just unpaired
-                            # for the round)
-                            f'edit_round_{round_}': WebContext.value_to_form_data(True),
-                            f'zero_point_bye_{round_}': WebContext.value_to_form_data(
-                                admin_player.pairings[round_].forfeit),
-                        }
-                        if round_ <= admin_player.tournament.rounds - admin_player.tournament.last_rounds_no_byes:
-                            # byes allowed
-                            data |= {
-                                f'half_point_bye_{round_}': WebContext.value_to_form_data(
-                                    admin_player.pairings[round_].half_point_bye),
-                                f'full_point_bye_{round_}': WebContext.value_to_form_data(
-                                    admin_player.pairings[round_].full_point_bye),
-                            }
+            case 'record':
+                data = {
+                    f'round_{round_}_result': WebContext.value_to_form_data(
+                        admin_player.pairings[round_].result.value)
+                    for round_ in range(
+                        admin_player.tournament.current_round,
+                        admin_player.tournament.rounds + 1)
+                }
                 template_context |= {
                     'modal': modal,
                     'data': data,
@@ -631,11 +617,11 @@ class PlayerAdminController(AbstractEventAdminController):
         )
 
     @get(
-        path='/admin/history-modal/{event_uniq_id:str}/{player_id:int}',
-        name='admin-history-modal',
+        path='/admin/record-modal/{event_uniq_id:str}/{player_id:int}',
+        name='admin-record-modal',
         cache=1,
     )
-    async def htmx_admin_history_modal(
+    async def htmx_admin_record_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
@@ -644,7 +630,7 @@ class PlayerAdminController(AbstractEventAdminController):
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
-            modal='history',
+            modal='record',
             player_id=player_id,
         )
 
@@ -898,35 +884,31 @@ class PlayerAdminController(AbstractEventAdminController):
         admin_player: Player = web_context.admin_player
         admin_tournament: Tournament = admin_player.tournament
         pairings: dict[int, Pairing] = admin_player.pairings
-        for round_ in range(1, admin_tournament.rounds + 1):
-            if f'edit_round_{round_}' in data:
+        for round_ in range(
+            admin_player.tournament.current_round,
+            admin_player.tournament.rounds + 1
+        ):
+            field: str = f'round_{round_}_result'
+            if field in data:
                 pairing: Pairing = pairings[round_]
                 if not (pairing.requested_bye or pairing.not_paired):
-                    # The player is already paired for this round
                     logger.warning(f'Player [{admin_player}] already paired for round [{round_}].')
                     return {}
-                if f'zero_point_bye_{round_}' in data:
-                    if pairings[round_].result != Result.ZERO_POINT_BYE:
-                        new_byes[round_] = Result.ZERO_POINT_BYE
+                result: Result = Result(int(data[field]))
+                if result == pairings[round_].result:
                     continue
-                bye_allowed: bool = round_ <= admin_tournament.rounds - admin_tournament.last_rounds_no_byes
-                if f'half_point_bye_{round_}' in data:
-                    if not bye_allowed:
-                        logger.warning(f'Bye not allowed for round [{round_}].')
-                        return {}
-                    if pairings[round_].result != Result.HALF_POINT_BYE:
-                        new_byes[round_] = Result.HALF_POINT_BYE
-                    continue
-                if f'full_point_bye_{round_}' in data:
-                    if not bye_allowed:
-                        logger.warning(f'Bye not allowed for round [{round_}].')
-                        return {}
-                    if pairings[round_].result != Result.FULL_POINT_BYE:
-                        new_byes[round_] = Result.FULL_POINT_BYE
-                    continue
-                # if no previous field found, set the player unpaired
-                if pairings[round_].result != Result.NO_RESULT:
-                    new_byes[round_] = Result.NO_RESULT
+                match result:
+                    case Result.ZERO_POINT_BYE | Result.NO_RESULT:
+                        new_byes[round_] = result
+                        continue
+                    case Result.HALF_POINT_BYE | Result.FULL_POINT_BYE:
+                        if round_ > admin_tournament.rounds - admin_tournament.last_rounds_no_byes:
+                            logger.warning(f'Bye not allowed for round [{round_}].')
+                            return {}
+                        new_byes[round_] = result
+                        continue
+                    case _:
+                        raise ValueError(f'{result=}')
         # check that the total number of byes is allowed
         byes: int = 0
         for round_ in pairings:
@@ -941,10 +923,10 @@ class PlayerAdminController(AbstractEventAdminController):
         return new_byes
 
     @patch(
-        path='/admin/player-history/{event_uniq_id:str}/{player_id:int}',
-        name='admin-player-history',
+        path='/admin/player-record/{event_uniq_id:str}/{player_id:int}',
+        name='admin-player-record',
     )
-    async def htmx_admin_player_history(
+    async def htmx_admin_player_record(
         self,
         request: HTMXRequest,
         data: Annotated[

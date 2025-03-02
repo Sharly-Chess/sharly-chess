@@ -605,7 +605,7 @@ class PapiWebConfig(metaclass=Singleton):
         'ffe',
         'check_in',
         'tournament',
-        'history',
+        'record',
     ]
 
     # The default fédération when creating events or players
