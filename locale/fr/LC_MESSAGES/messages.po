@@ -3902,7 +3902,7 @@ msgstr "Gain"
 
 #: src/web/templates/admin/players/record_modal.html
 msgid "Half-point bye"
-msgstr "Demi-point joker"
+msgstr "Demi-point joker (bye)"
 
 #: src/web/templates/admin/players/record_modal.html
 msgid "Full-point bye (deprecated)"
@@ -3923,12 +3923,12 @@ msgstr "Présent·e"
 #: src/web/templates/admin/players/record_modal.html
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
-msgstr "Nombre maximum de jokers : %(max_byes)d"
+msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
 
 #: src/web/templates/admin/players/record_modal.html
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
-msgstr "Dernières rondes sans joker : %(last_rounds_no_byes)d"
+msgstr "Dernières rondes sans joker (bye) : %(last_rounds_no_byes)d"
 
 #: src/web/templates/admin/players/record_modal.html
 msgid "Save"
