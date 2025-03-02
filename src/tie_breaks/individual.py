@@ -195,6 +195,8 @@ def dummy_score(
                 return dummy + Result.DRAW.points(player.point_values)
             case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
                 return dummy + Result.GAIN.points(player.point_values)
+            case _:
+                raise ValueError(f'{pairing.result=}')
     elif dummy_type == 'SB':
         dummy = player.points_after(max_round)
         match pairing.result:
@@ -206,6 +208,7 @@ def dummy_score(
                 return dummy, Result.LOSS
             case _:
                 return dummy, pairing.result
+    raise ValueError(f'{dummy_type=}')
 
 
 def buchholz(
@@ -252,6 +255,7 @@ def buchholz(
                 max_round=max_round,
                 papi_legacy=papi_legacy)
             for pairing in pairings.values()
+            if pairing.opponent_id is not None
         )
     scores: list[float] = []
     voluntary_unplayed: list[float] = []
@@ -386,10 +390,10 @@ def sum_of_buchholz(
     If *papi_legacy* is True, will use the backwards compatible computation."""
     if max_round is None:
         max_round = max(player.pairings)
-    opponents: list[Player] = [
+    opponents: list[Player | None] = [
         tournament.players_by_id.get(pairing.opponent_id)
         for round_index, pairing in player.pairings.items()
-        if round_index < max_round
+        if round_index <= max_round
     ]
     kwargs = {'max_round': max_round}
     if fore_modifier:
@@ -792,16 +796,26 @@ def perfect_tournament_performance(
         for round_index, pairing in player.pairings.items()
         if round_index <= max_round and pairing.played
     ]
-    actual_score = Decimal(sum(pairing.result.points(tournament.point_values) for pairing in played_rounds))
     if not played_rounds:
         return 0
+    actual_score = Decimal(
+        sum(
+            pairing.result.points(tournament.point_values)
+            for pairing in played_rounds
+        )
+    )
     if actual_score == len(played_rounds) * Result.LOSS.points(tournament.point_values):
-        return -800 + min(tournament.players_by_id[pairing.opponent_id].estimation for pairing in played_rounds)
+        return -800 + min(
+            tournament.players_by_id[pairing.opponent_id].estimation
+            for pairing in played_rounds
+        )
     ratings: list[int] = [
         tournament.players_by_id[pairing.opponent_id].estimation
         for pairing in played_rounds
     ]
-    first_estimation = tournament_performance_rating(player, tournament, max_round=max_round)
+    first_estimation = tournament_performance_rating(
+        player, tournament, max_round=max_round
+    )
     first_expected_score = expected_score(first_estimation, ratings, tournament.point_values)
     if isclose(first_expected_score, actual_score, abs_tol=0.01):
         return round_fide(first_estimation)
@@ -913,7 +927,9 @@ def direct_encounter(
         tied_pairings = {
             opponent_id: pairing
             for opponent_id, pairing in tied_pairings.items()
-            if pairing.result not in (Result.FORFEIT_GAIN, Result.DOUBLE_FORFEIT, Result.FORFEIT_LOSS)
+            if pairing.result not in (
+                Result.FORFEIT_GAIN, Result.DOUBLE_FORFEIT, Result.FORFEIT_LOSS
+            )
         }
     if len(tied_pairings) == len(tied_opponents):
         return sum(

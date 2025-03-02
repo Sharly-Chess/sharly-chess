@@ -203,13 +203,21 @@ class TournamentAdminController(AbstractEventAdminController):
 
         if action == 'update':
             tie_breaks = []
+            papi_tie_breaks: list[PapiTieBreak] = []
             for index in range(1, 4):
-                if tie_break := PapiTieBreak(
-                    WebContext.form_data_to_int(
-                        data, f'tie_break_{index}', PapiTieBreak.NONE
+                field = f'tie_break_{index}'
+                tie_break = PapiTieBreak(
+                    WebContext.form_data_to_int(data, field, PapiTieBreak.NONE)
+                )
+                if tie_break != PapiTieBreak.NONE:
+                    if tie_break in papi_tie_breaks:
+                        errors[field] = _('Tie-break already in use.')
+                    papi_tie_breaks.append(tie_break)
+                    tie_breaks.append(
+                        tie_break.to_tie_break(
+                            web_context.admin_tournament.rounds
+                        )
                     )
-                ).to_tie_break(web_context.admin_tournament.rounds):
-                    tie_breaks.append(tie_break)
 
         return StoredTournament(
             id=web_context.admin_tournament.id
