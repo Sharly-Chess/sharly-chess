@@ -3849,7 +3849,7 @@ msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne 
 
 #: src/web/templates/admin/players/record_modal.html
 msgid "Tournament record"
-msgstr ""
+msgstr "Historique"
 
 #: src/web/templates/admin/players/record_modal.html
 msgid "Round"
@@ -4017,7 +4017,7 @@ msgstr "Modifier l'historique du·de la joueur·euse."
 
 #: src/web/templates/admin/players/tab.html
 msgid "Record"
-msgstr ""
+msgstr "Historique"
 
 #: src/web/templates/admin/players/tab.html
 msgid "Remove the player from the event."
