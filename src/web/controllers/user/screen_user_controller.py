@@ -59,7 +59,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
                     f'Access denied for screen [{self.screen.uniq_id}].'
                 )
                 return
-            self.user_event_tab = self.screen.type.to_str()
+            self.user_event_tab = self.screen.type.value
         else:
             try:
                 self.rotator = self.user_event.rotators_by_id[rotator_id]
@@ -80,7 +80,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
     @property
     def login_needed(self) -> bool:
         if self.screen is not None:
-            if self.screen.type != ScreenType.Input:
+            if self.screen.type != ScreenType.INPUT:
                 return False
         if not self.user_event.update_password:
             return False
@@ -300,12 +300,12 @@ class ScreenUserController(AbstractScreenUserController):
         if tournament.last_check_in_update > date:
             return True
         match screen_set.type:
-            case ScreenType.Boards | ScreenType.Input:
+            case ScreenType.BOARDS | ScreenType.INPUT:
                 if tournament.last_illegal_move_update > date:
                     return True
                 if tournament.last_result_update > date:
                     return True
-            case ScreenType.Players:
+            case ScreenType.PLAYERS:
                 pass
             case _:
                 raise ValueError(f'type={screen_set.type}')
@@ -326,13 +326,13 @@ class ScreenUserController(AbstractScreenUserController):
             if web_context.screen.last_update > date:
                 return True
             match web_context.screen.type:
-                case ScreenType.Image:
+                case ScreenType.IMAGE:
                     pass
-                case ScreenType.Boards | ScreenType.Input | ScreenType.Players:
+                case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS:
                     for screen_set in web_context.screen.screen_sets_by_id.values():
                         if cls._user_screen_set_refresh_needed(screen_set, date):
                             return True
-                case ScreenType.Results:
+                case ScreenType.RESULTS:
                     results_tournament_ids: list[int] = (
                         web_context.screen.results_tournament_ids
                         if web_context.screen.results_tournament_ids

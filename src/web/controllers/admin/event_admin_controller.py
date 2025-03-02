@@ -83,7 +83,7 @@ class EventAdminWebContext(AdminWebContext):
         
     def get_print_split_options(self) -> dict[str, str]:
         return {
-            self.value_to_form_data(split.to_str()): str(split)
+            self.value_to_form_data(split): PrintSplit(split).name
             for split in PrintSplit
         }
 
@@ -626,7 +626,7 @@ class EventAdminController(AbstractEventAdminController):
                                 tournament_id
                             ),
                             'split': WebContext.value_to_form_data(
-                                PrintSplit.NoSplit.to_str()
+                                PrintSplit.NO_SPLIT
                             ),
                             'document': WebContext.value_to_form_data(
                                 PrintDocument.PLAYER_LIST
