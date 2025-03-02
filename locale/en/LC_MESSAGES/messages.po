@@ -889,38 +889,6 @@ msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
 msgstr "SB"
 
 #: src/data/tie_break.py
-msgid "Cut"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Cut top"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Cut Bottom"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Played modifier"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Papi legacy"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Fore modifier"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Limit"
-msgstr ""
-
-#: src/data/tie_break.py
-msgid "Exclude players"
-msgstr ""
-
-#: src/data/tie_break.py
 msgid "Number of games won"
 msgstr ""
 

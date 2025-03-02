@@ -264,28 +264,6 @@ class TieBreakOption(StrEnum):
             case _:
                 raise ValueError(f'Unknown tie break option: {self}')
 
-    @property
-    def name(self) -> str:
-        match self:
-            case TieBreakOption.CUT:
-                return _('Cut')
-            case TieBreakOption.CUT_TOP:
-                return _('Cut top')
-            case TieBreakOption.CUT_BOTTOM:
-                return _('Cut Bottom')
-            case TieBreakOption.PLAYED_MODIFIER:
-                return _('Played modifier')
-            case TieBreakOption.PAPI_LEGACY:
-                return _('Papi legacy')
-            case TieBreakOption.FORE_MODIFIER:
-                return _('Fore modifier')
-            case TieBreakOption.LIMIT:
-                return _('Limit')
-            case TieBreakOption.EXCLUDE_IDS:
-                return _('Exclude players')
-            case _:
-                raise ValueError(f'Unknown tie break option: {self}')
-
 
 class TieBreakType(StrEnum):
     """An enumeration representing the supported types of tournament
