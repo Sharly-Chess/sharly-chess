@@ -283,8 +283,6 @@ def buchholz(
             else:
                 scores.append(dummy_points)
             continue
-        if pairing.opponent_id is None:
-            continue
         opponent: Player = tournament.players_by_id[pairing.opponent_id]
         if tournament.pairing.swiss:
             opponent_adjusted_score = adjusted_score(
@@ -361,8 +359,6 @@ def fore_buchholz(
             else:
                 scores.append(dummy_points)
             continue
-        if pairing.opponent_id is None:
-            continue
         opponent: Player = tournament.players_by_id[pairing.opponent_id]
         opponent_adjusted_score = adjusted_score(
             opponent, tournament, max_round=max_round,
@@ -394,11 +390,10 @@ def sum_of_buchholz(
     If *papi_legacy* is True, will use the backwards compatible computation."""
     if max_round is None:
         max_round = max(player.pairings)
-    opponents: list[Player] = [
+    opponents: list[Player | None] = [
         tournament.players_by_id.get(pairing.opponent_id)
         for round_index, pairing in player.pairings.items()
         if round_index <= max_round
-        and pairing.opponent_id is not None
     ]
     kwargs = {'max_round': max_round}
     if fore_modifier:
@@ -648,7 +643,7 @@ def average_rating_opponents(
     ]
     ratings = []
     for pairing in pairings:
-        if pairing.opponent_id is None or pairing.unplayed:
+        if pairing.unplayed:
             continue
         opponent = tournament.players_by_id[pairing.opponent_id]
         with suppress(KeyError):
@@ -687,8 +682,6 @@ def tournament_performance_rating(
     ratings = []
     score = 0
     for pairing in pairings:
-        if pairing.opponent_id is None:
-            continue
         opponent = tournament.players_by_id[pairing.opponent_id]
         with suppress(KeyError):
             if papi_legacy:
@@ -735,8 +728,6 @@ def average_performance_rating_opponents(
     ]
     performance_ratings = []
     for pairing in played_games:
-        if pairing.opponent_id is None:
-            continue
         opponent: Player = tournament.players_by_id[pairing.opponent_id]
         opponent_tpr = tournament_performance_rating(
             opponent,
@@ -804,7 +795,6 @@ def perfect_tournament_performance(
         pairing
         for round_index, pairing in player.pairings.items()
         if round_index <= max_round and pairing.played
-        and pairing.opponent_id is not None
     ]
     if not played_rounds:
         return 0
@@ -871,7 +861,6 @@ def average_perfect_performance(
         pairing
         for round_index, pairing in player.pairings.items()
         if round_index <= max_round and pairing.played
-        and pairing.opponent_id is not None
     ]
     ptp = [
         perfect_tournament_performance(
