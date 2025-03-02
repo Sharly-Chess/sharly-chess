@@ -51,6 +51,15 @@
                         ) }}
                     </div>
                 </div>
+                <script>
+                    $('#document').change(function() {
+                        if (['rankings', 'tournament-summary'].includes($(this).val())) {
+                            $('#round_input').css('display', 'block');
+                        } else {
+                            $('#round_input').css('display', 'none');
+                        }
+                    });
+                </script>
                 <div class="row">
                     <div class="col-12 mb-3">
                         {{ admin_macros.select_input(
@@ -62,17 +71,6 @@
                         ) }}
                     </div>
                 </div>
-                <script>
-                    const documentSelect = document.getElementById('document');
-                    const roundInput = document.getElementById('round_input');
-                    documentSelect.addEventListener('change', () => {
-                        if (['rankings', 'tournament-summary'].includes(documentSelect.value)) {
-                            roundInput.style.display = 'block';
-                        } else {
-                            roundInput.style.display = 'none';
-                        }
-                    });
-                </script>
             </div> 
 
             <div class="modal-footer d-block">
