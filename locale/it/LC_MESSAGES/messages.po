@@ -1004,6 +1004,8 @@ msgstr "Nessuno"
 
 # Error: translation [BuchholzCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Buchholz]
+# Error: translation [BuchholzCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Buchholz]
 #: src/data/tie_break.py
 #, ai_translation
 msgid "Buchholz"
@@ -1041,11 +1043,15 @@ msgstr "Numero di vittorie"
 
 # Error: translation [KashdanCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Kashdan]
+# Error: translation [KashdanCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Kashdan]
 #: src/data/tie_break.py
 #, ai_translation
 msgid "Kashdan"
 msgstr ""
 
+# Error: translation [KoyaCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Koya]
 # Error: translation [KoyaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Koya]
 #: src/data/tie_break.py
@@ -1173,6 +1179,8 @@ msgstr "Giri uno eletto a giocare"
 msgid "Average of opponents Buchholz"
 msgstr "Media degli avversari Buchholz"
 
+# Error: translation [Fore BuchholzCity name (optional, probably does not need
+# a translation)] is much too long compared to initial [Fore Buchholz]
 # Error: translation [Fore BuchholzCity name (optional, probably does not need
 # a translation)] is much too long compared to initial [Fore Buchholz]
 #: src/data/tie_break.py
@@ -1357,6 +1365,8 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
+# Error: translation [U12City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U12]
 #: src/data/util.py
 #, ai_translation
 msgid "U12"
@@ -1369,6 +1379,8 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
+# Error: translation [U16City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U16]
 #: src/data/util.py
 #, ai_translation
 msgid "U16"
@@ -1379,6 +1391,8 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
+# Error: translation [U20City name (optional, probably does not need a
+# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #: src/data/util.py
@@ -6363,6 +6377,8 @@ msgstr "Numero massimo di risultati: illimitato"
 msgid "Image:"
 msgstr "Immagine:"
 
+# Error: translation [Rnd.BoaCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Rnd.Boa]
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
 #: src/web/templates/user/screen/results.html

@@ -1004,6 +1004,8 @@ msgstr "Καμία"
 
 # Error: translation [ΜπούχχολζCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Buchholz]
+# Error: translation [ΜπούχχολζCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Buchholz]
 #: src/data/tie_break.py
 #, ai_translation
 msgid "Buchholz"
@@ -1041,11 +1043,15 @@ msgstr "Αριθμός κερδών"
 
 # Error: translation [ΚασντάνCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Kashdan]
+# Error: translation [ΚασντάνCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Kashdan]
 #: src/data/tie_break.py
 #, ai_translation
 msgid "Kashdan"
 msgstr ""
 
+# Error: translation [ΚόγιαCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Koya]
 # Error: translation [ΚόγιαCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Koya]
 #: src/data/tie_break.py
@@ -1617,6 +1623,8 @@ msgstr "Δεν χωρίζονται"
 msgid "Category"
 msgstr "Κατηγορία"
 
+# Error: translation [ΚλαμπCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Club]
 # Error: translation [ΚλαμπCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Club]
 #: src/data/util.py
@@ -3390,6 +3398,8 @@ msgstr "Επεξεργασία"
 
 # Error: translation [ΚλώνοςCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Clone]
+# Error: translation [ΚλώνοςCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Clone]
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
 msgid "Clone"
@@ -3861,6 +3871,8 @@ msgstr "Ο χρονοδιακόπτης εμφανίζεται στις οθόν
 msgid "The number of columns used to display data."
 msgstr "Ο αριθμός των στηλών που χρησιμοποιούνται για την εμφάνιση δεδομένων."
 
+# Error: translation [ΜενούCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Menus]
 # Error: translation [ΜενούCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Menus]
 #: src/web/templates/admin/families/family_modal.html
@@ -4546,6 +4558,8 @@ msgstr "Αξιολογήσεις"
 
 # Error: translation [ΦΙΝΤΕConstellation name (optional, probably does not
 # need a translation)] is much too long compared to initial [FIDE]
+# Error: translation [ΦΙΝΤΕConstellation name (optional, probably does not
+# need a translation)] is much too long compared to initial [FIDE]
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "FIDE"
@@ -4666,6 +4680,9 @@ msgstr "Αριθμός τηλεφώνου:"
 msgid "The player's phone number."
 msgstr "Το τηλέφωνο του παίκτη."
 
+# Error: translation [Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ,
+# ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!] is much
+# too long compared to initial [Owed:]
 # Error: translation [Ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ,
 # ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ, ωχ!] is much
 # too long compared to initial [Owed:]
