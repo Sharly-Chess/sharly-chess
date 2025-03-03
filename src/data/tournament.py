@@ -837,10 +837,10 @@ class Tournament:
             # breakpoint()
             pass
 
-        players = sorted(self.players_by_id.values(), key=lambda player: player.points_after(max_round))
+        players = sorted(self.players_by_id.values(), key=lambda player: player.points_after(max_round, only_played=True))
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
-            for points, group in groupby(players, key=lambda player: player.points_after(max_round))
+            for points, group in groupby(players, key=lambda player: player.points_after(max_round, only_played=True))
         }
         point_keys = sorted(players_by_points.keys())
         level_estimations = {points: 0 for points in score_groups}
@@ -854,7 +854,7 @@ class Tournament:
                 average_rating = round_function(sum(group_ratings) / len(group_ratings))
                 level_estimations[points] = average_rating
         previous_estimation = previous_bonus = 0
-        for points in reversed(score_groups):
+        for points in reversed(point_keys):
             estimation = level_estimations[points]
             if estimation > 0:
                 previous_bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
@@ -864,7 +864,7 @@ class Tournament:
                 level_estimations[points] = previous_estimation + previous_bonus - bonus
                 previous_estimation = level_estimations[points]
                 previous_bonus = bonus
-        for points in score_groups:
+        for points in point_keys:
             estimation = level_estimations[points]
             if estimation > 0:
                 previous_bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
