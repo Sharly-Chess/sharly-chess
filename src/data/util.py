@@ -3,20 +3,16 @@ PlayerSex, TournamentPairing, TournamentRating"""
 
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum, StrEnum, IntEnum, auto
+from enum import Enum, StrEnum, IntEnum
 from itertools import islice
 from logging import Logger
 from math import floor
-from typing import Self, TYPE_CHECKING
+from typing import Self
 
 from common.i18n import _
 from common.logger import get_logger
 
 logger: Logger = get_logger()
-
-if TYPE_CHECKING:
-    from data.player import Player
-    from data.tournament import Tournament
 
 try:
     import itertools
@@ -190,7 +186,7 @@ class Result(IntEnum):
             case _:
                 raise ValueError(f'{self=}')
 
-    def points(self, values: dict[Self, float] | None = None) -> float:
+    def points(self, values: dict['Result', float] | None = None) -> float:
         """
         The value in points, according to rules defined in *values*.
         If a result instance is not included in *values*, the closest result's
