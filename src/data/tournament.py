@@ -603,8 +603,9 @@ class Tournament:
             bb_fields=(self._trf_bb_fields(point_values=self.point_values) if trf_type == TrfType.PAIRING else {}),
         )
 
+    @staticmethod
     def _find_player_value_by_id(
-        self, player_id: int, players_by_value: dict[Any, Player]
+        player_id: int, players_by_value: dict[Any, Player]
     ) -> any:
         for value, player in players_by_value.items():
             if player.id == player_id:

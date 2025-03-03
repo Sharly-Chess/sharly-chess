@@ -196,7 +196,8 @@ class PapiTieBreak(IntEnum):
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
-    def _papi_buchholz_cut(self, tournament_rounds: int) -> int:
+    @staticmethod
+    def _papi_buchholz_cut(tournament_rounds: int) -> int:
         if tournament_rounds <= 7:
             return 1
         elif tournament_rounds <= 12:

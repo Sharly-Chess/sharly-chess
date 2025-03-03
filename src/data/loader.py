@@ -298,7 +298,8 @@ class EventBackupLoader:
     def __init__(self):
         PapiWebConfig.event_backup_base_path.mkdir(exist_ok=True, parents=True)
 
-    def event_backups(self, event_id: str) -> list[EventBackup]:
+    @staticmethod
+    def event_backups(event_id: str) -> list[EventBackup]:
         backups: list[EventBackup] = []
         for version_dir in PapiWebConfig.event_backup_base_path.iterdir():
             if not version_dir.is_dir():
@@ -308,7 +309,8 @@ class EventBackupLoader:
                 backups.append(backup)
         return backups
 
-    def version_backups(self, version: Version) -> list[EventBackup]:
+    @staticmethod
+    def version_backups(version: Version) -> list[EventBackup]:
         version_dir: Path = (
             PapiWebConfig.event_backup_base_path / version.public
         )
