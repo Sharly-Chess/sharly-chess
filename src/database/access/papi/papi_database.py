@@ -256,10 +256,12 @@ class PapiDatabase(AccessDatabase):
             pairings: dict[int, Pairing] = {}
             for round_ in range(1, rounds + 1):
                 round_str = f'Rd{round_:0>2}'
+                color: BoardColor | None
                 color_str: str = row[f'{round_str}Cl']
-                color: BoardColor | None = None
-                with suppress(ValueError):
-                    color: BoardColor | None = BoardColor.from_papi_value(color_str)
+                try:
+                    color = BoardColor.from_papi_value(color_str)
+                except ValueError:
+                    color = None
                 opponent_papi_id: int | None = row[f'{round_str}Adv']
                 pairings[round_] = Pairing(
                     color,
@@ -311,21 +313,24 @@ class PapiDatabase(AccessDatabase):
             )
         return players
 
-    def add_board_result(self, player_papi_id: int, round_: int, result: Result):
+    def set_player_result(self, player_papi_id: int, round_: int, result: Result):
         """Writes the given result to the database."""
-        query: str = f'UPDATE `joueur` SET `Rd{round_:0>2}Res` = ? WHERE `Ref` = ?'
-        self._execute(
-            query,
-            (
-                result.value,
-                player_papi_id,
-            ),
-        )
+        data: dict[str, str | int] = {
+            f'Rd{round_:0>2}Res': result.to_papi_value,
+        }
+        match result:
+            case Result.NO_RESULT:
+                data[f'Rd{round_:0>2}Cl'] = 'R'
+            case Result.ZERO_POINT_BYE | Result.HALF_POINT_BYE | Result.FULL_POINT_BYE:
+                data[f'Rd{round_:0>2}Cl'] = 'F'
+        actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
+        query: str = f'UPDATE `joueur` SET {actions} WHERE `Ref` = ?'
+        params: tuple = tuple(list(data.values()) + [player_papi_id, ])
+        self._execute(query, params)
 
-    def remove_board_result(self, player_papi_id: int, round_: int):
+    def reset_player_result(self, player_papi_id: int, round_: int):
         """Writes the empty result for the given player in the database."""
-        query: str = f'UPDATE `joueur` SET `Rd{round_:0>2}Res` = 0 WHERE `Ref` = ?'
-        self._execute(query, (player_papi_id,))
+        self.set_player_result(player_papi_id, round_, Result.NO_RESULT)
 
     @staticmethod
     def timestamp_to_papi_date(ts: float) -> str:

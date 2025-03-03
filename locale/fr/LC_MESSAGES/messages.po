@@ -1009,7 +1009,7 @@ msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 
 #: src/data/tournament.py
-msgid "Qualification number and FFE password not set, operations on the FFE website will not be available."
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
 msgstr "Le numéro d'homologation et le mot de passe FFE ne sont pas définis, les opérations sur le site web FFE ne seront pas disponibles."
 
 #: src/data/tournament.py
@@ -1306,6 +1306,7 @@ msgid "League"
 msgstr "Ligue"
 
 #: src/data/util.py src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/players/record_modal.html
 msgid "Federation"
 msgstr "Fédération"
 
@@ -2682,6 +2683,7 @@ msgstr "Supprimer"
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/record_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
@@ -3507,6 +3509,7 @@ msgid "Filter the check-in status."
 msgstr "Filtrer le pointage."
 
 #: src/web/templates/admin/players/filter_check_ins.html
+#: src/web/templates/admin/players/record_modal.html
 msgid "Absent"
 msgstr "Absent·e"
 
@@ -3599,7 +3602,7 @@ msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
 msgstr "Commentaire"
 
 #: src/web/templates/admin/players/filter_columns.html
-msgid "History *** HISTORY FOR PLAYERS COLUMNS"
+msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Historique"
 
 #: src/web/templates/admin/players/filter_federations.html
@@ -3844,6 +3847,93 @@ msgstr "Commentaire :"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
+#: src/web/templates/admin/players/record_modal.html
+msgid "Tournament record"
+msgstr "Historique"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Round"
+msgstr "Ronde"
+
+#: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Score"
+msgstr "Score"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Result"
+msgstr "Résultat"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Color"
+msgstr "Couleur"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Opponent"
+msgstr "Adversaire"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Rating"
+msgstr "Elo"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Round skipped"
+msgstr "Absent·e"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Playing"
+msgstr "En cours"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Pairing allocated bye"
+msgstr "Exempt·e"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Loss"
+msgstr "Perte"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Draw"
+msgstr "Nulle"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Gain"
+msgstr "Gain"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Half-point bye"
+msgstr "Demi-point joker (bye)"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Full-point bye (deprecated)"
+msgstr "Point joker entier (obsolète)"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Forfeit loss"
+msgstr "Perte par forfait"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Forfeit gain"
+msgstr "Gain par forfait"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Present"
+msgstr "Présent·e"
+
+#: src/web/templates/admin/players/record_modal.html
+#, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
+
+#: src/web/templates/admin/players/record_modal.html
+#, python-format
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
+msgstr "Dernières rondes sans joker (bye) : %(last_rounds_no_byes)d"
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Save"
+msgstr "Enregistrer"
+
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
 msgid "Players"
@@ -3920,6 +4010,14 @@ msgstr "Payé"
 #: src/web/templates/admin/players/tab.html
 msgid "Edit the player's properties."
 msgstr "Éditer les propriétés du·de la joueur·euse."
+
+#: src/web/templates/admin/players/tab.html
+msgid "Edit the player's tournament record."
+msgstr "Modifier l'historique du·de la joueur·euse."
+
+#: src/web/templates/admin/players/tab.html
+msgid "Record"
+msgstr "Historique"
 
 #: src/web/templates/admin/players/tab.html
 msgid "Remove the player from the event."
@@ -4820,7 +4918,7 @@ msgid "Name of the Papi file (with no extension):"
 msgstr "Nom du fichier Papi (sans l'extension) :"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
+msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
 msgstr "Le nom du fichier papi, sans l'extension Papi (par défaut le numéro d'homologation FFE, puis l'identifiant de l'évènement)."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -4828,7 +4926,7 @@ msgid "Connections (FFE and ChessEvent)"
 msgstr "Connexions (FFE et ChessEvent)"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "FFE qualification number (optional):"
+msgid "FFE certification number (optional):"
 msgstr "Numéro d'homologation FFE (facultatif) :"
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -5147,10 +5245,6 @@ msgstr "Image :"
 #: src/web/templates/user/screen/results.html
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
-
-#: src/web/templates/user/screen/results.html
-msgid "Score"
-msgstr "Score"
 
 #: src/web/templates/user/screen/boards/board_row_player_cell.html
 msgid "EXEMPT"

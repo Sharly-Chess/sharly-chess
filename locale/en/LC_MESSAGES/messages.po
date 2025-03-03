@@ -870,7 +870,7 @@ msgstr "Perf"
 
 #: src/data/tie_break.py
 msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "Sbh"
+msgstr "SBh"
 
 #: src/data/tie_break.py
 msgid "NW *** ACRONYM FOR NUMBER OF WINS"
@@ -1009,7 +1009,7 @@ msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr ""
 
 #: src/data/tournament.py
-msgid "Qualification number and FFE password not set, operations on the FFE website will not be available."
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
 msgstr ""
 
 #: src/data/tournament.py
@@ -1306,6 +1306,7 @@ msgid "League"
 msgstr ""
 
 #: src/data/util.py src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/players/record_modal.html
 msgid "Federation"
 msgstr ""
 
@@ -2682,6 +2683,7 @@ msgstr ""
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
 #: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/record_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
@@ -3507,6 +3509,7 @@ msgid "Filter the check-in status."
 msgstr ""
 
 #: src/web/templates/admin/players/filter_check_ins.html
+#: src/web/templates/admin/players/record_modal.html
 msgid "Absent"
 msgstr ""
 
@@ -3599,8 +3602,8 @@ msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
 msgstr "Comment"
 
 #: src/web/templates/admin/players/filter_columns.html
-msgid "History *** HISTORY FOR PLAYERS COLUMNS"
-msgstr "History"
+msgid "Record *** RECORD FOR PLAYERS COLUMNS"
+msgstr "Record"
 
 #: src/web/templates/admin/players/filter_federations.html
 msgid "Filter the federations."
@@ -3844,6 +3847,93 @@ msgstr ""
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
+#: src/web/templates/admin/players/record_modal.html
+msgid "Tournament record"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Round"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/user/screen/results.html
+msgid "Score"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Result"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Color"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Opponent"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Rating"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Round skipped"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Playing"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Pairing allocated bye"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Loss"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Draw"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Gain"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Half-point bye"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Full-point bye (deprecated)"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Forfeit loss"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Forfeit gain"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Present"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+#, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+#, python-format
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
+msgstr ""
+
+#: src/web/templates/admin/players/record_modal.html
+msgid "Save"
+msgstr ""
+
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/screens/screen_card.html
 msgid "Players"
@@ -3919,6 +4009,14 @@ msgstr "Paid"
 
 #: src/web/templates/admin/players/tab.html
 msgid "Edit the player's properties."
+msgstr ""
+
+#: src/web/templates/admin/players/tab.html
+msgid "Edit the player's tournament record."
+msgstr ""
+
+#: src/web/templates/admin/players/tab.html
+msgid "Record"
 msgstr ""
 
 #: src/web/templates/admin/players/tab.html
@@ -4820,7 +4918,7 @@ msgid "Name of the Papi file (with no extension):"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "The name of the Papi file, without the .papi extension (by default the FFE qualification number of the tournament, then The Unique ID of the tournament)."
+msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -4828,7 +4926,7 @@ msgid "Connections (FFE and ChessEvent)"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "FFE qualification number (optional):"
+msgid "FFE certification number (optional):"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -5148,10 +5246,6 @@ msgstr ""
 msgid "Rnd.Boa"
 msgstr ""
 
-#: src/web/templates/user/screen/results.html
-msgid "Score"
-msgstr ""
-
 #: src/web/templates/user/screen/boards/board_row_player_cell.html
 msgid "EXEMPT"
 msgstr ""
@@ -5213,6 +5307,6 @@ msgstr ""
 msgid "vs"
 msgstr ""
 
-#~ msgid "Screen families allow to group screens together."
+#~ msgid "Full-point bye"
 #~ msgstr ""
 

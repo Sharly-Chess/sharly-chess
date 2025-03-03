@@ -122,24 +122,6 @@
     <!-- end ffe_licence() -->
 {% endmacro %}
 
-{% macro tooltip_script() %}
-    <!-- tooltip_script() -->
-    <script>
-        {# manually remove the tooltips when reloading #admin-content (tooltip elements are created by Bootstrap when tooltips are shown but sometimes not removed) #}
-        $(document).ready(function(){
-            $('body .tooltip').remove();
-            $('body .tooltip-inner').remove();
-            $('body .tooltip-arrow').remove();
-        });
-        {# Enable Bootstrap tooltips cf https://getbootstrap.com/docs/5.3/components/tooltips/ #}
-        if (typeof bootstrap !== 'undefined') { {# bootstrap is not set when loading the first page #}
-            tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-            tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-        }
-    </script>
-    <!-- end tooltip_script() -->
-{% endmacro %}
-
 {% macro background_script(background_info) %}
     <!-- background_script() -->
     <!-- This is needed since it's not possible to change body attributes using HTMX -->

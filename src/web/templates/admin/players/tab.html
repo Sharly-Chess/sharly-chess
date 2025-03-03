@@ -267,7 +267,7 @@
                             </div>
                         </th>
                     {% endif %}
-                    {% if 'history' in admin_players_filter_columns %}
+                    {% if 'record' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap">
                             <div class="d-flex align-items-center">
                                 <i class="bi-0-square"></i>
@@ -300,6 +300,21 @@
                                             {{ macros.tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
                                         >
                                             <i class="bi-pencil-fill pe-1"></i>{{ _('Edit') }}
+                                        </li>
+                                        <li
+                                            class="dropdown-item btn text-start"
+                                            hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                            hx-target="#modal-wrapper"
+                                            hx-indicator="#please-wait"
+                                            preload
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-wrapper"
+                                            hx-trigger="click, keyup[key=='Enter']"
+                                            tabindex="0"
+                                            {{ macros.tooltip_attributes('info', _('Edit the player\'s tournament record.'), 'left') }}
+                                        >
+                                            <i class="bi-0-square"></i><i class="bi-1-square-fill"></i>
+                                            {{ _('Record') }}
                                         </li>
                                         {% if not player.has_real_pairings %}
                                             <li
@@ -524,9 +539,9 @@
                                     {{ player.comment }}
                                 </td>
                             {% endif %}
-                            {% if 'history' in admin_players_filter_columns %}
+                            {% if 'record' in admin_players_filter_columns %}
                                 <td class="text-nowrap">
-                                    {{ admin_macros.player_history(player) }}
+                                    {{ admin_macros.player_record(player) }}
                                 </td>
                             {% endif %}
                         </tr>

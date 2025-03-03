@@ -37,8 +37,8 @@
     <!-- end tournament_status_icon() -->
 {% endmacro %}
 
-{% macro player_history(player) %}
-    <!-- player_history() -->
+{% macro player_record(player) %}
+    <!-- player_record() -->
     {% for pairing in player.pairings.values() %}
         {% if pairing.forfeit %}
             {% set _text='f' %}
@@ -78,7 +78,7 @@
             {% set _class='bg-danger text-white' %}
         {% endif %}
         <span
-                class="player-history text-center p-0 m-0  {{ _class }}"
+                class="player-record text-center p-0 m-0  {{ _class }}"
                 {% if tooltip_placement %}
                     {{ tooltip_attributes(_tooltip_level, _tooltip_text, tooltip_placement) }}
                 {% endif %}
@@ -87,7 +87,7 @@
             {{ _text|safe }}
         </span>
     {% endfor %}
-    <!-- end player_history() -->
+    <!-- end player_record() -->
 {% endmacro %}
 
 {% macro admin_players_sort_link(url, icon, sort, admin_players_sort) %}
