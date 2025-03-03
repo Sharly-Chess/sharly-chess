@@ -330,12 +330,12 @@ class LocaleInfo:
 class I18nUpdater:
     def __init__(
         self,
-        trusted_locales: list[str],
-        untrusted_locales: list[str],
+        trusted_locales_: list[str],
+        untrusted_locales_: list[str],
     ):
         """The path of the i18n files (this script should be run from the dev root)."""
-        self.trusted_locales: list[str] = trusted_locales
-        self.untrusted_locales: list[str] = untrusted_locales
+        self.trusted_locales: list[str] = trusted_locales_
+        self.untrusted_locales: list[str] = untrusted_locales_
         self.locale_dir: Path = Path('locale')
         self.pot_file: Path = self.locale_dir / 'messages.pot'
         self.doc_dir: Path = Path('docs')
