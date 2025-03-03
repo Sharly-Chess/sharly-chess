@@ -6,3 +6,8 @@ class EventMigration(AbstractEventMigration):
         self._execute(
             'ALTER TABLE `tournament` ADD `tie_breaks` TEXT'
         )
+
+    def backward(self):
+        self._execute(
+            'ALTER TABLE `tournament` DROP COLUMN `tie_breaks`'
+        )

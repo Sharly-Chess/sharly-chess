@@ -45,7 +45,7 @@ class ScreenSet:
         self.uniq_id: str = f'{self.screen.uniq_id}_{self.stored_screen_set.order if self.stored_screen_set else self.family_part}'
         fixed_boards_str: str | None = (
             self.stored_screen_set.fixed_boards_str
-            if self.screen.type in [ScreenType.Boards, ScreenType.Input]
+            if self.screen.type in [ScreenType.BOARDS, ScreenType.INPUT]
             and self.stored_screen_set
             else None
         )
@@ -326,7 +326,7 @@ class ScreenSet:
             return _('boards {board_numbers}').format(
                 board_numbers=', '.join(map(str, self.fixed_board_numbers))
             )
-        if self.type in [ScreenType.Boards, ScreenType.Input]:
+        if self.type in [ScreenType.BOARDS, ScreenType.INPUT]:
             match (self.first, self.last):
                 case (None, None):
                     return _('all the boards')
