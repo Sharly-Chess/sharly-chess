@@ -320,9 +320,9 @@ class PapiDatabase(AccessDatabase):
         }
         match result:
             case Result.NO_RESULT:
-                data[f'Rd{round_:0>2}Cl']= 'R'
+                data[f'Rd{round_:0>2}Cl'] = 'R'
             case Result.ZERO_POINT_BYE | Result.HALF_POINT_BYE | Result.FULL_POINT_BYE:
-                data[f'Rd{round_:0>2}Cl']= 'F'
+                data[f'Rd{round_:0>2}Cl'] = 'F'
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
         query: str = f'UPDATE `joueur` SET {actions} WHERE `Ref` = ?'
         params: tuple = tuple(list(data.values()) + [player_papi_id, ])
