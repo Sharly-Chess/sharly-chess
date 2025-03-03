@@ -807,7 +807,7 @@ class Tournament:
                     vpoints = 2 * Result.GAIN.points(self.point_values)
         return vpoints
     
-    def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True, debug: bool = False):
+    def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True):
         if max_round is None:
             max_round = self._current_round
         if self._current_round <= 1:
@@ -820,30 +820,14 @@ class Tournament:
             round_function = round_fide
         
         max_possible_points = Result.GAIN.points(self.point_values) * max_round
-        score_groups: list[float] = [0]
-        if (step := Result.LOSS.points(self.point_values)) == 0:
-            # NOTE(Amaras) only redefined if a loss gives 0 points
-            step = Result.DRAW.points(self.point_values)
-        assert step > 0, "Point values are too weird to consider"
-        current_score = 0
-        while current_score < max_possible_points:
-            # NOTE(Amaras) this assumes that you can get all possible
-            # scores starting with 0, and stepping up by a loss or a draw.
-            # Exotic point values like W=3, D=1.5, L=1 will not work
-            current_score += step
-            score_groups.append(current_score)
         
-        if debug:
-            # breakpoint()
-            pass
-
         players = sorted(self.players_by_id.values(), key=lambda player: player.points_after(max_round, only_played=True))
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
             for points, group in groupby(players, key=lambda player: player.points_after(max_round, only_played=True))
         }
         point_keys = sorted(players_by_points.keys())
-        level_estimations = {points: 0 for points in score_groups}
+        level_estimations = {points: 0 for points in point_keys}
         for points, test_group in players_by_points.items():
             group_ratings = [
                 player.estimation
@@ -933,7 +917,7 @@ class Tournament:
             )
         max_round = max_round or self.max_ranking_round or self.rounds
         # Estimate pairings to ensure we have a defined rank for everyone
-        self.estimate_players(max_round=max_round, papi_legacy=papi_legacy, debug=True)
+        self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
         for player in self.players_by_id.values():
             player.points = (
                 player.total_points() if max_round is None
