@@ -1,5 +1,6 @@
 from datetime import datetime
 from itertools import groupby
+from math import floor
 from time import time
 from collections import Counter
 from functools import cached_property
@@ -806,7 +807,7 @@ class Tournament:
                     vpoints = 2 * Result.GAIN.points(self.point_values)
         return vpoints
     
-    def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True):
+    def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True, debug: bool = False):
         if max_round is None:
             max_round = self._current_round
         if self._current_round <= 1:
@@ -817,16 +818,33 @@ class Tournament:
             round_function = round
         else:
             round_function = round_fide
+        
+        max_possible_points = Result.GAIN.points(self.point_values) * max_round
+        score_groups: list[float] = [0]
+        if (step := Result.LOSS.points(self.point_values)) == 0:
+            # NOTE(Amaras) only redefined if a loss gives 0 points
+            step = Result.DRAW.points(self.point_values)
+        assert step > 0, "Point values are too weird to consider"
+        current_score = 0
+        while current_score < max_possible_points:
+            # NOTE(Amaras) this assumes that you can get all possible
+            # scores starting with 0, and stepping up by a loss or a draw.
+            # Exotic point values like W=3, D=1.5, L=1 will not work
+            current_score += step
+            score_groups.append(current_score)
+        
+        if debug:
+            # breakpoint()
+            pass
+
         players = sorted(self.players_by_id.values(), key=lambda player: player.points_after(max_round))
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
             for points, group in groupby(players, key=lambda player: player.points_after(max_round))
         }
-        point_keys = sorted(list(players_by_points.keys()))
+        point_keys = sorted(players_by_points.keys())
+        level_estimations = {points: 0 for points in score_groups}
         for points, test_group in players_by_points.items():
-            if not any(player.estimated for player in test_group):
-                continue
-            test_group_index = point_keys.index(points)
             group_ratings = [
                 player.estimation
                 for player in test_group
@@ -834,85 +852,33 @@ class Tournament:
             ]
             if group_ratings:
                 average_rating = round_function(sum(group_ratings) / len(group_ratings))
-                for player in test_group:
-                    player.estimation = average_rating
-                continue
-            max_possible_points = Result.GAIN.points(self.point_values) * max_round
-            superior_ratings = []
-            i = 0
-            while not superior_ratings:
-                i += 1
-                try:
-                    superior_points = point_keys[test_group_index + i]
-                    superior_group = players_by_points[superior_points]
-                    ratings = [
-                        player.estimation
-                        for player in superior_group
-                        if not player.estimated
-                    ]
-                    if ratings:
-                        superior_ratings = ratings
-                except IndexError:
-                    break
-            inferior_ratings = []
-            i = 0
-            while not inferior_ratings:
-                i += 1
-                try:
-                    inferior_points = point_keys[test_group_index - i]
-                    inferior_group = players_by_points[inferior_points]
-                    ratings = [
-                        player.estimation
-                        for player in inferior_group
-                        if not player.estimated
-                    ]
-                    if ratings:
-                        superior_ratings = ratings
-                except IndexError:
-                    break
-            if papi_legacy:
-                round_function = round
-            else:
-                round_function = round_fide
-            if len(superior_ratings) == len(inferior_ratings) == 0:
-                for player in test_group:
-                    player.estimation = round_function(
-                        performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
-                    )
-                continue
-            test_group_bonus = performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
-            if superior_ratings:
-                superior_group_bonus = performance_bonus(
-                    superior_points / max_possible_points,
-                    papi_legacy=papi_legacy
-                )
-            if inferior_ratings:
-                inferior_group_bonus = performance_bonus(
-                    inferior_points / max_possible_points,
-                    papi_legacy=papi_legacy
-                )
-            if not inferior_ratings and superior_ratings:
-                average_rating = sum(superior_ratings) / len(superior_ratings)
-                bonus_difference = superior_group_bonus - test_group_bonus
-                for player in test_group:
-                    player.estimation = round_function(average_rating + bonus_difference)
-                continue
-            if not superior_ratings and inferior_ratings:
-                average_rating = sum(inferior_ratings) / len(inferior_ratings)
-                bonus_difference = test_group_bonus - inferior_group_bonus
-                for player in test_group:
-                    player.estimation = round_function(average_rating + bonus_difference)
-                continue
-            assert len(superior_ratings) > 0 and len(inferior_ratings) > 0
-            superior_average = sum(superior_ratings) / len(superior_ratings)
-            inferior_average = sum(inferior_ratings) / len(inferior_ratings)
+                level_estimations[points] = average_rating
+        previous_estimation = previous_bonus = 0
+        for points in reversed(score_groups):
+            estimation = level_estimations[points]
+            if estimation > 0:
+                previous_bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
+                previous_estimation = estimation
+            elif previous_estimation > 0:
+                bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
+                level_estimations[points] = previous_estimation + previous_bonus - bonus
+                previous_estimation = level_estimations[points]
+                previous_bonus = bonus
+        for points in score_groups:
+            estimation = level_estimations[points]
+            if estimation > 0:
+                previous_bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
+                previous_estimation = estimation
+            elif previous_estimation > 0:
+                bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
+                level_estimations[points] = previous_estimation + previous_bonus - bonus
+                previous_estimation = level_estimations[points]
+                previous_bonus = bonus
+
+        for points, test_group in players_by_points.items():
+            estimation = level_estimations[points]
             for player in test_group:
-                player.estimation = round_function(
-                    inferior_average
-                    + (superior_average - inferior_average)
-                    * (test_group_bonus - inferior_group_bonus)
-                    / (superior_group_bonus - inferior_group_bonus)
-                )
+                player.estimation = estimation
 
 
     def store_illegal_move(self, player: Player):
@@ -967,7 +933,7 @@ class Tournament:
             )
         max_round = max_round or self.max_ranking_round or self.rounds
         # Estimate pairings to ensure we have a defined rank for everyone
-        self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
+        self.estimate_players(max_round=max_round, papi_legacy=papi_legacy, debug=True)
         for player in self.players_by_id.values():
             player.points = (
                 player.total_points() if max_round is None
