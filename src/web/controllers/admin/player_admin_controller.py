@@ -526,7 +526,7 @@ class PlayerAdminController(AbstractEventAdminController):
                     f'round_{round_}_result': WebContext.value_to_form_data(
                         admin_player.pairings[round_].result.value)
                     for round_ in range(
-                        admin_player.tournament.current_round,
+                        max(1, admin_player.tournament.current_round),
                         admin_player.tournament.rounds + 1)
                 }
                 template_context |= {
@@ -885,7 +885,7 @@ class PlayerAdminController(AbstractEventAdminController):
         admin_tournament: Tournament = admin_player.tournament
         pairings: dict[int, Pairing] = admin_player.pairings
         for round_ in range(
-            admin_player.tournament.current_round,
+            max(1, admin_player.tournament.current_round),
             admin_player.tournament.rounds + 1
         ):
             field: str = f'round_{round_}_result'
