@@ -891,9 +891,9 @@ class PlayerAdminController(AbstractEventAdminController):
             field: str = f'round_{round_}_result'
             if field in data:
                 pairing: Pairing = pairings[round_]
-                if pairing.not_paired or pairing.result in [
+                if not (pairing.not_paired or pairing.result in [
                     Result.ZERO_POINT_BYE, Result.HALF_POINT_BYE, Result.FULL_POINT_BYE,
-                ]:
+                ]):
                     logger.warning(f'Player [{admin_player}] already paired for round [{round_}].')
                     return {}
                 result: Result = Result(int(data[field]))
