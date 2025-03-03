@@ -69,6 +69,7 @@ class Pairing:
     @property
     def unplayed(self) -> bool:
         return self.result in (
+            Result.NO_RESULT,
             Result.FORFEIT_GAIN,
             Result.FORFEIT_LOSS,
             Result.DOUBLE_FORFEIT,

@@ -461,23 +461,23 @@ class Event:
 
     @property
     def input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Input]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
 
     @property
     def boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Boards]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
 
     @property
     def players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Players]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
 
     @property
     def results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Results]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
 
     @property
     def image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.Image]
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
 
     @cached_property
     def public_screens_sorted_by_uniq_id(self) -> list[Screen]:
@@ -496,23 +496,23 @@ class Event:
 
     @property
     def public_input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Input]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
 
     @property
     def public_boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Boards]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
 
     @property
     def public_players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Players]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
 
     @property
     def public_results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Results]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
 
     @property
     def public_image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.Image]
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
 
     @cached_property
     def rotators_sorted_by_uniq_id(self) -> list[Rotator]:
@@ -664,7 +664,7 @@ class Event:
         assert base_uniq_id is not None or screen_type is not None
         return self._get_unused_item_uniq_id(
             base_uniq_id
-            or _('{screen_type}-screen').format(screen_type=screen_type.to_str()),
+            or _('{screen_type}-screen').format(screen_type=screen_type.value),
             self.basic_screens_by_uniq_id,
         )
 
@@ -677,7 +677,7 @@ class Event:
         base_name, or base_name (2), or base_name (n+1)...
         screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
         return self._get_unused_item_name(
-            base_name or screen_type.default_screen_name,
+            base_name or screen_type.name,
             [screen.name for screen in self.basic_screens_by_id.values()],
         )
 
@@ -709,7 +709,7 @@ class Event:
         family_type is used when the given ID is empty to set an ID that corresponds to the family type."""
         return self._get_unused_item_uniq_id(
             base_uniq_id
-            or _('{family_type}-family').format(family_type=family_type.to_str()),
+            or _('{family_type}-family').format(family_type=family_type.value),
             self.families_by_uniq_id,
         )
 
@@ -722,7 +722,7 @@ class Event:
         base_name, or base_name (2), or base_name (n+1)...
         family_type is used when the given name is empty to set a name that corresponds to the family type."""
         return self._get_unused_item_name(
-            base_name or family_type.default_screen_name,
+            base_name or family_type.name,
             [screen.name for screen in self.families_by_id.values()],
         )
 
