@@ -1,4 +1,5 @@
 import base64
+from collections.abc import Iterator
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date
@@ -156,23 +157,39 @@ class TournamentPlayer:
     def point_values(self) -> dict[Result, float] | None:
         return self._point_values
 
-    def points_before(self, max_round: int) -> float:
+    def points_before(self, max_round: int, only_played: bool = False) -> float:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index < max_round
+            if round_index < max_round and
+            (pairing.played or not only_played)
         )
 
-    def points_after(self, max_round: int) -> float:
+    def points_after(self, max_round: int, only_played: bool = False) -> float:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index <= max_round
+            if round_index <= max_round and
+            (pairing.played or not only_played)
         )
 
-    def total_points(self) -> float:
-        return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
+    def total_points(self, only_played: bool = False) -> float:
+        return sum(
+            pairing.result.points(self.point_values)
+            for pairing in self.pairings.values()
+            if pairing.played or not only_played
+        )
     
+    def max_possible_points(self, max_round: int | None = None, only_played: bool = False) -> float:
+        if max_round is None:
+            max_round = max(self.pairings)
+        return sum(
+            Result.GAIN.points(self.point_values)
+            for round_index, pairing in self.pairings.items()
+            if round_index <= max_round and
+            (pairing.played or not only_played)
+        )
+
     @property
     def estimation(self):
         return self._estimation or 0
