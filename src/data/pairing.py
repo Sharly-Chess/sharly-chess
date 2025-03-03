@@ -97,35 +97,6 @@ class Pairing:
         return self.result in (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE)
 
     @property
-    def no_point_value(self) -> bool:
-        return self.result in (
-            Result.NO_RESULT,
-            Result.ZERO_POINT_BYE,
-            Result.LOSS,
-            Result.UNRATED_LOSS,
-            Result.FORFEIT_LOSS,
-            Result.DOUBLE_FORFEIT,
-        )
-
-    @property
-    def half_point_value(self) -> bool:
-        return self.result in (
-            Result.DRAW,
-            Result.UNRATED_DRAW,
-            Result.HALF_POINT_BYE,
-        )
-
-    @property
-    def full_point_value(self) -> bool:
-        return self.result in (
-            Result.GAIN,
-            Result.UNRATED_GAIN,
-            Result.FORFEIT_GAIN,
-            Result.PAIRING_ALLOCATED_BYE,
-            Result.FULL_POINT_BYE,
-        )
-
-    @property
     def color_papi_value(self) -> str:
         if self.color:
             return self.color.to_papi_value
