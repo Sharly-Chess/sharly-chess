@@ -808,6 +808,9 @@ class Tournament:
         return vpoints
     
     def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True):
+        """Estimate the players after *max_round*.
+        If *max_round* is None, use the current round if possible.
+        If *papi_legacy* is True, use the computations reimplemented from Papi."""
         if max_round is None:
             max_round = self._current_round
         if self._current_round <= 1:
@@ -818,16 +821,24 @@ class Tournament:
             round_function = round
         else:
             round_function = round_fide
-        
+
         max_possible_points = Result.GAIN.points(self.point_values) * max_round
-        
-        players = sorted(self.players_by_id.values(), key=lambda player: player.points_after(max_round, only_played=True))
+
+        # NOTE(Amaras): only points from played games should be counted
+        players = sorted(
+            self.players_by_id.values(),
+            key=lambda player: player.points_after(max_round, only_played=True)
+        )
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
             for points, group in groupby(players, key=lambda player: player.points_after(max_round, only_played=True))
         }
+
         point_keys = sorted(players_by_points.keys())
         level_estimations = {points: 0 for points in point_keys}
+
+        # NOTE(Amaras): if there are rated players in the score group,
+        # use the average of their ratings as the level's estimation.
         for points, test_group in players_by_points.items():
             group_ratings = [
                 player.estimation
@@ -837,21 +848,19 @@ class Tournament:
             if group_ratings:
                 average_rating = round_function(sum(group_ratings) / len(group_ratings))
                 level_estimations[points] = average_rating
+
+        # NOTE(Amaras): If there are no players with a rating, use the
+        # estimation of the higher level, added with the difference
+        # between the score group's performance bonus and the previous
+        # group's performance bonus.
         previous_estimation = previous_bonus = 0
         for points in reversed(point_keys):
             estimation = level_estimations[points]
             if estimation > 0:
-                previous_bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
-                previous_estimation = estimation
-            elif previous_estimation > 0:
-                bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
-                level_estimations[points] = previous_estimation - previous_bonus + bonus
-                previous_estimation = level_estimations[points]
-                previous_bonus = bonus
-        for points in point_keys:
-            estimation = level_estimations[points]
-            if estimation > 0:
-                previous_bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
+                # No need to touch a group's estimation if it already has one
+                previous_bonus = round_function(
+                    performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+                )
                 previous_estimation = estimation
             elif previous_estimation > 0:
                 bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
@@ -859,6 +868,28 @@ class Tournament:
                 previous_estimation = level_estimations[points]
                 previous_bonus = bonus
 
+        # NOTE(Amaras): There may be additional levels with no estimation
+        # (usually the best score groups but might be all but the last),
+        # in which case, travel the groups upwards and estimate them
+        for points in point_keys:
+            estimation = level_estimations[points]
+            if estimation > 0:
+                previous_bonus = round_function(
+                    performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+                )
+                previous_estimation = estimation
+            elif previous_estimation > 0:
+                bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
+                level_estimations[points] = previous_estimation - previous_bonus + bonus
+                previous_estimation = level_estimations[points]
+                previous_bonus = bonus
+
+        # NOTE(Amaras): There may be a single case where all players
+        # have no estimation (*estimation == 0*), which is if no
+        # player is rated in the tournament.
+        # In this case, obviously, no rating-based tie-break
+        # should be used.
+        # This includes ARO, TPR, PTP, APRO, APPO and their variants
         for points, test_group in players_by_points.items():
             estimation = level_estimations[points]
             for player in test_group:
