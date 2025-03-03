@@ -256,9 +256,12 @@ class PapiDatabase(AccessDatabase):
             pairings: dict[int, Pairing] = {}
             for round_ in range(1, rounds + 1):
                 round_str = f'Rd{round_:0>2}'
+                color: BoardColor | None = None
                 color_str: str = row[f'{round_str}Cl']
-                with suppress(ValueError):
-                    color: BoardColor = BoardColor.from_papi_value(color_str)
+                try:
+                    color = BoardColor.from_papi_value(color_str)
+                except ValueError:
+                    pass
                 opponent_papi_id: int | None = row[f'{round_str}Adv']
                 pairings[round_] = Pairing(
                     color,
