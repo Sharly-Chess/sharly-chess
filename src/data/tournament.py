@@ -861,7 +861,7 @@ class Tournament:
                 previous_estimation = estimation
             elif previous_estimation > 0:
                 bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
-                level_estimations[points] = previous_estimation + previous_bonus - bonus
+                level_estimations[points] = previous_estimation - previous_bonus + bonus
                 previous_estimation = level_estimations[points]
                 previous_bonus = bonus
         for points in point_keys:
@@ -871,7 +871,7 @@ class Tournament:
                 previous_estimation = estimation
             elif previous_estimation > 0:
                 bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
-                level_estimations[points] = previous_estimation + previous_bonus - bonus
+                level_estimations[points] = previous_estimation - previous_bonus + bonus
                 previous_estimation = level_estimations[points]
                 previous_bonus = bonus
 
