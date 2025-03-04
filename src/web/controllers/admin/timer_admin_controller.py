@@ -426,7 +426,7 @@ class TimerAdminController(BaseEventAdminController):
         path='/admin/default-timers-update/{event_uniq_id:str}',
         name='default-timers-update'
     )
-    def htmx_admin_default_timers_update(
+    async def htmx_admin_default_timers_update(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
