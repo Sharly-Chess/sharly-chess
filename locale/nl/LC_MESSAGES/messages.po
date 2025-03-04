@@ -547,7 +547,7 @@ msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ongeldige poort [{port}], standaard [{default}]."
 
 #: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
 msgid "Invalid value [{value}]."
 msgstr "Ongeldige waarde [{value}]."
@@ -903,14 +903,14 @@ msgid "Exempt *** MALE"
 msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/base_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Last results"
 msgstr "Laatste resultaten"
 
 #: src/data/screen.py src/data/util.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/base_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Image"
@@ -1579,7 +1579,7 @@ msgstr "Wit"
 msgid "Black"
 msgstr "Zwart"
 
-#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/base_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/screens/tab.html
@@ -1587,7 +1587,7 @@ msgstr "Zwart"
 msgid "Pairings by board"
 msgstr "Paar per bord"
 
-#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/base_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -2003,33 +2003,273 @@ msgstr "Poort [{port}] al in gebruik, kan Papi-webserver niet starten."
 msgid "USE AT YOUR OWN RISKS"
 msgstr "GEBRUIK OP UW EIGEN RISICO'S"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "No recording"
+msgstr "Geen opname"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "{num} illegal move max"
+msgid_plural "{num} illegal moves max"
+msgstr[0] "{num} illegale verplaatsing max"
+msgstr[1] "{num} illegale bewegingen max"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "By default - {option}"
+msgstr "Standaard - {option}"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Full point bye"
+msgstr "Volledig punt bye"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Half point bye"
+msgstr "Halve punt bye"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
+msgstr "Kleur #1 wordt gebruikt tot {delay_1} minuten voor het begin van de rondes (vertraging #1), de kleur verandert dan geleidelijk tot kleur #2 ({delay_2} minuten voor het begin van de rondes)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
+msgstr "Kleur #2 wordt gebruikt {delay_2} minuten voor het begin van de rondes (vertraging #2), de kleur verandert dan geleidelijk tot kleur #3 (aan het begin van de rondes)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr "Kleur #3 wordt gebruikt vanaf het begin van de rondes en voor {delay_3} minuten na (vertraging #3)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Pairings by player"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Use no timer"
+msgstr "Geen timer gebruiken"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "No timer defined"
+msgstr "Geen timer gedefinieerd"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Timer {timer_uniq_id}"
+msgstr "Timer {timer_uniq_id}"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Display the exit button"
+msgstr "Afsluitknop tonen"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Hide the exit button"
+msgstr "De afsluitknop verbergen"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Display only paired players"
+msgstr "Alleen gekoppelde spelers weergeven"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Display all the players, paired and unpaired"
+msgstr "Toon alle spelers, gekoppeld en ongepaard"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "URL [{url}] responded code [{code}]."
+msgstr "URL [{url}] reageerde op code [{code}]."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "URL [{url}] did not respond (error: [{error}])."
+msgstr "URL [{url}] reageerde niet (fout: [{error}])."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Incorrect path [{path}]."
+msgstr "Onjuist pad [{path}]."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "File [{file}] not found."
+msgstr "Bestand [{file}] niet gevonden."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Wrong file extension [{ext}] ([pdf] expected)."
+msgstr "Verkeerde bestandsextensie [{ext}] ([pdf] verwacht)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Invalid color [{color}] ([#RRGGBB] expected)."
+msgstr "Ongeldige kleur [{color}] ([#RRGGBB] verwacht)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter the event ID."
+msgstr "Voer de agendanotitie-id in."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "event ID does not match."
+msgstr "event ID komt niet overeen."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Character [{char}] is not allowed."
+msgstr "Karakter [{char}] is niet toegestaan."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Event [{uniq_id}] already exists."
+msgstr "Gebeurtenis [{uniq_id}] bestaat al."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter the name of the event."
+msgstr "Voer de naam van het evenement in."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter the start date of the event."
+msgstr "Voer de begindatum van het evenement in."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter the end date of the event."
+msgstr "Voer de einddatum van het evenement in."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter a date after the start date."
+msgstr "Voer een datum in na de startdatum."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter a URL or select an image on the right hand side."
+msgstr "Voer een URL in of selecteer een afbeelding aan de rechterkant."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr "Ongeldige vertraging [{delay}] (positief geheel getal verwacht)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Voer een wachtwoord in voor de ChessEvent-verbinding."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "New event"
+msgstr "Nieuwe agendanotitie"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "event"
+msgstr "agendanotitie"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Current events ({num})"
+msgstr "Actuele gebeurtenissen ({num})"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No current events."
+msgstr "Geen actuele gebeurtenissen."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Upcoming events ({num})"
+msgstr "Aankomende gebeurtenissen ({num})"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No upcoming events."
+msgstr "Geen aankomende gebeurtenissen."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Passed events ({num})"
+msgstr "Geslaagde gebeurtenissen ({num})"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No passed events."
+msgstr "Geen voorbijgestreefde gebeurtenissen."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Archived events ({num})"
+msgstr "Gearchiveerde gebeurtenissen ({num})"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "No archived events."
+msgstr "Geen gearchiveerde evenementen."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/templates/admin/index/config_tab.html
+#, ai_translation
+msgid "Papi-web configuration"
+msgstr "Papi-webconfiguratie"
+
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Tournaments ({num})"
 msgstr "Toernooien ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Players ({num})"
 msgstr "Spelers ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Screens ({num})"
 msgstr "Schermen ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Families ({num})"
 msgstr "Gezinnen ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #: src/web/controllers/user/event_user_controller.py
 #, ai_translation
 msgid "Rotators ({num})"
 msgstr "rotatoren ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Timers ({num})"
 msgstr "Timers ({num})"
@@ -2107,14 +2347,6 @@ msgid "Please enter the family ID."
 msgstr "Voer het familie-ID in."
 
 #: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "Character [{char}] is not allowed."
-msgstr "Karakter [{char}] is niet toegestaan."
-
-#: src/web/controllers/admin/family_admin_controller.py
 #, ai_translation
 msgid "Family [{uniq_id}] already exists."
 msgstr "Familie [{uniq_id}] bestaat al."
@@ -2135,238 +2367,6 @@ msgstr "Timer [{timer_id}] niet gevonden."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Het opgeven van het aantal onderdelen en het aantal items per onderdeel is niet mogelijk."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "No recording"
-msgstr "Geen opname"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "{num} illegal move max"
-msgid_plural "{num} illegal moves max"
-msgstr[0] "{num} illegale verplaatsing max"
-msgstr[1] "{num} illegale bewegingen max"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "By default - {option}"
-msgstr "Standaard - {option}"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Full point bye"
-msgstr "Volledig punt bye"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Half point bye"
-msgstr "Halve punt bye"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
-msgstr "Kleur #1 wordt gebruikt tot {delay_1} minuten voor het begin van de rondes (vertraging #1), de kleur verandert dan geleidelijk tot kleur #2 ({delay_2} minuten voor het begin van de rondes)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
-msgstr "Kleur #2 wordt gebruikt {delay_2} minuten voor het begin van de rondes (vertraging #2), de kleur verandert dan geleidelijk tot kleur #3 (aan het begin van de rondes)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
-msgstr "Kleur #3 wordt gebruikt vanaf het begin van de rondes en voor {delay_3} minuten na (vertraging #3)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-#, ai_translation
-msgid "Pairings by player"
-msgstr "Pairings by player"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Use no timer"
-msgstr "Geen timer gebruiken"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "No timer defined"
-msgstr "Geen timer gedefinieerd"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Timer {timer_uniq_id}"
-msgstr "Timer {timer_uniq_id}"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Display the exit button"
-msgstr "Afsluitknop tonen"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Hide the exit button"
-msgstr "De afsluitknop verbergen"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Display only paired players"
-msgstr "Alleen gekoppelde spelers weergeven"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Display all the players, paired and unpaired"
-msgstr "Toon alle spelers, gekoppeld en ongepaard"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "URL [{url}] responded code [{code}]."
-msgstr "URL [{url}] reageerde op code [{code}]."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "URL [{url}] did not respond (error: [{error}])."
-msgstr "URL [{url}] reageerde niet (fout: [{error}])."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Incorrect path [{path}]."
-msgstr "Onjuist pad [{path}]."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "File [{file}] not found."
-msgstr "Bestand [{file}] niet gevonden."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Wrong file extension [{ext}] ([pdf] expected)."
-msgstr "Verkeerde bestandsextensie [{ext}] ([pdf] verwacht)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/timer_admin_controller.py
-#, ai_translation
-msgid "Invalid color [{color}] ([#RRGGBB] expected)."
-msgstr "Ongeldige kleur [{color}] ([#RRGGBB] verwacht)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter the event ID."
-msgstr "Voer de agendanotitie-id in."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "event ID does not match."
-msgstr "event ID komt niet overeen."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Event [{uniq_id}] already exists."
-msgstr "Gebeurtenis [{uniq_id}] bestaat al."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter the name of the event."
-msgstr "Voer de naam van het evenement in."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter the start date of the event."
-msgstr "Voer de begindatum van het evenement in."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter the end date of the event."
-msgstr "Voer de einddatum van het evenement in."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter a date after the start date."
-msgstr "Voer een datum in na de startdatum."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter a URL or select an image on the right hand side."
-msgstr "Voer een URL in of selecteer een afbeelding aan de rechterkant."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/timer_admin_controller.py
-#, ai_translation
-msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr "Ongeldige vertraging [{delay}] (positief geheel getal verwacht)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Voer een wachtwoord in voor de ChessEvent-verbinding."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "New event"
-msgstr "Nieuwe agendanotitie"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "event"
-msgstr "agendanotitie"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "Current events ({num})"
-msgstr "Actuele gebeurtenissen ({num})"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "No current events."
-msgstr "Geen actuele gebeurtenissen."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "Upcoming events ({num})"
-msgstr "Aankomende gebeurtenissen ({num})"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "No upcoming events."
-msgstr "Geen aankomende gebeurtenissen."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "Passed events ({num})"
-msgstr "Geslaagde gebeurtenissen ({num})"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "No passed events."
-msgstr "Geen voorbijgestreefde gebeurtenissen."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Archived events ({num})"
-msgstr "Gearchiveerde gebeurtenissen ({num})"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "No archived events."
-msgstr "Geen gearchiveerde evenementen."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/templates/admin/index/config_tab.html
-#, ai_translation
-msgid "Papi-web configuration"
-msgstr "Papi-webconfiguratie"
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2702,6 +2702,17 @@ msgstr "Toernooi [{tournament_uniq_id}] is bijgewerkt."
 msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr "Toernooi [{tournament_uniq_id}] is geschrapt."
 
+#: src/web/controllers/user/base_screen_user_controller.py
+#, ai_translation
+msgid "Access denied, please authenticate to enter results."
+msgstr "Toegang geweigerd, authenticeren om resultaten in te voeren."
+
+#: src/web/controllers/user/base_screen_user_controller.py
+#: src/web/controllers/user/screen_user_controller.py
+#, ai_translation
+msgid "Incorrect password."
+msgstr "Onjuist wachtwoord."
+
 #: src/web/controllers/user/event_user_controller.py
 #, ai_translation
 msgid "Results entry ({num})"
@@ -2726,16 +2737,6 @@ msgstr "Laatste resultaten ({num})"
 #, ai_translation
 msgid "Image ({num})"
 msgstr "Afbeelding ({num})"
-
-#: src/web/controllers/user/screen_user_controller.py
-#, ai_translation
-msgid "Access denied, please authenticate to enter results."
-msgstr "Toegang geweigerd, authenticeren om resultaten in te voeren."
-
-#: src/web/controllers/user/screen_user_controller.py
-#, ai_translation
-msgid "Incorrect password."
-msgstr "Onjuist wachtwoord."
 
 #: src/web/controllers/user/screen_user_controller.py
 #, ai_translation

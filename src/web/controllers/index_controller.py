@@ -301,7 +301,7 @@ class WebContext:
         return datetime.strftime(value, '%Y-%m-%d')
 
     def _redirect_error(self, errors: str | list[str]):
-        self.error = AbstractController.redirect_error(self.request, errors)
+        self.error = BaseController.redirect_error(self.request, errors)
 
     @property
     def admin_auth(self) -> bool:
@@ -355,7 +355,7 @@ class WebContext:
         }
 
 
-class AbstractController(Controller):
+class BaseController(Controller):
     """
     The basic controller, inherited by all the controllers of the application.
     Controllers are used to handle web requests and respond to clients.
@@ -418,7 +418,7 @@ class AbstractController(Controller):
                 SessionHandler.set_session_locale(request, locale)
 
 
-class IndexController(AbstractController):
+class IndexController(BaseController):
     @get(
         path='/',
         name='index',

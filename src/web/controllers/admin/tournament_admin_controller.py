@@ -24,9 +24,9 @@ from data.tournament import Tournament
 from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament, StoredScreen
-from web.controllers.admin.event_admin_controller import (
-    EventAdminWebContext,
-    AbstractEventAdminController,
+from web.controllers.admin.base_event_admin_controller import (
+    BaseEventAdminWebContext,
+    BaseEventAdminController,
 )
 from web.controllers.index_controller import WebContext
 from web.messages import Message
@@ -34,7 +34,7 @@ from web.messages import Message
 logger: Logger = get_logger()
 
 
-class TournamentAdminWebContext(EventAdminWebContext):
+class TournamentAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
@@ -72,7 +72,7 @@ class TournamentAdminWebContext(EventAdminWebContext):
         }
 
 
-class TournamentAdminController(AbstractEventAdminController):
+class TournamentAdminController(BaseEventAdminController):
     @classmethod
     def _admin_validate_tournament_update_data(
         cls,

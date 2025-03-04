@@ -30,9 +30,9 @@ from data.util import (
 )
 from database.sqlite.ffe_database import FfeDatabase
 from database.sqlite.fide_database import FideDatabase
-from web.controllers.admin.event_admin_controller import (
-    EventAdminWebContext,
-    AbstractEventAdminController,
+from web.controllers.admin.base_event_admin_controller import (
+    BaseEventAdminWebContext,
+    BaseEventAdminController,
 )
 from web.controllers.index_controller import WebContext
 from web.messages import Message
@@ -40,7 +40,7 @@ from web.messages import Message
 logger: Logger = get_logger()
 
 
-class PlayerAdminWebContext(EventAdminWebContext):
+class PlayerAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
@@ -126,7 +126,7 @@ class PlayerAdminWebContext(EventAdminWebContext):
         }
 
 
-class PlayerAdminController(AbstractEventAdminController):
+class PlayerAdminController(BaseEventAdminController):
     @classmethod
     def _admin_validate_player_update_data(
         cls,
