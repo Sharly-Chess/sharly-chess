@@ -28,9 +28,9 @@ from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, PrintSplit
 from data.tournament import Tournament
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredEvent
-from web.controllers.admin.index_admin_controller import (
+from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
-    AbstractIndexAdminController,
+    BaseAdminController,
 )
 from web.controllers.index_controller import AbstractController
 from web.controllers.index_controller import WebContext
@@ -94,7 +94,7 @@ class EventAdminWebContext(AdminWebContext):
         }
 
 
-class AbstractEventAdminController(AbstractIndexAdminController):
+class AbstractEventAdminController(BaseAdminController):
     @classmethod
     def _get_admin_event_render_context(
         cls,
