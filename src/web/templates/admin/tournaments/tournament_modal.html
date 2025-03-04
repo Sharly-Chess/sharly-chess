@@ -341,8 +341,10 @@
                         </button>
                         {% if action in ['create', 'clone', ] %}
                             <button
-                                type="submit"
-                                name="add_screens"
+                                type="button"
+                                hx-indicator="#please-wait"name="add_screens"
+                                hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
+                                hx-target="body"
                                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                             >
                                 <i class="bi-floppy-fill"></i>
