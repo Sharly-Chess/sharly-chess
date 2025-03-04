@@ -231,10 +231,11 @@ class Tournament:
         return self.stored_tournament.first_board_number or PapiWebConfig.default_first_board_number
 
     @property
-    def paired_bye_points(self) -> Result:
-        return Result(self.stored_tournament.paired_bye_points) \
-            if self.stored_tournament.paired_bye_points is not None \
-            else PapiWebConfig.default_paired_bye_points
+    def paired_bye_result(self) -> Result:
+        if self.stored_tournament.paired_bye_result is None:
+            return PapiWebConfig.default_paired_bye_result
+        else:
+            return Result(self.stored_tournament.paired_bye_result)
 
     @property
     def max_byes(self) -> int:
