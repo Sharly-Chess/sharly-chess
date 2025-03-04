@@ -127,6 +127,7 @@
                 </span>
             {% endif %}
         </div>
+        {#
         <div class="text-start {% if not tournament.stored_tournament.paired_bye_points %}text-secondary{% endif %}">
             {{ _('Paired bye points: %(string)s', string=paired_bye_points_options[tournament.paired_bye_points.value|string]) }}
             {% if not tournament.stored_tournament.paired_bye_points %}
@@ -135,6 +136,7 @@
                 </span>
             {% endif %}
         </div>
+        #}
         <div class="text-start {% if not tournament.stored_tournament.paired_bye_points %}text-secondary{% endif %}">
             {{ _('Maximum number of byes: %(max_byes)d', max_byes=tournament.max_byes) }}
             {% if not tournament.stored_tournament.max_byes %}
