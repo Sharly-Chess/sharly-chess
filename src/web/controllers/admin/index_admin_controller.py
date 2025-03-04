@@ -688,6 +688,17 @@ class AbstractIndexAdminController(AbstractAdminController):
                 for i in range(1, 4)
             }
         )
+        
+    @staticmethod
+    def _get_default_nav_id(
+        event: Event,
+    ) -> str:
+        if event.player_count > 0:
+            return 'players'
+        elif len(event.tournaments_by_uniq_id) > 0:
+            return 'tournaments'
+        else:
+            return 'config'
 
     @classmethod
     def _admin_render(
@@ -706,6 +717,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.current_events,
+                'get_default_nav_id': cls._get_default_nav_id,
                 'disabled': not event_loader.current_events,
                 'empty_str': _('No current events.'),
                 'icon_class': 'bi-calendar',
@@ -716,6 +728,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.coming_events,
+                'get_default_nav_id': cls._get_default_nav_id,
                 'disabled': not event_loader.coming_events,
                 'empty_str': _('No upcoming events.'),
                 'icon_class': 'bi-calendar-check',
@@ -726,6 +739,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.passed_events,
+                'get_default_nav_id': cls._get_default_nav_id,
                 'disabled': not event_loader.passed_events,
                 'empty_str': _('No passed events.'),
                 'icon_class': 'bi-calendar-minus',

@@ -36,8 +36,9 @@
     <div class="row">
         {% if nav_tab.events %}
             {% for event in nav_tab.events %}
+                {% set nav_id = nav_tab.get_default_nav_id(event) if nav_tab.get_default_nav_id else 'config'  %}
                 {% with
-                    card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
+                    card_url=url_for('admin-event-tab', event_uniq_id=event.uniq_id, admin_event_tab=nav_id),
                     card_class='border-danger' if not event.public and admin_auth else ''
                 %}
                     {% include 'event_card.html' %}
