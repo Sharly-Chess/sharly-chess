@@ -180,6 +180,24 @@ class ScreenSet:
             name = name.replace('%l', self.last_player_by_name.last_name[:8])
         return name
 
+    @property
+    def name_for_ranking(self) -> str | None:
+        self._extract_players_by_rank()
+        name: str | None = (
+            self.stored_screen_set.name if self.stored_screen_set else self.family.name
+        )
+        if name is None:
+            if self.first or self.last:
+                name = _('%f to %l')
+            else:
+                name = '%t'
+        name = name.replace('%t', str(self.tournament.name))
+        if self.first_item is not None:
+            name = name.replace(r'%f', str(self.first_player_by_rank.rank))
+        if self.last_item is not None:
+            name = name.replace('%l', str(self.last_player_by_rank.rank))
+        return name
+
     def _extract_data(self, items: list[Any]):
         if not items:
             self.items_lists = [
@@ -304,6 +322,62 @@ class ScreenSet:
     def last_player_by_name(self) -> Player:
         if not self.last_item:
             self._extract_players_by_name()
+        if TYPE_CHECKING:
+            assert isinstance(self.last_item, Player)
+        return self.last_item
+
+    def _extract_players_by_rank(self):
+        if self.items_lists is None:
+            self._extract_data(list(self.tournament.players_by_rank.values()))
+
+    @property
+    def players_by_rank_lists(self) -> list[list[Player]]:
+        self._extract_players_by_rank()
+        if TYPE_CHECKING:
+            assert (
+                isinstance(self.items_lists, list)
+                and all(isinstance(item, list) for item in self.items_lists)
+                and all(
+                    isinstance(item, Player)
+                    for item in chain(*self.items_lists)
+                )
+            )
+        return self.items_lists
+
+    @property
+    def players_by_rank_tuple_lists(
+        self,
+    ) -> Iterable[tuple[list[Player], list[Player]]]:
+        # TODO check that this method is really used
+        self._extract_players_by_rank()
+        if TYPE_CHECKING:
+            assert (
+                isinstance(self.items_lists, list)
+                and all(isinstance(item, list) for item in self.items_lists)
+                and all(
+                    isinstance(item, Player)
+                    for item in chain(*self.items_lists)
+                )
+            )
+        players_by_rank_lists: list[list[Player]] = self.items_lists
+        for players_by_rank in players_by_rank_lists:
+            yield (
+                players_by_rank[: (bound := math.ceil(len(players_by_rank) / 2))],
+                players_by_rank[bound:],
+            )
+
+    @property
+    def first_player_by_rank(self) -> Player:
+        if not self.first_item:
+            self._extract_players_by_rank()
+        if TYPE_CHECKING:
+            assert isinstance(self.first_item, Player)
+        return self.first_item
+
+    @property
+    def last_player_by_rank(self) -> Player:
+        if not self.last_item:
+            self._extract_players_by_rank()
         if TYPE_CHECKING:
             assert isinstance(self.last_item, Player)
         return self.last_item

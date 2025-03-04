@@ -86,6 +86,7 @@ class EventUserController(BaseUserController):
         boards_screens: list[Screen]
         players_screens: list[Screen]
         results_screens: list[Screen]
+        ranking_screens: list[Screen]
         image_screens: list[Screen]
         rotators: list[Rotator]
         if web_context.admin_auth:
@@ -93,6 +94,7 @@ class EventUserController(BaseUserController):
             boards_screens = web_context.user_event.boards_screens_sorted_by_uniq_id
             players_screens = web_context.user_event.players_screens_sorted_by_uniq_id
             results_screens = web_context.user_event.results_screens_sorted_by_uniq_id
+            ranking_screens = web_context.user_event.ranking_screens_sorted_by_uniq_id
             image_screens = web_context.user_event.image_screens_sorted_by_uniq_id
             rotators = web_context.user_event.rotators_sorted_by_uniq_id
         else:
@@ -107,6 +109,9 @@ class EventUserController(BaseUserController):
             )
             results_screens = (
                 web_context.user_event.public_results_screens_sorted_by_uniq_id
+            )
+            ranking_screens = (
+                web_context.user_event.public_ranking_screens_sorted_by_uniq_id
             )
             image_screens = (
                 web_context.user_event.public_image_screens_sorted_by_uniq_id
@@ -140,6 +145,13 @@ class EventUserController(BaseUserController):
                 ),
                 'screens': results_screens,
                 'disabled': not results_screens,
+            },
+            'ranking': {
+                'title': _('Ranking ({num})').format(
+                    num=len(ranking_screens) or '-'
+                ),
+                'screens': ranking_screens,
+                'disabled': not ranking_screens,
             },
             'image': {
                 'title': _('Image ({num})').format(num=len(image_screens) or '-'),
@@ -192,6 +204,7 @@ class EventUserController(BaseUserController):
                 if screen.type in [
                     ScreenType.BOARDS,
                     ScreenType.INPUT,
+                    ScreenType.RANKING,
                 ]:
                     if screen_set.tournament.last_illegal_move_update > date:
                         return True
@@ -222,7 +235,7 @@ class EventUserController(BaseUserController):
             if family.tournament.last_update > date:
                 return True
             match family.type:
-                case ScreenType.BOARDS | ScreenType.INPUT:
+                case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
                     if family.tournament.last_illegal_move_update > date:
                         return True
                     if family.tournament.last_result_update > date:

@@ -149,7 +149,7 @@ class SessionHandler:
     def get_session_admin_screens_screen_types(cls, request: HTMXRequest) -> list[str]:
         return request.session.get(
             cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
-            ['boards', 'input', 'players', 'results', 'image'],
+            ['boards', 'input', 'players', 'results', 'ranking', 'image', ],
         )
 
     LOCALE_KEY: str = 'locale'

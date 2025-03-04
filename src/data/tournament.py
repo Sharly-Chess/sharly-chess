@@ -442,9 +442,10 @@ class Tournament:
             self.players_by_id.values(),
             key=lambda player: player.rank_sort_key,
         )
+        for rank, player_ in enumerate(ranked_players, start=1):
+            player_.rank = rank
         return {
-            rank: player for rank, player in
-            enumerate(ranked_players, start=1)
+            rank: player for rank, player in ranked_players
         }
 
     @cached_property

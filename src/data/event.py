@@ -476,6 +476,10 @@ class Event:
         return self.screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
 
     @property
+    def ranking_screens_sorted_by_uniq_id(self) -> list[Screen]:
+        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RANKING]
+
+    @property
     def image_screens_sorted_by_uniq_id(self) -> list[Screen]:
         return self.screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
 
@@ -509,6 +513,10 @@ class Event:
     @property
     def public_results_screens_sorted_by_uniq_id(self) -> list[Screen]:
         return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
+
+    @property
+    def public_ranking_screens_sorted_by_uniq_id(self) -> list[Screen]:
+        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RANKING]
 
     @property
     def public_image_screens_sorted_by_uniq_id(self) -> list[Screen]:

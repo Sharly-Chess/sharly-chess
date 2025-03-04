@@ -193,6 +193,7 @@ class EventAdminController(BaseEventAdminController):
         admin_screens_show_input: bool | None,
         admin_screens_show_players: bool | None,
         admin_screens_show_results: bool | None,
+        admin_screens_show_ranking: bool | None,
         admin_screens_show_image: bool | None,
         admin_players_sort: str | None = None,
         admin_players_filter_columns: list[str] | None = None,
@@ -349,6 +350,7 @@ class EventAdminController(BaseEventAdminController):
                     'input': admin_screens_show_input,
                     'players': admin_screens_show_players,
                     'results': admin_screens_show_results,
+                    'ranking': admin_screens_show_ranking,
                     'image': admin_screens_show_image,
                 }.items():
                     if param is not None:

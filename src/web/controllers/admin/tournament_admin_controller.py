@@ -579,6 +579,11 @@ class TournamentAdminController(BaseEventAdminController):
                                 '@players',
                                 _('Pairings by player'),
                             ),
+                            (
+                                'ranking',
+                                '@ranking',
+                                _('Ranking'),
+                            ),
                         ]:
                             stored_screen: StoredScreen = event_database.add_stored_screen(
                                 StoredScreen(

@@ -553,6 +553,8 @@ class EventDatabase(SQLiteDatabase):
                                         ]
                                     else:
                                         results_tournament_ids = []
+                                case 'ranking':
+                                    pass
                                 case 'image':
                                     background_image: str = screen_dict.get(
                                         'background_image', None
@@ -566,7 +568,7 @@ class EventDatabase(SQLiteDatabase):
                             menu_text: str | None = None
                             menu: str | None = None
                             match type_:
-                                case 'boards' | 'input' | 'players' | 'results':
+                                case 'boards' | 'input' | 'players' | 'results' | 'ranking':
                                     menu_link: bool = screen_dict.get('menu_link', True)
                                     menu_text: str = screen_dict.get('menu_text', '')
                                     menu: str = screen_dict.get('menu', '')
@@ -722,10 +724,12 @@ class EventDatabase(SQLiteDatabase):
                                     players_show_unpaired = family_dict.get(
                                         'players_show_unpaired', False
                                     )
+                                case 'ranking':
+                                    pass
                                 case _:
                                     raise ValueError(f'type={type_}')
                             match type_:
-                                case 'boards' | 'input' | 'players':
+                                case 'boards' | 'input' | 'players' | 'ranking':
                                     menu_link: bool = family_dict.get('menu_link', True)
                                     menu_text: str = family_dict.get('menu_text', '')
                                     menu: str = family_dict.get('menu', '')

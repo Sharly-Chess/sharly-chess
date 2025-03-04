@@ -1189,6 +1189,7 @@ class ScreenType(StrEnum):
     INPUT = 'input'
     PLAYERS = 'players'
     RESULTS = 'results'
+    RANKING = 'ranking'
     IMAGE = 'image'
 
     @property
@@ -1202,6 +1203,8 @@ class ScreenType(StrEnum):
                 return _('Parings by player')
             case ScreenType.RESULTS:
                 return _('Last results')
+            case ScreenType.RANKING:
+                return _('Ranking')
             case ScreenType.IMAGE:
                 return _('Image')
             case _:
@@ -1220,6 +1223,8 @@ class ScreenType(StrEnum):
             case self.PLAYERS:
                 return 'bi-people'
             case self.RESULTS:
+                return 'bi-1-square'
+            case self.RANKING:
                 return 'bi-trophy'
             case self.IMAGE:
                 return 'bi-image'
