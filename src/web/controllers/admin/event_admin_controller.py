@@ -20,7 +20,6 @@ from common import unicode_normalize
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
 from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, PrintSplit, TournamentRating, PrintDocument
