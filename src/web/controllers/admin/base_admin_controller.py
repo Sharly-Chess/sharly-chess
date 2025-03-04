@@ -300,8 +300,6 @@ class BaseAdminController(BaseController):
         update_password: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
-        timer_colors: dict[int, str | None] = {i: None for i in range(1, 4)}
-        timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
@@ -392,24 +390,6 @@ class BaseAdminController(BaseController):
                     cls._admin_validate_record_illegal_moves_update_data(data, errors)
                 )
                 rules = cls._admin_validate_rules_update_data(data, errors)
-                for i in range(1, 4):
-                    field: str = f'color_{i}'
-                    if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-                        try:
-                            timer_colors[i] = WebContext.form_data_to_rgb(data, field)
-                        except ValueError:
-                            errors[field] = _(
-                                'Invalid color [{color}] ([#RRGGBB] expected).'
-                            ).format(color={data[field]})
-                    field: str = f'delay_{i}'
-                    try:
-                        timer_delays[i] = WebContext.form_data_to_int(
-                            data, field, minimum=1
-                        )
-                    except ValueError:
-                        errors[field] = _(
-                            'Invalid delay [{delay}] (positive integer expected).'
-                        ).format(delay=data[field])
                 field: str = 'message_text'
                 message_text = WebContext.form_data_to_str(data, field)
                 field: str = 'message_color'
@@ -462,8 +442,6 @@ class BaseAdminController(BaseController):
             update_password=update_password,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
-            timer_colors=timer_colors,
-            timer_delays=timer_delays,
             message_text=message_text,
             message_color=message_color,
             message_background_color=message_background_color,
@@ -471,6 +449,10 @@ class BaseAdminController(BaseController):
             chessevent_password=chessevent_password,
             chessevent_event_id=chessevent_event_id,
             errors=errors,
+            
+            # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
+            timer_colors = admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)},
+            timer_delays = admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)}
         )
 
     @staticmethod
@@ -593,8 +575,6 @@ class BaseAdminController(BaseController):
         update_password: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
-        colors: dict[int, str | None] = {i: None for i in range(1, 4)}
-        delays: dict[int, int | None] = {i: None for i in range(1, 4)}
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
@@ -612,8 +592,6 @@ class BaseAdminController(BaseController):
                 update_password = admin_event.stored_event.update_password
                 record_illegal_moves = admin_event.stored_event.record_illegal_moves
                 rules = admin_event.stored_event.rules
-                colors = admin_event.stored_event.timer_colors
-                delays = admin_event.stored_event.timer_delays
                 message_text = admin_event.stored_event.message_text
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
@@ -669,18 +647,7 @@ class BaseAdminController(BaseController):
                     chessevent_event_id
                 ),
             }
-            | {
-                f'color_{i}': WebContext.value_to_form_data(colors[i])
-                for i in range(1, 4)
-            }
-            | {
-                f'color_{i}_checkbox': WebContext.value_to_form_data(colors[i] is None)
-                for i in range(1, 4)
-            }
-            | {
-                f'delay_{i}': WebContext.value_to_form_data(delays[i])
-                for i in range(1, 4)
-            }
+
         )
 
     @classmethod
