@@ -102,10 +102,11 @@ class BaseAdminController(BaseController):
     def _get_paired_bye_points_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(Result.GAIN.point_value): _('Full point bye'),
-            WebContext.value_to_form_data(Result.DRAW.point_value): _('Half point bye'),
+            WebContext.value_to_form_data(Result.GAIN.value): _('Points for gain (full-point bye)'),
+            WebContext.value_to_form_data(Result.DRAW.value): _('Points for draw (half-point bye)'),
+            WebContext.value_to_form_data(Result.LOSS.value): _('Points for loss (zero-point bye)'),
         }
-        default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_points.point_value)
+        default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_points.value)
         options[''] = _('By default - {option}').format(option=options[default_option])
         return options
 

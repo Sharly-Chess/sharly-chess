@@ -7,7 +7,7 @@ class EventMigration(AbstractEventMigration):
             'ALTER TABLE `tournament` ADD `first_board_number` INTEGER'
         )
         self._execute(
-            'ALTER TABLE `tournament` ADD `paired_bye_points` FLOAT'
+            'ALTER TABLE `tournament` ADD `paired_bye_points` INTEGER'
         )
         self._execute(
             'ALTER TABLE `tournament` ADD `max_byes` INTEGER'

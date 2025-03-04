@@ -176,7 +176,9 @@ class BaseEventAdminController(BaseAdminController):
             case 'config':
                 pass
             case 'tournaments':
-                pass
+                template_context |= {
+                    'paired_bye_points_options': cls._get_paired_bye_points_options(),
+                }
             case 'players':
                 # The federations that will be shown on the federation select list
                 players_federations: list[FederationTuple] = sorted(

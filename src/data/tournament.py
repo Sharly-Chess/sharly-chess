@@ -232,7 +232,9 @@ class Tournament:
 
     @property
     def paired_bye_points(self) -> Result:
-        return Result(self.stored_tournament.paired_bye_points) or PapiWebConfig.default_paired_bye_points
+        return Result(self.stored_tournament.paired_bye_points) \
+            if self.stored_tournament.paired_bye_points is not None \
+            else PapiWebConfig.default_paired_bye_points
 
     @property
     def max_byes(self) -> int:

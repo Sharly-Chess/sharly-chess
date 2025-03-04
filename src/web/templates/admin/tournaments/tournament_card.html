@@ -119,6 +119,38 @@
                 {{ tournament.rating }}
             {% endif %}
         </div>
+        <div class="text-start {% if not tournament.stored_tournament.first_board_number %}text-secondary{% endif %}">
+            {{ _('First board number: %(board_number)d', board_number=tournament.first_board_number) }}
+            {% if not tournament.stored_tournament.first_board_number %}
+                <span class="fst-italic">
+                    {{ _('(by default)') }}
+                </span>
+            {% endif %}
+        </div>
+        <div class="text-start {% if not tournament.stored_tournament.paired_bye_points %}text-secondary{% endif %}">
+            {{ _('Paired bye points: %(string)s', string=paired_bye_points_options[tournament.paired_bye_points.value|string]) }}
+            {% if not tournament.stored_tournament.paired_bye_points %}
+                <span class="fst-italic">
+                    {{ _('(by default)') }}
+                </span>
+            {% endif %}
+        </div>
+        <div class="text-start {% if not tournament.stored_tournament.paired_bye_points %}text-secondary{% endif %}">
+            {{ _('Maximum number of byes: %(max_byes)d', max_byes=tournament.max_byes) }}
+            {% if not tournament.stored_tournament.max_byes %}
+                <span class="fst-italic">
+                    {{ _('(by default)') }}
+                </span>
+            {% endif %}
+        </div>
+        <div class="text-start {% if not tournament.stored_tournament.paired_bye_points %}text-secondary{% endif %}">
+            {{ _('Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d', last_rounds_no_byes=tournament.last_rounds_no_byes) }}
+            {% if not tournament.stored_tournament.last_rounds_no_byes %}
+                <span class="fst-italic">
+                    {{ _('(by default)') }}
+                </span>
+            {% endif %}
+        </div>
         <div class="text-start">
             <i class="bi-pencil-fill pe-1"></i>
             {{ tournament.last_update_str }}
