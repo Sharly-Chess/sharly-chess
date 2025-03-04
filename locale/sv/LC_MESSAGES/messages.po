@@ -547,7 +547,7 @@ msgid "Invalid port [{port}], by default [{default}]."
 msgstr "Ogiltig port [{port}], som standard [{default}]."
 
 #: src/common/papi_web_config.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
 msgid "Invalid value [{value}]."
 msgstr "Ogiltigt värde [{value}]."
@@ -903,14 +903,14 @@ msgid "Exempt *** MALE"
 msgstr "Exempt"
 
 #: src/data/screen.py src/data/util.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/base_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Last results"
 msgstr "Senaste resultat"
 
 #: src/data/screen.py src/data/util.py
-#: src/web/controllers/admin/index_admin_controller.py
+#: src/web/controllers/admin/base_admin_controller.py
 #: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Image"
@@ -1589,7 +1589,7 @@ msgstr "Vitt"
 msgid "Black"
 msgstr "Svart"
 
-#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/base_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/screens/tab.html
@@ -1597,7 +1597,7 @@ msgstr "Svart"
 msgid "Pairings by board"
 msgstr "Parningar ombord"
 
-#: src/data/util.py src/web/controllers/admin/index_admin_controller.py
+#: src/data/util.py src/web/controllers/admin/base_admin_controller.py
 #: src/web/controllers/admin/tournament_admin_controller.py
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/tab.html
@@ -2016,33 +2016,273 @@ msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
 msgid "USE AT YOUR OWN RISKS"
 msgstr "ANVÄNDNING VID DINA EGNA RISKER"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/templates/admin/event/tab.html
+#, ai_translation
+msgid "No recording"
+msgstr "Ingen inspelning"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "{num} illegal move max"
+msgid_plural "{num} illegal moves max"
+msgstr[0] "{num} olagligt drag max"
+msgstr[1] "{num} olagliga förflyttningar max"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "By default - {option}"
+msgstr "Som standard - {option}"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Full point bye"
+msgstr "Fullständigt led-efter-datum"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Half point bye"
+msgstr "Halva ledet efter"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
+msgstr "Färg #1 används tills {delay_1} minuter innan rundorna börjar (fördröjning #1), färgen ändras sedan gradvis till färg #2 ({delay_2} minuter innan rundorna börjar)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
+msgstr "Färg #2 används {delay_2} minuter innan rundorna börjar (fördröj #2), färgen ändras sedan gradvis till färg #3 (i början av rundorna)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr "Färg #3 används från början av rundorna och för {delay_3} minuter efter (fördröj #3)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Parningar av spelare"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Use no timer"
+msgstr "Använd ingen timer"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "No timer defined"
+msgstr "Ingen timer definierad"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Timer {timer_uniq_id}"
+msgstr "Tidpunkt {timer_uniq_id}"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Display the exit button"
+msgstr "Visa utgångsknappen@ info: whatsthis"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Hide the exit button"
+msgstr "Dölj utgångsknappen"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Display only paired players"
+msgstr "Visa endast parade spelare"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Display all the players, paired and unpaired"
+msgstr "Visa alla spelare, parade och oparade"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "URL [{url}] responded code [{code}]."
+msgstr "URL [{url}] svarade kod [{code}]."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#, ai_translation
+msgid "URL [{url}] did not respond (error: [{error}])."
+msgstr "URL [{url}] svarade inte (terror: [{error}])."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Incorrect path [{path}]."
+msgstr "Felaktig stig [{path}]."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "File [{file}] not found."
+msgstr "Filen [{file}] hittades inte."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Wrong file extension [{ext}] ([pdf] expected)."
+msgstr "Fel filändelse [{ext}] ([pdf] förväntas)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Invalid color [{color}] ([#RRGGBB] expected)."
+msgstr "Ogiltig färg [{color}] ([# RRGGBB] förväntas)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter the event ID."
+msgstr "Ange händelse-ID."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "event ID does not match."
+msgstr "Händelse-ID matchar inte."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/family_admin_controller.py
+#: src/web/controllers/admin/screen_admin_controller.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
+msgid "Character [{char}] is not allowed."
+msgstr "Tecken [{char}] är inte tillåtet."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Event [{uniq_id}] already exists."
+msgstr "Händelse [{uniq_id}] finns redan."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter the name of the event."
+msgstr "Ange händelsens namn."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter the start date of the event."
+msgstr "Ange evenemangets startdatum."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter the end date of the event."
+msgstr "Ange evenemangets slutdatum."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter a date after the start date."
+msgstr "Ange ett datum efter startdatum."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter a URL or select an image on the right hand side."
+msgstr "Ange en webbadress eller välj en bild på höger sida."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr "Ogiltig fördröjning [{delay}] (positivt heltal förväntas)."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Ange ett lösenord för ChessEvent-anslutningen."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "New event"
+msgstr "Nytt evenemang"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "event"
+msgstr "händelse"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Current events ({num})"
+msgstr "Aktuella händelser ({num})"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No current events."
+msgstr "Inga aktuella händelser."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Upcoming events ({num})"
+msgstr "Kommande evenemang ({num})"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No upcoming events."
+msgstr "Inga kommande händelser."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "Passed events ({num})"
+msgstr "Godkända evenemang ({num})"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/controllers/user/index_user_controller.py
+#, ai_translation
+msgid "No passed events."
+msgstr "Inga förbipasserade händelser."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Archived events ({num})"
+msgstr "Arkiverade evenemang ({num})"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "No archived events."
+msgstr "Inga arkiverade händelser."
+
+#: src/web/controllers/admin/base_admin_controller.py
+#: src/web/templates/admin/index/config_tab.html
+#, ai_translation
+msgid "Papi-web configuration"
+msgstr "Inställning av papi-webben"
+
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Tournaments ({num})"
 msgstr "Turneringar ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Players ({num})"
 msgstr "Spelare ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Screens ({num})"
 msgstr "Skärmar ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Families ({num})"
 msgstr "Familjer ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #: src/web/controllers/user/event_user_controller.py
 #, ai_translation
 msgid "Rotators ({num})"
 msgstr "Rotatorer ({num})"
 
-#: src/web/controllers/admin/event_admin_controller.py
+#: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
 msgid "Timers ({num})"
 msgstr "Timers ({num})"
@@ -2120,14 +2360,6 @@ msgid "Please enter the family ID."
 msgstr "Ange familje-ID."
 
 #: src/web/controllers/admin/family_admin_controller.py
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "Character [{char}] is not allowed."
-msgstr "Tecken [{char}] är inte tillåtet."
-
-#: src/web/controllers/admin/family_admin_controller.py
 #, ai_translation
 msgid "Family [{uniq_id}] already exists."
 msgstr "Familjen [{uniq_id}] finns redan."
@@ -2148,238 +2380,6 @@ msgstr "Timer [{timer_id}] hittades inte."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Det är inte möjligt att ange antalet delar och antalet objekt per del."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "No recording"
-msgstr "Ingen inspelning"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "{num} illegal move max"
-msgid_plural "{num} illegal moves max"
-msgstr[0] "{num} olagligt drag max"
-msgstr[1] "{num} olagliga förflyttningar max"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "By default - {option}"
-msgstr "Som standard - {option}"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Full point bye"
-msgstr "Fullständigt led-efter-datum"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Half point bye"
-msgstr "Halva ledet efter"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
-msgstr "Färg #1 används tills {delay_1} minuter innan rundorna börjar (fördröjning #1), färgen ändras sedan gradvis till färg #2 ({delay_2} minuter innan rundorna börjar)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
-msgstr "Färg #2 används {delay_2} minuter innan rundorna börjar (fördröj #2), färgen ändras sedan gradvis till färg #3 (i början av rundorna)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
-msgstr "Färg #3 används från början av rundorna och för {delay_3} minuter efter (fördröj #3)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/tournament_admin_controller.py
-#: src/web/templates/admin/families/tab.html
-#: src/web/templates/admin/screens/tab.html
-#, ai_translation
-msgid "Pairings by player"
-msgstr "Parningar av spelare"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Use no timer"
-msgstr "Använd ingen timer"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "No timer defined"
-msgstr "Ingen timer definierad"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Timer {timer_uniq_id}"
-msgstr "Tidpunkt {timer_uniq_id}"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Display the exit button"
-msgstr "Visa utgångsknappen@ info: whatsthis"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Hide the exit button"
-msgstr "Dölj utgångsknappen"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Display only paired players"
-msgstr "Visa endast parade spelare"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Display all the players, paired and unpaired"
-msgstr "Visa alla spelare, parade och oparade"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "URL [{url}] responded code [{code}]."
-msgstr "URL [{url}] svarade kod [{code}]."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/screen_admin_controller.py
-#, ai_translation
-msgid "URL [{url}] did not respond (error: [{error}])."
-msgstr "URL [{url}] svarade inte (terror: [{error}])."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Incorrect path [{path}]."
-msgstr "Felaktig stig [{path}]."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "File [{file}] not found."
-msgstr "Filen [{file}] hittades inte."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Wrong file extension [{ext}] ([pdf] expected)."
-msgstr "Fel filändelse [{ext}] ([pdf] förväntas)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/timer_admin_controller.py
-#, ai_translation
-msgid "Invalid color [{color}] ([#RRGGBB] expected)."
-msgstr "Ogiltig färg [{color}] ([# RRGGBB] förväntas)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter the event ID."
-msgstr "Ange händelse-ID."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "event ID does not match."
-msgstr "Händelse-ID matchar inte."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Event [{uniq_id}] already exists."
-msgstr "Händelse [{uniq_id}] finns redan."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter the name of the event."
-msgstr "Ange händelsens namn."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter the start date of the event."
-msgstr "Ange evenemangets startdatum."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter the end date of the event."
-msgstr "Ange evenemangets slutdatum."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter a date after the start date."
-msgstr "Ange ett datum efter startdatum."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter a URL or select an image on the right hand side."
-msgstr "Ange en webbadress eller välj en bild på höger sida."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/admin/timer_admin_controller.py
-#, ai_translation
-msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr "Ogiltig fördröjning [{delay}] (positivt heltal förväntas)."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Ange ett lösenord för ChessEvent-anslutningen."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "New event"
-msgstr "Nytt evenemang"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "event"
-msgstr "händelse"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "Current events ({num})"
-msgstr "Aktuella händelser ({num})"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "No current events."
-msgstr "Inga aktuella händelser."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "Upcoming events ({num})"
-msgstr "Kommande evenemang ({num})"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "No upcoming events."
-msgstr "Inga kommande händelser."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "Passed events ({num})"
-msgstr "Godkända evenemang ({num})"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/controllers/user/index_user_controller.py
-#, ai_translation
-msgid "No passed events."
-msgstr "Inga förbipasserade händelser."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "Archived events ({num})"
-msgstr "Arkiverade evenemang ({num})"
-
-#: src/web/controllers/admin/index_admin_controller.py
-#, ai_translation
-msgid "No archived events."
-msgstr "Inga arkiverade händelser."
-
-#: src/web/controllers/admin/index_admin_controller.py
-#: src/web/templates/admin/index/config_tab.html
-#, ai_translation
-msgid "Papi-web configuration"
-msgstr "Inställning av papi-webben"
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2715,6 +2715,17 @@ msgstr "Turneringen [{tournament_uniq_id}] har uppdaterats."
 msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr "Turneringen [{tournament_uniq_id}] har tagits bort."
 
+#: src/web/controllers/user/base_screen_user_controller.py
+#, ai_translation
+msgid "Access denied, please authenticate to enter results."
+msgstr "Åtkomst nekad, vänligen autentisera för att ange resultat."
+
+#: src/web/controllers/user/base_screen_user_controller.py
+#: src/web/controllers/user/screen_user_controller.py
+#, ai_translation
+msgid "Incorrect password."
+msgstr "Felaktigt lösenord."
+
 #: src/web/controllers/user/event_user_controller.py
 #, ai_translation
 msgid "Results entry ({num})"
@@ -2739,16 +2750,6 @@ msgstr "Senaste resultaten ({num})"
 #, ai_translation
 msgid "Image ({num})"
 msgstr "Bild ({num})"
-
-#: src/web/controllers/user/screen_user_controller.py
-#, ai_translation
-msgid "Access denied, please authenticate to enter results."
-msgstr "Åtkomst nekad, vänligen autentisera för att ange resultat."
-
-#: src/web/controllers/user/screen_user_controller.py
-#, ai_translation
-msgid "Incorrect password."
-msgstr "Felaktigt lösenord."
 
 #: src/web/controllers/user/screen_user_controller.py
 #, ai_translation
