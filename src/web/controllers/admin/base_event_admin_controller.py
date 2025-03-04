@@ -537,7 +537,7 @@ class BaseEventAdminController(BaseAdminController):
                 trigger_event="modal_opened",
                 after="settle"
             )
-        return HTMXTemplate(template_name='admin/event.html', context=template_context)
+        return HTMXTemplate(template_name='admin/event_layout.html', context=template_context)
     
     @staticmethod
     def get_default_nav_id(

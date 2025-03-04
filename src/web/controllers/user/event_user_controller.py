@@ -166,7 +166,7 @@ class EventUserController(BaseUserController):
                     (nav_index + 1) % len(nav_tabs)
                 ]
         return HTMXTemplate(
-            template_name='user/event.html',
+            template_name='user/event_layout.html',
             context=web_context.template_context
             | {
                 'messages': Message.messages(web_context.request),
