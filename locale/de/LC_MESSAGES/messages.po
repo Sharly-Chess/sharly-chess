@@ -754,8 +754,8 @@ msgstr "Turnier [{tournament_uniq_id}] hat nur [{boards_number}] Bretter (< [{fi
 
 #: src/data/family.py
 #, ai_translation
-msgid "Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored."
-msgstr "Turnier [{tournament_uniq_id}] hat nur [{players_number}] Spieler (< [{first}]), Familie ignoriert."
+msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
+msgstr "Turnier [{tournament_uniq_id}] hat nur [{player_count}] Spieler (< [{first}]), Familie ignoriert."
 
 #: src/data/family.py
 #, ai_translation

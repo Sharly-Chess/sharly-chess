@@ -148,7 +148,7 @@ class FideDatabase(SQLiteDatabase):
                 'blitz_rating': ('blitz_rating', int),
                 'birthday': ('year_of_birth', lambda s: int(s) if s else 0),
             }
-            players_number: int = 0
+            player_count: int = 0
             self.write = True
             with self:
                 for event, elem in ElementTree.iterparse(local_xml_file, events=("start", "end")):
@@ -158,9 +158,9 @@ class FideDatabase(SQLiteDatabase):
                     if event == 'end' and elem.tag == 'player':
                         query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?"] * len(data))})'
                         self._execute(query, tuple(data.values()))
-                        players_number += 1
-                        if players_number % 1000 == 0:
-                            print_interactive_info(_('{number} players written.').format(number=players_number), end='\r')
+                        player_count += 1
+                        if player_count % 1000 == 0:
+                            print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
                         
                     elif event == 'end' and elem.tag in fields:
                         (field_name, field_function) = fields[elem.tag]
@@ -190,7 +190,7 @@ class FideDatabase(SQLiteDatabase):
         if save:
             save.unlink(missing_ok=True)
         print_interactive_success(
-            _('{number} players written.').format(number=players_number)
+            _('{number} players written.').format(number=player_count)
         )
         return True
 

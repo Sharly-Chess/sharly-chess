@@ -261,7 +261,7 @@ class ActionSelector(metaclass=Singleton):
                             if create_empty_papi_database(
                                 tournament.file, papi_version
                             ):
-                                players_number: int = (
+                                player_count: int = (
                                     tournament.write_chessevent_info_to_database(
                                         chessevent_tournament, data_md5
                                     )
@@ -269,7 +269,7 @@ class ActionSelector(metaclass=Singleton):
                                 print_interactive_success(
                                     _(
                                         'Papi file [{file}] has been created (players: {num}).'
-                                    ).format(file=tournament.file, num=players_number)
+                                    ).format(file=tournament.file, num=player_count)
                                 )
                             if action_choice == upload_answer:
                                 if not tournament.ffe_id or not tournament.ffe_password:

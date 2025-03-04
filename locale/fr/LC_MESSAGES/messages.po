@@ -605,8 +605,8 @@ msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{
 msgstr "Le tournoi  [{tournament_uniq_id}] n'a que [{boards_number}] échiquiers (< [{first}]), famille ignorée."
 
 #: src/data/family.py
-msgid "Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored."
-msgstr "Le tournoi  [{tournament_uniq_id}] n'a que [{players_number}] joueur·euses (< [{first}]), famille ignorée."
+msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
+msgstr "Le tournoi  [{tournament_uniq_id}] n'a que [{player_count}] joueur·euses (< [{first}]), famille ignorée."
 
 #: src/data/family.py
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."

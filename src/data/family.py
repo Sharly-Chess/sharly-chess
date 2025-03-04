@@ -220,9 +220,9 @@ class Family:
                 if self.first:
                     if self.first > total_items_number:
                         self.error = _(
-                            'Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored.'
+                            'Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored.'
                         ).format(
-                            players_number=total_items_number,
+                            player_count=total_items_number,
                             tournament_uniq_id=self.tournament.uniq_id,
                             first=self.first,
                         )

@@ -131,7 +131,7 @@ class FfeDatabase(SQLiteDatabase):
             with FfeAccessDatabase(local_mdb_file) as ffe_access_database:
                 self.write = True
                 with self:
-                    players_number: int = 0
+                    player_count: int = 0
                     for player_dict in ffe_access_database.read_player_dicts():
                         try:
                             translations: dict[str, types.FunctionType] = {
@@ -165,9 +165,9 @@ class FfeDatabase(SQLiteDatabase):
                             }
                             query: str = f'INSERT INTO player({", ".join(map(lambda s: f"`{s}`", data.keys()))}) VALUES({", ".join(["?"] * len(data))})'
                             self._execute(query, tuple(data.values()))
-                            players_number += 1
-                            if players_number % 1000 == 0:
-                                print_interactive_info(_('{number} players written.').format(number=players_number), end='\r')
+                            player_count += 1
+                            if player_count % 1000 == 0:
+                                print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
                     
                         except ValueError:
                             print_interactive_warning(
@@ -187,7 +187,7 @@ class FfeDatabase(SQLiteDatabase):
         if save:
             save.unlink(missing_ok=True)
         print_interactive_success(
-            _('{number} players written.').format(number=players_number)
+            _('{number} players written.').format(number=player_count)
         )
         return True
 

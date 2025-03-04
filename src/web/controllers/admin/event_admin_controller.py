@@ -142,7 +142,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
             },
             'players': {
                 'title': _('Players ({num})').format(
-                    num=admin_event.players_number or '-'
+                    num=admin_event.player_count or '-'
                 ),
                 'template': 'players/tab.html',
             },
