@@ -19,8 +19,8 @@ from data.loader import EventLoader
 from data.rotator import Rotator
 from data.screen import Screen
 from data.util import ScreenType
-from web.controllers.user.index_user_controller import (
-    AbstractUserController,
+from web.controllers.user.base_user_controller import (
+    BaseUserController,
     UserWebContext,
 )
 from web.messages import Message
@@ -77,7 +77,7 @@ class EventUserWebContext(UserWebContext):
         }
 
 
-class EventUserController(AbstractUserController):
+class EventUserController(BaseUserController):
     @staticmethod
     def _user_event_render(
         web_context: EventUserWebContext,

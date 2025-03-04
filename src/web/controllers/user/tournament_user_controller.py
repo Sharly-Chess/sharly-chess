@@ -22,10 +22,10 @@ from data.tournament import Tournament
 from data.util import Result
 from web.controllers.index_controller import AbstractController
 from web.controllers.user.event_user_controller import EventUserWebContext
-from web.controllers.user.index_user_controller import AbstractUserController
-from web.controllers.user.screen_user_controller import (
+from web.controllers.user.base_user_controller import BaseUserController
+from web.controllers.user.base_screen_user_controller import (
     ScreenUserWebContext,
-    AbstractScreenUserController,
+    BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
 )
 from web.messages import Message
@@ -177,7 +177,7 @@ class PlayerUserWebContext(TournamentUserWebContext):
         }
 
 
-class AbstractInputUserController(AbstractScreenUserController):
+class AbstractInputUserController(BaseScreenUserController):
     pass
 
 
@@ -491,7 +491,7 @@ class ResultUserController(AbstractInputUserController):
         )
 
 
-class DownloadUserController(AbstractUserController):
+class DownloadUserController(BaseUserController):
     @get(
         path='/user/download-tournaments/{event_uniq_id:str}',
         name='user-download-tournaments',
