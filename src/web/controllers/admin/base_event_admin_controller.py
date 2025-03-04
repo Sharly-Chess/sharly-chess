@@ -157,13 +157,21 @@ class BaseEventAdminController(BaseAdminController):
                 'template': 'timers/tab.html',
             },
         }
+        
         if not web_context.admin_event_tab:
-            web_context.admin_event_tab = list(nav_tabs.keys())[0]
+            if web_context.admin_event.player_count:
+                web_context.admin_event_tab = 'players'
+            elif web_context.admin_event.tournaments_by_uniq_id:
+                web_context.admin_event_tab = 'tournaments'
+            else:
+                web_context.admin_event_tab = 'config'
+                
         template_context: dict[str, Any] = web_context.template_context | {
             'messages': Message.messages(web_context.request),
             'logging_levels': logging_levels,
             'nav_tabs': nav_tabs,
         }
+        
         match web_context.admin_event_tab:
             case 'config':
                 pass
@@ -539,13 +547,3 @@ class BaseEventAdminController(BaseAdminController):
             )
         return HTMXTemplate(template_name='admin/event_layout.html', context=template_context)
     
-    @staticmethod
-    def get_default_nav_id(
-        event: Event,
-    ) -> str:
-        if event.player_count > 0:
-            return 'players'
-        elif len(event.tournaments_by_uniq_id) > 0:
-            return 'tournaments'
-        else:
-            return 'config'
