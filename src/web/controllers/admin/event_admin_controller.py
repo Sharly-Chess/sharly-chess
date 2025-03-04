@@ -1361,7 +1361,7 @@ class EventAdminController(AbstractEventAdminController):
                 raise ValueError(f'download_format={download_format}')
             
     @staticmethod
-    def _get_default_nav_id(
+    def get_default_nav_id(
         event: Event,
     ) -> str:
         if event.player_count > 0:
