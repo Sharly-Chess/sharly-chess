@@ -463,6 +463,7 @@ class EventDatabase(SQLiteDatabase):
                                     max_byes=None,
                                     last_rounds_no_byes=None,
                                     tie_breaks=None,
+                                    point_values={'1': 1, '=': 0.5, '0': 0},
                                 )
                             )
                             tournament_ids_by_uniq_id[tournament_uniq_id] = (
@@ -1392,6 +1393,7 @@ class EventDatabase(SQLiteDatabase):
             last_chessevent_download_md5=row['last_chessevent_download_md5'],
             # needed to open event databases when version < 2.4.23 before checking the version
             tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
+            point_values=cls._load_point_values_from_database_field(row.get('point_values', None)),
         )
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
@@ -1438,6 +1440,7 @@ class EventDatabase(SQLiteDatabase):
             'paired_bye_points',
             'max_byes',
             'tie_breaks',
+            'point_values',
             'last_rounds_no_byes',
             'last_update',
             'last_result_update',
@@ -1469,6 +1472,7 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.paired_bye_points,
             stored_tournament.max_byes,
             self._dump_to_json_database_tie_breaks(stored_tournament.tie_breaks),
+            self._dump_to_json_database_point_values(stored_tournament.point_values),
             stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,
@@ -1620,6 +1624,32 @@ class EventDatabase(SQLiteDatabase):
                 'options': tie_break.options,
             } for tie_break in tie_breaks
         ])
+    
+    @classmethod
+    def _load_point_values_from_database_field(
+        cls, point_values_field: str | None,
+    ) -> dict[UtilResult, float]:
+        maybe_point_values = cls.load_json_from_database_field(point_values_field)
+        if not maybe_point_values:
+            return {UtilResult.GAIN: 1, UtilResult.DRAW: 0.5, UtilResult.LOSS: 0}
+        new_point_values = {}
+        for key, value in maybe_point_values.items():
+            with suppress(ValueError):
+                new_point_values[UtilResult.from_trf(key)] = float(value)
+        return new_point_values
+
+    @classmethod
+    def _dump_to_json_database_point_values(
+        cls, point_values: dict[UtilResult, float] | None
+    ) -> str | None:
+        if point_values is None:
+            point_values = {UtilResult.GAIN.to_trf: 1, UtilResult.DRAW.to_trf: 0.5, UtilResult.LOSS.to_trf: 0}
+        if TYPE_CHECKING:
+            assert isinstance(point_values, dict)
+            assert all(isinstance(key, UtilResult) for key in point_values)
+        return cls.dump_to_json_database_field(
+            {result.to_trf: points for result, points in point_values.items()}
+        )
 
     """
     ---------------------------------------------------------------------------------

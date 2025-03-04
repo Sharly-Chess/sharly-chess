@@ -558,10 +558,7 @@ class Tournament:
     
     @cached_property
     def point_values(self) -> dict[Result, float]:
-        return {
-            Result.from_trf(result_type): value 
-            for result_type, value in self.stored_tournament.point_values.items()
-        }
+        return self.stored_tournament.point_values
 
     @property
     def tie_breaks(self) -> list[TieBreak]:

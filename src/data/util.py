@@ -24,7 +24,7 @@ try:
     batched = itertools.batched
 except AttributeError:
 
-    def batched(iterable, n):
+    def batched(iterable, n: int):
         """Batch data from the *iterable* into tuples of length *n*.
         The last batch may be shorter than *n*"""
         if n < 1:

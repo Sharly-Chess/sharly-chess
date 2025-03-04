@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 from common.papi_web_config import PapiWebConfig
 from data.tie_break import TieBreak
+from data.util import Result
 
 """
 All the classes of this module are basic data classes store in the event databases.
@@ -67,7 +68,7 @@ class StoredTournament:
     last_ffe_rules_upload: float = field(default=0.0)
     last_chessevent_download_md5: str | None = field(default=None)
     errors: dict[str, str] = field(default_factory=dict[str, str])
-    point_values: dict[str, float] = field(default_factory=dict[str, float])
+    point_values: dict[Result, float] = field(default_factory=dict[Result, float])
 
 
 @dataclass
