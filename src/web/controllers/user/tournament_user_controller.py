@@ -20,7 +20,7 @@ from data.loader import EventLoader
 from data.player import Player
 from data.tournament import Tournament
 from data.util import Result
-from web.controllers.index_controller import AbstractController
+from web.controllers.index_controller import BaseController
 from web.controllers.user.event_user_controller import EventUserWebContext
 from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.base_screen_user_controller import (
@@ -402,12 +402,12 @@ class ResultUserController(AbstractInputUserController):
         if web_context.error:
             return web_context.error
         if round_ not in range(1, web_context.tournament.rounds + 1):
-            return AbstractController.redirect_error(
+            return BaseController.redirect_error(
                 request, f'Invalid round number [{round_}].'
             )
         if result is None:
             if not web_context.admin_auth:
-                return AbstractController.redirect_error(
+                return BaseController.redirect_error(
                     request, 'Result deletion is not allowed.'
                 )
             with suppress(ValueError):
@@ -418,7 +418,7 @@ class ResultUserController(AbstractInputUserController):
                 if web_context.admin_auth
                 else Result.user_imputable_results()
             ):
-                return AbstractController.redirect_error(
+                return BaseController.redirect_error(
                     request, f'Invalid result [{result}].'
                 )
             web_context.tournament.add_result(
@@ -512,7 +512,7 @@ class DownloadUserController(BaseUserController):
             if tournament.file_exists
         ]
         if not tournament_files:
-            return AbstractController.redirect_error(
+            return BaseController.redirect_error(
                 request, f'No Papi file for event [{web_context.user_event.uniq_id}].'
             )
         archive = BytesIO()
@@ -547,7 +547,7 @@ class DownloadUserController(BaseUserController):
         if web_context.error:
             return web_context.error
         if not web_context.tournament.file_exists:
-            return AbstractController.redirect_error(
+            return BaseController.redirect_error(
                 request, f'Papi file [{web_context.tournament.file}] not found.'
             )
         return File(

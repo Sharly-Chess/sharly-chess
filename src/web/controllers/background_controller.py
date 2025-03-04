@@ -7,7 +7,7 @@ from litestar.enums import MediaType
 
 from common.background import inline_image_url
 from common.logger import get_logger
-from web.controllers.index_controller import WebContext, AbstractController
+from web.controllers.index_controller import WebContext, BaseController
 
 logger: Logger = get_logger()
 
@@ -33,7 +33,7 @@ class BackgroundWebContext(WebContext):
             self.background['url'] = f'url({inline_image_url(image)})'
 
 
-class BackgroundController(AbstractController):
+class BackgroundController(BaseController):
     """
     The /background URL is called with an image and a color parameter.
     The JSON response contains a color and a url parameter where url is generated from the image (inline data when a

@@ -9,7 +9,7 @@ from common.i18n import _
 from common.logger import get_logger
 
 from common.papi_web_config import PapiWebConfig
-from web.controllers.index_controller import AbstractController, WebContext
+from web.controllers.index_controller import BaseController, WebContext
 
 logger: Logger = get_logger()
 
@@ -55,6 +55,6 @@ class UserWebContext(WebContext):
             'user_tab': self.user_tab,
         }
         
-class BaseUserController(AbstractController):
+class BaseUserController(BaseController):
     """An abstract class inherited by all the user controllers."""
 

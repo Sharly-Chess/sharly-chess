@@ -22,7 +22,7 @@ from data.tie_break import PapiTieBreak
 from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
 from database.store import StoredEvent
-from web.controllers.index_controller import AbstractController, WebContext
+from web.controllers.index_controller import BaseController, WebContext
 from web.messages import Message
 
 import web.controllers.admin.base_event_admin_controller as BEAC
@@ -81,7 +81,7 @@ class AdminWebContext(WebContext):
         }
 
 
-class BaseAdminController(AbstractController):
+class BaseAdminController(BaseController):
     """An base class inherited by all the admin controllers."""
 
     @staticmethod

@@ -30,7 +30,7 @@ from database.store import StoredEvent
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
 )
-from web.controllers.index_controller import AbstractController
+from web.controllers.index_controller import BaseController
 from web.controllers.index_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
@@ -463,7 +463,7 @@ class EventAdminController(BaseEventAdminController):
                             new_uniq_id=uniq_id
                         )
                     except PermissionError as ex:
-                        return AbstractController.redirect_error(
+                        return BaseController.redirect_error(
                             request,
                             _('Renaming the database failed: {ex}.').format(ex=ex),
                         )
@@ -506,7 +506,7 @@ class EventAdminController(BaseEventAdminController):
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
                 except PermissionError as ex:
-                    return AbstractController.redirect_error(
+                    return BaseController.redirect_error(
                         request, f'Archiving the database failed: {ex}'
                     )
                 event_loader.clear_cache(web_context.admin_event.uniq_id)

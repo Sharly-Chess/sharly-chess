@@ -23,7 +23,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.index_controller import WebContext, AbstractController
+from web.controllers.index_controller import WebContext, BaseController
 from web.messages import Message
 
 logger: Logger = get_logger()
@@ -925,7 +925,7 @@ class ScreenAdminController(BaseEventAdminController):
         match action:
             case 'delete':
                 if len(web_context.admin_screen.screen_sets_sorted_by_order) <= 1:
-                    return AbstractController.redirect_error(
+                    return BaseController.redirect_error(
                         request, _('The last set of a screen can not be deleted.')
                     )
             case 'update' | 'clone' | 'add' | 'reorder':
