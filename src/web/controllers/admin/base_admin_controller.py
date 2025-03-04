@@ -25,6 +25,8 @@ from database.store import StoredEvent
 from web.controllers.index_controller import AbstractController, WebContext
 from web.messages import Message
 
+import web.controllers.admin.base_event_admin_controller as BEAC
+
 logger: Logger = get_logger()
 
 class AdminWebContext(WebContext):
@@ -700,6 +702,7 @@ class BaseAdminController(AbstractController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.current_events,
+                'get_default_nav_id': BEAC.BaseEventAdminController.get_default_nav_id,
                 'disabled': not event_loader.current_events,
                 'empty_str': _('No current events.'),
                 'icon_class': 'bi-calendar',
@@ -710,6 +713,7 @@ class BaseAdminController(AbstractController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.coming_events,
+                'get_default_nav_id': BEAC.BaseEventAdminController.get_default_nav_id,
                 'disabled': not event_loader.coming_events,
                 'empty_str': _('No upcoming events.'),
                 'icon_class': 'bi-calendar-check',
@@ -720,6 +724,7 @@ class BaseAdminController(AbstractController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.passed_events,
+                'get_default_nav_id': BEAC.BaseEventAdminController.get_default_nav_id,
                 'disabled': not event_loader.passed_events,
                 'empty_str': _('No passed events.'),
                 'icon_class': 'bi-calendar-minus',

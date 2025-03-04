@@ -844,14 +844,4 @@ class EventAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'download_format={download_format}')
-            
-    @staticmethod
-    def get_default_nav_id(
-        event: Event,
-    ) -> str:
-        if event.player_count > 0:
-            return 'players'
-        elif len(event.tournaments_by_uniq_id) > 0:
-            return 'tournaments'
-        else:
-            return 'config'
+
