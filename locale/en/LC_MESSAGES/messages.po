@@ -605,7 +605,7 @@ msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{
 msgstr ""
 
 #: src/data/family.py
-msgid "Tournament [{tournament_uniq_id}] has only [{players_number}] players (< [{first}]), family ignored."
+msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
 msgstr ""
 
 #: src/data/family.py

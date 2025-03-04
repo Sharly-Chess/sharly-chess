@@ -496,7 +496,7 @@ class PapiDatabase(AccessDatabase):
         else:
             logger.info('No forfeits to delete.')
 
-    def get_checked_in_players_number(self) -> int:
+    def get_checked_in_player_count(self) -> int:
         """Return the number players already checked in."""
         query: str = 'SELECT COUNT(`Ref`) FROM `joueur` WHERE `Pointe` AND `Ref` > 1'
         self._execute(query)

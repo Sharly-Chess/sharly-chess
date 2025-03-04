@@ -142,7 +142,7 @@ class AbstractEventAdminController(AbstractIndexAdminController):
             },
             'players': {
                 'title': _('Players ({num})').format(
-                    num=admin_event.players_number or '-'
+                    num=admin_event.player_count or '-'
                 ),
                 'template': 'players/tab.html',
             },
@@ -1359,3 +1359,14 @@ class EventAdminController(AbstractEventAdminController):
                 )
             case _:
                 raise ValueError(f'download_format={download_format}')
+            
+    @staticmethod
+    def get_default_nav_id(
+        event: Event,
+    ) -> str:
+        if event.player_count > 0:
+            return 'players'
+        elif len(event.tournaments_by_uniq_id) > 0:
+            return 'tournaments'
+        else:
+            return 'config'

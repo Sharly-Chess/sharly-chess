@@ -6,6 +6,7 @@ from typing import Annotated, Any
 
 import requests
 import validators
+
 from litestar import get, post
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
@@ -27,6 +28,8 @@ from database.store import StoredEvent
 from web.controllers.index_controller import AbstractController, WebContext
 from web.messages import Message
 from web.urls import admin_event_url
+
+import web.controllers.admin.event_admin_controller as EAC
 
 logger: Logger = get_logger()
 
@@ -706,6 +709,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.current_events,
+                'get_default_nav_id': EAC.EventAdminController.get_default_nav_id,
                 'disabled': not event_loader.current_events,
                 'empty_str': _('No current events.'),
                 'icon_class': 'bi-calendar',
@@ -716,6 +720,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.coming_events,
+                'get_default_nav_id': EAC.EventAdminController.get_default_nav_id,
                 'disabled': not event_loader.coming_events,
                 'empty_str': _('No upcoming events.'),
                 'icon_class': 'bi-calendar-check',
@@ -726,6 +731,7 @@ class AbstractIndexAdminController(AbstractAdminController):
                 ),
                 'template': 'index/events_tab.html',
                 'events': event_loader.passed_events,
+                'get_default_nav_id': EAC.EventAdminController.get_default_nav_id,
                 'disabled': not event_loader.passed_events,
                 'empty_str': _('No passed events.'),
                 'icon_class': 'bi-calendar-minus',

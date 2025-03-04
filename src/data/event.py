@@ -246,7 +246,7 @@ class Event:
         return format_timestamp_time(self.stop)
 
     @cached_property
-    def players_number(self) -> int:
+    def player_count(self) -> int:
         return sum(
             len(tournament.players_by_name_with_unpaired)
             for tournament in self.tournaments_by_id.values()
