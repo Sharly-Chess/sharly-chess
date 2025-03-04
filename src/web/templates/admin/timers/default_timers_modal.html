@@ -1,0 +1,70 @@
+<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block">
+    <form
+        hx-patch="{{ url_for('default-timers-update', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    {{ _('Edition of default timers for event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
+                </h2>
+            </div>
+            <div class="modal-body">
+                <h4>
+                    {{ _('Timers') }}
+                </h4>
+                <div class="row">
+                    {% for num in [1, 2, 3] %}
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.color_input(
+                                name='color_'~num,
+                                label=_('Colour #%(num)d:', num=num),
+                                help_text=timer_color_texts[num],
+                                default_checkbox=true,
+                                default_color=papi_web_config.default_timer_colors[num],
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            {% with id='delay-'~num, name='delay_'~num %}
+                                {{ admin_macros.number_input(
+                                    name='delay_'~num,
+                                    label=_('Delay #%(num)d:', num=num),
+                                    placeholder=_('By default: %(minutes)d minutes', minutes=papi_web_config.default_timer_delays[num]),
+                                    help_text='',
+                                    data=data, errors=errors
+                                ) }}
+                            {% endwith %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="modal-footer d-block">
+                <div class="row">
+                    <div class="col col-6 text-start">
+                        <button
+                            type="submit"
+                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                        >
+                            <i class="bi-floppy-fill pe-1"></i>
+                            {{ _('Update') }}
+                        </button>
+                    </div>
+                    <div class="col col-6 text-end">
+                        <button
+                            type="button"
+                            class="btn btn-secondary text-nowrap"
+                            data-bs-dismiss="modal"
+                        >
+                            <i class="bi-x-circle-fill"></i>
+                            {{ _('Cancel') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
