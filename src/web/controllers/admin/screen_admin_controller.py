@@ -19,9 +19,9 @@ from data.screen_set import ScreenSet
 from data.util import ScreenType
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredScreen, StoredScreenSet
-from web.controllers.admin.event_admin_controller import (
-    EventAdminWebContext,
-    AbstractEventAdminController,
+from web.controllers.admin.base_event_admin_controller import (
+    BaseEventAdminWebContext,
+    BaseEventAdminController,
 )
 from web.controllers.index_controller import WebContext, AbstractController
 from web.messages import Message
@@ -29,7 +29,7 @@ from web.messages import Message
 logger: Logger = get_logger()
 
 
-class ScreenAdminWebContext(EventAdminWebContext):
+class ScreenAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
@@ -83,7 +83,7 @@ class ScreenAdminWebContext(EventAdminWebContext):
         }
 
 
-class ScreenAdminController(AbstractEventAdminController):
+class ScreenAdminController(BaseEventAdminController):
     @classmethod
     def _admin_validate_screen_update_data(
         cls,

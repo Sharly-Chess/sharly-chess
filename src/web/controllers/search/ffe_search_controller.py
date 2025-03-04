@@ -6,10 +6,10 @@ from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
 from data.player import Player
 from database.sqlite.ffe_database import FfeDatabase
-from web.controllers.admin.event_admin_controller import AbstractEventAdminController, EventAdminWebContext
+from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 
 
-class FfeSearchController(AbstractEventAdminController):
+class FfeSearchController(BaseEventAdminController):
 
     @get(
         path='/search/ffe/{event_uniq_id:str}',
@@ -21,7 +21,7 @@ class FfeSearchController(AbstractEventAdminController):
             event_uniq_id: str,
             search_ffe: str,
     ) -> Template | ClientRedirect:
-        web_context: EventAdminWebContext = EventAdminWebContext(
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             admin_event_tab='players',

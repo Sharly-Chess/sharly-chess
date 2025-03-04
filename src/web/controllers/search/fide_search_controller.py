@@ -6,10 +6,10 @@ from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
 from data.player import Player
 from database.sqlite.fide_database import FideDatabase
-from web.controllers.admin.event_admin_controller import AbstractEventAdminController, EventAdminWebContext
+from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 
 
-class FideSearchController(AbstractEventAdminController):
+class FideSearchController(BaseEventAdminController):
 
     @get(
         path='/search/fide/{event_uniq_id:str}',
@@ -21,7 +21,7 @@ class FideSearchController(AbstractEventAdminController):
             event_uniq_id: str,
             search_fide: str,
     ) -> Template | ClientRedirect:
-        web_context: EventAdminWebContext = EventAdminWebContext(
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             admin_event_tab='players',
