@@ -177,11 +177,11 @@ class PlayerUserWebContext(TournamentUserWebContext):
         }
 
 
-class AbstractInputUserController(BaseScreenUserController):
+class BaseInputUserController(BaseScreenUserController):
     pass
 
 
-class CheckInUserController(AbstractInputUserController):
+class CheckInUserController(BaseInputUserController):
     @get(
         path='/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-checkin-modal',
@@ -256,7 +256,7 @@ class CheckInUserController(AbstractInputUserController):
         return self._user_screen_render(web_context)
 
 
-class IllegalMoveUserController(AbstractInputUserController):
+class IllegalMoveUserController(BaseInputUserController):
     def _delete_or_add_illegal_move(
         self,
         request: HTMXRequest,
@@ -350,7 +350,7 @@ class IllegalMoveUserController(AbstractInputUserController):
         )
 
 
-class ResultUserController(AbstractInputUserController):
+class ResultUserController(BaseInputUserController):
     @get(
         path='/user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}',
         name='user-result-modal',
