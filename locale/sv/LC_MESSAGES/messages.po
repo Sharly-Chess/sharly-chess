@@ -946,6 +946,17 @@ msgstr "Av spelare"
 msgid "%t (by player)"
 msgstr "%t (per spelare)"
 
+#: src/data/screen.py src/data/util.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+msgid "Ranking"
+msgstr ""
+
+#: src/data/screen.py
+msgid "%t (ranking)"
+msgstr ""
+
 #: src/data/screen.py
 #, ai_translation
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
@@ -1568,14 +1579,12 @@ msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
 #: src/data/util.py
-#, fuzzy
-msgid "W *** WHITE COLOR FOR RANKINGS"
-msgstr "W"
+msgid "W *** WHITE COLOR FOR CROSSTABLE"
+msgstr ""
 
 #: src/data/util.py
-#, fuzzy
-msgid "B *** BLACK COLOR FOR RANKINGS"
-msgstr "B"
+msgid "B *** BLACK COLOR FOR CROSSTABLE"
+msgstr ""
 
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
@@ -1646,24 +1655,16 @@ msgid "List of players"
 msgstr "Förteckning över spelare"
 
 #: src/data/util.py
-#, ai_translation, python-format
-msgid "Rankings after round #%d"
-msgstr "Rankings efter omgång #% d"
+msgid "Ranking after round #{round}"
+msgstr ""
 
 #: src/data/util.py
-#, ai_translation, python-format
-msgid "Tournament summary after round #%d"
-msgstr "Sammanfattning av turneringen efter omgång #% d"
+msgid "Crosstable after round #{round}"
+msgstr ""
 
 #: src/data/util.py
-#, ai_translation
-msgid "Rankings"
-msgstr "Placering"
-
-#: src/data/util.py
-#, ai_translation
-msgid "Tournament summary"
-msgstr "Sammanfattning av turneringen"
+msgid "Crosstable"
+msgstr ""
 
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
@@ -2334,14 +2335,12 @@ msgid "A positive integer is expected."
 msgstr "Ett positivt heltal förväntas."
 
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation, python-format
-msgid "Not part of the selected tournament (%d rounds)."
-msgstr "Inte en del av den valda turneringen (% d rundor)."
+msgid "Not part of the selected tournament ({rounds} rounds)."
+msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation, python-format
-msgid "Round not finished (last finished: %d)."
-msgstr "Rund ej färdig (senast färdig: %d)."
+msgid "Round not finished (last finished: {round})."
+msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -2391,9 +2390,8 @@ msgid "Please enter the date of birth."
 msgstr "Ange födelsedatum."
 
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
-msgid "Only estimated rankings are optional."
-msgstr "Endast uppskattade rankningar är valfria."
+msgid "Only estimated ratings are optional."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2701,6 +2699,18 @@ msgid "Tie-break already in use."
 msgstr "Tie-break är redan i bruk."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file [{file}] created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file has not been created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Turneringen [{tournament_uniq_id}] har skapats och standardskärmar har lagts till."
@@ -2750,6 +2760,10 @@ msgstr "Parningar efter spelare ({num})"
 #, ai_translation
 msgid "Last results ({num})"
 msgstr "Senaste resultaten ({num})"
+
+#: src/web/controllers/user/event_user_controller.py
+msgid "Ranking ({num})"
+msgstr ""
 
 #: src/web/controllers/user/event_user_controller.py
 #, ai_translation
@@ -3436,7 +3450,6 @@ msgstr "Förvald katalog för Papi-filerna"
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
-#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "(by default)"
 msgstr "(som standard)"
@@ -3604,6 +3617,11 @@ msgid "Players from #%(first)s to #%(last)s"
 msgstr "Spelare från #%(first)s till #%(last)s"
 
 #: src/web/templates/admin/families/family_card.html
+#, python-format
+msgid "Players from #%(first)d to #%(last)d"
+msgstr ""
+
+#: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation
 msgid "No screens"
@@ -3638,6 +3656,10 @@ msgstr "Brädor skärmfamilj skapande"
 #, ai_translation
 msgid "Players screen family creation"
 msgstr "Spelare skärmfamilj skapande"
+
+#: src/web/templates/admin/families/family_modal.html
+msgid "Ranking screen family creation"
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation, python-format
@@ -3676,6 +3698,11 @@ msgstr "Egenskaper (parningar efter styrelse)"
 #, ai_translation
 msgid "Properties (pairings by player)"
 msgstr "Egenskaper (parningar av spelare)"
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Properties (ranking)"
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3726,6 +3753,28 @@ msgstr "Val av spelare (i alfabetisk ordning)"
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+msgid "Player selection (by rank)"
+msgstr ""
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The number of the first board to select, optional (the first board by default)."
+msgstr "Numret på det första brädet att välja, valfritt (det första brädet som standard)."
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
+msgstr "Antalet av den första spelaren att välja, valfritt (den första spelaren i alfabetisk ordning som standard)."
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+msgid "The rank of the first player to select, optional (1 by default)."
+msgstr ""
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
 msgid "First board:"
 msgstr "Första brädet:"
@@ -3747,14 +3796,19 @@ msgstr "T.ex.: %(num)d"
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
-msgid "The number of the first board to select, optional (the first board by default)."
-msgstr "Numret på det första brädet att välja, valfritt (det första brädet som standard)."
+msgid "The number of the last board to select, optional (the last board by default)."
+msgstr "Numret på det sista brädet att välja, valfritt (det sista brädet som standard)."
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
-msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
-msgstr "Antalet av den första spelaren att välja, valfritt (den första spelaren i alfabetisk ordning som standard)."
+msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
+msgstr "Antalet av den sista spelaren att välja, valfritt (den sista spelaren i alfabetisk ordning som standard)."
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+msgid "The rank of the last player to select, optional (the rank of the last rank player by default)."
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
@@ -3767,18 +3821,6 @@ msgstr "Sista brädet:"
 #, ai_translation
 msgid "Last player:"
 msgstr "Senaste spelare:"
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#, ai_translation
-msgid "The number of the last board to select, optional (the last board by default)."
-msgstr "Numret på det sista brädet att välja, valfritt (det sista brädet som standard)."
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#, ai_translation
-msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
-msgstr "Antalet av den sista spelaren att välja, valfritt (den sista spelaren i alfabetisk ordning som standard)."
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3873,9 +3915,8 @@ msgid "E.g.: @boards, @family, another-screen"
 msgstr "T.ex.: @ boards, @ family, another-screen"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation
-msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på menyn på skärmar i familjen. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ familj (alla skärmar i familjen), @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmarna."
+msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -3961,6 +4002,10 @@ msgstr "Lägg till en familj av skärmar för att visa parningar per bord."
 #, ai_translation
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Lägg till en grupp skärmar för att visa parningar i alfabetisk ordning."
+
+#: src/web/templates/admin/families/tab.html
+msgid "Add a family of screens to display the ranking."
+msgstr ""
 
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -5199,7 +5244,8 @@ msgstr "Du måste skapa en skärm eller en familj av skärmar innan du skapar en
 msgid "Create a rotator"
 msgstr "Skapa en rotator"
 
-#: src/web/templates/admin/rotators/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/rotators/tab.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "No rotators."
 msgstr "Inga ruttnare."
@@ -5288,6 +5334,10 @@ msgid "Results screen creation"
 msgstr "Bildskärmens resultat"
 
 #: src/web/templates/admin/screens/screen_modal.html
+msgid "Ranking screen creation"
+msgstr ""
+
+#: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "Image screen creation"
 msgstr "Bildskärmsskapelse"
@@ -5358,9 +5408,8 @@ msgid "The timer displayed on the screen."
 msgstr "Timern som visas på skärmen."
 
 #: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på skärmens meny. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmen."
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr ""
 
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
@@ -5554,6 +5603,10 @@ msgid "Add a screen to display the last results."
 msgstr "Lägg till en skärm för att visa de sista resultaten."
 
 #: src/web/templates/admin/screens/tab.html
+msgid "Add a screen to display the ranking."
+msgstr ""
+
+#: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Add a screen to display an image."
 msgstr "Lägg till en skärm för att visa en bild."
@@ -5579,25 +5632,29 @@ msgid "Show/hide the results screens."
 msgstr "Visa/göm resultatskärmarna."
 
 #: src/web/templates/admin/screens/tab.html
+msgid "Show/hide the ranking screens."
+msgstr ""
+
+#: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Show/hide the image screens."
 msgstr "Visa/göm bildskärmarna."
 
-#: src/web/templates/admin/screens/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/screens/tab.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "No such screens."
 msgstr "Inga sådana skärmar."
 
 #: src/web/templates/admin/timers/default_timers_modal.html
-#, ai_translation, python-format
+#, python-format
 msgid "Edition of default timers for event [%(event_uniq_id)s]"
-msgstr "Upplaga av standardtider för händelse [%(event_uniq_id)s]"
+msgstr ""
 
 #: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/tab.html
-#, ai_translation
 msgid "Timers"
-msgstr "Tidtagare"
+msgstr ""
 
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
@@ -5783,6 +5840,27 @@ msgstr "Det unika ID, som används för att referera timern."
 msgid "Colors and delays"
 msgstr "Färger och förseningar"
 
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Missing Papi file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Do you want Papi-web to create the file?"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Yes, create the file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "No, I will do it later"
+msgstr ""
+
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
 msgid "Tournaments"
@@ -5802,6 +5880,23 @@ msgstr "Skapa en turnering"
 #, ai_translation
 msgid "No tournaments."
 msgstr "Inga turneringar."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "Number of players : %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation
+msgid "Illegal moves are not recorded."
+msgstr "Olagliga rörelser registreras inte."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "At most %(num)d illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] "Högst %(num)d Olagligt drag registreras."
+msgstr[1] "På de flesta %(num)d olagliga rörelser registreras."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
@@ -5839,23 +5934,6 @@ msgid "No ChessEvent tournament defined"
 msgstr "Ingen ChessEvent-turnering definierad"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "Players found in the Papi_file : %(num)d"
-msgstr "Spelare som finns i Papi_filen : %(num)d"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Illegal moves are not recorded."
-msgstr "Olagliga rörelser registreras inte."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "At most %(num)d illegal move is recorded."
-msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] "Högst %(num)d Olagligt drag registreras."
-msgstr[1] "På de flesta %(num)d olagliga rörelser registreras."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "Rules file set"
 msgstr "Regelfil inställd"
@@ -5864,11 +5942,6 @@ msgstr "Regelfil inställd"
 #, ai_translation, python-format
 msgid "First board number: %(board_number)d"
 msgstr "Första styrelsenummer: %(board_number)d"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "Paired bye points: %(string)s"
-msgstr "Parad bye punkter: %(string)s"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -6157,16 +6230,6 @@ msgstr "Antalet första styrelse i turneringen (om inte satt, standard till %(de
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
-msgid "Paired bye points:"
-msgstr "Parad bye punkter:"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The points scored by players who are paired bye."
-msgstr "Poängen som görs av spelare som är parade bye."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
 msgid "Max byes:"
 msgstr "Max hej då:"
 
@@ -6261,6 +6324,10 @@ msgid "Results screens show the last results (most recent first)."
 msgstr "Resultatskärmar visar de sista resultaten (senaste först)."
 
 #: src/web/templates/common/macros.j2
+msgid "Ranking screens show the players by rank."
+msgstr ""
+
+#: src/web/templates/common/macros.j2
 #, ai_translation
 msgid "Image screens show an image (local or remote)."
 msgstr "Bildskärmar visar en bild (lokal eller fjärr)."
@@ -6270,7 +6337,7 @@ msgstr "Bildskärmar visar en bild (lokal eller fjärr)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator roterar automatiskt mellan flera skärmar."
 
-#: src/web/templates/user/event.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "Go back to the events page."
 msgstr "Gå tillbaka till händelsesidan."
@@ -6414,6 +6481,7 @@ msgstr "/förflyttning"
 
 #: src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation, python-format
 msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (runda %(round)d)"
@@ -6439,36 +6507,43 @@ msgid "Player / Elo"
 msgstr "Spelare / Elo"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Player Elo [Pts]"
 msgstr "Spelare Elo [Pts]"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Player Elo"
 msgstr "Spelare Elo"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Board & color"
 msgstr "Skrivbordsfärg"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Opponent Elo [Pts]"
 msgstr "Motståndare Elo [Pts]"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Opponent Elo"
 msgstr "Motståndare Elo"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Styrelsen #%(board_number)d med %(color)s"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "vs"
 msgstr "vs"
@@ -6520,4 +6595,49 @@ msgstr "vs"
 
 #~ msgid "Half point bye"
 #~ msgstr "Halva ledet efter"
+
+#~ msgid "W *** WHITE COLOR FOR RANKINGS"
+#~ msgstr "W"
+
+#~ msgid "B *** BLACK COLOR FOR RANKINGS"
+#~ msgstr "B"
+
+#~ msgid "Rankings after round #%d"
+#~ msgstr "Rankings efter omgång #% d"
+
+#~ msgid "Tournament summary after round #%d"
+#~ msgstr "Sammanfattning av turneringen efter omgång #% d"
+
+#~ msgid "Rankings"
+#~ msgstr "Placering"
+
+#~ msgid "Tournament summary"
+#~ msgstr "Sammanfattning av turneringen"
+
+#~ msgid "Not part of the selected tournament (%d rounds)."
+#~ msgstr "Inte en del av den valda turneringen (% d rundor)."
+
+#~ msgid "Round not finished (last finished: %d)."
+#~ msgstr "Rund ej färdig (senast färdig: %d)."
+
+#~ msgid "Only estimated rankings are optional."
+#~ msgstr "Endast uppskattade rankningar är valfria."
+
+#~ msgid "Players found in the Papi_file : %(num)d"
+#~ msgstr "Spelare som finns i Papi_filen : %(num)d"
+
+#~ msgid "Paired bye points: %(string)s"
+#~ msgstr "Parad bye punkter: %(string)s"
+
+#~ msgid "Paired bye points:"
+#~ msgstr "Parad bye punkter:"
+
+#~ msgid "The points scored by players who are paired bye."
+#~ msgstr "Poängen som görs av spelare som är parade bye."
+
+#~ msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
+#~ msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på menyn på skärmar i familjen. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ familj (alla skärmar i familjen), @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmarna."
+
+#~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+#~ msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på skärmens meny. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmen."
 

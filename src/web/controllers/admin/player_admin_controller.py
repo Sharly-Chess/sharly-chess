@@ -192,7 +192,7 @@ class PlayerAdminController(BaseEventAdminController):
         for tr in TournamentRating:
             if rating_types[tr] != PlayerRatingType.ESTIMATED and not ratings[tr]:
                 errors[f'{field}_{tr.value}'] = _(
-                    'Only estimated rankings are optional.'
+                    'Only estimated ratings are optional.'
                 )
         title: PlayerTitle | None = PlayerTitle.NONE
         try:

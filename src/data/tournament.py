@@ -1,15 +1,15 @@
-from datetime import datetime
-from itertools import groupby
-from time import time
 from collections import Counter
+from datetime import datetime
 from functools import cached_property
+from itertools import groupby
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
+from time import time
+from typing import TYPE_CHECKING
 
 from dateutil.relativedelta import relativedelta
 from trf import Tournament as TrfTournament
-from typing import TYPE_CHECKING, Any
 
 from common import format_timestamp_date_time
 from common.i18n import _
@@ -108,6 +108,7 @@ class Tournament:
         self._arbiter: str = ''
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
+        self._players_by_rank: dict[int, Player] | None = None
         self._papi_tie_breaks: tuple[
             PapiTieBreak, PapiTieBreak, PapiTieBreak
         ] | None = None
@@ -440,15 +441,8 @@ class Tournament:
 
     @cached_property
     def players_by_rank(self) -> dict[int, Player]:
-        ranked_players = sorted(
-            self.players_by_id.values(),
-            key=lambda player: player.rank_sort_key,
-        )
-        for rank, player_ in enumerate(ranked_players, start=1):
-            player_.rank = rank
-        return {
-            rank: player for rank, player in ranked_players
-        }
+        assert self._players_by_rank is not None, 'Tournament._players_sorted_by_rank is not set, call Tournament.compute_player_ranks() before.'
+        return self._players_by_rank
 
     @cached_property
     def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
@@ -580,7 +574,7 @@ class Tournament:
         first_round_pairing: BoardColor = BoardColor.WHITE,
         papi_legacy: bool = True,
     ) -> TrfTournament:
-        self.set_for_ranking(self.max_ranking_round, papi_legacy)
+        self.compute_player_ranks(self.max_ranking_round, papi_legacy)
         return TrfTournament(
             name=self.name,
             city=self.location,
@@ -591,7 +585,6 @@ class Tournament:
             players=[
                 player.to_trf(
                     self._player_id_to_trf_id,
-                    self._player_id_to_rank(player.id),
                     self.current_round + 1
                     if trf_type == TrfType.PAIRING
                     else self.rounds,
@@ -607,19 +600,14 @@ class Tournament:
             bb_fields=(self._trf_bb_fields(point_values=self.point_values) if trf_type == TrfType.PAIRING else {}),
         )
 
-    def _find_player_value_by_id(
-        self, player_id: int, players_by_value: dict[Any, Player]
-    ) -> any:
-        for value, player in players_by_value.items():
+    def _player_id_to_trf_id(self, player_id: int) -> int:
+        for value, player in self.players_by_trf_id.items():
             if player.id == player_id:
                 return value
         raise KeyError(f'Id of unknown player: {player_id}')
 
-    def _player_id_to_trf_id(self, player_id: int) -> int:
-        return self._find_player_value_by_id(player_id, self.players_by_trf_id)
-
     def _player_id_to_rank(self, player_id: int) -> int:
-        return self._find_player_value_by_id(player_id, self.players_by_rank)
+        return self.players_by_id[player_id].rank
 
     def _trf_xx_fields(self, first_round_pairing: BoardColor):
         next_round = self.current_round + 1
@@ -936,30 +924,39 @@ class Tournament:
                 continue
             player.illegal_moves = illegal_moves[player.id]
 
-    def set_for_ranking(
+    def compute_player_ranks(
         self, max_round: int | None = None, papi_legacy: bool = True
     ):
-        """Sets all the values required to compute the
-        rankings after the round *max_round*. """
+        """compute the ranks of all the players after round *max_round*."""
         if (
             max_round and self.max_ranking_round is not None
             and max_round > self.max_ranking_round
         ):
             raise ValueError(
-                f'Impossible to generate rankings for round [{max_round}] '
+                f'Impossible to generate ranking for round [{max_round}] '
                 f'(last finished round: [{self.max_ranking_round}])'
             )
         max_round = max_round or self.max_ranking_round or self.rounds
-        # Estimate pairings to ensure we have a defined rank for everyone
+        # Estimate ratings to ensure we have a defined rating for everyone
         self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
         for player in self.players_by_id.values():
             player.points = (
                 player.total_points() if max_round is None
                 else player.points_after(max_round)
             )
-            player.set_tie_break_values(self, max_round)
-        for player in self.players_by_rank.values():
-            player.set_ranking_pairings(max_round, self._player_id_to_rank)
+            player.compute_tie_break_values(max_round)
+        self._players_by_rank = {
+            rank: player
+            for rank, player in enumerate(
+                sorted(
+                    self.players_by_id.values(),
+                    key=lambda p: p.rank_sort_key,
+                ),
+                start=1
+            )
+        }
+        for rank, player in self._players_by_rank.items():
+            player.set_rank(rank)
 
     def _build_boards(self):
         if not self._current_round:

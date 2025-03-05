@@ -14,7 +14,9 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from data.player import Player
 from data.tie_break import PapiTieBreak, TieBreak
+from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
@@ -437,6 +439,10 @@ class TournamentAdminController(BaseEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
+            case 'create_papi':
+                template_context |= {
+                    'modal': modal,
+                }
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
@@ -514,6 +520,33 @@ class TournamentAdminController(BaseEventAdminController):
         tournament = context.admin_tournament
         BbpPairings().generate_pairings(tournament)
         tournament.read_papi(True)
+        Message.success(
+            request,
+            _(
+                'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
+            ).format(round=tournament.current_round, tournament_uniq_id=tournament.uniq_id),
+        )
+        return self._admin_event_tournaments_render(request, event_uniq_id)
+
+    @post(
+        path='/admin/tournament-papi-create/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-papi-create',
+    )
+    async def admin_tournament_papi_create(
+        self, request: HTMXRequest, event_uniq_id: str, tournament_id: int,
+    ) -> Template | ClientRedirect:
+        context = TournamentAdminWebContext(
+            request, event_uniq_id, None, tournament_id, None
+        )
+        file = context.admin_tournament.file
+        file.parent.mkdir(parents=True, exist_ok=True)
+        if create_empty_papi_database(file, PAPI_VERSIONS[-1]):
+            Message.success(
+                request, _('Papi file [{file}] created.').format(file=file)
+            )
+        else:
+            Message.error(request, _('Papi file has not been created.'))
+
         return self._admin_event_tournaments_render(request, event_uniq_id)
 
     def _admin_tournament_update(
@@ -630,6 +663,15 @@ class TournamentAdminController(BaseEventAdminController):
                             ).format(tournament_uniq_id=stored_tournament.uniq_id),
                         )
                     event_loader.clear_cache(event_uniq_id)
+                    if not Tournament(
+                        web_context.admin_event, stored_tournament
+                    ).file_exists:
+                        return self._admin_event_tournaments_render(
+                            request,
+                            event_uniq_id=event_uniq_id,
+                            tournament_id=stored_tournament.id,
+                            modal='create_papi',
+                        )
                     return self._admin_event_tournaments_render(
                         request, event_uniq_id=event_uniq_id
                     )
@@ -648,6 +690,15 @@ class TournamentAdminController(BaseEventAdminController):
                         ),
                     )
                     event_loader.clear_cache(event_uniq_id)
+                    if not Tournament(
+                        web_context.admin_event, stored_tournament
+                    ).file_exists:
+                        return self._admin_event_tournaments_render(
+                            request,
+                            event_uniq_id=event_uniq_id,
+                            tournament_id=tournament_id,
+                            modal='create_papi',
+                        )
                     return self._admin_event_tournaments_render(
                         request, event_uniq_id=event_uniq_id
                     )
@@ -762,27 +813,30 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)
         )
-        print_document = (
+        print_document: PrintDocument = (
             PrintDocument(document) if document else PrintDocument.PLAYER_LIST
         )
-        if print_document.is_ranking:
-            round = (
-                round or
-                admin_tournament.max_ranking_round or
-                admin_tournament.rounds
-            )
-            admin_tournament.set_for_ranking(round)
-            ordered_players = admin_tournament.players_by_rank.values()
-        else:
-            ordered_players = admin_tournament.players_by_name_with_unpaired
+        players: list[Player]
+        match print_document:
+            case PrintDocument.RANKING | PrintDocument.CROSSTABLE:
+                round = (
+                    round or
+                    admin_tournament.max_ranking_round or
+                    admin_tournament.rounds
+                )
+                admin_tournament.compute_player_ranks(round)
+                players = list(admin_tournament.players_by_rank.values())
+            case PrintDocument.PLAYER_LIST:
+                players = admin_tournament.players_by_name_with_unpaired
+            case _:
+                raise ValueError(f'{print_document=}')
 
-        players_in_tournament = [
-            player for player in ordered_players
-            if player.tournament.id == tournament_id
-        ]
-        split_by = PrintSplit(split) if split else PrintSplit.NO_SPLIT
+        split_by: PrintSplit = PrintSplit(split) if split else PrintSplit.NO_SPLIT
+        split_players: dict[str, list[Player]]
         if split_by == PrintSplit.NO_SPLIT:
-            split_players = {"": players_in_tournament}
+            split_players = {
+                "": players,
+            }
         else:
             split_functions = {
                 PrintSplit.CATEGORY: lambda p: p.category.short_name,
@@ -799,7 +853,7 @@ class TournamentAdminController(BaseEventAdminController):
                 split_players = defaultdict(list)
 
             # Split players by group
-            for player in players_in_tournament:
+            for player in players:
                 split_players[split_functions[split_by](player)].append(player)
 
             if split_by == PrintSplit.CATEGORY:
@@ -819,10 +873,7 @@ class TournamentAdminController(BaseEventAdminController):
             'tournament': admin_tournament,
             'players': split_players,
             'title': print_document.to_title(round),
-            'rank_players': print_document.is_ranking,
-            'tournament_summary': (
-                print_document == PrintDocument.TOURNAMENT_SUMMARY
-            ),
+            'document': print_document,
             'max_round': round,
         }
         return HTMXTemplate(

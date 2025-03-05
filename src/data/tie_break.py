@@ -8,7 +8,6 @@ from common.i18n import _
 
 if TYPE_CHECKING:
     from data.player import Player
-    from data.tournament import Tournament
 
 
 class PapiTieBreak(IntEnum):
@@ -196,7 +195,8 @@ class PapiTieBreak(IntEnum):
             case _:
                 raise ValueError(f'Unknown tie break: {self}')
 
-    def _papi_buchholz_cut(self, tournament_rounds: int) -> int:
+    @staticmethod
+    def _papi_buchholz_cut(tournament_rounds: int) -> int:
         if tournament_rounds <= 7:
             return 1
         elif tournament_rounds <= 12:
@@ -501,16 +501,15 @@ class TieBreak:
     type: TieBreakType
     options: dict[TieBreakOption, Any]
 
-    def player_value(
+    def compute_player_value(
         self,
         player: 'Player',
-        tournament: 'Tournament',
         max_round: int | None = None,
     ) -> int | float:
         self._check_options()
         return self.type.compute_function(
             player,
-            tournament,
+            player.tournament,
             max_round=max_round,
             **self.options,
         )

@@ -5,9 +5,7 @@ from litestar.contrib.htmx.request import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
-from common.i18n import _
 from common.logger import get_logger
-
 from common.papi_web_config import PapiWebConfig
 from web.controllers.index_controller import BaseController, WebContext
 
@@ -22,10 +20,9 @@ class UserWebContext(WebContext):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None,
+        ],
         user_tab: str | None,
     ):
         super().__init__(request, data=data)

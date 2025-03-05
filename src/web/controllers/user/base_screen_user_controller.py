@@ -143,10 +143,9 @@ class RotatorUserWebContext(ScreenOrRotatorUserWebContext):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None,
+        ],
         event_uniq_id: str,
         rotator_id: int,
         rotator_screen_index: int,
