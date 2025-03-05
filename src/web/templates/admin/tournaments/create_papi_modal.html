@@ -1,0 +1,50 @@
+<div class="modal-dialog modal-dialog-centered admin-create-papi-modal d-block">
+    <form
+        hx-post="{{ url_for('admin-tournament-papi-create', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    {{ _('Missing Papi file') }}
+                </h2>
+            </div>
+            <div class="modal-body">
+                <h4 class="text-danger">
+                    {{ _('Warning: Papi file [%(path)s] not found. Many features are disabled.', path=admin_tournament.file) }}
+                </h4>
+                {{ admin_macros.select_input(
+                    name='papi_version',
+                    label=_('Papi version'),
+                    select_options=papi_version_options,
+                    help_text=_('Version of papi to create the file for.'),
+                    data=data, errors=errors
+                ) }}
+            </div>
+            <div class="modal-footer d-block">
+                <div class="d-flex flex-wrap gap-4">
+                    <div class="d-flex gap-2 flex-grow-1">
+                        <button
+                            type="submit"
+                            class="text-nowrap white btn btn-primary"
+                        >
+                            <i class="bi-plus-circle-fill pe-1"></i>
+                            {{ _('Create Papi file') }}
+                        </button>
+                    </div>
+                    <div>
+                        <button
+                            type="button"
+                            data-bs-dismiss="modal"
+                            class="btn btn-secondary text-nowrap"
+                        >
+                            <i class="bi-x-circle-fill pe-1"></i>
+                            {{ _('Continue without Papi file') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -15,6 +15,7 @@ from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
 from data.tie_break import PapiTieBreak, TieBreak
+from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
@@ -437,6 +438,21 @@ class TournamentAdminController(BaseEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
+            case 'create_papi':
+                if data is None:
+                    data = {
+                        'papi_version': WebContext.value_to_form_data(
+                            PAPI_VERSIONS[-1]
+                        )
+                    }
+                if errors is None:
+                    errors = {}
+                template_context |= {
+                    'modal': modal,
+                    'papi_version_options': cls._get_papi_version_options(),
+                    'data': data,
+                    'errors': errors,
+                }
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
@@ -514,6 +530,39 @@ class TournamentAdminController(BaseEventAdminController):
         tournament = context.admin_tournament
         BbpPairings().generate_pairings(tournament)
         tournament.read_papi(True)
+        Message.success(
+            request,
+            _(
+                'Pairings of round %d generated for tournament [%s].'
+            ).format(tournament.current_round, tournament.uniq_id),
+        )
+        return self._admin_event_tournaments_render(request, event_uniq_id)
+
+    @post(
+        path='/admin/tournament-papi-create/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-papi-create',
+    )
+    async def admin_tournament_papi_create(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        context = TournamentAdminWebContext(
+            request, event_uniq_id, None, tournament_id, data
+        )
+        file = context.admin_tournament.file
+        if create_empty_papi_database(file, data['papi_version']):
+            Message.success(
+                request, _('Papi file [%s] created.').format(file)
+            )
+        else:
+            Message.error(request, _('Papi file has not been created.'))
+
         return self._admin_event_tournaments_render(request, event_uniq_id)
 
     def _admin_tournament_update(
@@ -625,6 +674,15 @@ class TournamentAdminController(BaseEventAdminController):
                             ).format(tournament_uniq_id=stored_tournament.uniq_id),
                         )
                     event_loader.clear_cache(event_uniq_id)
+                    if not Tournament(
+                        web_context.admin_event, stored_tournament
+                    ).file_exists:
+                        return self._admin_event_tournaments_render(
+                            request,
+                            event_uniq_id=event_uniq_id,
+                            tournament_id=tournament_id,
+                            modal='create_papi',
+                        )
                     return self._admin_event_tournaments_render(
                         request, event_uniq_id=event_uniq_id
                     )
@@ -643,6 +701,15 @@ class TournamentAdminController(BaseEventAdminController):
                         ),
                     )
                     event_loader.clear_cache(event_uniq_id)
+                    if not Tournament(
+                        web_context.admin_event, stored_tournament
+                    ).file_exists:
+                        return self._admin_event_tournaments_render(
+                            request,
+                            event_uniq_id=event_uniq_id,
+                            tournament_id=tournament_id,
+                            modal='create_papi',
+                        )
                     return self._admin_event_tournaments_render(
                         request, event_uniq_id=event_uniq_id
                     )

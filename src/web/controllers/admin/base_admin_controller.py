@@ -21,6 +21,7 @@ from data.loader import EventLoader, ArchiveLoader
 from data.tie_break import PapiTieBreak
 from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
+from database.access.papi.papi_template import PAPI_VERSIONS
 from database.store import StoredEvent
 from web.controllers.index_controller import BaseController, WebContext
 from web.messages import Message
@@ -114,6 +115,13 @@ class BaseAdminController(BaseController):
         return {
             WebContext.value_to_form_data(tie_break): tie_break.name
             for tie_break in iter(PapiTieBreak)
+        }
+
+    @staticmethod
+    def _get_papi_version_options() -> dict[str, str]:
+        return {
+            WebContext.value_to_form_data(version): version
+            for version in PAPI_VERSIONS
         }
 
     @staticmethod

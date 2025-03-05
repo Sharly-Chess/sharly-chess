@@ -2196,12 +2196,6 @@ msgid "Please enter a URL or select an image on the right hand side."
 msgstr "Bitte geben Sie eine URL ein oder wählen Sie ein Bild auf der rechten Seite."
 
 #: src/web/controllers/admin/base_admin_controller.py
-#: src/web/controllers/admin/timer_admin_controller.py
-#, ai_translation
-msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr "Ungültige Verzögerung [{delay}] (positive Ganzzahl erwartet)."
-
-#: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Bitte geben Sie ein Passwort für die ChessEvent-Verbindung ein."
@@ -2610,6 +2604,11 @@ msgstr "Timer [{uniq_id}] existiert bereits."
 
 #: src/web/controllers/admin/timer_admin_controller.py
 #, ai_translation
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr "Ungültige Verzögerung [{delay}] (positive Ganzzahl erwartet)."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
 msgid "Please enter the round number or the hour ID."
 msgstr "Bitte geben Sie die runde Nummer oder die Stunden-ID ein."
 
@@ -2705,6 +2704,20 @@ msgstr "Das Passwort des Turniers auf der FFE-Website besteht aus 10 Großbuchst
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tie-break already in use."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Pairings of round %d generated for tournament [%s]."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Papi file [%s] created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file has not been created."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
@@ -2946,21 +2959,21 @@ msgid "When unpaired players are not displayed, there is no way to distinguish t
 msgstr "Wenn ungepaarte Spieler nicht angezeigt werden, gibt es keine Möglichkeit, die abwesenden (Nullpunkt) Spieler und die Spieler mit einem Halbpunkt-Bye zu unterscheiden."
 
 #: src/web/templates/admin/common/modal/timer_colors.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "Colour #%(num)d:"
 msgstr "Farbe #%(num)d:"
 
 #: src/web/templates/admin/common/modal/timer_delays.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "Delay #%(num)d:"
 msgstr "Verzögerung #%(num)d:"
 
 #: src/web/templates/admin/common/modal/timer_delays.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "By default: %(minutes)d minutes"
@@ -3255,11 +3268,6 @@ msgid "The background colour is used when the image does not fill the whole scre
 msgstr "Die Hintergrundfarbe wird verwendet, wenn das Bild nicht den gesamten Bildschirm füllt."
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Timers"
-msgstr "Zeitmesser"
-
-#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
 msgid "Alert message"
@@ -3297,6 +3305,7 @@ msgstr "Erstellen"
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -3326,6 +3335,7 @@ msgstr "Löschen"
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -3400,6 +3410,7 @@ msgstr "Wie man die Ergebnisse teilt."
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/timers/tab.html
 #: src/web/templates/admin/timers/timer_card.html
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -3493,23 +3504,6 @@ msgstr "Maximale Anzahl illegaler Bewegungen"
 #, ai_translation
 msgid "No rules file set"
 msgstr "Keine Regeln-Datei gesetzt"
-
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Default timer configuration"
-msgstr "Standard-Timer-Konfiguration"
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation, python-format
-msgid "%(minutes)d minutes before"
-msgstr "%(minutes)d Minuten vor"
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation, python-format
-msgid "%(minutes)d minutes after"
-msgstr "%(minutes)d Minuten nach"
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
@@ -5609,6 +5603,17 @@ msgstr "Die Bildbildschirme anzeigen/verbergen."
 msgid "No such screens."
 msgstr "Keine solchen Bildschirme."
 
+#: src/web/templates/admin/timers/default_timers_modal.html
+#, python-format
+msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgstr ""
+
+#: src/web/templates/admin/timers/default_timers_modal.html
+#: src/web/templates/admin/timers/tab.html
+#, ai_translation
+msgid "Timers"
+msgstr "Zeitmesser"
+
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
 msgid "Add a timer to the event."
@@ -5618,6 +5623,29 @@ msgstr "Fügen Sie dem Event einen Timer hinzu."
 #, ai_translation
 msgid "Create a timer"
 msgstr "Einen Timer erstellen"
+
+#: src/web/templates/admin/timers/tab.html
+#, ai_translation
+msgid "Default timer configuration"
+msgstr "Standard-Timer-Konfiguration"
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation
+msgid "Edit the properties of the timer."
+msgstr "Bearbeiten Sie die Eigenschaften des Timers."
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation, python-format
+msgid "%(minutes)d minutes before"
+msgstr "%(minutes)d Minuten vor"
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation, python-format
+msgid "%(minutes)d minutes after"
+msgstr "%(minutes)d Minuten nach"
 
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
@@ -5634,11 +5662,6 @@ msgstr "Runde #%(round)d"
 #, ai_translation
 msgid "No hours."
 msgstr "Keine Stunden."
-
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation
-msgid "Edit the properties of the timer."
-msgstr "Bearbeiten Sie die Eigenschaften des Timers."
 
 #: src/web/templates/admin/timers/timer_card.html
 #, ai_translation
@@ -5774,6 +5797,31 @@ msgstr "Die Unique ID, verwendet, um den Timer zu referenzieren."
 #, ai_translation
 msgid "Colors and delays"
 msgstr "Farben und Verzögerungen"
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Missing Papi file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found. Many features are disabled."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Papi version"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Version of papi to create the file for."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Create Papi file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Continue without Papi file"
+msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
