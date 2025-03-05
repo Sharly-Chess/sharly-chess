@@ -439,7 +439,9 @@ class TournamentAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
             case 'create_papi':
-                template_context |= {'modal': modal}
+                template_context |= {
+                    'modal': modal,
+                }
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
