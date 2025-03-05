@@ -34,6 +34,36 @@
 {% endblock %}
 
 {% block cards_container_cards %}
+    <div>
+        <div class="d-flex gap-4 mt-3">
+            <div class="flex-grow-1">
+                <h4>
+                    {{ _('Default timer configuration') }}
+                </h4>
+            </div>
+            <div {{ macros.tooltip_attributes('info', _('Edit the properties of the timer.'), 'top') }}>
+                <button
+                    class="btn btn-sm btn-outline-primary"
+                    hx-get="{{ url_for('admin-default-timers-modal', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="#modal-wrapper"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-pencil-fill pe-1"></i>
+                    {{ _('Edit') }}
+                </button>
+            </div>
+        </div>
+        <div class="d-flex flex-column gap-1">
+            <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[1] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[1]) }}</div></div>
+            <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[2] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[2]) }}</div></div>
+            <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[3] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes after', minutes=admin_event.timer_delays[3]) }}</div></div>
+        </div>
+    </div>
+
+    <h4 class="mt-5">{{ _('Timers') }}</h4>
     <div class="row">
         {% if admin_event.timers_by_uniq_id %}
             {% for timer in admin_event.timers_by_uniq_id.values() %}

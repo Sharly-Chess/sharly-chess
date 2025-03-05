@@ -66,8 +66,8 @@
             <td class="">
                 <span>
                     <img
-                            class="player-federation-flag ms-1 ps-1 pe-1"
-                            src="{{ url_for('static', file_path='/images/federations/' ~ admin_event.federation ~ '.svg') }}"
+                        class="player-federation-flag ms-1 ps-1 pe-1"
+                        src="{{ url_for('static', file_path='/images/federations/' ~ admin_event.federation ~ '.svg') }}"
                     />
                     {{ admin_event.federation }}
                     -
@@ -151,14 +151,6 @@
                         {{ _('No rules file set') }}
                     </span>
                 {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('Default timer configuration') }}</th>
-            <td class="text-nowrap">
-                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[1] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[1]) }}</div></div>
-                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[2] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=admin_event.timer_delays[2]) }}</div></div>
-                <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ admin_event.timer_colors[3] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes after', minutes=admin_event.timer_delays[3]) }}</div></div>
             </td>
         </tr>
         <tr>

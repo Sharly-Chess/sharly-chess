@@ -369,7 +369,7 @@ class PapiWebConfig(metaclass=Singleton):
         return self._ffe_upload_delay or self._default_ffe_upload_delay
 
     """ The version of the application. """
-    version: Version = Version('2.4.23')
+    version: Version = Version('2.4.24')
 
     """ The URL of the project. """
     url: str = 'https://github.com/papi-web-org/papi-web'
@@ -581,8 +581,8 @@ class PapiWebConfig(metaclass=Singleton):
     """ The default first board number for tournaments. """
     default_first_board_number: int = 1
 
-    """ The points scored by players paired bye. """
-    default_paired_bye_points: Result = Result.GAIN
+    """ The default result for players paired bye. """
+    default_paired_bye_result: Result = Result.GAIN
 
     """ The default maximum number of byes for a player in a tournament. """
     default_max_byes: int = 1

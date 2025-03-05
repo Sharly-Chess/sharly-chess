@@ -4,6 +4,7 @@ from datetime import datetime
 from logging import Logger
 from typing import Annotated, Any
 
+from common.papi_web_config import PapiWebConfig
 from litestar import post, get, delete, patch
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
@@ -17,7 +18,7 @@ from common.logger import get_logger
 from data.loader import EventLoader
 from data.timer import Timer, TimerHour
 from database.sqlite.event_database import EventDatabase
-from database.store import StoredTimer, StoredTimerHour
+from database.store import StoredEvent, StoredTimer, StoredTimerHour
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -275,6 +276,34 @@ class TimerAdminController(BaseEventAdminController):
         match modal:
             case None:
                 pass
+            case 'default-timers':
+                stored_event: StoredEvent = web_context.admin_event.stored_event
+                if data is None:
+                    colors = stored_event.timer_colors
+                    delays = stored_event.timer_delays
+                    data = (
+                        {
+                            f'color_{i}': WebContext.value_to_form_data(colors[i])
+                            for i in range(1, 4)
+                        }
+                        | {
+                            f'color_{i}_checkbox': WebContext.value_to_form_data(colors[i] is None)
+                            for i in range(1, 4)
+                        }
+                        | {
+                            f'delay_{i}': WebContext.value_to_form_data(delays[i])
+                            for i in range(1, 4)
+                        }
+                    )
+
+                template_context |= {
+                    'timer_color_texts': cls._get_timer_color_texts(
+                        PapiWebConfig.default_timer_delays
+                    ),
+                    'modal': 'default-timers',
+                    'errors': errors or {},
+                    'data': data,
+                }
             case 'timer':
                 if data is None:
                     uniq_id: str | None = None
@@ -374,6 +403,97 @@ class TimerAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
         return cls._admin_event_render(template_context)
+
+    @get(
+        path='/admin/default-timers-modal/{event_uniq_id:str}',
+        name='admin-default-timers-modal',
+        cache=1,
+    )
+    async def htmx_admin_default_timers_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_timers_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            modal='default-timers',
+            action=None,
+            timer_id=None,
+        )
+
+    @patch(
+        path='/admin/default-timers-update/{event_uniq_id:str}',
+        name='default-timers-update'
+    )
+    async def htmx_admin_default_timers_update(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect:
+        web_context: TimerAdminWebContext = TimerAdminWebContext(
+            request,
+            admin_event_tab='timers',
+            event_uniq_id=event_uniq_id,
+            timer_id=None,
+            timer_hour_id=None,
+            data=data,
+        )
+        
+        if data is None:
+            data = {}
+            
+        errors: dict[str, str] = {}
+        stored_event: StoredEvent = web_context.admin_event.stored_event
+            
+        timer_colors: dict[int, str | None] = {i: None for i in range(1, 4)}
+        timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
+        for i in range(1, 4):
+            field: str = f'color_{i}'
+            if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+                try:
+                    timer_colors[i] = WebContext.form_data_to_rgb(data, field)
+                except ValueError:
+                    errors[field] = _(
+                        'Invalid color [{color}] ([#RRGGBB] expected).'
+                    ).format(color={data[field]})
+            field: str = f'delay_{i}'
+            try:
+                timer_delays[i] = WebContext.form_data_to_int(
+                    data, field, minimum=1
+                )
+            except ValueError:
+                errors[field] = _(
+                    'Invalid delay [{delay}] (positive integer expected).'
+                ).format(delay=data[field])
+        
+        if errors:
+            return self._admin_event_timers_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                modal='default-timers',
+                action=None,
+                timer_id=None,
+                data=data,
+                errors=errors,
+            )
+        
+        stored_event.timer_colors=timer_colors
+        stored_event.timer_delays=timer_delays
+            
+        with EventDatabase(
+            web_context.admin_event.uniq_id, write=True
+        ) as event_database:
+            event_database.update_stored_event(stored_event)
+            event_database.commit()
+            
+        return self._admin_event_timers_render(
+            request, event_uniq_id=event_uniq_id
+        )
 
     @get(
         path='/admin/timer-modal/create/{event_uniq_id:str}',

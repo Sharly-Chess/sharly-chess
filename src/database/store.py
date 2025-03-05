@@ -4,7 +4,7 @@ from common.papi_web_config import PapiWebConfig
 from data.tie_break import TieBreak
 
 """
-All the classes of this module are basic data classes stored into event databases.
+All the classes of this module are basic data classes store in the event databases.
 """
 
 
@@ -54,7 +54,7 @@ class StoredTournament:
     record_illegal_moves: int | None
     rules: str | None
     first_board_number: int | None
-    paired_bye_points: float | None
+    paired_bye_result: int | None
     max_byes: int | None
     last_rounds_no_byes: int | None
     tie_breaks: list[TieBreak] | None

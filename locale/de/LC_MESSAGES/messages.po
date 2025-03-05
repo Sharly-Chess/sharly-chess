@@ -2048,13 +2048,18 @@ msgstr "Standardmäßig - {option}"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
-msgid "Full point bye"
-msgstr "Auf Wiedersehen."
+msgid "Points for gain (full-point bye)"
+msgstr "Punkte für den Gewinn (Vollpunkt bye)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
-msgid "Half point bye"
-msgstr "Halber Schlussstrich"
+msgid "Points for draw (half-point bye)"
+msgstr "Ziehungspunkte (Halbpunkt bis zum Schluss)"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Points for loss (zero-point bye)"
+msgstr "Punkte für Verlust (Nullpunkt bye)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
@@ -2194,12 +2199,6 @@ msgstr "Bitte geben Sie ein Datum nach dem Startdatum ein."
 #, ai_translation
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr "Bitte geben Sie eine URL ein oder wählen Sie ein Bild auf der rechten Seite."
-
-#: src/web/controllers/admin/base_admin_controller.py
-#: src/web/controllers/admin/timer_admin_controller.py
-#, ai_translation
-msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr "Ungültige Verzögerung [{delay}] (positive Ganzzahl erwartet)."
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
@@ -2610,6 +2609,11 @@ msgstr "Timer [{uniq_id}] existiert bereits."
 
 #: src/web/controllers/admin/timer_admin_controller.py
 #, ai_translation
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr "Ungültige Verzögerung [{delay}] (positive Ganzzahl erwartet)."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
 msgid "Please enter the round number or the hour ID."
 msgstr "Bitte geben Sie die runde Nummer oder die Stunden-ID ein."
 
@@ -2704,8 +2708,9 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr "Das Passwort des Turniers auf der FFE-Website besteht aus 10 Großbuchstaben."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
 msgid "Tie-break already in use."
-msgstr ""
+msgstr "Krawattenbruch bereits in Gebrauch."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
@@ -2946,21 +2951,21 @@ msgid "When unpaired players are not displayed, there is no way to distinguish t
 msgstr "Wenn ungepaarte Spieler nicht angezeigt werden, gibt es keine Möglichkeit, die abwesenden (Nullpunkt) Spieler und die Spieler mit einem Halbpunkt-Bye zu unterscheiden."
 
 #: src/web/templates/admin/common/modal/timer_colors.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "Colour #%(num)d:"
 msgstr "Farbe #%(num)d:"
 
 #: src/web/templates/admin/common/modal/timer_delays.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "Delay #%(num)d:"
 msgstr "Verzögerung #%(num)d:"
 
 #: src/web/templates/admin/common/modal/timer_delays.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "By default: %(minutes)d minutes"
@@ -3255,11 +3260,6 @@ msgid "The background colour is used when the image does not fill the whole scre
 msgstr "Die Hintergrundfarbe wird verwendet, wenn das Bild nicht den gesamten Bildschirm füllt."
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Timers"
-msgstr "Zeitmesser"
-
-#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
 msgid "Alert message"
@@ -3297,6 +3297,7 @@ msgstr "Erstellen"
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -3326,6 +3327,7 @@ msgstr "Löschen"
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -3400,6 +3402,7 @@ msgstr "Wie man die Ergebnisse teilt."
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/timers/tab.html
 #: src/web/templates/admin/timers/timer_card.html
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -3445,6 +3448,7 @@ msgstr "Standardverzeichnis der Papi-Dateien"
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "(by default)"
 msgstr "(standardmäßig)"
@@ -3493,23 +3497,6 @@ msgstr "Maximale Anzahl illegaler Bewegungen"
 #, ai_translation
 msgid "No rules file set"
 msgstr "Keine Regeln-Datei gesetzt"
-
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Default timer configuration"
-msgstr "Standard-Timer-Konfiguration"
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation, python-format
-msgid "%(minutes)d minutes before"
-msgstr "%(minutes)d Minuten vor"
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation, python-format
-msgid "%(minutes)d minutes after"
-msgstr "%(minutes)d Minuten nach"
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
@@ -4802,11 +4789,13 @@ msgid "Present"
 msgstr "Gegenwart"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr "Maximale Anzahl von Byes: %(max_byes)d"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr "Letzte Runden ohne Abschiede: %(last_rounds_no_byes)d"
@@ -5609,6 +5598,17 @@ msgstr "Die Bildbildschirme anzeigen/verbergen."
 msgid "No such screens."
 msgstr "Keine solchen Bildschirme."
 
+#: src/web/templates/admin/timers/default_timers_modal.html
+#, ai_translation, python-format
+msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgstr "Ausgabe von Standardtimern für Ereignis [%(event_uniq_id)s]"
+
+#: src/web/templates/admin/timers/default_timers_modal.html
+#: src/web/templates/admin/timers/tab.html
+#, ai_translation
+msgid "Timers"
+msgstr "Zeitmesser"
+
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
 msgid "Add a timer to the event."
@@ -5618,6 +5618,29 @@ msgstr "Fügen Sie dem Event einen Timer hinzu."
 #, ai_translation
 msgid "Create a timer"
 msgstr "Einen Timer erstellen"
+
+#: src/web/templates/admin/timers/tab.html
+#, ai_translation
+msgid "Default timer configuration"
+msgstr "Standard-Timer-Konfiguration"
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation
+msgid "Edit the properties of the timer."
+msgstr "Bearbeiten Sie die Eigenschaften des Timers."
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation, python-format
+msgid "%(minutes)d minutes before"
+msgstr "%(minutes)d Minuten vor"
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation, python-format
+msgid "%(minutes)d minutes after"
+msgstr "%(minutes)d Minuten nach"
 
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
@@ -5634,11 +5657,6 @@ msgstr "Runde #%(round)d"
 #, ai_translation
 msgid "No hours."
 msgstr "Keine Stunden."
-
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation
-msgid "Edit the properties of the timer."
-msgstr "Bearbeiten Sie die Eigenschaften des Timers."
 
 #: src/web/templates/admin/timers/timer_card.html
 #, ai_translation
@@ -5851,6 +5869,16 @@ msgstr[1] "Höchstens %(num)d werden illegale Züge aufgezeichnet."
 #, ai_translation
 msgid "Rules file set"
 msgstr "Regeln-Dateisatz"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "First board number: %(board_number)d"
+msgstr "Nummer des ersten Vorstands: %(board_number)d"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "Paired bye points: %(string)s"
+msgstr "Gepaarte Bye-Punkte: %(string)s"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -6494,4 +6522,10 @@ msgstr "vs."
 
 #~ msgid "Full-point bye"
 #~ msgstr "Vollständiges Wiedersehen"
+
+#~ msgid "Full point bye"
+#~ msgstr "Auf Wiedersehen."
+
+#~ msgid "Half point bye"
+#~ msgstr "Halber Schlussstrich"
 
