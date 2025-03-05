@@ -3,20 +3,16 @@ PlayerSex, TournamentPairing, TournamentRating"""
 
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum, StrEnum, IntEnum, auto
+from enum import Enum, StrEnum, IntEnum
 from itertools import islice
 from logging import Logger
 from math import floor
-from typing import Self, TYPE_CHECKING
+from typing import Self
 
 from common.i18n import _
 from common.logger import get_logger
 
 logger: Logger = get_logger()
-
-if TYPE_CHECKING:
-    from data.player import Player
-    from data.tournament import Tournament
 
 try:
     import itertools
@@ -337,7 +333,7 @@ class Result(IntEnum):
                 raise ValueError(f'Unknown value: {value}')
 
     @property
-    def to_rankings(self) -> str:
+    def to_crosstable(self) -> str:
         match self:
             case Result.LOSS | Result.UNRATED_LOSS:
                 return '-'
@@ -1160,13 +1156,14 @@ class BoardColor(StrEnum):
                 return 'black1'
             case _:
                 raise ValueError(f'Unknown value:  {self}')
+
     @property
-    def to_rankings(self) -> str:
+    def to_crosstable(self) -> str:
         match self:
             case BoardColor.WHITE:
-                return _('W *** WHITE COLOR FOR RANKINGS')
+                return _('W *** WHITE COLOR FOR CROSSTABLE')
             case BoardColor.BLACK:
-                return _('B *** BLACK COLOR FOR RANKINGS')
+                return _('B *** BLACK COLOR FOR CROSSTABLE')
             case _:
                 raise ValueError(f'Unknown value:  {self}')
 
@@ -1324,36 +1321,40 @@ class PrintSplit(StrEnum):
 
 class PrintDocument(StrEnum):
     PLAYER_LIST = "player-list"
-    RANKINGS = "rankings"
-    TOURNAMENT_SUMMARY = "tournament-summary"
+    RANKING = "ranking"
+    CROSSTABLE = "crosstable"
 
     def to_title(self, tournament_round: int) -> str:
         match self:
             case self.PLAYER_LIST:
                 return _('List of players')
-            case self.RANKINGS:
-                return _('Rankings after round #%d') % tournament_round
-            case self.TOURNAMENT_SUMMARY:
-                return _(
-                    'Tournament summary after round #%d'
-                ) % tournament_round
+            case self.RANKING:
+                return _('Ranking after round #{round}').format(round=tournament_round)
+            case self.CROSSTABLE:
+                return _('Crosstable after round #{round}').format(round=tournament_round)
             case _:
                 raise ValueError(f'Invalid print type: {self}')
 
     @property
+    def is_player_list(self) -> bool:
+        return self == PrintDocument.PLAYER_LIST
+
+    @property
     def is_ranking(self) -> bool:
-        return self in (
-            PrintDocument.RANKINGS, PrintDocument.TOURNAMENT_SUMMARY
-        )
+        return self == PrintDocument.RANKING
+
+    @property
+    def is_crosstable(self) -> bool:
+        return self  == PrintDocument.CROSSTABLE
 
     @property
     def name(self) -> str:
         match self:
             case self.PLAYER_LIST:
                 return _('List of players')
-            case self.RANKINGS:
-                return _('Rankings')
-            case self.TOURNAMENT_SUMMARY:
-                return _('Tournament summary')
+            case self.RANKING:
+                return _('Ranking')
+            case self.CROSSTABLE:
+                return _('Crosstable')
             case _:
                 raise ValueError(f'Invalid print type: {self}')

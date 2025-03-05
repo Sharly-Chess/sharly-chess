@@ -14,6 +14,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from data.player import Player
 from data.tie_break import PapiTieBreak, TieBreak
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
@@ -757,27 +758,30 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)
         )
-        print_document = (
+        print_document: PrintDocument = (
             PrintDocument(document) if document else PrintDocument.PLAYER_LIST
         )
-        if print_document.is_ranking:
-            round = (
-                round or
-                admin_tournament.max_ranking_round or
-                admin_tournament.rounds
-            )
-            admin_tournament.compute_player_ranks(round)
-            ordered_players = admin_tournament.players_by_rank
-        else:
-            ordered_players = admin_tournament.players_by_name_with_unpaired
+        players: list[Player]
+        match print_document:
+            case PrintDocument.RANKING | PrintDocument.CROSSTABLE:
+                round = (
+                    round or
+                    admin_tournament.max_ranking_round or
+                    admin_tournament.rounds
+                )
+                admin_tournament.compute_player_ranks(round)
+                players = list(admin_tournament.players_by_rank.values())
+            case PrintDocument.PLAYER_LIST:
+                players = admin_tournament.players_by_name_with_unpaired
+            case _:
+                raise ValueError(f'{print_document=}')
 
-        players_in_tournament = [
-            player for player in ordered_players
-            if player.tournament.id == tournament_id
-        ]
-        split_by = PrintSplit(split) if split else PrintSplit.NO_SPLIT
+        split_by: PrintSplit = PrintSplit(split) if split else PrintSplit.NO_SPLIT
+        split_players: dict[str, list[Player]]
         if split_by == PrintSplit.NO_SPLIT:
-            split_players = {"": players_in_tournament}
+            split_players = {
+                "": players,
+            }
         else:
             split_functions = {
                 PrintSplit.CATEGORY: lambda p: p.category.short_name,
@@ -794,7 +798,7 @@ class TournamentAdminController(BaseEventAdminController):
                 split_players = defaultdict(list)
 
             # Split players by group
-            for player in players_in_tournament:
+            for player in players:
                 split_players[split_functions[split_by](player)].append(player)
 
             if split_by == PrintSplit.CATEGORY:
@@ -814,10 +818,7 @@ class TournamentAdminController(BaseEventAdminController):
             'tournament': admin_tournament,
             'players': split_players,
             'title': print_document.to_title(round),
-            'rank_players': print_document.is_ranking,
-            'tournament_summary': (
-                print_document == PrintDocument.TOURNAMENT_SUMMARY
-            ),
+            'document': print_document,
             'max_round': round,
         }
         return HTMXTemplate(

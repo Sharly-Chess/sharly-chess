@@ -1540,12 +1540,12 @@ msgstr "GM"
 
 #: src/data/util.py
 #, fuzzy
-msgid "W *** WHITE COLOR FOR RANKINGS"
+msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "W"
 
 #: src/data/util.py
 #, fuzzy
-msgid "B *** BLACK COLOR FOR RANKINGS"
+msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
 
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
@@ -1614,24 +1614,21 @@ msgid "List of players"
 msgstr "Lista de jugadores"
 
 #: src/data/util.py
-#, ai_translation, python-format
-msgid "Rankings after round #%d"
-msgstr "Rankings después de la ronda #%d"
+msgid "Ranking after round #{round}"
+msgstr ""
 
 #: src/data/util.py
-#, ai_translation, python-format
-msgid "Tournament summary after round #%d"
-msgstr "Resumen del torneo después de la ronda #%d"
-
-#: src/data/util.py
-#, ai_translation
-msgid "Rankings"
-msgstr "Rankings"
+msgid "Crosstable after round #{round}"
+msgstr ""
 
 #: src/data/util.py
 #, ai_translation
-msgid "Tournament summary"
-msgstr "Resumen del torneo"
+msgid "Ranking"
+msgstr "Ranking"
+
+#: src/data/util.py
+msgid "Crosstable"
+msgstr ""
 
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
@@ -2152,12 +2149,6 @@ msgid "Please enter a URL or select an image on the right hand side."
 msgstr "Introduzca una URL o seleccione una imagen en el lado derecho."
 
 #: src/web/controllers/admin/base_admin_controller.py
-#: src/web/controllers/admin/timer_admin_controller.py
-#, ai_translation
-msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr "Retraso no válido [{delay}] (se espera un número entero positivo)."
-
-#: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Introduzca una contraseña para la conexión ChessEvent."
@@ -2302,15 +2293,19 @@ msgstr "Por favor, elija el documento."
 msgid "A positive integer is expected."
 msgstr "Se espera un número entero positivo."
 
+# Error: tokens differ between [Not part of the selected tournament ({rounds}
+# rounds).] and [No es parte del torneo seleccionado ( rondas de %d).]
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation, python-format
-msgid "Not part of the selected tournament (%d rounds)."
-msgstr "No es parte del torneo seleccionado ( rondas de %d)."
+#, ai_translation
+msgid "Not part of the selected tournament ({rounds} rounds)."
+msgstr ""
 
+# Error: tokens differ between [Round not finished (last finished: {round}).]
+# and [Redondo no terminado (último acabado: %d).]
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation, python-format
-msgid "Round not finished (last finished: %d)."
-msgstr "Redondo no terminado (último acabado: %d)."
+#, ai_translation
+msgid "Round not finished (last finished: {round})."
+msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -2360,9 +2355,8 @@ msgid "Please enter the date of birth."
 msgstr "Por favor, introduzca la fecha de nacimiento."
 
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
-msgid "Only estimated rankings are optional."
-msgstr "Sólo los rankings estimados son opcionales."
+msgid "Only estimated ratings are optional."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2563,6 +2557,11 @@ msgstr "Por favor, introduzca la identificación del temporizador."
 #, ai_translation
 msgid "Timer [{uniq_id}] already exists."
 msgstr "Temporizador [{uniq_id}] ya existe."
+
+#: src/web/controllers/admin/timer_admin_controller.py
+#, ai_translation
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr "Retraso no válido [{delay}] (se espera un número entero positivo)."
 
 #: src/web/controllers/admin/timer_admin_controller.py
 #, ai_translation
@@ -2902,21 +2901,21 @@ msgid "When unpaired players are not displayed, there is no way to distinguish t
 msgstr "Cuando los jugadores no emparejados no se muestran, no hay manera de distinguir los jugadores ausentes (punto cero) y los jugadores con un medio punto de adiós)."
 
 #: src/web/templates/admin/common/modal/timer_colors.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Colour #%(num)d:"
 msgstr ""
 
 #: src/web/templates/admin/common/modal/timer_delays.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr ""
 
 #: src/web/templates/admin/common/modal/timer_delays.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, ai_translation, python-format
 msgid "By default: %(minutes)d minutes"
@@ -3211,11 +3210,6 @@ msgid "The background colour is used when the image does not fill the whole scre
 msgstr "El color de fondo se utiliza cuando la imagen no llena toda la pantalla."
 
 #: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "Timers"
-msgstr "Temporizadores"
-
-#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
 msgid "Alert message"
@@ -3253,6 +3247,7 @@ msgstr "Crear"
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -3282,6 +3277,7 @@ msgstr "Eliminar"
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -3356,6 +3352,7 @@ msgstr "Cómo dividir los resultados."
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/timers/tab.html
 #: src/web/templates/admin/timers/timer_card.html
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -3449,23 +3446,6 @@ msgstr "Número máximo de traslados ilegales"
 #, ai_translation
 msgid "No rules file set"
 msgstr "No hay reglas de conjunto de archivos"
-
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "Default timer configuration"
-msgstr "Configuración predeterminada del temporizador"
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation, python-format
-msgid "%(minutes)d minutes before"
-msgstr "%(minutes)d minutos antes"
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation, python-format
-msgid "%(minutes)d minutes after"
-msgstr "%(minutes)d minutos después"
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
@@ -5563,6 +5543,17 @@ msgstr "Mostrar/ocultar las pantallas de imagen."
 msgid "No such screens."
 msgstr "No hay tales pantallas."
 
+#: src/web/templates/admin/timers/default_timers_modal.html
+#, python-format
+msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgstr ""
+
+#: src/web/templates/admin/timers/default_timers_modal.html
+#: src/web/templates/admin/timers/tab.html
+#, ai_translation
+msgid "Timers"
+msgstr "Temporizadores"
+
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
 msgid "Add a timer to the event."
@@ -5572,6 +5563,29 @@ msgstr "Añade un temporizador al evento."
 #, ai_translation
 msgid "Create a timer"
 msgstr "Crear un temporizador"
+
+#: src/web/templates/admin/timers/tab.html
+#, ai_translation
+msgid "Default timer configuration"
+msgstr "Configuración predeterminada del temporizador"
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation
+msgid "Edit the properties of the timer."
+msgstr "Editar las propiedades del temporizador."
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation, python-format
+msgid "%(minutes)d minutes before"
+msgstr "%(minutes)d minutos antes"
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, ai_translation, python-format
+msgid "%(minutes)d minutes after"
+msgstr "%(minutes)d minutos después"
 
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
@@ -5588,11 +5602,6 @@ msgstr ""
 #, ai_translation
 msgid "No hours."
 msgstr "No hay horas."
-
-#: src/web/templates/admin/timers/timer_card.html
-#, ai_translation
-msgid "Edit the properties of the timer."
-msgstr "Editar las propiedades del temporizador."
 
 #: src/web/templates/admin/timers/timer_card.html
 #, ai_translation
@@ -6448,4 +6457,10 @@ msgstr "vs."
 
 #~ msgid "Full-point bye"
 #~ msgstr "Adios a punto completo"
+
+#~ msgid "Tournament summary after round #{round}"
+#~ msgstr "Resumen del torneo después de la ronda #%d"
+
+#~ msgid "Tournament summary"
+#~ msgstr "Resumen del torneo"
 

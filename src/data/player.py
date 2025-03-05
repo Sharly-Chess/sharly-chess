@@ -1,5 +1,4 @@
 import base64
-from collections.abc import Iterator
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date
@@ -259,8 +258,7 @@ class Player(TournamentPlayer):
         self.color: BoardColor | None = None
         self.illegal_moves: int = 0
         self._tie_break_values: list[int | float] | None = None
-        self.ranking_pairings: list[str] | None = None
-        self.rank: int | None = None
+        self._rank: int | None = None
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
@@ -483,41 +481,56 @@ class Player(TournamentPlayer):
         self.time_control_increment = increment
         self.time_control_modified = modified
 
+    @staticmethod
+    def _tie_break_value_as_float(tie_break_value: int | float | tuple[float, ...]) -> float:
+        """Returns a player's tie-break value as a string."""
+        if isinstance(tie_break_value, int):
+            return float(tie_break_value)
+        elif isinstance(tie_break_value, float):
+            return tie_break_value
+        elif isinstance(tie_break_value, tuple):
+            return tie_break_value[0]
+        else:
+            raise ValueError(
+                f'Unrecognized tie-break value [{tie_break_value}]'
+            )
+
     @property
-    def tie_break_values_display(self) -> list[str]:
+    def tie_break_values_as_strings(self) -> list[str]:
+        """Returns the player's tie-break values as strings."""
+        assert self._tie_break_values is not None, 'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
         if not self._tie_break_values:
             return []
-        display_values = []
-        for tie_break_value in self._tie_break_values:
-            if isinstance(tie_break_value, int):
-                value = float(tie_break_value)
-            elif isinstance(tie_break_value, float):
-                value = tie_break_value
-            elif isinstance(tie_break_value, tuple):
-                value = tie_break_value[0]
-            else:
-                raise ValueError(
-                    f'Unrecognized tie-break value [{tie_break_value}]'
-                )
-
-            display_values.append(self._points_str(value))
-        return display_values
-
-    def set_tie_break_values(
-        self, tournament: 'Tournament', max_round: int | None = None
-    ):
-        self._tie_break_values = [
-            tie_break.player_value(self, tournament, max_round)
-            for tie_break in tournament.tie_breaks
+        return [
+            self._points_str(self._tie_break_value_as_float(tie_break_value))
+            for tie_break_value in self._tie_break_values
         ]
 
-    def set_ranking_pairings(
-        self, max_round: int, player_id_to_rank: Callable[[int], int]
+    def compute_tie_break_values(
+        self, max_round: int | None = None
     ):
-        self.ranking_pairings = [
-            self.pairings[round_].to_rankings(player_id_to_rank)
-            if round_ in self.pairings else ' '
-            for round_ in range(1, max_round + 1)
+        self._tie_break_values = [
+            tie_break.compute_player_value(self, max_round)
+            for tie_break in self.tournament.tie_breaks
+        ]
+
+    @property
+    def rank(self) -> int:
+        assert self._rank, 'Player._rank is not set, call Tournament.compute_player_ranks() before.'
+        return self._rank
+
+    def set_rank(self, rank: int):
+        self._rank = rank
+
+    @cached_property
+    def crosstable_strings(self) -> list[str]:
+        return [
+            pairing.result.to_crosstable + (
+                f'{self.tournament.players_by_id[pairing.opponent_id].rank:>3}{self.color.to_crosstable}'
+                if pairing.opponent_id else
+                ''
+            )
+            for pairing in self.pairings.values()
         ]
 
     @property

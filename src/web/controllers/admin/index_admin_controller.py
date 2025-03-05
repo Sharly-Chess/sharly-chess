@@ -1,9 +1,9 @@
 from logging import Logger
-from typing import Annotated, Any
+from typing import Annotated
 
 from litestar import get, post
 from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
+from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect
@@ -15,8 +15,6 @@ from database.store import StoredEvent
 from web.controllers.admin.base_admin_controller import AdminWebContext, BaseAdminController
 from web.messages import Message
 from web.urls import admin_event_url
-
-import web.controllers.admin.event_admin_controller as EAC
 
 logger: Logger = get_logger()
 

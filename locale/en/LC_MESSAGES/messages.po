@@ -1253,11 +1253,11 @@ msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
 #: src/data/util.py
-msgid "W *** WHITE COLOR FOR RANKINGS"
+msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "W"
 
 #: src/data/util.py
-msgid "B *** BLACK COLOR FOR RANKINGS"
+msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
 
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
@@ -1315,21 +1315,19 @@ msgid "List of players"
 msgstr ""
 
 #: src/data/util.py
-#, python-format
-msgid "Rankings after round #%d"
+msgid "Ranking after round #{round}"
 msgstr ""
 
 #: src/data/util.py
-#, python-format
-msgid "Tournament summary after round #%d"
+msgid "Crosstable after round #{round}"
 msgstr ""
 
 #: src/data/util.py
-msgid "Rankings"
+msgid "Ranking"
 msgstr ""
 
 #: src/data/util.py
-msgid "Tournament summary"
+msgid "Crosstable"
 msgstr ""
 
 #: src/database/sqlite/ffe_database.py
@@ -1752,11 +1750,6 @@ msgid "Please enter a URL or select an image on the right hand side."
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
-#: src/web/controllers/admin/timer_admin_controller.py
-msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr ""
-
-#: src/web/controllers/admin/base_admin_controller.py
 msgid "Please enter a password for the ChessEvent connection."
 msgstr ""
 
@@ -1876,13 +1869,11 @@ msgid "A positive integer is expected."
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
-#, python-format
-msgid "Not part of the selected tournament (%d rounds)."
+msgid "Not part of the selected tournament ({rounds} rounds)."
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
-#, python-format
-msgid "Round not finished (last finished: %d)."
+msgid "Round not finished (last finished: {round})."
 msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
@@ -1924,7 +1915,7 @@ msgid "Please enter the date of birth."
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
-msgid "Only estimated rankings are optional."
+msgid "Only estimated ratings are optional."
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
@@ -2085,6 +2076,10 @@ msgstr ""
 
 #: src/web/controllers/admin/timer_admin_controller.py
 msgid "Timer [{uniq_id}] already exists."
+msgstr ""
+
+#: src/web/controllers/admin/timer_admin_controller.py
+msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
 #: src/web/controllers/admin/timer_admin_controller.py
@@ -2361,21 +2356,21 @@ msgid "When unpaired players are not displayed, there is no way to distinguish t
 msgstr ""
 
 #: src/web/templates/admin/common/modal/timer_colors.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Colour #%(num)d:"
 msgstr ""
 
 #: src/web/templates/admin/common/modal/timer_delays.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr ""
 
 #: src/web/templates/admin/common/modal/timer_delays.html
-#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_modal.html
 #, python-format
 msgid "By default: %(minutes)d minutes"
@@ -2625,10 +2620,6 @@ msgid "The background colour is used when the image does not fill the whole scre
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
-msgid "Timers"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/tab.html
 msgid "Alert message"
 msgstr ""
@@ -2661,6 +2652,7 @@ msgstr ""
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -2688,6 +2680,7 @@ msgstr ""
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
 #: src/web/templates/admin/timers/timer_modal.html
 #: src/web/templates/admin/tournaments/tournament_modal.html
@@ -2750,6 +2743,7 @@ msgstr ""
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/timers/tab.html
 #: src/web/templates/admin/timers/timer_card.html
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Edit"
@@ -2825,22 +2819,6 @@ msgstr ""
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "No rules file set"
-msgstr ""
-
-#: src/web/templates/admin/event/tab.html
-msgid "Default timer configuration"
-msgstr ""
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
-#, python-format
-msgid "%(minutes)d minutes before"
-msgstr ""
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/timers/timer_card.html
-#, python-format
-msgid "%(minutes)d minutes after"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
@@ -4602,12 +4580,43 @@ msgstr ""
 msgid "No such screens."
 msgstr ""
 
+#: src/web/templates/admin/timers/default_timers_modal.html
+#, python-format
+msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgstr ""
+
+#: src/web/templates/admin/timers/default_timers_modal.html
+#: src/web/templates/admin/timers/tab.html
+msgid "Timers"
+msgstr ""
+
 #: src/web/templates/admin/timers/tab.html
 msgid "Add a timer to the event."
 msgstr ""
 
 #: src/web/templates/admin/timers/tab.html
 msgid "Create a timer"
+msgstr ""
+
+#: src/web/templates/admin/timers/tab.html
+msgid "Default timer configuration"
+msgstr ""
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+msgid "Edit the properties of the timer."
+msgstr ""
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, python-format
+msgid "%(minutes)d minutes before"
+msgstr ""
+
+#: src/web/templates/admin/timers/tab.html
+#: src/web/templates/admin/timers/timer_card.html
+#, python-format
+msgid "%(minutes)d minutes after"
 msgstr ""
 
 #: src/web/templates/admin/timers/tab.html
@@ -4622,10 +4631,6 @@ msgstr ""
 #: src/web/templates/admin/timers/timer_card.html
 #: src/web/templates/admin/timers/timer_hours_modal.html
 msgid "No hours."
-msgstr ""
-
-#: src/web/templates/admin/timers/timer_card.html
-msgid "Edit the properties of the timer."
 msgstr ""
 
 #: src/web/templates/admin/timers/timer_card.html
@@ -5309,5 +5314,11 @@ msgid "vs"
 msgstr ""
 
 #~ msgid "Full-point bye"
+#~ msgstr ""
+
+#~ msgid "Tournament summary after round #{round}"
+#~ msgstr ""
+
+#~ msgid "Tournament summary"
 #~ msgstr ""
 

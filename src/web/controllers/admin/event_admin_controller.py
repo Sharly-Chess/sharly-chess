@@ -623,14 +623,14 @@ class EventAdminController(BaseEventAdminController):
             if tournament:
                 if round_ > tournament.rounds:
                     errors[field] = _(
-                        'Not part of the selected tournament (%d rounds).'
-                    ).format(tournament.rounds)
-                elif document and document.is_ranking:
+                        'Not part of the selected tournament ({rounds} rounds).'
+                    ).format(rounds=tournament.rounds)
+                elif document and (document.is_ranking or document.is_crosstable):
                     max_round = tournament.max_ranking_round
                     if max_round is not None and round_ > max_round:
                         errors[field] = _(
-                            'Round not finished (last finished: %d).'
-                        ).format(max_round)
+                            'Round not finished (last finished: {round}).'
+                        ).format(round=max_round)
 
         if len(errors):
             return self._admin_event(
