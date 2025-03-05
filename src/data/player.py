@@ -259,7 +259,8 @@ class Player(TournamentPlayer):
         self.color: BoardColor | None = None
         self.illegal_moves: int = 0
         self._tie_break_values: list[int | float] | None = None
-        self._ranking_pairings: list[str] | None = None
+        self.ranking_pairings: list[str] | None = None
+        self.rank: int | None = None
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
@@ -365,7 +366,7 @@ class Player(TournamentPlayer):
             self.points += points
 
     def to_trf(
-        self, player_id_to_trf_id: Callable[[int], int], rank: int, max_round: int,
+        self, player_id_to_trf_id: Callable[[int], int], max_round: int,
     ) -> TrfPlayer:
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
@@ -379,7 +380,7 @@ class Player(TournamentPlayer):
             if self.date_of_birth
             else '',
             points=self.points_after(max_round),
-            rank=rank,
+            rank=self.rank,
             games=[
                 result.to_trf(round_nb, player_id_to_trf_id)
                 for round_nb, result in self.pairings.items()
@@ -510,14 +511,10 @@ class Player(TournamentPlayer):
             for tie_break in tournament.tie_breaks
         ]
 
-    @property
-    def ranking_pairings(self) -> list[str]:
-        return self._ranking_pairings
-
     def set_ranking_pairings(
         self, max_round: int, player_id_to_rank: Callable[[int], int]
     ):
-        self._ranking_pairings = [
+        self.ranking_pairings = [
             self.pairings[round_].to_rankings(player_id_to_rank)
             if round_ in self.pairings else ' '
             for round_ in range(1, max_round + 1)

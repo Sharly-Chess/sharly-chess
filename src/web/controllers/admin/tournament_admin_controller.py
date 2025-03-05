@@ -766,8 +766,8 @@ class TournamentAdminController(BaseEventAdminController):
                 admin_tournament.max_ranking_round or
                 admin_tournament.rounds
             )
-            admin_tournament.set_for_ranking(round)
-            ordered_players = admin_tournament.players_by_rank.values()
+            admin_tournament.compute_player_ranks(round)
+            ordered_players = admin_tournament.players_by_rank
         else:
             ordered_players = admin_tournament.players_by_name_with_unpaired
 

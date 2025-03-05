@@ -76,7 +76,9 @@
                         <tbody>
                             {% for player in players[splitBy] %}
                                 <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
-                                    <td class="right {{ extra_classes}}">{{ n|length }}</td>
+                                    <td class="right {{ extra_classes}}">
+                                        {% if rank_players %} {{player.rank}} {% else %} {{ n|length }} {% endif %}
+                                    </td>
                                     <td class="right {{ extra_classes}}">{{ player.title.short_name }}</td>
                                     <td class="left {{ extra_classes}}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
                                     <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
