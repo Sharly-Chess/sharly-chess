@@ -499,8 +499,6 @@ class Player(TournamentPlayer):
     def tie_break_values_as_strings(self) -> list[str]:
         """Returns the player's tie-break values as strings."""
         assert self._tie_break_values is not None, 'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
-        if not self._tie_break_values:
-            return []
         return [
             self._points_str(self._tie_break_value_as_float(tie_break_value))
             for tie_break_value in self._tie_break_values
