@@ -526,7 +526,8 @@ class Player(TournamentPlayer):
     def crosstable_strings(self) -> list[str]:
         return [
             pairing.result.to_crosstable + (
-                f'{self.tournament.players_by_id[pairing.opponent_id].rank:>3}{self.color.to_crosstable}'
+                f'{self.tournament.players_by_id[pairing.opponent_id].rank:>3}'
+                f'{pairing.color.to_crosstable}'
                 if pairing.opponent_id else
                 ''
             )
