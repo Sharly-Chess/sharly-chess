@@ -5,103 +5,109 @@
 {% endblock %}
 
 {% block card_title %}
+    <div class="d-flex gap-2 align-items-center justify-content-center">
+        <div
+            class="text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
+            {% if tournament.rounds %}
+                {{ macros.tooltip_attributes('info', _('Number of players : %(num)d', num=tournament.players_by_id|length), 'top') }}
+            {% endif %}
+        >
+            <i class="bi-people-fill pe-1"></i>
+            {% if tournament.rounds %}
+                {{ tournament.players_by_id|length }}
+            {% else %}
+                <i class="bi-question text-secondary"></i>
+            {% endif %}
+        </div>
+        <div
+            class="text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
+        >
+            {{ admin_macros.tournament_status_icon(tournament) }}
+            {% if tournament.rounds %}
+                {{ tournament.current_round }}/{{ tournament.rounds }}
+            {% else %}
+                <i class="bi-question"></i>
+            {% endif %}
+        </div>
+        {% if not tournament.record_illegal_moves %}
+            {% set text=_('Illegal moves are not recorded.') %}
+        {% else %}
+            {% set text=ngettext('At most %(num)d illegal move is recorded.', 'At most %(num)d illegal moves are recorded.', tournament.record_illegal_moves) %}
+        {% endif %}
+        <div
+            class="text-nowrap"
+            {{ macros.tooltip_attributes(type, text, 'top') }}
+        >
+            {% if not tournament.record_illegal_moves %}
+                <i class="bi-flag text-secondary"></i>
+            {% else %}
+                {% for i in range(tournament.record_illegal_moves) %}
+                    <i class="bi-flag-fill"></i>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block card_text %}
+    <div class="pb-3 mb-3 border-bottom border-secondary">
+        {# The block will be supplied by the FFE plugin in the future #}
+        <div class="d-flex flex-column gap-1">
+            <div class="">
+                {% if not tournament.file_exists %}
+                    {% set text=_('The Papi file for the tournament does not exist (%(papi_file)s).', papi_file=tournament.file) %}
+                    {% set type='error' %}
+                {% elif not tournament.rounds %}
+                    {% set text=_('The Papi file for the tournament exists but could not be read (%(papi_file)s).', papi_file=tournament.file) %}
+                    {% set type='error' %}
+                {% else %}
+                    {% set text=_('The Papi file for the tournament was successfully read (%(papi_file)s).', papi_file=tournament.file) %}
+                    {% set type='info' %}
+                {% endif %}
+                <span
+                    class="d-flex gap-2 "
+                    {{ macros.tooltip_attributes(type, text, 'top') }}
+                >
+                    {% if not tournament.file_exists or not tournament.rounds %}
+                        <i class="bi-file-earmark-excel-fill text-danger"></i>
+                    {% else %}
+                        <i class="bi-file-check-fill text-success"></i>
+                    {% endif %}
+                    {{ tournament.filename }}
+                </span>
+            </div>
+            <div class="d-flex gap-2 {% if not tournament.ffe_id %}text-secondary{% endif %}">
+                <img
+                    src="{{ url_for('static', file_path='/images/ffe.png') }}"
+                    style="height: 1.2em"
+                    class="p-0"
+                />
+                {% if tournament.ffe_id %}
+                    {{ _('FFE qualification: %(ffe_id)s', ffe_id=tournament.ffe_id) }}
+                {% else %}
+                    {{ _('No FFE qualification') }}
+                {% endif %}
+            </div>
+            <div class="d-flex gap-2 {% if not tournament.chessevent_user_id or not tournament.chessevent_event_id or not tournament.chessevent_tournament_name %}text-secondary{% endif %}">
+                <i class="bi-download"></i>
+                {% if tournament.chessevent_user_id and tournament.chessevent_event_id and tournament.chessevent_tournament_name %}
+                    {{ _(
+                        'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s',
+                        chessevent_user_id=tournament.chessevent_user_id,
+                        chessevent_event_id=tournament.chessevent_event_id,
+                        chessevent_tournament_name=tournament.chessevent_tournament_name) }}
+                {% elif not tournament.chessevent_user_id %}
+                    {{ _('No ChessEvent identifier defined') }}
+                {% elif not tournament.chessevent_event_id %}
+                    {{ _('No ChessEvent event defined') }}
+                {% else %}
+                    {{ _('No ChessEvent tournament defined') }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
     <div class="d-flex flex-column gap-1">
-        <div class="">
-            {% if not tournament.file_exists %}
-                {% set text=_('The Papi file for the tournament does not exist (%(papi_file)s).', papi_file=tournament.file) %}
-                {% set type='error' %}
-            {% elif not tournament.rounds %}
-                {% set text=_('The Papi file for the tournament exists but could not be read (%(papi_file)s).', papi_file=tournament.file) %}
-                {% set type='error' %}
-            {% else %}
-                {% set text=_('The Papi file for the tournament was successfully read (%(papi_file)s).', papi_file=tournament.file) %}
-                {% set type='info' %}
-            {% endif %}
-            <span
-                class="me-2 text-nowrap"
-                {{ macros.tooltip_attributes(type, text, 'top') }}
-            >
-                {% if not tournament.file_exists or not tournament.rounds %}
-                    <i class="bi-file-earmark-excel-fill text-danger pe-1"></i>
-                {% else %}
-                    <i class="bi-file-check-fill text-success pe-1"></i>
-                {% endif %}
-                {{ tournament.filename }}
-            </span>
-        </div>
-        <div class="text-start {% if not tournament.ffe_id %}text-secondary{% endif %}">
-            <img
-                src="{{ url_for('static', file_path='/images/ffe.png') }}"
-                style="height: 1.2em"
-                class="p-0"
-            />
-            {% if tournament.ffe_id %}
-                {{ _('FFE qualification: %(ffe_id)s', ffe_id=tournament.ffe_id) }}
-            {% else %}
-                {{ _('No FFE qualification') }}
-            {% endif %}
-        </div>
-         <div class="text-start {% if not tournament.chessevent_user_id or not tournament.chessevent_event_id or not tournament.chessevent_tournament_name %}text-secondary{% endif %}">
-             <i class="bi-download pe-1" ></i>
-             {% if tournament.chessevent_user_id and tournament.chessevent_event_id and tournament.chessevent_tournament_name %}
-                 {{ _(
-                     'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s',
-                     chessevent_user_id=tournament.chessevent_user_id,
-                     chessevent_event_id=tournament.chessevent_event_id,
-                     chessevent_tournament_name=tournament.chessevent_tournament_name) }}
-             {% elif not tournament.chessevent_user_id %}
-                 {{ _('No ChessEvent identifier defined') }}
-             {% elif not tournament.chessevent_event_id %}
-                 {{ _('No ChessEvent event defined') }}
-             {% else %}
-                 {{ _('No ChessEvent tournament defined') }}
-             {% endif %}
-        </div>
-        <div class="text-start">
-            <span
-                class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
-                {% if tournament.rounds %}
-                    {{ macros.tooltip_attributes('info', _('Players found in the Papi_file : %(num)d', num=tournament.players_by_id|length), 'top') }}
-                {% endif %}
-            >
-                <i class="bi-people-fill pe-1"></i>
-                {% if tournament.rounds %}
-                    {{ tournament.players_by_id|length }}
-                {% else %}
-                    <i class="bi-question text-secondary"></i>
-                {% endif %}
-            </span>
-            <span
-                class="me-2 text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
-            >
-                {{ admin_macros.tournament_status_icon(tournament) }}
-                {% if tournament.rounds %}
-                    {{ tournament.current_round }}/{{ tournament.rounds }}
-                {% else %}
-                    <i class="bi-question"></i>
-                {% endif %}
-            </span>
-            {% if not tournament.record_illegal_moves %}
-                {% set text=_('Illegal moves are not recorded.') %}
-            {% else %}
-                {% set text=ngettext('At most %(num)d illegal move is recorded.', 'At most %(num)d illegal moves are recorded.', tournament.record_illegal_moves) %}
-            {% endif %}
-            <span
-                class="me-2 text-nowrap"
-                {{ macros.tooltip_attributes(type, text, 'top') }}
-            >
-                {% if not tournament.record_illegal_moves %}
-                    <i class="bi-flag text-secondary"></i>
-                {% else %}
-                    {% for i in range(tournament.record_illegal_moves) %}
-                        <i class="bi-flag-fill"></i>
-                    {% endfor %}
-                {% endif %}
-            </span>
-        </div>
         <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
             {% if tournament.rules %}
                 {{ _('Rules file set') }}
@@ -119,9 +125,19 @@
                 {{ tournament.rating }}
             {% endif %}
         </div>
-        <div class="text-start">
-            <i class="bi-pencil-fill pe-1"></i>
-            {{ tournament.last_update_str }}
+        <div class="text-start {% if not tournament.stored_tournament.first_board_number %}text-secondary{% endif %}">
+            {{ _('First board number: %(board_number)d', board_number=tournament.first_board_number) }}
+        </div>
+        {#
+        <div class="text-start {% if not tournament.stored_tournament.paired_bye_result %}text-secondary{% endif %}">
+            {{ _('Paired bye result: %(string)s', string=paired_bye_result_options[tournament.paired_bye_result.value|string]) }}
+        </div>
+        #}
+        <div class="text-start {% if not tournament.stored_tournament.max_byes %}text-secondary{% endif %}">
+            {{ _('Maximum number of byes: %(max_byes)d', max_byes=tournament.max_byes) }}
+        </div>
+        <div class="text-start {% if not tournament.stored_tournament.last_rounds_no_byes %}text-secondary{% endif %}">
+            {{ _('Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d', last_rounds_no_byes=tournament.last_rounds_no_byes) }}
         </div>
     </div>
 {% endblock %}

@@ -1568,14 +1568,12 @@ msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
 #: src/data/util.py
-#, fuzzy
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
-msgstr "W"
+msgstr ""
 
 #: src/data/util.py
-#, fuzzy
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
-msgstr "B"
+msgstr ""
 
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
@@ -1654,9 +1652,8 @@ msgid "Crosstable after round #{round}"
 msgstr ""
 
 #: src/data/util.py
-#, ai_translation
 msgid "Ranking"
-msgstr "Placering"
+msgstr ""
 
 #: src/data/util.py
 msgid "Crosstable"
@@ -2033,13 +2030,18 @@ msgstr "Som standard - {option}"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
-msgid "Full point bye"
-msgstr "Fullständigt led-efter-datum"
+msgid "Points for gain (full-point bye)"
+msgstr "Poäng för vinst (fullständigt byte)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
-msgid "Half point bye"
-msgstr "Halva ledet efter"
+msgid "Points for draw (half-point bye)"
+msgstr "Poäng för dragning (halvpunktsbye)"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Points for loss (zero-point bye)"
+msgstr "Poäng för förlust (nollpunktsbye)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
@@ -2325,17 +2327,11 @@ msgstr "Välj dokumentet."
 msgid "A positive integer is expected."
 msgstr "Ett positivt heltal förväntas."
 
-# Error: tokens differ between [Not part of the selected tournament ({rounds}
-# rounds).] and [Inte en del av den valda turneringen (% d rundor).]
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
 msgid "Not part of the selected tournament ({rounds} rounds)."
 msgstr ""
 
-# Error: tokens differ between [Round not finished (last finished: {round}).]
-# and [Rund ej färdig (senast färdig: %d).]
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
 msgid "Round not finished (last finished: {round})."
 msgstr ""
 
@@ -2387,9 +2383,8 @@ msgid "Please enter the date of birth."
 msgstr "Ange födelsedatum."
 
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
 msgid "Only estimated ratings are optional."
-msgstr "Endast uppskattade rankningar är valfria."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2692,7 +2687,20 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr "Lösenordet för turneringen på FFE webbplats är gjord av 10 stora bokstäver."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
 msgid "Tie-break already in use."
+msgstr "Tie-break är redan i bruk."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file [{file}] created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file has not been created."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
@@ -4773,11 +4781,13 @@ msgid "Present"
 msgstr "Närvarande"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr "Maximalt antal byten: %(max_byes)d"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr "Sista omgången utan avgång: %(last_rounds_no_byes)d"
@@ -5191,7 +5201,8 @@ msgstr "Du måste skapa en skärm eller en familj av skärmar innan du skapar en
 msgid "Create a rotator"
 msgstr "Skapa en rotator"
 
-#: src/web/templates/admin/rotators/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/rotators/tab.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "No rotators."
 msgstr "Inga ruttnare."
@@ -5575,7 +5586,8 @@ msgstr "Visa/göm resultatskärmarna."
 msgid "Show/hide the image screens."
 msgstr "Visa/göm bildskärmarna."
 
-#: src/web/templates/admin/screens/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/screens/tab.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "No such screens."
 msgstr "Inga sådana skärmar."
@@ -5587,9 +5599,8 @@ msgstr ""
 
 #: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/tab.html
-#, ai_translation
 msgid "Timers"
-msgstr "Tidtagare"
+msgstr ""
 
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
@@ -5775,6 +5786,27 @@ msgstr "Det unika ID, som används för att referera timern."
 msgid "Colors and delays"
 msgstr "Färger och förseningar"
 
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Missing Papi file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Do you want Papi-web to create the file?"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Yes, create the file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "No, I will do it later"
+msgstr ""
+
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
 msgid "Tournaments"
@@ -5794,6 +5826,23 @@ msgstr "Skapa en turnering"
 #, ai_translation
 msgid "No tournaments."
 msgstr "Inga turneringar."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "Number of players : %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation
+msgid "Illegal moves are not recorded."
+msgstr "Olagliga rörelser registreras inte."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "At most %(num)d illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] "Högst %(num)d Olagligt drag registreras."
+msgstr[1] "På de flesta %(num)d olagliga rörelser registreras."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
@@ -5831,26 +5880,14 @@ msgid "No ChessEvent tournament defined"
 msgstr "Ingen ChessEvent-turnering definierad"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "Players found in the Papi_file : %(num)d"
-msgstr "Spelare som finns i Papi_filen : %(num)d"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Illegal moves are not recorded."
-msgstr "Olagliga rörelser registreras inte."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "At most %(num)d illegal move is recorded."
-msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] "Högst %(num)d Olagligt drag registreras."
-msgstr[1] "På de flesta %(num)d olagliga rörelser registreras."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "Rules file set"
 msgstr "Regelfil inställd"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "First board number: %(board_number)d"
+msgstr "Första styrelsenummer: %(board_number)d"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -6139,16 +6176,6 @@ msgstr "Antalet första styrelse i turneringen (om inte satt, standard till %(de
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
-msgid "Paired bye points:"
-msgstr "Parad bye punkter:"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The points scored by players who are paired bye."
-msgstr "Poängen som görs av spelare som är parade bye."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
 msgid "Max byes:"
 msgstr "Max hej då:"
 
@@ -6252,7 +6279,7 @@ msgstr "Bildskärmar visar en bild (lokal eller fjärr)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator roterar automatiskt mellan flera skärmar."
 
-#: src/web/templates/user/event.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "Go back to the events page."
 msgstr "Gå tillbaka till händelsesidan."
@@ -6497,9 +6524,48 @@ msgstr "vs"
 #~ msgid "Full-point bye"
 #~ msgstr "Fullständigt farväl"
 
-#~ msgid "Tournament summary after round #{round}"
+#~ msgid "Full point bye"
+#~ msgstr "Fullständigt led-efter-datum"
+
+#~ msgid "Half point bye"
+#~ msgstr "Halva ledet efter"
+
+#~ msgid "W *** WHITE COLOR FOR RANKINGS"
+#~ msgstr "W"
+
+#~ msgid "B *** BLACK COLOR FOR RANKINGS"
+#~ msgstr "B"
+
+#~ msgid "Rankings after round #%d"
+#~ msgstr "Rankings efter omgång #% d"
+
+#~ msgid "Tournament summary after round #%d"
 #~ msgstr "Sammanfattning av turneringen efter omgång #% d"
+
+#~ msgid "Rankings"
+#~ msgstr "Placering"
 
 #~ msgid "Tournament summary"
 #~ msgstr "Sammanfattning av turneringen"
+
+#~ msgid "Not part of the selected tournament (%d rounds)."
+#~ msgstr "Inte en del av den valda turneringen (% d rundor)."
+
+#~ msgid "Round not finished (last finished: %d)."
+#~ msgstr "Rund ej färdig (senast färdig: %d)."
+
+#~ msgid "Only estimated rankings are optional."
+#~ msgstr "Endast uppskattade rankningar är valfria."
+
+#~ msgid "Players found in the Papi_file : %(num)d"
+#~ msgstr "Spelare som finns i Papi_filen : %(num)d"
+
+#~ msgid "Paired bye points: %(string)s"
+#~ msgstr "Parad bye punkter: %(string)s"
+
+#~ msgid "Paired bye points:"
+#~ msgstr "Parad bye punkter:"
+
+#~ msgid "The points scored by players who are paired bye."
+#~ msgstr "Poängen som görs av spelare som är parade bye."
 

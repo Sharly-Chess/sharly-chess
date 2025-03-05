@@ -16,6 +16,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from data.player import Player
 from data.tie_break import PapiTieBreak, TieBreak
+from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
@@ -134,7 +135,7 @@ class TournamentAdminController(BaseEventAdminController):
         record_illegal_moves: int | None = None
         rules: str | None = None
         first_board_number: int | None = None
-        paired_bye_points: float | None = None
+        paired_bye_result: int | None = None
         max_byes: int | None = None
         last_rounds_no_byes: int | None = None
         tie_breaks: list[TieBreak] | None = None
@@ -188,8 +189,8 @@ class TournamentAdminController(BaseEventAdminController):
                 first_board_number = WebContext.form_data_to_int(
                     data, 'first_board_number'
                 )
-                paired_bye_points = WebContext.form_data_to_float(
-                    data, 'paired_bye_points'
+                paired_bye_result = WebContext.form_data_to_int(
+                    data, 'paired_bye_result'
                 )
                 max_byes = WebContext.form_data_to_int(
                     data, 'max_byes'
@@ -246,7 +247,7 @@ class TournamentAdminController(BaseEventAdminController):
             record_illegal_moves=record_illegal_moves,
             rules=rules,
             first_board_number=first_board_number,
-            paired_bye_points=paired_bye_points,
+            paired_bye_result=paired_bye_result,
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
             check_in_open=check_in_open,
@@ -320,7 +321,7 @@ class TournamentAdminController(BaseEventAdminController):
                     record_illegal_moves: int | None = None
                     rules: str | None = None
                     first_board_number: int | None = None
-                    paired_bye_points: float | None = None
+                    paired_bye_result: float | None = None
                     max_byes: int | None = None
                     last_rounds_no_byes: int | None = None
                     tie_break_1: PapiTieBreak | None = None
@@ -349,7 +350,7 @@ class TournamentAdminController(BaseEventAdminController):
                             )
                             rules = admin_tournament.stored_tournament.rules
                             first_board_number = admin_tournament.stored_tournament.first_board_number
-                            paired_bye_points = admin_tournament.stored_tournament.paired_bye_points
+                            paired_bye_result = admin_tournament.stored_tournament.paired_bye_result
                             max_byes = admin_tournament.stored_tournament.max_byes
                             last_rounds_no_byes = admin_tournament.stored_tournament.last_rounds_no_byes
                         case 'create' | 'delete':
@@ -410,7 +411,7 @@ class TournamentAdminController(BaseEventAdminController):
                         ),
                         'rules': WebContext.value_to_form_data(rules),
                         'first_board_number': WebContext.value_to_form_data(first_board_number),
-                        'paired_bye_points': WebContext.value_to_form_data(paired_bye_points),
+                        'paired_bye_result': WebContext.value_to_form_data(paired_bye_result),
                         'max_byes': WebContext.value_to_form_data(max_byes),
                         'last_rounds_no_byes': WebContext.value_to_form_data(last_rounds_no_byes),
                         'ffe_id': WebContext.value_to_form_data(ffe_id),
@@ -431,12 +432,16 @@ class TournamentAdminController(BaseEventAdminController):
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
                     ),
-                    'paired_bye_points_options': cls._get_paired_bye_points_options(),
+                    'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     'tie_break_options': cls._get_tie_break_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,
                     'errors': errors,
+                }
+            case 'create_papi':
+                template_context |= {
+                    'modal': modal,
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
@@ -515,6 +520,33 @@ class TournamentAdminController(BaseEventAdminController):
         tournament = context.admin_tournament
         BbpPairings().generate_pairings(tournament)
         tournament.read_papi(True)
+        Message.success(
+            request,
+            _(
+                'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
+            ).format(round=tournament.current_round, tournament_uniq_id=tournament.uniq_id),
+        )
+        return self._admin_event_tournaments_render(request, event_uniq_id)
+
+    @post(
+        path='/admin/tournament-papi-create/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-papi-create',
+    )
+    async def admin_tournament_papi_create(
+        self, request: HTMXRequest, event_uniq_id: str, tournament_id: int,
+    ) -> Template | ClientRedirect:
+        context = TournamentAdminWebContext(
+            request, event_uniq_id, None, tournament_id, None
+        )
+        file = context.admin_tournament.file
+        file.parent.mkdir(parents=True, exist_ok=True)
+        if create_empty_papi_database(file, PAPI_VERSIONS[-1]):
+            Message.success(
+                request, _('Papi file [{file}] created.').format(file=file)
+            )
+        else:
+            Message.error(request, _('Papi file has not been created.'))
+
         return self._admin_event_tournaments_render(request, event_uniq_id)
 
     def _admin_tournament_update(
@@ -626,6 +658,15 @@ class TournamentAdminController(BaseEventAdminController):
                             ).format(tournament_uniq_id=stored_tournament.uniq_id),
                         )
                     event_loader.clear_cache(event_uniq_id)
+                    if not Tournament(
+                        web_context.admin_event, stored_tournament
+                    ).file_exists:
+                        return self._admin_event_tournaments_render(
+                            request,
+                            event_uniq_id=event_uniq_id,
+                            tournament_id=stored_tournament.id,
+                            modal='create_papi',
+                        )
                     return self._admin_event_tournaments_render(
                         request, event_uniq_id=event_uniq_id
                     )
@@ -644,6 +685,15 @@ class TournamentAdminController(BaseEventAdminController):
                         ),
                     )
                     event_loader.clear_cache(event_uniq_id)
+                    if not Tournament(
+                        web_context.admin_event, stored_tournament
+                    ).file_exists:
+                        return self._admin_event_tournaments_render(
+                            request,
+                            event_uniq_id=event_uniq_id,
+                            tournament_id=tournament_id,
+                            modal='create_papi',
+                        )
                     return self._admin_event_tournaments_render(
                         request, event_uniq_id=event_uniq_id
                     )

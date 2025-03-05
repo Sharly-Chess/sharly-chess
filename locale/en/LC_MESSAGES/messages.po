@@ -1629,11 +1629,15 @@ msgid "By default - {option}"
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
-msgid "Full point bye"
+msgid "Points for gain (full-point bye)"
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
-msgid "Half point bye"
+msgid "Points for draw (half-point bye)"
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Points for loss (zero-point bye)"
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
@@ -2160,6 +2164,18 @@ msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tie-break already in use."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file [{file}] created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file has not been created."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
@@ -3900,11 +3916,13 @@ msgid "Present"
 msgstr ""
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr ""
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr ""
@@ -4253,7 +4271,8 @@ msgstr ""
 msgid "Create a rotator"
 msgstr ""
 
-#: src/web/templates/admin/rotators/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/rotators/tab.html
+#: src/web/templates/user/event_layout.html
 msgid "No rotators."
 msgstr ""
 
@@ -4576,7 +4595,8 @@ msgstr ""
 msgid "Show/hide the image screens."
 msgstr ""
 
-#: src/web/templates/admin/screens/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/screens/tab.html
+#: src/web/templates/user/event_layout.html
 msgid "No such screens."
 msgstr ""
 
@@ -4747,6 +4767,27 @@ msgstr ""
 msgid "Colors and delays"
 msgstr ""
 
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Missing Papi file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Do you want Papi-web to create the file?"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Yes, create the file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "No, I will do it later"
+msgstr ""
+
 #: src/web/templates/admin/tournaments/tab.html
 msgid "Tournaments"
 msgstr ""
@@ -4762,6 +4803,22 @@ msgstr ""
 #: src/web/templates/admin/tournaments/tab.html
 msgid "No tournaments."
 msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "Number of players : %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+msgid "Illegal moves are not recorded."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "At most %(num)d illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
@@ -4797,23 +4854,12 @@ msgid "No ChessEvent tournament defined"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, python-format
-msgid "Players found in the Papi_file : %(num)d"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "Illegal moves are not recorded."
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, python-format
-msgid "At most %(num)d illegal move is recorded."
-msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Rules file set"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "First board number: %(board_number)d"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
@@ -5051,14 +5097,6 @@ msgid "The number of the first board of the tournament (if not set, defaults to 
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "Paired bye points:"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-msgid "The points scored by players who are paired bye."
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Max byes:"
 msgstr ""
 
@@ -5145,7 +5183,7 @@ msgstr ""
 msgid "Rotator automatically rotate between multiple screens."
 msgstr ""
 
-#: src/web/templates/user/event.html
+#: src/web/templates/user/event_layout.html
 msgid "Go back to the events page."
 msgstr ""
 
@@ -5313,12 +5351,15 @@ msgstr ""
 msgid "vs"
 msgstr ""
 
-#~ msgid "Full-point bye"
+#~ msgid "Players found in the Papi_file : %(num)d"
 #~ msgstr ""
 
-#~ msgid "Tournament summary after round #{round}"
+#~ msgid "Paired bye points: %(string)s"
 #~ msgstr ""
 
-#~ msgid "Tournament summary"
+#~ msgid "Paired bye points:"
+#~ msgstr ""
+
+#~ msgid "The points scored by players who are paired bye."
 #~ msgstr ""
 

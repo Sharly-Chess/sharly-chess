@@ -1558,14 +1558,12 @@ msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
 #: src/data/util.py
-#, fuzzy
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
-msgstr "W"
+msgstr ""
 
 #: src/data/util.py
-#, fuzzy
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
-msgstr "B"
+msgstr ""
 
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
@@ -1632,10 +1630,7 @@ msgstr "Federatie"
 msgid "List of players"
 msgstr "Lijst van spelers"
 
-# Error: tokens differ between [Ranking after round #{round}] and [Ranglijsten
-# na ronde #%d]
 #: src/data/util.py
-#, ai_translation
 msgid "Ranking after round #{round}"
 msgstr ""
 
@@ -1644,9 +1639,8 @@ msgid "Crosstable after round #{round}"
 msgstr ""
 
 #: src/data/util.py
-#, ai_translation
 msgid "Ranking"
-msgstr "Ranglijsten"
+msgstr ""
 
 #: src/data/util.py
 msgid "Crosstable"
@@ -2023,13 +2017,18 @@ msgstr "Standaard - {option}"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
-msgid "Full point bye"
-msgstr "Volledig punt bye"
+msgid "Points for gain (full-point bye)"
+msgstr "Punten voor winst (volledig punt bye)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
-msgid "Half point bye"
-msgstr "Halve punt bye"
+msgid "Points for draw (half-point bye)"
+msgstr "Te trekken punten (halverwege punt)"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Points for loss (zero-point bye)"
+msgstr "Punten voor verlies (nulpunt bye)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
@@ -2315,17 +2314,11 @@ msgstr "Kies het document."
 msgid "A positive integer is expected."
 msgstr "Een positief geheel getal wordt verwacht."
 
-# Error: tokens differ between [Not part of the selected tournament ({rounds}
-# rounds).] and [Geen onderdeel van het geselecteerde toernooi (%d rondes).]
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
 msgid "Not part of the selected tournament ({rounds} rounds)."
 msgstr ""
 
-# Error: tokens differ between [Round not finished (last finished: {round}).]
-# and [Ronde is niet voltooid (laatste voltooid: %d).]
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation
 msgid "Round not finished (last finished: {round})."
 msgstr ""
 
@@ -2681,7 +2674,20 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr "Het wachtwoord van het toernooi op de FSFE website is gemaakt van 10 hoofdletters."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
 msgid "Tie-break already in use."
+msgstr "Bie-break is al in gebruik."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file [{file}] created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file has not been created."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
@@ -4758,11 +4764,13 @@ msgid "Present"
 msgstr "Aanwezig"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr "Maximum aantal byes: %(max_byes)d"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr "Laatste rondes zonder byes: %(last_rounds_no_byes)d"
@@ -5176,7 +5184,8 @@ msgstr "U moet een scherm of een familie van schermen maken voordat u een rotato
 msgid "Create a rotator"
 msgstr "Een rotator aanmaken"
 
-#: src/web/templates/admin/rotators/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/rotators/tab.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "No rotators."
 msgstr "Geen rotators."
@@ -5560,7 +5569,8 @@ msgstr "De resultatenschermen tonen/verbergen."
 msgid "Show/hide the image screens."
 msgstr "Afbeeldingsschermen tonen/verbergen."
 
-#: src/web/templates/admin/screens/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/screens/tab.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "No such screens."
 msgstr "Zo'n schermen bestaan niet."
@@ -5572,9 +5582,8 @@ msgstr ""
 
 #: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/tab.html
-#, ai_translation
 msgid "Timers"
-msgstr "Timers"
+msgstr ""
 
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
@@ -5760,6 +5769,27 @@ msgstr "Het unieke ID, gebruikt om naar de timer te verwijzen."
 msgid "Colors and delays"
 msgstr "Kleuren en vertragingen"
 
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Missing Papi file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Do you want Papi-web to create the file?"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Yes, create the file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "No, I will do it later"
+msgstr ""
+
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
 msgid "Tournaments"
@@ -5779,6 +5809,23 @@ msgstr "Een toernooi aanmaken"
 #, ai_translation
 msgid "No tournaments."
 msgstr "Geen toernooien."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "Number of players : %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation
+msgid "Illegal moves are not recorded."
+msgstr "Illegale bewegingen worden niet geregistreerd."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "At most %(num)d illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] "Hoogstens wordt %(num)d illegale beweging geregistreerd."
+msgstr[1] "Hoogstens worden %(num)d illegale bewegingen geregistreerd."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
@@ -5816,26 +5863,14 @@ msgid "No ChessEvent tournament defined"
 msgstr "Geen ChessEvent-toernooi gedefinieerd"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "Players found in the Papi_file : %(num)d"
-msgstr "Spelers gevonden in het Papi_bestand : %(num)d"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Illegal moves are not recorded."
-msgstr "Illegale bewegingen worden niet geregistreerd."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "At most %(num)d illegal move is recorded."
-msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] "Hoogstens wordt %(num)d illegale beweging geregistreerd."
-msgstr[1] "Hoogstens worden %(num)d illegale bewegingen geregistreerd."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "Rules file set"
 msgstr "Regelsbestand ingesteld"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "First board number: %(board_number)d"
+msgstr "Eerste bordnummer: %(board_number)d"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -6126,16 +6161,6 @@ msgstr "Het nummer van het eerste bord van het toernooi (indien niet ingesteld, 
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
-msgid "Paired bye points:"
-msgstr "Gepaarde bye punten:"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The points scored by players who are paired bye."
-msgstr "De punten gescoord door spelers die zijn gekoppeld bye."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
 msgid "Max byes:"
 msgstr "Max. byes:"
 
@@ -6239,7 +6264,7 @@ msgstr "Afbeeldingsschermen tonen een afbeelding (lokaal of op afstand)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator draait automatisch tussen meerdere schermen."
 
-#: src/web/templates/user/event.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "Go back to the events page."
 msgstr "Ga terug naar de evenementen pagina."
@@ -6482,9 +6507,48 @@ msgstr "vs"
 #~ msgid "Full-point bye"
 #~ msgstr "Volledig punt bye"
 
-#~ msgid "Tournament summary after round #{round}"
+#~ msgid "Full point bye"
+#~ msgstr "Volledig punt bye"
+
+#~ msgid "Half point bye"
+#~ msgstr "Halve punt bye"
+
+#~ msgid "W *** WHITE COLOR FOR RANKINGS"
+#~ msgstr "W"
+
+#~ msgid "B *** BLACK COLOR FOR RANKINGS"
+#~ msgstr "B"
+
+#~ msgid "Rankings after round #%d"
+#~ msgstr "Ranglijsten na ronde #%d"
+
+#~ msgid "Tournament summary after round #%d"
 #~ msgstr "Overzicht van toernooien na ronde #%d"
+
+#~ msgid "Rankings"
+#~ msgstr "Ranglijsten"
 
 #~ msgid "Tournament summary"
 #~ msgstr "Overzicht van het toernooi"
+
+#~ msgid "Not part of the selected tournament (%d rounds)."
+#~ msgstr "Geen onderdeel van het geselecteerde toernooi (%d rondes)."
+
+#~ msgid "Round not finished (last finished: %d)."
+#~ msgstr "Ronde is niet voltooid (laatste voltooid: %d)."
+
+#~ msgid "Only estimated rankings are optional."
+#~ msgstr "Alleen geschatte rankings zijn optioneel."
+
+#~ msgid "Players found in the Papi_file : %(num)d"
+#~ msgstr "Spelers gevonden in het Papi_bestand : %(num)d"
+
+#~ msgid "Paired bye points: %(string)s"
+#~ msgstr "Gepaarde bye punten: %(string)s"
+
+#~ msgid "Paired bye points:"
+#~ msgstr "Gepaarde bye punten:"
+
+#~ msgid "The points scored by players who are paired bye."
+#~ msgstr "De punten gescoord door spelers die zijn gekoppeld bye."
 

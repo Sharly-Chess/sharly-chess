@@ -21,6 +21,7 @@ from data.loader import EventLoader, ArchiveLoader
 from data.tie_break import PapiTieBreak
 from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
+from database.access.papi.papi_template import PAPI_VERSIONS
 from database.store import StoredEvent
 from web.controllers.index_controller import BaseController, WebContext
 from web.messages import Message
@@ -99,13 +100,14 @@ class BaseAdminController(BaseController):
         return options
 
     @staticmethod
-    def _get_paired_bye_points_options() -> dict[str, str]:
+    def _get_paired_bye_result_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(Result.GAIN.point_value): _('Full point bye'),
-            WebContext.value_to_form_data(Result.DRAW.point_value): _('Half point bye'),
+            WebContext.value_to_form_data(Result.GAIN.value): _('Points for gain (full-point bye)'),
+            WebContext.value_to_form_data(Result.DRAW.value): _('Points for draw (half-point bye)'),
+            WebContext.value_to_form_data(Result.LOSS.value): _('Points for loss (zero-point bye)'),
         }
-        default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_points.point_value)
+        default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_result.value)
         options[''] = _('By default - {option}').format(option=options[default_option])
         return options
 
