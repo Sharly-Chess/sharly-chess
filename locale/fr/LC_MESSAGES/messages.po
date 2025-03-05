@@ -2171,6 +2171,20 @@ msgid "Tie-break already in use."
 msgstr "Départage déjà utilisé."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Papi file [{file}] created."
+msgstr "Fichier Papi [{file}] créé."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file has not been created."
+msgstr "Le fichier Papi n'a pas pu être créé."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Le tournoi [{tournament_uniq_id}] a été créé et les écrans par défaut ont été ajoutés."
 
@@ -4757,6 +4771,27 @@ msgstr "L'identifiant unique, utilisé pour référencer le chronomètre'."
 #: src/web/templates/admin/timers/timer_modal.html
 msgid "Colors and delays"
 msgstr "Couleurs et délais"
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Missing Papi file"
+msgstr "Fichier Papi manquant"
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr "Attention: Fichier Papi [%(path)s] introuvable, de nombreuses fonctionnalités sont désactivées."
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Do you want Papi-web to create the file?"
+msgstr "Voulez-vous que Papi-Web crée ce fichier ?"
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Yes, create the file"
+msgstr "Oui, créer le fichier"
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "No, I will do it later"
+msgstr "Non, je le ferai plus tard"
 
 #: src/web/templates/admin/tournaments/tab.html
 msgid "Tournaments"

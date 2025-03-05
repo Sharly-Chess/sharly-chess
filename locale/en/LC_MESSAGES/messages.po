@@ -2171,6 +2171,20 @@ msgid "Tie-break already in use."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Papi file [{file}] created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file has not been created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr ""
 
@@ -4756,6 +4770,27 @@ msgstr ""
 
 #: src/web/templates/admin/timers/timer_modal.html
 msgid "Colors and delays"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Missing Papi file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Do you want Papi-web to create the file?"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Yes, create the file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "No, I will do it later"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html

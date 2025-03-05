@@ -2702,6 +2702,20 @@ msgid "Tie-break already in use."
 msgstr "Cravatta già in uso."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Papi file [{file}] created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+msgid "Papi file has not been created."
+msgstr ""
+
+#: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Il torneo [{tournament_uniq_id}] è stato creato e le schermate predefinite sono state aggiunte."
@@ -5585,17 +5599,6 @@ msgstr "Mostra/nascondi le schermate dell'immagine."
 msgid "No such screens."
 msgstr "Non ci sono schermi del genere."
 
-#: src/web/templates/admin/timers/default_timers_modal.html
-#, ai_translation, python-format
-msgid "Edition of default timers for event [%(event_uniq_id)s]"
-msgstr "Edizione dei timer predefiniti per l'evento [%(event_uniq_id)s]"
-
-#: src/web/templates/admin/timers/default_timers_modal.html
-#: src/web/templates/admin/timers/tab.html
-#, ai_translation
-msgid "Timers"
-msgstr "Timer"
-
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
 msgid "Add a timer to the event."
@@ -5779,6 +5782,27 @@ msgstr "L'ID univoco, usato per fare riferimento al timer."
 #, ai_translation
 msgid "Colors and delays"
 msgstr "Colori e ritardi"
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Missing Papi file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Do you want Papi-web to create the file?"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Yes, create the file"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "No, I will do it later"
+msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
