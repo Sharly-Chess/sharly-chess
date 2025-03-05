@@ -87,13 +87,9 @@
                                     <td class="center {{ extra_classes}}">{{ player.federation }}</td>
                                     <td class="center {{ extra_classes}}">{{ player.league }}</td>
                                     {% if document.is_crosstable %}
-                                        {% if player.crosstable_strings %}
-                                            {% for crosstable_string in (player.crosstable_strings)[:max_round] %}
-                                                <td class="right {{ extra_classes}}">{{ crosstable_string }}</td>
-                                            {% endfor %}
-                                        {% else %}
-                                            <td class="right {{ extra_classes}}" colspan="{{ max_round }}">player.crosstable_strings={{player.crosstable_strings}}</td>
-                                        {% endif %}
+                                        {% for crosstable_string in (player.crosstable_strings)[:max_round] %}
+                                            <td class="right {{ extra_classes}}">{{ crosstable_string }}</td>
+                                        {% endfor %}
                                     {% else %}
                                         <td class="left {{ extra_classes}}">{{ player.club }}</td>
                                     {% endif %}
