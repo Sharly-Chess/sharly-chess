@@ -30,7 +30,10 @@
                     <div>
                         <button
                             type="button"
-                            data-bs-dismiss="modal"
+                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='tournaments') }}"
+                            preload
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                             class="btn btn-secondary text-nowrap"
                         >
                             <i class="bi-x-circle-fill pe-1"></i>

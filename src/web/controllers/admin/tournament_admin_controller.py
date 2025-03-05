@@ -538,6 +538,7 @@ class TournamentAdminController(BaseEventAdminController):
             request, event_uniq_id, None, tournament_id, None
         )
         file = context.admin_tournament.file
+        file.parent.mkdir(parents=True, exist_ok=True)
         if create_empty_papi_database(file, PAPI_VERSIONS[-1]):
             Message.success(
                 request, _('Papi file [%s] created.').format(file)
