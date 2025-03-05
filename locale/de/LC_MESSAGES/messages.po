@@ -5804,23 +5804,19 @@ msgstr ""
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
 #, python-format
-msgid "Warning: Papi file [%(path)s] not found. Many features are disabled."
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
 msgstr ""
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Papi version"
+msgid "Do you want Papi-web to create the file?"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Version of papi to create the file for."
+msgid "Yes, create the file"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Create Papi file"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Continue without Papi file"
+msgid "No, I will do it later"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html

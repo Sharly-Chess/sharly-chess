@@ -11,16 +11,10 @@
                 </h2>
             </div>
             <div class="modal-body">
-                <h4 class="text-danger">
-                    {{ _('Warning: Papi file [%(path)s] not found. Many features are disabled.', path=admin_tournament.file) }}
-                </h4>
-                {{ admin_macros.select_input(
-                    name='papi_version',
-                    label=_('Papi version'),
-                    select_options=papi_version_options,
-                    help_text=_('Version of papi to create the file for.'),
-                    data=data, errors=errors
-                ) }}
+                <h5 class="text-danger">
+                    {{ _('Warning: Papi file [%(path)s] not found, many features are disabled.', path=admin_tournament.file) }}
+                </h5>
+                <h5>{{ _('Do you want Papi-web to create the file?') }}</h5>
             </div>
             <div class="modal-footer d-block">
                 <div class="d-flex flex-wrap gap-4">
@@ -30,7 +24,7 @@
                             class="text-nowrap white btn btn-primary"
                         >
                             <i class="bi-plus-circle-fill pe-1"></i>
-                            {{ _('Create Papi file') }}
+                            {{ _('Yes, create the file') }}
                         </button>
                     </div>
                     <div>
@@ -40,7 +34,7 @@
                             class="btn btn-secondary text-nowrap"
                         >
                             <i class="bi-x-circle-fill pe-1"></i>
-                            {{ _('Continue without Papi file') }}
+                            {{ _('No, I will do it later') }}
                         </button>
                     </div>
                 </div>

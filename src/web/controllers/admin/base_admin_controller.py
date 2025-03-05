@@ -118,13 +118,6 @@ class BaseAdminController(BaseController):
         }
 
     @staticmethod
-    def _get_papi_version_options() -> dict[str, str]:
-        return {
-            WebContext.value_to_form_data(version): version
-            for version in PAPI_VERSIONS
-        }
-
-    @staticmethod
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
         return {
             1: _(

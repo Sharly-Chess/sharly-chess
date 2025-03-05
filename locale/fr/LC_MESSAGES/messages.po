@@ -4771,24 +4771,20 @@ msgstr "Fichier Papi manquant"
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
 #, python-format
-msgid "Warning: Papi file [%(path)s] not found. Many features are disabled."
-msgstr "Attention: Fichier Papi [%(path)s] introuvable. De nombreuses fonctionnalités sont désactivées."
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr "Attention: Fichier Papi [%(path)s] introuvable, de nombreuses fonctionnalités sont désactivées."
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Papi version"
-msgstr "Version de Papi"
+msgid "Do you want Papi-web to create the file?"
+msgstr "Voulez-vous que Papi-Web crée ce fichier?"
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Version of papi to create the file for."
-msgstr "Version de Papi pour laquelle créer le fichier."
+msgid "Yes, create the file"
+msgstr "Oui, créer le fichier"
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Create Papi file"
-msgstr "Créer le fichier Papi"
-
-#: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Continue without Papi file"
-msgstr "Continuer sans fichier Papi"
+msgid "No, I will do it later"
+msgstr "Non, je le ferai plus tard"
 
 #: src/web/templates/admin/tournaments/tab.html
 msgid "Tournaments"
