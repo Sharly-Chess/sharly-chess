@@ -16,19 +16,19 @@
             {% endblock %}
         </div>
         <div
-            class="card-body p-2 d-flex flex-column"
+            class="card-body px-2 py-3 d-flex flex-column gap-3"
         >
             <div class="card-title text-center fw-bold">
-                {% block card_title %}
+                {%- block card_title -%}
                     CARD_TITLE
-                {% endblock %}
+                {%- endblock -%}
             </div>
-            <div class="card-text mb-auto mt-1 text-start mb-3 pb-2">
+            <div class="card-text mb-auto text-start">
                 {% block card_text %}
                     CARD_TEXT
                 {% endblock %}
             </div>
-            <div class="d-flex flex-wrap card-buttons mt-auto pt-3 align-self-start w-100 gap-3">
+            <div class="d-flex flex-wrap card-buttons mt-auto align-self-start w-100 gap-3">
                 <div class="flex-grow-1 d-flex gap-2">
                     {% block card_buttons_left %}
                         CARD_BUTTON_LEFT

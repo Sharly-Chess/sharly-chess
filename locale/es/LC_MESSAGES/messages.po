@@ -2004,13 +2004,18 @@ msgstr "Por defecto - {option}"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
-msgid "Full point bye"
-msgstr "Adios punto completo"
+msgid "Points for gain (full-point bye)"
+msgstr "Puntos para ganar (adiós a punto completo)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
-msgid "Half point bye"
-msgstr "Medio punto adios"
+msgid "Points for draw (half-point bye)"
+msgstr "Puntos para el sorteo (adiós a medio punto)"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Points for loss (zero-point bye)"
+msgstr "Puntos por pérdida (adiós de cero puntos)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
@@ -2659,17 +2664,18 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr "La contraseña del torneo en el sitio web de la FFE está hecha de 10 letras mayúsculas."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
+#, ai_translation
 msgid "Tie-break already in use."
+msgstr "Tie-break ya está en uso."
+
+#: src/web/controllers/admin/tournament_admin_controller.py
+#, python-format
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, python-format
-msgid "Pairings of round %d generated for tournament [%s]."
-msgstr ""
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, python-format
-msgid "Papi file [%s] created."
+msgid "Papi file [{file}] created."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
@@ -3412,6 +3418,7 @@ msgstr "Directorio predeterminado de los archivos Papi"
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "(by default)"
 msgstr "(por defecto)"
@@ -4750,11 +4757,13 @@ msgid "Present"
 msgstr "Presente"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr "Número máximo de byes: %(max_byes)d"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr "Últimas rondas sin byes: %(last_rounds_no_byes)d"
@@ -5557,17 +5566,6 @@ msgstr "Mostrar/ocultar las pantallas de imagen."
 msgid "No such screens."
 msgstr "No hay tales pantallas."
 
-#: src/web/templates/admin/timers/default_timers_modal.html
-#, python-format
-msgid "Edition of default timers for event [%(event_uniq_id)s]"
-msgstr ""
-
-#: src/web/templates/admin/timers/default_timers_modal.html
-#: src/web/templates/admin/timers/tab.html
-#, ai_translation
-msgid "Timers"
-msgstr "Temporizadores"
-
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
 msgid "Add a timer to the event."
@@ -5849,6 +5847,16 @@ msgstr[1] "Como mucho %(num)d movimientos ilegales se registran."
 #, ai_translation
 msgid "Rules file set"
 msgstr "Conjunto de archivos de reglas"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "First board number: %(board_number)d"
+msgstr "Primer número de placa: %(board_number)d"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "Paired bye points: %(string)s"
+msgstr "Puntos de bye emparejados: %(string)s"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -6492,4 +6500,10 @@ msgstr "vs."
 
 #~ msgid "Full-point bye"
 #~ msgstr "Adios a punto completo"
+
+#~ msgid "Full point bye"
+#~ msgstr "Adios punto completo"
+
+#~ msgid "Half point bye"
+#~ msgstr "Medio punto adios"
 

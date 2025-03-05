@@ -1,5 +1,4 @@
 import base64
-from collections.abc import Iterator
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date

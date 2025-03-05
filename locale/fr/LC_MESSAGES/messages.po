@@ -1631,12 +1631,16 @@ msgid "By default - {option}"
 msgstr "Par défaut - {option}"
 
 #: src/web/controllers/admin/base_admin_controller.py
-msgid "Full point bye"
-msgstr "Points de victoire"
+msgid "Points for gain (full-point bye)"
+msgstr "Points de victoire (point joker)"
 
 #: src/web/controllers/admin/base_admin_controller.py
-msgid "Half point bye"
-msgstr "Points de match nul"
+msgid "Points for draw (half-point bye)"
+msgstr "Points de match nul (demi-point joker)"
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Points for loss (zero-point bye)"
+msgstr "Points de défaite (zéro point joker)"
 
 #: src/web/controllers/admin/base_admin_controller.py
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
@@ -2168,13 +2172,13 @@ msgstr "Départage déjà utilisé."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, python-format
-msgid "Pairings of round %d generated for tournament [%s]."
-msgstr "Les appariements de la ronde %d ont été générés pour le tournoi [%s]"
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, python-format
-msgid "Papi file [%s] created."
-msgstr "Fichier Papi [%s] créé."
+msgid "Papi file [{file}] created."
+msgstr "Fichier Papi [{file}] créé."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 msgid "Papi file has not been created."
@@ -2799,6 +2803,7 @@ msgstr "Répertoire par défaut des fichiers Papi"
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -3918,11 +3923,13 @@ msgid "Present"
 msgstr "Présent·e"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr "Dernières rondes sans joker (bye) : %(last_rounds_no_byes)d"
@@ -4601,7 +4608,7 @@ msgstr "Aucun écran de ce type."
 #: src/web/templates/admin/timers/default_timers_modal.html
 #, python-format
 msgid "Edition of default timers for event [%(event_uniq_id)s]"
-msgstr ""
+msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_id)s]"
 
 #: src/web/templates/admin/timers/default_timers_modal.html
 #: src/web/templates/admin/timers/tab.html
@@ -4854,6 +4861,16 @@ msgstr[1] "Au plus %(num)d coups illegaux sont enregistrés."
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Rules file set"
 msgstr "Règlement défini"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "First board number: %(board_number)d"
+msgstr "Numéro du premier échiquier : %(board_number)d"
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "Paired bye points: %(string)s"
+msgstr "Point d'exemption : %(string)s"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Edit the properties of the tournament."

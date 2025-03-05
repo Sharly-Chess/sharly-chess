@@ -1631,11 +1631,15 @@ msgid "By default - {option}"
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
-msgid "Full point bye"
+msgid "Points for gain (full-point bye)"
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
-msgid "Half point bye"
+msgid "Points for draw (half-point bye)"
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Points for loss (zero-point bye)"
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
@@ -2168,12 +2172,12 @@ msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, python-format
-msgid "Pairings of round %d generated for tournament [%s]."
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, python-format
-msgid "Papi file [%s] created."
+msgid "Papi file [{file}] created."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
@@ -2799,6 +2803,7 @@ msgstr ""
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 msgid "(by default)"
 msgstr ""
 
@@ -3918,11 +3923,13 @@ msgid "Present"
 msgstr ""
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr ""
 
 #: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr ""
@@ -4856,6 +4863,16 @@ msgid "Rules file set"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "First board number: %(board_number)d"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "Paired bye points: %(string)s"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Edit the properties of the tournament."
 msgstr ""
 
@@ -5353,5 +5370,11 @@ msgid "vs"
 msgstr ""
 
 #~ msgid "Full-point bye"
+#~ msgstr ""
+
+#~ msgid "Full point bye"
+#~ msgstr ""
+
+#~ msgid "Half point bye"
 #~ msgstr ""
 
