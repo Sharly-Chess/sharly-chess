@@ -484,7 +484,7 @@ class Player(TournamentPlayer):
 
     @staticmethod
     def _tie_break_value_as_float(tie_break_value: int | float | tuple[float, ...]) -> float:
-        """Returns a player's tie-break value as a string."""
+        """Returns a player's tie-break value as a float."""
         if isinstance(tie_break_value, int):
             return float(tie_break_value)
         elif isinstance(tie_break_value, float):
