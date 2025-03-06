@@ -7,6 +7,7 @@ name = "Papi-web"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.11.0"
 version = "2.4.25"
+
 authors = [
   {name = "Pascal Aubry", email = "papi-web@echecs-bretagne.fr"},
   {name = "Sammy Plat", email = "papi-web@echecs-bretagne.fr"},

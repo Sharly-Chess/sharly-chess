@@ -9,6 +9,7 @@ from sqlite3 import OperationalError
 from packaging.version import Version
 
 from common.logger import get_logger, print_interactive_error
+from common.papi_web_config import PapiWebConfig
 from database.migrations import events
 from database.sqlite.event_database import EventDatabase
 
@@ -81,14 +82,42 @@ class EventMigrationManager:
         ):
             self._log_error(
                 f'Database %{database.file.name} ({database.version}) '
-                'impossible to upgrade: version is prior to the first '
-                f'upgradable version ({self.first_migration_version})'
+                'impossible to migrate: version is prior to the first '
+                f'database version ({self.first_migration_version})'
             )
             return False
-        if database.version > target_version:
-            return self._rollback(database, target_version, skip_commits)
-        else:
-            return self._upgrade(database, target_version, skip_commits)
+        if target_version < self.first_migration_version:
+            self._log_error(
+                f'impossible to migrate to version [{target_version.public}]: '
+                f' version is prior to the first database version '
+                f'({self.first_migration_version}).'
+            )
+            return False
+        if database.version > PapiWebConfig.version:
+            self._log_error(
+                f'Database {database.file.name} ({database.version}) '
+                f'impossible to migrate: version is after the '
+                f'current Papi-web version ({PapiWebConfig.version.public}).'
+            )
+            return False
+        if target_version > PapiWebConfig.version:
+            self._log_error(
+                f'impossible to upgrade to version [{target_version.public}]: '
+                f' version is after the current Papi-web version '
+                f'({PapiWebConfig.version.public}).'
+            )
+            return False
+
+        migration_status = (
+            self._rollback(database, target_version, skip_commits)
+            if database.version > target_version else
+            self._upgrade(database, target_version, skip_commits)
+        )
+        if migration_status and database.version != target_version:
+            database.set_version(target_version)
+            if not skip_commits:
+                database.commit()
+        return migration_status
 
     def _upgrade(
         self,
@@ -119,6 +148,10 @@ class EventMigrationManager:
                     f'to version {migration_version}: "{e}"'
                 )
                 return False
+        if database.version != target_version:
+            database.set_version(target_version)
+            if not skip_commits:
+                database.commit()
         return True
 
     def _rollback(
@@ -127,25 +160,24 @@ class EventMigrationManager:
         target_version: Version,
         skip_commits: bool,
     ) -> bool:
-        while database.version > target_version:
-            if database.version not in self.migration_versions:
-                self._log_error(
-                    'No migration for current database version, '
-                    'impossible to rollback.'
-                )
-                return False
-
+        current_version = (
+            database.version if
+            database.version in self.migration_versions
+            else self._previous_migration_version(database.version)
+        )
+        while current_version > target_version:
             migration_class = self._version_to_migration_class(
-                database.version
+                current_version
             )
             previous_version = self._previous_migration_version(
-                database.version
+                current_version
             )
             try:
                 migration_class.backward(database)
                 database.set_version(previous_version)
                 if not skip_commits:
                     database.commit()
+                current_version = previous_version
                 logger.debug(
                     'Database %s has been downgraded to version %s.',
                     database.file.name,

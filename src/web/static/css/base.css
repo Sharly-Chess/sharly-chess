@@ -66,6 +66,12 @@ nav .btn-link:hover {
 .papi-web-tooltip-error {
   --bs-tooltip-color: #900000;
 }
+.card-title {
+    margin-bottom: 0;
+}
+.card-title:empty {
+    display: none;
+}
 .image-screen, .card-body {
 	background-repeat: no-repeat;
 	background-position: center center;

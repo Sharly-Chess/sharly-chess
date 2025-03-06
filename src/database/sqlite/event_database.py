@@ -459,7 +459,7 @@ class EventDatabase(SQLiteDatabase):
                                     record_illegal_moves=None,
                                     rules=None,
                                     first_board_number=None,
-                                    paired_bye_points=None,
+                                    paired_bye_result=None,
                                     max_byes=None,
                                     last_rounds_no_byes=None,
                                     tie_breaks=None,
@@ -879,12 +879,7 @@ class EventDatabase(SQLiteDatabase):
             )
         super().__enter__()
 
-        from database.sqlite.event_migration import EventMigrationManager
-
-        if (
-            self._auto_upgrade and
-            self.version < EventMigrationManager().last_migration_version
-        ):
+        if self._auto_upgrade and self.version < PapiWebConfig.version:
             if self.write:
                 self.upgrade()
             else:
@@ -1376,7 +1371,7 @@ class EventDatabase(SQLiteDatabase):
             rules=row.get('rules', None),
             # needed to open event databases when version < 2.4.21 before checking the version
             first_board_number=row.get('first_board_number', None),
-            paired_bye_points=row.get('paired_bye_points', None),
+            paired_bye_result=row.get('paired_bye_result', None),
             max_byes=row.get('max_byes', None),
             last_rounds_no_byes=row.get('last_rounds_no_byes', None),
             # needed to open event databases when version < 2.4.20 before checking the version
@@ -1437,7 +1432,7 @@ class EventDatabase(SQLiteDatabase):
             'record_illegal_moves',
             'rules',
             'first_board_number',
-            'paired_bye_points',
+            'paired_bye_result',
             'max_byes',
             'tie_breaks',
             'point_values',
@@ -1469,7 +1464,7 @@ class EventDatabase(SQLiteDatabase):
             stored_tournament.record_illegal_moves,
             stored_tournament.rules,
             stored_tournament.first_board_number,
-            stored_tournament.paired_bye_points,
+            stored_tournament.paired_bye_result,
             stored_tournament.max_byes,
             self._dump_to_json_database_tie_breaks(stored_tournament.tie_breaks),
             self._dump_to_json_database_point_values(stored_tournament.point_values),
