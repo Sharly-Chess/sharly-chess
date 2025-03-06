@@ -1,0 +1,20 @@
+{% import '/common/macros.j2' as macros %}
+
+<span class="dropdown">
+    {{ admin_macros.text_input(
+        name='search_ffe',
+        label=_('FFE database:'),
+        help_text='',
+        placeholder=_('E.g.: %(string)s', string='pierre dupont paris'),
+        errors={} if ffe_search_available else {'search_ffe': _('The FFE database is not available.'), },
+        disabled=not ffe_search_available,
+        hx_get=url_for('ffe-search', event_uniq_id=admin_event.uniq_id) if ffe_search_available else '',
+        hx_trigger='keyup changed delay:0.2s',
+        hx_target='#ffe-search-results',
+        hx_indicator_img=url_for('static', file_path='images/papi-web.gif')
+    ) }}
+    {% if ffe_search_available %}
+        <ul id="ffe-search-results" class="dropdown-menu ffe-search-results p-0">
+        </ul>
+    {% endif %}
+</span>
