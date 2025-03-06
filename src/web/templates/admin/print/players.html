@@ -60,7 +60,10 @@
                                     {% elif tournament.rating == 3 %}
                                         {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
                                     {% endif %}
+                                {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                 </th>
+                                {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
+                                <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
                                 {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                 <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
                                 {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
@@ -95,6 +98,8 @@
                                     <td class="left {{ extra_classes}}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
                                     {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                     <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+                                    {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
+                                    <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
                                     {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                     <td class="center {{ extra_classes}}">{{ player.federation }}</td>
                                     {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
