@@ -199,20 +199,22 @@ class Screen:
                 first_last = screen_set.first is not None or screen_set.last is not None
                 text: str
                 if (
-                    self.type == ScreenType.PLAYERS
-                    or not screen_set.tournament.current_round
+                    self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]
+                    and screen_set.tournament.current_round
                 ):
-                    text = self.menu_text or self.default_players_screen_menu_text(
-                        single_tournament=single_tournament, first_last=first_last
-                    )
-                elif self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]:
                     text = self.menu_text or self.default_boards_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last
                     )
-                else:
+                elif self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]:
+                    text = self.menu_text or self.default_players_screen_menu_text(
+                        single_tournament=single_tournament, first_last=first_last
+                    )
+                elif self.type == ScreenType.RANKING:
                     text = self.menu_text or self.default_ranking_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last
                     )
+                else:
+                    text = self.menu_text
                 text = text.replace('%t', screen_set.tournament.name)
                 if self.type == ScreenType.RANKING:
                     if '%f' in text:
