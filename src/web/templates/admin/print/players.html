@@ -1,3 +1,5 @@
+{% import '../../common/macros.j2' as macros %}
+
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1">
@@ -36,15 +38,20 @@
                     <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
                         <thead>
                             <tr class="column-heading">
-                                <th class="right {{ extra_classes }}">
+                                {% set i = 0 %}
+                                {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
+                                <th class="right" {{ extra_classes}}>
                                     {% if rank_players %}
                                         {{ _('Rk. *** RANK FOR PRINT VIEW') }}
                                     {% else %}
                                         {{ _('Nb. *** NB FOR PRINT VIEW') }}
                                     {% endif %}
                                 </th>
+                                {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                 <th class="right {{ extra_classes}}">&nbsp;</th>
+                                {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                 <th class="left {{ extra_classes}}">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                                {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                 <th class="center {{ extra_classes}}">
                                     {% if tournament.rating == 1 %}
                                         {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
@@ -54,9 +61,9 @@
                                         {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
                                     {% endif %}
                                 </th>
-                                <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
+                                {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                 <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
-                                <th class="center {{ extra_classes}}">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
+                                {{ macros.extra_column_header(i, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                 {% if document.is_crosstable %}
                                     {% for round in range(1, max_round + 1) %}
                                         <th class="right">{{ _('R %(round)d *** ROUND FOR PRINT VIEW', round=round) }}</th>
@@ -77,15 +84,20 @@
                         <tbody>
                             {% for player in players[splitBy] %}
                                 <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
+                                    {% set i = 0 %}
+                                    {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                     <td class="right {{ extra_classes}}">
                                         {% if rank_players %} {{ player.rank }} {% else %} {{ n|length }} {% endif %}
                                     </td>
+                                    {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                     <td class="right {{ extra_classes}}">{{ player.title.short_name }}</td>
+                                    {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                     <td class="left {{ extra_classes}}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
+                                    {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                     <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
-                                    <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
+                                    {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                     <td class="center {{ extra_classes}}">{{ player.federation }}</td>
-                                    <td class="center {{ extra_classes}}">{{ player.league }}</td>
+                                    {{ macros.extra_column_data(i, player, extra_classes, extra_columns)}}{% set i = i + 1 %}
                                     {% if document.is_crosstable %}
                                         {% for crosstable_string in (player.crosstable_strings)[:max_round] %}
                                             <td class="right {{ extra_classes}}">{{ crosstable_string }}</td>

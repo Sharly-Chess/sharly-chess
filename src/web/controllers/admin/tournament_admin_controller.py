@@ -26,6 +26,7 @@ from data.tournament import Tournament
 from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament, StoredScreen
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -866,12 +867,22 @@ class TournamentAdminController(BaseEventAdminController):
                     for key in sorted(split_players.keys())
                 }
 
+        per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
+            document=print_document
+        )
+        extra_columns = {}
+        for plugin_columns in per_plugin_columns:
+            for extra_column in plugin_columns:
+                c = extra_columns.setdefault(extra_column.insertion_index, [])
+                c.append(extra_column)
+        
         template_context |= {
             'tournament': admin_tournament,
             'players': split_players,
             'title': print_document.to_title(round),
             'document': print_document,
             'max_round': round,
+            'extra_columns': extra_columns,
         }
         return HTMXTemplate(
             template_name='admin/print/players.html', context=template_context
