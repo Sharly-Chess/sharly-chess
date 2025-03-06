@@ -23,6 +23,8 @@ from web.controllers.admin.base_admin_controller import (
 from web.messages import Message
 from web.session import SessionHandler
 
+import plugins.manager as PM
+
 logger: Logger = get_logger()
 
 
@@ -176,6 +178,11 @@ class BaseEventAdminController(BaseAdminController):
             case 'config':
                 pass
             case 'tournaments':
+                tournament_card_blocks = PM.plugin_manager.hook.get_tournament_card_block_template()
+                template_context |= {
+                    'paired_bye_result_options': cls._get_paired_bye_result_options(),
+                    "tournament_card_blocks": tournament_card_blocks
+                }
                 template_context |= {
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                 }

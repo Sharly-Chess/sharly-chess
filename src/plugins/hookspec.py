@@ -37,7 +37,11 @@ class AppHookSpecs:
     @hookspec
     def augment_player(self, player: Player):
         """Add plugin specific data to a player"""
-        
+    
+    @hookspec
+    def get_tournament_card_block_template(self) -> Iterable[str]:
+        """Provide a path to the template to be added to tournament cards"""
+    
     @hookspec
     def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[Iterable[ExtraColumn] | None]:
         """Provide extra columns for the print view"""

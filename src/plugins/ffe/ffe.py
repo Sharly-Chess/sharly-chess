@@ -48,7 +48,11 @@ def augment_player(player: Player):
                 player.club = ffe_player.club
                 player.league = ffe_player.league
                 player.comment = ffe_player.comment
-    
+
+@hookimpl
+def get_tournament_card_block_template():
+    return "/ffe_tournament_card_block.html"
+
 @hookimpl
 def get_extra_print_view_columns(document: PrintDocument):
     match document:
