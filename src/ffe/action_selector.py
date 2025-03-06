@@ -204,17 +204,15 @@ class ActionSelector(metaclass=Singleton):
                 return True
             updated_tournaments: list[Tournament] = []
             for tournament in tournaments:
-                needs_upload: NeedsUpload = tournament.ffe_rules_upload_needed
-                match needs_upload:
-                    case NeedsUpload.YES:
-                        updated_tournaments.append(tournament)
+                if tournament.ffe_rules_upload_needed == NeedsUpload.YES:
+                    updated_tournaments.append(tournament)
             if not updated_tournaments:
                 print_interactive_info(
                     _('No need to upload the rules to the FFE website (up to date).')
                 )
             for tournament in updated_tournaments:
                 FFESession(tournament, debug=False).upload_rules()
-            time.sleep(10)
+            return True
         if choice == upload_answer:
             ffe_upload_delay: int = PapiWebConfig().ffe_upload_delay
             try:
