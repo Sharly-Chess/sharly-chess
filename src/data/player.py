@@ -263,7 +263,7 @@ class Player(TournamentPlayer):
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
         self.tournament: Tournament | None = tournament
-        self.rank: int = 0
+        self._rank: int | None = None
         self.errors: dict[str, str] = errors or {}
 
     @staticmethod
