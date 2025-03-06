@@ -819,11 +819,6 @@ class TournamentAdminController(BaseEventAdminController):
         players: list[Player]
         match print_document:
             case PrintDocument.RANKING | PrintDocument.CROSSTABLE:
-                round = (
-                    round or
-                    admin_tournament.max_ranking_round or
-                    admin_tournament.rounds
-                )
                 admin_tournament.compute_player_ranks(round)
                 players = list(admin_tournament.players_by_rank.values())
             case PrintDocument.PLAYER_LIST:

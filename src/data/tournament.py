@@ -488,8 +488,6 @@ class Tournament:
     def max_ranking_round(self) -> int | None:
         if not self.started:
             return 0
-        if self.finished:
-            return None
         if self.playing:
             return self.current_round - 1
         return self.current_round
@@ -923,33 +921,34 @@ class Tournament:
         self, max_round: int | None = None, papi_legacy: bool = True
     ):
         """compute the ranks of all the players after round *max_round*."""
-        if (
-            max_round and self.max_ranking_round is not None
-            and max_round > self.max_ranking_round
-        ):
-            raise ValueError(
-                f'Impossible to generate ranking for round [{max_round}] '
-                f'(last finished round: [{self.max_ranking_round}])'
-            )
-        max_round = max_round or self.max_ranking_round or self.rounds
-        # Estimate ratings to ensure we have a defined rating for everyone
-        self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
-        for player in self.players_by_id.values():
-            player.points = (
-                player.total_points() if max_round is None
-                else player.points_after(max_round)
-            )
-            player.compute_tie_break_values(max_round)
-        self._players_by_rank = {
-            rank: player
-            for rank, player in enumerate(
-                sorted(
-                    self.players_by_id.values(),
-                    key=lambda p: p.rank_sort_key,
-                ),
-                start=1
-            )
-        }
+        if max_round is None:
+            max_round = self.max_ranking_round
+        else:
+            max_round = max(0, min(max_round, self.max_ranking_round))
+        if max_round:
+            # Estimate ratings to ensure we have a defined rating for everyone
+            self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
+            for player in self.players_by_id.values():
+                player.points = (
+                    player.total_points() if max_round is None
+                    else player.points_after(max_round)
+                )
+                player.compute_tie_break_values(max_round)
+            self._players_by_rank = {
+                rank: player
+                for rank, player in enumerate(
+                    sorted(
+                        self.players_by_id.values(),
+                        key=lambda p: p.rank_sort_key,
+                    ),
+                    start=1
+                )
+            }
+        else:
+            # set 0.0 tie-break values for all the players
+            for player in self.players_by_id.values():
+                player.compute_tie_break_values(0)
+            self._players_by_rank = self.players_by_trf_id
         for rank, player in self._players_by_rank.items():
             player.set_rank(rank)
 
