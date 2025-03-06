@@ -13,13 +13,6 @@
             {% for players in screen_set.players_by_rank_lists %}
                 <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
                     <table class="table table-striped table-sm bg-light">
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col" class="player w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}</th>
-                                <th scope="col" class="pairing text-nowrap text-start">{{ _('Board & color') }}</th>
-                                <th scope="col" class="opponent w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}</th>
-                            </tr>
-                        </thead>
                         <thead>
                             <tr class="column-heading">
                                 <th class="right {{ extra_classes }}">
@@ -43,7 +36,7 @@
                                 <th class="right {{ extra_classes}}">
                                     <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
                                 </th>
-                                {% for tie_break in admin_tournament.tie_breaks %}
+                                {% for tie_break in tournament.tie_breaks %}
                                     <th class="right">{{ tie_break.acronym }}</th>
                                 {% endfor %}
                             </tr>

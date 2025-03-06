@@ -440,11 +440,6 @@ class Tournament:
         )
 
     @cached_property
-    def players_by_rank(self) -> dict[int, Player]:
-        assert self._players_by_rank is not None, 'Tournament._players_sorted_by_rank is not set, call Tournament.compute_player_ranks() before.'
-        return self._players_by_rank
-
-    @cached_property
     def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
         """Returns the number of players by FFE licence."""
         counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
@@ -957,6 +952,11 @@ class Tournament:
         }
         for rank, player in self._players_by_rank.items():
             player.set_rank(rank)
+
+    @cached_property
+    def players_by_rank(self) -> dict[int, Player]:
+        self.compute_player_ranks()
+        return self._players_by_rank
 
     def _build_boards(self):
         if not self._current_round:

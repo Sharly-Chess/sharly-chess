@@ -111,7 +111,9 @@
             </div>
         {% elif screen.type == 'ranking' %}
             <div class="screen ranking-screen">
-                {% include 'screen/ranking.html' %}
+                {% for screen_set in screen.screen_sets_sorted_by_order %}
+                    {% include 'screen/ranking/set.html' %}
+                {% endfor %}
             </div>
         {% elif screen.type == 'image' %}
             <div
