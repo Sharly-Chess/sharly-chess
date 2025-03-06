@@ -3154,7 +3154,7 @@ msgstr "Le nombre d'écrans sur lesquels les joueur·euses seront réparti·es, 
 
 #: src/web/templates/admin/families/family_modal.html
 msgid "On fixed size screens:"
-msgstr "ur des écrans de taille fixe "
+msgstr "Sur des écrans de taille fixe :"
 
 #: src/web/templates/admin/families/family_modal.html
 msgid "E.g.: 20 (place 20 boards on each screen)"
@@ -4129,10 +4129,12 @@ msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
 #: src/web/templates/admin/players/tab.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Rk. *** RANK FOR PRINT VIEW"
 msgstr "Pl."
 
@@ -4141,30 +4143,37 @@ msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nr"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Name *** NAME FOR PRINT VIEW"
 msgstr "Nom"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Elo *** STD ELO FOR PRINT VIEW"
 msgstr "Elo"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapide"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat."
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Féd."
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "League *** LEAGUE FOR PRINT VIEW"
 msgstr "Ligue"
 
@@ -4174,10 +4183,12 @@ msgid "R %(round)d *** ROUND FOR PRINT VIEW"
 msgstr "R %(round)d"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
 
@@ -5384,38 +5395,31 @@ msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Player Elo"
 msgstr "Joueur·euse Elo"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Board & color"
 msgstr "Échiquier & couleur"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Opponent Elo"
 msgstr "Adversaire Elo"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "vs"
 msgstr "contre"
 
