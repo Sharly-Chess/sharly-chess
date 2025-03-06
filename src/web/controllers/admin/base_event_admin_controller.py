@@ -70,9 +70,15 @@ class BaseEventAdminWebContext(AdminWebContext):
         }
         
     def get_print_split_options(self) -> dict[str, str]:
+        per_plugin_split_options = PM.plugin_manager.hook.get_print_split_options()
+        plugin_split_options = [option for options in per_plugin_split_options for option in options]
+        
         return {
             self.value_to_form_data(split): PrintSplit(split).name
             for split in PrintSplit
+        } | {
+            self.value_to_form_data(plugin_option.url_name): plugin_option.name
+            for plugin_option in plugin_split_options
         }
 
     def get_print_document_options(self) -> dict[str, str]:

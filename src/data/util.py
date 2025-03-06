@@ -1300,9 +1300,7 @@ def performance_bonus(
 
 class PrintSplit(StrEnum):
     NO_SPLIT = 'no-split'
-    CATEGORY = 'category'
     CLUB = 'club'
-    LEAGUE = 'league'
     FEDERATION = 'federation'
 
     @property
@@ -1310,12 +1308,8 @@ class PrintSplit(StrEnum):
         match self:
             case PrintSplit.NO_SPLIT:
                 return _('No split')
-            case PrintSplit.CATEGORY:
-                return _('Category')
             case PrintSplit.CLUB:
                 return _('Club')
-            case PrintSplit.LEAGUE:
-                return _('League')
             case PrintSplit.FEDERATION:
                 return _('Federation')
             case _:
