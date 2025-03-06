@@ -500,8 +500,6 @@ class Player(TournamentPlayer):
     def tie_break_values_as_strings(self) -> list[str]:
         """Returns the player's tie-break values as strings."""
         assert self._tie_break_values is not None, 'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
-        if not self._tie_break_values:
-            return []
         return [
             self._points_str(self._tie_break_value_as_float(tie_break_value))
             for tie_break_value in self._tie_break_values
@@ -527,7 +525,8 @@ class Player(TournamentPlayer):
     def crosstable_strings(self) -> list[str]:
         return [
             pairing.result.to_crosstable + (
-                f'{self.tournament.players_by_id[pairing.opponent_id].rank:>3}{self.color.to_crosstable}'
+                f'{self.tournament.players_by_id[pairing.opponent_id].rank:>3}'
+                f'{pairing.color.to_crosstable}'
                 if pairing.opponent_id else
                 ''
             )
