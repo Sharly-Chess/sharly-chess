@@ -787,21 +787,33 @@ class TournamentAdminController(BaseEventAdminController):
     def split_players_by(split_by: str, players: list[Player]):
         split_functions = {
             PrintSplit.CLUB: lambda p: p.club_tuple.club,
+            PrintSplit.CATEGORY: lambda p: p.category.short_name,
             PrintSplit.FEDERATION: lambda p: p.federation_tuple.federation,
         } 
         
-        split_players = defaultdict(list)
+        if split_by == PrintSplit.CATEGORY:
+            split_players = {
+                category.short_name: [] for category in PlayerCategory
+            }
+        else:
+            split_players = defaultdict(list)
 
         # Split players by group
         for player in players:
             split_players[split_functions[split_by](player)].append(player)
 
-        # Sort by key
-        split_players = {
-            key: split_players[key]
-            for key in sorted(split_players.keys())
-        }
-        
+        if split_by == PrintSplit.CATEGORY:
+            # Filter out empty categories
+            split_players = {
+                key: split_players[key] for key in split_players.keys()
+                if len(split_players[key]) > 0
+            }
+        else:
+            # Sort by key
+            split_players = {
+                key: split_players[key]
+                for key in sorted(split_players.keys())
+            }
         return split_players
 
     @get(
@@ -858,15 +870,14 @@ class TournamentAdminController(BaseEventAdminController):
         
             split_functions = {
                 PrintSplit.CLUB: partial(self.split_players_by, PrintSplit.CLUB),
+                PrintSplit.CATEGORY: partial(self.split_players_by, PrintSplit.CATEGORY),
                 PrintSplit.FEDERATION: partial(self.split_players_by, PrintSplit.FEDERATION),
             } | {
                 plugin_option.url_name: plugin_option.split_fn
                 for plugin_option in plugin_split_options
             }
-            
-            print(split_functions)
 
-            split_players = split_functions[split_by](players_in_tournament)
+        split_players = split_functions[split_by](players_in_tournament)
 
         per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
             document=print_document
