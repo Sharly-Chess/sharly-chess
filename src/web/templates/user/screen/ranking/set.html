@@ -20,44 +20,61 @@
                                 <th scope="col" class="opponent w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}</th>
                             </tr>
                         </thead>
+                        <thead>
+                            <tr class="column-heading">
+                                <th class="right {{ extra_classes }}">
+                                    {{ _('Rk. *** RANK FOR PRINT VIEW') }}
+                                </th>
+                                <th class="right {{ extra_classes}}">&nbsp;</th>
+                                <th class="left {{ extra_classes}}">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">
+                                    {% if tournament.rating == 1 %}
+                                        {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
+                                    {% elif tournament.rating == 2 %}
+                                        {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
+                                    {% elif tournament.rating == 3 %}
+                                        {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
+                                    {% endif %}
+                                </th>
+                                <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
+                                <th class="left {{ extra_classes}}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                                <th class="right {{ extra_classes}}">
+                                    <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
+                                </th>
+                                {% for tie_break in admin_tournament.tie_breaks %}
+                                    <th class="right">{{ tie_break.acronym }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
                         <tbody>
-                        {% for player in players %}
-                            {% if tournament.current_round %}
-                                {% with pairing=player.pairings[tournament.current_round] %}
-                                {% with opponent_id=pairing.opponent_id %}
-                                    <tr class="player-row {% if not opponent_id %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
-                                        <td  class="player bg-transparent text-nowrap {% if opponent_id and not pairing.exempt %}{% if player.color == 'W' %}white{%else %}black{%endif %}{%endif %}">
-                                            {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }} [{{ player.vpoints_str }}]
+                            {% if players %}
+                                {% for player in players %}
+                                    <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
+                                        <td class="right {{ extra_classes}}">
+                                            {{ player.rank }}
                                         </td>
-                                        {% if pairing.exempt %}
-                                            <td colspan="2" class="bg-transparent text-nowrap">{{ player.exempt_str }}</td>
-                                        {% elif not opponent_id %}
-                                            <td colspan="2" class="bg-transparent text-nowrap">{{ player.not_paired_str }}</td>
-                                        {% else %}
-                                            {% with opponent=tournament.players_by_id[opponent_id] %}
-                                                <td class="pairing bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('Board #%(board_number)d with %(color)s', board_number=player.board_number, color=player.color_str) }}</td>
-                                                <td class="opponent bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.last_name }} {{ opponent.first_name }} {{ opponent.rating }}{{ opponent.rating_type }} [{{ opponent.vpoints_str }}]</td>
-                                            {% endwith %}
-                                        {% endif %}
+                                        <td class="right {{ extra_classes}}">{{ player.title.short_name }}</td>
+                                        <td class="left {{ extra_classes}}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
+                                        <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+                                        <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
+                                        <td class="center {{ extra_classes}}">{{ player.federation }}</td>
+                                        <td class="center {{ extra_classes}}">{{ player.league }}</td>
+                                        <td class="left {{ extra_classes}}">{{ player.club }}</td>
+                                        <td class="right {{ extra_classes}}"><strong>{{ player.points_str }}</strong></td>
+                                        {% for tie_break_string in player.tie_break_values_as_strings %}
+                                            <td class="center {{ extra_classes}}">{{ tie_break_string }}</td>
+                                        {% endfor %}
                                     </tr>
-                                {% endwith %}
-                                {% endwith %}
+                                {% endfor %}
                             {% else %}
-                                <tr class="player-row not-paired fs-italic">
-                                    <td class="player bg-transparent">
-                                        <i class="
-                                            {% if player.check_in %}
-                                                bi-check-square-fill player-check-out
-                                            {% else %}
-                                                bi-square player-check-in
-                                            {% endif %}
-                                            player-{{ tournament.id }}-{{ player.id }}"></i>
-                                        {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}
+                                <tr class="odd">
+                                    <td class="left {{ extra_classes}}" colspan="{{ 8 + tournament.tie_breaks|length }}">
+                                        {{ _('No players.') }}
                                     </td>
-                                    <td colspan="2" class="bg-transparent"><span class="fst-italic">{{ player.not_paired_str }}</span></td>
                                 </tr>
                             {% endif %}
-                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
