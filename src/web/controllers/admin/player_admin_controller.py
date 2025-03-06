@@ -37,6 +37,8 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.index_controller import WebContext
 from web.messages import Message
 
+import plugins.manager as PM
+
 logger: Logger = get_logger()
 
 
@@ -47,7 +49,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         event_uniq_id: str,
         player_id: int | None,
         player_fide_id: int | None,
-        player_ffe_id: int | None,
+        player_from_plugin: Player | None,
         tournament_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -72,43 +74,12 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             # player_fide_id is set when is a player is to be imported from the FIDE database
             with FideDatabase() as fide_database:
                 self.admin_player = fide_database.get_player_by_fide_id(player_fide_id)
-                # Try to get more information by requesting the FFE database
-                if FfeDatabase().exists():
-                    with FfeDatabase() as ffe_database:
-                        if ffe_player := ffe_database.get_player_by_fide_id(self.admin_player.fide_id):
-                            self.admin_player.ffe_id = ffe_player.ffe_id
-                            for rating_type in [
-                                TournamentRating.STANDARD,
-                                TournamentRating.RAPID,
-                                TournamentRating.BLITZ,
-                            ]:
-                                if self.admin_player.rating_types[rating_type] == PlayerRatingType.ESTIMATED:
-                                    self.admin_player.ratings[rating_type] = ffe_player.ratings[rating_type]
-                                    self.admin_player.rating_types[rating_type] = ffe_player.rating_types[rating_type]
-                            if ffe_player.date_of_birth and self.admin_player.year_of_birth == ffe_player.year_of_birth:
-                                self.admin_player.date_of_birth = ffe_player.date_of_birth
-                            self.admin_player.ffe_licence = ffe_player.ffe_licence
-                            self.admin_player.ffe_licence_number = ffe_player.ffe_licence_number
-                            self.admin_player.club = ffe_player.club
-                            self.admin_player.league = ffe_player.league
-                            self.admin_player.comment = ffe_player.comment
-        elif player_ffe_id:
-            # player_ffe_id is set when is a player is to be imported from the FFE database
-            with FfeDatabase() as ffe_database:
-                self.admin_player = ffe_database.get_player_by_ffe_id(player_ffe_id)
-                # Try to get more information by requesting the FIDE database
-                with FideDatabase() as fide_database:
-                    if fide_player := fide_database.get_player_by_fide_id(self.admin_player.fide_id):
-                        self.admin_player.federation = fide_player.federation
-                        self.admin_player.title = fide_player.title
-                        for rating_type in [
-                            TournamentRating.STANDARD,
-                            TournamentRating.RAPID,
-                            TournamentRating.BLITZ,
-                        ]:
-                            if self.admin_player.rating_types[rating_type] == PlayerRatingType.ESTIMATED and fide_player.rating_types[rating_type] != PlayerRatingType.ESTIMATED:
-                                self.admin_player.ratings[rating_type] = fide_player.ratings[rating_type]
-                                self.admin_player.rating_types[rating_type] = fide_player.rating_types[rating_type]
+                PM.plugin_manager.hook.augment_player(player=self.admin_player)
+                
+        elif player_from_plugin:
+            # A player has been returned via a plugin search
+            self.admin_player = player_from_plugin
+            
         if tournament_id:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
@@ -333,7 +304,7 @@ class PlayerAdminController(BaseEventAdminController):
         action: str | None = None,
         player_id: int | None = None,
         player_fide_id: int | None = None,
-        player_ffe_id: int | None = None,
+        player_from_plugin: Player | None = None,
         tournament_id: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
@@ -343,7 +314,7 @@ class PlayerAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             player_id=player_id,
             player_fide_id=player_fide_id,
-            player_ffe_id=player_ffe_id,
+            player_from_plugin=player_from_plugin,
             tournament_id=tournament_id,
             data=data,
         )
@@ -475,6 +446,9 @@ class PlayerAdminController(BaseEventAdminController):
                     str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
                     for tournament in admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
                 }
+                
+                plugin_search_templates = PM.plugin_manager.hook.get_player_search_template() or []
+                
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
                     'tournament_ratings_strings': {
@@ -516,6 +490,7 @@ class PlayerAdminController(BaseEventAdminController):
                     },
                     'fide_search_available': FideDatabase().exists(),
                     'ffe_search_available': FfeDatabase().exists(),
+                    'plugin_search_templates': plugin_search_templates,
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -578,25 +553,6 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/player-modal/create-from-ffe/{event_uniq_id:str}/{player_ffe_id:int}',
-        name='admin-player-create-from-ffe-modal',
-        cache=1,
-    )
-    async def htmx_admin_player_create_from_ffe_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        player_ffe_id: int | None,
-    ) -> Template | ClientRedirect:
-        return self._admin_event_players_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            modal='player',
-            action='create',
-            player_ffe_id=player_ffe_id,
-        )
-
-    @get(
         path='/admin/player-modal/{action:str}/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-modal',
         cache=1,
@@ -652,7 +608,7 @@ class PlayerAdminController(BaseEventAdminController):
                     event_uniq_id=event_uniq_id,
                     player_id=player_id,
                     player_fide_id=None,
-                    player_ffe_id=None,
+                    player_from_plugin=None,
                     tournament_id=None,
                     data=data,
                 )
@@ -671,7 +627,7 @@ class PlayerAdminController(BaseEventAdminController):
                 action=action,
                 player_id=player_id,
                 player_fide_id=None,
-                player_ffe_id=None,
+                player_from_plugin=None,
                 data=data,
                 errors=player.errors,
             )
@@ -756,7 +712,7 @@ class PlayerAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             player_id=player_id,
             player_fide_id=None,
-            player_ffe_id=None,
+            player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -943,7 +899,7 @@ class PlayerAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             player_id=player_id,
             player_fide_id=None,
-            player_ffe_id=None,
+            player_from_plugin=None,
             tournament_id=None,
             data=data,
         )
@@ -997,7 +953,7 @@ class PlayerAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             player_id=None,
             player_fide_id=None,
-            player_ffe_id=None,
+            player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -1033,7 +989,7 @@ class PlayerAdminController(BaseEventAdminController):
             action=None,
             player_id=None,
             player_fide_id=None,
-            player_ffe_id=None,
+            player_from_plugin=None,
             tournament_id=tournament_id,
         )
 
@@ -1053,7 +1009,7 @@ class PlayerAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             player_id=None,
             player_fide_id=None,
-            player_ffe_id=None,
+            player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -1131,7 +1087,7 @@ class PlayerAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             player_id=player_id,
             player_fide_id=None,
-            player_ffe_id=None,
+            player_from_plugin=None,
             tournament_id=None,
             data=data,
         )
