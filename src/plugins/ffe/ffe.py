@@ -1,9 +1,12 @@
 
+from collections import defaultdict
+from functools import partial
+
 from common import BASE_DIR
 from data.player import Player
+from data.util import PlayerCategory, PlayerRatingType, PrintDocument, TournamentRating
 from database.sqlite.ffe_database import FfeDatabase
-from plugins.hookspec import hookimpl, ExtraColumn
-from data.util import PlayerRatingType, PrintDocument, TournamentRating
+from plugins.hookspec import PrintSplitOption, hookimpl, ExtraColumn
 
 from common.i18n import _
 
@@ -52,6 +55,52 @@ def augment_player(player: Player):
 @hookimpl
 def get_tournament_card_block_template():
     return "/ffe_tournament_card_block.html"
+
+def split_players_by(split_by: str, players: list[Player]):
+    split_functions = {
+        "ffe-category": lambda p: p.category.short_name,
+        "ffe-league": lambda p: p.league_tuple.league,
+    } 
+    
+    if split_by == "ffe-category":
+        split_players = {
+            category.short_name: [] for category in PlayerCategory
+        }
+    else:
+        split_players = defaultdict(list)
+
+    # Split players by group
+    for player in players:
+        split_players[split_functions[split_by](player)].append(player)
+
+    if split_by == "ffe-category":
+        # Filter out empty categories
+        split_players = {
+            key: split_players[key] for key in split_players.keys()
+            if len(split_players[key]) > 0
+        }
+    else:
+        # Sort by key
+        split_players = {
+            key: split_players[key]
+            for key in sorted(split_players.keys())
+        }
+    return split_players
+    
+@hookimpl
+def get_print_split_options():
+    return [
+        PrintSplitOption(
+            name=_('Category'),
+            url_name="ffe-category",
+            split_fn=partial(split_players_by, "ffe-category"),
+        ),
+        PrintSplitOption(
+            name=_('League'),
+            url_name="ffe-league",
+            split_fn=partial(split_players_by, "ffe-league"),
+        ),
+    ]
 
 @hookimpl
 def get_extra_print_view_columns(document: PrintDocument):

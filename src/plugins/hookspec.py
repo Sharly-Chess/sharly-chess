@@ -11,6 +11,13 @@ from web.controllers.index_controller import BaseController
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
 
+class PrintSplitOption(NamedTuple):
+    name: str
+    url_name: str
+    split_fn: Callable[
+        [list[Player]], dict[str, list[Player]]
+    ]
+
 class ExtraColumn(NamedTuple):
     insertion_index: int
     title: str
@@ -42,6 +49,10 @@ class AppHookSpecs:
     def get_tournament_card_block_template(self) -> Iterable[str]:
         """Provide a path to the template to be added to tournament cards"""
     
+    @hookspec
+    def get_print_split_options(self) -> Iterable[Iterable[PrintSplitOption] | None]:
+        """Provide print splitting options"""
+        
     @hookspec
     def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[Iterable[ExtraColumn] | None]:
         """Provide extra columns for the print view"""
