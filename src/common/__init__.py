@@ -12,6 +12,8 @@ import unicodedata
 
 from common.logger import get_logger
 
+APP_NAME: str = 'papi-web'
+
 """True when the program is running in a development environment, False if running as an EXE file."""
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
