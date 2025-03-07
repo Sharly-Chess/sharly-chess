@@ -190,7 +190,7 @@ class Result(IntEnum):
             case _:
                 raise ValueError(f'{self=}')
 
-    def points(self, values: dict[Self, float] | None = None) -> float:
+    def points(self, values: dict['Result', float] | None = None) -> float:
         """
         The value in points, according to rules defined in *values*.
         If a result instance is not included in *values*, the closest result's

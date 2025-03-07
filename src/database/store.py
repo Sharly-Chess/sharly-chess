@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 
 from common.papi_web_config import PapiWebConfig
 from data.tie_break import TieBreak
-from data.util import Result
 
 """
 All the classes of this module are basic data classes store in the event databases.
