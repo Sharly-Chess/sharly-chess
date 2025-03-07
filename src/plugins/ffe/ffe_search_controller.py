@@ -7,7 +7,7 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
 from data.player import Player
-from database.sqlite.ffe_database import FfeDatabase
+from plugins.ffe.ffe_database import FfeDatabase
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 

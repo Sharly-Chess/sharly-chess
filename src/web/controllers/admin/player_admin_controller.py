@@ -28,7 +28,6 @@ from data.util import (
     PlayerFFELicence,
     Result,
 )
-from database.sqlite.ffe_database import FfeDatabase
 from database.sqlite.fide_database import FideDatabase
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -489,7 +488,6 @@ class PlayerAdminController(BaseEventAdminController):
                         for federation_id in federation_ids
                     },
                     'fide_search_available': FideDatabase().exists(),
-                    'ffe_search_available': FfeDatabase().exists(),
                     'plugin_search_templates': plugin_search_templates,
                     'modal': modal,
                     'action': action,

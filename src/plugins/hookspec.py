@@ -30,12 +30,20 @@ class AppHookSpecs:
     """Holds all hookspecs for this application"""
 
     @hookspec
-    def get_controllers(self) -> Iterable[Iterable[BaseController] | None]:
+    def on_init(self) -> Iterable[Iterable[BaseController]]:
+        """Provide any initialisation"""
+
+    @hookspec
+    def get_controllers(self) -> Iterable[Iterable[BaseController]]:
         """Provide controllers for the application"""
         
     @hookspec
-    def get_templates_path(self) -> Iterable[Iterable[Path] | None]:
+    def get_templates_path(self) -> Iterable[Iterable[Path]]:
         """Provide base path to any provided templates"""
+        
+    @hookspec
+    def get_base_admin_context(self) -> Iterable[dict[str, Any]]:
+        """Provide plugin context for the AdminWebContext"""
         
     @hookspec
     def get_player_search_template(self) -> Iterable[str]:

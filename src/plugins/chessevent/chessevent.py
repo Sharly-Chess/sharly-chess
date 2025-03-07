@@ -1,9 +1,7 @@
 
 from common import BASE_DIR
-from data.player import Player
-from database.sqlite.ffe_database import FfeDatabase
-from plugins.hookspec import hookimpl, ExtraColumn
-from data.util import PlayerRatingType, PrintDocument, TournamentRating
+from plugins.ffe.ffe_database import FfeDatabase
+from plugins.hookspec import hookimpl
 
 from common.i18n import _
 

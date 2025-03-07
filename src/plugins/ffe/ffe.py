@@ -3,9 +3,10 @@ from collections import defaultdict
 from functools import partial
 
 from common import BASE_DIR
+from common.logger import print_interactive_error
 from data.player import Player
 from data.util import PlayerRatingType, PrintDocument, TournamentRating
-from database.sqlite.ffe_database import FfeDatabase
+from plugins.ffe.ffe_database import FfeDatabase
 from plugins.hookspec import PrintSplitOption, hookimpl, ExtraColumn
 
 from common.i18n import _
@@ -16,6 +17,11 @@ from .ffe_search_controller import FfeSearchController
 PLUGIN_NAME = "ffe"
 
 @hookimpl
+def on_init():
+    if not FfeDatabase().check():
+        print_interactive_error(_('Error while updating the FFE database.'))
+
+@hookimpl
 def get_controllers():
     return [
         FfeSearchController,
@@ -24,6 +30,12 @@ def get_controllers():
 @hookimpl
 def get_templates_path():
     return BASE_DIR / 'src/plugins/ffe/templates'
+
+@hookimpl
+def get_base_admin_context():
+    return {
+        'ffe_search_available': FfeDatabase().exists(),
+    }
 
 @hookimpl
 def get_player_search_template():

@@ -1,4 +1,4 @@
-from database.sqlite.ffe_database import FfeDatabase
+from plugins.ffe.ffe_database import FfeDatabase
 from database.sqlite.fide_database import FideDatabase
 
 limit: int = 8

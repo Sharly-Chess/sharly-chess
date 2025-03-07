@@ -26,6 +26,8 @@ from database.store import StoredEvent
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
 
+import plugins.manager as PM
+
 logger: Logger = get_logger()
 
 class AdminWebContext(WebContext):
@@ -75,9 +77,12 @@ class AdminWebContext(WebContext):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        per_plugin_context = PM.plugin_manager.hook.get_base_admin_context()
+        plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
+        
         return super().template_context | {
             'admin_tab': self.admin_tab,
-        }
+        } | plugin_context
 
 
 class BaseAdminController(BaseController):
