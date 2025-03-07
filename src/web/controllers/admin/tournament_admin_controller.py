@@ -883,7 +883,7 @@ class TournamentAdminController(BaseEventAdminController):
                 for plugin_option in plugin_split_options
             }
 
-        split_players = split_functions[split_by](players)
+            split_players = split_functions[split_by](players)
 
         per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
             document=print_document

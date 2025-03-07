@@ -100,7 +100,7 @@ def get_print_split_options():
 @hookimpl
 def get_extra_print_view_columns(document: PrintDocument):
     match document:
-        case PrintDocument.PLAYER_LIST | PrintDocument.RANKINGS | PrintDocument.TOURNAMENT_SUMMARY:
+        case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
             return [
                 ExtraColumn(
                     insertion_index=6,
