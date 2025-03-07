@@ -2,7 +2,7 @@
 
 # Papi-web - ChangeLog
 
-## Version 2.5.0 - Février 2025
+## Version 2.5.0 - Mars 2025
 - Passage en multilingue anglais et français
 - Refonte complète de l'interface web
 - Ajout de l'onglet « Joueur·euses »
@@ -11,6 +11,7 @@
 - Ajout de la gestion du pointage
 - Suppression de l'onglet « ChessEvent » (la configuration des connexions à ChessEvent se fait désormais au niveau des évènements et des tournois)
 - Ajout d'une fédération sur les évènements
+- Mise en conformité du calcul des départages avec les préconisations de la FIDE
 - Correction du calcul des points virtuels en Système Accéléré Dégressif 
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
 - Correction d'un bug sur la duplication des écrans, familles et tournois
