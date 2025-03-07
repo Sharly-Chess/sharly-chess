@@ -1372,3 +1372,11 @@ class PointValueType(Enum):
                 return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
             case _:
                 raise ValueError(f'{self=}')
+    
+    @property
+    def to_papi_value(self) -> str:
+        match self:
+            case PointValueType.PAPI_3_POINTS:
+                return "OUI"
+            case _:
+                return "NON"
