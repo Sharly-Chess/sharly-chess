@@ -148,7 +148,6 @@ class PapiWebEnvironment(Environment):
         self,
         directories: list[Path],
     ) -> None:
-        print(directories)
         template_loader: FileSystemLoader = FileSystemLoaderWithRelativePath(
             searchpath=directories
         )

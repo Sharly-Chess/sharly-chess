@@ -190,9 +190,6 @@ class BaseEventAdminController(BaseAdminController):
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     "tournament_card_blocks": tournament_card_blocks
                 }
-                template_context |= {
-                    'paired_bye_result_options': cls._get_paired_bye_result_options(),
-                }
             case 'players':
                 # The federations that will be shown on the federation select list
                 players_federations: list[FederationTuple] = sorted(
