@@ -1373,6 +1373,16 @@ class PointValueType(Enum):
             case _:
                 raise ValueError(f'{self=}')
     
+    @classmethod
+    def from_papi_value(cls, value: str) -> Self:
+        match value.upper():
+            case "NON":
+                return PointValueType.STANDARD
+            case "OUI":
+                return PointValueType.PAPI_3_POINTS
+            case _:
+                raise ValueError(f'Cannot convert {value=} to {self.__class__.__name__}')
+
     @property
     def to_papi_value(self) -> str:
         match self:
