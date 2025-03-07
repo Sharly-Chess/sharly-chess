@@ -87,7 +87,7 @@ class FamilyAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
         match type_:
-            case 'boards' | 'input' | 'players':
+            case 'boards' | 'input' | 'players' | 'ranking':
                 pass
             case _:
                 raise ValueError(f'type=[{type_}]')
@@ -208,6 +208,8 @@ class FamilyAdminController(BaseEventAdminController):
                         players_show_unpaired = WebContext.form_data_to_bool(
                             data, 'players_show_unpaired'
                         )
+                    case 'ranking':
+                        pass
                     case _:
                         raise ValueError(f'type=[{type_}]')
                 field: str = 'parts'
@@ -322,16 +324,6 @@ class FamilyAdminController(BaseEventAdminController):
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
                                 family_type=ScreenType(family_type)
                             )
-                            # basic_name: str
-                            # match family_type:
-                            #     case 'input':
-                            #         basic_name = _('Results entry')
-                            #     case 'boards':
-                            #         basic_name = _('pairings by board')
-                            #     case 'players':
-                            #         basic_name = _('Pairings by player')
-                            #     case _:
-                            #         raise ValueError(f'family_type=[{family_type}]')
                             name = web_context.admin_event.get_unused_family_name(
                                 family_type=ScreenType(family_type)
                             )
@@ -369,6 +361,8 @@ class FamilyAdminController(BaseEventAdminController):
                                     input_exit_button = web_context.admin_family.stored_family.input_exit_button
                                 case ScreenType.PLAYERS:
                                     players_show_unpaired = web_context.admin_family.stored_family.players_show_unpaired
+                                case ScreenType.RANKING:
+                                    pass
                                 case _:
                                     raise ValueError(
                                         f'type=[{web_context.admin_family.type}]'
@@ -394,6 +388,8 @@ class FamilyAdminController(BaseEventAdminController):
                                     menu = '@input'
                                 case ScreenType.PLAYERS:
                                     menu = '@players'
+                                case ScreenType.RANKING:
+                                    menu = '@ranking'
                                 case _:
                                     raise ValueError(f'family_type={family_type}')
                         case 'delete':

@@ -946,6 +946,17 @@ msgstr "Per giocatore"
 msgid "%t (by player)"
 msgstr "%t (da giocatore)"
 
+#: src/data/screen.py src/data/util.py
+#: src/web/controllers/admin/tournament_admin_controller.py
+#: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/screens/tab.html
+msgid "Ranking"
+msgstr ""
+
+#: src/data/screen.py
+msgid "%t (ranking)"
+msgstr ""
+
 #: src/data/screen.py
 #, ai_translation
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
@@ -1572,14 +1583,12 @@ msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
 #: src/data/util.py
-#, fuzzy
-msgid "W *** WHITE COLOR FOR RANKINGS"
-msgstr "W"
+msgid "W *** WHITE COLOR FOR CROSSTABLE"
+msgstr ""
 
 #: src/data/util.py
-#, fuzzy
-msgid "B *** BLACK COLOR FOR RANKINGS"
-msgstr "B"
+msgid "B *** BLACK COLOR FOR CROSSTABLE"
+msgstr ""
 
 #: src/data/util.py src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/results.html
@@ -1647,24 +1656,16 @@ msgid "List of players"
 msgstr "Elenco dei giocatori"
 
 #: src/data/util.py
-#, ai_translation, python-format
-msgid "Rankings after round #%d"
-msgstr "Classificazioni dopo il round #%d"
+msgid "Ranking after round #{round}"
+msgstr ""
 
 #: src/data/util.py
-#, ai_translation, python-format
-msgid "Tournament summary after round #%d"
-msgstr "Sommario del torneo dopo il round #%d"
+msgid "Crosstable after round #{round}"
+msgstr ""
 
 #: src/data/util.py
-#, ai_translation
-msgid "Rankings"
-msgstr "Classificazioni"
-
-#: src/data/util.py
-#, ai_translation
-msgid "Tournament summary"
-msgstr "Sintesi del torneo"
+msgid "Crosstable"
+msgstr ""
 
 #: src/database/sqlite/ffe_database.py
 #, ai_translation
@@ -2335,14 +2336,12 @@ msgid "A positive integer is expected."
 msgstr "Ci si aspetta un intero positivo."
 
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation, python-format
-msgid "Not part of the selected tournament (%d rounds)."
-msgstr "Non fa parte del torneo selezionato (%d giri)."
+msgid "Not part of the selected tournament ({rounds} rounds)."
+msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
-#, ai_translation, python-format
-msgid "Round not finished (last finished: %d)."
-msgstr "Round non finito (ultima finito: %d)."
+msgid "Round not finished (last finished: {round})."
+msgstr ""
 
 #: src/web/controllers/admin/event_admin_controller.py
 #, ai_translation
@@ -2392,9 +2391,8 @@ msgid "Please enter the date of birth."
 msgstr "Inserire la data di nascita."
 
 #: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
-msgid "Only estimated rankings are optional."
-msgstr "Solo le classifiche stimate sono facoltative."
+msgid "Only estimated ratings are optional."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2702,12 +2700,10 @@ msgid "Tie-break already in use."
 msgstr "Cravatta già in uso."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
-#, python-format
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/web/controllers/admin/tournament_admin_controller.py
-#, python-format
 msgid "Papi file [{file}] created."
 msgstr ""
 
@@ -2765,6 +2761,10 @@ msgstr "Abbinamenti per giocatore ({num})"
 #, ai_translation
 msgid "Last results ({num})"
 msgstr "Ultimi risultati ({num})"
+
+#: src/web/controllers/user/event_user_controller.py
+msgid "Ranking ({num})"
+msgstr ""
 
 #: src/web/controllers/user/event_user_controller.py
 #, ai_translation
@@ -3451,7 +3451,6 @@ msgstr "Directory predefinita dei file Papi"
 #: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
-#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "(by default)"
 msgstr "(per impostazione predefinita)"
@@ -3617,6 +3616,11 @@ msgid "Players from #%(first)s to #%(last)s"
 msgstr "Giocatori da #%(first)s a #%(last)s"
 
 #: src/web/templates/admin/families/family_card.html
+#, python-format
+msgid "Players from #%(first)d to #%(last)d"
+msgstr ""
+
+#: src/web/templates/admin/families/family_card.html
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation
 msgid "No screens"
@@ -3651,6 +3655,10 @@ msgstr "Creazione di una famiglia di schermate"
 #, ai_translation
 msgid "Players screen family creation"
 msgstr "Creazione della famiglia di schermate dei giocatori"
+
+#: src/web/templates/admin/families/family_modal.html
+msgid "Ranking screen family creation"
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation, python-format
@@ -3689,6 +3697,11 @@ msgstr "Proprietà (coppie a bordo)"
 #, ai_translation
 msgid "Properties (pairings by player)"
 msgstr "Proprietà (pailing per giocatore)"
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+msgid "Properties (ranking)"
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3739,6 +3752,28 @@ msgstr "Selezione del giocatore (in ordine alfabetico)"
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+msgid "Player selection (by rank)"
+msgstr ""
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The number of the first board to select, optional (the first board by default)."
+msgstr "Il numero della prima scheda da selezionare, opzionale (la prima scheda per impostazione predefinita)."
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#, ai_translation
+msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
+msgstr "Il numero del primo giocatore da selezionare, opzionale (il primo giocatore per ordine alfabetico per impostazione predefinita)."
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+msgid "The rank of the first player to select, optional (1 by default)."
+msgstr ""
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
 msgid "First board:"
 msgstr "Prima tavola:"
@@ -3760,14 +3795,19 @@ msgstr "Ad esempio: %(num)d"
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
-msgid "The number of the first board to select, optional (the first board by default)."
-msgstr "Il numero della prima scheda da selezionare, opzionale (la prima scheda per impostazione predefinita)."
+msgid "The number of the last board to select, optional (the last board by default)."
+msgstr "Il numero dell'ultima scheda da selezionare, opzionale (l'ultima scheda per impostazione predefinita)."
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
-msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
-msgstr "Il numero del primo giocatore da selezionare, opzionale (il primo giocatore per ordine alfabetico per impostazione predefinita)."
+msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
+msgstr "Il numero dell'ultimo giocatore da selezionare, opzionale (l'ultimo giocatore per ordine alfabetico per impostazione predefinita)."
+
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+msgid "The rank of the last player to select, optional (the rank of the last rank player by default)."
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
@@ -3780,18 +3820,6 @@ msgstr "Ultima tavola:"
 #, ai_translation
 msgid "Last player:"
 msgstr "Ultimo giocatore:"
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#, ai_translation
-msgid "The number of the last board to select, optional (the last board by default)."
-msgstr "Il numero dell'ultima scheda da selezionare, opzionale (l'ultima scheda per impostazione predefinita)."
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#, ai_translation
-msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
-msgstr "Il numero dell'ultimo giocatore da selezionare, opzionale (l'ultimo giocatore per ordine alfabetico per impostazione predefinita)."
 
 #: src/web/templates/admin/families/family_modal.html
 #, ai_translation
@@ -3886,9 +3914,8 @@ msgid "E.g.: @boards, @family, another-screen"
 msgstr "Ad esempio: @boards, @family, un altro schermo"
 
 #: src/web/templates/admin/families/family_modal.html
-#, ai_translation
-msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-msgstr "Questo campo consente di specificare le schermate i cui collegamenti saranno visualizzati sul menu delle schermate della famiglia. Gli identificatori dello schermo devono essere separati da virgole, le parole chiave @family (tutte le schermate della famiglia), @boards (tutte le schermate delle board), @input (tutte le schermate di input), @players (tutte le schermate dei giocatori) e il jolly * possono essere utilizzati. Se questo campo è lasciato vuoto, nessun menu verrà visualizzato sulle schermate."
+msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
+msgstr ""
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -3974,6 +4001,10 @@ msgstr "Aggiungi una famiglia di schermi per visualizzare gli accoppiamenti a bo
 #, ai_translation
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Aggiungi una famiglia di schermi per visualizzare gli abbinamenti per ordine alfabetico."
+
+#: src/web/templates/admin/families/tab.html
+msgid "Add a family of screens to display the ranking."
+msgstr ""
 
 #: src/web/templates/admin/families/tab.html
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -5210,7 +5241,8 @@ msgstr "È necessario creare uno schermo o una famiglia di schermi prima di crea
 msgid "Create a rotator"
 msgstr "Crea un rotatore"
 
-#: src/web/templates/admin/rotators/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/rotators/tab.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "No rotators."
 msgstr "Niente rotatori."
@@ -5299,6 +5331,10 @@ msgid "Results screen creation"
 msgstr "Creazione dello schermo dei risultati"
 
 #: src/web/templates/admin/screens/screen_modal.html
+msgid "Ranking screen creation"
+msgstr ""
+
+#: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
 msgid "Image screen creation"
 msgstr "Creazione schermata immagine"
@@ -5369,9 +5405,8 @@ msgid "The timer displayed on the screen."
 msgstr "Il timer visualizzato sullo schermo."
 
 #: src/web/templates/admin/screens/screen_modal.html
-#, ai_translation
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr "Questo campo consente di specificare le schermate i cui collegamenti saranno visualizzati sul menu dello schermo. Gli identificatori dello schermo devono essere separati da virgole, le parole chiave @boards (tutte le schermate delle schede), @input (tutte le schermate di ingresso), @players (tutte le schermate dei giocatori) e la jolly * possono essere utilizzate. Se questo campo è lasciato vuoto, non verrà visualizzato alcun menu sullo schermo."
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr ""
 
 #: src/web/templates/admin/screens/screen_modal.html
 #, ai_translation
@@ -5565,6 +5600,10 @@ msgid "Add a screen to display the last results."
 msgstr "Aggiunge una schermata per visualizzare gli ultimi risultati."
 
 #: src/web/templates/admin/screens/tab.html
+msgid "Add a screen to display the ranking."
+msgstr ""
+
+#: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Add a screen to display an image."
 msgstr "Aggiungi una schermata per visualizzare un'immagine."
@@ -5590,14 +5629,29 @@ msgid "Show/hide the results screens."
 msgstr "Mostra/nascondi le schermate dei risultati."
 
 #: src/web/templates/admin/screens/tab.html
+msgid "Show/hide the ranking screens."
+msgstr ""
+
+#: src/web/templates/admin/screens/tab.html
 #, ai_translation
 msgid "Show/hide the image screens."
 msgstr "Mostra/nascondi le schermate dell'immagine."
 
-#: src/web/templates/admin/screens/tab.html src/web/templates/user/event.html
+#: src/web/templates/admin/screens/tab.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "No such screens."
 msgstr "Non ci sono schermi del genere."
+
+#: src/web/templates/admin/timers/default_timers_modal.html
+#, python-format
+msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgstr ""
+
+#: src/web/templates/admin/timers/default_timers_modal.html
+#: src/web/templates/admin/timers/tab.html
+msgid "Timers"
+msgstr ""
 
 #: src/web/templates/admin/timers/tab.html
 #, ai_translation
@@ -5825,6 +5879,23 @@ msgid "No tournaments."
 msgstr "Niente tornei."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
+#, python-format
+msgid "Number of players : %(num)d"
+msgstr ""
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation
+msgid "Illegal moves are not recorded."
+msgstr "Le mosse illegali non sono registrate."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
+#, ai_translation, python-format
+msgid "At most %(num)d illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] "Al massimo %(num)d movimento illegale è registrato."
+msgstr[1] "Al massimo %(num)d movimenti illegali sono registrati."
+
+#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation, python-format
 msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
 msgstr "Il file Papi per il torneo non esiste (%(papi_file)s)."
@@ -5860,23 +5931,6 @@ msgid "No ChessEvent tournament defined"
 msgstr "Nessun torneo di ChessEvent definito"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "Players found in the Papi_file : %(num)d"
-msgstr "Giocatori trovati nel file Papi_file: %(num)d"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Illegal moves are not recorded."
-msgstr "Le mosse illegali non sono registrate."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "At most %(num)d illegal move is recorded."
-msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] "Al massimo %(num)d movimento illegale è registrato."
-msgstr[1] "Al massimo %(num)d movimenti illegali sono registrati."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "Rules file set"
 msgstr "Imposta file regole"
@@ -5885,11 +5939,6 @@ msgstr "Imposta file regole"
 #, ai_translation, python-format
 msgid "First board number: %(board_number)d"
 msgstr "Numero della prima tavola: %(board_number)d"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "Paired bye points: %(string)s"
-msgstr "Punti di addio abbinati: %(string)s"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
@@ -6178,16 +6227,6 @@ msgstr "Il numero della prima board del torneo (se non è impostato, è predefin
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation
-msgid "Paired bye points:"
-msgstr "Punti di addio abbinati:"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The points scored by players who are paired bye."
-msgstr "I punti segnati dai giocatori che sono accoppiati bye."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
 msgid "Max byes:"
 msgstr "Max byes:"
 
@@ -6282,6 +6321,10 @@ msgid "Results screens show the last results (most recent first)."
 msgstr "Le schermate dei risultati mostrano gli ultimi risultati (prima più recenti)."
 
 #: src/web/templates/common/macros.j2
+msgid "Ranking screens show the players by rank."
+msgstr ""
+
+#: src/web/templates/common/macros.j2
 #, ai_translation
 msgid "Image screens show an image (local or remote)."
 msgstr "Gli schermi delle immagini mostrano un'immagine (locale o remota)."
@@ -6291,7 +6334,7 @@ msgstr "Gli schermi delle immagini mostrano un'immagine (locale o remota)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator ruota automaticamente tra più schermi."
 
-#: src/web/templates/user/event.html
+#: src/web/templates/user/event_layout.html
 #, ai_translation
 msgid "Go back to the events page."
 msgstr "Torna alla pagina degli eventi."
@@ -6435,6 +6478,7 @@ msgstr "/muovi"
 
 #: src/web/templates/user/screen/boards/set.html
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation, python-format
 msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (round %(round)d)"
@@ -6460,36 +6504,43 @@ msgid "Player / Elo"
 msgstr "Giocatore / Elo"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Player Elo [Pts]"
 msgstr "Giocatore Elo [Pts]"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Player Elo"
 msgstr "Giocatore Elo"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Board & color"
 msgstr "& Colore tavola"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Opponent Elo [Pts]"
 msgstr "Opponente Elo [Pts]"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Opponent Elo"
 msgstr "Opponente Elo"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Tavola #%(board_number)d con %(color)s"
 
 #: src/web/templates/user/screen/players/set.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "vs"
 msgstr "vs"
@@ -6541,4 +6592,49 @@ msgstr "vs"
 
 #~ msgid "Half point bye"
 #~ msgstr "Mezzo punto bye"
+
+#~ msgid "W *** WHITE COLOR FOR RANKINGS"
+#~ msgstr "W"
+
+#~ msgid "B *** BLACK COLOR FOR RANKINGS"
+#~ msgstr "B"
+
+#~ msgid "Rankings after round #%d"
+#~ msgstr "Classificazioni dopo il round #%d"
+
+#~ msgid "Tournament summary after round #%d"
+#~ msgstr "Sommario del torneo dopo il round #%d"
+
+#~ msgid "Rankings"
+#~ msgstr "Classificazioni"
+
+#~ msgid "Tournament summary"
+#~ msgstr "Sintesi del torneo"
+
+#~ msgid "Not part of the selected tournament (%d rounds)."
+#~ msgstr "Non fa parte del torneo selezionato (%d giri)."
+
+#~ msgid "Round not finished (last finished: %d)."
+#~ msgstr "Round non finito (ultima finito: %d)."
+
+#~ msgid "Only estimated rankings are optional."
+#~ msgstr "Solo le classifiche stimate sono facoltative."
+
+#~ msgid "Players found in the Papi_file : %(num)d"
+#~ msgstr "Giocatori trovati nel file Papi_file: %(num)d"
+
+#~ msgid "Paired bye points: %(string)s"
+#~ msgstr "Punti di addio abbinati: %(string)s"
+
+#~ msgid "Paired bye points:"
+#~ msgstr "Punti di addio abbinati:"
+
+#~ msgid "The points scored by players who are paired bye."
+#~ msgstr "I punti segnati dai giocatori che sono accoppiati bye."
+
+#~ msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
+#~ msgstr "Questo campo consente di specificare le schermate i cui collegamenti saranno visualizzati sul menu delle schermate della famiglia. Gli identificatori dello schermo devono essere separati da virgole, le parole chiave @family (tutte le schermate della famiglia), @boards (tutte le schermate delle board), @input (tutte le schermate di input), @players (tutte le schermate dei giocatori) e il jolly * possono essere utilizzati. Se questo campo è lasciato vuoto, nessun menu verrà visualizzato sulle schermate."
+
+#~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+#~ msgstr "Questo campo consente di specificare le schermate i cui collegamenti saranno visualizzati sul menu dello schermo. Gli identificatori dello schermo devono essere separati da virgole, le parole chiave @boards (tutte le schermate delle schede), @input (tutte le schermate di ingresso), @players (tutte le schermate dei giocatori) e la jolly * possono essere utilizzate. Se questo campo è lasciato vuoto, non verrà visualizzato alcun menu sullo schermo."
 

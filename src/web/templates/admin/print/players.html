@@ -26,6 +26,7 @@
             {% set n = [1] %}
             {% set extra_classes = "" %}
             {% if tournament_summary %}{% set extra_classes = "small" %}{% endif %}
+            {% set rank_players = document.is_ranking or document.is_crosstable %}
             {% if players %}
                 {% for splitBy in players.keys() %}
                     <div class="title">
@@ -35,7 +36,7 @@
                     <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
                         <thead>
                             <tr class="column-heading">
-                                <th class="right" {{ extra_classes}}>
+                                <th class="right {{ extra_classes }}">
                                     {% if rank_players %}
                                         {{ _('Rk. *** RANK FOR PRINT VIEW') }}
                                     {% else %}
@@ -56,7 +57,7 @@
                                 <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
                                 <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
                                 <th class="center {{ extra_classes}}">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
-                                {% if tournament_summary %}
+                                {% if document.is_crosstable %}
                                     {% for round in range(1, max_round + 1) %}
                                         <th class="right">{{ _('R %(round)d *** ROUND FOR PRINT VIEW', round=round) }}</th>
                                     {% endfor %}
@@ -76,24 +77,26 @@
                         <tbody>
                             {% for player in players[splitBy] %}
                                 <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
-                                    <td class="right {{ extra_classes}}">{{ n|length }}</td>
+                                    <td class="right {{ extra_classes}}">
+                                        {% if rank_players %} {{ player.rank }} {% else %} {{ n|length }} {% endif %}
+                                    </td>
                                     <td class="right {{ extra_classes}}">{{ player.title.short_name }}</td>
                                     <td class="left {{ extra_classes}}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
                                     <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
                                     <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
                                     <td class="center {{ extra_classes}}">{{ player.federation }}</td>
                                     <td class="center {{ extra_classes}}">{{ player.league }}</td>
-                                    {% if tournament_summary %}
-                                        {% for pairing in player.ranking_pairings %}
-                                            <td class="right {{ extra_classes}}">{{ pairing }}</td>
+                                    {% if document.is_crosstable %}
+                                        {% for crosstable_string in (player.crosstable_strings)[:max_round] %}
+                                            <td class="right {{ extra_classes}}">{{ crosstable_string }}</td>
                                         {% endfor %}
                                     {% else %}
                                         <td class="left {{ extra_classes}}">{{ player.club }}</td>
                                     {% endif %}
                                     {% if rank_players %}
                                         <td class="right {{ extra_classes}}"><strong>{{ player.points_str }}</strong></td>
-                                        {% for tie_break in player.tie_break_values_display %}
-                                            <td class="center {{ extra_classes}}">{{ tie_break }}</td>
+                                        {% for tie_break_string in player.tie_break_values_as_strings %}
+                                            <td class="center {{ extra_classes}}">{{ tie_break_string }}</td>
                                         {% endfor %}
                                     {% endif %}
                                 </tr>

@@ -26,6 +26,8 @@
                             {{ _('Players screen creation') }}
                         {% elif screen_type == 'results' %}
                             {{ _('Results screen creation') }}
+                        {% elif screen_type == 'ranking' %}
+                            {{ _('Ranking screen creation') }}
                         {% elif screen_type == 'image' %}
                             {{ _('Image screen creation') }}
                         {% else %}
@@ -55,6 +57,8 @@
                             {{ _('Properties (pairings by player)') }}
                         {% elif screen_type == 'results' %}
                             {{ _('Properties (last results)') }}
+                        {% elif screen_type == 'ranking' %}
+                            {{ _('Properties (ranking)') }}
                         {% elif screen_type == 'image' %}
                             {{ _('Properties (image)') }}
                         {% else %}
@@ -62,7 +66,7 @@
                         {% endif %}
                     </h4>
 
-                    {% set col = 6 if action == 'create' and screen_type in ['input', 'boards', 'players'] else 4 %}
+                    {% set col = 6 if action == 'create' and screen_type in ['input', 'boards', 'players', 'ranking', ] else 4 %}
                     <div class="row">
                         <div class="col-12 col-xl-{{col}} mb-3">
                             {{ admin_macros.switch_input(
@@ -91,7 +95,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if action == 'create' and screen_type in ['input', 'boards', 'players'] %}
+                        {% if action == 'create' and screen_type in ['input', 'boards', 'players', 'ranking', ] %}
                             <div class="col-12 col-xl-{{col}} mb-3">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
@@ -104,7 +108,7 @@
                         {% endif %}
                     </div>
 
-                    {% if screen_type in ['input', 'boards', 'players', 'results'] %}
+                    {% if screen_type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
                         <h4>
                             {{ _('Layout') }}
                         </h4>
@@ -138,7 +142,7 @@
                                     name='menu',
                                     label=_('Links displayed on the screen menu:'),
                                     placeholder=_('E.g.: @boards, @family, another-screen'),
-                                    help_text=_('This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen.'),
+                                    help_text=_('This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
@@ -252,6 +256,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    {% include '../common/modal/alert_message.html' %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if screen_type == 'ranking' %}
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     {% include '../common/modal/alert_message.html' %}

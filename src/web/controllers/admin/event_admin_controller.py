@@ -193,6 +193,7 @@ class EventAdminController(BaseEventAdminController):
         admin_screens_show_input: bool | None,
         admin_screens_show_players: bool | None,
         admin_screens_show_results: bool | None,
+        admin_screens_show_ranking: bool | None,
         admin_screens_show_image: bool | None,
         admin_players_sort: str | None = None,
         admin_players_filter_columns: list[str] | None = None,
@@ -349,6 +350,7 @@ class EventAdminController(BaseEventAdminController):
                     'input': admin_screens_show_input,
                     'players': admin_screens_show_players,
                     'results': admin_screens_show_results,
+                    'ranking': admin_screens_show_ranking,
                     'image': admin_screens_show_image,
                 }.items():
                     if param is not None:
@@ -623,14 +625,14 @@ class EventAdminController(BaseEventAdminController):
             if tournament:
                 if round_ > tournament.rounds:
                     errors[field] = _(
-                        'Not part of the selected tournament (%d rounds).'
-                    ).format(tournament.rounds)
-                elif document and document.is_ranking:
+                        'Not part of the selected tournament ({rounds} rounds).'
+                    ).format(rounds=tournament.rounds)
+                elif document and (document.is_ranking or document.is_crosstable):
                     max_round = tournament.max_ranking_round
                     if max_round is not None and round_ > max_round:
                         errors[field] = _(
-                            'Round not finished (last finished: %d).'
-                        ).format(max_round)
+                            'Round not finished (last finished: {round}).'
+                        ).format(round=max_round)
 
         if len(errors):
             return self._admin_event(

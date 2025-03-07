@@ -80,7 +80,8 @@
                 'input': { 'title': _('Results entry'), 'icon_class': 'bi-pencil','tooltip_text': _('Add a screen to enter the results.'),  },
                 'boards': { 'title': _('Pairings by board'), 'icon_class': 'bi-card-list', 'tooltip_text': _('Add a screen to display the pairings by board.'), },
                 'players': { 'title': _('Pairings by player'), 'icon_class': 'bi-people', 'tooltip_text': _('Add a screen to display the pairings by alphabetical order.'), },
-                'results': { 'title': _('Last results'), 'icon_class': 'bi-trophy', 'tooltip_text': _('Add a screen to display the last results.'), },
+                'results': { 'title': _('Last results'), 'icon_class': 'bi-1-square', 'tooltip_text': _('Add a screen to display the last results.'), },
+                'ranking': { 'title': _('Ranking'), 'icon_class': 'bi-trophy', 'tooltip_text': _('Add a screen to display the ranking.'), },
                 'image': { 'title': _('Image'), 'icon_class': 'bi-image', 'tooltip_text': _('Add a screen to display an image.'), },
             }.items() %}
                 <li
@@ -124,6 +125,11 @@
             'results': {
                 'title': _('Last results'),
                 'checkbox_tooltip_text': _('Show/hide the results screens.'),
+                'icon_class': 'bi-1-square',
+            },
+            'ranking': {
+                'title': _('Ranking'),
+                'checkbox_tooltip_text': _('Show/hide the ranking screens.'),
                 'icon_class': 'bi-trophy',
             },
             'image': {

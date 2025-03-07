@@ -1,5 +1,4 @@
 import re
-from contextlib import suppress
 from datetime import datetime, timedelta, date
 from itertools import product
 from logging import Logger

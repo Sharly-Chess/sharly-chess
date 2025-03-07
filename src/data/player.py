@@ -258,7 +258,7 @@ class Player(TournamentPlayer):
         self.color: BoardColor | None = None
         self.illegal_moves: int = 0
         self._tie_break_values: list[int | float] | None = None
-        self._ranking_pairings: list[str] | None = None
+        self._rank: int | None = None
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
@@ -364,7 +364,7 @@ class Player(TournamentPlayer):
             self.points += points
 
     def to_trf(
-        self, player_id_to_trf_id: Callable[[int], int], rank: int, max_round: int,
+        self, player_id_to_trf_id: Callable[[int], int], max_round: int,
     ) -> TrfPlayer:
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
@@ -378,7 +378,7 @@ class Player(TournamentPlayer):
             if self.date_of_birth
             else '',
             points=self.points_after(max_round),
-            rank=rank,
+            rank=self.rank,
             games=[
                 result.to_trf(round_nb, player_id_to_trf_id)
                 for round_nb, result in self.pairings.items()
@@ -481,45 +481,55 @@ class Player(TournamentPlayer):
         self.time_control_increment = increment
         self.time_control_modified = modified
 
+    @staticmethod
+    def _tie_break_value_as_float(tie_break_value: int | float | tuple[float, ...]) -> float:
+        """Returns a player's tie-break value as a float."""
+        if isinstance(tie_break_value, int):
+            return float(tie_break_value)
+        elif isinstance(tie_break_value, float):
+            return tie_break_value
+        elif isinstance(tie_break_value, tuple):
+            return tie_break_value[0]
+        else:
+            raise ValueError(
+                f'Unrecognized tie-break value [{tie_break_value}]'
+            )
+
     @property
-    def tie_break_values_display(self) -> list[str]:
-        if not self._tie_break_values:
-            return []
-        display_values = []
-        for tie_break_value in self._tie_break_values:
-            if isinstance(tie_break_value, int):
-                value = float(tie_break_value)
-            elif isinstance(tie_break_value, float):
-                value = tie_break_value
-            elif isinstance(tie_break_value, tuple):
-                value = tie_break_value[0]
-            else:
-                raise ValueError(
-                    f'Unrecognized tie-break value [{tie_break_value}]'
-                )
+    def tie_break_values_as_strings(self) -> list[str]:
+        """Returns the player's tie-break values as strings."""
+        assert self._tie_break_values is not None, 'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
+        return [
+            self._points_str(self._tie_break_value_as_float(tie_break_value))
+            for tie_break_value in self._tie_break_values
+        ]
 
-            display_values.append(self._points_str(value))
-        return display_values
-
-    def set_tie_break_values(
-        self, tournament: 'Tournament', max_round: int | None = None
+    def compute_tie_break_values(
+        self, max_round: int | None = None
     ):
         self._tie_break_values = [
-            tie_break.player_value(self, tournament, max_round)
-            for tie_break in tournament.tie_breaks
+            tie_break.compute_player_value(self, max_round)
+            for tie_break in self.tournament.tie_breaks
         ]
 
     @property
-    def ranking_pairings(self) -> list[str]:
-        return self._ranking_pairings
+    def rank(self) -> int:
+        assert self._rank, 'Player._rank is not set, call Tournament.compute_player_ranks() before.'
+        return self._rank
 
-    def set_ranking_pairings(
-        self, max_round: int, player_id_to_rank: Callable[[int], int]
-    ):
-        self._ranking_pairings = [
-            self.pairings[round_].to_rankings(player_id_to_rank)
-            if round_ in self.pairings else ' '
-            for round_ in range(1, max_round + 1)
+    def set_rank(self, rank: int):
+        self._rank = rank
+
+    @cached_property
+    def crosstable_strings(self) -> list[str]:
+        return [
+            pairing.result.to_crosstable + (
+                f'{self.tournament.players_by_id[pairing.opponent_id].rank:>3}'
+                f'{pairing.color.to_crosstable}'
+                if pairing.opponent_id else
+                ''
+            )
+            for pairing in self.pairings.values()
         ]
 
     @property

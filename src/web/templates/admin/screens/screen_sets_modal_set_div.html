@@ -26,16 +26,25 @@
                         ) }}
                     </div>
                 </div>
-                {% if admin_screen.type in ['boards', 'input', 'players'] %}
+                {% if admin_screen.type in ['boards', 'input', 'players', 'ranking', ] %}
                     <h4 class="mt-4">
                         {% if admin_screen.type in ['boards', 'input'] %}
                             {{ _('Board selection (by number)') }}
-                        {% else %}
+                        {% elif admin_screen.type == 'players' %}
                             {{ _('Player selection (by alphabetical order)') }}
+                        {% else %}
+                            {{ _('Player selection (by rank)') }}
                         {% endif %}
                     </h4>
                     <div class="row">
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
+                            {% if admin_screen.type in ['boards', 'input'] %}
+                                {% set help_text=_('The number of the first board to select, optional (the first board by default).') %}
+                            {% elif admin_screen.type == 'players' %}
+                                {% set help_text=_('The number of the first player to select, optional (the first player by alphabetical order by default).') %}
+                            {% else %}
+                                {% set help_text=_('The rank of the first player to select, optional (1 by default).') %}
+                            {% endif %}
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if admin_screen.type in ['boards', 'input'] else _('First player:'),
@@ -49,6 +58,13 @@
                             ) }}
                         </div>
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
+                            {% if admin_screen.type in ['boards', 'input'] %}
+                                {% set help_text=_('The number of the last board to select, optional (the last board by default).') %}
+                            {% elif admin_screen.type == 'players' %}
+                                {% set help_text=_('The number of the last player to select, optional (the last player by alphabetical order by default).') %}
+                            {% else %}
+                                {% set help_text=_('The rank of the last player to select, optional (the rank of the last rank player by default).') %}
+                            {% endif %}
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if admin_screen.type in ['boards', 'input'] else _('Last player:'),

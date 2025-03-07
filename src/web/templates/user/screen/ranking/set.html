@@ -1,0 +1,77 @@
+{% with tournament=screen_set.tournament %}
+    <div
+            class="ranking-screen-set"
+    >
+        <h2 class="set-title text-center">
+            {% if tournament.current_round %}
+                {{ screen_set.name_for_ranking }}
+            {% else %}
+                {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_ranking, round=tournament.current_round) }}
+            {% endif %}
+        </h2>
+        <div class="row screen-set-row mx-0 w-100">
+            {% for players in screen_set.players_by_rank_lists %}
+                <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
+                    <table class="table table-striped table-sm bg-light">
+                        <thead>
+                            <tr class="column-heading">
+                                <th class="right {{ extra_classes }}">
+                                    {{ _('Rk. *** RANK FOR PRINT VIEW') }}
+                                </th>
+                                <th class="right {{ extra_classes}}">&nbsp;</th>
+                                <th class="left {{ extra_classes}}">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">
+                                    {% if tournament.rating == 1 %}
+                                        {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
+                                    {% elif tournament.rating == 2 %}
+                                        {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
+                                    {% elif tournament.rating == 3 %}
+                                        {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
+                                    {% endif %}
+                                </th>
+                                <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
+                                <th class="center {{ extra_classes}}">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
+                                <th class="left {{ extra_classes}}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                                <th class="right {{ extra_classes}}">
+                                    <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
+                                </th>
+                                {% for tie_break in tournament.tie_breaks %}
+                                    <th class="right">{{ tie_break.acronym }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if players %}
+                                {% for player in players %}
+                                    <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
+                                        <td class="right {{ extra_classes}}">
+                                            {{ player.rank }}
+                                        </td>
+                                        <td class="right {{ extra_classes}}">{{ player.title.short_name }}</td>
+                                        <td class="left {{ extra_classes}}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
+                                        <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+                                        <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
+                                        <td class="center {{ extra_classes}}">{{ player.federation }}</td>
+                                        <td class="center {{ extra_classes}}">{{ player.league }}</td>
+                                        <td class="left {{ extra_classes}}">{{ player.club }}</td>
+                                        <td class="right {{ extra_classes}}"><strong>{{ player.points_str }}</strong></td>
+                                        {% for tie_break_string in player.tie_break_values_as_strings %}
+                                            <td class="center {{ extra_classes}}">{{ tie_break_string }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr class="odd">
+                                    <td class="left {{ extra_classes}}" colspan="{{ 8 + tournament.tie_breaks|length }}">
+                                        {{ _('No players.') }}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endwith %}

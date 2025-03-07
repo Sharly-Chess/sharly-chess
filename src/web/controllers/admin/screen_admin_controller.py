@@ -101,7 +101,7 @@ class ScreenAdminController(BaseEventAdminController):
             case 'create':
                 type_ = web_context.screen_type
                 match type_:
-                    case 'boards' | 'input' | 'players':
+                    case 'boards' | 'input' | 'players' | 'ranking':
                         field = 'init_set_tournament_id'
                         init_set_tournament_id = WebContext.form_data_to_int(
                             data, field
@@ -213,6 +213,8 @@ class ScreenAdminController(BaseEventAdminController):
                             field = f'results_tournament_{tournament_id}'
                             if WebContext.form_data_to_bool(data, field):
                                 results_tournament_ids.append(tournament_id)
+                    case ScreenType.RANKING:
+                        pass
                     case ScreenType.IMAGE:
                         field = 'background_image'
                         background_image = WebContext.form_data_to_str(data, field, '')
@@ -422,7 +424,7 @@ class ScreenAdminController(BaseEventAdminController):
                                 screen_type=ScreenType(screen_type)
                             )
                             match screen_type:
-                                case 'input' | 'boards' | 'players':
+                                case 'input' | 'boards' | 'players' | 'ranking':
                                     init_set_tournament_id = list(
                                         web_context.admin_event.tournaments_by_id.keys()
                                     )[0]
@@ -471,6 +473,8 @@ class ScreenAdminController(BaseEventAdminController):
                                     results_limit = web_context.admin_screen.stored_screen.results_limit
                                     results_max_age = web_context.admin_screen.stored_screen.results_max_age
                                     results_tournament_ids = web_context.admin_screen.stored_screen.results_tournament_ids
+                                case ScreenType.RANKING:
+                                    pass
                                 case ScreenType.IMAGE:
                                     background_image = web_context.admin_screen.stored_screen.background_image
                                     background_color = (
@@ -498,6 +502,8 @@ class ScreenAdminController(BaseEventAdminController):
                                     menu = '@input'
                                 case ScreenType.PLAYERS:
                                     menu = '@players'
+                                case ScreenType.RANKING:
+                                    menu = '@ranking'
                                 case ScreenType.RESULTS | ScreenType.IMAGE:
                                     pass
                                 case _:
@@ -708,6 +714,7 @@ class ScreenAdminController(BaseEventAdminController):
                         ScreenType.BOARDS,
                         ScreenType.INPUT,
                         ScreenType.PLAYERS,
+                        ScreenType.RANKING,
                     ]:
                         event_database.add_stored_screen_set(
                             stored_screen.id, init_set_tournament_id
@@ -725,6 +732,7 @@ class ScreenAdminController(BaseEventAdminController):
                         ScreenType.BOARDS,
                         ScreenType.INPUT,
                         ScreenType.PLAYERS,
+                        ScreenType.RANKING,
                     ]:
                         for (
                             screen_set

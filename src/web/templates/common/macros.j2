@@ -73,8 +73,11 @@
         {% set _icon_class='bi-people' %}
         {% set _tooltip_text=_('Players screens show pairings by alphabetical order.') %}
     {% elif screen_type == 'results' %}
-        {% set _icon_class='bi-trophy' %}
+        {% set _icon_class='bi-1-square' %}
         {% set _tooltip_text=_('Results screens show the last results (most recent first).') %}
+    {% elif screen_type == 'ranking' %}
+        {% set _icon_class='bi-trophy' %}
+        {% set _tooltip_text=_('Ranking screens show the players by rank.') %}
     {% elif screen_type == 'image' %}
         {% set _icon_class='bi-image' %}
         {% set _tooltip_text=_('Image screens show an image (local or remote).') %}

@@ -11,7 +11,7 @@
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
         {% if admin_screens_show_details %}
-            {% if screen.type in ['input', 'boards', 'players', 'results'] %}
+            {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
                 <div>
                     <span class="pe-1">{{ macros.screen_type_icon(screen.type, true) }}</span>
                     {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
@@ -127,7 +127,7 @@
             <hr/>
         {% endif %}
 
-        {% if screen.type in ['boards', 'input', 'players'] %}
+        {% if screen.type in ['boards', 'input', 'players', 'ranking', ] %}
             {% for screen_set in screen.screen_sets_sorted_by_order %}
                 <div>
                     {{ screen_set.tournament.name }}
@@ -165,7 +165,7 @@
             </button>
         </span>
     {% endif %}
-    {% if not screen.family and screen.type in ['boards', 'input', 'players'] %}
+    {% if not screen.family and screen.type in ['boards', 'input', 'players', 'ranking', ] %}
         <span
             {{ macros.tooltip_attributes(
                 'info',
