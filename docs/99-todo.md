@@ -4,14 +4,14 @@
 
 ## Fonctionnalités demandées par les utilisateur·ices
 
-- [ ] Affichage des appariements par origine (club) (CJ)
-- [ ] Affichage automatique du classement et grille américaine après la saisie du dernier résultat d'une ronde (HB)
 - [ ] Envoi des appariements aux joueur·euses par mél et texto (PL)
-- [ ] Prise en charge de la méthode HEAD pour les afficheurs dynamiques (PA)
 - [ ] Ajouter une barre de recherche sur les écrans de résultats pour les arbitres (SP)
 - [ ] Ajouter un tableau de bord avec l'avancement des tournois des évènements (NDP)
 - [ ] Ajouter la possibilité d'afficher l'historique des joueur·euses de plusieurs manières : Papi, TRF, ... (SP)
 - [ ] ~~Ajouter la possibilité de changer le nom d'un⋅e participant⋅e pour l'affichage des appariements (SP > 2.4.20)~~
+- [X] ~~Affichage des appariements par origine (club) (CJ > 2.5.0)~~
+- [X] ~~Affichage automatique du classement et grille américaine après la saisie du dernier résultat d'une ronde (HB > 2.5.0)~~
+- [X] ~~Prise en charge de la méthode HEAD pour les afficheurs dynamiques (PA > 2.5.0)~~
 - [X] ~~Pointage de tou·tes les joueur·euses de l'évènement sur un même écran (TA > 2.4.20)~~
 - [X] ~~Mettre un bouton de création d'écran par type d'écran (DR > 2.4.19)~~
 - [X] ~~Mettre en place un système multilingue pour les tournois internationaux (PA > 2.4.19)~~

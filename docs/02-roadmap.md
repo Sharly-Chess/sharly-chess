@@ -73,6 +73,9 @@
 | FFE - Protection données            |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |
 | ChessEvent - Téléchargement données |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |
 | Gestion des joueur·euses            |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |
+| Impression des appariements         |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |
+| Impression des classements          |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |
+| Impression des grilles américaines  |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |
 | Performances FIDE                   |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |
 | Calcul des prix                     |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |
 | Calcul des normes joueur·euses      |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |
