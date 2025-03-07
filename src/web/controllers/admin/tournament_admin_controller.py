@@ -816,6 +816,8 @@ class TournamentAdminController(BaseEventAdminController):
         print_document: PrintDocument = (
             PrintDocument(document) if document else PrintDocument.PLAYER_LIST
         )
+        if round is None:
+            round = 0
         players: list[Player]
         match print_document:
             case PrintDocument.RANKING | PrintDocument.CROSSTABLE:
