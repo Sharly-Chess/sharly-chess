@@ -1247,7 +1247,7 @@ class Tournament:
         with (PapiDatabase(self.file, write=True) as papi_database):
             if tie_breaks := self._update_papi_tie_breaks():
                 papi_database.update_tie_breaks(tie_breaks)
-            papi_database.update_point_values(self.point_value_type)
+            papi_database.update_point_values(self._point_value_type)
             papi_database.commit()
 
     def _update_papi_tie_breaks(
