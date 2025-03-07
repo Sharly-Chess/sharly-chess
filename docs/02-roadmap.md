@@ -14,7 +14,7 @@
 |   2.4   | Oct 2024  | Logiciel libre<br/>Support multilingue<br/>Configuration web<br/>Stockage SQLite                                                                                                                                                     |
 |   2.5   | Mar 2025  | Amélioration de l'interface<br/>Gestion des joueur·euses<br/>Calcul, affichage et impression des classements                                                                                                                         |
 |   2.6   |   2025    | **Iso-fonctionnalité avec Papi 3.3.8**<br/>Appariements suisse, toutes rondes et manuel, brouillon/publié<br/>Calcul des prix<br/>Calcul des normes et certificats<br/>Statistiques, performances FIDE, import/export TRF, chevalets |
-|   3.0   |   2025    | **Ajout des fonctionnalités non supportées par papi**<br/>Abandon du format Access<br/>Résultats, départages                                                                                                                         |
+|   3.0   |  2025 ?   | **Ajout des fonctionnalités non supportées par papi**<br/>Abandon du format Access<br/>Résultats, départages                                                                                                                         |
 
 ## Roadmap détaillée
 
@@ -73,7 +73,6 @@
 | FFE - Protection données            |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |
 | ChessEvent - Téléchargement données |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |      :ok:       |
 | Gestion des joueur·euses            |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |      :ok:       |
-| Performances FIDE                   |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |
 | Performances FIDE                   |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |
 | Calcul des prix                     |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |
 | Calcul des normes joueur·euses      |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |      :ok:       |      :ok:       |
