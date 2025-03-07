@@ -30,10 +30,10 @@ from data.util import (
     PlayerRatingType,
     PlayerGender,
     PlayerTitle,
-    PlayerFFELicence,
 )
 from database.access.ffe.ffe_access_database import FfeAccessDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

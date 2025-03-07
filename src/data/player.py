@@ -17,12 +17,13 @@ from data.util import (
     PlayerGender,
     PlayerTitle,
     BoardColor,
-    PlayerFFELicence,
     Result,
     TournamentRating,
     PlayerRatingType,
     PlayerCategory,
 )
+
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

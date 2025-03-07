@@ -15,7 +15,8 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
-from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, PrintSplit, PrintDocument
+from data.util import PlayerGender, PlayerCategory, PrintSplit, PrintDocument
+from plugins.ffe.util import PlayerFFELicence
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,

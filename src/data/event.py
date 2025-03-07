@@ -28,12 +28,12 @@ from data.timer import Timer, TimerHour
 from data.tournament import Tournament
 from data.util import (
     ScreenType,
-    PlayerFFELicence,
     PlayerGender,
     PlayerCategory,
     TournamentRating,
 )
 from database.store import StoredEvent
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

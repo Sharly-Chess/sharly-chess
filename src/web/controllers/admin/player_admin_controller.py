@@ -25,10 +25,10 @@ from data.util import (
     TournamentRating,
     PlayerRatingType,
     PlayerTitle,
-    PlayerFFELicence,
     Result,
 )
 from database.sqlite.fide_database import FideDatabase
+from plugins.ffe.util import PlayerFFELicence
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
