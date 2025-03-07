@@ -29,8 +29,8 @@ from database.store import StoredEvent
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
 )
-from web.controllers.index_controller import BaseController
-from web.controllers.index_controller import WebContext
+from web.controllers.base_controller import BaseController
+from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
 

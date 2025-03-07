@@ -7,7 +7,7 @@ from litestar.enums import MediaType
 
 from common.background import inline_image_url
 from common.logger import get_logger
-from web.controllers.index_controller import WebContext, BaseController
+from web.controllers.base_controller import WebContext, BaseController
 
 logger: Logger = get_logger()
 

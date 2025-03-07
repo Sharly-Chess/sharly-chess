@@ -23,7 +23,7 @@ from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
 from database.access.papi.papi_template import PAPI_VERSIONS
 from database.store import StoredEvent
-from web.controllers.index_controller import BaseController, WebContext
+from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
 
 logger: Logger = get_logger()

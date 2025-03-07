@@ -6,7 +6,7 @@ from collections.abc import Iterable, Callable
 
 from common import APP_NAME
 from data.util import PrintDocument
-from web.controllers.index_controller import BaseController
+from web.controllers.base_controller import BaseController
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)

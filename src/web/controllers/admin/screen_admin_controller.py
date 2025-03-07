@@ -23,7 +23,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.index_controller import WebContext, BaseController
+from web.controllers.base_controller import WebContext, BaseController
 from web.messages import Message
 
 logger: Logger = get_logger()
