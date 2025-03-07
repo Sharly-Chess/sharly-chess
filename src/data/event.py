@@ -20,7 +20,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.family import Family
-from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
+from data.player import Player, ClubTuple, FederationTuple
 from data.rotator import Rotator
 from data.screen import Screen
 from data.screen_set import ScreenSet
@@ -294,14 +294,6 @@ class Event:
                 counter[federation_tuple] += tournament.federation_counts[
                     federation_tuple
                 ]
-        return counter
-
-    @cached_property
-    def league_counts(self) -> Counter[LeagueTuple]:
-        counter: Counter[LeagueTuple] = Counter[LeagueTuple]()
-        for tournament in self.tournaments_by_id.values():
-            for league_tuple in tournament.league_counts:
-                counter[league_tuple] += tournament.league_counts[league_tuple]
         return counter
 
     @cached_property

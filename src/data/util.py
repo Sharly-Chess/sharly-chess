@@ -7,7 +7,7 @@ from enum import Enum, StrEnum, IntEnum
 from itertools import islice
 from logging import Logger
 from math import floor
-from typing import Self
+from typing import Any, Self
 
 from common.i18n import _
 from common.logger import get_logger
@@ -1282,3 +1282,6 @@ class PrintDocument(StrEnum):
                 return _('Crosstable')
             case _:
                 raise ValueError(f'Invalid print type: {self}')
+            
+def getPluginData(pluginName: str, plugin_data: dict[str, dict], field: str, default: Any = None):
+    return plugin_data.get(pluginName, {}).get(field, default)

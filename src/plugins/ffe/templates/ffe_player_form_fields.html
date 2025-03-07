@@ -1,0 +1,51 @@
+<h4 class="mt-3">
+    {{ _('French Chess Federation') }}
+</h4>
+<div class="row">
+    <div class="col-12 col-sm-4 mb-3">
+        {{ admin_macros.text_input(
+            name='ffe_licence_number',
+            label=_('Licence number:'),
+            placeholder=_('E.g.: %(string)s', string='R08943'),
+            help_text=_('The player\'s licence number.') if action != 'delete' else '',
+            disabled=action == 'delete',
+            error=action == 'delete',
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-sm-4 mb-3">
+        {{ admin_macros.select_input(
+            name='ffe_licence',
+            label=_('Licence:'),
+            help_text=_('The player\'s licence.') if action != 'delete' else '',
+            select_options=licence_options,
+            disabled=action == 'delete',
+            error=action == 'delete',
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-sm-4 mb-3">
+        {{ admin_macros.number_input(
+            name='ffe_id',
+            label=_('FFE Uniq ID:'),
+            help_text=_('The player\'s Uniq ID for the French federation (do not change).') if action != 'delete' else '',
+            disabled=true,
+            error=action == 'delete',
+            number_min=1,
+            data=data, errors=errors
+        ) }}
+    </div>
+</div>
+</div class="row">
+    <div class="col-12 mb-3">
+        {{ admin_macros.select_input(
+            name='ffe_league',
+            label=_('League:'),
+            help_text=_('The player\'s league.') if action != 'delete' else '',
+            select_options=ffe_leagues,
+            disabled=action == 'delete',
+            error=action == 'delete',
+            data=data, errors=errors
+        ) }}
+    </div>
+<div>

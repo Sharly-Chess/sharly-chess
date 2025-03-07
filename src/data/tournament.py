@@ -25,7 +25,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.chessevent_tournament import ChessEventTournament
 from data.family import Family
-from data.player import Player, FederationTuple, LeagueTuple, ClubTuple
+from data.player import Player, FederationTuple, ClubTuple
 from data.screen import Screen
 from data.util import (
     BoardColor,
@@ -38,6 +38,8 @@ from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament
 from plugins.ffe.util import PlayerFFELicence
+
+import plugins.manager as PM
 
 logger: Logger = get_logger()
 
@@ -387,22 +389,6 @@ class Tournament:
         return self._players_by_id
 
     @cached_property
-    def players_by_ffe_licence_number(self) -> dict[str, Player]:
-        return {
-            player.ffe_licence_number: player
-            for player in self.players_by_id.values()
-            if player.ffe_licence_number
-        }
-
-    @cached_property
-    def players_by_ffe_id(self) -> dict[int, Player]:
-        return {
-            player.ffe_id: player
-            for player in self.players_by_id.values()
-            if player.ffe_id
-        }
-
-    @cached_property
     def players_by_fide_id(self) -> dict[int, Player]:
         return {
             player.fide_id: player
@@ -461,14 +447,6 @@ class Tournament:
         counter: Counter[FederationTuple] = Counter[FederationTuple]()
         for player in self.players_by_id.values():
             counter[player.federation_tuple] += 1
-        return counter
-
-    @cached_property
-    def league_counts(self) -> Counter[LeagueTuple]:
-        """Returns the number of players by league."""
-        counter: Counter[LeagueTuple] = Counter[LeagueTuple]()
-        for player in self.players_by_id.values():
-            counter[player.league_tuple] += 1
         return counter
 
     @cached_property
@@ -1166,25 +1144,22 @@ class Tournament:
     ):
         """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
+            per_plugin_player_data = PM.plugin_manager.hook.player_data_for_db_write(player=player)
+            plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
+        
             data: dict[str, str | int | float | None] = {
                 'Ref': (max(p.ref_id for p in self.players_by_id.values()) if self.players_by_id else 1) + 1,
-                'RefFFE': player.ffe_id or (datetime.now() - relativedelta(years=30)),  # like Papi does :-(
-                'NrFFE': player.ffe_licence_number
-                if player.ffe_licence_number
-                else None,
                 'Nom': player.last_name,
                 'Prenom': player.first_name,
                 'Sexe': player.gender.to_papi_value,
                 'NeLe': PapiDatabase.date_to_papi_date(player.date_of_birth),
                 'Cat': player.category.to_papi_value,
-                'AffType': player.ffe_licence.to_papi_value,
                 'Elo': player.ratings[TournamentRating.STANDARD],
                 'Rapide': player.ratings[TournamentRating.RAPID],
                 'Blitz': player.ratings[TournamentRating.BLITZ],
                 'Federation': player.federation,
                 'ClubRef': 0,
                 'Club': player.club,
-                'Ligue': player.league,
                 'Fide': player.rating_types[TournamentRating.STANDARD].to_papi_value,
                 'RapideFide': player.rating_types[TournamentRating.RAPID].to_papi_value,
                 'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,
@@ -1199,7 +1174,7 @@ class Tournament:
                 'Flotteur': 'X' * 24,
                 'Pts': 0,
                 'PtA': 0,
-            }
+            } | plugin_data
             for round_ in range(1, 25):
                 data[f'Rd{round_:0>2}Adv'] = None
                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
