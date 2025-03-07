@@ -21,6 +21,7 @@ from data.util import (
     PlayerFFELicence,
     PlayerRatingType,
     BoardColor,
+    PointValueType,
 )
 from database.access.access_database import AccessDatabase
 
@@ -36,6 +37,7 @@ class TournamentInfo(NamedTuple):
     rating_limit1: int
     rating_limit2: int
     tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
+    point_values: dict[Result, float]
     location: str
     start_date: str
     end_date: str
@@ -79,6 +81,10 @@ class PapiDatabase(AccessDatabase):
             PapiTieBreak.from_papi_value(self._read_var('Dep2')),
             PapiTieBreak.from_papi_value(self._read_var('Dep3')),
         )
+        if self._read_var('DecomptePoints').upper() == 'OUI':
+            point_values = PointValueType.PAPI_3_POINTS.point_values
+        else:
+            point_values = PointValueType.STANDARD.point_values
         location: str = self._read_var('Lieu')
         start_date: str = self._read_var('DateDebut')
         end_date: str = self._read_var('DateFin')
@@ -90,6 +96,7 @@ class PapiDatabase(AccessDatabase):
             rating_limit1,
             rating_limit2,
             tie_breaks,
+            point_values,
             location,
             start_date,
             end_date,

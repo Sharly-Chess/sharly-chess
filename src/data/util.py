@@ -1357,3 +1357,18 @@ class PrintDocument(StrEnum):
                 return _('Tournament summary')
             case _:
                 raise ValueError(f'Invalid print type: {self}')
+
+
+class PointValueType(Enum):
+    STANDARD = 1
+    PAPI_3_POINTS = 2
+
+    @property
+    def point_values(self) -> dict[Result, float]:
+        match self:
+            case PointValueType.STANDARD:
+                return {Result.GAIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
+            case PointValueType.PAPI_3_POINTS:
+                return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
+            case _:
+                raise ValueError(f'{self=}')

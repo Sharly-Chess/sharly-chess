@@ -33,6 +33,7 @@ from data.util import (
     TournamentRating,
     PlayerFFELicence,
     PlayerGender,
+    PointValueType,
 )
 from data.util import TournamentPairing, Result
 from database.access.papi.papi_database import PapiDatabase
@@ -111,6 +112,7 @@ class Tournament:
         self._papi_tie_breaks: tuple[
             PapiTieBreak, PapiTieBreak, PapiTieBreak
         ] | None = None
+        self._point_values: dict[Result, float] = PointValueType.STANDARD.point_values
         self._papi_read = False
 
     @property
@@ -558,9 +560,9 @@ class Tournament:
             case _:
                 return False
     
-    @cached_property
+    @property
     def point_values(self) -> dict[Result, float]:
-        return self.stored_tournament.point_values
+        return self._point_values
 
     @property
     def tie_breaks(self) -> list[TieBreak]:
@@ -670,6 +672,7 @@ class Tournament:
                     self._rating_limit1,
                     self._rating_limit2,
                     self._papi_tie_breaks,
+                    self._point_values,
                     self._location,
                     self._start_date,
                     self._end_date,
