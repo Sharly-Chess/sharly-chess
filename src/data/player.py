@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
-from typing import TYPE_CHECKING, Self, Callable
+from typing import TYPE_CHECKING, Any, Self, Callable
 from trf import Player as TrfPlayer
 
 if TYPE_CHECKING:
@@ -68,61 +68,34 @@ class FederationTuple:
     def __str__(self) -> str:
         return self.federation
 
-
 @dataclass(frozen=True)
 @total_ordering
-class LeagueTuple(FederationTuple):
-    league: str = ''
-
-    @cached_property
-    def to_query_param(self) -> str:
-        return self.string_tuple_to_query_param((self.federation, self.league))
-
-    @classmethod
-    def from_query_param(cls, query_param: str) -> Self:
-        t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
-        return LeagueTuple(t[0], t[1])
-
-    def __le__(self, other: Self):
-        # p1 <= p2 calls p1.__le__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return (self.federation, self.league) <= (other.federation, other.league)
-
-    def __str__(self) -> str:
-        return f'{self.federation}-{self.league}'
-
-
-@dataclass(frozen=True)
-@total_ordering
-class ClubTuple(LeagueTuple):
+class ClubTuple(FederationTuple):
     club: str = ''
 
     @cached_property
     def to_query_param(self) -> str:
         return self.string_tuple_to_query_param(
-            (self.federation, self.league, self.club)
+            (self.federation, self.club)
         )
 
     @classmethod
     def from_query_param(cls, query_param: str) -> Self:
         t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
-        return ClubTuple(t[0], t[1], t[2])
+        return ClubTuple(t[0], t[1])
 
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
             f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
-        return (self.federation, self.league, self.club) <= (
+        return (self.federation, self.club) <= (
             other.federation,
-            other.league,
             other.club,
         )
 
     def __str__(self) -> str:
-        return f'{self.federation}-{self.league}-{self.club}'
+        return f'{self.federation}-{self.club}'
 
 
 class TournamentPlayer:
@@ -205,26 +178,27 @@ class Player(TournamentPlayer):
         first_name: str,
         date_of_birth: date | None,
         gender: PlayerGender,
+        fide_id: int | None,
+        federation: str,
+        title: PlayerTitle,
+        pairings: dict[int, Pairing],
+        
+        # Extra fields
         mail: str,
         phone: str,
         comment: str,
         owed: float,
         paid: float,
-        title: PlayerTitle,
         ratings: dict[TournamentRating, int],
         rating_types: dict[TournamentRating, PlayerRatingType],
-        fide_id: int | None,
-        ffe_id: int | None,
-        ffe_licence: PlayerFFELicence,
-        ffe_licence_number: str | None,
-        federation: str,
-        league: str,
         club: str,
         fixed: int,
         check_in: bool,
-        pairings: dict[int, Pairing],
         tournament: 'Tournament | None' = None,
         errors: dict[str, str] | None = None,
+        
+        # Plugins can add their own player data
+        plugin_data: dict[str, dict[str, Any]] = None
     ):
         super().__init__(
             id,
@@ -244,11 +218,7 @@ class Player(TournamentPlayer):
         self.paid: float = paid
         self.ratings: dict[TournamentRating, int] = ratings
         self.rating_types: dict[TournamentRating, PlayerRatingType] = rating_types
-        self.ffe_id: int = ffe_id
-        self.ffe_licence: PlayerFFELicence = ffe_licence
-        self.ffe_licence_number: str | None = ffe_licence_number
         self.federation: str = federation
-        self.league: str = league
         self.club: str = club
         self.fixed: int = fixed
         self.check_in: bool = check_in
@@ -265,6 +235,7 @@ class Player(TournamentPlayer):
         self.time_control_modified: bool | None = None
         self.tournament: Tournament | None = tournament
         self.errors: dict[str, str] = errors or {}
+        self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
 
     @staticmethod
     def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
@@ -326,11 +297,7 @@ class Player(TournamentPlayer):
 
     @cached_property
     def club_tuple(self) -> ClubTuple:
-        return ClubTuple(self.federation, self.league, self.club)
-
-    @cached_property
-    def league_tuple(self) -> LeagueTuple:
-        return LeagueTuple(self.federation, self.league)
+        return ClubTuple(self.federation, self.club)
 
     @cached_property
     def federation_tuple(self) -> FederationTuple:
@@ -566,5 +533,5 @@ class Player(TournamentPlayer):
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (
             f'{self.__class__.__name__}'
-            f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} licence={self.ffe_licence.value} {self.last_name} {self.first_name} {self.club_tuple})'
+            f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} {self.last_name} {self.first_name} {self.club_tuple})'
         )

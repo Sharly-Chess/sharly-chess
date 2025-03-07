@@ -14,7 +14,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
-from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
+from data.player import Player, ClubTuple, FederationTuple
 from data.util import PlayerGender, PlayerCategory, PrintSplit, PrintDocument
 from plugins.ffe.util import PlayerFFELicence
 from web.controllers.admin.base_admin_controller import (
@@ -206,29 +206,13 @@ class BaseEventAdminController(BaseAdminController):
                     )
                     if f in players_federations
                 ]
-                # The leagues that will be shown on the league select list
-                players_leagues: list[LeagueTuple] = sorted(
-                    {
-                        player.league_tuple
-                        for player in web_context.admin_event.players_by_id.values()
-                        if not filter_federations
-                        or player.federation_tuple in filter_federations
-                    }
-                )
-                # The leagues that will be selected on the league select list and used to filter the players
-                filter_leagues: list[LeagueTuple] = [
-                    league
-                    for league in SessionHandler.get_session_admin_players_filter_leagues(
-                        web_context.request
-                    )
-                    if league in players_leagues
-                ]
                 # The clubs that will be shown on the club select list
                 players_clubs: list[ClubTuple] = sorted(
                     {
                         player.club_tuple
                         for player in web_context.admin_event.players_by_id.values()
-                        if not filter_leagues or player.league_tuple in filter_leagues
+                        if not filter_federations
+                        or player.federation_tuple in filter_federations
                     }
                 )
                 # The clubs that will be selected on the club select list and used to filter the players
@@ -258,19 +242,6 @@ class BaseEventAdminController(BaseAdminController):
                         player.year_of_birth
                         for player in web_context.admin_event.players_by_id.values()
                     }
-                )
-                # The licences that will be shown on the licence select list
-                players_licences: list[PlayerFFELicence] = sorted(
-                    {
-                        player.ffe_licence
-                        for player in admin_event.players_by_id.values()
-                    }
-                )
-                # The licences that will be selected on the licence select list and used to filter the players
-                filter_licences: list[PlayerFFELicence] = (
-                    SessionHandler.get_session_admin_players_filter_licences(
-                        web_context.request
-                    )
                 )
                 # The check-in statuses that will be selected on the check-in status select list and used to filter the players
                 players_check_ins: list[bool | None] = [None, True, False]
@@ -392,10 +363,6 @@ class BaseEventAdminController(BaseAdminController):
                                 or player.gender.value in filter_genders
                             )
                             and (
-                                len(filter_licences) in [0, len(players_licences)]
-                                or player.ffe_licence in filter_licences
-                            )
-                            and (
                                 len(filter_categories) in [0, len(players_categories)]
                                 or player.category in filter_categories
                             )
@@ -419,10 +386,6 @@ class BaseEventAdminController(BaseAdminController):
                                 or player.federation_tuple in filter_federations
                             )
                             and (
-                                len(filter_leagues) in [0, len(players_leagues)]
-                                or player.league_tuple in filter_leagues
-                            )
-                            and (
                                 len(filter_clubs) in [0, len(players_clubs)]
                                 or player.club_tuple in filter_clubs
                             )
@@ -439,7 +402,7 @@ class BaseEventAdminController(BaseAdminController):
                                 {
                                     filter_origin_part
                                     in unicode_normalize(
-                                        f'{player.federation} {player.league} {player.club}'.lower()
+                                        f'{player.federation} {player.club}'.lower()
                                     )
                                     for filter_origin_part in filter_origin_parts
                                 }
@@ -455,7 +418,6 @@ class BaseEventAdminController(BaseAdminController):
                         'check_in',
                         'rating',
                         'federation',
-                        'league',
                         'club',
                         'yob',
                         'category',
@@ -464,7 +426,6 @@ class BaseEventAdminController(BaseAdminController):
                         'gender',
                         'fixed',
                         'fide',
-                        'ffe',
                         'owed_paid',
                         'tournament',
                         'comment',
@@ -474,12 +435,10 @@ class BaseEventAdminController(BaseAdminController):
                         web_context.request
                     ),
                     'admin_players_federations': players_federations,
-                    'admin_players_leagues': players_leagues,
                     'admin_players_clubs': players_clubs,
                     'admin_players_yobs': players_yobs,
                     'admin_players_categories': players_categories,
                     'admin_players_genders': players_genders,
-                    'admin_players_licences': players_licences,
                     'admin_players_check_ins': players_check_ins,
                     'admin_players_filter_columns': SessionHandler.get_session_admin_players_filter_columns(
                         web_context.request
@@ -487,16 +446,10 @@ class BaseEventAdminController(BaseAdminController):
                     'admin_players_filter_federations': SessionHandler.get_session_admin_players_filter_federations(
                         web_context.request
                     ),
-                    'admin_players_filter_leagues': SessionHandler.get_session_admin_players_filter_leagues(
-                        web_context.request
-                    ),
                     'admin_players_filter_clubs': SessionHandler.get_session_admin_players_filter_clubs(
                         web_context.request
                     ),
                     'admin_players_filter_genders': SessionHandler.get_session_admin_players_filter_genders(
-                        web_context.request
-                    ),
-                    'admin_players_filter_licences': SessionHandler.get_session_admin_players_filter_licences(
                         web_context.request
                     ),
                     'admin_players_filter_check_ins': SessionHandler.get_session_admin_players_filter_check_ins(

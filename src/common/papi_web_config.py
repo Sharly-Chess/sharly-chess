@@ -593,7 +593,6 @@ class PapiWebConfig(metaclass=Singleton):
     """ The default filter for the players columns. """
     default_players_filter_columns: list[str] = [
         'federation',
-        'league',
         'club',
         'yob',
         'category',
@@ -823,26 +822,3 @@ class PapiWebConfig(metaclass=Singleton):
         'NON': 'None',
     }
 
-    """ The FFE league names. """
-    ffe_leagues: dict[str, str] = {
-        '': '',
-        'ARA': 'Auvergne-Rhône-Alpes',
-        'BFC': 'Bourgogne-Franche-Comté',
-        'BRE': 'Bretagne',
-        'CRS': 'Corse',
-        'CVL': 'Centre-Val de Loire',
-        'EST': 'Grand-Est',
-        'GUA': 'Guadeloupe',
-        'GUY': 'Guyane',
-        'HDF': 'Hauts-de-France',
-        'IDF': 'Île-de-France',
-        'MAR': 'Martinique',
-        'NAQ': 'Nouvelle-Aquitaine',
-        'NCA': 'Nouvelle-Calédonie',
-        'NOR': 'Normandie',
-        'OCC': 'Occitanie',
-        'PAC': "Provence-Alpes-Côte d'azur",
-        'PDL': 'Pays de la Loire',
-        'POL': 'Saint-Pierre-et-Miquelon',
-        'REU': 'Réunion',
-    }

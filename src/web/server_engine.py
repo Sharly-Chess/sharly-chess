@@ -20,8 +20,14 @@ from common.logger import (
 )
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.fide_database import FideDatabase
+
 from plugins.manager import plugin_manager
+from plugins.registration import register_plugins
+
+register_plugins()
+        
 from web.settings import route_handlers, template_config, middlewares, stores
+
 
 logger: Logger = get_logger()
 
@@ -51,6 +57,7 @@ class ServerEngine(Engine):
         super().__init__()
         if self.updated:
             return
+        
         print_interactive_info(_('Starting Papi-web server, please wait...'))
         papi_web_config: PapiWebConfig = PapiWebConfig()
         print_interactive_info(

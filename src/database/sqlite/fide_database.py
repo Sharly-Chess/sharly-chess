@@ -231,11 +231,7 @@ class FideDatabase(SQLiteDatabase):
                     PlayerRatingType.FIDE if row['blitz_rating'] else PlayerRatingType.ESTIMATED,
             },
             fide_id=row['fide_id'],
-            ffe_id=None,
-            ffe_licence=PlayerFFELicence.NONE,
-            ffe_licence_number=None,
             federation=row['federation'],
-            league='',
             club='',
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
