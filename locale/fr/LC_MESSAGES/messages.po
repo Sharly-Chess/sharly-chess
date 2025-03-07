@@ -2988,7 +2988,7 @@ msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique
 
 #: src/web/templates/admin/families/family_modal.html
 msgid "Ranking screen family creation"
-msgstr "Création d'un écran de classement"
+msgstr "Création d'une famille d'écrans de classement"
 
 #: src/web/templates/admin/families/family_modal.html
 #, python-format
