@@ -123,20 +123,22 @@ def get_validated_player_form_fields(action: str, tournament: 'Tournament', data
         errors[field] = f'Invalid league value [{data[field]}].'
         data[field] = ''
     ffe_id: int | None = None
-    
-    try:
-        ffe_id = WebContextModule.WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
-        ffe_ids = [ get_data(player.plugin_data, 'ffe_id', None) for player in tournament.players_by_id.values() ]
-        
-        if action == 'create' and tournament and ffe_id and ffe_id in ffe_ids:
-                errors[field] = _(
-                    'The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}].'
-                ).format(
-                    ffe_id=ffe_id,
-                    tournament_uniq_id=tournament.uniq_id
-                )
-    except ValueError:
-        errors[field] = _('Invalid FFE ID [{ffe_id}].').format(ffe_id=data[field])
+
+    if tournament:
+        # When adding a player, the tournament may not me chosen (in this case do not test)
+        try:
+            ffe_id = WebContextModule.WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
+            ffe_ids = [ get_data(player.plugin_data, 'ffe_id', None) for player in tournament.players_by_id.values() ]
+
+            if action == 'create' and ffe_id and ffe_id in ffe_ids:
+                    errors[field] = _(
+                        'The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}].'
+                    ).format(
+                        ffe_id=ffe_id,
+                        tournament_uniq_id=tournament.uniq_id
+                    )
+        except ValueError:
+            errors[field] = _('Invalid FFE ID [{ffe_id}].').format(ffe_id=data[field])
    
     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
     try:
@@ -154,16 +156,16 @@ def get_validated_player_form_fields(action: str, tournament: 'Tournament', data
             errors[field] = _(
                 'Invalid FFE licence number [{ffe_licence_number}].'
             ).format(ffe_licence_number=data[field])
-            
-        ffe_licence_numbers = [ player.plugin_data.get(PLUGIN_NAME, {}).get('ffe_licence_number', None) for player in tournament.players_by_id.values() ]
-        
-        if action == 'create' and tournament and ffe_licence_number in ffe_licence_numbers:
-            errors[field] = _(
-                'The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}].'
-            ).format(
-                ffe_licence_number=ffe_licence_number,
-                tournament_uniq_id=tournament.uniq_id
-            )
+        elif tournament:
+            # When adding a player, the tournament may not me chosen (in this case do not test)
+            ffe_licence_numbers = [ player.plugin_data.get(PLUGIN_NAME, {}).get('ffe_licence_number', None) for player in tournament.players_by_id.values() ]
+            if action == 'create' and ffe_licence_number in ffe_licence_numbers:
+                errors[field] = _(
+                    'The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}].'
+                ).format(
+                    ffe_licence_number=ffe_licence_number,
+                    tournament_uniq_id=tournament.uniq_id
+                )
 
     return {
         PLUGIN_NAME: {
