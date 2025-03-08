@@ -156,8 +156,6 @@ class PapiWebEnvironment(Environment):
         super().__init__(
             loader=template_loader,
             autoescape=True,
-            trim_blocks=True,
-            lstrip_blocks=True,
         )
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(
