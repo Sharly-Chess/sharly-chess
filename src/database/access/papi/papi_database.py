@@ -19,6 +19,7 @@ from data.util import (
     TournamentRating,
     PlayerRatingType,
     BoardColor,
+    PointValueType,
 )
 from database.access.access_database import AccessDatabase
 from plugins.ffe.util import PlayerFFELicence
@@ -35,6 +36,7 @@ class TournamentInfo(NamedTuple):
     rating_limit1: int
     rating_limit2: int
     tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
+    point_value_type: PointValueType
     location: str
     start_date: str
     end_date: str
@@ -78,6 +80,7 @@ class PapiDatabase(AccessDatabase):
             PapiTieBreak.from_papi_value(self._read_var('Dep2')),
             PapiTieBreak.from_papi_value(self._read_var('Dep3')),
         )
+        point_value_type: PointValueType = PointValueType.from_papi_value(self._read_var('DecomptePoints'))
         location: str = self._read_var('Lieu')
         start_date: str = self._read_var('DateDebut')
         end_date: str = self._read_var('DateFin')
@@ -89,6 +92,7 @@ class PapiDatabase(AccessDatabase):
             rating_limit1,
             rating_limit2,
             tie_breaks,
+            point_value_type,
             location,
             start_date,
             end_date,
@@ -212,6 +216,11 @@ class PapiDatabase(AccessDatabase):
     ):
         for index, key in enumerate(('Dep1', 'Dep2', 'Dep3')):
             self._update_var(key, tie_breaks[index].to_papi_value)
+    
+    def update_point_values(
+        self, point_value_type: PointValueType
+    ):
+        self._update_var('DecomptePoints', point_value_type.to_papi_value)
 
     def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.

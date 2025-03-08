@@ -32,6 +32,7 @@ from data.util import (
     NeedsUpload,
     TournamentRating,
     PlayerGender,
+    PointValueType,
 )
 from data.util import TournamentPairing, Result
 from database.access.papi.papi_database import PapiDatabase
@@ -112,6 +113,7 @@ class Tournament:
         self._papi_tie_breaks: tuple[
             PapiTieBreak, PapiTieBreak, PapiTieBreak
         ] | None = None
+        self._point_value_type = PointValueType.STANDARD
         self._papi_read = False
 
     @property
@@ -546,12 +548,9 @@ class Tournament:
             case _:
                 return False
     
-    @cached_property
+    @property
     def point_values(self) -> dict[Result, float]:
-        return {
-            Result.from_trf(result_type): value 
-            for result_type, value in self.stored_tournament.point_values.items()
-        }
+        return self._point_value_type.point_values
 
     @property
     def tie_breaks(self) -> list[TieBreak]:
@@ -655,6 +654,7 @@ class Tournament:
                     self._rating_limit1,
                     self._rating_limit2,
                     self._papi_tie_breaks,
+                    self._point_value_type,
                     self._location,
                     self._start_date,
                     self._end_date,
@@ -1235,7 +1235,7 @@ class Tournament:
                         player, round_nb, player.pairings[round_nb]
                     )
             papi_database.commit()
-
+    
     def update_papi_database_from_stored_tournament(self):
         """Updates the papi database with all the
         values in common with the stored tournament."""
@@ -1244,6 +1244,7 @@ class Tournament:
         with (PapiDatabase(self.file, write=True) as papi_database):
             if tie_breaks := self._update_papi_tie_breaks():
                 papi_database.update_tie_breaks(tie_breaks)
+            papi_database.update_point_values(self._point_value_type)
             papi_database.commit()
 
     def _update_papi_tie_breaks(

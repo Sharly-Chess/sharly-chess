@@ -1619,6 +1619,7 @@ class EventDatabase(SQLiteDatabase):
                 'options': tie_break.options,
             } for tie_break in tie_breaks
         ])
+    
 
     """
     ---------------------------------------------------------------------------------
