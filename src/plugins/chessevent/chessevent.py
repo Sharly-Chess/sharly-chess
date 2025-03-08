@@ -1,9 +1,6 @@
 
 from common import BASE_DIR
-from plugins.ffe.ffe_database import FfeDatabase
 from plugins.hookspec import hookimpl
-
-from common.i18n import _
 
 #: Name of the plugin that will be referenced in our configuration
 PLUGIN_NAME = "chessevent"

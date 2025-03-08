@@ -33,7 +33,6 @@ from data.util import (
     TournamentRating,
 )
 from database.store import StoredEvent
-from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

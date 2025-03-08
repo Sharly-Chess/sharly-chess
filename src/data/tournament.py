@@ -1,5 +1,4 @@
 from collections import Counter
-from datetime import datetime
 from functools import cached_property
 from itertools import groupby
 from logging import Logger
@@ -8,7 +7,6 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 
-from dateutil.relativedelta import relativedelta
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp_date_time
@@ -38,7 +36,6 @@ from data.util import TournamentPairing, Result
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament
-from plugins.ffe.util import PlayerFFELicence
 from plugins.manager import plugin_manager
 
 logger: Logger = get_logger()
@@ -1148,9 +1145,9 @@ class Tournament:
                 'Elo': player.ratings[TournamentRating.STANDARD],
                 'Rapide': player.ratings[TournamentRating.RAPID],
                 'Blitz': player.ratings[TournamentRating.BLITZ],
-                'Federation': player.federation,
+                'Federation': player.federation.name,
                 'ClubRef': 0,
-                'Club': player.club,
+                'Club': player.club.name,
                 'Fide': player.rating_types[TournamentRating.STANDARD].to_papi_value,
                 'RapideFide': player.rating_types[TournamentRating.RAPID].to_papi_value,
                 'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,

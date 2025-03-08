@@ -1283,8 +1283,8 @@ class PrintDocument(StrEnum):
             case _:
                 raise ValueError(f'Invalid print type: {self}')
 
-def get_plugin_data(pluginName: str, plugin_data: dict[str, dict], field: str, default: Any = None):
-    return plugin_data.get(pluginName, {}).get(field, default)
+def get_plugin_data(plugin_name: str, plugin_data: dict[str, dict], field: str, default: Any = None):
+    return plugin_data.get(plugin_name, {}).get(field, default)
 
 
 class PointValueType(Enum):
@@ -1309,7 +1309,7 @@ class PointValueType(Enum):
             case "OUI":
                 return PointValueType.PAPI_3_POINTS
             case _:
-                raise ValueError(f'Cannot convert {value=} to {self.__class__.__name__}')
+                raise ValueError(f'Cannot convert {value=} to {cls.__class__.__name__}')
 
     @property
     def to_papi_value(self) -> str:

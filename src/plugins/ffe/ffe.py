@@ -223,7 +223,7 @@ def is_tournament_participation_possible(tournament: 'Tournament', player: Playe
             for player in tournament.players_by_id.values())
     ):
         # This string is not translated because the error should never happen
-        return f'FFE ID [{player.ffe_id}] already present in tournament [{tournament.uniq_id}].',
+        return f'FFE ID [{ffe_id}] already present in tournament [{tournament.uniq_id}].',
     
     return None
 

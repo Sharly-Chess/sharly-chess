@@ -26,6 +26,7 @@ from common.i18n import (
 )
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
+from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
 from web.urls import index_url
@@ -264,6 +265,10 @@ class WebContext:
         if isinstance(value, float):
             return f'{value:.2f}'
         if isinstance(value, Path):
+            return str(value)
+        if isinstance(value, Federation):
+            return str(value)
+        if isinstance(value, Club):
             return str(value)
         raise ValueError(f'unknown type for value [{value}]')
 
