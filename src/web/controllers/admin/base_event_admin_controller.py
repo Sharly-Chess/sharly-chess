@@ -283,53 +283,51 @@ class BaseEventAdminController(BaseAdminController):
                     web_context.request
                 ):
                     case 'alpha':
-
                         def sort_key(player: Player):
                             return player.last_name, player.first_name
+                    
                     case 'rating_desc':
-
                         def sort_key(player: Player):
                             return -player.rating, player.last_name, player.first_name
+                    
                     case 'rating_asc':
-
                         def sort_key(player: Player):
                             return player.rating, player.last_name, player.first_name
+                   
                     case 'yob_desc':
-
                         def sort_key(player: Player):
                             return (
                                 -player.year_of_birth,
                                 player.last_name,
                                 player.first_name,
                             )
+                    
                     case 'yob_asc':
-
                         def sort_key(player: Player):
                             return (
                                 player.year_of_birth,
                                 player.last_name,
                                 player.first_name,
                             )
+                    
                     case 'category_desc':
-
                         def sort_key(player: Player):
                             return -player.category, player.last_name, player.first_name
+                    
                     case 'category_asc':
-
                         def sort_key(player: Player):
                             return player.category, player.last_name, player.first_name
+                    
                     case 'origin':
-
                         def sort_key(player: Player):
                             return (
                                 player.federation,
-                                player.league,
                                 player.club,
                                 player.last_name,
                                 player.first_name,
                             )
+                   
                     case 'tournament':
-
                         def sort_key(player: Player):
                             return (
                                 web_context.admin_event.tournaments_by_id[
@@ -339,6 +337,7 @@ class BaseEventAdminController(BaseAdminController):
                                 player.last_name,
                                 player.first_name,
                             )
+                    
                     case _:
                         raise ValueError(
                             f'sort={SessionHandler.get_session_admin_players_sort(web_context.request)}'

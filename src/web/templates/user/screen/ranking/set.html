@@ -31,7 +31,6 @@
                                 </th>
                                 <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
                                 <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
-                                <th class="center {{ extra_classes}}">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
                                 <th class="left {{ extra_classes}}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
                                 <th class="right {{ extra_classes}}">
                                     <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
@@ -53,7 +52,6 @@
                                         <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
                                         <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
                                         <td class="center {{ extra_classes}}">{{ player.federation }}</td>
-                                        <td class="center {{ extra_classes}}">{{ player.league }}</td>
                                         <td class="left {{ extra_classes}}">{{ player.club }}</td>
                                         <td class="right {{ extra_classes}}"><strong>{{ player.points_str }}</strong></td>
                                         {% for tie_break_string in player.tie_break_values_as_strings %}

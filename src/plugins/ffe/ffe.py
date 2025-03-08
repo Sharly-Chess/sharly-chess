@@ -264,10 +264,10 @@ def get_extra_print_view_columns(document: PrintDocument):
         case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
             return [
                 ExtraColumn(
-                    insertion_index=6,
+                    at="club",
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
                     classes="center",
-                    value=lambda player: player.league,
+                    value=lambda player: getData(player.plugin_data, 'league'),
                 )
             ]
             

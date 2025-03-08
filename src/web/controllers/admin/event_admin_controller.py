@@ -666,7 +666,7 @@ class EventAdminController(BaseEventAdminController):
                 else:
                     data += f'N:{capwords(player.last_name)}\n'
                     data += f'FN:{capwords(player.last_name)}\n'
-                data += f'ORG:{player.league} - {player.club}\n'
+                data += f'ORG:{player.club}\n'
                 data += f'item1.TEL:{player.phone}\n'
                 data += 'item1.X-ABLabel:' + _('Personal') + '\n'
                 data += f'item2.EMAIL;type=INTERNET:{player.mail}\n'

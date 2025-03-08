@@ -68,7 +68,7 @@
                             {{ player.first_name }}
                             {% if player.mail %}/ {{ player.mail }}{% endif %}
                             {% if player.phone %}/ {{ player.phone }}{% endif %}
-                            {% if player.league or player.club %}/ {{ player.league }} {{ player.club }}{% endif %}
+                            {% if player.club %}/ {{ player.club }}{% endif %}
                         </label>
                     </li>
                 {% endfor %}
