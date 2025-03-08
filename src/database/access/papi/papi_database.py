@@ -22,7 +22,7 @@ from data.util import (
     PointValueType,
 )
 from database.access.access_database import AccessDatabase
-from plugins.ffe.util import PlayerFFELicence
+from plugins.manager import plugin_manager
 
 logger: Logger = get_logger()
 
@@ -137,9 +137,12 @@ class PapiDatabase(AccessDatabase):
 
     def update_player(self, player: Player):
         """Updates the event database with the information in the provided player."""
+        
+        per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(player=player)
+        plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
+        
         fields: list[str] = (
             [
-                'RefFFE',
                 'Nom',
                 'Prenom',
                 'NeLe',
@@ -147,10 +150,7 @@ class PapiDatabase(AccessDatabase):
                 'FideTitre',
                 'FideCode',
                 'Federation',
-                'Ligue',
                 'Club',
-                'AffType',
-                'NrFFE',
                 'EMail',
                 'Tel',
                 'Commentaire',
@@ -159,10 +159,10 @@ class PapiDatabase(AccessDatabase):
             ]
             + [tr.papi_value_field for tr in TournamentRating]
             + [tr.papi_type_field for tr in TournamentRating]
+            + [field for field in plugin_data.keys()]
         )
         params = (
             [
-                player.ffe_id,
                 player.last_name,
                 player.first_name,
                 self.date_to_papi_date(player.date_of_birth),
@@ -170,10 +170,7 @@ class PapiDatabase(AccessDatabase):
                 player.title.to_papi_value,
                 player.fide_id,
                 player.federation,
-                player.league,
                 player.club,
-                player.ffe_licence.to_papi_value,
-                player.ffe_licence_number,
                 player.mail,
                 player.phone,
                 player.comment,
@@ -182,6 +179,7 @@ class PapiDatabase(AccessDatabase):
             ]
             + [player.ratings[tr] for tr in TournamentRating]
             + [player.rating_types[tr].to_papi_value for tr in TournamentRating]
+            + [value for value in plugin_data.values()]
             + [
                 player.ref_id,
             ]
@@ -226,10 +224,13 @@ class PapiDatabase(AccessDatabase):
         """Reads the database and fetches the Player identification, pairings and results.
         The tournament_id is used to make the players' id unique for an event."""
         players: dict[int, Player] = {}
+        
+        per_plugin_fields = plugin_manager.hook.get_db_player_fields()
+        plugin_fields =  [field for fields in per_plugin_fields for field in fields]
+        
         player_fields: list[str] = (
             [
                 'Ref',
-                'RefFFE',
                 'Nom',
                 'Prenom',
                 'NeLe',
@@ -246,16 +247,15 @@ class PapiDatabase(AccessDatabase):
             + [tr.papi_type_field for tr in TournamentRating]
             + [
                 'Pointe',
-                'AffType',
-                'NrFFE',
                 'Federation',
-                'Ligue',
                 'Club',
                 'FideCode',
             ]
+            + plugin_fields
         )
         for rd, suffix in product(range(1, rounds + 1), ['Cl', 'Adv', 'Res']):
             player_fields.append(f'Rd{rd:0>2}{suffix}')
+        
         query: str = (
             f'SELECT {", ".join(player_fields)} FROM joueur WHERE Ref <> 1 ORDER BY Ref'
         )
@@ -291,7 +291,7 @@ class PapiDatabase(AccessDatabase):
             fide_id: int | None = None
             if row['FideCode']:
                 fide_id = int(str(row['FideCode']).strip())
-            players[player_papi_web_id] = Player(
+            player = Player(
                 id=player_papi_web_id,
                 last_name=row['Nom'] or '',
                 first_name=row['Prenom'] or '',
@@ -309,16 +309,15 @@ class PapiDatabase(AccessDatabase):
                     for tr in TournamentRating
                 },
                 fide_id=fide_id,
-                ffe_id=row['RefFFE'] or '',
-                ffe_licence=PlayerFFELicence.from_papi_value(row['AffType'] or ''),
-                ffe_licence_number=row['NrFFE'] or '',
                 federation=row['Federation'] or '',
-                league=row['Ligue'] or '',
                 club=row['Club'] or '',
                 fixed=row['Fixe'] or 0,
                 check_in=row['Pointe'] or False,
                 pairings=pairings,
             )
+            
+            plugin_manager.hook.augment_player_after_db_fetch(player=player, row=row)
+            players[player_papi_web_id] = player
         return players
 
     def set_player_result(self, player_papi_id: int, round_: int, result: Result):

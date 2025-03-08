@@ -891,7 +891,7 @@ class TournamentAdminController(BaseEventAdminController):
         extra_columns = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
-                c = extra_columns.setdefault(extra_column.insertion_index, [])
+                c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
         
         template_context |= {

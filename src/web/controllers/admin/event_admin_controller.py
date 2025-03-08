@@ -21,7 +21,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
-from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
+from data.player import Player, ClubTuple, FederationTuple
 from data.util import PlayerGender, PlayerCategory, PrintSplit, TournamentRating, PrintDocument
 from data.tournament import Tournament
 from database.sqlite.event_database import EventDatabase
@@ -199,7 +199,6 @@ class EventAdminController(BaseEventAdminController):
         admin_players_sort: str | None = None,
         admin_players_filter_columns: list[str] | None = None,
         admin_players_filter_federations: list[str] | None = None,
-        admin_players_filter_leagues: list[str] | None = None,
         admin_players_filter_clubs: list[str] | None = None,
         admin_players_filter_genders: list[int] | None = None,
         admin_players_filter_licences: list[int] | None = None,
@@ -235,15 +234,6 @@ class EventAdminController(BaseEventAdminController):
                         [
                             FederationTuple.from_query_param(query_param)
                             for query_param in admin_players_filter_federations
-                            if query_param  # '' must be ignored
-                        ],
-                    )
-                elif admin_players_filter_leagues is not None:
-                    SessionHandler.set_session_admin_players_filter_leagues(
-                        request,
-                        [
-                            LeagueTuple.from_query_param(query_param)
-                            for query_param in admin_players_filter_leagues
                             if query_param  # '' must be ignored
                         ],
                     )
@@ -676,7 +666,7 @@ class EventAdminController(BaseEventAdminController):
                 else:
                     data += f'N:{capwords(player.last_name)}\n'
                     data += f'FN:{capwords(player.last_name)}\n'
-                data += f'ORG:{player.league} - {player.club}\n'
+                data += f'ORG:{player.club}\n'
                 data += f'item1.TEL:{player.phone}\n'
                 data += 'item1.X-ABLabel:' + _('Personal') + '\n'
                 data += f'item2.EMAIL;type=INTERNET:{player.mail}\n'
@@ -694,6 +684,7 @@ class EventAdminController(BaseEventAdminController):
     @staticmethod
     def get_players_datasheet_columns() -> list[str]:
         """Returns the names of the columns used in the datasheets that can be downloaded."""
+        # TODO: plugin data
         return [
             'last_name',
             'first_name',
@@ -702,12 +693,8 @@ class EventAdminController(BaseEventAdminController):
             'phone',
             'gender',
             'fide_id',
-            'ffe_id',
-            'ffe_licence_number',
-            'ffe_licence',
             'tournament',
             'federation',
-            'league',
             'club',
             'St',
             'S',
@@ -722,6 +709,7 @@ class EventAdminController(BaseEventAdminController):
         players: list[Player],
     ) -> list[list[str | int | float]]:
         """Returns the data of the datasheets that can be downloaded."""
+        # TODO: plugin data
         return [
             [
                 player.last_name,
@@ -731,12 +719,8 @@ class EventAdminController(BaseEventAdminController):
                 player.phone,
                 player.gender.short_name,
                 player.fide_id,
-                player.ffe_id,
-                player.ffe_licence_number,
-                player.ffe_licence.short_name,
                 player.tournament.uniq_id,
                 player.federation,
-                player.league,
                 player.club,
                 player.ratings[TournamentRating.STANDARD],
                 player.rating_types[TournamentRating.STANDARD].short_name,

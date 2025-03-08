@@ -37,8 +37,8 @@
                             id="{{ name }}-{{ loop.index }}"
                             name="{% if column not in ['name', 'rating', ] %}{{ name }}{% endif %}"
                             value="{{ column }}"
-                            {% if column in ['name', 'rating', ] or column in admin_players_filter_columns %}checked{% endif %}
-                            {% if column in ['name', 'rating', ] %}disabled{% endif %}
+                            {% if column in ['name', 'rating', ] or column in admin_players_filter_columns %}checked {% endif %}
+                            {% if column in ['name', 'rating', ] %}disabled {% endif %}
                             class="{% if column not in ['name', 'rating', ] %}{{ name }}{% endif %} {{ name }}_{{ column }}"
                         />
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
@@ -52,8 +52,6 @@
                                 <i class="bi-sort-numeric-down pe-1"></i>{{ _('Rating *** RATING FOR PLAYERS COLUMNS') }}
                             {% elif column == 'federation' %}
                                 <i class="bi-house pe-1"></i>{{ _('Federation *** FEDERATION FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'league' %}
-                                <i class="bi-house pe-1"></i>{{ _('League *** LEAGUE FOR PLAYERS COLUMNS') }}
                             {% elif column == 'club' %}
                                 <i class="bi-house pe-1"></i>{{ _('Club *** CLUB FOR PLAYERS COLUMNS') }}
                             {% elif column == 'yob' %}

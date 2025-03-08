@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from data.util import PlayerRatingType, TournamentRating
 from database.sqlite.fide_database import FideDatabase
@@ -6,12 +6,13 @@ from litestar import get
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
-from data.player import Player
 from plugins.ffe.ffe_database import FfeDatabase
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 
-
+if TYPE_CHECKING:
+    from data.player import Player
+    
 class FfeSearchController(BaseEventAdminController):
 
     @get(
@@ -35,10 +36,10 @@ class FfeSearchController(BaseEventAdminController):
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
-        players: list[Player] | None = None
+        players: list['Player'] | None = None
         if search_ffe:
             with FfeDatabase() as ffe_database:
-                players: list[Player] = [player for player in ffe_database.search_player(search_ffe, limit=8)]
+                players: list['Player'] = [player for player in ffe_database.search_player(search_ffe, limit=8)]
         return HTMXTemplate(
             template_name='/ffe_search_results.html',
             context= template_context | {

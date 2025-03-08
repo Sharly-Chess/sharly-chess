@@ -1,4 +1,3 @@
-import re
 import string
 from datetime import date
 from logging import Logger
@@ -29,14 +28,13 @@ from data.util import (
 )
 from database.sqlite.fide_database import FideDatabase
 from plugins.ffe.util import PlayerFFELicence
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
 from web.messages import Message
-
-import plugins.manager as PM
 
 logger: Logger = get_logger()
 
@@ -73,8 +71,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             # player_fide_id is set when is a player is to be imported from the FIDE database
             with FideDatabase() as fide_database:
                 self.admin_player = fide_database.get_player_by_fide_id(player_fide_id)
-                PM.plugin_manager.hook.augment_player(player=self.admin_player)
-                
+            plugin_manager.hook.augment_player_after_search(player=self.admin_player)
         elif player_from_plugin:
             # A player has been returned via a plugin search
             self.admin_player = player_from_plugin
@@ -178,11 +175,6 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-        league: str | None = WebContext.form_data_to_str(data, field := 'league')
-        if league and league not in PapiWebConfig.ffe_leagues:
-            # should never happen, not translated.
-            errors[field] = f'Invalid league value [{data[field]}].'
-            data[field] = ''
         club: str | None = WebContext.form_data_to_str(data, field := 'club')
         fide_id: int | None = None
         try:
@@ -198,40 +190,6 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
             )
-        ffe_id: int | None = None
-        try:
-            ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
-            if action == 'create' and tournament and ffe_id and ffe_id in tournament.players_by_ffe_id:
-                    errors[field] = _(
-                        'The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}].'
-                    ).format(
-                        ffe_id=ffe_id,
-                        tournament_uniq_id=tournament.uniq_id
-                    )
-        except ValueError:
-            errors[field] = _('Invalid FFE ID [{ffe_id}].').format(ffe_id=data[field])
-        ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
-        try:
-            ffe_licence = PlayerFFELicence(
-                WebContext.form_data_to_int(data, field := 'ffe_licence')
-            )
-        except ValueError:
-            errors[field] = f'Invalid FFE licence [{data[field]}].'
-        ffe_licence_number: str | None = WebContext.form_data_to_str(
-            data, field := 'ffe_licence_number'
-        )
-        if ffe_licence_number:
-            if not re.match(r'^[A-Z]\d{5}$', ffe_licence_number):
-                errors[field] = _(
-                    'Invalid FFE licence number [{ffe_licence_number}].'
-                ).format(ffe_licence_number=data[field])
-            if action == 'create' and tournament and ffe_licence_number in tournament.players_by_ffe_licence_number:
-                errors[field] = _(
-                    'The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}].'
-                ).format(
-                    ffe_licence_number=ffe_licence_number,
-                    tournament_uniq_id=tournament.uniq_id
-                )
         mail: str | None = None
         try:
             mail = WebContext.form_data_to_mail(data, field := 'mail')
@@ -262,6 +220,11 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
+        
+        # Have plugins validate their fields and return private plugin data
+        per_plugin_player_data = plugin_manager.hook.get_validated_player_form_fields(action=action, tournament=tournament, data=data, errors=errors)
+        plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
+        
         return Player(
             id=web_context.admin_player.id if action != 'create' else None,
             first_name=first_name,
@@ -277,17 +240,14 @@ class PlayerAdminController(BaseEventAdminController):
             ratings=ratings,
             rating_types=rating_types,
             fide_id=fide_id,
-            ffe_id=ffe_id,
-            ffe_licence=ffe_licence,
-            ffe_licence_number=ffe_licence_number,
             federation=federation,
-            league=league,
             club=club,
             fixed=fixed,
             check_in=False,  # not taken into account when updating/creating/deleting the player
             pairings={},  # Pairings are read from Papi but not used
             tournament=tournament,
             errors=errors,
+            plugin_data=plugin_data
         )
 
     @staticmethod
@@ -341,18 +301,15 @@ class PlayerAdminController(BaseEventAdminController):
                     }
                     title: PlayerTitle = PlayerTitle.NONE
                     federation: str | None = None
-                    league: str | None = None
                     club: str | None = None
-                    ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
-                    ffe_licence_number: str | None = None
                     fide_id: int | None = None
-                    ffe_id: int | None = None
                     mail: str | None = None
                     phone: str | None = None
                     comment: str | None = None
                     owed: float = 0.0
                     paid: float = 0.0
                     fixed: int = 0
+                    plugin_data = {}
                     if admin_player:
                         first_name = admin_player.first_name
                         last_name = admin_player.last_name
@@ -362,18 +319,15 @@ class PlayerAdminController(BaseEventAdminController):
                         rating_types = admin_player.rating_types
                         title = admin_player.title
                         federation = admin_player.federation
-                        league = admin_player.league
                         club = admin_player.club
-                        ffe_licence = admin_player.ffe_licence
-                        ffe_licence_number = admin_player.ffe_licence_number
                         fide_id = admin_player.fide_id or None
-                        ffe_id = admin_player.ffe_id
                         mail = admin_player.mail
                         phone = admin_player.phone
                         comment = admin_player.comment
                         owed = admin_player.owed
                         paid = admin_player.paid
                         fixed = admin_player.fixed
+                        plugin_data = admin_player.plugin_data or {}
                     match action:
                         case 'update' | 'delete':
                             tournament_id = admin_player.tournament.id
@@ -384,6 +338,10 @@ class PlayerAdminController(BaseEventAdminController):
                                 tournament_id = None
                         case _:
                             raise ValueError(f'action=[{action}]')
+                   
+                    per_plugin_form_data = plugin_manager.hook.get_player_form_data(plugin_data=plugin_data)
+                    plugin_form_data = { key: value for data in per_plugin_form_data for key, value in data.items() }
+                        
                     data = (
                         {
                             'last_name': WebContext.value_to_form_data(last_name),
@@ -398,13 +356,7 @@ class PlayerAdminController(BaseEventAdminController):
                             'title': WebContext.value_to_form_data(title.value),
                             'federation': WebContext.value_to_form_data(federation),
                             'fide_id': WebContext.value_to_form_data(fide_id),
-                            'league': WebContext.value_to_form_data(league),
                             'club': WebContext.value_to_form_data(club),
-                            'ffe_licence': WebContext.value_to_form_data(ffe_licence),
-                            'ffe_licence_number': WebContext.value_to_form_data(
-                                ffe_licence_number
-                            ),
-                            'ffe_id': WebContext.value_to_form_data(ffe_id),
                             'mail': WebContext.value_to_form_data(mail),
                             'phone': WebContext.value_to_form_data(phone),
                             'comment': WebContext.value_to_form_data(comment),
@@ -424,6 +376,7 @@ class PlayerAdminController(BaseEventAdminController):
                             )
                             for tr in TournamentRating
                         }
+                        | plugin_form_data
                     )
                 if errors is None:
                     errors = {}
@@ -446,7 +399,8 @@ class PlayerAdminController(BaseEventAdminController):
                     for tournament in admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
                 }
                 
-                plugin_search_templates = PM.plugin_manager.hook.get_player_search_template() or []
+                plugin_search_templates = plugin_manager.hook.get_player_search_template() or []
+                plugin_form_fields_templates = plugin_manager.hook.get_player_form_fields_template() or []
                 
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
@@ -489,6 +443,7 @@ class PlayerAdminController(BaseEventAdminController):
                     },
                     'fide_search_available': FideDatabase().exists(),
                     'plugin_search_templates': plugin_search_templates,
+                    'plugin_form_fields_templates': plugin_form_fields_templates,
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -718,6 +673,7 @@ class PlayerAdminController(BaseEventAdminController):
             return web_context.error
         admin_player: Player = web_context.admin_player
         src_tournament: Tournament = admin_player.tournament
+        
         if admin_player.has_real_pairings:
             Message.error(
                 request,
@@ -731,24 +687,12 @@ class PlayerAdminController(BaseEventAdminController):
             )
         else:
             dst_tournament: Tournament = web_context.admin_tournament
+            
             if not dst_tournament.file_exists:
                 Message.error(
                     request,
                     _('Papi file [{tournament_file}] not found.').format(
                         tournament_file=dst_tournament.file
-                    ),
-                )
-            elif (
-                admin_player.ffe_licence_number
-                in dst_tournament.players_by_ffe_licence_number
-            ):
-                Message.error(
-                    request,
-                    _(
-                        'FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].'
-                    ).format(
-                        ffe_licence_number=admin_player.ffe_licence_number,
-                        tournament_uniq_id=dst_tournament.uniq_id,
                     ),
                 )
             elif admin_player.fide_id in dst_tournament.players_by_fide_id:
@@ -761,12 +705,8 @@ class PlayerAdminController(BaseEventAdminController):
                         tournament_uniq_id=dst_tournament.uniq_id,
                     ),
                 )
-            elif admin_player.ffe_id in dst_tournament.players_by_ffe_id:
-                # This string is not translated because the error should never happen
-                Message.error(
-                    request,
-                    f'FFE ID [{admin_player.ffe_id}] already present in tournament [{dst_tournament.uniq_id}].',
-                )
+            elif plugin_error := plugin_manager.hook.is_tournament_participation_possible(tournament=dst_tournament, player=admin_player) or None:
+                Message.error(request, plugin_error)
             else:
                 dst_tournament.add_player(admin_player)
                 src_tournament.delete_player(admin_player)

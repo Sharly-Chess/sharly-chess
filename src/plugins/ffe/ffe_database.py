@@ -31,7 +31,9 @@ from data.util import (
     PlayerGender,
     PlayerTitle,
 )
-from database.access.ffe.ffe_access_database import FfeAccessDatabase
+
+from plugins.ffe.constants import PLUGIN_NAME
+from plugins.ffe.ffe_access_database import FfeAccessDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.util import PlayerFFELicence
 
@@ -220,16 +222,20 @@ class FfeDatabase(SQLiteDatabase):
                 TournamentRating.BLITZ: PlayerRatingType(row['blitz_rating_type']),
             },
             fide_id=row['fide_id'],
-            ffe_id=row['ffe_id'],
-            ffe_licence=PlayerFFELicence(row['ffe_licence']),
-            ffe_licence_number=row['ffe_licence_number'],
             federation=row['federation'],
-            league=row['league'],
             club=row['club'],
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
             pairings={},  # Pairings are read from Papi but not used
             tournament=None,
+            plugin_data={
+                PLUGIN_NAME: {
+                    "ffe_id": row['ffe_id'],
+                    "ffe_licence": PlayerFFELicence(row['ffe_licence']),
+                    "ffe_licence_number": row['ffe_licence_number'],
+                    "league": row['league'],
+                }
+            }
         ) if row else None
 
     def search_player(

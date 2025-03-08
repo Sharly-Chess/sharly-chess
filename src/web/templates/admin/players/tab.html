@@ -137,9 +137,9 @@
                             {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down', 'rating_asc', admin_players_sort) }}
                         </div>
                     </th>
-                    {% if 'federation' in admin_players_filter_columns or 'league' in admin_players_filter_columns or 'club' in admin_players_filter_columns %}
+                    {% if 'federation' in admin_players_filter_columns or 'club' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-start" colspan="{{
-                            (1 if 'federation' in admin_players_filter_columns else 0) + (1 if 'league' in admin_players_filter_columns else 0) + (1 if 'club' in admin_players_filter_columns else 0)
+                            (1 if 'federation' in admin_players_filter_columns else 0) + (1 if 'club' in admin_players_filter_columns else 0)
                         }}">
                             <div class="d-flex align-items-center gap-1">
                                 {{ _('Origin *** ORIGIN COLUMN HEADER FOR PLAYERS') }}
@@ -148,9 +148,6 @@
                                 {% endif %}
                                 {% if admin_players_federations|length > 1 %}
                                     {% include 'filter_federations.html' %}
-                                {% endif %}
-                                {% if admin_players_leagues|length > 1 %}
-                                    {% include 'filter_leagues.html' %}
                                 {% endif %}
                                 {% if admin_players_clubs|length > 1 %}
                                     {% include 'filter_clubs.html' %}
@@ -238,14 +235,6 @@
                         <th scope="col" class="text-nowrap text-center w-1">
                             <div class="d-flex align-items-center">
                                 {{ _('FIDE *** FIDE COLUMN HEADER FOR PLAYERS') }}
-                            </div>
-                        </th>
-                    {% endif %}
-                    {% if 'ffe' in admin_players_filter_columns %}
-                        <th scope="col" class="text-nowrap text-center w-1">
-                            <div class="d-flex align-items-center">
-                                {{ _('FFE *** FFE COLUMN HEADER FOR PLAYERS') }}
-                                {% include 'filter_ffe_licences.html' %}
                             </div>
                         </th>
                     {% endif %}
@@ -395,11 +384,6 @@
                                     </span>
                                 </td>
                             {% endif %}
-                            {% if 'league' in admin_players_filter_columns %}
-                                <td class="text-nowrap text-start w-1">
-                                    {{ player.league }}
-                                </td>
-                            {% endif %}
                             {% if 'club' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-start w-1" style="max-width: 15em; overflow: hidden; text-overflow: ellipsis;">
                                     {{ player.club }}
@@ -465,27 +449,6 @@
                                             {{ macros.tooltip_attributes('warning', _('No FIDE ID.'), 'left') }}
                                         {% endif %}
                                     />
-                                </td>
-                            {% endif %}
-                            {% if 'ffe' in admin_players_filter_columns %}
-                                <td class="text-nowrap text-center w-1">
-                                    <span
-                                        {% if player.ffe_licence.value == 0 %}
-                                            {{ macros.tooltip_attributes('error', player.ffe_licence.name, 'right') }}
-                                        {% elif player.ffe_licence.value == 1 %}
-                                            {{ macros.tooltip_attributes('warning', _('FFE licence: %(ffe_licence_number)s (expired).', ffe_licence_number=player.ffe_licence_number), 'right') }}
-                                            class="cursor-pointer"
-                                            onclick="navigator.clipboard.writeText('{{ player.ffe_licence_number }}')"
-                                        {% elif player.ffe_licence.value in [2, 3] %}
-                                            {{ macros.tooltip_attributes('info', _('FFE licence: %(ffe_licence_number)s (click to copy to the clipboard).', ffe_licence_number=player.ffe_licence_number), 'right') }}
-                                            class="cursor-pointer"
-                                            onclick="navigator.clipboard.writeText('{{ player.ffe_licence_number }}')"
-                                        {% else %}
-                                            {{ macros.tooltip_attributes('error', _('Unknown FFE Licence type [%(ffe_licence)s].', ffe_licence=player.ffe_licence), 'right') }}
-                                        {% endif %}
-                                    >
-                                        {{ macros.ffe_licence(player.ffe_licence) }}
-                                    </span>
                                 </td>
                             {% endif %}
                             {% if 'owed_paid' in admin_players_filter_columns %}

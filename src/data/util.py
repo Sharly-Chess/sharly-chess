@@ -7,7 +7,7 @@ from enum import Enum, StrEnum, IntEnum
 from itertools import islice
 from logging import Logger
 from math import floor
-from typing import Self
+from typing import Any, Self
 
 from common.i18n import _
 from common.logger import get_logger
@@ -1283,6 +1283,9 @@ class PrintDocument(StrEnum):
             case _:
                 raise ValueError(f'Invalid print type: {self}')
 
+def get_plugin_data(pluginName: str, plugin_data: dict[str, dict], field: str, default: Any = None):
+    return plugin_data.get(pluginName, {}).get(field, default)
+
 
 class PointValueType(Enum):
     STANDARD = 1
@@ -1297,7 +1300,7 @@ class PointValueType(Enum):
                 return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
             case _:
                 raise ValueError(f'{self=}')
-    
+
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
         match value.upper():

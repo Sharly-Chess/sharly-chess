@@ -4,7 +4,7 @@
     {% if search_results %}
         {% for player in search_results %}
             <li class="dropdown-item text-nowrap btn"
-                hx-get="{{ url_for('ffe-create-from-modal', event_uniq_id=admin_event.uniq_id, player_ffe_id=player.ffe_id) }}"
+                hx-get="{{ url_for('ffe-create-from-modal', event_uniq_id=admin_event.uniq_id, player_ffe_id=player.plugin_data.ffe.ffe_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
             >

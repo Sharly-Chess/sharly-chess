@@ -15,11 +15,15 @@
                     <table class="table table-striped table-sm bg-light">
                         <thead>
                             <tr class="column-heading">
+                                {{ macros.extra_column_header("rank", extra_classes, extra_columns)}}
                                 <th class="right {{ extra_classes }}">
                                     {{ _('Rk. *** RANK FOR PRINT VIEW') }}
                                 </th>
+                                {{ macros.extra_column_header("title", extra_classes, extra_columns)}}
                                 <th class="right {{ extra_classes}}">&nbsp;</th>
+                                {{ macros.extra_column_header("name", extra_classes, extra_columns)}}
                                 <th class="left {{ extra_classes}}">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                                {{ macros.extra_column_header("elo", extra_classes, extra_columns)}}
                                 <th class="center {{ extra_classes}}">
                                     {% if tournament.rating == 1 %}
                                         {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
@@ -29,36 +33,50 @@
                                         {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
                                     {% endif %}
                                 </th>
+                                {{ macros.extra_column_header("category", extra_classes, extra_columns)}}
                                 <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
+                                {{ macros.extra_column_header("federation", extra_classes, extra_columns)}}
                                 <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
-                                <th class="center {{ extra_classes}}">{{ _('League *** LEAGUE FOR PRINT VIEW') }}</th>
+                                {{ macros.extra_column_header("club", extra_classes, extra_columns)}}
                                 <th class="left {{ extra_classes}}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                                {{ macros.extra_column_header("points", extra_classes, extra_columns)}}
                                 <th class="right {{ extra_classes}}">
                                     <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
                                 </th>
+                                {{ macros.extra_column_header("first-tie-break", extra_classes, extra_columns)}}
                                 {% for tie_break in tournament.tie_breaks %}
                                     <th class="right">{{ tie_break.acronym }}</th>
                                 {% endfor %}
+                                {{ macros.extra_column_header("end", extra_classes, extra_columns)}}
                             </tr>
                         </thead>
                         <tbody>
                             {% if players %}
                                 {% for player in players %}
                                     <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
+                                        {{ macros.extra_column_data("rank", player, extra_classes, extra_columns)}}
                                         <td class="right {{ extra_classes}}">
                                             {{ player.rank }}
                                         </td>
+                                        {{ macros.extra_column_data("title", player, extra_classes, extra_columns)}}
                                         <td class="right {{ extra_classes}}">{{ player.title.short_name }}</td>
+                                        {{ macros.extra_column_data("name", player, extra_classes, extra_columns)}}
                                         <td class="left {{ extra_classes}}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
+                                        {{ macros.extra_column_data("elo", player, extra_classes, extra_columns)}}
                                         <td class="right {{ extra_classes}}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+                                        {{ macros.extra_column_data("category", player, extra_classes, extra_columns)}}
                                         <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
+                                        {{ macros.extra_column_data("federation", player, extra_classes, extra_columns)}}
                                         <td class="center {{ extra_classes}}">{{ player.federation }}</td>
-                                        <td class="center {{ extra_classes}}">{{ player.league }}</td>
+                                        {{ macros.extra_column_data("club", player, extra_classes, extra_columns)}}
                                         <td class="left {{ extra_classes}}">{{ player.club }}</td>
+                                        {{ macros.extra_column_data("points", player, extra_classes, extra_columns)}}
                                         <td class="right {{ extra_classes}}"><strong>{{ player.points_str }}</strong></td>
+                                        {{ macros.extra_column_data("first-tie-break", player, extra_classes, extra_columns)}}
                                         {% for tie_break_string in player.tie_break_values_as_strings %}
                                             <td class="center {{ extra_classes}}">{{ tie_break_string }}</td>
                                         {% endfor %}
+                                        {{ macros.extra_column_data("end", player, extra_classes, extra_columns)}}
                                     </tr>
                                 {% endfor %}
                             {% else %}

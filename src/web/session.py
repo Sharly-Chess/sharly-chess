@@ -1,15 +1,18 @@
 import logging
 import time
+from typing import TYPE_CHECKING
 
 from litestar.contrib.htmx.request import HTMXRequest
 
 from common import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.event import Event
-from data.player import FederationTuple, LeagueTuple, ClubTuple
+from data.player import FederationTuple, ClubTuple
 from data.util import PlayerGender, PlayerCategory
 from plugins.ffe.util import PlayerFFELicence
 
+if TYPE_CHECKING:
+    from data.event import Event
+    
 logger: logging.Logger = get_logger()
 
 
@@ -17,13 +20,13 @@ class SessionHandler:
     AUTH_SESSION_KEY: str = 'auth'
 
     @classmethod
-    def store_password(cls, request: HTMXRequest, event: Event, password: str | None):
+    def store_password(cls, request: HTMXRequest, event: 'Event', password: str | None):
         if cls.AUTH_SESSION_KEY not in request.session:
             request.session[cls.AUTH_SESSION_KEY]: dict[str, str] = {}
         request.session[cls.AUTH_SESSION_KEY][event.uniq_id] = password
 
     @classmethod
-    def get_stored_password(cls, request: HTMXRequest, event: Event) -> str | None:
+    def get_stored_password(cls, request: HTMXRequest, event: 'Event') -> str | None:
         try:
             return request.session[cls.AUTH_SESSION_KEY][event.uniq_id]
         except KeyError:
@@ -222,29 +225,6 @@ class SessionHandler:
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, [])
         ]
 
-    ADMIN_PLAYERS_FILTER_LEAGUES_KEY: str = 'admin_players_filter_leagues'
-
-    @classmethod
-    def set_session_admin_players_filter_leagues(
-        cls, request: HTMXRequest, league_tuples: list[LeagueTuple]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY]: list[LeagueTuple] = (
-            league_tuples
-        )
-
-    @classmethod
-    def get_session_admin_players_filter_leagues(
-        cls, request: HTMXRequest
-    ) -> list[LeagueTuple]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
-        return [
-            d
-            if isinstance(d, LeagueTuple)
-            else LeagueTuple(d['federation'], d['league'])
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY, [])
-        ]
-
     ADMIN_PLAYERS_FILTER_CLUBS_KEY: str = 'admin_players_filter_clubs'
 
     @classmethod
@@ -264,7 +244,7 @@ class SessionHandler:
         return [
             d
             if isinstance(d, ClubTuple)
-            else ClubTuple(d['federation'], d['league'], d['club'])
+            else ClubTuple(d['federation'], d['club'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
 

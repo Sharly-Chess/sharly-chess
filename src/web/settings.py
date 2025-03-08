@@ -16,6 +16,7 @@ from litestar.types import ControllerRouterHandler, Middleware
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
+
 from plugins.manager import plugin_manager
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
@@ -37,6 +38,7 @@ from web.controllers.user.tournament_user_controller import (
     ResultUserController,
     DownloadUserController,
 )
+
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
 

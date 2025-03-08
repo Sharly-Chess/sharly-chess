@@ -251,21 +251,6 @@ class WebContext:
             except NumberParseException:
                 raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)')
 
-    @classmethod
-    def form_data_to_ffe_licence_number(
-        cls, data: dict[str, str], field: str
-    ) -> str | None:
-        if data is None:
-            return None
-        data[field] = data.get(field, '')
-        if data[field] is not None:
-            data[field] = data[field].strip().upper()
-        if not data[field]:
-            return None
-        if re.match(r'^[A-Za-z][0-9]{5}$', data[field]):
-            return data[field]
-        raise ValueError(f'data[{field}]=[{data[field]}] (licence number expected)')
-
     @staticmethod
     def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
         if value is None:
