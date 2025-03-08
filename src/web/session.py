@@ -244,7 +244,7 @@ class SessionHandler:
         return [
             d
             if isinstance(d, ClubTuple)
-            else ClubTuple(d['federation'], d['league'], d['club'])
+            else ClubTuple(d['federation'], d['club'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
 

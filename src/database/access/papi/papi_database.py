@@ -155,7 +155,7 @@ class PapiDatabase(AccessDatabase):
             ]
             + [tr.papi_value_field for tr in TournamentRating]
             + [tr.papi_type_field for tr in TournamentRating]
-            + [field for field, _ in plugin_data.items()]
+            + [field for field in plugin_data.keys()]
         )
         params = (
             [
@@ -175,7 +175,7 @@ class PapiDatabase(AccessDatabase):
             ]
             + [player.ratings[tr] for tr in TournamentRating]
             + [player.rating_types[tr].to_papi_value for tr in TournamentRating]
-            + [value for _, value in plugin_data.items()]
+            + [value for value in plugin_data.values()]
             + [
                 player.ref_id,
             ]

@@ -708,7 +708,6 @@ class PlayerAdminController(BaseEventAdminController):
             elif plugin_error := plugin_manager.hook.is_tournament_participation_possible(tournament=dst_tournament, player=admin_player) or None:
                 Message.error(request, plugin_error)
             else:
-                print(dst_tournament, admin_player)
                 dst_tournament.add_player(admin_player)
                 src_tournament.delete_player(admin_player)
                 Message.success(

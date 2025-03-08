@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 
 from common import BASE_DIR
 from common.logger import print_interactive_error
-from data.util import PlayerRatingType, PrintDocument, ScreenType, TournamentRating, getPluginData
+from data.util import PlayerRatingType, PrintDocument, ScreenType, TournamentRating, get_plugin_data
 from data.player import Player
 from plugins.ffe.constants import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
@@ -49,7 +49,7 @@ ffe_leagues: dict[str, str] = {
     'REU': 'Réunion',
 }
 
-getData = partial(getPluginData, PLUGIN_NAME)
+get_data = partial(get_plugin_data, PLUGIN_NAME)
     
 @hookimpl
 def on_init():
@@ -73,10 +73,10 @@ def augment_player_after_db_fetch(player: Player, row: dict[str: Any]):
 def player_data_for_db_write(player: Player):
     pd = player.plugin_data
     return {
-        'RefFFE': getData(pd, 'ffe_id', (datetime.now() - relativedelta(years=30))),  # like Papi does :-(
-        'AffType': getData(pd, 'ffe_licence').to_papi_value if getData(pd, 'ffe_licence') else '',
-        'NrFFE': getData(pd, 'ffe_licence_number', None),
-        'Ligue': getData(pd, 'league', ''),
+        'RefFFE': get_data(pd, 'ffe_id', (datetime.now() - relativedelta(years=30))),  # like Papi does :-(
+        'AffType': get_data(pd, 'ffe_licence').to_papi_value if get_data(pd, 'ffe_licence') else '',
+        'NrFFE': get_data(pd, 'ffe_licence_number', None),
+        'Ligue': get_data(pd, 'league', ''),
     }
     
 @hookimpl
@@ -107,12 +107,12 @@ def get_player_form_fields_template():
 @hookimpl
 def get_player_form_data(plugin_data: dict[str, dict[str, Any]]):
     return {
-        'ffe_licence': WebContextModule.WebContext.value_to_form_data(getData(plugin_data, 'ffe_licence', None)),
+        'ffe_licence': WebContextModule.WebContext.value_to_form_data(get_data(plugin_data, 'ffe_licence', None)),
         'ffe_licence_number': WebContextModule.WebContext.value_to_form_data(
-            getData(plugin_data, 'ffe_licence_number', None)
+            get_data(plugin_data, 'ffe_licence_number', None)
         ),
-        'ffe_id': WebContextModule.WebContext.value_to_form_data(getData(plugin_data, 'ffe_id', None)),
-        'ffe_league': WebContextModule.WebContext.value_to_form_data(getData(plugin_data, 'league', None)),
+        'ffe_id': WebContextModule.WebContext.value_to_form_data(get_data(plugin_data, 'ffe_id', None)),
+        'ffe_league': WebContextModule.WebContext.value_to_form_data(get_data(plugin_data, 'league', None)),
     }   
 
 @hookimpl
@@ -126,7 +126,7 @@ def get_validated_player_form_fields(action: str, tournament: 'Tournament', data
     
     try:
         ffe_id = WebContextModule.WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
-        ffe_ids = [ getData(player.plugin_data, 'ffe_id', None) for player in tournament.players_by_id.values() ]
+        ffe_ids = [ get_data(player.plugin_data, 'ffe_id', None) for player in tournament.players_by_id.values() ]
         
         if action == 'create' and tournament and ffe_id and ffe_id in ffe_ids:
                 errors[field] = _(
@@ -193,31 +193,31 @@ def augment_player_after_search(player: Player):
                 player.comment = ffe_player.comment
                 player.club = ffe_player.club
                 player.plugin_data[PLUGIN_NAME] = {
-                    "ffe_id": getData(ffe_player.plugin_data, 'ffe_id'),
-                    "ffe_licence": getData(ffe_player.plugin_data, 'ffe_licence'),
-                    "ffe_licence_number": getData(ffe_player.plugin_data, 'ffe_licence_number'),
-                    "league": getData(ffe_player.plugin_data, 'league')
+                    "ffe_id": get_data(ffe_player.plugin_data, 'ffe_id'),
+                    "ffe_licence": get_data(ffe_player.plugin_data, 'ffe_licence'),
+                    "ffe_licence_number": get_data(ffe_player.plugin_data, 'ffe_licence_number'),
+                    "league": get_data(ffe_player.plugin_data, 'league')
                 }
                 
 @hookimpl
 def is_tournament_participation_possible(tournament: 'Tournament', player: Player):
     ffe_licence_number = player.plugin_data.get(PLUGIN_NAME, {}).get('ffe_licence_number', None)
-    ffe_id = getData(player.plugin_data, 'ffe_id', None)
+    ffe_id = get_data(player.plugin_data, 'ffe_id', None)
     if (
         ffe_licence_number
-        and any(getData(player.plugin_data, 'ffe_licence_number', None) == ffe_licence_number
+        and any(get_data(player.plugin_data, 'ffe_licence_number', None) == ffe_licence_number
             for player in tournament.players_by_id.values())
     ):
         return _(
             'FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].'
         ).format(
-            ffe_licence_number=getData(player.plugin_data, 'ffe_licence_number', None),
+            ffe_licence_number=get_data(player.plugin_data, 'ffe_licence_number', None),
             tournament_uniq_id=tournament.uniq_id,
         )
     
     if (
         ffe_id
-        and any(getData(player.plugin_data, 'ffe_id', None) == ffe_id
+        and any(get_data(player.plugin_data, 'ffe_id', None) == ffe_id
             for player in tournament.players_by_id.values())
     ):
         # This string is not translated because the error should never happen
@@ -267,7 +267,7 @@ def get_extra_print_view_columns(document: PrintDocument):
                     at="club",
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
                     classes="center",
-                    value=lambda player: getData(player.plugin_data, 'league'),
+                    value=lambda player: get_data(player.plugin_data, 'league'),
                 )
             ]
             
@@ -283,7 +283,7 @@ def get_extra_screen_columns(screen: ScreenType):
                     at="club",
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
                     classes="center",
-                    value=lambda player: getData(player.plugin_data, 'league'),
+                    value=lambda player: get_data(player.plugin_data, 'league'),
                 )
             ]
             

@@ -1283,5 +1283,5 @@ class PrintDocument(StrEnum):
             case _:
                 raise ValueError(f'Invalid print type: {self}')
             
-def getPluginData(pluginName: str, plugin_data: dict[str, dict], field: str, default: Any = None):
+def get_plugin_data(pluginName: str, plugin_data: dict[str, dict], field: str, default: Any = None):
     return plugin_data.get(pluginName, {}).get(field, default)
