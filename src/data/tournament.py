@@ -885,8 +885,8 @@ class Tournament:
 
     def compute_player_ranks(
         self, max_round: int | None = None, papi_legacy: bool = True
-    ):
-        """compute the ranks of all the players after round *max_round*."""
+    ) -> dict[int, Player]:
+        """compute and return the ranks of all the players after round *max_round*."""
         if max_round is None:
             max_round = self.max_ranking_round
         else:
@@ -895,10 +895,7 @@ class Tournament:
             # Estimate ratings to ensure we have a defined rating for everyone
             self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
             for player in self.players_by_id.values():
-                player.points = (
-                    player.total_points() if max_round is None
-                    else player.points_after(max_round)
-                )
+                player.points = player.points_after(max_round)
                 player.compute_tie_break_values(max_round)
             self._players_by_rank = {
                 rank: player
@@ -917,6 +914,7 @@ class Tournament:
             self._players_by_rank = self.players_by_trf_id
         for rank, player in self._players_by_rank.items():
             player.set_rank(rank)
+        return self._players_by_rank
 
     @cached_property
     def players_by_rank(self) -> dict[int, Player]:

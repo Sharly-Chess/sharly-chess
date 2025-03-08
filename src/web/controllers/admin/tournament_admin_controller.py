@@ -853,12 +853,11 @@ class TournamentAdminController(BaseEventAdminController):
             PrintDocument(document) if document else PrintDocument.PLAYER_LIST
         )
         if round is None:
-            round = 0
+            round = admin_tournament.max_ranking_round
         players: list[Player]
         match print_document:
             case PrintDocument.RANKING | PrintDocument.CROSSTABLE:
-                admin_tournament.compute_player_ranks(round)
-                players = list(admin_tournament.players_by_rank.values())
+                players = list(admin_tournament.compute_player_ranks(round).values())
             case PrintDocument.PLAYER_LIST:
                 players = admin_tournament.players_by_name_with_unpaired
             case _:
