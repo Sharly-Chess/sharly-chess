@@ -14,7 +14,7 @@ from data.player import Player
 from plugins.ffe.constants import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.util import PlayerFFELicence
-from plugins.hookspec import PrintSplitOption, hookimpl, ExtraColumn
+from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, ExtraColumn
 
 from common.i18n import _
 
@@ -289,3 +289,18 @@ def get_extra_screen_columns(screen: ScreenType):
             
         case _:
             return
+        
+@hookimpl
+def get_extra_player_columns():
+    return [
+        ExtraAdminColumn(
+            at="club",
+            header_template="/ffe_player_league_header.html",
+            cell_template="/ffe_player_league_cell.html",
+        ),
+        ExtraAdminColumn(
+            at="owed",
+            header_template="/ffe_player_licence_header.html",
+            cell_template="/ffe_player_licence_cell.html",
+        )
+    ]

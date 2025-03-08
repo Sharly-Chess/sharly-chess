@@ -2037,6 +2037,29 @@ msgstr "Liga:"
 msgid "The player's league."
 msgstr "La liga del jugador."
 
+#: src/plugins/ffe/templates/ffe_player_league_header.html
+msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_licence_cell.html
+#, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_licence_cell.html
+#, python-format
+msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_licence_cell.html
+#, python-format
+msgid "Unknown FFE Licence type [%(ffe_licence)s]."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_licence_header.html
+msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
+msgstr ""
+
 #: src/plugins/ffe/templates/ffe_search.html
 #, ai_translation
 msgid "FFE database:"
@@ -2982,9 +3005,8 @@ msgid "Sort the players by rating (less rated first)."
 msgstr "Ordenar a los jugadores por calificación (menos valorado primero)."
 
 #: src/web/templates/admin/common/macros.j2
-#, ai_translation
-msgid "Sort the players by origin (federation, league, club)."
-msgstr "Ordenar los jugadores por origen (federación, liga, club)."
+msgid "Sort the players by club."
+msgstr ""
 
 #: src/web/templates/admin/common/macros.j2
 #, ai_translation
@@ -6603,4 +6625,7 @@ msgstr "vs."
 
 #~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 #~ msgstr "Tipo de licencia FFE desconocido [%(ffe_licence)s]."
+
+#~ msgid "Sort the players by origin (federation, league, club)."
+#~ msgstr "Ordenar los jugadores por origen (federación, liga, club)."
 

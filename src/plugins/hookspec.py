@@ -28,6 +28,10 @@ class ExtraColumn(NamedTuple):
         [Any], str
     ]
 
+class ExtraAdminColumn(NamedTuple):
+    at: str
+    header_template: str
+    cell_template: str
 class AppHookSpecs:
     """Holds all hookspecs for this application"""
 
@@ -90,6 +94,10 @@ class AppHookSpecs:
     @hookspec
     def get_print_split_options(self) -> Iterable[Iterable[PrintSplitOption] | None]:
         """Provide print splitting options"""
+
+    @hookspec
+    def get_extra_player_columns(self) -> Iterable[Iterable[ExtraAdminColumn] | None]:
+        """Provide extra columns for the print view"""
         
     @hookspec
     def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[Iterable[ExtraColumn] | None]:

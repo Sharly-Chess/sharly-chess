@@ -189,6 +189,14 @@ class BaseEventAdminController(BaseAdminController):
                     "tournament_card_blocks": tournament_card_blocks
                 }
             case 'players':
+                # Allow plugin to provide extra columns
+                per_plugin_columns = plugin_manager.hook.get_extra_player_columns()
+                extra_columns = {}
+                for plugin_columns in per_plugin_columns:
+                    for extra_column in plugin_columns:
+                        c = extra_columns.setdefault(extra_column.at, [])
+                        c.append(extra_column)
+                
                 # The federations that will be shown on the federation select list
                 players_federations: list[Federation] = sorted(
                     {
@@ -461,6 +469,7 @@ class BaseEventAdminController(BaseAdminController):
                     'admin_players_filter_name': SessionHandler.get_session_admin_players_filter_name(
                         web_context.request
                     ),
+                    'admin_players_extra_columns': extra_columns,
                 }
             case 'screens':
                 template_context |= {

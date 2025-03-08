@@ -570,3 +570,26 @@ hx_indicator_img: the URL of the image of the indicator, optional
         disabled=disabled,
     ) }}
 {% endmacro %}
+
+{% macro extra_admin_column_header(
+    at,
+    extra_columns = {}
+) %}
+    {% set columns=extra_columns[at] or [] %}
+    {% for column in columns %}
+        {% include column.header_template %}
+    {% endfor %}
+{% endmacro %}
+
+{% macro extra_admin_column_cell(
+    at,
+    value, 
+    extra_columns = {}
+) %}
+    {% with value=value %}
+        {% set columns=extra_columns[at] or [] %}
+        {% for column in columns %}
+            {% include column.cell_template %}
+        {% endfor %}
+    {% endwith %}
+{% endmacro %}
