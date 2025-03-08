@@ -21,7 +21,7 @@ class PrintSplitOption(NamedTuple):
     ]
 
 class ExtraColumn(NamedTuple):
-    insertion_index: int
+    at: str
     title: str
     classes: str
     value: Callable[
