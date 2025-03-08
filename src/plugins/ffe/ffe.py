@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 
 from common import BASE_DIR
 from common.logger import print_interactive_error
-from data.util import PlayerRatingType, PrintDocument, TournamentRating, getPluginData
+from data.util import PlayerRatingType, PrintDocument, ScreenType, TournamentRating, getPluginData
 from data.player import Player
 from plugins.ffe.constants import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
@@ -262,6 +262,22 @@ def get_print_split_options():
 def get_extra_print_view_columns(document: PrintDocument):
     match document:
         case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
+            return [
+                ExtraColumn(
+                    at="club",
+                    title=_('League *** LEAGUE FOR PRINT VIEW'),
+                    classes="center",
+                    value=lambda player: getData(player.plugin_data, 'league'),
+                )
+            ]
+            
+        case _:
+            return
+
+@hookimpl
+def get_extra_screen_columns(screen: ScreenType):
+    match screen:
+        case ScreenType.RANKING:
             return [
                 ExtraColumn(
                     at="club",

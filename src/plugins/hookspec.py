@@ -4,7 +4,7 @@ from typing import NamedTuple, Any, TYPE_CHECKING
 from collections.abc import Iterable, Callable
 from data.player import Player
 from common import APP_NAME
-from data.util import PrintDocument
+from data.util import PrintDocument, ScreenType
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -94,3 +94,8 @@ class AppHookSpecs:
     @hookspec
     def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[Iterable[ExtraColumn] | None]:
         """Provide extra columns for the print view"""
+    
+    @hookspec
+    def get_extra_screen_columns(self, screen: ScreenType) -> Iterable[Iterable[ExtraColumn] | None]:
+        """Provide extra columns for the print view"""
+

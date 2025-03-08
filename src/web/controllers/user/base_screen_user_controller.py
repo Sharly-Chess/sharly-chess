@@ -13,6 +13,7 @@ from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
 from data.util import ScreenType
+from plugins.manager import plugin_manager
 from web.controllers.user.event_user_controller import EventUserWebContext
 from web.controllers.user.base_user_controller import BaseUserController
 from web.messages import Message
@@ -200,6 +201,16 @@ class BaseScreenUserController(BaseUserController):
         cls,
         web_context: ScreenOrRotatorUserWebContext,
     ) -> Template | ClientRedirect:
+        # Allow plugin to provide extra columns
+        per_plugin_columns = plugin_manager.hook.get_extra_screen_columns(
+            screen=web_context.screen.type
+        )
+        extra_columns = {}
+        for plugin_columns in per_plugin_columns:
+            for extra_column in plugin_columns:
+                c = extra_columns.setdefault(extra_column.at, [])
+                c.append(extra_column)
+        
         return HTMXTemplate(
             template_name='user/screen.html',
             context=web_context.template_context
@@ -214,5 +225,6 @@ class BaseScreenUserController(BaseUserController):
                     web_context.request
                 ),
                 'messages': Message.messages(web_context.request),
+                'extra_columns': extra_columns,
             },
         )
