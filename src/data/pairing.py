@@ -120,13 +120,6 @@ class Pairing:
             round=round_number,
         )
 
-    def to_rankings(self, player_id_to_rank: Callable[[int], int]) -> str:
-        rankings_string = self.result.to_rankings
-        if self.opponent_id:
-            rank = player_id_to_rank(self.opponent_id)
-            rankings_string += f'{rank:>3}{self.color.to_rankings}'
-        return rankings_string
-
     def __repr__(self):
         return (
             f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'

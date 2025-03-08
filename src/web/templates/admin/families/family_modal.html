@@ -23,6 +23,8 @@
                             {{ _('Boards screen family creation') }}
                         {% elif family_type == 'players' %}
                             {{ _('Players screen family creation') }}
+                        {% elif family_type == 'ranking' %}
+                            {{ _('Ranking screen family creation') }}
                         {% else %}
                             ?
                         {% endif %}
@@ -50,6 +52,8 @@
                             {{ _('Properties (pairings by board)') }}
                         {% elif family_type == 'players' %}
                             {{ _('Properties (pairings by player)') }}
+                        {% elif family_type == 'ranking' %}
+                            {{ _('Properties (ranking)') }}
                         {% else %}
                             ?
                         {% endif %}
@@ -96,33 +100,43 @@
                     <h4 class="mt-4">
                         {% if family_type in ['boards', 'input'] %}
                             {{ _('Board selection (by number)') }}
-                        {% else %} {# family_type == 'players' #}
+                        {% elif family_type == 'players' %}
                             {{ _('Player selection (by alphabetical order)') }}
+                        {% else %} {# family_type == 'ranking' #}
+                            {{ _('Player selection (by rank)') }}
                         {% endif %}
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
+                            {% if family_type in ['boards', 'input'] %}
+                                {% set help_text=_('The number of the first board to select, optional (the first board by default).') %}
+                            {% elif family_type == 'players' %}
+                                {% set help_text=_('The number of the first player to select, optional (the first player by alphabetical order by default).') %}
+                            {% else %}
+                                {% set help_text=_('The rank of the first player to select, optional (1 by default).') %}
+                            {% endif %}
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if family_type in ['boards', 'input'] else _('First player:'),
                                 placeholder=_('E.g.: %(num)d', num=15),
-                                help_text=
-                                    _('The number of the first board to select, optional (the first board by default).')
-                                    if family_type in ['boards', 'input'] else
-                                    _('The number of the first player to select, optional (the first player by alphabetical order by default).'),
+                                help_text=help_text,
                                 data=data, errors=errors,
                                 number_min=1
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
+                            {% if family_type in ['boards', 'input'] %}
+                                {% set help_text=_('The number of the last board to select, optional (the last board by default).') %}
+                            {% elif family_type == 'players' %}
+                                {% set help_text=_('The number of the last player to select, optional (the last player by alphabetical order by default).') %}
+                            {% else %}
+                                {% set help_text=_('The rank of the last player to select, optional (the rank of the last rank player by default).') %}
+                            {% endif %}
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if family_type in ['boards', 'input'] else _('Last player:'),
                                 placeholder=_('E.g.: %(num)d', num=40),
-                                help_text=
-                                    _('The number of the last board to select, optional (the last board by default).')
-                                    if family_type in ['boards', 'input'] else
-                                    _('The number of the last player to select, optional (the last player by alphabetical order by default).'),
+                                help_text=help_text,
                                 data=data, errors=errors,
                                 number_min=1
                             ) }}
@@ -192,7 +206,7 @@
                                 name='menu',
                                 label=_('Links displayed on the screen menu:'),
                                 placeholder=_('E.g.: @boards, @family, another-screen'),
-                                help_text=_('This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens.'),
+                                help_text=_('This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -255,6 +269,13 @@
                                     {% include '../common/modal/show_unpaired.html' %}
                                 </div>
                                 <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/alert_message.html' %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if family_type == 'ranking' %}
+                            <div class="row">
+                                <div class="col-12 mb-3">
                                     {% include '../common/modal/alert_message.html' %}
                                 </div>
                             </div>

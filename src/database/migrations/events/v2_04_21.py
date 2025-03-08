@@ -1,3 +1,5 @@
+from typing import Any
+
 from database.sqlite.event_migration import AbstractEventMigration
 
 

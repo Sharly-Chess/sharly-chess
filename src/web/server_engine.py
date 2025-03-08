@@ -19,8 +19,8 @@ from common.logger import (
     print_interactive_error,
 )
 from common.papi_web_config import PapiWebConfig
-from database.sqlite.ffe_database import FfeDatabase
 from database.sqlite.fide_database import FideDatabase
+from plugins.manager import plugin_manager
 from web.settings import route_handlers, template_config, middlewares, stores
 
 logger: Logger = get_logger()
@@ -68,8 +68,10 @@ class ServerEngine(Engine):
             )
         if not FideDatabase().check():
             print_interactive_error(_('Error while updating the FIDE database.'))
-        if not FfeDatabase().check():
-            print_interactive_error(_('Error while updating the FFE database.'))
+        
+        # Give plugins an opportunity to initialise themselves
+        plugin_manager.hook.on_init()
+        
         if EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed:
             if DEVEL_ENV:
                 print_interactive_info(_('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.'))

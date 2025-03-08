@@ -6,8 +6,8 @@ from data.util import (
     PlayerCategory,
     PlayerRatingType,
     PlayerTitle,
-    PlayerFFELicence,
 )
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

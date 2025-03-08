@@ -82,14 +82,23 @@ class Family:
             return self.menu_text
         single_tournament: bool = len(self.event.tournaments_by_id) == 1
         text: str
-        if self.type == ScreenType.PLAYERS or not self.tournament.current_round:
-            text = Screen.default_players_screen_menu_text(
+        if (
+                self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]
+                and self.tournament.current_round
+        ):
+            text = self.menu_text or Screen.default_boards_screen_menu_text(
+                single_tournament=single_tournament, first_last=True
+            )
+        elif self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]:
+            text = self.menu_text or Screen.default_players_screen_menu_text(
+                single_tournament=single_tournament, first_last=True
+            )
+        elif self.type == ScreenType.RANKING:
+            text = self.menu_text or Screen.default_ranking_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
         else:
-            text = Screen.default_boards_screen_menu_text(
-                single_tournament=single_tournament, first_last=True
-            )
+            text = self.menu_text
         return text.replace('%t', self.tournament.name)
 
     @property
@@ -202,20 +211,25 @@ class Family:
                     )
                     self._calculated_first = 1
                     self._calculated_last = cut_items_number
-            case ScreenType.PLAYERS:
+            case ScreenType.PLAYERS | ScreenType.RANKING:
                 players_instead_of_boards = False
-                if self.tournament.current_round:
-                    if self.players_show_unpaired:
+                if ScreenType(self.type) == ScreenType.PLAYERS:
+                    if self.tournament.current_round:
+                        if self.players_show_unpaired:
+                            total_items_number = len(
+                                self.tournament.players_by_name_with_unpaired
+                            )
+                        else:
+                            total_items_number = len(
+                                self.tournament.players_by_name_without_unpaired
+                            )
+                    else:
                         total_items_number = len(
                             self.tournament.players_by_name_with_unpaired
                         )
-                    else:
-                        total_items_number = len(
-                            self.tournament.players_by_name_without_unpaired
-                        )
                 else:
                     total_items_number = len(
-                        self.tournament.players_by_name_with_unpaired
+                        self.tournament.players_by_rank
                     )
                 if self.first:
                     if self.first > total_items_number:

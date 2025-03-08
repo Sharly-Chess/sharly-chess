@@ -1,5 +1,4 @@
 import re
-from contextlib import suppress
 from datetime import datetime, timedelta, date
 from itertools import product
 from logging import Logger
@@ -18,12 +17,12 @@ from data.util import (
     PlayerGender,
     PlayerTitle,
     TournamentRating,
-    PlayerFFELicence,
     PlayerRatingType,
     BoardColor,
     PointValueType,
 )
 from database.access.access_database import AccessDatabase
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

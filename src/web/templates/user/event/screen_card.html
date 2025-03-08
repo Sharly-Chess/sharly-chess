@@ -14,7 +14,7 @@
 
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
-        {% if screen.type in ['input', 'boards', 'players', 'results'] %}
+        {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
             <div>
                 {{ _('Columns:') }}
                 {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
@@ -74,7 +74,7 @@
             </div>
         {% endif %}
 
-        {% if screen.type in ['boards', 'input', 'players'] %}
+        {% if screen.type in ['boards', 'input', 'players', 'ranking', ] %}
             {% for screen_set in screen.screen_sets_sorted_by_order %}
                 <div>
                     {% if screen_set.tournament %}

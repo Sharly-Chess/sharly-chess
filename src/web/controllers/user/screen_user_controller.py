@@ -92,7 +92,7 @@ class ScreenUserController(BaseScreenUserController):
         if tournament.last_check_in_update > date:
             return True
         match screen_set.type:
-            case ScreenType.BOARDS | ScreenType.INPUT:
+            case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
                 if tournament.last_illegal_move_update > date:
                     return True
                 if tournament.last_result_update > date:
@@ -120,7 +120,7 @@ class ScreenUserController(BaseScreenUserController):
             match web_context.screen.type:
                 case ScreenType.IMAGE:
                     pass
-                case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS:
+                case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
                     for screen_set in web_context.screen.screen_sets_by_id.values():
                         if cls._user_screen_set_refresh_needed(screen_set, date):
                             return True

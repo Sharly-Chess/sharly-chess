@@ -30,10 +30,10 @@ from data.util import (
     PlayerRatingType,
     PlayerGender,
     PlayerTitle,
-    PlayerFFELicence,
 )
 from database.access.ffe.ffe_access_database import FfeAccessDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 
@@ -65,7 +65,7 @@ class FfeDatabase(SQLiteDatabase):
                 ).upper()
                 or yes_answer
             ) != yes_answer:
-                return False
+                return True
         else:
             age: int = int(time() - self.file.lstat().st_mtime)
             if age > 2 * 24 * 60 * 60:

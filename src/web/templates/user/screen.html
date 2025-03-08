@@ -109,6 +109,12 @@
             <div class="screen results-screen">
                 {% include 'screen/results.html' %}
             </div>
+        {% elif screen.type == 'ranking' %}
+            <div class="screen ranking-screen">
+                {% for screen_set in screen.screen_sets_sorted_by_order %}
+                    {% include 'screen/ranking/set.html' %}
+                {% endfor %}
+            </div>
         {% elif screen.type == 'image' %}
             <div
                 class="screen image-screen position-absolute top-0 bottom-0 start-0 end-0 border border-black"
