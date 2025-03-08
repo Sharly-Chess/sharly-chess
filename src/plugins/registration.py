@@ -1,8 +1,7 @@
-import plugins.manager as PM
-
+from plugins.manager import plugin_manager
 from plugins.ffe import ffe
 from plugins.chessevent import chessevent
 
 def register_plugins():
-    PM.plugin_manager.register(chessevent)
-    PM.plugin_manager.register(ffe)
+    plugin_manager.register(chessevent)
+    plugin_manager.register(ffe)

@@ -17,6 +17,7 @@ from litestar.types import ControllerRouterHandler, Middleware
 from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
 
+from plugins.manager import plugin_manager
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
 from web.controllers.admin.index_admin_controller import IndexAdminController
@@ -37,8 +38,6 @@ from web.controllers.user.tournament_user_controller import (
     ResultUserController,
     DownloadUserController,
 )
-
-import plugins.manager as PM
 
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
@@ -79,7 +78,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     static_files_router,
     
     # Plugin controllers
-    *[controller for controllers in PM.plugin_manager.hook.get_controllers() for controller in controllers],
+    *[controller for controllers in plugin_manager.hook.get_controllers() for controller in controllers],
 ]
 
 # Keep this here for the day we need to add extra functions to templates
@@ -134,7 +133,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
-plugin_template_paths: list[Path] = PM.plugin_manager.hook.get_templates_path()
+plugin_template_paths: list[Path] = plugin_manager.hook.get_templates_path()
 
 template_dirs: list[Path] = [
     BASE_DIR / 'src/web/templates',

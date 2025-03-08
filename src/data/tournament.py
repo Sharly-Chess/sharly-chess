@@ -38,8 +38,7 @@ from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament
 from plugins.ffe.util import PlayerFFELicence
-
-import plugins.manager as PM
+from plugins.manager import plugin_manager
 
 logger: Logger = get_logger()
 
@@ -1144,7 +1143,7 @@ class Tournament:
     ):
         """Adds a new player to the tournament, returns the player's ID."""
         with PapiDatabase(self.file, write=True) as papi_database:
-            per_plugin_player_data = PM.plugin_manager.hook.player_data_for_db_write(player=player)
+            per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(player=player)
             plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
         
             data: dict[str, str | int | float | None] = {

@@ -16,15 +16,13 @@ from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, FederationTuple
 from data.util import PlayerGender, PlayerCategory, PrintSplit, PrintDocument
-from plugins.ffe.util import PlayerFFELicence
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
 )
 from web.messages import Message
 from web.session import SessionHandler
-
-import plugins.manager as PM
 
 logger: Logger = get_logger()
 
@@ -71,7 +69,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         }
         
     def get_print_split_options(self) -> dict[str, str]:
-        per_plugin_split_options = PM.plugin_manager.hook.get_print_split_options()
+        per_plugin_split_options = plugin_manager.hook.get_print_split_options()
         plugin_split_options = [option for options in per_plugin_split_options for option in options]
         
         return {
@@ -185,7 +183,7 @@ class BaseEventAdminController(BaseAdminController):
             case 'config':
                 pass
             case 'tournaments':
-                tournament_card_blocks = PM.plugin_manager.hook.get_tournament_card_block_template()
+                tournament_card_blocks = plugin_manager.hook.get_tournament_card_block_template()
                 template_context |= {
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     "tournament_card_blocks": tournament_card_blocks

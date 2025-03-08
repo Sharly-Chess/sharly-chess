@@ -28,14 +28,13 @@ from data.util import (
 )
 from database.sqlite.fide_database import FideDatabase
 from plugins.ffe.util import PlayerFFELicence
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
 from web.messages import Message
-
-import plugins.manager as PM
 
 logger: Logger = get_logger()
 
@@ -72,7 +71,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             # player_fide_id is set when is a player is to be imported from the FIDE database
             with FideDatabase() as fide_database:
                 self.admin_player = fide_database.get_player_by_fide_id(player_fide_id)
-            PM.plugin_manager.hook.augment_player_after_search(player=self.admin_player)
+            plugin_manager.hook.augment_player_after_search(player=self.admin_player)
         elif player_from_plugin:
             # A player has been returned via a plugin search
             self.admin_player = player_from_plugin
@@ -223,7 +222,7 @@ class PlayerAdminController(BaseEventAdminController):
             )
         
         # Have plugins validate their fields and return private plugin data
-        per_plugin_player_data = PM.plugin_manager.hook.get_validated_player_form_fields(action=action, tournament=tournament, data=data, errors=errors)
+        per_plugin_player_data = plugin_manager.hook.get_validated_player_form_fields(action=action, tournament=tournament, data=data, errors=errors)
         plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
         
         return Player(
@@ -340,7 +339,7 @@ class PlayerAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
                    
-                    per_plugin_form_data = PM.plugin_manager.hook.get_player_form_data(plugin_data=plugin_data)
+                    per_plugin_form_data = plugin_manager.hook.get_player_form_data(plugin_data=plugin_data)
                     plugin_form_data = { key: value for data in per_plugin_form_data for key, value in data.items() }
                         
                     data = (
@@ -400,8 +399,8 @@ class PlayerAdminController(BaseEventAdminController):
                     for tournament in admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
                 }
                 
-                plugin_search_templates = PM.plugin_manager.hook.get_player_search_template() or []
-                plugin_form_fields_templates = PM.plugin_manager.hook.get_player_form_fields_template() or []
+                plugin_search_templates = plugin_manager.hook.get_player_search_template() or []
+                plugin_form_fields_templates = plugin_manager.hook.get_player_form_fields_template() or []
                 
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
@@ -706,7 +705,7 @@ class PlayerAdminController(BaseEventAdminController):
                         tournament_uniq_id=dst_tournament.uniq_id,
                     ),
                 )
-            elif plugin_error := PM.plugin_manager.hook.is_tournament_participation_possible(tournament=dst_tournament, player=admin_player) or None:
+            elif plugin_error := plugin_manager.hook.is_tournament_participation_possible(tournament=dst_tournament, player=admin_player) or None:
                 Message.error(request, plugin_error)
             else:
                 print(dst_tournament, admin_player)

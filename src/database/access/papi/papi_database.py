@@ -21,8 +21,7 @@ from data.util import (
     BoardColor,
 )
 from database.access.access_database import AccessDatabase
-
-import plugins.manager as PM
+from plugins.manager import plugin_manager
 
 logger: Logger = get_logger()
 
@@ -135,7 +134,7 @@ class PapiDatabase(AccessDatabase):
     def update_player(self, player: Player):
         """Updates the event database with the information in the provided player."""
         
-        per_plugin_player_data = PM.plugin_manager.hook.player_data_for_db_write(player=player)
+        per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(player=player)
         plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
         
         fields: list[str] = (
@@ -217,7 +216,7 @@ class PapiDatabase(AccessDatabase):
         The tournament_id is used to make the players' id unique for an event."""
         players: dict[int, Player] = {}
         
-        per_plugin_fields = PM.plugin_manager.hook.get_db_player_fields()
+        per_plugin_fields = plugin_manager.hook.get_db_player_fields()
         plugin_fields =  [field for fields in per_plugin_fields for field in fields]
         
         player_fields: list[str] = (
@@ -308,7 +307,7 @@ class PapiDatabase(AccessDatabase):
                 pairings=pairings,
             )
             
-            PM.plugin_manager.hook.augment_player_after_db_fetch(player=player, row=row)
+            plugin_manager.hook.augment_player_after_db_fetch(player=player, row=row)
             players[player_papi_web_id] = player
         return players
 

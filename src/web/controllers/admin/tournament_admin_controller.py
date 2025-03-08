@@ -28,14 +28,13 @@ from data.tournament import Tournament
 from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament, StoredScreen
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
 from web.messages import Message
-
-import plugins.manager as PM
 
 logger: Logger = get_logger()
 
@@ -872,7 +871,7 @@ class TournamentAdminController(BaseEventAdminController):
                 "": players,
             }
         else:
-            per_plugin_split_options = PM.plugin_manager.hook.get_print_split_options()
+            per_plugin_split_options = plugin_manager.hook.get_print_split_options()
             plugin_split_options = [option for options in per_plugin_split_options for option in options]
         
             split_functions = {
@@ -886,7 +885,7 @@ class TournamentAdminController(BaseEventAdminController):
 
             split_players = split_functions[split_by](players)
 
-        per_plugin_columns = PM.plugin_manager.hook.get_extra_print_view_columns(
+        per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
             document=print_document
         )
         extra_columns = {}
