@@ -427,14 +427,6 @@ class Tournament:
         )
 
     @cached_property
-    def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
-        """Returns the number of players by FFE licence."""
-        counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
-        for player in self.players_by_id.values():
-            counter[player.ffe_licence] += 1
-        return counter
-
-    @cached_property
     def gender_counts(self) -> Counter[PlayerGender]:
         """Returns the number of players by gender."""
         counter: Counter[PlayerGender] = Counter[PlayerGender]()

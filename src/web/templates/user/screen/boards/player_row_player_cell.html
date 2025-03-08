@@ -19,9 +19,5 @@
     <i
         class="{% if player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"
     ></i>
-    {% if admin_auth %}
-        {{ macros.ffe_licence(player.ffe_licence, 'ms-1') }}
-        <img class="player-federation-flag ms-1 ps-1 pe-1" src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}" />
-    {% endif %}
     {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}
 </td>

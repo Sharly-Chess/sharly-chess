@@ -271,14 +271,6 @@ class Event:
         )
 
     @cached_property
-    def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
-        counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
-        for tournament in self.tournaments_by_id.values():
-            for ffe_licence in tournament.ffe_licence_counts:
-                counter[ffe_licence] += tournament.ffe_licence_counts[ffe_licence]
-        return counter
-
-    @cached_property
     def gender_counts(self) -> Counter[PlayerGender]:
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
         for tournament in self.tournaments_by_id.values():
