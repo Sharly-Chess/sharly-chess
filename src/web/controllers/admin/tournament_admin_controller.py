@@ -792,9 +792,9 @@ class TournamentAdminController(BaseEventAdminController):
     @staticmethod
     def split_players_by(split_by: str, players: list[Player]):
         split_functions = {
-            PrintSplit.CLUB: lambda p: p.club_tuple.club,
+            PrintSplit.CLUB: lambda p: p.club,
             PrintSplit.CATEGORY: lambda p: p.category.short_name,
-            PrintSplit.FEDERATION: lambda p: p.federation_tuple.federation,
+            PrintSplit.FEDERATION: lambda p: p.federation,
         } 
         
         if split_by == PrintSplit.CATEGORY:

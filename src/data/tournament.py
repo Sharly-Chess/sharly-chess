@@ -25,7 +25,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.chessevent_tournament import ChessEventTournament
 from data.family import Family
-from data.player import Player, FederationTuple, ClubTuple
+from data.player import Player, Federation, Club
 from data.screen import Screen
 from data.util import (
     BoardColor,
@@ -443,19 +443,19 @@ class Tournament:
         return counter
 
     @cached_property
-    def federation_counts(self) -> Counter[FederationTuple]:
+    def federation_counts(self) -> Counter[Federation]:
         """Returns the number of players by federation."""
-        counter: Counter[FederationTuple] = Counter[FederationTuple]()
+        counter: Counter[Federation] = Counter[Federation]()
         for player in self.players_by_id.values():
-            counter[player.federation_tuple] += 1
+            counter[player.federation] += 1
         return counter
 
     @cached_property
-    def club_counts(self) -> Counter[ClubTuple]:
+    def club_counts(self) -> Counter[Club]:
         """Returns the number of players by club."""
-        counter: Counter[ClubTuple] = Counter[ClubTuple]()
+        counter: Counter[Club] = Counter[Club]()
         for player in self.players_by_id.values():
-            counter[player.club_tuple] += 1
+            counter[player.club] += 1
         return counter
 
     @property

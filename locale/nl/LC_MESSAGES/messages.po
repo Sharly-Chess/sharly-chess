@@ -255,8 +255,8 @@ msgstr "Fout: [{ex}]."
 msgid "Checking Papi-web version..."
 msgstr "Papi-web-versie wordt gecontroleerd..."
 
-#: src/common/engine.py src/database/sqlite/ffe_database.py
-#: src/database/sqlite/fide_database.py
+#: src/common/engine.py src/database/sqlite/fide_database.py
+#: src/plugins/ffe/ffe_database.py
 #, fuzzy
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
@@ -1330,26 +1330,6 @@ msgstr "M"
 
 #: src/data/util.py
 #, ai_translation
-msgid "No FFE Licence"
-msgstr "Geen FFE-licentie"
-
-#: src/data/util.py
-#, ai_translation
-msgid "Expired FFE licence"
-msgstr "Verlopen FFE-licentie"
-
-#: src/data/util.py
-#, ai_translation
-msgid "FFE licence B (leisure)"
-msgstr "FFE-licentie B (vrijheid)"
-
-#: src/data/util.py
-#, ai_translation
-msgid "FFE licence A (competition)"
-msgstr "FFE-licentie A (mededinging)"
-
-#: src/data/util.py
-#, ai_translation
 msgid "U8"
 msgstr "U8"
 
@@ -1625,11 +1605,6 @@ msgstr "Categorie"
 msgid "Club"
 msgstr "Club"
 
-#: src/data/util.py
-#, ai_translation
-msgid "League"
-msgstr "League"
-
 #: src/data/util.py src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/players/record_modal.html
 #, ai_translation
@@ -1653,61 +1628,6 @@ msgstr ""
 msgid "Crosstable"
 msgstr ""
 
-#: src/database/sqlite/ffe_database.py
-#, ai_translation
-msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr "De FFE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?"
-
-#: src/database/sqlite/ffe_database.py
-#, ai_translation
-msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr "De FFE-database [{file}] is verouderd ([{days}] dagen], wilt u het bijwerken (Y/n)?"
-
-#: src/database/sqlite/ffe_database.py
-#, ai_translation
-msgid "Downloading the FFE database..."
-msgstr "Downloaden van de FFE-database..."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Could not download [{url}], error code [{code}]."
-msgstr "Kon niet downloaden [{url}], foutcode [{code}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Could not download [{url}]: {ex}."
-msgstr "Kon niet downloaden [{url}]: {ex}."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "No data received from [{url}]."
-msgstr "Geen gegevens ontvangen van [{url}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Could not unzip data."
-msgstr "Kon de data niet losmaken."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Storing data..."
-msgstr "Gegevens worden opgeslagen..."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "{number} players written."
-msgstr "{number} spelers geschreven."
-
-#: src/database/sqlite/ffe_database.py
-#, ai_translation
-msgid "Error reading the following row (player ignored): [{row}]."
-msgstr "Fout bij lezen van de volgende rij (speler genegeerd): [{row}]."
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-#, ai_translation
-msgid "Error while creating the database: {ex}."
-msgstr "Fout bij het aanmaken van de database: {ex}."
-
 #: src/database/sqlite/fide_database.py
 #, ai_translation
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -1722,6 +1642,41 @@ msgstr "De FIDE-database [{file}] is verouderd ([{days}] dagen], wilt u deze upd
 #, ai_translation
 msgid "Downloading the FIDE database..."
 msgstr "De FIDE-database downloaden..."
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "Could not download [{url}], error code [{code}]."
+msgstr "Kon niet downloaden [{url}], foutcode [{code}]."
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "Could not download [{url}]: {ex}."
+msgstr "Kon niet downloaden [{url}]: {ex}."
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "No data received from [{url}]."
+msgstr "Geen gegevens ontvangen van [{url}]."
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "Could not unzip data."
+msgstr "Kon de data niet losmaken."
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "Storing data..."
+msgstr "Gegevens worden opgeslagen..."
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "{number} players written."
+msgstr "{number} spelers geschreven."
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "Error while creating the database: {ex}."
+msgstr "Fout bij het aanmaken van de database: {ex}."
 
 #: src/ffe/action_selector.py
 #, ai_translation
@@ -1845,15 +1800,14 @@ msgstr "Inhoud van de URL [{url}] is niet geldig (input[id=[{id]] niet gevonden)
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialiseren van een sessie naar [{url}]..."
 
-#: src/ffe/ffe_session.py
+#: src/ffe/ffe_session.py src/plugins/ffe/templates/filter_ffe_licences.html
+#: src/plugins/ffe/templates/filter_leagues.html
 #: src/web/templates/admin/players/filter_categories.html
 #: src/web/templates/admin/players/filter_check_ins.html
 #: src/web/templates/admin/players/filter_clubs.html
 #: src/web/templates/admin/players/filter_columns.html
 #: src/web/templates/admin/players/filter_federations.html
-#: src/web/templates/admin/players/filter_ffe_licences.html
 #: src/web/templates/admin/players/filter_genders.html
-#: src/web/templates/admin/players/filter_leagues.html
 #: src/web/templates/admin/players/filter_tournaments.html
 #, ai_translation
 msgid "OK"
@@ -1944,6 +1898,215 @@ msgstr "Het versturen van de regels van het toernooi [{ffe_id}] ({file}) naar de
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Regels uploaden link niet gevonden, controleren of het toernooi is niet gemarkeerd als afgewerkt op de FSFE website."
 
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
+#, ai_translation, python-format
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
+msgstr "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
+
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/index/event_card.html
+#, ai_translation
+msgid "No ChessEvent identifier defined"
+msgstr "Geen ChessEvent identifier gedefinieerd"
+
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/index/event_card.html
+#, ai_translation
+msgid "No ChessEvent event defined"
+msgstr "No ChessEvent event defined"
+
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
+#, ai_translation
+msgid "No ChessEvent tournament defined"
+msgstr "Geen ChessEvent-toernooi gedefinieerd"
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "Error while updating the FFE database."
+msgstr "Fout bij het bijwerken van de FFE-database."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr "De speler met FFE ID [{ffe_id}] speelt al toernooi [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "Invalid FFE ID [{ffe_id}]."
+msgstr "Ongeldige FFE ID [{ffe_id}]."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr "Ongeldig FFE-licentienummer [{ffe_licence_number}]."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr "De speler met FFE licentienummer [{ffe_licence_number}] speelt al toernooi [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr "FFE licentie [{ffe_licence_number}] al aanwezig in toernooi [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "League"
+msgstr "League"
+
+#: src/plugins/ffe/ffe.py
+#, fuzzy
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr "League"
+
+#: src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr "De FFE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?"
+
+#: src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr "De FFE-database [{file}] is verouderd ([{days}] dagen], wilt u het bijwerken (Y/n)?"
+
+#: src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "Downloading the FFE database..."
+msgstr "Downloaden van de FFE-database..."
+
+#: src/plugins/ffe/ffe_database.py
+#, ai_translation
+msgid "Error reading the following row (player ignored): [{row}]."
+msgstr "Fout bij lezen van de volgende rij (speler genegeerd): [{row}]."
+
+#: src/plugins/ffe/util.py
+#, ai_translation
+msgid "No FFE Licence"
+msgstr "Geen FFE-licentie"
+
+#: src/plugins/ffe/util.py
+#, ai_translation
+msgid "Expired FFE licence"
+msgstr "Verlopen FFE-licentie"
+
+#: src/plugins/ffe/util.py
+#, ai_translation
+msgid "FFE licence B (leisure)"
+msgstr "FFE-licentie B (vrijheid)"
+
+#: src/plugins/ffe/util.py
+#, ai_translation
+msgid "FFE licence A (competition)"
+msgstr "FFE-licentie A (mededinging)"
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "French Chess Federation"
+msgstr "Franse Schaakbond"
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "Licence number:"
+msgstr "Licentienummer:"
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#: src/plugins/ffe/templates/ffe_search.html
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(string)s"
+msgstr "B.v.: %(string)s"
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "The player's licence number."
+msgstr "Het licentienummer van de speler."
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "Licence:"
+msgstr "Licentie:"
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "The player's licence."
+msgstr "De licentie van de speler."
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "FFE Uniq ID:"
+msgstr "FFE Uniq ID:"
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr "De Uniq ID van de speler voor de Franse federatie (wijzig niet)."
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "League:"
+msgstr "League:"
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#, ai_translation
+msgid "The player's league."
+msgstr "De spelerscompetitie."
+
+#: src/plugins/ffe/templates/ffe_search.html
+#, ai_translation
+msgid "FFE database:"
+msgstr "FFE-database:"
+
+#: src/plugins/ffe/templates/ffe_search.html
+#, ai_translation
+msgid "The FFE database is not available."
+msgstr "De FFE-database is niet beschikbaar."
+
+#: src/plugins/ffe/templates/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+#, ai_translation
+msgid "No results."
+msgstr "Geen resultaten."
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, ai_translation, python-format
+msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
+msgstr "Het Papi bestand voor het toernooi bestaat niet (%(papi_file)s)."
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, ai_translation, python-format
+msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
+msgstr "Het Papi bestand voor het toernooi bestaat maar kon niet worden gelezen (%(papi_file)s)."
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, ai_translation, python-format
+msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
+msgstr "Het Papi bestand voor het toernooi werd met succes gelezen (%(papi_file)s)."
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, ai_translation, python-format
+msgid "FFE qualification: %(ffe_id)s"
+msgstr "FFE-kwalificatie: %(ffe_id)s"
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, ai_translation
+msgid "No FFE qualification"
+msgstr "Geen FFE-kwalificatie"
+
+#: src/plugins/ffe/templates/filter_ffe_licences.html
+#, ai_translation
+msgid "Filter the licences."
+msgstr "Filter de licenties."
+
+#: src/plugins/ffe/templates/filter_leagues.html
+#, ai_translation
+msgid "Filter the leagues."
+msgstr "Filter de competities."
+
 #: src/web/server_engine.py
 #, ai_translation
 msgid "Opening the welcome page [{url}] in a browser..."
@@ -1986,11 +2149,6 @@ msgstr "Fout bij het bijwerken van de FIDE-database."
 
 #: src/web/server_engine.py
 #, ai_translation
-msgid "Error while updating the FFE database."
-msgstr "Fout bij het bijwerken van de FFE-database."
-
-#: src/web/server_engine.py
-#, ai_translation
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
 msgstr "Automatische installatie van BBP-paringen voor ontwikkelaars met PAPI_WEB_EXPERIMENTAL=1."
 
@@ -1999,7 +2157,7 @@ msgstr "Automatische installatie van BBP-paringen voor ontwikkelaars met PAPI_WE
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr "Poort [{port}] al in gebruik, kan Papi-webserver niet starten."
 
-#: src/web/controllers/index_controller.py
+#: src/web/controllers/base_controller.py
 #, ai_translation
 msgid "USE AT YOUR OWN RISKS"
 msgstr "GEBRUIK OP UW EIGEN RISICO'S"
@@ -2392,26 +2550,6 @@ msgstr "Ongeldige FIDE ID [{fide_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
-msgstr "De speler met FFE ID [{ffe_id}] speelt al toernooi [{tournament_uniq_id}]."
-
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr "Ongeldige FFE ID [{ffe_id}]."
-
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
-msgid "Invalid FFE licence number [{ffe_licence_number}]."
-msgstr "Ongeldig FFE-licentienummer [{ffe_licence_number}]."
-
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
-msgstr "De speler met FFE licentienummer [{ffe_licence_number}] speelt al toernooi [{tournament_uniq_id}]."
-
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
 msgid "Invalid mail [{mail}]."
 msgstr "Ongeldig bericht [{mail}]."
 
@@ -2479,11 +2617,6 @@ msgstr "Speler [{last_name} {first_name}] heeft paren in toernooi [{tournament_u
 #, ai_translation
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Papi-bestand [{tournament_file}] niet gevonden."
-
-#: src/web/controllers/admin/player_admin_controller.py
-#, ai_translation
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
-msgstr "FFE licentie [{ffe_licence_number}] al aanwezig in toernooi [{tournament_uniq_id}]."
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -3121,14 +3254,6 @@ msgid "Chessevent ID:"
 msgstr "Chessevent ID:"
 
 #: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, python-format
-msgid "E.g.: %(string)s"
-msgstr "B.v.: %(string)s"
-
-#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "De ID die wordt gebruikt om verbinding te maken met het ChessEvent platform (standaard kan worden overschreven door de toernooien)."
@@ -3445,20 +3570,6 @@ msgstr "(standaard)"
 #, ai_translation
 msgid "ChessEvent"
 msgstr "ChessEvent"
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/index/event_card.html
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "No ChessEvent identifier defined"
-msgstr "Geen ChessEvent identifier gedefinieerd"
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/index/event_card.html
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "No ChessEvent event defined"
-msgstr "No ChessEvent event defined"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -4278,12 +4389,6 @@ msgstr "Download de informatie van de geselecteerde spelers (ODS-formaat)."
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Download de informatie van de geselecteerde spelers (XLSX-formaat)."
 
-#: src/web/templates/admin/players/ffe_search_results.html
-#: src/web/templates/admin/players/fide_search_results.html
-#, ai_translation
-msgid "No results."
-msgstr "Geen resultaten."
-
 #: src/web/templates/admin/players/filter_categories.html
 #, ai_translation
 msgid "Filter the categories."
@@ -4352,11 +4457,6 @@ msgstr "Federation"
 
 #: src/web/templates/admin/players/filter_columns.html
 #, fuzzy
-msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-msgstr "League"
-
-#: src/web/templates/admin/players/filter_columns.html
-#, fuzzy
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
 msgstr "Club"
 
@@ -4420,20 +4520,10 @@ msgstr "Record"
 msgid "Filter the federations."
 msgstr "Filter de federaties."
 
-#: src/web/templates/admin/players/filter_ffe_licences.html
-#, ai_translation
-msgid "Filter the licences."
-msgstr "Filter de licenties."
-
 #: src/web/templates/admin/players/filter_genders.html
 #, ai_translation
 msgid "Filter the genders."
 msgstr "Filter de geslachten."
-
-#: src/web/templates/admin/players/filter_leagues.html
-#, ai_translation
-msgid "Filter the leagues."
-msgstr "Filter de competities."
 
 #: src/web/templates/admin/players/filter_tournaments.html
 #, fuzzy
@@ -4487,16 +4577,6 @@ msgstr "De FIDE-database is niet beschikbaar."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
-msgid "FFE database:"
-msgstr "FFE-database:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The FFE database is not available."
-msgstr "De FFE-database is niet beschikbaar."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
 msgid "Identity"
 msgstr "Identiteit"
 
@@ -4547,6 +4627,21 @@ msgstr "Het geslacht van de speler."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
+msgid "Club:"
+msgstr "Club:"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "E.g.: My favourite club!"
+msgstr "Bv.: Mijn favoriete club!"
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
+msgid "The player's club."
+msgstr "De club van de speler."
+
+#: src/web/templates/admin/players/player_modal.html
+#, ai_translation
 msgid "The player's tournament."
 msgstr "Het toernooi van de speler."
 
@@ -4594,66 +4689,6 @@ msgstr "De FIDE titel van de speler."
 #, ai_translation
 msgid "The player's federation."
 msgstr "De spelerfederatie."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "French Chess Federation"
-msgstr "Franse Schaakbond"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence number:"
-msgstr "Licentienummer:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence number."
-msgstr "Het licentienummer van de speler."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Licence:"
-msgstr "Licentie:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's licence."
-msgstr "De licentie van de speler."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "FFE Uniq ID:"
-msgstr "FFE Uniq ID:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "De Uniq ID van de speler voor de Franse federatie (wijzig niet)."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "League:"
-msgstr "League:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's league."
-msgstr "De spelerscompetitie."
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "Club:"
-msgstr "Club:"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "E.g.: My favourite club!"
-msgstr "Bv.: Mijn favoriete club!"
-
-#: src/web/templates/admin/players/player_modal.html
-#, ai_translation
-msgid "The player's club."
-msgstr "De club van de speler."
 
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
@@ -4871,8 +4906,13 @@ msgstr "Elo"
 
 #: src/web/templates/admin/players/tab.html
 #, fuzzy
-msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-msgstr "Origin"
+msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
+msgstr "Fed."
+
+#: src/web/templates/admin/players/tab.html
+#, fuzzy
+msgid "Club *** CLUB COLUMN HEADER FOR PLAYERS"
+msgstr "Club"
 
 #: src/web/templates/admin/players/tab.html
 #, fuzzy
@@ -4898,11 +4938,6 @@ msgstr "De telefoonnummers."
 #, fuzzy
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "FIDE"
-
-#: src/web/templates/admin/players/tab.html
-#, fuzzy
-msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE"
 
 #: src/web/templates/admin/players/tab.html
 #, fuzzy
@@ -4985,31 +5020,18 @@ msgid "No FIDE ID."
 msgstr "Geen FIDE ID."
 
 #: src/web/templates/admin/players/tab.html
-#, ai_translation, python-format
-msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr "FFE-licentie: %(ffe_licence_number)s (verlopen)."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation, python-format
-msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr "FFE licentie: %(ffe_licence_number)s (klik om te kopiëren naar het klembord)."
-
-#: src/web/templates/admin/players/tab.html
-#, ai_translation, python-format
-msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr "Onbekend FFE-licentietype [%(ffe_licence)s]."
-
-#: src/web/templates/admin/players/tab.html
 #, ai_translation
 msgid "Change the player's tournament."
 msgstr "Wijzig het toernooi van de speler."
 
 #: src/web/templates/admin/players/tab.html
+#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "No players."
 msgstr "Geen spelers."
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Rk. *** RANK FOR PRINT VIEW"
 msgstr "Rk."
@@ -5020,39 +5042,40 @@ msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nb."
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Name *** NAME FOR PRINT VIEW"
 msgstr "Name"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Elo *** STD ELO FOR PRINT VIEW"
 msgstr "Elo"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapid"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Fed"
-
-#: src/web/templates/admin/print/players.html
-#, fuzzy
-msgid "League *** LEAGUE FOR PRINT VIEW"
-msgstr "League"
 
 #: src/web/templates/admin/print/players.html
 #, fuzzy, python-format
@@ -5060,11 +5083,13 @@ msgid "R %(round)d *** ROUND FOR PRINT VIEW"
 msgstr "R %(round)d"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 #, fuzzy
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
@@ -5882,41 +5907,6 @@ msgstr[0] "Hoogstens wordt %(num)d illegale beweging geregistreerd."
 msgstr[1] "Hoogstens worden %(num)d illegale bewegingen geregistreerd."
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
-msgstr "Het Papi bestand voor het toernooi bestaat niet (%(papi_file)s)."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
-msgstr "Het Papi bestand voor het toernooi bestaat maar kon niet worden gelezen (%(papi_file)s)."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
-msgstr "Het Papi bestand voor het toernooi werd met succes gelezen (%(papi_file)s)."
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "FFE qualification: %(ffe_id)s"
-msgstr "FFE-kwalificatie: %(ffe_id)s"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "No FFE qualification"
-msgstr "Geen FFE-kwalificatie"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
-msgstr "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "No ChessEvent tournament defined"
-msgstr "Geen ChessEvent-toernooi gedefinieerd"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
 msgid "Rules file set"
 msgstr "Regelsbestand ingesteld"
@@ -6490,43 +6480,36 @@ msgid "Player / Elo"
 msgstr "Speler / Elo"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Player Elo [Pts]"
 msgstr "Speler Elo [Pts]"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Player Elo"
 msgstr "Speler Elo"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Board & color"
 msgstr "Bordkleur"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Opponent Elo [Pts]"
 msgstr "Tegenstander Elo [Pts]"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "Opponent Elo"
 msgstr "Tegenstander Elo"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Bord #%(board_number)d met %(color)s"
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, ai_translation
 msgid "vs"
 msgstr "vs"
@@ -6623,4 +6606,22 @@ msgstr "vs"
 
 #~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 #~ msgstr "Dit veld geeft u de schermen aan waarvan de links op het schermmenu worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @boards (alle boards), @input (alle invoerschermen), @players (alle spelersschermen) en de wildcard * kunnen worden gebruikt. Als dit veld leeg blijft, zal er geen menu op het scherm worden weergegeven."
+
+#~ msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
+#~ msgstr "League"
+
+#~ msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
+#~ msgstr "Origin"
+
+#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
+#~ msgstr "FFE"
+
+#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
+#~ msgstr "FFE-licentie: %(ffe_licence_number)s (verlopen)."
+
+#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+#~ msgstr "FFE licentie: %(ffe_licence_number)s (klik om te kopiëren naar het klembord)."
+
+#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
+#~ msgstr "Onbekend FFE-licentietype [%(ffe_licence)s]."
 

@@ -137,36 +137,41 @@
                             {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down', 'rating_asc', admin_players_sort) }}
                         </div>
                     </th>
-                    {% if 'federation' in admin_players_filter_columns or 'club' in admin_players_filter_columns %}
-                        <th scope="col" class="text-nowrap text-start" colspan="{{
-                            (1 if 'federation' in admin_players_filter_columns else 0) + (1 if 'club' in admin_players_filter_columns else 0)
-                        }}">
+                    {% if 'federation' in admin_players_filter_columns %}
+                        <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center gap-1">
-                                {{ _('Origin *** ORIGIN COLUMN HEADER FOR PLAYERS') }}
-                                {% if admin_players_clubs|length > 1 %}
-                                    {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'origin', admin_players_sort) }}
-                                {% endif %}
+                                {{ _('Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS') }}
                                 {% if admin_players_federations|length > 1 %}
                                     {% include 'filter_federations.html' %}
+                                {% endif %}
+                            </div>
+                        </th>
+                    {% endif %}
+                    {% if 'club' in admin_players_filter_columns %}
+                        <th scope="col" class="text-nowrap text-start">
+                            <div class="d-flex align-items-center gap-1">
+                                {{ _('Club *** CLUB COLUMN HEADER FOR PLAYERS') }}
+                                {% if admin_players_clubs|length > 1 %}
+                                    {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'club', admin_players_sort) }}
                                 {% endif %}
                                 {% if admin_players_clubs|length > 1 %}
                                     {% include 'filter_clubs.html' %}
                                 {% endif %}
                                 <input
                                     type="text"
-                                    name="admin_players_filter_origin"
+                                    name="admin_players_filter_clubs_search"
                                     class="admin-players-filter-origin py-0 px-1"
                                     hx-get="{{ url }}"
                                     hx-swap="multi:#players-table-body,#players-table-counters"
                                     hx-trigger="keyup changed delay:0.2s"
                                     preload
                                     hx-indicator="#please-wait"
-                                    value="{{ admin_players_filter_origin }}"
+                                    value="{{ admin_players_filter_clubs_search }}"
                                 />
                                 <i
                                     class="bi-x-circle btn text-dark p-0 m-0"
                                     hx-get="{{ url }}"
-                                    hx-vals='{"admin_players_filter_origin": ""}'
+                                    hx-vals='{"admin_players_filter_clubs_search": ""}'
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 ></i>
@@ -374,7 +379,7 @@
                                 {{ player.rating }}{{ player.rating_type }}
                             </td>
                             {% if 'federation' in admin_players_filter_columns %}
-                                <td class="text-nowrap text-start w-1">
+                                <td class="text-nowrap text-center w-1">
                                     <span class="">
                                         <img
                                             class="player-federation-flag pe-1"

@@ -30,33 +30,16 @@ logger: Logger = get_logger()
 
 @dataclass(frozen=True)
 @total_ordering
-class FederationTuple:
+class Federation:
     federation: str = ''
-
-    @classmethod
-    def string_tuple_to_query_param(cls, strings: tuple[str, ...]) -> str:
-        return '-' + '-'.join(
-            [
-                base64.b64encode(string.encode('utf-8')).decode('utf-8')
-                for string in strings
-            ]
-        )
-
-    @classmethod
-    def query_param_to_string_tuple(cls, query_param: str) -> tuple[str, ...]:
-        return tuple(
-            base64.b64decode(string).decode('utf-8')
-            for string in query_param[1:].split('-')
-        )
 
     @cached_property
     def to_query_param(self) -> str:
-        return self.string_tuple_to_query_param((self.federation,))
+        return base64.b64encode(self.federation.encode('utf-8')).decode('utf-8')
 
     @classmethod
     def from_query_param(cls, query_param: str) -> Self:
-        t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
-        return FederationTuple(t[0])
+        return base64.b64decode(query_param).decode('utf-8')
 
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
@@ -70,32 +53,26 @@ class FederationTuple:
 
 @dataclass(frozen=True)
 @total_ordering
-class ClubTuple(FederationTuple):
+class Club:
     club: str = ''
 
     @cached_property
     def to_query_param(self) -> str:
-        return self.string_tuple_to_query_param(
-            (self.federation, self.club)
-        )
+        return base64.b64encode(self.club.encode('utf-8')).decode('utf-8')
 
     @classmethod
     def from_query_param(cls, query_param: str) -> Self:
-        t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
-        return ClubTuple(t[0], t[1])
+        return base64.b64decode(query_param).decode('utf-8')
 
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
             f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
-        return (self.federation, self.club) <= (
-            other.federation,
-            other.club,
-        )
+        return self.club <= other.club
 
     def __str__(self) -> str:
-        return f'{self.federation}-{self.club}'
+        return self.club
 
 
 class TournamentPlayer:
@@ -218,8 +195,8 @@ class Player(TournamentPlayer):
         self.paid: float = paid
         self.ratings: dict[TournamentRating, int] = ratings
         self.rating_types: dict[TournamentRating, PlayerRatingType] = rating_types
-        self.federation: str = federation
-        self.club: str = club
+        self.federation: Federation = Federation(federation)
+        self.club: Club = Club(club)
         self.fixed: int = fixed
         self.check_in: bool = check_in
         self.points: float | None = None
@@ -296,12 +273,12 @@ class Player(TournamentPlayer):
         return self.tournament.point_values if self.tournament else None
 
     @cached_property
-    def club_tuple(self) -> ClubTuple:
-        return ClubTuple(self.federation, self.club)
+    def club(self) -> Club:
+        return Club(self.federation, self.club)
 
     @cached_property
-    def federation_tuple(self) -> FederationTuple:
-        return FederationTuple(self.federation)
+    def federation(self) -> Federation:
+        return Federation(self.federation)
 
     def compute_points(self, max_round: int):
         """Computes and stores the points of the player,
@@ -533,5 +510,5 @@ class Player(TournamentPlayer):
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (
             f'{self.__class__.__name__}'
-            f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} {self.last_name} {self.first_name} {self.club_tuple})'
+            f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} {self.last_name} {self.first_name} {self.club})'
         )

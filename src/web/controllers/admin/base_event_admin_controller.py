@@ -14,7 +14,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
-from data.player import Player, ClubTuple, FederationTuple
+from data.player import Player, Club, Federation
 from data.util import PlayerGender, PlayerCategory, PrintSplit, PrintDocument
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import (
@@ -190,14 +190,14 @@ class BaseEventAdminController(BaseAdminController):
                 }
             case 'players':
                 # The federations that will be shown on the federation select list
-                players_federations: list[FederationTuple] = sorted(
+                players_federations: list[Federation] = sorted(
                     {
-                        player.federation_tuple
+                        player.federation
                         for player in web_context.admin_event.players_by_id.values()
                     }
                 )
                 # The federations that will be selected on the federation select list and used to filter the players
-                filter_federations: list[FederationTuple] = [
+                filter_federations: list[Federation] = [
                     f
                     for f in SessionHandler.get_session_admin_players_filter_federations(
                         web_context.request
@@ -205,16 +205,14 @@ class BaseEventAdminController(BaseAdminController):
                     if f in players_federations
                 ]
                 # The clubs that will be shown on the club select list
-                players_clubs: list[ClubTuple] = sorted(
+                players_clubs: list[Club] = sorted(
                     {
-                        player.club_tuple
+                        player.club
                         for player in web_context.admin_event.players_by_id.values()
-                        if not filter_federations
-                        or player.federation_tuple in filter_federations
                     }
                 )
                 # The clubs that will be selected on the club select list and used to filter the players
-                filter_clubs: list[ClubTuple] = [
+                filter_clubs: list[Club] = [
                     c
                     for c in SessionHandler.get_session_admin_players_filter_clubs(
                         web_context.request
@@ -272,7 +270,7 @@ class BaseEventAdminController(BaseAdminController):
                 filter_name_parts: list[str] = filter_name.split(' ')
                 # The origin (federation+league+club) the players must match
                 filter_origin: str = (
-                    SessionHandler.get_session_admin_players_filter_origin(
+                    SessionHandler.get_session_admin_players_filter_clubs_search(
                         web_context.request
                     )
                 )
@@ -315,11 +313,10 @@ class BaseEventAdminController(BaseAdminController):
                     case 'category_asc':
                         def sort_key(player: Player):
                             return player.category, player.last_name, player.first_name
-                    
-                    case 'origin':
+                            
+                    case 'club':
                         def sort_key(player: Player):
                             return (
-                                player.federation,
                                 player.club,
                                 player.last_name,
                                 player.first_name,
@@ -380,11 +377,11 @@ class BaseEventAdminController(BaseAdminController):
                             )
                             and (
                                 len(filter_federations) in [0, len(players_federations)]
-                                or player.federation_tuple in filter_federations
+                                or player.federation in filter_federations
                             )
                             and (
                                 len(filter_clubs) in [0, len(players_clubs)]
-                                or player.club_tuple in filter_clubs
+                                or player.club in filter_clubs
                             )
                             and all(
                                 {
@@ -446,6 +443,9 @@ class BaseEventAdminController(BaseAdminController):
                     'admin_players_filter_clubs': SessionHandler.get_session_admin_players_filter_clubs(
                         web_context.request
                     ),
+                    'admin_players_filter_clubs_search': SessionHandler.get_session_admin_players_filter_clubs_search(
+                        web_context.request
+                    ),
                     'admin_players_filter_genders': SessionHandler.get_session_admin_players_filter_genders(
                         web_context.request
                     ),
@@ -459,9 +459,6 @@ class BaseEventAdminController(BaseAdminController):
                         web_context.request
                     ),
                     'admin_players_filter_name': SessionHandler.get_session_admin_players_filter_name(
-                        web_context.request
-                    ),
-                    'admin_players_filter_origin': SessionHandler.get_session_admin_players_filter_origin(
                         web_context.request
                     ),
                 }

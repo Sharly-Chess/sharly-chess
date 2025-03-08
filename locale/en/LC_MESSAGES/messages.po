@@ -205,8 +205,8 @@ msgstr ""
 msgid "Checking Papi-web version..."
 msgstr ""
 
-#: src/common/engine.py src/database/sqlite/ffe_database.py
-#: src/database/sqlite/fide_database.py
+#: src/common/engine.py src/database/sqlite/fide_database.py
+#: src/plugins/ffe/ffe_database.py
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
 
@@ -1072,22 +1072,6 @@ msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
 #: src/data/util.py
-msgid "No FFE Licence"
-msgstr ""
-
-#: src/data/util.py
-msgid "Expired FFE licence"
-msgstr ""
-
-#: src/data/util.py
-msgid "FFE licence B (leisure)"
-msgstr ""
-
-#: src/data/util.py
-msgid "FFE licence A (competition)"
-msgstr ""
-
-#: src/data/util.py
 msgid "U8"
 msgstr ""
 
@@ -1312,10 +1296,6 @@ msgstr ""
 msgid "Club"
 msgstr ""
 
-#: src/data/util.py
-msgid "League"
-msgstr ""
-
 #: src/data/util.py src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/players/record_modal.html
 msgid "Federation"
@@ -1337,50 +1317,6 @@ msgstr ""
 msgid "Crosstable"
 msgstr ""
 
-#: src/database/sqlite/ffe_database.py
-msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py
-msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py
-msgid "Downloading the FFE database..."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "Could not download [{url}], error code [{code}]."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "Could not download [{url}]: {ex}."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "No data received from [{url}]."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "Could not unzip data."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "Storing data..."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "{number} players written."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py
-msgid "Error reading the following row (player ignored): [{row}]."
-msgstr ""
-
-#: src/database/sqlite/ffe_database.py src/database/sqlite/fide_database.py
-msgid "Error while creating the database: {ex}."
-msgstr ""
-
 #: src/database/sqlite/fide_database.py
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
@@ -1391,6 +1327,34 @@ msgstr ""
 
 #: src/database/sqlite/fide_database.py
 msgid "Downloading the FIDE database..."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+msgid "Could not download [{url}], error code [{code}]."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+msgid "Could not download [{url}]: {ex}."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+msgid "No data received from [{url}]."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+msgid "Could not unzip data."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+msgid "Storing data..."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+msgid "{number} players written."
+msgstr ""
+
+#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+msgid "Error while creating the database: {ex}."
 msgstr ""
 
 #: src/ffe/action_selector.py
@@ -1491,15 +1455,14 @@ msgstr ""
 msgid "Initializing a session to [{url}]..."
 msgstr ""
 
-#: src/ffe/ffe_session.py
+#: src/ffe/ffe_session.py src/plugins/ffe/templates/filter_ffe_licences.html
+#: src/plugins/ffe/templates/filter_leagues.html
 #: src/web/templates/admin/players/filter_categories.html
 #: src/web/templates/admin/players/filter_check_ins.html
 #: src/web/templates/admin/players/filter_clubs.html
 #: src/web/templates/admin/players/filter_columns.html
 #: src/web/templates/admin/players/filter_federations.html
-#: src/web/templates/admin/players/filter_ffe_licences.html
 #: src/web/templates/admin/players/filter_genders.html
-#: src/web/templates/admin/players/filter_leagues.html
 #: src/web/templates/admin/players/filter_tournaments.html
 msgid "OK"
 msgstr ""
@@ -1572,6 +1535,181 @@ msgstr ""
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
+#, python-format
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
+msgstr ""
+
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/index/event_card.html
+msgid "No ChessEvent identifier defined"
+msgstr ""
+
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
+#: src/web/templates/admin/event/tab.html
+#: src/web/templates/admin/index/event_card.html
+msgid "No ChessEvent event defined"
+msgstr ""
+
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
+msgid "No ChessEvent tournament defined"
+msgstr ""
+
+#: src/plugins/ffe/ffe.py
+msgid "Error while updating the FFE database."
+msgstr ""
+
+#: src/plugins/ffe/ffe.py
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/plugins/ffe/ffe.py
+msgid "Invalid FFE ID [{ffe_id}]."
+msgstr ""
+
+#: src/plugins/ffe/ffe.py
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr ""
+
+#: src/plugins/ffe/ffe.py
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/plugins/ffe/ffe.py
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#: src/plugins/ffe/ffe.py
+msgid "League"
+msgstr ""
+
+#: src/plugins/ffe/ffe.py
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr "League"
+
+#: src/plugins/ffe/ffe_database.py
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr ""
+
+#: src/plugins/ffe/ffe_database.py
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr ""
+
+#: src/plugins/ffe/ffe_database.py
+msgid "Downloading the FFE database..."
+msgstr ""
+
+#: src/plugins/ffe/ffe_database.py
+msgid "Error reading the following row (player ignored): [{row}]."
+msgstr ""
+
+#: src/plugins/ffe/util.py
+msgid "No FFE Licence"
+msgstr ""
+
+#: src/plugins/ffe/util.py
+msgid "Expired FFE licence"
+msgstr ""
+
+#: src/plugins/ffe/util.py
+msgid "FFE licence B (leisure)"
+msgstr ""
+
+#: src/plugins/ffe/util.py
+msgid "FFE licence A (competition)"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "French Chess Federation"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "Licence number:"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#: src/plugins/ffe/templates/ffe_search.html
+#: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, python-format
+msgid "E.g.: %(string)s"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "The player's licence number."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "Licence:"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "The player's licence."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "FFE Uniq ID:"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "League:"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+msgid "The player's league."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_search.html
+msgid "FFE database:"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_search.html
+msgid "The FFE database is not available."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_search_results.html
+#: src/web/templates/admin/players/fide_search_results.html
+msgid "No results."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, python-format
+msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, python-format
+msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, python-format
+msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+#, python-format
+msgid "FFE qualification: %(ffe_id)s"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_tournament_card_block.html
+msgid "No FFE qualification"
+msgstr ""
+
+#: src/plugins/ffe/templates/filter_ffe_licences.html
+msgid "Filter the licences."
+msgstr ""
+
+#: src/plugins/ffe/templates/filter_leagues.html
+msgid "Filter the leagues."
+msgstr ""
+
 #: src/web/server_engine.py
 msgid "Opening the welcome page [{url}] in a browser..."
 msgstr ""
@@ -1605,10 +1743,6 @@ msgid "Error while updating the FIDE database."
 msgstr ""
 
 #: src/web/server_engine.py
-msgid "Error while updating the FFE database."
-msgstr ""
-
-#: src/web/server_engine.py
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
 msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
 
@@ -1616,7 +1750,7 @@ msgstr "Installation automatique de BBP Pairings pour les developpeur·euses ave
 msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr ""
 
-#: src/web/controllers/index_controller.py
+#: src/web/controllers/base_controller.py
 msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
@@ -1938,22 +2072,6 @@ msgid "Invalid FIDE ID [{fide_id}]."
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
-msgstr ""
-
-#: src/web/controllers/admin/player_admin_controller.py
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr ""
-
-#: src/web/controllers/admin/player_admin_controller.py
-msgid "Invalid FFE licence number [{ffe_licence_number}]."
-msgstr ""
-
-#: src/web/controllers/admin/player_admin_controller.py
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
-msgstr ""
-
-#: src/web/controllers/admin/player_admin_controller.py
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
@@ -2007,10 +2125,6 @@ msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 msgid "Papi file [{tournament_file}] not found."
-msgstr ""
-
-#: src/web/controllers/admin/player_admin_controller.py
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
@@ -2539,14 +2653,6 @@ msgid "Chessevent ID:"
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, python-format
-msgid "E.g.: %(string)s"
-msgstr ""
-
-#: src/web/templates/admin/event/event_modal.html
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
@@ -2813,18 +2919,6 @@ msgstr ""
 
 #: src/web/templates/admin/event/tab.html
 msgid "ChessEvent"
-msgstr ""
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/index/event_card.html
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "No ChessEvent identifier defined"
-msgstr ""
-
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/index/event_card.html
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "No ChessEvent event defined"
 msgstr ""
 
 #: src/web/templates/admin/event/tab.html
@@ -3534,11 +3628,6 @@ msgstr ""
 msgid "Download the information of the selected players (XLSX format)."
 msgstr ""
 
-#: src/web/templates/admin/players/ffe_search_results.html
-#: src/web/templates/admin/players/fide_search_results.html
-msgid "No results."
-msgstr ""
-
 #: src/web/templates/admin/players/filter_categories.html
 msgid "Filter the categories."
 msgstr ""
@@ -3590,11 +3679,7 @@ msgstr "Rating"
 
 #: src/web/templates/admin/players/filter_columns.html
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Fide"
-
-#: src/web/templates/admin/players/filter_columns.html
-msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-msgstr "League"
+msgstr "Fed."
 
 #: src/web/templates/admin/players/filter_columns.html
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
@@ -3648,16 +3733,8 @@ msgstr "Record"
 msgid "Filter the federations."
 msgstr ""
 
-#: src/web/templates/admin/players/filter_ffe_licences.html
-msgid "Filter the licences."
-msgstr ""
-
 #: src/web/templates/admin/players/filter_genders.html
 msgid "Filter the genders."
-msgstr ""
-
-#: src/web/templates/admin/players/filter_leagues.html
-msgid "Filter the leagues."
 msgstr ""
 
 #: src/web/templates/admin/players/filter_tournaments.html
@@ -3703,14 +3780,6 @@ msgid "The FIDE database is not available."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
-msgid "FFE database:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The FFE database is not available."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
 msgid "Identity"
 msgstr ""
 
@@ -3751,6 +3820,18 @@ msgid "The player's gender."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
+msgid "Club:"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "E.g.: My favourite club!"
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
+msgid "The player's club."
+msgstr ""
+
+#: src/web/templates/admin/players/player_modal.html
 msgid "The player's tournament."
 msgstr ""
 
@@ -3788,54 +3869,6 @@ msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
 msgid "The player's federation."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "French Chess Federation"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence number:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence number."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Licence:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's licence."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "FFE Uniq ID:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "League:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's league."
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "Club:"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "E.g.: My favourite club!"
-msgstr ""
-
-#: src/web/templates/admin/players/player_modal.html
-msgid "The player's club."
 msgstr ""
 
 #: src/web/templates/admin/players/player_modal.html
@@ -4013,8 +4046,12 @@ msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
 #: src/web/templates/admin/players/tab.html
-msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-msgstr "Origin"
+msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
+msgstr "Fed."
+
+#: src/web/templates/admin/players/tab.html
+msgid "Club *** CLUB COLUMN HEADER FOR PLAYERS"
+msgstr "Club"
 
 #: src/web/templates/admin/players/tab.html
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
@@ -4035,10 +4072,6 @@ msgstr ""
 #: src/web/templates/admin/players/tab.html
 msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
 msgstr "Fide"
-
-#: src/web/templates/admin/players/tab.html
-msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE"
 
 #: src/web/templates/admin/players/tab.html
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
@@ -4110,29 +4143,16 @@ msgid "No FIDE ID."
 msgstr ""
 
 #: src/web/templates/admin/players/tab.html
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr ""
-
-#: src/web/templates/admin/players/tab.html
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr ""
-
-#: src/web/templates/admin/players/tab.html
-#, python-format
-msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr ""
-
-#: src/web/templates/admin/players/tab.html
 msgid "Change the player's tournament."
 msgstr ""
 
 #: src/web/templates/admin/players/tab.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "No players."
 msgstr ""
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Rk. *** RANK FOR PRINT VIEW"
 msgstr "Rk."
 
@@ -4141,32 +4161,34 @@ msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nb."
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Name *** NAME FOR PRINT VIEW"
 msgstr "Name"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Elo *** STD ELO FOR PRINT VIEW"
 msgstr "Elo"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapid"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat."
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Fed."
-
-#: src/web/templates/admin/print/players.html
-msgid "League *** LEAGUE FOR PRINT VIEW"
-msgstr "League"
 
 #: src/web/templates/admin/print/players.html
 #, python-format
@@ -4174,10 +4196,12 @@ msgid "R %(round)d *** ROUND FOR PRINT VIEW"
 msgstr "R %(round)d"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
 
 #: src/web/templates/admin/print/players.html
+#: src/web/templates/user/screen/ranking/set.html
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
 
@@ -4877,39 +4901,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
-#, python-format
-msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, python-format
-msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, python-format
-msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, python-format
-msgid "FFE qualification: %(ffe_id)s"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "No FFE qualification"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "No ChessEvent tournament defined"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Rules file set"
 msgstr ""
 
@@ -5384,38 +5375,31 @@ msgid "Player / Elo"
 msgstr ""
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Player Elo [Pts]"
 msgstr ""
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Player Elo"
 msgstr ""
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Board & color"
 msgstr ""
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "Opponent Elo"
 msgstr ""
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
 
 #: src/web/templates/user/screen/players/set.html
-#: src/web/templates/user/screen/ranking/set.html
 msgid "vs"
 msgstr ""
 
@@ -5435,5 +5419,23 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+#~ msgstr ""
+
+#~ msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
+#~ msgstr "League"
+
+#~ msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
+#~ msgstr "Origin"
+
+#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
+#~ msgstr "FFE"
+
+#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
+#~ msgstr ""
+
+#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+#~ msgstr ""
+
+#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 #~ msgstr ""
 

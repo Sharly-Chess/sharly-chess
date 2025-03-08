@@ -20,7 +20,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.family import Family
-from data.player import Player, ClubTuple, FederationTuple
+from data.player import Player, Club, Federation
 from data.rotator import Rotator
 from data.screen import Screen
 from data.screen_set import ScreenSet
@@ -287,21 +287,21 @@ class Event:
         return counter
 
     @cached_property
-    def federation_counts(self) -> Counter[FederationTuple]:
-        counter: Counter[FederationTuple] = Counter[FederationTuple]()
+    def federation_counts(self) -> Counter[Federation]:
+        counter: Counter[Federation] = Counter[Federation]()
         for tournament in self.tournaments_by_id.values():
-            for federation_tuple in tournament.federation_counts:
-                counter[federation_tuple] += tournament.federation_counts[
-                    federation_tuple
+            for federation in tournament.federation_counts:
+                counter[federation] += tournament.federation_counts[
+                    federation
                 ]
         return counter
 
     @cached_property
-    def club_counts(self) -> Counter[ClubTuple]:
-        counter: Counter[ClubTuple] = Counter[ClubTuple]()
+    def club_counts(self) -> Counter[Club]:
+        counter: Counter[Club] = Counter[Club]()
         for tournament in self.tournaments_by_id.values():
-            for club_tuple in tournament.club_counts:
-                counter[club_tuple] += tournament.club_counts[club_tuple]
+            for club in tournament.club_counts:
+                counter[club] += tournament.club_counts[club]
         return counter
 
     @cached_property

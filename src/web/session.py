@@ -6,7 +6,7 @@ from litestar.contrib.htmx.request import HTMXRequest
 
 from common import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.player import FederationTuple, ClubTuple
+from data.player import Federation, Club
 from data.util import PlayerGender, PlayerCategory
 from plugins.ffe.util import PlayerFFELicence
 
@@ -178,7 +178,7 @@ class SessionHandler:
             'yob_asc',
             'category_desc',
             'category_asc',
-            'origin',
+            'club',
             'tournament',
         ]
         request.session[cls.ADMIN_PLAYERS_SORT_KEY]: str = players_sort
@@ -208,20 +208,20 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_players_filter_federations(
-        cls, request: HTMXRequest, federation_tuples: list[FederationTuple]
+        cls, request: HTMXRequest, federations: list[Federation]
     ):
         request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY]: list[
-            FederationTuple
-        ] = federation_tuples
+            Federation
+        ] = federations
 
     @classmethod
     def get_session_admin_players_filter_federations(
         cls, request: HTMXRequest
-    ) -> list[FederationTuple]:
+    ) -> list[Federation]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, FederationTuple) else FederationTuple(d['federation'])
+            d if isinstance(d, Federation) else Federation(d)
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, [])
         ]
 
@@ -229,24 +229,34 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_players_filter_clubs(
-        cls, request: HTMXRequest, club_tuples: list[ClubTuple]
+        cls, request: HTMXRequest, clubs: list[Club]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY]: list[ClubTuple] = (
-            club_tuples
+        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY]: list[Club] = (
+            clubs
         )
 
     @classmethod
     def get_session_admin_players_filter_clubs(
         cls, request: HTMXRequest
-    ) -> list[ClubTuple]:
+    ) -> list[Club]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
             d
-            if isinstance(d, ClubTuple)
-            else ClubTuple(d['federation'], d['club'])
+            if isinstance(d, Club)
+            else Club(d)
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
+
+    ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY: str = 'admin_players_filter_clubs_search'
+
+    @classmethod
+    def set_session_admin_players_filter_clubs_search(cls, request: HTMXRequest, origin: str):
+        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY]: str = origin
+
+    @classmethod
+    def get_session_admin_players_filter_clubs_search(cls, request: HTMXRequest) -> str:
+        return request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY, '')
 
     ADMIN_PLAYERS_FILTER_GENDERS_KEY: str = 'admin_players_filter_genders'
 
@@ -350,13 +360,3 @@ class SessionHandler:
     @classmethod
     def get_session_admin_players_filter_name(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, '')
-
-    ADMIN_PLAYERS_FILTER_ORIGIN_KEY: str = 'admin_players_filter_origin'
-
-    @classmethod
-    def set_session_admin_players_filter_origin(cls, request: HTMXRequest, origin: str):
-        request.session[cls.ADMIN_PLAYERS_FILTER_ORIGIN_KEY]: str = origin
-
-    @classmethod
-    def get_session_admin_players_filter_origin(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_ORIGIN_KEY, '')

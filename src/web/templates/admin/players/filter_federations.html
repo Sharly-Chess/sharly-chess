@@ -24,23 +24,23 @@
                     </button>
                 </li>
                 <li class="dropdown-divider m-0"></li>
-                {% for federation_tuple in admin_players_federations %}
+                {% for federation in admin_players_federations %}
                     <li class="dropdown-item d-flex align-items-center gap-2">
                         <input
                             type="checkbox"
                             id="{{ name }}-{{ loop.index }}"
                             name="{{ name }}"
-                            value="{{ federation_tuple.to_query_param }}"
-                            {% if federation_tuple in admin_players_filter_federations %}checked{% endif %}
+                            value="{{ federation.to_query_param }}"
+                            {% if federation in admin_players_filter_federations %}checked{% endif %}
                             class="{{ name }}"
                         />
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
                             <span>
                                 <img
                                     class="player-federation-flag pe-1"
-                                    src="{{ url_for('static', file_path='/images/federations/' ~ federation_tuple.federation ~ '.svg') }}"
+                                    src="{{ url_for('static', file_path='/images/federations/' ~ federation ~ '.svg') }}"
                                 />
-                                ({{ admin_event.federation_counts[federation_tuple] }})
+                                ({{ admin_event.federation_counts[federation] }})
                             </span>
                         </label>
                     </li>
