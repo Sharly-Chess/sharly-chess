@@ -16,6 +16,7 @@ from litestar.types import ControllerRouterHandler, Middleware
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
+from plugins.manager import plugin_manager
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
 from web.controllers.admin.index_admin_controller import IndexAdminController
@@ -26,7 +27,6 @@ from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
 from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
-from web.controllers.search.ffe_search_controller import FfeSearchController
 from web.controllers.search.fide_search_controller import FideSearchController
 from web.controllers.user.event_user_controller import EventUserController
 from web.controllers.user.index_user_controller import IndexUserController
@@ -73,8 +73,10 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     RotatorAdminController,
     PlayerAdminController,
     FideSearchController,
-    FfeSearchController,
     static_files_router,
+    
+    # Plugin controllers
+    *[controller for controllers in plugin_manager.hook.get_controllers() for controller in controllers],
 ]
 
 # Keep this here for the day we need to add extra functions to templates
@@ -129,8 +131,12 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
-template_dir: Path = BASE_DIR / 'src/web/templates'
+plugin_template_paths: list[Path] = plugin_manager.hook.get_templates_path()
 
+template_dirs: list[Path] = [
+    BASE_DIR / 'src/web/templates',
+    *[path for path in plugin_template_paths],
+]
 
 class PapiWebEnvironment(Environment):
     """Override to:
@@ -140,10 +146,10 @@ class PapiWebEnvironment(Environment):
 
     def __init__(
         self,
-        directory: Path,
+        directories: list[Path],
     ) -> None:
         template_loader: FileSystemLoader = FileSystemLoaderWithRelativePath(
-            searchpath=[directory]
+            searchpath=directories
         )
         super().__init__(
             loader=template_loader,
@@ -161,7 +167,7 @@ class PapiWebEnvironment(Environment):
 
 
 template_engine: JinjaTemplateEngine = JinjaTemplateEngine(
-    engine_instance=PapiWebEnvironment(template_dir),
+    engine_instance=PapiWebEnvironment(template_dirs),
 )
 
 # create the Jinja config that will be passed to the Litestar app

@@ -30,9 +30,9 @@ from data.util import (
     PlayerTitle,
     TournamentRating,
     PlayerRatingType,
-    PlayerFFELicence,
 )
 from database.sqlite.sqlite_database import SQLiteDatabase
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

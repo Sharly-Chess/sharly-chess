@@ -15,13 +15,16 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, ClubTuple, LeagueTuple, FederationTuple
-from data.util import PlayerGender, PlayerFFELicence, PlayerCategory, PrintSplit, PrintDocument
+from data.util import PlayerGender, PlayerCategory, PrintSplit, PrintDocument
+from plugins.ffe.util import PlayerFFELicence
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
 )
 from web.messages import Message
 from web.session import SessionHandler
+
+import plugins.manager as PM
 
 logger: Logger = get_logger()
 
@@ -68,9 +71,15 @@ class BaseEventAdminWebContext(AdminWebContext):
         }
         
     def get_print_split_options(self) -> dict[str, str]:
+        per_plugin_split_options = PM.plugin_manager.hook.get_print_split_options()
+        plugin_split_options = [option for options in per_plugin_split_options for option in options]
+        
         return {
             self.value_to_form_data(split): PrintSplit(split).name
             for split in PrintSplit
+        } | {
+            self.value_to_form_data(plugin_option.url_name): plugin_option.name
+            for plugin_option in plugin_split_options
         }
 
     def get_print_document_options(self) -> dict[str, str]:
@@ -176,8 +185,10 @@ class BaseEventAdminController(BaseAdminController):
             case 'config':
                 pass
             case 'tournaments':
+                tournament_card_blocks = PM.plugin_manager.hook.get_tournament_card_block_template()
                 template_context |= {
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
+                    "tournament_card_blocks": tournament_card_blocks
                 }
             case 'players':
                 # The federations that will be shown on the federation select list

@@ -31,13 +31,13 @@ from data.util import (
     BoardColor,
     NeedsUpload,
     TournamentRating,
-    PlayerFFELicence,
     PlayerGender,
 )
 from data.util import TournamentPairing, Result
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

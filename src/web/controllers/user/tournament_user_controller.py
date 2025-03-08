@@ -20,7 +20,7 @@ from data.loader import EventLoader
 from data.player import Player
 from data.tournament import Tournament
 from data.util import Result
-from web.controllers.index_controller import BaseController
+from web.controllers.base_controller import BaseController
 from web.controllers.user.event_user_controller import EventUserWebContext
 from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.base_screen_user_controller import (

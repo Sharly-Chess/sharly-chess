@@ -7,7 +7,7 @@ from litestar.params import Body
 
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
-from web.controllers.index_controller import BaseController, WebContext
+from web.controllers.base_controller import BaseController, WebContext
 
 logger: Logger = get_logger()
 

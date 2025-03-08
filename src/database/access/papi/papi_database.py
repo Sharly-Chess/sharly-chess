@@ -17,11 +17,11 @@ from data.util import (
     PlayerGender,
     PlayerTitle,
     TournamentRating,
-    PlayerFFELicence,
     PlayerRatingType,
     BoardColor,
 )
 from database.access.access_database import AccessDatabase
+from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 

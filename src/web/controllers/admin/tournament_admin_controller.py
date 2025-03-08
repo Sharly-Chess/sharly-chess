@@ -3,6 +3,7 @@ from logging import Logger
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 from collections import defaultdict
+from functools import partial
 
 import trf
 from litestar import post, get, delete, patch
@@ -16,6 +17,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from data.player import Player
 from data.tie_break import PapiTieBreak, TieBreak
+from data.player import Player
 from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
@@ -26,11 +28,12 @@ from data.tournament import Tournament
 from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament, StoredScreen
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.index_controller import WebContext
+from web.controllers.base_controller import WebContext
 from web.messages import Message
 
 logger: Logger = get_logger()
@@ -785,6 +788,39 @@ class TournamentAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
+    
+    @staticmethod
+    def split_players_by(split_by: str, players: list[Player]):
+        split_functions = {
+            PrintSplit.CLUB: lambda p: p.club_tuple.club,
+            PrintSplit.CATEGORY: lambda p: p.category.short_name,
+            PrintSplit.FEDERATION: lambda p: p.federation_tuple.federation,
+        } 
+        
+        if split_by == PrintSplit.CATEGORY:
+            split_players = {
+                category.short_name: [] for category in PlayerCategory
+            }
+        else:
+            split_players = defaultdict(list)
+
+        # Split players by group
+        for player in players:
+            split_players[split_functions[split_by](player)].append(player)
+
+        if split_by == PrintSplit.CATEGORY:
+            # Filter out empty categories
+            split_players = {
+                key: split_players[key] for key in split_players.keys()
+                if len(split_players[key]) > 0
+            }
+        else:
+            # Sort by key
+            split_players = {
+                key: split_players[key]
+                for key in sorted(split_players.keys())
+            }
+        return split_players
 
     @get(
         path='/admin/player-print-view/{event_uniq_id:str}/{tournament_id:int}',
@@ -828,50 +864,43 @@ class TournamentAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'{print_document=}')
 
-        split_by: PrintSplit = PrintSplit(split) if split else PrintSplit.NO_SPLIT
+        split_by = split or PrintSplit.NO_SPLIT
         split_players: dict[str, list[Player]]
         if split_by == PrintSplit.NO_SPLIT:
             split_players = {
                 "": players,
             }
         else:
+            per_plugin_split_options = plugin_manager.hook.get_print_split_options()
+            plugin_split_options = [option for options in per_plugin_split_options for option in options]
+        
             split_functions = {
-                PrintSplit.CATEGORY: lambda p: p.category.short_name,
-                PrintSplit.CLUB: lambda p: p.club_tuple.club,
-                PrintSplit.LEAGUE: lambda p: p.league_tuple.league,
-                PrintSplit.FEDERATION: lambda p: p.federation_tuple.federation,
+                PrintSplit.CLUB: partial(self.split_players_by, PrintSplit.CLUB),
+                PrintSplit.CATEGORY: partial(self.split_players_by, PrintSplit.CATEGORY),
+                PrintSplit.FEDERATION: partial(self.split_players_by, PrintSplit.FEDERATION),
+            } | {
+                plugin_option.url_name: plugin_option.split_fn
+                for plugin_option in plugin_split_options
             }
 
-            if split_by == PrintSplit.CATEGORY:
-                split_players = {
-                    category.short_name: [] for category in PlayerCategory
-                }
-            else:
-                split_players = defaultdict(list)
+            split_players = split_functions[split_by](players)
 
-            # Split players by group
-            for player in players:
-                split_players[split_functions[split_by](player)].append(player)
-
-            if split_by == PrintSplit.CATEGORY:
-                # Filter out empty categories
-                split_players = {
-                    key: split_players[key] for key in split_players.keys()
-                    if len(split_players[key]) > 0
-                }
-            else:
-                # Sort by key
-                split_players = {
-                    key: split_players[key]
-                    for key in sorted(split_players.keys())
-                }
-
+        per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
+            document=print_document
+        )
+        extra_columns = {}
+        for plugin_columns in per_plugin_columns:
+            for extra_column in plugin_columns:
+                c = extra_columns.setdefault(extra_column.insertion_index, [])
+                c.append(extra_column)
+        
         template_context |= {
             'tournament': admin_tournament,
             'players': split_players,
             'title': print_document.to_title(round),
             'document': print_document,
             'max_round': round,
+            'extra_columns': extra_columns,
         }
         return HTMXTemplate(
             template_name='admin/print/players.html', context=template_context
