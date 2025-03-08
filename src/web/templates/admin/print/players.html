@@ -27,7 +27,7 @@
             
             {% set n = [1] %}
             {% set extra_classes = "" %}
-            {% set rank_players = document.is_ranking or document.is_crosstable %}
+            {% set rank_players = document.is_crosstable %}
             {% if rank_players %}{% set extra_classes = "small" %}{% endif %}
             {% if players %}
                 {% for splitBy in players.keys() %}
