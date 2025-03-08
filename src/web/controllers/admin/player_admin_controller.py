@@ -17,7 +17,7 @@ from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.pairing import Pairing
-from data.player import Player
+from data.player import Player, Federation, Club
 from data.tournament import Tournament
 from data.util import (
     PlayerGender,
@@ -168,14 +168,18 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
-        federation: str | None = WebContext.form_data_to_str(
+        federation_name: str | None = WebContext.form_data_to_str(
             data, field := 'federation', PapiWebConfig().default_federation
         )
-        if federation not in PapiWebConfig.federations:
+        federation: Federation | None = None
+        if federation_name not in PapiWebConfig.federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-        club: str | None = WebContext.form_data_to_str(data, field := 'club')
+        else:
+            federation = Federation(federation_name)
+        club_name: str | None = WebContext.form_data_to_str(data, field := 'club')
+        club: Club = Club(club_name) if club_name else None
         fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
@@ -300,8 +304,8 @@ class PlayerAdminController(BaseEventAdminController):
                         tr: PlayerRatingType.ESTIMATED for tr in TournamentRating
                     }
                     title: PlayerTitle = PlayerTitle.NONE
-                    federation: str | None = None
-                    club: str | None = None
+                    federation: Federation | None = None
+                    club: Club | None = None
                     fide_id: int | None = None
                     mail: str | None = None
                     phone: str | None = None

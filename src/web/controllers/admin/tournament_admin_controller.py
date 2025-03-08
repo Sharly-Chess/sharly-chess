@@ -1,7 +1,7 @@
 import re
 from logging import Logger
 from tempfile import NamedTemporaryFile
-from typing import Annotated, Any
+from typing import Annotated, Any, Callable
 from collections import defaultdict
 from functools import partial
 
@@ -15,7 +15,6 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
-from data.player import Player
 from data.tie_break import PapiTieBreak, TieBreak
 from data.player import Player
 from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
@@ -790,13 +789,14 @@ class TournamentAdminController(BaseEventAdminController):
         )
     
     @staticmethod
-    def split_players_by(split_by: str, players: list[Player]):
-        split_functions = {
-            PrintSplit.CLUB: lambda p: p.club_tuple.club,
+    def split_players_by(split_by: PrintSplit, players: list[Player]) -> dict[str, list[Player]]:
+        split_functions: dict[PrintSplit, Callable] = {
+            PrintSplit.CLUB: lambda p: p.club,
             PrintSplit.CATEGORY: lambda p: p.category.short_name,
-            PrintSplit.FEDERATION: lambda p: p.federation_tuple.federation,
+            PrintSplit.FEDERATION: lambda p: p.federation,
         } 
-        
+
+        split_players: dict[str, list[Player]]
         if split_by == PrintSplit.CATEGORY:
             split_players = {
                 category.short_name: [] for category in PlayerCategory

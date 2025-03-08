@@ -23,108 +23,83 @@ from data.util import (
     PlayerCategory,
 )
 
-from plugins.ffe.util import PlayerFFELicence
-
 logger: Logger = get_logger()
 
 
 @dataclass(frozen=True)
 @total_ordering
-class FederationTuple:
-    federation: str = ''
-
-    @classmethod
-    def string_tuple_to_query_param(cls, strings: tuple[str, ...]) -> str:
-        return '-' + '-'.join(
-            [
-                base64.b64encode(string.encode('utf-8')).decode('utf-8')
-                for string in strings
-            ]
-        )
-
-    @classmethod
-    def query_param_to_string_tuple(cls, query_param: str) -> tuple[str, ...]:
-        return tuple(
-            base64.b64decode(string).decode('utf-8')
-            for string in query_param[1:].split('-')
-        )
+class Federation:
+    name: str = ''
 
     @cached_property
     def to_query_param(self) -> str:
-        return self.string_tuple_to_query_param((self.federation,))
+        return base64.b64encode(self.name.encode('utf-8')).decode('utf-8')
 
     @classmethod
     def from_query_param(cls, query_param: str) -> Self:
-        t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
-        return FederationTuple(t[0])
+        return base64.b64decode(query_param).decode('utf-8')
 
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
             f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
-        return self.federation <= other.federation
+        return self.name <= other.name
 
     def __str__(self) -> str:
-        return self.federation
+        return self.name
 
 @dataclass(frozen=True)
 @total_ordering
-class ClubTuple(FederationTuple):
-    club: str = ''
+class Club:
+    name: str = ''
 
     @cached_property
     def to_query_param(self) -> str:
-        return self.string_tuple_to_query_param(
-            (self.federation, self.club)
-        )
+        return base64.b64encode(self.name.encode('utf-8')).decode('utf-8')
 
     @classmethod
     def from_query_param(cls, query_param: str) -> Self:
-        t: tuple[str, ...] = cls.query_param_to_string_tuple(query_param)
-        return ClubTuple(t[0], t[1])
+        return base64.b64decode(query_param).decode('utf-8')
 
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
             f'Can not compare [{type(other)}] and [{self.__class__}]'
         )
-        return (self.federation, self.club) <= (
-            other.federation,
-            other.club,
-        )
+        return self.name <= other.name
 
     def __str__(self) -> str:
-        return f'{self.federation}-{self.club}'
+        return self.name
 
 
 class TournamentPlayer:
     """A class representing a player in a tournament"""
     def __init__(
         self,
-        id: int,
+        id: int | None,
         last_name: str,
-        first_name: str,
+        first_name: str | None,
         date_of_birth: date | None,
         gender: PlayerGender,
-        fide_id: int,
-        federation: str,
+        fide_id: int | None,
+        federation: Federation,
         title: PlayerTitle,
         pairings: dict[int, Pairing],
         estimation: int | None = None,
         point_values: dict[Result, float] | None = None,
     ):
-        self.id = id
-        self.last_name = last_name
-        self.first_name = first_name
-        self.date_of_birth = date_of_birth
-        self.gender = gender
-        self.fide_id = fide_id
-        self.federation = federation
-        self.title = title
-        self._estimation = estimation
-        self.pairings = pairings
-        self._point_values = point_values
+        self.id: int | None = id
+        self.last_name: str = last_name
+        self.first_name: str | None = first_name
+        self.date_of_birth: date | None = date_of_birth
+        self.gender: PlayerGender = gender
+        self.fide_id: int | None = fide_id
+        self.federation: Federation = federation
+        self.title: PlayerTitle = title
+        self._estimation: int | None = estimation
+        self.pairings: dict[int, Pairing] = pairings
+        self._point_values: dict[Result, float] = point_values
 
     @property
     def point_values(self) -> dict[Result, float] | None:
@@ -179,7 +154,7 @@ class Player(TournamentPlayer):
         date_of_birth: date | None,
         gender: PlayerGender,
         fide_id: int | None,
-        federation: str,
+        federation: Federation,
         title: PlayerTitle,
         pairings: dict[int, Pairing],
         
@@ -191,7 +166,7 @@ class Player(TournamentPlayer):
         paid: float,
         ratings: dict[TournamentRating, int],
         rating_types: dict[TournamentRating, PlayerRatingType],
-        club: str,
+        club: Club,
         fixed: int,
         check_in: bool,
         tournament: 'Tournament | None' = None,
@@ -218,8 +193,8 @@ class Player(TournamentPlayer):
         self.paid: float = paid
         self.ratings: dict[TournamentRating, int] = ratings
         self.rating_types: dict[TournamentRating, PlayerRatingType] = rating_types
-        self.federation: str = federation
-        self.club: str = club
+        self.federation: Federation = federation
+        self.club: Club = club
         self.fixed: int = fixed
         self.check_in: bool = check_in
         self.points: float | None = None
@@ -295,14 +270,6 @@ class Player(TournamentPlayer):
     def point_values(self) -> dict[Result, float] | None:
         return self.tournament.point_values if self.tournament else None
 
-    @cached_property
-    def club_tuple(self) -> ClubTuple:
-        return ClubTuple(self.federation, self.club)
-
-    @cached_property
-    def federation_tuple(self) -> FederationTuple:
-        return FederationTuple(self.federation)
-
     def compute_points(self, max_round: int):
         """Computes and stores the points of the player,
         from round 1 to round `max_round` (returns None)"""
@@ -340,7 +307,7 @@ class Player(TournamentPlayer):
             sex=self.gender.to_trf,
             title=self.title.to_trf,
             rating=self.rating,
-            fed=self.federation,
+            fed=self.federation.name,
             id=self.fide_id,
             birthdate=self.date_of_birth.strftime('%Y/%m/%d')
             if self.date_of_birth
@@ -533,5 +500,5 @@ class Player(TournamentPlayer):
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (
             f'{self.__class__.__name__}'
-            f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} {self.last_name} {self.first_name} {self.club_tuple})'
+            f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} {self.last_name} {self.first_name} {self.club})'
         )

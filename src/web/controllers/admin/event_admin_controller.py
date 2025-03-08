@@ -21,7 +21,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
-from data.player import Player, ClubTuple, FederationTuple
+from data.player import Player, Club, Federation
 from data.util import PlayerGender, PlayerCategory, PrintSplit, TournamentRating, PrintDocument
 from data.tournament import Tournament
 from database.sqlite.event_database import EventDatabase
@@ -200,13 +200,13 @@ class EventAdminController(BaseEventAdminController):
         admin_players_filter_columns: list[str] | None = None,
         admin_players_filter_federations: list[str] | None = None,
         admin_players_filter_clubs: list[str] | None = None,
+        admin_players_filter_clubs_search: str | None = None,
         admin_players_filter_genders: list[int] | None = None,
         admin_players_filter_licences: list[int] | None = None,
         admin_players_filter_check_ins: list[int] | None = None,
         admin_players_filter_tournaments: list[int] | None = None,
         admin_players_filter_categories: list[int] | None = None,
         admin_players_filter_name: str | None = None,
-        admin_players_filter_origin: str | None = None,
         admin_players_clear_filters: int | None = None,
     ) -> Template | ClientRedirect:
         match admin_event_tab:
@@ -232,7 +232,7 @@ class EventAdminController(BaseEventAdminController):
                     SessionHandler.set_session_admin_players_filter_federations(
                         request,
                         [
-                            FederationTuple.from_query_param(query_param)
+                            Federation.from_query_param(query_param)
                             for query_param in admin_players_filter_federations
                             if query_param  # '' must be ignored
                         ],
@@ -241,7 +241,7 @@ class EventAdminController(BaseEventAdminController):
                     SessionHandler.set_session_admin_players_filter_clubs(
                         request,
                         [
-                            ClubTuple.from_query_param(query_param)
+                            Club.from_query_param(query_param)
                             for query_param in admin_players_filter_clubs
                             if query_param  # '' must be ignored
                         ],
@@ -299,15 +299,14 @@ class EventAdminController(BaseEventAdminController):
                     SessionHandler.set_session_admin_players_filter_name(
                         request, unicode_normalize(admin_players_filter_name).lower()
                     )
-                elif admin_players_filter_origin is not None:
-                    SessionHandler.set_session_admin_players_filter_origin(
-                        request, unicode_normalize(admin_players_filter_origin).lower()
+                elif admin_players_filter_clubs_search is not None:
+                    SessionHandler.set_session_admin_players_filter_clubs_search(
+                        request, unicode_normalize(admin_players_filter_clubs_search).lower()
                     )
                 elif admin_players_clear_filters:
                     SessionHandler.set_session_admin_players_filter_federations(
                         request, []
                     )
-                    SessionHandler.set_session_admin_players_filter_leagues(request, [])
                     SessionHandler.set_session_admin_players_filter_clubs(request, [])
                     SessionHandler.set_session_admin_players_filter_genders(request, [])
                     SessionHandler.set_session_admin_players_filter_licences(
@@ -323,7 +322,7 @@ class EventAdminController(BaseEventAdminController):
                         request, []
                     )
                     SessionHandler.set_session_admin_players_filter_name(request, '')
-                    SessionHandler.set_session_admin_players_filter_origin(request, '')
+                    SessionHandler.set_session_admin_players_filter_clubs_search(request, '')
             case 'screens':
                 if admin_screens_show_family_screens is not None:
                     SessionHandler.set_session_admin_screens_show_family_screens(

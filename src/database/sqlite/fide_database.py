@@ -24,7 +24,7 @@ from common.logger import (
     print_interactive_success,
 )
 from common.papi_web_config import PapiWebConfig
-from data.player import Player
+from data.player import Player, Federation, Club
 from data.util import (
     PlayerGender,
     PlayerTitle,
@@ -32,7 +32,6 @@ from data.util import (
     PlayerRatingType,
 )
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 
@@ -231,8 +230,8 @@ class FideDatabase(SQLiteDatabase):
                     PlayerRatingType.FIDE if row['blitz_rating'] else PlayerRatingType.ESTIMATED,
             },
             fide_id=row['fide_id'],
-            federation=row['federation'],
-            club='',
+            federation=Federation(row['federation']),
+            club=Club(''),
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
             pairings={},  # Pairings are read from Papi but not used

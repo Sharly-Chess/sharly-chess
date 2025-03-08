@@ -98,8 +98,8 @@
         {% set _tooltip_text=_('Sort the players by rating (most rated first).') %}
     {% elif sort == 'rating_asc' %}
         {% set _tooltip_text=_('Sort the players by rating (less rated first).') %}
-    {% elif sort == 'origin' %}
-        {% set _tooltip_text=_('Sort the players by origin (federation, league, club).') %}
+    {% elif sort == 'club' %}
+        {% set _tooltip_text=_('Sort the players by club.') %}
     {% elif sort == 'yob_desc' %}
         {% set _tooltip_text=_('Sort the players by year of birth (youngest first).') %}
     {% elif sort == 'yob_asc' %}
@@ -569,4 +569,27 @@ hx_indicator_img: the URL of the image of the indicator, optional
         error=error,
         disabled=disabled,
     ) }}
+{% endmacro %}
+
+{% macro extra_admin_column_header(
+    at,
+    extra_columns = {}
+) %}
+    {% set columns=extra_columns[at] or [] %}
+    {% for column in columns %}
+        {% include column.header_template %}
+    {% endfor %}
+{% endmacro %}
+
+{% macro extra_admin_column_cell(
+    at,
+    value, 
+    extra_columns = {}
+) %}
+    {% with value=value %}
+        {% set columns=extra_columns[at] or [] %}
+        {% for column in columns %}
+            {% include column.cell_template %}
+        {% endfor %}
+    {% endwith %}
 {% endmacro %}

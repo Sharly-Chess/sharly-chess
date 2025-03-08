@@ -1,5 +1,4 @@
 from collections import Counter
-from datetime import datetime
 from functools import cached_property
 from itertools import groupby
 from logging import Logger
@@ -8,7 +7,6 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 
-from dateutil.relativedelta import relativedelta
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp_date_time
@@ -25,7 +23,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.chessevent_tournament import ChessEventTournament
 from data.family import Family
-from data.player import Player, FederationTuple, ClubTuple
+from data.player import Player, Federation, Club
 from data.screen import Screen
 from data.util import (
     BoardColor,
@@ -38,7 +36,6 @@ from data.util import TournamentPairing, Result
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event_database import EventDatabase
 from database.store import StoredTournament
-from plugins.ffe.util import PlayerFFELicence
 from plugins.manager import plugin_manager
 
 logger: Logger = get_logger()
@@ -427,14 +424,6 @@ class Tournament:
         )
 
     @cached_property
-    def ffe_licence_counts(self) -> Counter[PlayerFFELicence]:
-        """Returns the number of players by FFE licence."""
-        counter: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
-        for player in self.players_by_id.values():
-            counter[player.ffe_licence] += 1
-        return counter
-
-    @cached_property
     def gender_counts(self) -> Counter[PlayerGender]:
         """Returns the number of players by gender."""
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
@@ -443,19 +432,19 @@ class Tournament:
         return counter
 
     @cached_property
-    def federation_counts(self) -> Counter[FederationTuple]:
+    def federation_counts(self) -> Counter[Federation]:
         """Returns the number of players by federation."""
-        counter: Counter[FederationTuple] = Counter[FederationTuple]()
+        counter: Counter[Federation] = Counter[Federation]()
         for player in self.players_by_id.values():
-            counter[player.federation_tuple] += 1
+            counter[player.federation] += 1
         return counter
 
     @cached_property
-    def club_counts(self) -> Counter[ClubTuple]:
+    def club_counts(self) -> Counter[Club]:
         """Returns the number of players by club."""
-        counter: Counter[ClubTuple] = Counter[ClubTuple]()
+        counter: Counter[Club] = Counter[Club]()
         for player in self.players_by_id.values():
-            counter[player.club_tuple] += 1
+            counter[player.club] += 1
         return counter
 
     @property
@@ -1156,9 +1145,9 @@ class Tournament:
                 'Elo': player.ratings[TournamentRating.STANDARD],
                 'Rapide': player.ratings[TournamentRating.RAPID],
                 'Blitz': player.ratings[TournamentRating.BLITZ],
-                'Federation': player.federation,
+                'Federation': player.federation.name,
                 'ClubRef': 0,
-                'Club': player.club,
+                'Club': player.club.name,
                 'Fide': player.rating_types[TournamentRating.STANDARD].to_papi_value,
                 'RapideFide': player.rating_types[TournamentRating.RAPID].to_papi_value,
                 'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,

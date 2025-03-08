@@ -91,9 +91,11 @@
                             ></i>
                         </div>
                     </th>
+                    {{ admin_macros.extra_admin_column_header("title", admin_players_extra_columns)}}
                     <th scope="col" class="text-nowrap">
                         {# Players' title #}
                     </th>
+                    {{ admin_macros.extra_admin_column_header("name", admin_players_extra_columns)}}
                     <th
                         scope="col"
                         class="text-nowrap position-sticky start-0 z-2 px-3"
@@ -121,6 +123,7 @@
                             ></i>
                         </div>
                     </th>
+                    {{ admin_macros.extra_admin_column_header("check-in", admin_players_extra_columns)}}
                     {% if 'check_in' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center">
@@ -130,6 +133,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("elo", admin_players_extra_columns)}}
                     <th scope="col" class="text-nowrap text-center">
                         <div class="d-flex align-items-center gap-1">
                             {{ _('Elo *** ELO COLUMN HEADER FOR PLAYERS') }}
@@ -137,42 +141,50 @@
                             {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down', 'rating_asc', admin_players_sort) }}
                         </div>
                     </th>
-                    {% if 'federation' in admin_players_filter_columns or 'club' in admin_players_filter_columns %}
-                        <th scope="col" class="text-nowrap text-start" colspan="{{
-                            (1 if 'federation' in admin_players_filter_columns else 0) + (1 if 'club' in admin_players_filter_columns else 0)
-                        }}">
+                    {{ admin_macros.extra_admin_column_header("federation", admin_players_extra_columns)}}
+                    {% if 'federation' in admin_players_filter_columns %}
+                        <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center gap-1">
-                                {{ _('Origin *** ORIGIN COLUMN HEADER FOR PLAYERS') }}
-                                {% if admin_players_clubs|length > 1 %}
-                                    {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'origin', admin_players_sort) }}
-                                {% endif %}
+                                {{ _('Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS') }}
                                 {% if admin_players_federations|length > 1 %}
                                     {% include 'filter_federations.html' %}
+                                {% endif %}
+                            </div>
+                        </th>
+                    {% endif %}
+                    {{ admin_macros.extra_admin_column_header("club", admin_players_extra_columns)}}
+                    {% if 'club' in admin_players_filter_columns %}
+                        <th scope="col" class="text-nowrap text-start">
+                            <div class="d-flex align-items-center gap-1">
+                                {{ _('Club *** CLUB COLUMN HEADER FOR PLAYERS') }}
+                                {% if admin_players_clubs|length > 1 %}
+                                    {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'club', admin_players_sort) }}
                                 {% endif %}
                                 {% if admin_players_clubs|length > 1 %}
                                     {% include 'filter_clubs.html' %}
                                 {% endif %}
                                 <input
                                     type="text"
-                                    name="admin_players_filter_origin"
+                                    name="admin_players_filter_clubs_search"
                                     class="admin-players-filter-origin py-0 px-1"
                                     hx-get="{{ url }}"
                                     hx-swap="multi:#players-table-body,#players-table-counters"
                                     hx-trigger="keyup changed delay:0.2s"
                                     preload
                                     hx-indicator="#please-wait"
-                                    value="{{ admin_players_filter_origin }}"
+                                    value="{{ admin_players_filter_clubs_search }}"
                                 />
                                 <i
                                     class="bi-x-circle btn text-dark p-0 m-0"
                                     hx-get="{{ url }}"
-                                    hx-vals='{"admin_players_filter_origin": ""}'
+                                    hx-vals='{"admin_players_filter_clubs_search": ""}'
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 ></i>
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("yob", admin_players_extra_columns)}}
                     {% if 'yob' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center">
@@ -184,6 +196,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("category", admin_players_extra_columns)}}
                     {% if 'category' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center">
@@ -196,6 +209,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("mail", admin_players_extra_columns)}}
                     {% if 'mail' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-start w-1">
                             <div class="d-flex align-items-center">
@@ -203,6 +217,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("phone", admin_players_extra_columns)}}
                     {% if 'phone' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-start w-1">
                             <div class="d-flex align-items-center">
@@ -210,6 +225,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("gender", admin_players_extra_columns)}}
                     {% if 'gender' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center">
@@ -219,6 +235,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("fixed", admin_players_extra_columns)}}
                     {% if 'fixed' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center">
@@ -231,6 +248,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("fide", admin_players_extra_columns)}}
                     {% if 'fide' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-center w-1">
                             <div class="d-flex align-items-center">
@@ -238,10 +256,12 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("owed", admin_players_extra_columns)}}
                     {% if 'owed_paid' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap text-end"><div class="d-flex align-items-center">{{ _('Owed *** OWED COLUMN HEADER FOR PLAYERS') }}</div></th>
                         <th scope="col" class="text-nowrap text-end"><div class="d-flex align-items-center">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</div></th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("tournament", admin_players_extra_columns)}}
                     {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
                         <th scope="col" class="text-nowrap text-center">
                             <div class="d-flex align-items-center">
@@ -249,6 +269,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("comment", admin_players_extra_columns)}}
                     {% if 'comment' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap">
                             <div class="d-flex align-items-center">
@@ -256,6 +277,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("record", admin_players_extra_columns)}}
                     {% if 'record' in admin_players_filter_columns %}
                         <th scope="col" class="text-nowrap">
                             <div class="d-flex align-items-center">
@@ -264,6 +286,7 @@
                             </div>
                         </th>
                     {% endif %}
+                    {{ admin_macros.extra_admin_column_header("end", admin_players_extra_columns)}}
                 </tr>
             </thead>
             <tbody id="players-table-body">
@@ -329,15 +352,18 @@
                             <th scope="row" class="text-nowrap text-end w-1">
                                 {{ loop.index }}
                             </th>
+                            {{ admin_macros.extra_admin_column_cell("title", player, admin_players_extra_columns)}}
                             <td class="text-end">
                                 {{ player.title.short_name }}
                             </td>
+                            {{ admin_macros.extra_admin_column_cell("name", player, admin_players_extra_columns)}}
                             <td
                                 class="text-nowrap position-sticky start-0 px-3"
                                 style="border-right: 2px solid #454748;"
                             >
                                 {{ player.last_name }} {{ player.first_name }}
                             </td>
+                            {{ admin_macros.extra_admin_column_cell("check-in", player, admin_players_extra_columns)}}
                             {% if 'check_in' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center">
                                     <i
@@ -370,11 +396,13 @@
                                     ></i>
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("elo", player, admin_players_extra_columns)}}
                             <td class="text-nowrap text-center">
                                 {{ player.rating }}{{ player.rating_type }}
                             </td>
+                            {{ admin_macros.extra_admin_column_cell("federation", player, admin_players_extra_columns)}}
                             {% if 'federation' in admin_players_filter_columns %}
-                                <td class="text-nowrap text-start w-1">
+                                <td class="text-nowrap text-center w-1">
                                     <span class="">
                                         <img
                                             class="player-federation-flag pe-1"
@@ -384,21 +412,25 @@
                                     </span>
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("club", player, admin_players_extra_columns)}}
                             {% if 'club' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-start w-1" style="max-width: 15em; overflow: hidden; text-overflow: ellipsis;">
                                     {{ player.club }}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("yob", player, admin_players_extra_columns)}}
                             {% if 'yob' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center">
                                     {{ player.year_of_birth }}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("category", player, admin_players_extra_columns)}}
                             {% if 'category' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center">
                                     {{ player.category.short_name }}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("mail", player, admin_players_extra_columns)}}
                             {% if 'mail' in admin_players_filter_columns %}
                                 <td class="text-nowrap">
                                     <i
@@ -412,6 +444,7 @@
                                     ></i>
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("phone", player, admin_players_extra_columns)}}
                             {% if 'phone' in admin_players_filter_columns %}
                                 <td class="text-nowrap">
                                     <i
@@ -425,17 +458,20 @@
                                     ></i>
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("gender", player, admin_players_extra_columns)}}
                             {% if 'gender' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center">
                                     {{ admin_macros.gender_icon(player.gender) }}
                                     {{ player.gender.short_name }}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("fixed", player, admin_players_extra_columns)}}
                             {% if 'fixed' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center">
                                     {% if player.fixed %}{{ player.fixed }}{% endif %}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("fide", player, admin_players_extra_columns)}}
                             {% if 'fide' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-center w-1">
                                     <img
@@ -451,6 +487,7 @@
                                     />
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("owed", player, admin_players_extra_columns)}}
                             {% if 'owed_paid' in admin_players_filter_columns %}
                                 <td class="text-nowrap text-end">
                                     {{ player.owed }}
@@ -459,6 +496,7 @@
                                     {{ player.paid }}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("tournament", player, admin_players_extra_columns)}}
                             {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
                                 <td class="text-nowrap text-start">
                                     {% if player.has_real_pairings or admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id|length == 1 %}
@@ -497,16 +535,19 @@
                                     {% endif %}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("comment", player, admin_players_extra_columns)}}
                             {% if 'comment' in admin_players_filter_columns %}
                                 <td class="text-nowrap">
                                     {{ player.comment }}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("record", player, admin_players_extra_columns)}}
                             {% if 'record' in admin_players_filter_columns %}
                                 <td class="text-nowrap">
                                     {{ admin_macros.player_record(player) }}
                                 </td>
                             {% endif %}
+                            {{ admin_macros.extra_admin_column_cell("end", player, admin_players_extra_columns)}}
                         </tr>
                     {% endfor %}
                     {# return empty rows for when an update removes the player from the players' table #}
