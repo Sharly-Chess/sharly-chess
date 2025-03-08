@@ -20,7 +20,7 @@ try:
     batched = itertools.batched
 except AttributeError:
 
-    def batched(iterable, n):
+    def batched(iterable, n: int):
         """Batch data from the *iterable* into tuples of length *n*.
         The last batch may be shorter than *n*"""
         if n < 1:
@@ -186,7 +186,7 @@ class Result(IntEnum):
             case _:
                 raise ValueError(f'{self=}')
 
-    def points(self, values: dict[Self, float] | None = None) -> float:
+    def points(self, values: dict['Result', float] | None = None) -> float:
         """
         The value in points, according to rules defined in *values*.
         If a result instance is not included in *values*, the closest result's
@@ -1282,6 +1282,39 @@ class PrintDocument(StrEnum):
                 return _('Crosstable')
             case _:
                 raise ValueError(f'Invalid print type: {self}')
-            
+
 def get_plugin_data(pluginName: str, plugin_data: dict[str, dict], field: str, default: Any = None):
     return plugin_data.get(pluginName, {}).get(field, default)
+
+
+class PointValueType(Enum):
+    STANDARD = 1
+    PAPI_3_POINTS = 2
+
+    @property
+    def point_values(self) -> dict[Result, float]:
+        match self:
+            case PointValueType.STANDARD:
+                return {Result.GAIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
+            case PointValueType.PAPI_3_POINTS:
+                return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
+            case _:
+                raise ValueError(f'{self=}')
+
+    @classmethod
+    def from_papi_value(cls, value: str) -> Self:
+        match value.upper():
+            case "NON":
+                return PointValueType.STANDARD
+            case "OUI":
+                return PointValueType.PAPI_3_POINTS
+            case _:
+                raise ValueError(f'Cannot convert {value=} to {self.__class__.__name__}')
+
+    @property
+    def to_papi_value(self) -> str:
+        match self:
+            case PointValueType.PAPI_3_POINTS:
+                return "OUI"
+            case _:
+                return "NON"

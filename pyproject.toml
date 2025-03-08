@@ -7,10 +7,12 @@ name = "Papi-web"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.11.0"
 version = "2.4.24"
+
 authors = [
   {name = "Pascal Aubry", email = "papi-web@echecs-bretagne.fr"},
   {name = "Sammy Plat", email = "papi-web@echecs-bretagne.fr"},
   {name = "Timothy Armes", email = "tim@timothyarmes.com"},
+  {name = "Youri Aubry"},
 ]
 license = { text = "AGPL v3.0" }
 readme = "README.md"
