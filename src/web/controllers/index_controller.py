@@ -3,8 +3,8 @@ from logging import Logger
 from litestar import get
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.contrib.htmx.request import HTMXRequest
-from litestar.response import Redirect, Template
 from litestar.contrib.htmx.response import HTMXTemplate
+from litestar.response import Redirect, Template
 
 from common.logger import get_logger
 from web.controllers.base_controller import BaseController, WebContext

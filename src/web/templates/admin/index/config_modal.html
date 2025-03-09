@@ -1,0 +1,148 @@
+<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block">
+    <form
+        hx-patch="{{ url_for('admin-config-update') }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    {{ _('Edition of papi-web settings') }}
+                </h2>
+            </div>
+            <div class="modal-body">
+                {% if papi_web_config.force_edit %}
+                    <h4>
+                        {{ _('Please validate the global configuration of the application.') }}
+                    </h4>
+                {% endif %}
+                <h4>
+                   {{ _('Application') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='launch_browser',
+                            label=_('Launch browser:'),
+                            help_text=_('Papi-web can automatically launch a web browser when starting the web server.'),
+                            select_options=launch_browser_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='log_level',
+                            label=_('Log level:'),
+                            help_text=_('The log level allows you to trace the behaviour of the application.'),
+                            select_options=log_level_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <h4>
+                   {{ _('Internationalization') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {# can not use admin_macros.select_input() here because of dynamic-select #}
+                        {% with id='federation', name='federation' %}
+                            <div>
+                                <div class="d-flex align-items-center">
+                                    <label for="{{ name }}" class="form-check-label flex-grow-1 mb-1">
+                                        {{ _('Federation:') }}
+                                    </label>
+                                </div>
+                                <select
+                                    id="{{ id }}"
+                                    name="{{ name }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    data-dynamic-select
+                                >
+                                    {% for federation_id, federation_name in federation_options.items() %}
+                                        <option
+                                                value="{{ federation_id }}"
+                                                {% if federation_id == data[name] %}selected{%endif %}
+                                                data-img="{{ url_for('static', file_path='/images/federations/' ~ (federation_id or papi_web_config.default_federation) ~ '.svg') }}"
+                                        >
+                                            {{ federation_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div id="{{ id }}-help" class="form-text">
+                                    {{ _('The default federation for your events.') }}
+                                </div>
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {# can not use admin_macros.select_input() here because of dynamic-select #}
+                        {% with id='locale', name='locale' %}
+                            <div>
+                                <div class="d-flex align-items-center">
+                                    <label for="{{ name }}" class="form-check-label flex-grow-1 mb-1">
+                                        {{ _('Language:') }}
+                                    </label>
+                                </div>
+                                <select
+                                    id="{{ id }}"
+                                    name="{{ name }}"
+                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
+                                    data-dynamic-select
+                                >
+                                    {% for locale, locale_info in locale_infos.items() %}
+                                        <option
+                                                value="{{ locale }}"
+                                                {% if locale == data[name] %}selected{%endif %}
+                                                data-img="{{ locale_info.flag_url }}"
+                                        >
+                                            {{ locale_info.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div id="{{ id }}-help" class="form-text">
+                                    {{ _('The default language used.') }}
+                                </div>
+                                {% if name in errors %}
+                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                        {{ errors[name] }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer d-block">
+                <div class="row">
+                    <div class="col col-6 text-start">
+                        <button
+                            type="submit"
+                            class="text-nowrap white btn btn-primary"
+                        >
+                            <i class="bi-floppy-fill pe-1"></i>
+                            {{ _('Update') }}
+                        </button>
+                    </div>
+                    <div class="col col-6 text-end">
+                        {% if not papi_web_config.force_edit %}
+                            <button
+                                type="button"
+                                class="btn btn-secondary text-nowrap"
+                                data-bs-dismiss="modal"
+                            >
+                                <i class="bi-x-circle-fill"></i>
+                                {{ _('Cancel') }}
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

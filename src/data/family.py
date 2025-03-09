@@ -7,7 +7,7 @@ from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.screen import Screen
 from data.util import ScreenType
-from database.store import StoredFamily
+from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
     from data.event import Event

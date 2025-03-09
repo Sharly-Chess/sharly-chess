@@ -10,7 +10,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.player import Player
 from data.util import ScreenType
-from database.store import StoredScreenSet
+from database.sqlite.event.event_store import StoredScreenSet
 
 if TYPE_CHECKING:
     from data.event import Event

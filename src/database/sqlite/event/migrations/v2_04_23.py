@@ -1,4 +1,4 @@
-from database.sqlite.event_migration import AbstractEventMigration
+from database.sqlite.event.event_migration import AbstractEventMigration
 
 
 class EventMigration(AbstractEventMigration):

@@ -21,7 +21,7 @@ from data.result import Result as DataResult
 from data.tie_break import TieBreak, TieBreakType, TieBreakOption
 from data.util import Result as UtilResult
 from database.sqlite.sqlite_database import SQLiteDatabase
-from database.store import (
+from database.sqlite.event.event_store import (
     StoredTournament,
     StoredEvent,
     StoredTimer,
@@ -136,9 +136,8 @@ class EventDatabase(SQLiteDatabase):
 
     def create(self, populate: bool = False):
         """
-        Create an event database, based on /database/sql/create_event.sql.
-        The file associated to this database must not exist before calling
-        this method.
+        Create an event database by running the migrations from scratch.
+        The file associated to this database must not exist before calling this method.
         :param populate: if True, the corresponding file in /database/yml is used to populate the database (this way
         example databases are created when no event database is found).
         """
@@ -159,10 +158,10 @@ class EventDatabase(SQLiteDatabase):
 
             self._create()
             with EventDatabase(self.uniq_id, True, False) as event_database:
-                from database.sqlite.event_migration import EventMigrationManager
+                from database.sqlite.event.event_migration import EventMigrationManager
 
                 event_database._version = EventMigrationManager.EMPTY_DATABASE_VERSION
-                version = PapiWebConfig.version
+                version = PapiWebConfig().version
                 EventMigrationManager().migrate(event_database, version)
                 event_database._execute(
                     "INSERT INTO `info` "
@@ -882,7 +881,7 @@ class EventDatabase(SQLiteDatabase):
             )
         super().__enter__()
 
-        if self._auto_upgrade and self.version < PapiWebConfig.version:
+        if self._auto_upgrade and self.version < PapiWebConfig().version:
             if self.write:
                 self.upgrade()
             else:
@@ -974,10 +973,10 @@ class EventDatabase(SQLiteDatabase):
         self._version = version
 
     def _upgrade(self):
-        from database.sqlite.event_migration import EventMigrationManager
+        from database.sqlite.event.event_migration import EventMigrationManager
 
         initial_version = self.version
-        if EventMigrationManager().migrate(self, PapiWebConfig.version):
+        if EventMigrationManager().migrate(self, PapiWebConfig().version):
             logger.info(
                 'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
@@ -989,7 +988,7 @@ class EventDatabase(SQLiteDatabase):
         """Upgrades the database version from the stored database version to
         the current Papi-web version.
         This may change the structure of the database."""
-        papi_web_version: Version = PapiWebConfig.version
+        papi_web_version: Version = PapiWebConfig().version
         if self.version > papi_web_version:
             raise PapiWebException(
                 f'Your Papi-web version ({papi_web_version}) can not open database {self.file.name} (version '

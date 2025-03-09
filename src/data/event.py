@@ -32,7 +32,7 @@ from data.util import (
     PlayerCategory,
     TournamentRating,
 )
-from database.store import StoredEvent
+from database.sqlite.event.event_store import StoredEvent
 
 logger: Logger = get_logger()
 

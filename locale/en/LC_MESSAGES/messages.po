@@ -168,8 +168,7 @@ msgstr ""
 msgid "Please choose the event:"
 msgstr ""
 
-#: src/chessevent/event_selector.py src/common/papi_web_config.py
-#: src/ffe/event_selector.py
+#: src/chessevent/event_selector.py src/ffe/event_selector.py
 msgid "Your choice: "
 msgstr ""
 
@@ -205,7 +204,7 @@ msgstr ""
 msgid "Checking Papi-web version..."
 msgstr ""
 
-#: src/common/engine.py src/database/sqlite/fide_database.py
+#: src/common/engine.py src/database/sqlite/fide/fide_database.py
 #: src/plugins/ffe/ffe_database.py
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
@@ -400,83 +399,6 @@ msgstr ""
 
 #: src/common/engine.py
 msgid "New version [{version}] has been installed in [{dir}]."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Option is obsolete, set environment variable [{var}=1] instead."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Locale [{locale}] not found."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Option not set."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Section not found."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "The following languages are available:"
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Invalid log level [{level}], by default [{default}]."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Option not set, by default [{default}]."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Invalid host configuration [{host}], by default [{default}]."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Invalid port [{port}], by default [{default}]."
-msgstr ""
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/base_admin_controller.py
-msgid "Invalid value [{value}]."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Invalid delay [{delay}], by default [{default}]"
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Section not found, default configuration set."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Your file {ini_file} has been saved as {ini_file_org}."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Adding lines to {file}..."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "[i18n] # Added by Papi-web {version}"
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "# The line below has been commented by Papi-web {version}"
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Your file {ini_file} has been modified."
-msgstr ""
-
-#: src/common/papi_web_config.py
-msgid "Could not write to {ini_file}: {ex}."
 msgstr ""
 
 #: src/common/papi_web_config.py
@@ -1317,43 +1239,43 @@ msgstr ""
 msgid "Crosstable"
 msgstr ""
 
-#: src/database/sqlite/fide_database.py
+#: src/database/sqlite/fide/fide_database.py
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
 
-#: src/database/sqlite/fide_database.py
+#: src/database/sqlite/fide/fide_database.py
 msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
 msgstr ""
 
-#: src/database/sqlite/fide_database.py
+#: src/database/sqlite/fide/fide_database.py
 msgid "Downloading the FIDE database..."
 msgstr ""
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 msgid "Could not download [{url}], error code [{code}]."
 msgstr ""
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 msgid "Could not download [{url}]: {ex}."
 msgstr ""
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 msgid "No data received from [{url}]."
 msgstr ""
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 msgid "Could not unzip data."
 msgstr ""
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 msgid "Storing data..."
 msgstr ""
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 msgid "{number} players written."
 msgstr ""
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 msgid "Error while creating the database: {ex}."
 msgstr ""
 
@@ -1749,6 +1671,22 @@ msgstr ""
 msgid "Logging level: {log_level}"
 msgstr ""
 
+#: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
+msgid "Error while updating the FIDE database."
+msgstr ""
+
+#: src/web/server_engine.py
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
+
+#: src/web/server_engine.py
+msgid "Port [{port}] already in use."
+msgstr ""
+
+#: src/web/server_engine.py
+msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
+msgstr ""
+
 #: src/web/server_engine.py
 msgid "Port: {port}"
 msgstr ""
@@ -1759,18 +1697,6 @@ msgstr ""
 
 #: src/web/server_engine.py
 msgid "LAN/WAN URL: {lan_url}"
-msgstr ""
-
-#: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
-msgid "Error while updating the FIDE database."
-msgstr ""
-
-#: src/web/server_engine.py
-msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
-
-#: src/web/server_engine.py
-msgid "Port [{port}] already in use, can not start Papi-web server."
 msgstr ""
 
 #: src/web/controllers/base_controller.py
@@ -1852,6 +1778,10 @@ msgid "Display all the players, paired and unpaired"
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
+msgid "Invalid value [{value}]."
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
@@ -1930,6 +1860,18 @@ msgid "event"
 msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
+msgid "Invalid log level [{log_level}]."
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Invalid federation [{federation}]."
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Invalid locale [{locale}]."
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
 #: src/web/controllers/user/index_user_controller.py
 msgid "Current events ({num})"
 msgstr ""
@@ -1969,7 +1911,15 @@ msgstr ""
 
 #: src/web/controllers/admin/base_admin_controller.py
 #: src/web/templates/admin/index/config_tab.html
-msgid "Papi-web configuration"
+msgid "Papi-web settings"
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Automatically launch a browser when starting the server"
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Do nothing"
 msgstr ""
 
 #: src/web/controllers/admin/base_event_admin_controller.py
@@ -2072,6 +2022,10 @@ msgstr ""
 
 #: src/web/controllers/admin/family_admin_controller.py
 msgid "Specifying the number of parts and the number of items per part is not possible."
+msgstr ""
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Papi-web settings has been updated."
 msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
@@ -2408,6 +2362,10 @@ msgid "From the local network (LAN/WAN)"
 msgstr ""
 
 #: src/web/templates/index.html
+msgid "The public screens are not available until the Papi-web settings have been validated."
+msgstr ""
+
+#: src/web/templates/index.html
 msgid "Click here to access the public screens of the events."
 msgstr ""
 
@@ -2421,6 +2379,10 @@ msgstr ""
 
 #: src/web/templates/index.html
 msgid "Access to the arbiter interface is not allowed from this client."
+msgstr ""
+
+#: src/web/templates/index.html
+msgid "Papi-web settings (private access)"
 msgstr ""
 
 #: src/web/templates/index.html
@@ -2595,6 +2557,7 @@ msgid "Only arbiters can see private events."
 msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/index/config_modal.html
 #: src/web/templates/admin/players/player_modal.html
 msgid "Federation:"
 msgstr ""
@@ -2804,6 +2767,7 @@ msgstr ""
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/index/config_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -2830,6 +2794,7 @@ msgstr ""
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/index/config_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/players/record_modal.html
@@ -2896,6 +2861,7 @@ msgstr ""
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
+#: src/web/templates/admin/index/config_tab.html
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -2935,6 +2901,7 @@ msgstr ""
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
+#: src/web/templates/admin/index/config_tab.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
 msgid "(by default)"
@@ -3416,6 +3383,54 @@ msgstr ""
 msgid "Deletion date"
 msgstr ""
 
+#: src/web/templates/admin/index/config_modal.html
+msgid "Edition of papi-web settings"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Please validate the global configuration of the application."
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Application"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Launch browser:"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Papi-web can automatically launch a web browser when starting the web server."
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Log level:"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "The log level allows you to trace the behaviour of the application."
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Internationalization"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "The default federation for your events."
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Language:"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "The default language used."
+msgstr ""
+
+#: src/web/templates/admin/index/config_tab.html
+msgid "Edit the Papi-web settings."
+msgstr ""
+
 #: src/web/templates/admin/index/config_tab.html
 #: src/web/templates/admin/index/events_tab.html
 msgid "Add an event."
@@ -3443,6 +3458,14 @@ msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
 #: src/web/templates/admin/index/config_tab.html
+msgid "Default language"
+msgstr ""
+
+#: src/web/templates/admin/index/config_tab.html
+msgid "Default federation:"
+msgstr ""
+
+#: src/web/templates/admin/index/config_tab.html
 msgid "Launching the browser on server startup"
 msgstr ""
 
@@ -3452,6 +3475,10 @@ msgstr ""
 
 #: src/web/templates/admin/index/config_tab.html
 msgid "No"
+msgstr ""
+
+#: src/web/templates/admin/index/config_tab.html
+msgid "Log level"
 msgstr ""
 
 #: src/web/templates/admin/index/config_tab.html
@@ -5463,5 +5490,65 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Sort the players by origin (federation, league, club)."
+#~ msgstr ""
+
+#~ msgid "Option is obsolete, set environment variable [{var}=1] instead."
+#~ msgstr ""
+
+#~ msgid "Locale [{locale}] not found."
+#~ msgstr ""
+
+#~ msgid "Option not set."
+#~ msgstr ""
+
+#~ msgid "Section not found."
+#~ msgstr ""
+
+#~ msgid "The following languages are available:"
+#~ msgstr ""
+
+#~ msgid "Invalid log level [{level}], by default [{default}]."
+#~ msgstr ""
+
+#~ msgid "Option not set, by default [{default}]."
+#~ msgstr ""
+
+#~ msgid "Invalid host configuration [{host}], by default [{default}]."
+#~ msgstr ""
+
+#~ msgid "Invalid port [{port}], by default [{default}]."
+#~ msgstr ""
+
+#~ msgid "Invalid delay [{delay}], by default [{default}]"
+#~ msgstr ""
+
+#~ msgid "Section not found, default configuration set."
+#~ msgstr ""
+
+#~ msgid "Your file {ini_file} has been saved as {ini_file_org}."
+#~ msgstr ""
+
+#~ msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
+#~ msgstr ""
+
+#~ msgid "Adding lines to {file}..."
+#~ msgstr ""
+
+#~ msgid "[i18n] # Added by Papi-web {version}"
+#~ msgstr ""
+
+#~ msgid "# The line below has been commented by Papi-web {version}"
+#~ msgstr ""
+
+#~ msgid "Your file {ini_file} has been modified."
+#~ msgstr ""
+
+#~ msgid "Could not write to {ini_file}: {ex}."
+#~ msgstr ""
+
+#~ msgid "Port [{port}] already in use, can not start Papi-web server."
+#~ msgstr ""
+
+#~ msgid "Default federation"
 #~ msgstr ""
 

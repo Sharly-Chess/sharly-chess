@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from common.logger import get_logger
 from data.screen import Screen
-from database.store import StoredRotator
+from database.sqlite.event.event_store import StoredRotator
 
 logger: Logger = get_logger()
 

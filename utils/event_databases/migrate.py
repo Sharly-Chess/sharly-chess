@@ -5,8 +5,8 @@ from packaging.version import Version
 
 from common.logger import print_interactive_info, print_interactive_error, print_interactive_success
 from data.loader import EventLoader
-from database.sqlite.event_database import EventDatabase
-from database.sqlite.event_migration import EventMigrationManager
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_migration import EventMigrationManager
 
 
 if __name__ == '__main__':

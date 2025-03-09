@@ -16,10 +16,10 @@ from common.i18n import _, set_locale
 from common.logger import (
     get_logger,
     print_interactive_info,
-    print_interactive_error,
+    print_interactive_error, print_interactive_warning,
 )
 from common.papi_web_config import PapiWebConfig
-from database.sqlite.fide_database import FideDatabase
+from database.sqlite.fide.fide_database import FideDatabase
 
 from plugins.manager import plugin_manager
 from plugins.registration import register_plugins
@@ -65,6 +65,38 @@ class ServerEngine(Engine):
                 log_level=papi_web_config.log_level_str
             )
         )
+
+        if not FideDatabase().check():
+            print_interactive_error(_('Error while updating the FIDE database.'))
+        
+        # Give plugins an opportunity to initialise themselves
+        plugin_manager.hook.on_init()
+
+        if EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed:
+            if DEVEL_ENV:
+                print_interactive_info(_('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.'))
+                BbpPairingsInstaller().install()
+            else:
+                raise FileNotFoundError('BBP Pairings not installed.')
+
+        for port in papi_web_config.web_ports:
+            if self.__port_in_use(port):
+                print_interactive_warning(
+                    _(
+                        'Port [{port}] already in use.'
+                    ).format(port=port)
+                )
+                continue
+            papi_web_config.web_port = port
+            break
+        if papi_web_config.web_port is None:
+            print_interactive_error(
+                _(
+                    'All the candidate ports [{ports}] are already in use, can not start Papi-web server.'
+                ).format(ports=', '.join(str(port) for port in papi_web_config.web_ports))
+            )
+            return
+
         print_interactive_info(_('Port: {port}').format(port=papi_web_config.web_port))
         print_interactive_info(
             _('Local URL: {local_url}').format(local_url=papi_web_config.local_url)
@@ -73,26 +105,8 @@ class ServerEngine(Engine):
             print_interactive_info(
                 _('LAN/WAN URL: {lan_url}').format(lan_url=papi_web_config.lan_url)
             )
-        if not FideDatabase().check():
-            print_interactive_error(_('Error while updating the FIDE database.'))
-        
-        # Give plugins an opportunity to initialise themselves
-        plugin_manager.hook.on_init()
-        
-        if EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed:
-            if DEVEL_ENV:
-                print_interactive_info(_('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.'))
-                BbpPairingsInstaller().install()
-            else:
-                raise FileNotFoundError('BBP Pairings not installed.')
-        if self.__port_in_use(papi_web_config.web_port):
-            print_interactive_error(
-                _(
-                    'Port [{port}] already in use, can not start Papi-web server.'
-                ).format(port=papi_web_config.web_port)
-            )
-            return
-        if papi_web_config.web_launch_browser:
+
+        if papi_web_config.launch_browser:
             Thread(target=launch_browser, args=(papi_web_config.local_url,)).start()
         app: Litestar = Litestar(
             debug=True,

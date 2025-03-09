@@ -25,8 +25,8 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredTournament, StoredScreen
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,

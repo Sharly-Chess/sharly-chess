@@ -14,8 +14,8 @@ from data.result import Result
 from data.screen_set import ScreenSet
 from data.timer import Timer
 from data.util import ScreenType
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredScreen
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
     from data.event import Event

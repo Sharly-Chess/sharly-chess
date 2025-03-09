@@ -1,8 +1,6 @@
 import logging
 import platform
-import re
 import socket
-from datetime import datetime
 from logging import Logger
 from pathlib import Path
 
@@ -12,32 +10,26 @@ import pyodbc
 import uvicorn
 from packaging.version import Version
 
-from common import TMP_DIR, BASE_DIR, DEVEL_ENV, EXPERIMENTAL_FEATURES_ENV_VAR
-from common.config_reader import ConfigReader
+from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES
 from common.i18n import (
-    set_locale,
     default_locale,
-    _,
-    locale_localized_name,
-    trusted_locales,
+    _, trusted_locales, untrusted_locales,
 )
 from common.logger import (
     get_logger,
     configure_logger,
-    print_interactive_error,
-    print_interactive_input,
-    input_interactive,
-    print_interactive_info,
-    print_interactive_success,
 )
 from common.singleton import Singleton
+from data.player import Federation
 from data.util import Result
+from database.sqlite.config.config_database import ConfigDatabase
+from database.sqlite.config.config_store import StoredConfig
 
 logger: Logger = get_logger()
 
 
 class PapiWebConfig(metaclass=Singleton):
-    """The configuration for the application.
+    """The configuration for the application, read from the database.
     Only 5 properties can be configured:
         1. The logging level
         2. The web host IP
@@ -45,18 +37,20 @@ class PapiWebConfig(metaclass=Singleton):
         4. Whether a browser window opens
         5. The delay between FFE uploads."""
 
-    """ The configuration file. """
-    config_file: Path = Path('papi-web.ini')
+    # The configuration file (SQLite database).
+    config_file: Path = Path('.scc')
 
-    """ The default values of the configuration file values (if not set on the configuration file). """
-    _default_log_level: int = logging.INFO
-    _default_web_host: str = '0.0.0.0'
-    _default_web_port: int = 80
-    _default_web_launch_browser: bool = True
-    _default_ffe_upload_delay: int = 180
+    # The default log level, used by default.
+    default_log_level: int = logging.INFO
 
-    """ The minimum delay between two upload to the FFE website. """
-    min_ffe_upload_delay: int = 60
+    # The port ued by the Uvicorn web server.
+    web_host: str = '0.0.0.0'
+
+    # The ports the web server tries to start on, tried one after the other.
+    web_ports: list[int] = [80, 81, 8080, 8081, ]
+
+    # The default behaviour to open a browser after the startup of the web server.
+    default_web_launch_browser: bool = True
 
     """ The accepted log levels. """
     log_levels: dict[int, str] = {
@@ -70,312 +64,85 @@ class PapiWebConfig(metaclass=Singleton):
         if not default_locale:
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
-        self._log_level: int | None = None
-        self._web_host: str | None = None
-        self._web_port: int | None = None
-        self._web_launch_browser: bool | None = None
-        self._ffe_upload_delay: int | None = None
-        self.locales: list[str] = trusted_locales
-        self.locale: str | None = None
-        self._local_ip: str | None = None
-        self._lan_ip: str | None = None
-        self.reader = ConfigReader(self.config_file)
-        if not self.reader.errors and not self.reader.warnings:
-            section_key = 'i18n'
-            try:
-                options = self.reader[section_key]
-                key = 'experimental_locales'
-                if key in options and DEVEL_ENV:
-                    self.reader.add_warning(
-                        _(
-                            'Option is obsolete, set environment variable [{var}=1] instead.'
-                        ).format(var=EXPERIMENTAL_FEATURES_ENV_VAR),
-                        section_key,
-                        key,
-                    )
-                key = 'locale'
-                try:
-                    locale = options[key]
-                    if locale in self.locales:
-                        self.locale = locale
-                    else:
-                        self.reader.add_warning(
-                            _('Locale [{locale}] not found.').format(locale=locale),
-                            section_key,
-                            key,
-                        )
-                except (TypeError, KeyError):
-                    self.reader.add_warning(_('Option not set.'), section_key, key)
-            except KeyError:
-                self.reader.add_warning(_('Section not found.'), section_key)
-            if self.locale:
-                set_locale(self.locale)
-            else:
-                set_locale(default_locale)
-                print_interactive_input(_('The following languages are available:'))
-                locale_range = range(1, len(self.locales) + 1)
-                for num in locale_range:
-                    locale: str = self.locales[num - 1]
-                    print_interactive_input(
-                        f'  - [{num}] {locale} ({locale_localized_name(locale)})'
-                    )
-                locale_num: int | None = None
-                while locale_num is None:
-                    choice: str = input_interactive(_('Your choice: '))
-                    try:
-                        locale_num = int(choice)
-                        if locale_num not in locale_range:
-                            locale_num = None
-                    except ValueError:
-                        pass
-                self.locale = self.locales[locale_num - 1]
-                set_locale(self.locale)
-                self.save_locale_preference()
-            # Once the language is set, make sure that important directories can be used
-            try:
-                PapiWebConfig.event_path.mkdir(parents=True, exist_ok=True)
-            except PermissionError as pe:
-                logger.critical(
-                    f'Could not create directory [{TMP_DIR.absolute()}]: {pe}'
-                )
-                raise pe
-            logger.debug('ODBC drivers found:')
-            for driver in pyodbc.drivers():
-                logger.debug(f' - {driver}')
-            logger.debug('System information:')
-            logger.debug(
-                f' - Machine/processor: {platform.machine()}/{platform.processor()}'
+        self.web_port: int | None = None
+        with ConfigDatabase() as config_database:
+            self.stored_config: StoredConfig = config_database.load_stored_config()
+        # Once the configuration is read, make sure that important directories can be used
+        try:
+            self.event_path.mkdir(parents=True, exist_ok=True)
+        except PermissionError as pe:
+            logger.critical(
+                f'Could not create directory [{TMP_DIR.absolute()}]: {pe}'
             )
-            logger.debug(f' - Platform: {platform.platform()}')
-            logger.debug(f' - Architecture: {" ".join(platform.architecture())}')
-            section_key = 'logging'
-            try:
-                options = self.reader[section_key]
-                key = 'level'
-                try:
-                    level = options[key]
-                    try:
-                        self._log_level = [
-                            k for k, v in self.log_levels.items() if v == level
-                        ][0]
-                    except IndexError:
-                        self.reader.add_warning(
-                            _(
-                                'Invalid log level [{level}], by default [{default}].'
-                            ).format(
-                                level=level,
-                                default=self.log_levels[self._default_log_level],
-                            ),
-                            section_key,
-                            key,
-                        )
-                except (TypeError, KeyError):
-                    self.reader.add_warning(
-                        _('Option not set, by default [{default}].').format(
-                            default=self.log_levels[self._default_log_level]
-                        ),
-                        section_key,
-                        key,
-                    )
-            except KeyError:
-                self.reader.add_warning(_('Section not found.'), section_key)
-            section_key = 'web'
-            if section_key not in self.reader:
-                self.reader.add_warning(_('Section not found.'), section_key)
-            else:
-                web_section = self.reader[section_key]
-                key = 'host'
-                if key not in web_section:
-                    self.reader.add_warning(_('Option not set.'), section_key, key)
-                else:
-                    self._web_host = self.reader.get(section_key, key)
-                    matches = re.match(r'^(\d+)\.(\d+)\.(\d+)\.(\d+)$', self._web_host)
-                    if matches:
-                        for i in range(4):
-                            if int(matches.group(i + 1)) > 255:
-                                self._web_host = None
-                    else:
-                        self._web_host = None
-                    if self.web_host is None:
-                        self.reader.add_warning(
-                            _(
-                                'Invalid host configuration [{host}], by default [{default}].'
-                            ).format(
-                                host=self.reader.get(section_key, key),
-                                default=self._default_web_host,
-                            ),
-                            section_key,
-                            key,
-                        )
-                key = 'port'
-                if key not in web_section:
-                    self.reader.add_warning(
-                        _('Option not set, by default [{default}].').format(
-                            default=self._default_web_port
-                        ),
-                        section_key,
-                        key,
-                    )
-                else:
-                    self._web_port = self.reader.getint_safe(section_key, key)
-                    if self.web_port is None:
-                        self.reader.add_warning(
-                            _('Invalid port [{port}], by default [{default}].').format(
-                                port=self.reader.get(section_key, key),
-                                default=self._default_web_port,
-                            ),
-                            section_key,
-                            key,
-                        )
-                key = 'launch_browser'
-                if key not in web_section:
-                    self.reader.add_warning(
-                        _('Option not set, by default [{default}].').format(
-                            default='on' if self._default_web_launch_browser else 'off'
-                        ),
-                        section_key,
-                        key,
-                    )
-                else:
-                    self._web_launch_browser = self.reader.getboolean_safe(
-                        section_key, key
-                    )
-                    if self._web_launch_browser is None:
-                        self.reader.add_error(
-                            _('Invalid value [{value}].').format(
-                                value=self.reader.get(section_key, key)
-                            ),
-                            section_key,
-                            key,
-                        )
-            section_key = 'ffe'
-            try:
-                options = self.reader[section_key]
-                key = 'upload_delay'
-                if key not in options:
-                    self.reader.add_warning(
-                        _('Option not set, by default [{default}].').format(
-                            ffe_upload_delay=self._default_ffe_upload_delay
-                        ),
-                        section_key,
-                        key,
-                    )
-                else:
-                    self._ffe_upload_delay = self.reader.getint_safe(section_key, key)
-                    if (
-                        self.ffe_upload_delay is None
-                        or self.ffe_upload_delay < self.min_ffe_upload_delay
-                    ):
-                        self.reader.add_warning(
-                            _('Invalid delay [{delay}], by default [{default}]').format(
-                                delay=self.reader.get(section_key, key),
-                                default=self._default_ffe_upload_delay,
-                            ),
-                            section_key,
-                            key,
-                        )
-            except KeyError:
-                self.reader.add_warning(
-                    _('Section not found, default configuration set.'), section_key
-                )
-        else:
-            self.reader.add_debug('Default configuration set.')
+            raise pe
+        logger.debug('ODBC drivers found:')
+        for driver in pyodbc.drivers():
+            logger.debug(f' - {driver}')
+        logger.debug('System information:')
+        logger.debug(
+            f' - Machine/processor: {platform.machine()}/{platform.processor()}'
+        )
+        logger.debug(f' - Platform: {platform.platform()}')
+        logger.debug(f' - Architecture: {" ".join(platform.architecture())}')
+        self.locales: list[str] = trusted_locales
+        if EXPERIMENTAL_FEATURES:
+            self.locales += untrusted_locales
         configure_logger(self.log_level)
 
-    def save_locale_preference(self):
-        config_save: Path = (
-            self.config_file.parent
-            / f'{self.config_file.name}.{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
-        )
-        try:
-            self.config_file.rename(config_save)
-            print_interactive_info(
-                _('Your file {ini_file} has been saved as {ini_file_org}.').format(
-                    ini_file=self.config_file, ini_file_org=config_save
-                )
-            )
-        except Exception as ex:
-            print_interactive_error(
-                _('Could not save {ini_file} to {ini_file_org}: {ex}.').format(
-                    ini_file=self.config_file, ini_file_org=config_save, ex=ex
-                )
-            )
-            return
-        try:
-            with open(config_save, 'r') as input_file:
-                with open(self.config_file, 'w', encoding='utf-8') as output_file:
-                    print_interactive_info(
-                        _('Adding lines to {file}...').format(file=self.config_file)
-                    )
-                    for line in [
-                        _('[i18n] # Added by Papi-web {version}').format(
-                            version=PapiWebConfig.version
-                        ),
-                        f'locale = {self.locale}',
-                        '',
-                    ]:
-                        output_file.write(f'{line}\n')
-                        if line:
-                            print_interactive_info(f'- {line}')
-                    locale_pattern = re.compile(r'^locale\s*=')
-                    for line in input_file:
-                        if line.startswith('[i18n]') or locale_pattern.match(line):
-                            output_file.write(
-                                _(
-                                    '# The line below has been commented by Papi-web {version}'
-                                ).format(version=PapiWebConfig.version)
-                            )
-                            output_file.write(f'\n# {line}')
-                        else:
-                            output_file.write(line)
-            print_interactive_success(
-                _('Your file {ini_file} has been modified.').format(
-                    ini_file=self.config_file
-                )
-            )
-        except Exception as ex:
-            print_interactive_error(
-                _('Could not write to {ini_file}: {ex}.').format(
-                    ini_file=self.config_file, ex=ex
-                )
-            )
+    def reload(self):
+        with ConfigDatabase() as config_database:
+            self.stored_config: StoredConfig = config_database.load_stored_config()
+
+    @property
+    def force_edit(self) -> bool:
+        return self.stored_config.force_edit
 
     @property
     def log_level(self) -> int:
-        return self._log_level or self._default_log_level
+        return self.stored_config.log_level or self.default_log_level
 
     @property
     def log_level_str(self) -> str:
         return self.log_levels[self.log_level]
 
     @property
-    def web_host(self) -> str:
-        return self._web_host or self._default_web_host
+    def launch_browser(self) -> bool:
+        if self.stored_config.launch_browser is not None:
+            return self.stored_config.launch_browser
+        else:
+            return self.default_web_launch_browser
 
     @property
-    def web_port(self) -> int:
-        return self._web_port or self._default_web_port
+    def federation(self) -> Federation:
+        return Federation(self.stored_config.federation or self.default_federation)
 
     @property
-    def web_launch_browser(self) -> bool:
-        return (
-            self._web_launch_browser
-            if self._web_launch_browser is not None
-            else self._default_web_launch_browser
-        )
+    def locale(self) -> str:
+        return self.stored_config.locale or default_locale
 
-    @property
-    def ffe_upload_delay(self) -> int:
-        return self._ffe_upload_delay or self._default_ffe_upload_delay
+    # The delay between two uploads to the FFE website.
+    # TODO move this to the ffe plugin
+    ffe_upload_delay: int = 180
 
-    """ The version of the application. """
-    version: Version = Version('2.4.24')
+    def update_values(
+            self,
+            log_level: int | None,
+            launch_browser: bool | None,
+            federation: Federation | None,
+            locale: str | None,
+    ):
+        pass
 
     """ The URL of the project. """
     url: str = 'https://github.com/papi-web-org/papi-web'
 
     """ The contact email. """
     mail: str = 'papi-web@echecs-bretagne.fr'
+
+    @property
+    def version(self) -> Version:
+        """The version of the application."""
+        return Version(self.stored_config.version)
 
     @property
     def copyright(self) -> str:
@@ -469,24 +236,21 @@ class PapiWebConfig(metaclass=Singleton):
     @property
     def lan_ip(self) -> str | None:
         """Returns the IP of the server on the LAN/WAN."""
-        if self._lan_ip is None:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.settimeout(0)
-            try:
-                s.connect(('10.254.254.254', 1))  # doesn't even have to be reachable
-                self._lan_ip = s.getsockname()[0]
-            except Exception:  # pylint: disable=broad-exception-caught
-                pass
-            finally:
-                s.close()
-        return self._lan_ip
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0)
+        try:
+            s.connect(('10.254.254.254', 1))  # doesn't even have to be reachable
+            return s.getsockname()[0]
+        except Exception:  # pylint: disable=broad-exception-caught
+            pass
+        finally:
+            s.close()
+        return None
 
     @property
     def local_ip(self) -> str:
         """Returns the local IP (localhost) of the server (with arbiter access)."""
-        if self._local_ip is None:
-            self._local_ip = '127.0.0.1'
-        return self._local_ip
+        return '127.0.0.1'
 
     @property
     def lan_url(self) -> str:
@@ -608,8 +372,7 @@ class PapiWebConfig(metaclass=Singleton):
     ]
 
     # The default fédération when creating events or players
-    # TODO make this hard-coded value configurable
-    default_federation: str = 'FRA'
+    default_federation: str = 'FID'
 
     """ The federation names. """
     federations: dict[str, str] = {

@@ -209,8 +209,7 @@ msgstr "En händelse hittades, tryck på Enter (Q för att avsluta):"
 msgid "Please choose the event:"
 msgstr "Välj evenemanget:"
 
-#: src/chessevent/event_selector.py src/common/papi_web_config.py
-#: src/ffe/event_selector.py
+#: src/chessevent/event_selector.py src/ffe/event_selector.py
 #, ai_translation
 msgid "Your choice: "
 msgstr "Valet är ditt:"
@@ -255,7 +254,7 @@ msgstr "Fel: [{ex}]."
 msgid "Checking Papi-web version..."
 msgstr "Kontrollerar papi- webbversion..."
 
-#: src/common/engine.py src/database/sqlite/fide_database.py
+#: src/common/engine.py src/database/sqlite/fide/fide_database.py
 #: src/plugins/ffe/ffe_database.py
 #, fuzzy
 msgid "Y *** THE LETTER TO ANSWER YES"
@@ -500,102 +499,6 @@ msgstr "Fil laddad ner: [{zip_file}]."
 #, ai_translation
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "Ny version [{version}] har installerats i [{dir}]."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Option is obsolete, set environment variable [{var}=1] instead."
-msgstr "Alternativet är föråldrat, ställ in miljövariabeln [{var}=1] istället."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Locale [{locale}] not found."
-msgstr "Locale [{locale}] hittades inte."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Option not set."
-msgstr "Alternativet är inte fastställt."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Section not found."
-msgstr "Avsnittet hittades inte."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "The following languages are available:"
-msgstr "Följande språk finns tillgängliga:"
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Invalid log level [{level}], by default [{default}]."
-msgstr "Ogiltig loggnivå [{level}], som standard [{default}]."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Option not set, by default [{default}]."
-msgstr "Alternativet är inte fastställt, som standard [{default}]."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Invalid host configuration [{host}], by default [{default}]."
-msgstr "Ogiltig värdkonfiguration [{host}], som standard [{default}]."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Invalid port [{port}], by default [{default}]."
-msgstr "Ogiltig port [{port}], som standard [{default}]."
-
-#: src/common/papi_web_config.py
-#: src/web/controllers/admin/base_admin_controller.py
-#, ai_translation
-msgid "Invalid value [{value}]."
-msgstr "Ogiltigt värde [{value}]."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Invalid delay [{delay}], by default [{default}]"
-msgstr "Ogiltig försening [{delay}], som standard [{default}]"
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Section not found, default configuration set."
-msgstr "Avsnitt hittades inte, förvald inställningsuppsättning."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Your file {ini_file} has been saved as {ini_file_org}."
-msgstr "Din fil {ini_file} har sparats som {ini_file_org}."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
-msgstr "Kunde inte spara {ini_file} till {ini_file_org}: {ex}."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Adding lines to {file}..."
-msgstr "Lägger till rader i {file}..."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "[i18n] # Added by Papi-web {version}"
-msgstr "[i18n] # Tillagd av Papi-web {version}"
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "# The line below has been commented by Papi-web {version}"
-msgstr "# Linjen nedan har kommenterats av Papi-web {version}"
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Your file {ini_file} has been modified."
-msgstr "Din akt {ini_file} har ändrats."
-
-#: src/common/papi_web_config.py
-#, ai_translation
-msgid "Could not write to {ini_file}: {ex}."
-msgstr "Kunde inte skriva till {ini_file}: {ex}."
 
 #: src/common/papi_web_config.py
 #, ai_translation
@@ -1641,52 +1544,52 @@ msgstr ""
 msgid "Crosstable"
 msgstr ""
 
-#: src/database/sqlite/fide_database.py
+#: src/database/sqlite/fide/fide_database.py
 #, ai_translation
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
 
-#: src/database/sqlite/fide_database.py
+#: src/database/sqlite/fide/fide_database.py
 #, ai_translation
 msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
 msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
 
-#: src/database/sqlite/fide_database.py
+#: src/database/sqlite/fide/fide_database.py
 #, ai_translation
 msgid "Downloading the FIDE database..."
 msgstr "Laddar ner FIDE- databasen..."
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 #, ai_translation
 msgid "Could not download [{url}], error code [{code}]."
 msgstr "Kunde inte ladda ner [{url}], felkod [{code}]."
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 #, ai_translation
 msgid "Could not download [{url}]: {ex}."
 msgstr "Kunde inte ladda ner [{url}]: {ex}."
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 #, ai_translation
 msgid "No data received from [{url}]."
 msgstr "Inga uppgifter inkom från [{url}]."
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 #, ai_translation
 msgid "Could not unzip data."
 msgstr "Kunde inte packa upp data."
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 #, ai_translation
 msgid "Storing data..."
 msgstr "Lagra data..."
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 #, ai_translation
 msgid "{number} players written."
 msgstr "{number} Skrivna spelare."
 
-#: src/database/sqlite/fide_database.py src/plugins/ffe/ffe_database.py
+#: src/database/sqlite/fide/fide_database.py src/plugins/ffe/ffe_database.py
 #, ai_translation
 msgid "Error while creating the database: {ex}."
 msgstr "Fel när databasen skapades: {ex}."
@@ -2163,6 +2066,24 @@ msgstr "Börjar papi-webbserver, vänta..."
 msgid "Logging level: {log_level}"
 msgstr "Loggningsnivå: {log_level}"
 
+#: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
+#, ai_translation
+msgid "Error while updating the FIDE database."
+msgstr "Fel vid uppdatering av FIDE- databasen."
+
+#: src/web/server_engine.py
+#, ai_translation
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr "Automatiskt installera BBP parningar för utvecklare med PAPI_WEB_EXPERIMENTAL=1."
+
+#: src/web/server_engine.py
+msgid "Port [{port}] already in use."
+msgstr ""
+
+#: src/web/server_engine.py
+msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
+msgstr ""
+
 #: src/web/server_engine.py
 #, ai_translation
 msgid "Port: {port}"
@@ -2177,21 +2098,6 @@ msgstr "Lokal webbadress: {local_url}"
 #, ai_translation
 msgid "LAN/WAN URL: {lan_url}"
 msgstr "LAN/WAN URL: {lan_url}"
-
-#: src/web/server_engine.py utils/federation_flags/download_federation_flags.py
-#, ai_translation
-msgid "Error while updating the FIDE database."
-msgstr "Fel vid uppdatering av FIDE- databasen."
-
-#: src/web/server_engine.py
-#, ai_translation
-msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr "Automatiskt installera BBP parningar för utvecklare med PAPI_WEB_EXPERIMENTAL=1."
-
-#: src/web/server_engine.py
-#, ai_translation
-msgid "Port [{port}] already in use, can not start Papi-web server."
-msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
 
 #: src/web/controllers/base_controller.py
 #, ai_translation
@@ -2290,6 +2196,11 @@ msgid "Display all the players, paired and unpaired"
 msgstr "Visa alla spelare, parade och oparade"
 
 #: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "Invalid value [{value}]."
+msgstr "Ogiltigt värde [{value}]."
+
+#: src/web/controllers/admin/base_admin_controller.py
 #: src/web/controllers/admin/screen_admin_controller.py
 #, ai_translation
 msgid "URL [{url}] responded code [{code}]."
@@ -2386,6 +2297,18 @@ msgid "event"
 msgstr "händelse"
 
 #: src/web/controllers/admin/base_admin_controller.py
+msgid "Invalid log level [{log_level}]."
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Invalid federation [{federation}]."
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Invalid locale [{locale}]."
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
 #: src/web/controllers/user/index_user_controller.py
 #, ai_translation
 msgid "Current events ({num})"
@@ -2434,8 +2357,16 @@ msgstr "Inga arkiverade händelser."
 #: src/web/controllers/admin/base_admin_controller.py
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
-msgid "Papi-web configuration"
+msgid "Papi-web settings"
 msgstr "Inställning av papi-webben"
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Automatically launch a browser when starting the server"
+msgstr ""
+
+#: src/web/controllers/admin/base_admin_controller.py
+msgid "Do nothing"
+msgstr ""
 
 #: src/web/controllers/admin/base_event_admin_controller.py
 #, ai_translation
@@ -2559,6 +2490,10 @@ msgstr "Timer [{timer_id}] hittades inte."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Det är inte möjligt att ange antalet delar och antalet objekt per del."
+
+#: src/web/controllers/admin/index_admin_controller.py
+msgid "Papi-web settings has been updated."
+msgstr ""
 
 #: src/web/controllers/admin/player_admin_controller.py
 #, ai_translation
@@ -2972,6 +2907,10 @@ msgid "From the local network (LAN/WAN)"
 msgstr "Från det lokala nätverket (LAN/WAN)"
 
 #: src/web/templates/index.html
+msgid "The public screens are not available until the Papi-web settings have been validated."
+msgstr ""
+
+#: src/web/templates/index.html
 #, ai_translation
 msgid "Click here to access the public screens of the events."
 msgstr "Klicka här för att komma åt evenemangens offentliga skärmar."
@@ -2990,6 +2929,10 @@ msgstr "Arbiter-gränssnittet gör det möjligt att hantera händelserna."
 #, ai_translation
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient."
+
+#: src/web/templates/index.html
+msgid "Papi-web settings (private access)"
+msgstr ""
 
 #: src/web/templates/index.html
 #, ai_translation
@@ -3192,6 +3135,7 @@ msgid "Only arbiters can see private events."
 msgstr "Endast skiljedomare kan se privata evenemang."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/index/config_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #, ai_translation
 msgid "Federation:"
@@ -3442,6 +3386,7 @@ msgstr "Skapa"
 
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/index/config_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
 #: src/web/templates/admin/screens/screen_modal.html
@@ -3470,6 +3415,7 @@ msgstr "Ta bort"
 #: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/event/print_modal.html
 #: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/index/config_modal.html
 #: src/web/templates/admin/players/close_check_in_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/players/record_modal.html
@@ -3548,6 +3494,7 @@ msgstr "Hur man delar upp resultaten."
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
+#: src/web/templates/admin/index/config_tab.html
 #: src/web/templates/admin/players/tab.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
@@ -3595,6 +3542,7 @@ msgstr "Förvald katalog för Papi-filerna"
 
 #: src/web/templates/admin/event/tab.html
 #: src/web/templates/admin/families/family_card.html
+#: src/web/templates/admin/index/config_tab.html
 #: src/web/templates/admin/rotators/rotator_card.html
 #: src/web/templates/admin/screens/screen_card.html
 #, ai_translation
@@ -4156,6 +4104,54 @@ msgstr "Arkiverad händelse"
 msgid "Deletion date"
 msgstr "Datum för borttagning"
 
+#: src/web/templates/admin/index/config_modal.html
+msgid "Edition of papi-web settings"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Please validate the global configuration of the application."
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Application"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Launch browser:"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Papi-web can automatically launch a web browser when starting the web server."
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Log level:"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "The log level allows you to trace the behaviour of the application."
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Internationalization"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "The default federation for your events."
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "Language:"
+msgstr ""
+
+#: src/web/templates/admin/index/config_modal.html
+msgid "The default language used."
+msgstr ""
+
+#: src/web/templates/admin/index/config_tab.html
+msgid "Edit the Papi-web settings."
+msgstr ""
+
 #: src/web/templates/admin/index/config_tab.html
 #: src/web/templates/admin/index/events_tab.html
 #, ai_translation
@@ -4189,6 +4185,14 @@ msgid "Access from the local network (LAN/WAN)"
 msgstr "Tillträde från det lokala nätverket (LAN/WAN)"
 
 #: src/web/templates/admin/index/config_tab.html
+msgid "Default language"
+msgstr ""
+
+#: src/web/templates/admin/index/config_tab.html
+msgid "Default federation:"
+msgstr ""
+
+#: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "Launching the browser on server startup"
 msgstr "Starta webbläsaren vid serverstart"
@@ -4203,6 +4207,10 @@ msgstr "Ja, det är jag."
 #: src/web/templates/admin/index/config_tab.html
 #, ai_translation
 msgid "No"
+msgstr ""
+
+#: src/web/templates/admin/index/config_tab.html
+msgid "Log level"
 msgstr ""
 
 #: src/web/templates/admin/index/config_tab.html
@@ -6666,4 +6674,64 @@ msgstr "vs"
 
 #~ msgid "Sort the players by origin (federation, league, club)."
 #~ msgstr "Sortera spelarna efter ursprung (federation, liga, klubb)."
+
+#~ msgid "Option is obsolete, set environment variable [{var}=1] instead."
+#~ msgstr "Alternativet är föråldrat, ställ in miljövariabeln [{var}=1] istället."
+
+#~ msgid "Locale [{locale}] not found."
+#~ msgstr "Locale [{locale}] hittades inte."
+
+#~ msgid "Option not set."
+#~ msgstr "Alternativet är inte fastställt."
+
+#~ msgid "Section not found."
+#~ msgstr "Avsnittet hittades inte."
+
+#~ msgid "The following languages are available:"
+#~ msgstr "Följande språk finns tillgängliga:"
+
+#~ msgid "Invalid log level [{level}], by default [{default}]."
+#~ msgstr "Ogiltig loggnivå [{level}], som standard [{default}]."
+
+#~ msgid "Option not set, by default [{default}]."
+#~ msgstr "Alternativet är inte fastställt, som standard [{default}]."
+
+#~ msgid "Invalid host configuration [{host}], by default [{default}]."
+#~ msgstr "Ogiltig värdkonfiguration [{host}], som standard [{default}]."
+
+#~ msgid "Invalid port [{port}], by default [{default}]."
+#~ msgstr "Ogiltig port [{port}], som standard [{default}]."
+
+#~ msgid "Invalid delay [{delay}], by default [{default}]"
+#~ msgstr "Ogiltig försening [{delay}], som standard [{default}]"
+
+#~ msgid "Section not found, default configuration set."
+#~ msgstr "Avsnitt hittades inte, förvald inställningsuppsättning."
+
+#~ msgid "Your file {ini_file} has been saved as {ini_file_org}."
+#~ msgstr "Din fil {ini_file} har sparats som {ini_file_org}."
+
+#~ msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
+#~ msgstr "Kunde inte spara {ini_file} till {ini_file_org}: {ex}."
+
+#~ msgid "Adding lines to {file}..."
+#~ msgstr "Lägger till rader i {file}..."
+
+#~ msgid "[i18n] # Added by Papi-web {version}"
+#~ msgstr "[i18n] # Tillagd av Papi-web {version}"
+
+#~ msgid "# The line below has been commented by Papi-web {version}"
+#~ msgstr "# Linjen nedan har kommenterats av Papi-web {version}"
+
+#~ msgid "Your file {ini_file} has been modified."
+#~ msgstr "Din akt {ini_file} har ändrats."
+
+#~ msgid "Could not write to {ini_file}: {ex}."
+#~ msgstr "Kunde inte skriva till {ini_file}: {ex}."
+
+#~ msgid "Port [{port}] already in use, can not start Papi-web server."
+#~ msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
+
+#~ msgid "Default federation"
+#~ msgstr ""
 
