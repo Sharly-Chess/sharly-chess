@@ -50,7 +50,7 @@ class PapiWebConfig(metaclass=Singleton):
     web_ports: list[int] = [80, 81, 8080, 8081, ]
 
     # The default behaviour to open a browser after the startup of the web server.
-    default_web_launch_browser: bool = True
+    default_launch_browser: bool = True
 
     """ The accepted log levels. """
     log_levels: dict[int, str] = {
@@ -110,7 +110,7 @@ class PapiWebConfig(metaclass=Singleton):
         if self.stored_config.launch_browser is not None:
             return self.stored_config.launch_browser
         else:
-            return self.default_web_launch_browser
+            return self.default_launch_browser
 
     @property
     def federation(self) -> Federation:

@@ -800,7 +800,7 @@ class BaseAdminController(BaseController):
                     'off': _('Do nothing'),
                 }
                 launch_browser_options[''] = _('By default - {option}').format(
-                    option=launch_browser_options['on' if PapiWebConfig.default_web_launch_browser else 'off']
+                    option=launch_browser_options['on' if PapiWebConfig.default_launch_browser else 'off']
                 )
                 federation_options: dict[str, str] = {
                     PapiWebConfig.default_federation: _('By default - {option}').format(
