@@ -3,7 +3,7 @@ from database.sqlite.config.config_migration import AbstractConfigMigration
 
 class ConfigMigration(AbstractConfigMigration):
     def forward(self):
-        self._execute(
+        self.execute(
             'CREATE TABLE `info` ('
             '    `version` TEXT NOT NULL,'
             '    `force_edit` INTEGER NOT NULL,'

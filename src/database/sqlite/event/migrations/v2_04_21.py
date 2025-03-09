@@ -8,27 +8,27 @@ class EventMigration(AbstractEventMigration):
         # No need to store the rounds skipped by the users since pairing information is stored
         # at player-level after the ChessEvent import. IF EXISTS is used because the table is not
         # created since 2.4.20
-        self._execute('DROP TABLE IF EXISTS `skipped_round`')
-        self._execute(
+        self.execute('DROP TABLE IF EXISTS `skipped_round`')
+        self.execute(
             "ALTER TABLE `info` ADD `federation` TEXT NOT NULL DEFAULT 'NON'"
         )
         # Assume that the events before 2.4.21 were all in France
-        self._execute('UPDATE `info` SET `federation` = ?', ('FRA',))
+        self.execute('UPDATE `info` SET `federation` = ?', ('FRA',))
         # Add ChessEvent information at event-level and tournament-level
-        self._execute('ALTER TABLE `info` ADD `chessevent_user_id` TEXT')
-        self._execute('ALTER TABLE `info` ADD `chessevent_password` TEXT')
-        self._execute('ALTER TABLE `info` ADD `chessevent_event_id` TEXT')
-        self._execute(
+        self.execute('ALTER TABLE `info` ADD `chessevent_user_id` TEXT')
+        self.execute('ALTER TABLE `info` ADD `chessevent_password` TEXT')
+        self.execute('ALTER TABLE `info` ADD `chessevent_event_id` TEXT')
+        self.execute(
             'ALTER TABLE `tournament` ADD `chessevent_user_id` TEXT'
         )
-        self._execute(
+        self.execute(
             'ALTER TABLE `tournament` ADD `chessevent_password` TEXT'
         )
-        self._execute(
+        self.execute(
             'ALTER TABLE `tournament` ADD `chessevent_event_id` TEXT'
         )
         # Read all the ChessEvent connections
-        self._execute('SELECT * FROM `chessevent` ORDER BY `id`')
+        self.execute('SELECT * FROM `chessevent` ORDER BY `id`')
         chessevent_connections: dict[int, dict[str, Any]] = {
             row['id']: {
                 'chessevent_user_id': row['user_id'],
@@ -42,20 +42,20 @@ class EventMigration(AbstractEventMigration):
             event_chessevent_connection: dict[str, Any] = list(
                 chessevent_connections.values()
             )[0]
-            self._execute(
+            self.execute(
                 f'UPDATE `info` SET {", ".join(f"`{field}` = ?" for field in event_chessevent_connection)}',
                 tuple(event_chessevent_connection.values()),
             )
         else:
             # Read the tournaments and set the ChessEvent information of the tournament
-            self._execute(
+            self.execute(
                 'SELECT `id`, `chessevent_id` FROM `tournament` WHERE `chessevent_id` IS NOT NULL'
             )
             for row in self._fetchall():
                 chessevent_connection: dict[str, Any] = (
                     chessevent_connections[row['chessevent_id']]
                 )
-                self._execute(
+                self.execute(
                     f'UPDATE `tournament` SET {", ".join(f"`{field}` = ?" for field in chessevent_connection)} WHERE `id` = ?',
                     tuple(
                         list(chessevent_connection.values()) + [row['id']]
@@ -65,11 +65,11 @@ class EventMigration(AbstractEventMigration):
         # error in table tournament after drop column: unknown column "chessevent_id" in foreign key definition
         # Since there is no simple way in SQlite to remove a constraint (https://sqlite.org/lang_altertable.html part 7),
         # copy the table and rename:
-        self._execute('PRAGMA foreign_keys=off')
-        self._execute(
+        self.execute('PRAGMA foreign_keys=off')
+        self.execute(
             'ALTER TABLE `tournament` RENAME TO `tournament_copy`'
         )
-        self._execute(
+        self.execute(
             'CREATE TABLE `tournament` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -101,7 +101,7 @@ class EventMigration(AbstractEventMigration):
             '    UNIQUE(`uniq_id`)'
             ')'
         )
-        self._execute(
+        self.execute(
             'INSERT INTO `tournament`('
             '    `id`, '
             '    `uniq_id`, '
@@ -158,7 +158,7 @@ class EventMigration(AbstractEventMigration):
             '    `last_chessevent_download_md5`'
             'FROM `tournament_copy`'
         )
-        self._execute('DROP TABLE `tournament_copy`')
-        self._execute('PRAGMA foreign_keys=on')
+        self.execute('DROP TABLE `tournament_copy`')
+        self.execute('PRAGMA foreign_keys=on')
         # Eventually drop the now useless chessevent table
-        self._execute('DROP TABLE `chessevent`')
+        self.execute('DROP TABLE `chessevent`')

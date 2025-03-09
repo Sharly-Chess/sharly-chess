@@ -163,7 +163,7 @@ class EventDatabase(SQLiteDatabase):
                 event_database._version = EventMigrationManager.EMPTY_DATABASE_VERSION
                 version = PapiWebConfig().version
                 EventMigrationManager().migrate(event_database, version)
-                event_database._execute(
+                event_database.execute(
                     "INSERT INTO `info` "
                     "(`version`, `name`, `start`, `stop`, `last_update`) "
                     "VALUES(?, ?, ?, ?, ?)",
@@ -846,7 +846,7 @@ class EventDatabase(SQLiteDatabase):
         """Store the current time as the last time the database was updated."""
         # NOTE(Amaras): We could get in weird territory if time is not
         # monotonic.
-        self._execute('UPDATE `info` SET `last_update` = ?', (time.time(),))
+        self.execute('UPDATE `info` SET `last_update` = ?', (time.time(),))
 
     def rename(self, new_uniq_id: str = None):
         """Changes the event file database to the one associated to the
@@ -942,7 +942,7 @@ class EventDatabase(SQLiteDatabase):
     def _get_stored_event(self) -> StoredEvent:
         """Gets all the information about the event in the database
         and returns a corresponding StoredEvent record."""
-        self._execute(
+        self.execute(
             'SELECT * FROM `info`',
             (),
         )
@@ -966,7 +966,7 @@ class EventDatabase(SQLiteDatabase):
 
     def set_version(self, version: Version):
         """Sets the version field stored in the database to `version`."""
-        self._execute(
+        self.execute(
             'UPDATE `info` SET `version` = ?, `last_update` = ?',
             (f'{version.major}.{version.minor}.{version.micro}', time.time()),
         )
@@ -1049,7 +1049,7 @@ class EventDatabase(SQLiteDatabase):
             time.time(),
         )
         field_sets = (f'`{f}` = ?' for f in fields)
-        self._execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
+        self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
         return self._get_stored_event()
 
     """
@@ -1072,7 +1072,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def get_stored_timer_hour(self, timer_hour_id: int) -> StoredTimerHour | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `timer_hour` WHERE `id` = ?',
             (timer_hour_id,),
         )
@@ -1082,7 +1082,7 @@ class EventDatabase(SQLiteDatabase):
         return None
 
     def get_stored_timer_next_hour_order(self, timer_id: int) -> int:
-        self._execute(
+        self.execute(
             'SELECT MAX(`order`) AS order_max FROM `timer_hour` WHERE `timer_id` = ?',
             (timer_id,),
         )
@@ -1090,7 +1090,7 @@ class EventDatabase(SQLiteDatabase):
         return (row['order_max'] if row['order_max'] else 0) + 1
 
     def get_stored_timer_next_round(self, timer_id: int) -> int:
-        self._execute(
+        self.execute(
             'SELECT `uniq_id` FROM `timer_hour` WHERE `timer_id` = ?',
             (timer_id,),
         )
@@ -1101,7 +1101,7 @@ class EventDatabase(SQLiteDatabase):
         return highest_round + 1
 
     def load_stored_timer_hours(self, timer_id: int) -> Iterator[StoredTimerHour]:
-        self._execute(
+        self.execute(
             'SELECT * FROM `timer_hour` WHERE `timer_id` = ? ORDER BY `order`',
             (timer_id,),
         )
@@ -1131,7 +1131,7 @@ class EventDatabase(SQLiteDatabase):
         ]
         if stored_timer_hour.id is None:
             protected_fields = [f'`{f}`' for f in fields]
-            self._execute(
+            self.execute(
                 f'INSERT INTO `timer_hour`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
@@ -1139,7 +1139,7 @@ class EventDatabase(SQLiteDatabase):
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_timer_hour.id]
-            self._execute(
+            self.execute(
                 f'UPDATE `timer_hour` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
@@ -1153,7 +1153,7 @@ class EventDatabase(SQLiteDatabase):
     ):
         order: int = 1
         for timer_hour_id in timer_hour_ids:
-            self._execute(
+            self.execute(
                 'UPDATE `timer_hour` SET `order` = ? WHERE `id` = ?',
                 (
                     order,
@@ -1203,7 +1203,7 @@ class EventDatabase(SQLiteDatabase):
                     self.get_stored_timer_next_round(stored_timer_hour.timer_id)
                 )
             else:
-                self._execute(
+                self.execute(
                     'SELECT uniq_id FROM `timer_hour` WHERE `timer_id` = ?',
                     (stored_timer_hour.timer_id,),
                 )
@@ -1219,10 +1219,10 @@ class EventDatabase(SQLiteDatabase):
         return self._write_stored_timer_hour(stored_timer_hour)
 
     def delete_stored_timer_hour(self, timer_hour_id: int, timer_id: int):
-        self._execute('DELETE FROM `timer_hour` WHERE `id` = ?;', (timer_hour_id,))
+        self.execute('DELETE FROM `timer_hour` WHERE `id` = ?;', (timer_hour_id,))
         order: int = 1
         for stored_timer_hour in self.load_stored_timer_hours(timer_id):
-            self._execute(
+            self.execute(
                 'UPDATE `timer_hour` SET `order` = ? WHERE `id` = ?',
                 (
                     order,
@@ -1233,7 +1233,7 @@ class EventDatabase(SQLiteDatabase):
         self.set_last_update()
 
     def _delete_stored_timer_hours(self, timer_id: int):
-        self._execute('DELETE FROM `timer_hour` WHERE `timer_id` = ?;', (timer_id,))
+        self.execute('DELETE FROM `timer_hour` WHERE `timer_id` = ?;', (timer_id,))
 
     """
     ---------------------------------------------------------------------------------
@@ -1255,7 +1255,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def get_stored_timer(self, timer_id: int) -> StoredTimer | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `timer` WHERE `id` = ?',
             (timer_id,),
         )
@@ -1265,7 +1265,7 @@ class EventDatabase(SQLiteDatabase):
         return None
 
     def get_stored_timer_ids(self) -> Iterator[int]:
-        self._execute(
+        self.execute(
             'SELECT `id` FROM `timer` ORDER BY `uniq_id`',
             (),
         )
@@ -1296,7 +1296,7 @@ class EventDatabase(SQLiteDatabase):
         ]
         if stored_timer.id is None:
             protected_fields = [f'`{f}`' for f in fields]
-            self._execute(
+            self.execute(
                 f'INSERT INTO `timer`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
@@ -1304,7 +1304,7 @@ class EventDatabase(SQLiteDatabase):
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_timer.id]
-            self._execute(
+            self.execute(
                 f'UPDATE `timer` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
@@ -1327,15 +1327,15 @@ class EventDatabase(SQLiteDatabase):
         return self._write_stored_timer(stored_timer)
 
     def delete_stored_timer(self, timer_id: int):
-        self._execute(
+        self.execute(
             'UPDATE `family` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,)
         )
-        self._execute(
+        self.execute(
             'UPDATE `screen` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,)
         )
         self._delete_stored_timer_hours(timer_id)
         # references are not deleted as they should be!
-        self._execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
+        self.execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
         self.set_last_update()
 
     """
@@ -1393,7 +1393,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `tournament` WHERE `id` = ?',
             (tournament_id,),
         )
@@ -1403,7 +1403,7 @@ class EventDatabase(SQLiteDatabase):
         return None
 
     def load_stored_tournaments(self) -> Iterator[StoredTournament]:
-        self._execute(
+        self.execute(
             'SELECT * FROM `tournament` ORDER BY `uniq_id`',
             (),
         )
@@ -1478,7 +1478,7 @@ class EventDatabase(SQLiteDatabase):
         ]
         if stored_tournament.id is None:
             protected_fields = [f'`{f}`' for f in fields]
-            self._execute(
+            self.execute(
                 f'INSERT INTO `tournament`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
@@ -1486,7 +1486,7 @@ class EventDatabase(SQLiteDatabase):
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_tournament.id]
-            self._execute(
+            self.execute(
                 f'UPDATE `tournament` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
@@ -1516,11 +1516,11 @@ class EventDatabase(SQLiteDatabase):
         self._delete_tournament_stored_illegal_moves(tournament_id)
         self._delete_tournament_stored_results(tournament_id)
         # references are not deleted on cascade as they should be!
-        self._execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
+        self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
         self.set_last_update()
 
     def set_tournament_last_ffe_upload(self, tournament_id: int):
-        self._execute(
+        self.execute(
             'UPDATE `tournament` SET `last_ffe_upload` = ? WHERE `id` = ?',
             (
                 time.time(),
@@ -1529,7 +1529,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def set_tournament_last_ffe_rules_upload(self, tournament_id: int):
-        self._execute(
+        self.execute(
             'UPDATE `tournament` SET `last_ffe_rules_upload` = ? WHERE `id` = ?',
             (
                 time.time(),
@@ -1540,7 +1540,7 @@ class EventDatabase(SQLiteDatabase):
     def set_tournament_last_chessevent_download_md5(
         self, tournament_id: int, md5: str = None
     ):
-        self._execute(
+        self.execute(
             'UPDATE `tournament` SET `last_chessevent_download_md5` = ? WHERE `id` = ?',
             (
                 md5,
@@ -1549,7 +1549,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def _set_tournament_last_illegal_move_update(self, tournament_id: int):
-        self._execute(
+        self.execute(
             'UPDATE `tournament` SET `last_illegal_move_update` = ? WHERE `id` = ?',
             (
                 time.time(),
@@ -1558,7 +1558,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def set_tournament_last_check_in_update(self, tournament_id: int):
-        self._execute(
+        self.execute(
             'UPDATE `tournament` SET `last_check_in_update` = ? WHERE `id` = ?',
             (
                 time.time(),
@@ -1567,7 +1567,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def set_tournament_last_result_update(self, tournament_id: int):
-        self._execute(
+        self.execute(
             'UPDATE `tournament` SET `last_result_update` = ? WHERE `id` = ?',
             (
                 time.time(),
@@ -1577,7 +1577,7 @@ class EventDatabase(SQLiteDatabase):
 
     def set_tournament_check_in(self, tournament_id: int, o: bool):
         """Opens (o is True) or closes (o is False) the check_in for the tournament."""
-        self._execute(
+        self.execute(
             'UPDATE `tournament` SET `check_in_open` = ?, `last_ffe_upload` = ? WHERE `id` = ?',
             (
                 1 if o else 0,
@@ -1640,7 +1640,7 @@ class EventDatabase(SQLiteDatabase):
         self,
         illegal_move_id: int,
     ) -> StoredIllegalMove | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `illegal_move` WHERE `id` = ?',
             (illegal_move_id,),
         )
@@ -1650,7 +1650,7 @@ class EventDatabase(SQLiteDatabase):
         return None
 
     def get_stored_illegal_moves(self, tournament_id: int, round_: int) -> Counter[int]:
-        self._execute(
+        self.execute(
             'SELECT `illegal_move`.* '
             'FROM `illegal_move` '
             'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`'
@@ -1677,7 +1677,7 @@ class EventDatabase(SQLiteDatabase):
         ]
         params: list = [tournament_id, round_, player_id, time.time()]
         protected_fields = [f'`{f}`' for f in fields]
-        self._execute(
+        self.execute(
             f'INSERT INTO `illegal_move`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
             tuple(params),
         )
@@ -1687,7 +1687,7 @@ class EventDatabase(SQLiteDatabase):
         self, tournament_id: int, round_: int, player_id: int
     ) -> bool:
         self._set_tournament_last_illegal_move_update(tournament_id)
-        self._execute(
+        self.execute(
             'SELECT `id` FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ? AND `player_id` = ? LIMIT 1',
             (
                 tournament_id,
@@ -1698,7 +1698,7 @@ class EventDatabase(SQLiteDatabase):
         row: dict[str, Any] = self._fetchone()
         if not row:
             return False
-        self._execute(
+        self.execute(
             'DELETE FROM `illegal_move` WHERE `id` = ?',
             (row['id'],),
         )
@@ -1709,7 +1709,7 @@ class EventDatabase(SQLiteDatabase):
     ):
         self._set_tournament_last_illegal_move_update(tournament_id)
         if round_:
-            self._execute(
+            self.execute(
                 'DELETE FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ?',
                 (
                     tournament_id,
@@ -1717,7 +1717,7 @@ class EventDatabase(SQLiteDatabase):
                 ),
             )
         else:
-            self._execute(
+            self.execute(
                 'DELETE FROM `illegal_move` WHERE `tournament_id` = ?',
                 (tournament_id,),
             )
@@ -1742,7 +1742,7 @@ class EventDatabase(SQLiteDatabase):
         self,
         result_id: int,
     ) -> StoredResult | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `result` WHERE `id` = ?',
             (result_id,),
         )
@@ -1755,7 +1755,7 @@ class EventDatabase(SQLiteDatabase):
         self, tournament_id: int, round_: int, board: Board, result: UtilResult
     ):
         self.set_tournament_last_result_update(tournament_id)
-        self._execute(
+        self.execute(
             'INSERT INTO `result`('
             '    `tournament_id`, `round`, `board_id`, '
             '    `white_player_id`, `black_player_id`, '
@@ -1774,13 +1774,13 @@ class EventDatabase(SQLiteDatabase):
 
     def delete_stored_result(self, tournament_id: int, round_: int, board_id: int):
         self.set_tournament_last_result_update(tournament_id)
-        self._execute(
+        self.execute(
             'DELETE FROM `result` WHERE `tournament_id` = ? AND `round` = ? AND `board_id` = ?',
             (tournament_id, round_, board_id),
         )
 
     def _delete_tournament_stored_results(self, tournament_id: int):
-        self._execute(
+        self.execute(
             'DELETE FROM `result` WHERE `tournament_id` = ?',
             (tournament_id,),
         )
@@ -1807,7 +1807,7 @@ class EventDatabase(SQLiteDatabase):
             params += [
                 limit,
             ]
-        self._execute(query, tuple(params))
+        self.execute(query, tuple(params))
         results: list[DataResult] = []
         for row in self._fetchall():
             try:
@@ -1867,7 +1867,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def get_stored_family(self, family_id: int) -> StoredFamily | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `family` WHERE `id` = ?',
             (family_id,),
         )
@@ -1877,7 +1877,7 @@ class EventDatabase(SQLiteDatabase):
         return None
 
     def load_stored_families(self) -> Iterator[StoredFamily]:
-        self._execute(
+        self.execute(
             'SELECT * FROM `family` ORDER BY `uniq_id`',
             (),
         )
@@ -1931,7 +1931,7 @@ class EventDatabase(SQLiteDatabase):
         ]
         if stored_family.id is None:
             protected_fields = [f'`{f}`' for f in fields]
-            self._execute(
+            self.execute(
                 f'INSERT INTO `family`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
@@ -1939,7 +1939,7 @@ class EventDatabase(SQLiteDatabase):
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_family.id]
-            self._execute(
+            self.execute(
                 f'UPDATE `family` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
@@ -1962,11 +1962,11 @@ class EventDatabase(SQLiteDatabase):
         return self._write_stored_family(stored_family)
 
     def delete_stored_family(self, family_id: int):
-        self._execute('DELETE FROM `family` WHERE `id` = ?;', (family_id,))
+        self.execute('DELETE FROM `family` WHERE `id` = ?;', (family_id,))
         self.set_last_update()
 
     def _delete_tournament_stored_families(self, tournament_id: int):
-        self._execute(
+        self.execute(
             'DELETE FROM `family` WHERE `tournament_id` = ?;', (tournament_id,)
         )
 
@@ -2012,7 +2012,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def get_stored_screen(self, screen_id: int) -> StoredScreen | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `screen` WHERE `id` = ?',
             (screen_id,),
         )
@@ -2022,7 +2022,7 @@ class EventDatabase(SQLiteDatabase):
         return None
 
     def load_stored_screens(self) -> Iterator[StoredScreen]:
-        self._execute(
+        self.execute(
             'SELECT * FROM `screen` ORDER BY `uniq_id`',
             (),
         )
@@ -2034,7 +2034,7 @@ class EventDatabase(SQLiteDatabase):
             yield stored_screen
 
     def _set_stored_screen_last_update(self, screen_id: int):
-        self._execute(
+        self.execute(
             'UPDATE `screen` SET `last_update` = ? WHERE `id` = ?',
             (
                 time.time(),
@@ -2094,7 +2094,7 @@ class EventDatabase(SQLiteDatabase):
         ]
         if stored_screen.id is None:
             protected_fields = [f'`{f}`' for f in fields]
-            self._execute(
+            self.execute(
                 f'INSERT INTO `screen`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
@@ -2102,7 +2102,7 @@ class EventDatabase(SQLiteDatabase):
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_screen.id]
-            self._execute(
+            self.execute(
                 f'UPDATE `screen` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
@@ -2125,15 +2125,15 @@ class EventDatabase(SQLiteDatabase):
         return self._write_stored_screen(stored_screen)
 
     def _delete_screen_stored_screen_sets(self, screen_id: int):
-        self._execute('DELETE FROM `screen_set` WHERE `screen_id` = ?;', (screen_id,))
+        self.execute('DELETE FROM `screen_set` WHERE `screen_id` = ?;', (screen_id,))
 
     def delete_stored_screen(self, screen_id: int):
         self._delete_screen_stored_screen_sets(screen_id)
-        self._execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
+        self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
         self.set_last_update()
 
     def _delete_tournament_stored_screens(self, tournament_id: int):
-        self._execute(
+        self.execute(
             'SELECT `screen`.`id` AS `screen_id` '
             'FROM `screen` '
             'JOIN `screen_set` ON `screen_set`.`screen_id` = `screen`.`id` '
@@ -2164,7 +2164,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def get_stored_screen_set(self, screen_id: int) -> StoredScreenSet | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `screen_set` WHERE `id` = ?',
             (screen_id,),
         )
@@ -2174,7 +2174,7 @@ class EventDatabase(SQLiteDatabase):
         return None
 
     def get_stored_screen_next_set_order(self, screen_id: int) -> int:
-        self._execute(
+        self.execute(
             'SELECT MAX(`order`) AS order_max FROM `screen_set` WHERE `screen_id` = ?',
             (screen_id,),
         )
@@ -2182,7 +2182,7 @@ class EventDatabase(SQLiteDatabase):
         return (row['order_max'] if row['order_max'] else 0) + 1
 
     def load_stored_screen_sets(self, screen_id: int) -> Iterator[StoredScreenSet]:
-        self._execute(
+        self.execute(
             'SELECT * FROM `screen_set` WHERE `screen_id` = ? ORDER BY `order`',
             (screen_id,),
         )
@@ -2195,7 +2195,7 @@ class EventDatabase(SQLiteDatabase):
     ):
         order: int = 1
         for screen_set_id in screen_set_ids:
-            self._execute(
+            self.execute(
                 'UPDATE `screen_set` SET `order` = ?, `last_update` = ? WHERE `id` = ?',
                 (
                     order,
@@ -2233,7 +2233,7 @@ class EventDatabase(SQLiteDatabase):
         ]
         if stored_screen_set.id is None:
             protected_fields = [f'`{f}`' for f in fields]
-            self._execute(
+            self.execute(
                 f'INSERT INTO `screen_set`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
@@ -2243,7 +2243,7 @@ class EventDatabase(SQLiteDatabase):
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_screen_set.id]
-            self._execute(
+            self.execute(
                 f'UPDATE `screen_set` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
@@ -2297,7 +2297,7 @@ class EventDatabase(SQLiteDatabase):
     def delete_stored_screen_set(self, screen_set_id: int, screen_id: int):
         order: int = 1
         for stored_screen_set in self.load_stored_screen_sets(screen_id):
-            self._execute(
+            self.execute(
                 'UPDATE `screen_set` SET `order` = ?, `last_update` = ? WHERE `id` = ?',
                 (
                     order,
@@ -2307,7 +2307,7 @@ class EventDatabase(SQLiteDatabase):
             )
             order += 1
         self._set_stored_screen_last_update(screen_id)
-        self._execute('DELETE FROM `screen_set` WHERE `id` = ?;', (screen_set_id,))
+        self.execute('DELETE FROM `screen_set` WHERE `id` = ?;', (screen_set_id,))
         self.set_last_update()
 
     """
@@ -2333,7 +2333,7 @@ class EventDatabase(SQLiteDatabase):
         )
 
     def get_stored_rotator(self, rotator_id: int) -> StoredRotator | None:
-        self._execute(
+        self.execute(
             'SELECT * FROM `rotator` WHERE `id` = ?',
             (rotator_id,),
         )
@@ -2343,7 +2343,7 @@ class EventDatabase(SQLiteDatabase):
         return None
 
     def load_stored_rotators(self) -> Iterator[StoredRotator]:
-        self._execute(
+        self.execute(
             'SELECT * FROM `rotator` ORDER BY `uniq_id`',
             (),
         )
@@ -2373,7 +2373,7 @@ class EventDatabase(SQLiteDatabase):
         ]
         if stored_rotator.id is None:
             protected_fields = [f'`{f}`' for f in fields]
-            self._execute(
+            self.execute(
                 f'INSERT INTO `rotator`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
@@ -2383,7 +2383,7 @@ class EventDatabase(SQLiteDatabase):
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_rotator.id]
-            self._execute(
+            self.execute(
                 f'UPDATE `rotator` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
@@ -2406,5 +2406,5 @@ class EventDatabase(SQLiteDatabase):
         return self._write_stored_rotator(stored_rotator)
 
     def delete_stored_rotator(self, rotator_id: int):
-        self._execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
+        self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
         self.set_last_update()

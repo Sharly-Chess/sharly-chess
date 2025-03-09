@@ -39,7 +39,7 @@ class ConfigDatabase(SQLiteDatabase):
                 with ConfigDatabase(write=True, auto_upgrade=False) as config_database:
                     config_database._version = ConfigMigrationManager.EMPTY_DATABASE_VERSION
                     ConfigMigrationManager().migrate(config_database, self.papi_web_version)
-                    config_database._execute(
+                    config_database.execute(
                         "INSERT INTO `info`(`version`, `force_edit`) VALUES(?, ?)",
                         (
                             f'{self.papi_web_version.major}.{self.papi_web_version.minor}.{self.papi_web_version.micro}',
@@ -89,7 +89,7 @@ class ConfigDatabase(SQLiteDatabase):
 
     def _get_stored_config(self) -> StoredConfig:
         """Gets all the information about the config and returns a corresponding StoredConfig record."""
-        self._execute(
+        self.execute(
             'SELECT * FROM `info`',
             (),
         )
@@ -107,7 +107,7 @@ class ConfigDatabase(SQLiteDatabase):
 
     def set_version(self, version: Version):
         """Sets the version field stored in the database to `version`."""
-        self._execute(
+        self.execute(
             'UPDATE `info` SET `version` = ?',
             (f'{version.major}.{version.minor}.{version.micro}', ),
         )
@@ -152,6 +152,6 @@ class ConfigDatabase(SQLiteDatabase):
             stored_config.locale,
         )
         field_sets = (f'`{f}` = ?' for f in fields)
-        self._execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
+        self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
         return self._get_stored_config()
 
