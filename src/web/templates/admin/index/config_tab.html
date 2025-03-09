@@ -116,14 +116,6 @@
             </td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">{{ _('Log level') }}</th>
-            <td>{% if papi_web_config.log_level %}{{ _('Yes') }}{% else %}<span class="fst-italic">{{ _('No') }}</span>{% endif %}</td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('Launching the browser on server startup') }}</th>
-            <td>{% if papi_web_config.launch_browser %}{{ _('Yes') }}{% else %}<span class="fst-italic">{{ _('No') }}</span>{% endif %}</td>
-        </tr>
-        <tr>
             <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Papi-web') }}</th>
             <td>{{ papi_web_config['version'] }}</td>
         </tr>
