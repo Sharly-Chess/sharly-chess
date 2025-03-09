@@ -1145,7 +1145,7 @@ class Tournament:
                 'Blitz': player.ratings[TournamentRating.BLITZ],
                 'Federation': player.federation.name,
                 'ClubRef': 0,
-                'Club': player.club.name,
+                'Club': player.club.name if player.club else None,
                 'Fide': player.rating_types[TournamentRating.STANDARD].to_papi_value,
                 'RapideFide': player.rating_types[TournamentRating.RAPID].to_papi_value,
                 'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,
