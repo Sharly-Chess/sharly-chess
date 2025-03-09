@@ -39,7 +39,7 @@
                             <tr class="column-heading">
                                 {{ macros.extra_column_header("rank", extra_classes, extra_columns)}}
                                 <th class="right {{ extra_classes }}">
-                                    {% if rank_players %}
+                                    {% if document.is_ranking or document.is_crosstable %}
                                         {{ _('Rk. *** RANK FOR PRINT VIEW') }}
                                     {% else %}
                                         {{ _('Nb. *** NB FOR PRINT VIEW') }}
@@ -87,7 +87,11 @@
                                 <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
                                     {{ macros.extra_column_data("rank", player, extra_classes, extra_columns)}}
                                     <td class="right {{ extra_classes }}">
-                                        {% if rank_players %} {{ player.rank }} {% else %} {{ n|length }} {% endif %}
+                                        {% if document.is_ranking or document.is_crosstable %}
+                                            {{ player.rank }}
+                                        {% else %}
+                                            {{ n|length }}
+                                        {% endif %}
                                     </td>
                                     {{ macros.extra_column_data("title", player, extra_classes, extra_columns)}}
                                     <td class="right {{ extra_classes }}">{{ player.title.short_name }}</td>
@@ -115,8 +119,7 @@
                                     {% endif %}
                                     {{ macros.extra_column_data("end", extra_classes, extra_columns)}}
                                 </tr>
-
-                                {% set __ = n.append(1) %} 
+                                {% set __ = n.append(1) %}
                             {% endfor %}
                         </tbody>
                     </table>
