@@ -29,9 +29,9 @@
             {% set extra_classes = "" %}
             {% if document.is_crosstable %}{% set extra_classes = "small" %}{% endif %}
             {% if players %}
-                {% for splitBy in players.keys() %}
+                {% for split_by in players.keys() %}
                     <div class="title">
-                        {{ splitBy }}
+                        {{ split_by }}
                     </div>
 
                     <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
@@ -83,7 +83,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for player in players[splitBy] %}
+                            {% for player in players[split_by] %}
                                 <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
                                     {{ macros.extra_column_data("rank", player, extra_classes, extra_columns)}}
                                     <td class="right {{ extra_classes }}">
