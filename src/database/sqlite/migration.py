@@ -102,21 +102,18 @@ class AbstractMigrationManager(ABC):
                 f'({self.first_migration_version}).'
             )
             return False
-        from database.sqlite.config.config_database import ConfigDatabase
-
-        papi_web_version: Version = ConfigDatabase.papi_web_version
-        if database.version > papi_web_version:
+        if database.version > SQLiteVersionedDatabase.papi_web_version:
             self._log_error(
                 f'Database {database.file.name} ({database.version}) '
                 f'impossible to migrate: version is after the '
-                f'current Papi-web version ({papi_web_version.public}).'
+                f'current Papi-web version ({SQLiteVersionedDatabase.papi_web_version.public}).'
             )
             return False
-        if target_version > papi_web_version:
+        if target_version > SQLiteVersionedDatabase.papi_web_version:
             self._log_error(
                 f'impossible to upgrade to version [{target_version.public}]: '
                 f' version is after the current Papi-web version '
-                f'({papi_web_version.public}).'
+                f'({SQLiteVersionedDatabase.papi_web_version.public}).'
             )
             return False
 
