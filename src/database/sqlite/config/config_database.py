@@ -25,9 +25,6 @@ class ConfigDatabase(SQLiteVersionedDatabase):
     The SQLite database class for Papi-web config.
     """
 
-    # The current Papi-web version
-    papi_web_version: Version = Version('2.4.24')
-
     # The file holding the configuration of the application.
     config_database_path: Path = Path('.scc')
 

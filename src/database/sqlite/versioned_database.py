@@ -8,7 +8,6 @@ from packaging.version import Version
 
 from common.exception import PapiWebException
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 if TYPE_CHECKING:
@@ -25,9 +24,12 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
         self._version: Version | None = None
         self.auto_upgrade = auto_upgrade
 
+    # The current Papi-web version
+    papi_web_version: Version = Version('2.4.24')
+
     @classmethod
     @abstractmethod
-    def from_parent(cls, parent: 'SQLiteVersionedDatabase') -> Self:
+    def from_parent(cls, parent: Self) -> Self:
         pass
 
     @property
@@ -63,16 +65,15 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
         """Upgrades the database version from the stored database version
         to the current Papi-web version.
         This may change the structure of the database."""
-        papi_web_version: Version = PapiWebConfig().version
-        if self.version > papi_web_version:
+        if self.version > self.papi_web_version:
             raise PapiWebException(
-                f'Your Papi-web version ({papi_web_version}) '
+                f'Your Papi-web version ({self.papi_web_version}) '
                 f'can not open database {self.file.name} '
                 f'(version {self.version}), please upgrade.'
             )
         logger.info(f'Upgrading database {self.file.name}...')
         initial_version = self.version
-        if self.migration_manager.migrate(self, papi_web_version):
+        if self.migration_manager.migrate(self, self.papi_web_version):
             logger.info(
                 'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
@@ -115,9 +116,8 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
                 f'[{self.file.resolve()}] does not exist.'
             )
         super().__enter__()
-        from database.sqlite.config.config_database import ConfigDatabase
 
-        if self.auto_upgrade and self.version < ConfigDatabase.papi_web_version:
+        if self.auto_upgrade and self.version < self.papi_web_version:
             if self.write:
                 self.upgrade()
             else:

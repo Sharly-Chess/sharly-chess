@@ -22,6 +22,7 @@ from common.logger import (
 from common.singleton import Singleton
 from data.player import Federation
 from data.util import Result
+from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
 
 logger: Logger = get_logger()
@@ -91,8 +92,6 @@ class PapiWebConfig(metaclass=Singleton):
         self.stored_config = self.load()
 
     def load(self) -> StoredConfig:
-        from database.sqlite.config.config_database import ConfigDatabase
-
         with ConfigDatabase() as config_database:
             return config_database.load_stored_config()
 
