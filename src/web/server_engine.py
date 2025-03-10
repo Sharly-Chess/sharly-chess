@@ -101,6 +101,7 @@ class ServerEngine(Engine):
             template_config=template_config,
             middleware=middlewares,
             stores=stores,
+            pdb_on_exception=DEVEL_ENV,
         )
         # This code is intended to check the uniformity of the paths and names used for the application URLs
         # url_map: defaultdict[str, list[str]] = defaultdict(list[str])
