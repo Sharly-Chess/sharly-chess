@@ -9,7 +9,8 @@ from common.logger import get_logger
 from data.chessevent_player import ChessEventPlayer
 from data.chessevent_tournament import ChessEventTournament
 from data.pairing import Pairing
-from data.player import Federation, Player
+from data.player import Player, Federation, Club
+
 from data.tie_break import PapiTieBreak
 from data.util import (
     Result,
@@ -310,7 +311,7 @@ class PapiDatabase(AccessDatabase):
                 },
                 fide_id=fide_id,
                 federation=Federation(row['Federation'] or ''),
-                club=row['Club'] or '',
+                club=Club(row['Club'] or ''),
                 fixed=row['Fixe'] or 0,
                 check_in=row['Pointe'] or False,
                 pairings=pairings,
