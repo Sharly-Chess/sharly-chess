@@ -49,7 +49,7 @@
                         <input type="hidden" name="max_byes" value="{{ admin_player.tournament.max_byes }}"/>
                         {% for round, pairing in admin_player.pairings.items() %}
                             {% set name='round_' ~ round ~ '_result' %}
-                            {% set zero_point_bye_allowed = round > admin_player.tournament.current_round %}
+                            {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round %}
                             {% if pairing.opponent_id %}
                                 {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
                                 {% set opponent=opponent_player.last_name ~ ' ' ~ opponent_player.first_name %}
