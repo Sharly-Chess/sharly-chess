@@ -27,7 +27,7 @@ class ScreenSet:
         self,
         screen: 'Screen',
         stored_screen_set: StoredScreenSet | None = None,
-        family: 'NewFamily | None' = None,
+        family: 'Family | None' = None,
         family_part: int | None = None,
     ):
         if stored_screen_set is None:
@@ -40,7 +40,7 @@ class ScreenSet:
             )
         self.screen: 'Screen' = screen
         self.stored_screen_set: StoredScreenSet | None = stored_screen_set
-        self.family: 'NewFamily | None' = family
+        self.family: 'Family | None' = family
         self.family_part: int | None = family_part
         self.uniq_id: str = f'{self.screen.uniq_id}_{self.stored_screen_set.order if self.stored_screen_set else self.family_part}'
         fixed_boards_str: str | None = (

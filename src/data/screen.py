@@ -32,7 +32,7 @@ class Screen:
         self,
         event: 'Event',
         stored_screen: StoredScreen | None = None,
-        family: 'NewFamily | None' = None,
+        family: 'Family | None' = None,
         family_part: int | None = None,
     ):
         if stored_screen is None:
@@ -45,7 +45,7 @@ class Screen:
             )
         self.event: 'Event' = event
         self.stored_screen: StoredScreen | None = stored_screen
-        self.family: 'NewFamily | None' = family
+        self.family: 'Family | None' = family
         self.family_part: int | None = family_part
 
     @cached_property
