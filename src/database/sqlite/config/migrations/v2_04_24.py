@@ -13,3 +13,6 @@ class Migration(AbstractMigration):
             '    `locale` TEXT'
             ')'
         )
+
+    def backward(self):
+        self.database.execute('DROP TABLE `info`')
