@@ -1,25 +1,24 @@
+import re
+from abc import abstractmethod, ABC
 from functools import cached_property
 from importlib import import_module
-from pkgutil import iter_modules
-import re
-from abc import abstractmethod
 from logging import Logger
+from pkgutil import iter_modules
 from sqlite3 import OperationalError
-from typing import TYPE_CHECKING
+from types import ModuleType
 
 from packaging.version import Version
 
-from common.logger import get_logger, print_interactive_error
-from database.sqlite.config import migrations
-from database.sqlite.sqlite_database import SQLiteDatabase
+from common.logger import print_interactive_error, get_logger
+from database.sqlite.versioned_database import SQLiteVersionedDatabase
 
 logger: Logger = get_logger()
 
-if TYPE_CHECKING:
-    from database.sqlite.config.config_database import ConfigDatabase
 
+class AbstractMigration(ABC):
+    def __init__(self, database: SQLiteVersionedDatabase):
+        self.database = database
 
-class AbstractConfigMigration(SQLiteDatabase):
     @abstractmethod
     def forward(self):
         pass
@@ -30,9 +29,9 @@ class AbstractConfigMigration(SQLiteDatabase):
         )
 
 
-class ConfigMigrationManager:
+class AbstractMigrationManager(ABC):
     EMPTY_DATABASE_VERSION: Version = Version('0.0.0')
-    MIGRATION_CLASS_NAME: str = 'ConfigMigration'
+    MIGRATION_CLASS_NAME: str = 'Migration'
 
     def __init__(self, cli_usage: bool = False):
         self._log_error = (
@@ -40,9 +39,14 @@ class ConfigMigrationManager:
         )
 
     @property
+    @abstractmethod
+    def base_module(self) -> ModuleType:
+        pass
+
+    @property
     def migration_modules(self) -> list[str]:
         return [
-            f'{migrations.__name__}.{module}'
+            f'{self.base_module.__name__}.{module}'
             for module in self._migration_module_names
         ]
 
@@ -55,7 +59,9 @@ class ConfigMigrationManager:
 
     @property
     def _migration_module_names(self) -> list[str]:
-        return [module for _, module, _ in iter_modules(migrations.__path__)]
+        return [
+            module for _, module, _ in iter_modules(self.base_module.__path__)
+        ]
 
     @property
     def first_migration_version(self) -> Version:
@@ -75,7 +81,7 @@ class ConfigMigrationManager:
 
     def migrate(
         self,
-        database: 'ConfigDatabase',
+        database: SQLiteVersionedDatabase,
         target_version: Version,
         skip_commits: bool = False,
     ) -> bool:
@@ -96,18 +102,21 @@ class ConfigMigrationManager:
                 f'({self.first_migration_version}).'
             )
             return False
-        if database.version > database.papi_web_version:
+        from database.sqlite.config.config_database import ConfigDatabase
+
+        papi_web_version: Version = ConfigDatabase.papi_web_version
+        if database.version > papi_web_version:
             self._log_error(
                 f'Database {database.file.name} ({database.version}) '
                 f'impossible to migrate: version is after the '
-                f'current Papi-web version ({database.papi_web_version.public}).'
+                f'current Papi-web version ({papi_web_version.public}).'
             )
             return False
-        if target_version > database.papi_web_version:
+        if target_version > papi_web_version:
             self._log_error(
                 f'impossible to upgrade to version [{target_version.public}]: '
                 f' version is after the current Papi-web version '
-                f'({database.papi_web_version.public}).'
+                f'({papi_web_version.public}).'
             )
             return False
 
@@ -124,7 +133,7 @@ class ConfigMigrationManager:
 
     def _upgrade(
         self,
-        database: 'ConfigDatabase',
+        database: SQLiteVersionedDatabase,
         target_version: Version,
         skip_commits: bool,
     ) -> bool:
@@ -135,7 +144,7 @@ class ConfigMigrationManager:
                 migration_version
             )
             try:
-                migration_class.forward(database)
+                migration_class(database).forward()
                 database.set_version(migration_version)
                 if not skip_commits:
                     database.commit()
@@ -159,7 +168,7 @@ class ConfigMigrationManager:
 
     def _rollback(
         self,
-        database: 'ConfigDatabase',
+        database: SQLiteVersionedDatabase,
         target_version: Version,
         skip_commits: bool,
     ) -> bool:
@@ -176,7 +185,7 @@ class ConfigMigrationManager:
                 current_version
             )
             try:
-                migration_class.backward(database)
+                migration_class(database).backward()
                 database.set_version(previous_version)
                 if not skip_commits:
                     database.commit()
@@ -220,16 +229,15 @@ class ConfigMigrationManager:
 
     def _version_to_migration_class(
         self, version: Version
-    ) -> type[AbstractConfigMigration]:
+    ) -> type[AbstractMigration]:
         return getattr(
             import_module(self._version_to_module(version)),
             self.MIGRATION_CLASS_NAME,
         )
 
-    @staticmethod
-    def _version_to_module(version: Version) -> str:
+    def _version_to_module(self, version: Version) -> str:
         return (
-            f'{migrations.__name__}.'
+            f'{self.base_module.__name__}.'
             f'v{version.major}_{version.minor:02d}_{version.micro:02d}'
         )
 

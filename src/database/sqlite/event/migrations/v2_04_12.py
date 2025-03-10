@@ -1,7 +1,7 @@
-from database.sqlite.event.event_migration import AbstractEventMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class EventMigration(AbstractEventMigration):
+class Migration(AbstractMigration):
     def forward(self):
-        self._execute('ALTER TABLE `info` ADD `rules` TEXT')
-        self._execute('ALTER TABLE `tournament` ADD `rules` TEXT')
+        self.database.execute('ALTER TABLE `info` ADD `rules` TEXT')
+        self.database.execute('ALTER TABLE `tournament` ADD `rules` TEXT')

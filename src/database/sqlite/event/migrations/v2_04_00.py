@@ -1,9 +1,9 @@
-from database.sqlite.event.event_migration import AbstractEventMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class EventMigration(AbstractEventMigration):
+class Migration(AbstractMigration):
     def forward(self):
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `info` ('
             '    `version` TEXT NOT NULL,'
             '    `name` TEXT NOT NULL DEFAULT \'?\','
@@ -21,7 +21,7 @@ class EventMigration(AbstractEventMigration):
             '    `last_update` FLOAT NOT NULL'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `chessevent` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -32,7 +32,7 @@ class EventMigration(AbstractEventMigration):
             '    UNIQUE(`uniq_id`)'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `timer_hour` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -47,7 +47,7 @@ class EventMigration(AbstractEventMigration):
             '    FOREIGN KEY (`timer_id`) REFERENCES `timer`(`id`) ON DELETE CASCADE'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `timer` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -57,7 +57,7 @@ class EventMigration(AbstractEventMigration):
             '    UNIQUE(`uniq_id`)'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `tournament` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -85,7 +85,7 @@ class EventMigration(AbstractEventMigration):
             '    FOREIGN KEY (`chessevent_id`) REFERENCES `chessevent`(`id`)'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `illegal_move` ('
             '    `id` INTEGER NOT NULL,'
             '    `tournament_id` INTEGER NOT NULL,'
@@ -96,7 +96,7 @@ class EventMigration(AbstractEventMigration):
             '    FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `result` ('
             '    `id` INTEGER NOT NULL,'
             '    `tournament_id` INTEGER NOT NULL,'
@@ -110,7 +110,7 @@ class EventMigration(AbstractEventMigration):
             '    FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `screen` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -133,7 +133,7 @@ class EventMigration(AbstractEventMigration):
             '    FOREIGN KEY (`timer_id`) REFERENCES `timer`(`id`)'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `screen_set` ('
             '    `id` INTEGER NOT NULL,'
             '    `screen_id` INTEGER NOT NULL,'
@@ -149,7 +149,7 @@ class EventMigration(AbstractEventMigration):
             '    FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `family` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -175,7 +175,7 @@ class EventMigration(AbstractEventMigration):
             '    FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `rotator` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -188,7 +188,7 @@ class EventMigration(AbstractEventMigration):
             '    UNIQUE(`uniq_id`)'
             ')'
         )
-        self._execute(
+        self.database.execute(
             'CREATE TABLE `skipped_round` ('
             '    `id` INTEGER NOT NULL,'
             '    `tournament_id` INTEGER NOT NULL,'
