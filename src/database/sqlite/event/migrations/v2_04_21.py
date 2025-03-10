@@ -1,61 +1,61 @@
 from typing import Any
 
-from database.sqlite.event.event_migration import AbstractEventMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class EventMigration(AbstractEventMigration):
+class Migration(AbstractMigration):
     def forward(self):
         # No need to store the rounds skipped by the users since pairing information is stored
         # at player-level after the ChessEvent import. IF EXISTS is used because the table is not
         # created since 2.4.20
-        self.execute('DROP TABLE IF EXISTS `skipped_round`')
-        self.execute(
+        self.database.execute('DROP TABLE IF EXISTS `skipped_round`')
+        self.database.execute(
             "ALTER TABLE `info` ADD `federation` TEXT NOT NULL DEFAULT 'NON'"
         )
         # Assume that the events before 2.4.21 were all in France
-        self.execute('UPDATE `info` SET `federation` = ?', ('FRA',))
+        self.database.execute('UPDATE `info` SET `federation` = ?', ('FRA',))
         # Add ChessEvent information at event-level and tournament-level
-        self.execute('ALTER TABLE `info` ADD `chessevent_user_id` TEXT')
-        self.execute('ALTER TABLE `info` ADD `chessevent_password` TEXT')
-        self.execute('ALTER TABLE `info` ADD `chessevent_event_id` TEXT')
-        self.execute(
+        self.database.execute('ALTER TABLE `info` ADD `chessevent_user_id` TEXT')
+        self.database.execute('ALTER TABLE `info` ADD `chessevent_password` TEXT')
+        self.database.execute('ALTER TABLE `info` ADD `chessevent_event_id` TEXT')
+        self.database.execute(
             'ALTER TABLE `tournament` ADD `chessevent_user_id` TEXT'
         )
-        self.execute(
+        self.database.execute(
             'ALTER TABLE `tournament` ADD `chessevent_password` TEXT'
         )
-        self.execute(
+        self.database.execute(
             'ALTER TABLE `tournament` ADD `chessevent_event_id` TEXT'
         )
         # Read all the ChessEvent connections
-        self.execute('SELECT * FROM `chessevent` ORDER BY `id`')
+        self.database.execute('SELECT * FROM `chessevent` ORDER BY `id`')
         chessevent_connections: dict[int, dict[str, Any]] = {
             row['id']: {
                 'chessevent_user_id': row['user_id'],
                 'chessevent_password': row['password'],
                 'chessevent_event_id': row['event_id'],
             }
-            for row in self._fetchall()
+            for row in self.database._fetchall()
         }
         if len(chessevent_connections) == 1:
             # Set the ChessEvent connection as the event default ChessEvent connection
             event_chessevent_connection: dict[str, Any] = list(
                 chessevent_connections.values()
             )[0]
-            self.execute(
+            self.database.execute(
                 f'UPDATE `info` SET {", ".join(f"`{field}` = ?" for field in event_chessevent_connection)}',
                 tuple(event_chessevent_connection.values()),
             )
         else:
             # Read the tournaments and set the ChessEvent information of the tournament
-            self.execute(
+            self.database.execute(
                 'SELECT `id`, `chessevent_id` FROM `tournament` WHERE `chessevent_id` IS NOT NULL'
             )
-            for row in self._fetchall():
+            for row in self.database._fetchall():
                 chessevent_connection: dict[str, Any] = (
                     chessevent_connections[row['chessevent_id']]
                 )
-                self.execute(
+                self.database.execute(
                     f'UPDATE `tournament` SET {", ".join(f"`{field}` = ?" for field in chessevent_connection)} WHERE `id` = ?',
                     tuple(
                         list(chessevent_connection.values()) + [row['id']]
@@ -65,11 +65,11 @@ class EventMigration(AbstractEventMigration):
         # error in table tournament after drop column: unknown column "chessevent_id" in foreign key definition
         # Since there is no simple way in SQlite to remove a constraint (https://sqlite.org/lang_altertable.html part 7),
         # copy the table and rename:
-        self.execute('PRAGMA foreign_keys=off')
-        self.execute(
+        self.database.execute('PRAGMA foreign_keys=off')
+        self.database.execute(
             'ALTER TABLE `tournament` RENAME TO `tournament_copy`'
         )
-        self.execute(
+        self.database.execute(
             'CREATE TABLE `tournament` ('
             '    `id` INTEGER NOT NULL,'
             '    `uniq_id` TEXT NOT NULL,'
@@ -101,7 +101,7 @@ class EventMigration(AbstractEventMigration):
             '    UNIQUE(`uniq_id`)'
             ')'
         )
-        self.execute(
+        self.database.execute(
             'INSERT INTO `tournament`('
             '    `id`, '
             '    `uniq_id`, '
@@ -158,7 +158,7 @@ class EventMigration(AbstractEventMigration):
             '    `last_chessevent_download_md5`'
             'FROM `tournament_copy`'
         )
-        self.execute('DROP TABLE `tournament_copy`')
-        self.execute('PRAGMA foreign_keys=on')
+        self.database.execute('DROP TABLE `tournament_copy`')
+        self.database.execute('PRAGMA foreign_keys=on')
         # Eventually drop the now useless chessevent table
-        self.execute('DROP TABLE `chessevent`')
+        self.database.execute('DROP TABLE `chessevent`')

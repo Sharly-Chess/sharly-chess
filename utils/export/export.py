@@ -8,7 +8,8 @@ from PyInstaller.__main__ import run
 from packaging.version import Version
 
 from common import BASE_DIR
-from database.sqlite.event.event_migration import EventMigrationManager
+from database.sqlite.config.config_database import ConfigMigrationManager
+from database.sqlite.event.event_database import EventMigrationManager
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import trusted_locales, untrusted_locales
 from common.papi_web_config import PapiWebConfig
@@ -76,6 +77,8 @@ def build_exe():
         'src/papi_web.py',
     ]
     for module in EventMigrationManager().migration_modules:
+        pyinstaller_params.append(f'--hiddenimport={module}')
+    for module in ConfigMigrationManager().migration_modules:
         pyinstaller_params.append(f'--hiddenimport={module}')
 
     files: list[Path] = []

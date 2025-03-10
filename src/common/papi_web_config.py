@@ -22,7 +22,6 @@ from common.logger import (
 from common.singleton import Singleton
 from data.player import Federation
 from data.util import Result
-from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
 
 logger: Logger = get_logger()
@@ -65,8 +64,7 @@ class PapiWebConfig(metaclass=Singleton):
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
-        with ConfigDatabase() as config_database:
-            self.stored_config: StoredConfig = config_database.load_stored_config()
+        self.stored_config: StoredConfig = self.load()
         # Once the configuration is read, make sure that important directories can be used
         try:
             self.event_path.mkdir(parents=True, exist_ok=True)
@@ -90,8 +88,13 @@ class PapiWebConfig(metaclass=Singleton):
         configure_logger(self.log_level)
 
     def reload(self):
+        self.stored_config = self.load()
+
+    def load(self) -> StoredConfig:
+        from database.sqlite.config.config_database import ConfigDatabase
+
         with ConfigDatabase() as config_database:
-            self.stored_config: StoredConfig = config_database.load_stored_config()
+            return config_database.load_stored_config()
 
     @property
     def force_edit(self) -> bool:

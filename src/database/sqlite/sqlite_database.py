@@ -62,7 +62,7 @@ class SQLiteDatabase:
     def execute(self, query: str, params: tuple = ()):
         self.cursor.execute(query, params)
 
-    def execute_script(self, sql: str):
+    def executescript(self, sql: str):
         self.cursor.executescript(sql)
 
     def _fetchall(self) -> Iterator[dict[str, Any]]:

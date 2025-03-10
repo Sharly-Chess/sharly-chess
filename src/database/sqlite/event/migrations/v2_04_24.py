@@ -1,19 +1,19 @@
-from database.sqlite.event.event_migration import AbstractEventMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class EventMigration(AbstractEventMigration):
+class Migration(AbstractMigration):
     def forward(self):
-        self.execute(
+        self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `paired_bye_points`'
         )
-        self.execute(
+        self.database.execute(
             'ALTER TABLE `tournament` ADD `paired_bye_result` INTEGER'
         )
 
     def backward(self):
-        self.execute(
+        self.database.execute(
             'ALTER TABLE `tournament` ADD `paired_bye_points` FLOAT'
         )
-        self.execute(
+        self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `paired_bye_result`'
         )

@@ -278,5 +278,5 @@ class FideDatabase(SQLiteDatabase):
 
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self.execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
+        self.execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
         return self.get_player_from_row(self._fetchone())

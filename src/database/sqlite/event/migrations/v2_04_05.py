@@ -1,6 +1,6 @@
-from database.sqlite.event.event_migration import AbstractEventMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class EventMigration(AbstractEventMigration):
+class Migration(AbstractMigration):
     def forward(self):
-        self.execute('ALTER TABLE `rotator` DROP COLUMN `show_menus`')
+        self.database.execute('ALTER TABLE `rotator` DROP COLUMN `show_menus`')

@@ -1,11 +1,11 @@
-from database.sqlite.event.event_migration import AbstractEventMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class EventMigration(AbstractEventMigration):
+class Migration(AbstractMigration):
     def forward(self):
-        self.execute(
+        self.database.execute(
             'ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT'
         )
-        self.execute(
+        self.database.execute(
             'UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0'
         )

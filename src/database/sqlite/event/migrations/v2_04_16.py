@@ -1,22 +1,22 @@
-from database.sqlite.event.event_migration import AbstractEventMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class EventMigration(AbstractEventMigration):
+class Migration(AbstractMigration):
     def forward(self):
-        self.execute('ALTER TABLE `info` ADD `message_text` TEXT')
-        self.execute('ALTER TABLE `info` ADD `message_color` TEXT')
-        self.execute(
+        self.database.execute('ALTER TABLE `info` ADD `message_text` TEXT')
+        self.database.execute('ALTER TABLE `info` ADD `message_color` TEXT')
+        self.database.execute(
             'ALTER TABLE `info` ADD `message_background_color` TEXT'
         )
-        self.execute(
+        self.database.execute(
             'ALTER TABLE `screen` ADD `message_default` INTEGER NOT NULL DEFAULT 1'
         )
-        self.execute('ALTER TABLE `screen` ADD `message_text` TEXT')
-        self.execute(
+        self.database.execute('ALTER TABLE `screen` ADD `message_text` TEXT')
+        self.database.execute(
             'ALTER TABLE `family` ADD `message_default` INTEGER NOT NULL DEFAULT 1'
         )
-        self.execute('ALTER TABLE `family` ADD `message_text` TEXT')
-        self.execute(
+        self.database.execute('ALTER TABLE `family` ADD `message_text` TEXT')
+        self.database.execute(
             'ALTER TABLE `rotator` ADD `message_default` INTEGER NOT NULL DEFAULT 1'
         )
-        self.execute('ALTER TABLE `rotator` ADD `message_text` TEXT')
+        self.database.execute('ALTER TABLE `rotator` ADD `message_text` TEXT')

@@ -1,9 +1,9 @@
-from database.sqlite.config.config_migration import AbstractConfigMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class ConfigMigration(AbstractConfigMigration):
+class Migration(AbstractMigration):
     def forward(self):
-        self.execute(
+        self.database.execute(
             'CREATE TABLE `info` ('
             '    `version` TEXT NOT NULL,'
             '    `force_edit` INTEGER NOT NULL,'
