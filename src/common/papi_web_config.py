@@ -127,15 +127,6 @@ class PapiWebConfig(metaclass=Singleton):
     # TODO move this to the ffe plugin
     ffe_upload_delay: int = 180
 
-    def update_values(
-            self,
-            log_level: int | None,
-            launch_browser: bool | None,
-            federation: Federation | None,
-            locale: str | None,
-    ):
-        pass
-
     """ The URL of the project. """
     url: str = 'https://github.com/papi-web-org/papi-web'
 
