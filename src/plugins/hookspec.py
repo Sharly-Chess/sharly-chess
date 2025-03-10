@@ -109,5 +109,5 @@ class AppHookSpecs:
         """Provide extra columns for the print view"""
 
     @hookspec
-    def get_extra_tournament_exporters(self) -> Iterable[AbstractTournamentExporter]:
+    def get_extra_tournament_exporters(self) -> Iterable[Iterable[AbstractTournamentExporter]]:
         """Provide extra exporting formats for tournaments"""
