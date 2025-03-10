@@ -3,7 +3,8 @@ import re
 from collections import defaultdict
 from datetime import datetime
 from functools import partial
-from typing import Any, TYPE_CHECKING
+from pathlib import Path
+from typing import Any, TYPE_CHECKING, Iterable
 
 from dateutil.relativedelta import relativedelta
 
@@ -50,18 +51,21 @@ ffe_leagues: dict[str, str] = {
 }
 
 get_data = partial(get_plugin_data, PLUGIN_NAME)
-    
+
+
 @hookimpl
 def on_init():
     if not FfeDatabase().check():
         print_interactive_error(_('Error while updating the FFE database.'))
 
+
 @hookimpl
-def get_db_player_fields():
+def get_db_player_fields() -> list[str]:
     return ['RefFFE', 'AffType', 'NrFFE', 'Ligue']
-    
+
+
 @hookimpl
-def augment_player_after_db_fetch(player: Player, row: dict[str: Any]):
+def augment_player_after_db_fetch(player: Player, row: dict[str, Any]):
     player.plugin_data[PLUGIN_NAME] = {
         'ffe_id': row['RefFFE'],
         'ffe_licence': PlayerFFELicence.from_papi_value(row['AffType'] or ''),
@@ -69,8 +73,9 @@ def augment_player_after_db_fetch(player: Player, row: dict[str: Any]):
         'league': row['Ligue'] or '',
     }
 
+
 @hookimpl
-def player_data_for_db_write(player: Player):
+def player_data_for_db_write(player: Player) -> dict[str, Any]:
     pd = player.plugin_data
     return {
         'RefFFE': get_data(pd, 'ffe_id', (datetime.now() - relativedelta(years=30))),  # like Papi does :-(
@@ -78,34 +83,42 @@ def player_data_for_db_write(player: Player):
         'NrFFE': get_data(pd, 'ffe_licence_number', None),
         'Ligue': get_data(pd, 'league', ''),
     }
-    
+
+
 @hookimpl
-def get_controllers():
+def get_controllers() -> Iterable[type[WebContextModule.BaseController]]:
     return [
         FfeSearchController,
     ]
 
-@hookimpl
-def get_templates_path():
-    return BASE_DIR / 'src/plugins/ffe/templates'
 
 @hookimpl
-def get_base_admin_context():
+def get_templates_path() -> Path:
+    return BASE_DIR / 'src/plugins/ffe/templates'
+
+
+@hookimpl
+def get_base_admin_context() -> dict[str, Any]:
     return {
         'ffe_search_available': FfeDatabase().exists(),
         'ffe_leagues': ffe_leagues
     }
 
+
 @hookimpl
-def get_player_search_template():
+def get_player_search_template() -> str:
     return "/ffe_search.html"
 
-@hookimpl
-def get_player_form_fields_template():
-    return "/ffe_player_form_fields.html"
 
 @hookimpl
-def get_player_form_data(plugin_data: dict[str, dict[str, Any]]):
+def get_player_form_fields_template() -> str:
+    return "/ffe_player_form_fields.html"
+
+
+@hookimpl
+def get_player_form_data(
+    plugin_data: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
     return {
         'ffe_licence': WebContextModule.WebContext.value_to_form_data(get_data(plugin_data, 'ffe_licence', None)),
         'ffe_licence_number': WebContextModule.WebContext.value_to_form_data(
@@ -115,8 +128,14 @@ def get_player_form_data(plugin_data: dict[str, dict[str, Any]]):
         'ffe_league': WebContextModule.WebContext.value_to_form_data(get_data(plugin_data, 'league', None)),
     }   
 
+
 @hookimpl
-def get_validated_player_form_fields(action: str, tournament: 'Tournament', data: dict[str, str], errors: dict[str, str]):
+def get_validated_player_form_fields(
+    action: str,
+    tournament: 'Tournament',
+    data: dict[str, str],
+    errors: dict[str, str]
+) -> dict[str, Any]:
     league: str | None = WebContextModule.WebContext.form_data_to_str(data, field := 'ffe_league')
     if league and league not in ffe_leagues:
         # should never happen, not translated.
@@ -175,7 +194,8 @@ def get_validated_player_form_fields(action: str, tournament: 'Tournament', data
             "league": league,
         }
     }
-        
+
+
 @hookimpl
 def augment_player_after_search(player: Player):
     # Try to get more information by requesting the FFE database
@@ -200,15 +220,19 @@ def augment_player_after_search(player: Player):
                     "ffe_licence_number": get_data(ffe_player.plugin_data, 'ffe_licence_number'),
                     "league": get_data(ffe_player.plugin_data, 'league')
                 }
-                
+
+
 @hookimpl
-def is_tournament_participation_possible(tournament: 'Tournament', player: Player):
+def is_tournament_participation_possible(
+    tournament: 'Tournament', player: Player
+) -> str | None:
     ffe_licence_number = player.plugin_data.get(PLUGIN_NAME, {}).get('ffe_licence_number', None)
     ffe_id = get_data(player.plugin_data, 'ffe_id', None)
     if (
-        ffe_licence_number
-        and any(get_data(player.plugin_data, 'ffe_licence_number', None) == ffe_licence_number
-            for player in tournament.players_by_id.values())
+        ffe_licence_number and any(
+            get_data(player_.plugin_data, 'ffe_licence_number', None) == ffe_licence_number
+            for player_ in tournament.players_by_id.values()
+        )
     ):
         return _(
             'FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}].'
@@ -218,18 +242,21 @@ def is_tournament_participation_possible(tournament: 'Tournament', player: Playe
         )
     
     if (
-        ffe_id
-        and any(get_data(player.plugin_data, 'ffe_id', None) == ffe_id
-            for player in tournament.players_by_id.values())
+        ffe_id and any(
+            get_data(player_.plugin_data, 'ffe_id', None) == ffe_id
+            for player_ in tournament.players_by_id.values()
+        )
     ):
         # This string is not translated because the error should never happen
-        return f'FFE ID [{ffe_id}] already present in tournament [{tournament.uniq_id}].',
+        return f'FFE ID [{ffe_id}] already present in tournament [{tournament.uniq_id}].'
     
     return None
 
+
 @hookimpl
-def get_tournament_card_block_template():
+def get_tournament_card_block_template() -> str:
     return "/ffe_tournament_card_block.html"
+
 
 def split_players_by(split_by: str, players: list[Player]):
     split_functions = {
@@ -249,9 +276,10 @@ def split_players_by(split_by: str, players: list[Player]):
     }
     
     return split_players
-    
+
+
 @hookimpl
-def get_print_split_options():
+def get_print_split_options() -> Iterable[PrintSplitOption]:
     return [
         PrintSplitOption(
             name=_('League'),
@@ -260,8 +288,11 @@ def get_print_split_options():
         ),
     ]
 
+
 @hookimpl
-def get_extra_print_view_columns(document: PrintDocument):
+def get_extra_print_view_columns(
+    document: PrintDocument
+) -> Iterable[ExtraColumn]:
     match document:
         case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
             return [
@@ -274,10 +305,11 @@ def get_extra_print_view_columns(document: PrintDocument):
             ]
             
         case _:
-            return
+            return []
+
 
 @hookimpl
-def get_extra_screen_columns(screen: ScreenType):
+def get_extra_screen_columns(screen: ScreenType) -> Iterable[ExtraColumn]:
     match screen:
         case ScreenType.RANKING:
             return [
@@ -290,10 +322,11 @@ def get_extra_screen_columns(screen: ScreenType):
             ]
             
         case _:
-            return
-        
+            return []
+
+
 @hookimpl
-def get_extra_player_columns():
+def get_extra_player_columns() -> Iterable[ExtraAdminColumn]:
     return [
         ExtraAdminColumn(
             at="club",
