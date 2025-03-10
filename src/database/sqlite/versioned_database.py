@@ -54,7 +54,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
     
     @property
     def version(self) -> Version:
-        """Returns the Papi-web version which created the database."""
+        """Returns the Papi-web version which used the database."""
         if self._version is None:
             self._version = self.stored_version
         return self._version
