@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError
