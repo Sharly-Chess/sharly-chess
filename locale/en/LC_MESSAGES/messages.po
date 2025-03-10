@@ -1035,6 +1035,14 @@ msgstr ""
 msgid "ChessEvent tournament name not set."
 msgstr ""
 
+#: src/data/tournament_export.py
+msgid "Export to TRF16 (rating)"
+msgstr ""
+
+#: src/data/tournament_export.py
+msgid "Export to TRF(bx) (pairing)"
+msgstr ""
+
 #: src/data/util.py
 msgid "Standard rating"
 msgstr ""
@@ -4946,14 +4954,6 @@ msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Export"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "Export to TRF16 (rating)"
-msgstr ""
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "Export to TRF(bx) (pairing)"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tournament_card.html

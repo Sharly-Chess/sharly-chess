@@ -1035,6 +1035,14 @@ msgstr "Évènement ChessEvent non défini."
 msgid "ChessEvent tournament name not set."
 msgstr "Nom du tournoi ChessEvent non défini."
 
+#: src/data/tournament_export.py
+msgid "Export to TRF16 (rating)"
+msgstr "Exporter en TRF16 (classement)"
+
+#: src/data/tournament_export.py
+msgid "Export to TRF(bx) (pairing)"
+msgstr "Exporter en TRF(bx) (appariements)"
+
 #: src/data/util.py
 msgid "Standard rating"
 msgstr "Classement standard"
@@ -4947,14 +4955,6 @@ msgstr "Apparier"
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Export"
 msgstr "Exporter"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "Export to TRF16 (rating)"
-msgstr "Exporter en TRF16 (classement)"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-msgid "Export to TRF(bx) (pairing)"
-msgstr "Exporter en TRF(bx) (appariements)"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 msgid "Print players, results, etc."

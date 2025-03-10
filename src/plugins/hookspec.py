@@ -4,6 +4,7 @@ from typing import NamedTuple, Any, TYPE_CHECKING
 from collections.abc import Iterable, Callable
 from data.player import Player
 from common import APP_NAME
+from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
 
 if TYPE_CHECKING:
@@ -107,3 +108,6 @@ class AppHookSpecs:
     def get_extra_screen_columns(self, screen: ScreenType) -> Iterable[Iterable[ExtraColumn] | None]:
         """Provide extra columns for the print view"""
 
+    @hookspec
+    def get_extra_tournament_exporters(self) -> Iterable[AbstractTournamentExporter]:
+        """Provide extra exporting formats for tournaments"""

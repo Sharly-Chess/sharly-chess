@@ -128,18 +128,14 @@
                 <i class="bi-download pe-1"></i>{{ _('Export') }}
             </button>
             <ul class="dropdown-menu locale">
-                <li
-                    class="dropdown-item text-start cursor-pointer"
-                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=rating', '_blank')"
-                >
-                    {{ _('Export to TRF16 (rating)') }}
-                </li>
-                <li
-                    class="dropdown-item text-start cursor-pointer"
-                    onclick="window.open('{{ url_for('admin-tournament-trf-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}?usage=pairing', '_blank')"
-                >
-                    {{ _('Export to TRF(bx) (pairing)') }}
-                </li>
+                {% for exporter in tournament_exporters %}
+                    <li
+                        class="dropdown-item text-start cursor-pointer"
+                        onclick="window.open('{{ exporter.download_url.format(event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}', '_blank')"
+                    >
+                        {{ exporter.name }}
+                    </li>
+                {% endfor %}
             </ul>
         </div>
     {% endif %}
