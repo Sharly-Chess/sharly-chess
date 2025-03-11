@@ -24,14 +24,18 @@ CREATE TABLE `player` (
     PRIMARY KEY(`id` AUTOINCREMENT)
 );
 
-CREATE INDEX "player_name" ON "player" (
-    "last_name", "first_name"
+CREATE INDEX "player_last_name" ON "player" (
+    "last_name" COLLATE NOCASE
 );
 
-CREATE INDEX "fide_id" ON "player" (
+CREATE INDEX "player_first_name" ON "player" (
+    "first_name" COLLATE NOCASE
+);
+
+CREATE INDEX "player_fide_id" ON "player" (
     "fide_id"
 );
 
-CREATE INDEX "ffe_licence" ON "player" (
+CREATE INDEX "player_ffe_licence" ON "player" (
     "ffe_licence_number"
 );
