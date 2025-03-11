@@ -1289,6 +1289,16 @@ msgstr "Δεν έχει οριστεί εκδήλωση σκακιού."
 msgid "ChessEvent tournament name not set."
 msgstr "Το όνομα τουρνουά του Σκακιού δεν έχει οριστεί."
 
+#: src/data/tournament_export.py
+#, ai_translation
+msgid "Export to TRF16 (rating)"
+msgstr "Εξαγωγή σε TRF16 (βαθμολόγηση)"
+
+#: src/data/tournament_export.py
+#, ai_translation
+msgid "Export to TRF(bx) (pairing)"
+msgstr "Εξαγωγή σε TRF (bx) (ζευγάρι)"
+
 #: src/data/util.py
 #, ai_translation
 msgid "Standard rating"
@@ -5974,16 +5984,6 @@ msgstr "Ζεύγος"
 #, ai_translation
 msgid "Export"
 msgstr "Εξαγωγή"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Export to TRF16 (rating)"
-msgstr "Εξαγωγή σε TRF16 (βαθμολόγηση)"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Export to TRF(bx) (pairing)"
-msgstr "Εξαγωγή σε TRF (bx) (ζευγάρι)"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation

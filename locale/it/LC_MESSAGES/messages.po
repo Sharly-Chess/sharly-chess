@@ -1291,6 +1291,16 @@ msgstr "Evento a scacchi non impostato."
 msgid "ChessEvent tournament name not set."
 msgstr "Nome del torneo di ChessEvent non impostato."
 
+#: src/data/tournament_export.py
+#, ai_translation
+msgid "Export to TRF16 (rating)"
+msgstr "Esportazione in TRF16 (rating)"
+
+#: src/data/tournament_export.py
+#, ai_translation
+msgid "Export to TRF(bx) (pairing)"
+msgstr "Esporta in TRF(bx) (pailing)"
+
 #: src/data/util.py
 #, ai_translation
 msgid "Standard rating"
@@ -5971,16 +5981,6 @@ msgstr "Coppia"
 #, ai_translation
 msgid "Export"
 msgstr "Esporta"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Export to TRF16 (rating)"
-msgstr "Esportazione in TRF16 (rating)"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Export to TRF(bx) (pairing)"
-msgstr "Esporta in TRF(bx) (pailing)"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation
