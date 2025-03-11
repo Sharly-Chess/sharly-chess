@@ -1,3 +1,5 @@
+import weakref
+from _weakref import ReferenceType
 from collections import Counter
 from functools import cached_property
 from itertools import groupby
@@ -49,7 +51,7 @@ class Tournament:
         event: 'Event',
         stored_tournament: StoredTournament,
     ):
-        self.event: 'Event' = event
+        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
         if not stored_tournament.path:
             self.event.add_debug(
@@ -113,6 +115,10 @@ class Tournament:
         ] | None = None
         self._point_value_type = PointValueType.STANDARD
         self._papi_read = False
+
+    @property
+    def event(self) -> 'Event':
+        return self._event_ref()
 
     @property
     def id(self) -> int:

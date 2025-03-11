@@ -1,4 +1,6 @@
 import fnmatch
+import weakref
+from _weakref import ReferenceType
 from collections.abc import Iterator
 from functools import cached_property
 from logging import Logger
@@ -19,6 +21,7 @@ from database.store import StoredScreen
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.family import Family
 
 logger: Logger = get_logger()
 
@@ -43,10 +46,18 @@ class Screen:
             assert family is None and family_part is None, (
                 f'screen={stored_screen}, family={family}, family_part={family_part}'
             )
-        self.event: 'Event' = event
+        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_screen: StoredScreen | None = stored_screen
-        self.family: 'Family | None' = family
+        self._family_ref: 'ReferenceType[Family] | None' = weakref.ref(family) if family else None
         self.family_part: int | None = family_part
+
+    @property
+    def event(self) -> 'Event | None':
+        return self._event_ref()
+
+    @property
+    def family(self) -> 'Family | None':
+        return self._family_ref() if self._family_ref else None
 
     @cached_property
     def screen_sets_by_id(self) -> dict[int | None, ScreenSet]:
