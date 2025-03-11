@@ -32,3 +32,6 @@ __pycache__/
 *.db
 /locale/*/LC_MESSAGES/messages.mo
 /locale/messages.pot
+
+*.dat
+*.log

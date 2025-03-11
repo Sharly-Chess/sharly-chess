@@ -14,3 +14,11 @@ CREATE TABLE `player` (
     `year_of_birth` INTEGER NOT NULL,
     PRIMARY KEY(`id` AUTOINCREMENT)
 );
+
+CREATE INDEX "name" ON "player" (
+    "last_name", "first_name"
+);
+
+CREATE INDEX "fide_id" ON "player" (
+    "fide_id"
+);
