@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 
 from common import BASE_DIR
 from common.logger import print_interactive_error
-from data.util import PlayerRatingType, PrintDocument, ScreenType, TournamentRating, get_plugin_data
+from data.util import PlayerCategory, PlayerRatingType, PrintDocument, ScreenType, TournamentRating, get_plugin_data
 from data.player import Player
 from plugins.ffe.constants import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
@@ -221,6 +221,40 @@ def augment_player_after_search(player: Player):
                     "league": get_data(ffe_player.plugin_data, 'league')
                 }
 
+
+@hookimpl
+def set_player_default_ratings(federation: str, player: 'Player'):
+    if federation == 'FRA':
+        if not player.ratings[TournamentRating.RAPID]:
+            match player.category:
+                case PlayerCategory.U8 | PlayerCategory.U10:
+                    player.ratings[TournamentRating.RAPID] = 799
+                case PlayerCategory.U12 | PlayerCategory.U14:
+                    player.ratings[TournamentRating.RAPID] = 999
+                case _:
+                    player.ratings[TournamentRating.RAPID] = 1199
+        if not player.ratings[TournamentRating.BLITZ]:
+            match player.category:
+                case PlayerCategory.U8 | PlayerCategory.U10:
+                    player.ratings[TournamentRating.BLITZ] = 799
+                case PlayerCategory.U12 | PlayerCategory.U14:
+                    player.ratings[TournamentRating.BLITZ] = 999
+                case _:
+                    player.ratings[TournamentRating.BLITZ] = 1199
+        if not player.ratings[TournamentRating.STANDARD]:
+            match player.category:
+                case (
+                    PlayerCategory.U8
+                    | PlayerCategory.U10
+                    | PlayerCategory.U12
+                    | PlayerCategory.U14
+                    | PlayerCategory.U16
+                    | PlayerCategory.U18
+                    | PlayerCategory.U20
+                ):
+                    player.ratings[TournamentRating.STANDARD] = 1299
+                case _:
+                    player.ratings[TournamentRating.STANDARD] = 1399
 
 @hookimpl
 def is_tournament_participation_possible(
