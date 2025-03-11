@@ -4,15 +4,17 @@ from collections import defaultdict
 from datetime import datetime
 from functools import partial
 from pathlib import Path
+from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable
 
 from dateutil.relativedelta import relativedelta
+from packaging.version import Version
 
 from common import BASE_DIR
 from common.logger import print_interactive_error
 from data.util import PlayerRatingType, PrintDocument, ScreenType, TournamentRating, get_plugin_data
 from data.player import Player
-from plugins.ffe.constants import PLUGIN_NAME
+from plugins.ffe.constants import PLUGIN_NAME, PLUGIN_VERSION
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.util import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, ExtraColumn
@@ -20,8 +22,10 @@ from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, Extra
 from common.i18n import _
 
 import web.controllers.base_controller as WebContextModule
+from . import migrations
 
 from .ffe_search_controller import FfeSearchController
+from ..migration import AbstractPluginMigrationManager
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -51,6 +55,20 @@ ffe_leagues: dict[str, str] = {
 }
 
 get_data = partial(get_plugin_data, PLUGIN_NAME)
+
+
+class FfePluginMigrationManager(AbstractPluginMigrationManager):
+    @property
+    def plugin_name(self) -> str:
+        return PLUGIN_NAME
+
+    @property
+    def latest_plugin_version(self) -> Version:
+        return PLUGIN_VERSION
+
+    @property
+    def base_module(self) -> ModuleType:
+        return migrations
 
 
 @hookimpl
@@ -339,3 +357,8 @@ def get_extra_player_columns() -> Iterable[ExtraAdminColumn]:
             cell_template="/ffe_player_licence_cell.html",
         )
     ]
+
+
+@hookimpl
+def get_event_migration_manager() -> AbstractPluginMigrationManager:
+    return FfePluginMigrationManager()

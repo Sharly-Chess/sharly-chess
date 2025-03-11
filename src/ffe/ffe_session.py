@@ -401,7 +401,7 @@ class FFESession(Session):
         if error:
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
-            event_database.set_tournament_last_ffe_upload(self.tournament.id)
+            event_database.set_tournament_ffe_last_upload(self.tournament.id)
             event_database.commit()
         print_interactive_success(_('Results upload OK'))
         if not set_visible:
@@ -494,6 +494,6 @@ class FFESession(Session):
             logger.error(error)
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
-            event_database.set_tournament_last_ffe_rules_upload(self.tournament.id)
+            event_database.set_tournament_ffe_last_rules_upload(self.tournament.id)
             event_database.commit()
         logger.info('Rules upload OK')
