@@ -1,3 +1,5 @@
+import weakref
+from _weakref import ReferenceType
 from functools import cached_property, cache
 from math import ceil
 from typing import TYPE_CHECKING
@@ -22,12 +24,16 @@ class Family:
         event: 'Event',
         stored_family: StoredFamily,
     ):
-        self.event: 'Event' = event
+        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_family: StoredFamily = stored_family
         self._calculated_first: int | None = None
         self._calculated_last: int | None = None
         self._calculated_number: int | None = None
         self._calculated_parts: int | None = None
+
+    @property
+    def event(self) -> 'Event':
+        return self._event_ref()
 
     @property
     def id(self) -> int:

@@ -1,4 +1,5 @@
 import base64
+import weakref
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date
@@ -8,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Self, Callable
 from trf import Player as TrfPlayer
 
 if TYPE_CHECKING:
+    from _weakref import ReferenceType
     from data.tournament import Tournament
 
 from common.i18n import _
@@ -208,9 +210,17 @@ class Player(TournamentPlayer):
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
-        self.tournament: Tournament | None = tournament
+        self._tournament_ref: 'ReferenceType[Tournament] | None' = None
+        self.set_tournament(tournament)
         self.errors: dict[str, str] = errors or {}
         self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
+
+    @property
+    def tournament(self) -> 'Tournament':
+        return self._tournament_ref() if self._tournament_ref else None
+
+    def set_tournament(self, tournament: 'Tournament'):
+        self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @staticmethod
     def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
