@@ -147,23 +147,36 @@ class FideDatabase(SQLiteDatabase):
                 'blitz_rating': ('blitz_rating', int),
                 'birthday': ('year_of_birth', lambda s: int(s) if s else 0),
             }
+            db_columns = [field[0] for field in fields.values() if field[0] != 'name']
+            db_columns += ['first_name', 'last_name']
+            query = f'''INSERT INTO player({", ".join(db_columns)}) VALUES({", ".join([f':{c}' for c in db_columns])})'''
             player_count: int = 0
             self.write = True
+            to_write = []
+            data: dict[str, Any] = {}
+            context = ElementTree.iterparse(local_xml_file, events=('start', 'end'))
+            root = next(context)[1]
             with self:
-                for event, elem in ElementTree.iterparse(local_xml_file, events=("start", "end")):
+                for event, elem in context:
                     if event == 'start' and elem.tag == 'player':
-                        data: dict[str, Any] = {}
+                        data = {}
                         
                     if event == 'end' and elem.tag == 'player':
-                        query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?"] * len(data))})'
-                        self._execute(query, tuple(data.values()))
+                        to_write.append(data)
+                        elem.clear()
+                        root.clear()
                         player_count += 1
                         if player_count % 1000 == 0:
+                            self._executemany(query, to_write)
                             print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
+                            self.commit()
+                            to_write.clear()
                         
                     elif event == 'end' and elem.tag in fields:
                         (field_name, field_function) = fields[elem.tag]
                         data[field_name] = elem.text or ''
+                        elem.clear()
+                        root.clear()
                         if field_function:
                             data[field_name] = field_function(data[field_name])
                         
@@ -176,8 +189,9 @@ class FideDatabase(SQLiteDatabase):
                                 data['last_name'] = data['name'].strip()
                                 data['first_name'] = None
                             del data['name']
-                    
-                self.commit()
+                if to_write:
+                    self._executemany(query, to_write)
+                    self.commit()
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
                 _('Error while creating the database: {ex}.').format(ex=ex)
