@@ -62,7 +62,7 @@ class SQLiteDatabase:
             del self.database
             self.database = None
 
-    def _execute(self, query: str, params: tuple = ()):
+    def _execute(self, query: str, params: tuple | dict[str, Any] = ()):
         self.cursor.execute(query, params)
 
     def _executemany(self, query: str, params: Iterable[tuple | dict[str, Any]] = ()):

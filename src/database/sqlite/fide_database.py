@@ -136,7 +136,7 @@ class FideDatabase(SQLiteDatabase):
                 'fideid': ('fide_id', lambda s: int(s.strip())),
                 'name': ('name', None),
                 'country': ('federation', lambda s: s.upper()),
-                'sex': ('gender', lambda s: PlayerGender.from_fide_value(s)),
+                'sex': ('gender', PlayerGender.from_fide_value),
                 # exception for 1001710 Vreeken, Corry
                 'title': (
                     'fide_title',
@@ -278,7 +278,7 @@ class FideDatabase(SQLiteDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join([f'(last_name LIKE ?)', ] * len(tokens))
+        order_conditions = ' OR '.join(['(last_name LIKE ?)', ] * len(tokens))
         params += [f'{token}%' for token in tokens]
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
@@ -292,5 +292,5 @@ class FideDatabase(SQLiteDatabase):
 
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self._execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
+        self._execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
         return self.get_player_from_row(self._fetchone())
