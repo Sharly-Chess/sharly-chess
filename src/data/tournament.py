@@ -634,7 +634,7 @@ class Tournament:
                 ) = papi_database.read_info()
                 self._players_by_id = papi_database.read_players(self.id, self._rounds)
             for player in self._players_by_id.values():
-                player.set_tournament(self)
+                player.tournament = self
         else:
             self._rounds = 0
             self._players_by_id = {}

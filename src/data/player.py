@@ -210,8 +210,7 @@ class Player(TournamentPlayer):
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
-        self._tournament_ref: 'ReferenceType[Tournament] | None' = None
-        self.set_tournament(tournament)
+        self._tournament_ref: 'ReferenceType[Tournament] | None' = tournament
         self.errors: dict[str, str] = errors or {}
         self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
 
@@ -219,7 +218,8 @@ class Player(TournamentPlayer):
     def tournament(self) -> 'Tournament':
         return self._tournament_ref() if self._tournament_ref else None
 
-    def set_tournament(self, tournament: 'Tournament'):
+    @tournament.setter
+    def tournament(self, tournament: 'Tournament'):
         self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @staticmethod
