@@ -1,32 +1,33 @@
-<div id="player-modal" class="modal-dialog modal-dialog-centered admin-player-edit-modal d-block">
-    <form
-        {% if action == 'create' %}
-            hx-post="{{ url_for('admin-player-create', event_uniq_id=admin_event.uniq_id) }}"
-        {% elif action == 'update' %}
-            hx-patch="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
-        {% elif action == 'delete' %}
-            hx-delete="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
-        {% else %}
-            hx-get="{{ url_for('unknown-action-' ~ action) }}"
-        {% endif %}
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    {% if action == 'create' %}
-                        {{ _('Player creation') }}
-                    {% elif action == 'update' %}
-                        {{ _('Edition of player [%(last_name)s %(first_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
-                    {% elif action == 'delete' %}
-                        {{ _('Deletion of player [%(last_name)s %(first_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
-                    {% else %}
-                        ?
-                    {% endif %}
-                </h2>
-            </div>
-            <div class="modal-body">
+<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-player-edit-modal d-block">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'create' %}
+                    {{ _('Player creation') }}
+                {% elif action == 'update' %}
+                    {{ _('Edition of player [%(last_name)s %(first_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
+                {% elif action == 'delete' %}
+                    {{ _('Deletion of player [%(last_name)s %(first_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
+                {% else %}
+                    ?
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                {% if action == 'create' %}
+                    hx-post="{{ url_for('admin-player-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% elif action == 'update' %}
+                    hx-patch="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+                {% elif action == 'delete' %}
+                    hx-delete="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+                {% else %}
+                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 {% if action == 'delete' %}
                     <h4 class="text-danger">
                         {{ _('Warning: the deletion of a player is permanent!') }}
@@ -273,7 +274,7 @@
                             </div>
                         {% endwith %}
                     </div>
-                <div>
+                </div>
 
                 {% for form_fields_template in plugin_form_fields_templates %}
                     {% include form_fields_template %}
@@ -339,38 +340,33 @@
                     </div>
 
                 </div>
-            </div>
-            <div class="modal-footer d-block">
-                <div class="row">
-                    <div class="col col-6 text-start">
-                        <button
-                            type="submit"
-                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-                        >
-                            <i class="bi-floppy-fill pe-1"></i>
-                            {% if action == 'create' %}
-                                {{ _('Create') }}
-                            {% elif action == 'update' %}
-                                {{ _('Update') }}
-                            {% elif action == 'delete' %}
-                                {{ _('Delete') }}
-                            {% else %}
-                                ?
-                            {% endif %}
-                        </button>
-                    </div>
-                    <div class="col col-6 text-end">
-                        <button
-                            type="button"
-                            class="btn btn-secondary text-nowrap"
-                            data-bs-dismiss="modal"
-                        >
-                            <i class="bi-x-circle-fill pe-1"></i>
-                            {{ _('Cancel') }}
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
-    </form>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {% if action == 'create' %}
+                    {{ _('Create') }}
+                {% elif action == 'update' %}
+                    {{ _('Update') }}
+                {% elif action == 'delete' %}
+                    {{ _('Delete') }}
+                {% else %}
+                    ?
+                {% endif %}
+            </button>
+        </div>
+    </div>
 </div>
