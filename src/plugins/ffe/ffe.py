@@ -8,28 +8,33 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 from pathlib import Path
+from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable
 
 from dateutil.relativedelta import relativedelta
+from packaging.version import Version
 
 from common import BASE_DIR
 from common.logger import print_interactive_error
 from data.event import Event
 from data.util import PlayerCategory, PlayerRatingType, PrintDocument, ScreenType, TournamentRating, get_plugin_data
 from data.player import Player
+
 from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, ExtraColumn
 
 from common.i18n import _
 
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 import web.controllers.base_controller as WebContextModule
+from . import migrations
 
-from .constants import PLUGIN_NAME
+from .constants import PLUGIN_NAME, PLUGIN_VERSION
 from .util import PlayerFFELicence
 from .ffe_database import FfeDatabase
 from .ffe_session_handler import FFESessionHandler
 from .ffe_search_controller import FfeSearchController
 from .ffe_event_controller import FfeAdminEventController
+from ..migration import AbstractPluginMigrationManager
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -59,8 +64,21 @@ ffe_leagues: dict[str, str] = {
 }
 
 get_data = partial(get_plugin_data, PLUGIN_NAME)
-    
-    
+
+
+class FfePluginMigrationManager(AbstractPluginMigrationManager):
+    @property
+    def plugin_name(self) -> str:
+        return PLUGIN_NAME
+
+    @property
+    def latest_plugin_version(self) -> Version:
+        return PLUGIN_VERSION
+
+    @property
+    def base_module(self) -> ModuleType:
+        return migrations
+
 @hookimpl
 def on_init():
     if not FfeDatabase().check():
@@ -125,7 +143,7 @@ def get_base_event_admin_context(web_context: BaseEventAdminWebContext) -> dict[
                     for player in web_context.admin_event.players_by_id.values()
                 }
             )
-            
+
             # The leagues that will be selected on the league select list and used to filter the players
             filter_leagues: list[str] = [
                 league
@@ -148,11 +166,11 @@ def get_base_event_admin_context(web_context: BaseEventAdminWebContext) -> dict[
                     web_context.request
                 )
             )
-            
+
             league_counts: Counter[str] = Counter[str]()
             for player in web_context.admin_event.players_by_id.values():
                 league_counts[get_data(player.plugin_data, 'league')] += 1
-    
+
             licence_counts: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
             for player in web_context.admin_event.players_by_id.values():
                 licence_counts[get_data(player.plugin_data, 'ffe_licence')] += 1
@@ -164,7 +182,7 @@ def get_base_event_admin_context(web_context: BaseEventAdminWebContext) -> dict[
                 'admin_filter_licences': filter_licences,
                 'ffe_league_counts': league_counts,
                 'ffe_licence_counts': licence_counts,
-                
+
                 'admin_players_filter_leagues': FFESessionHandler.get_session_admin_players_filter_leagues(
                     web_context.request
                 ),
@@ -172,17 +190,17 @@ def get_base_event_admin_context(web_context: BaseEventAdminWebContext) -> dict[
                     web_context.request
                 ),
         }
-                
+
         case _:
             return {}
-        
-        
+
+
 @hookimpl
 def clear_player_filters(request: HTMXRequest):
     FFESessionHandler.set_session_admin_players_filter_leagues(request, [])
     FFESessionHandler.set_session_admin_players_filter_licences(request, [])
-        
-        
+
+
 @hookimpl
 def filter_player(web_context: HTMXRequest, player: Player) -> bool:
     filter_leagues: list[str] = (
@@ -195,10 +213,10 @@ def filter_player(web_context: HTMXRequest, player: Player) -> bool:
             web_context.request
         )
     )
-    
+
     admin_players_leagues = web_context.template_context['admin_players_leagues']
     admin_players_licences = web_context.template_context['admin_players_licences']
-    
+
     return (
         len(filter_leagues) in [0, len(admin_players_leagues)]
         or get_data(player.plugin_data, 'league') in filter_leagues
@@ -329,7 +347,7 @@ def augment_player_after_search(player: Player):
 def set_player_default_ratings(federation: str, player: 'Player'):
     if federation != 'FRA':
         return
-    
+
     if not player.ratings[TournamentRating.RAPID]:
         match player.category:
             case PlayerCategory.U8 | PlayerCategory.U10:
@@ -478,3 +496,8 @@ def get_extra_player_columns() -> Iterable[ExtraAdminColumn]:
             cell_template="/ffe_player_licence_cell.html",
         )
     ]
+
+
+@hookimpl
+def get_event_migration_manager() -> AbstractPluginMigrationManager:
+    return FfePluginMigrationManager()

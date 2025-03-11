@@ -242,7 +242,7 @@ class ActionSelector(metaclass=Singleton):
                                 continue
                             data_md5 = hashlib.md5(data.encode('utf-8')).hexdigest()
                             if (
-                                data_md5 == tournament.last_chessevent_download_md5
+                                data_md5 == tournament.chessevent_last_download_md5
                                 and tournament.file.exists()
                             ):
                                 print_interactive_info(
