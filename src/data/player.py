@@ -210,7 +210,8 @@ class Player(TournamentPlayer):
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
-        self._tournament_ref: 'ReferenceType[Tournament] | None' = tournament
+        self._tournament_ref: 'ReferenceType[Tournament] | None' = None
+        self.tournament = tournament
         self.errors: dict[str, str] = errors or {}
         self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
 
