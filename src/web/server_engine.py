@@ -53,8 +53,9 @@ def launch_browser(url: str):
 
 
 class ServerEngine(Engine):
-    def __init__(self):
+    def __init__(self, debug: bool=False):
         super().__init__()
+        self.debug = debug
         if self.updated:
             return
         
@@ -68,7 +69,7 @@ class ServerEngine(Engine):
 
         if not FideDatabase().check():
             print_interactive_error(_('Error while updating the FIDE database.'))
-        
+
         # Give plugins an opportunity to initialise themselves
         plugin_manager.hook.on_init()
 
@@ -115,6 +116,7 @@ class ServerEngine(Engine):
             template_config=template_config,
             middleware=middlewares,
             stores=stores,
+            pdb_on_exception=self.debug,
         )
         # This code is intended to check the uniformity of the paths and names used for the application URLs
         # url_map: defaultdict[str, list[str]] = defaultdict(list[str])

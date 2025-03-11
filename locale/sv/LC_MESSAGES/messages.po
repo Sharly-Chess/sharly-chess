@@ -1186,6 +1186,16 @@ msgstr "ChessEvent är inte bestämt."
 msgid "ChessEvent tournament name not set."
 msgstr "ChessEvent turneringsnamn inte bestämt."
 
+#: src/data/tournament_export.py
+#, ai_translation
+msgid "Export to TRF16 (rating)"
+msgstr "Export till TRF16 (kriterium)"
+
+#: src/data/tournament_export.py
+#, ai_translation
+msgid "Export to TRF(bx) (pairing)"
+msgstr "Export till TRF (bx) (parning)"
+
 #: src/data/util.py
 #, ai_translation
 msgid "Standard rating"
@@ -5982,16 +5992,6 @@ msgstr "Paraplyer"
 #, ai_translation
 msgid "Export"
 msgstr "Exportera"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Export to TRF16 (rating)"
-msgstr "Export till TRF16 (kriterium)"
-
-#: src/web/templates/admin/tournaments/tournament_card.html
-#, ai_translation
-msgid "Export to TRF(bx) (pairing)"
-msgstr "Export till TRF (bx) (parning)"
 
 #: src/web/templates/admin/tournaments/tournament_card.html
 #, ai_translation

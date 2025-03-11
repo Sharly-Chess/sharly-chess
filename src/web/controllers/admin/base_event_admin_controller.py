@@ -1,3 +1,4 @@
+import itertools
 import logging
 from logging import Logger
 from typing import Annotated, Any
@@ -15,6 +16,7 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.player import Player, Club, Federation
+from data.tournament_export import AbstractTournamentExporter, Trf16TournamentExporter, TrfBxTournamentExporter
 from data.util import PlayerGender, PlayerCategory, PrintSplit, PrintDocument
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import (
@@ -184,9 +186,16 @@ class BaseEventAdminController(BaseAdminController):
                 pass
             case 'tournaments':
                 tournament_card_blocks = plugin_manager.hook.get_tournament_card_block_template()
+                tournament_exporters: list[AbstractTournamentExporter] = [
+                    Trf16TournamentExporter(),
+                    TrfBxTournamentExporter()
+                ] + list(itertools.chain.from_iterable(
+                    plugin_manager.hook.get_extra_tournament_exporters()
+                ))
                 template_context |= {
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
-                    "tournament_card_blocks": tournament_card_blocks
+                    'tournament_card_blocks': tournament_card_blocks,
+                    'tournament_exporters': tournament_exporters
                 }
             case 'players':
                 # Allow plugin to provide extra columns

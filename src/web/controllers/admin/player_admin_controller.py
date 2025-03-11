@@ -216,7 +216,7 @@ class PlayerAdminController(BaseEventAdminController):
             paid = WebContext.form_data_to_float(data, field := 'paid')
         except ValueError:
             errors[field] = _('Invalid amount [{amount}].').format(amount=data[field])
-        comment: str | None = WebContext.form_data_to_mail(data, 'comment')
+        comment: str | None = data.get('comment')
         fixed: int | None = None
         try:
             fixed = WebContext.form_data_to_int(data, field := 'fixed', minimum=1)

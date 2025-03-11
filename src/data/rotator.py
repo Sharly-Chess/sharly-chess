@@ -1,3 +1,5 @@
+import weakref
+from _weakref import ReferenceType
 from contextlib import suppress
 from functools import cached_property
 from logging import Logger
@@ -27,8 +29,12 @@ class Rotator:
         event: 'Event',
         stored_rotator: StoredRotator,
     ):
-        self.event: 'Event' = event
+        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_rotator: StoredRotator = stored_rotator
+
+    @property
+    def event(self) -> 'Event':
+        return self._event_ref()
 
     @property
     def id(self) -> int:

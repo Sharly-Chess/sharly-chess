@@ -4,6 +4,7 @@ import sys
 from logging import Logger
 
 from chessevent.chessevent_engine import ChessEventEngine
+from common import DEVEL_ENV
 from common.i18n import _
 from common.logger import get_logger
 from ffe.ffe_engine import FFEEngine
@@ -27,11 +28,18 @@ try:
     )
     # undocumented feature to start from a different folder and work with different configurations
     parser.add_argument('--path', default='.')
+    if DEVEL_ENV:
+        parser.add_argument(
+            '-d',
+            '--debug',
+            help='on the webserver, if there is an uncaught exception, drop to PDB',
+            action='store_true',
+        )
     args = parser.parse_args()
     os.chdir(args.path)
 
     if args.server:
-        se: ServerEngine = ServerEngine()
+        se: ServerEngine = ServerEngine(debug=(DEVEL_ENV and args.debug))
     elif args.ffe:
         fe: FFEEngine = FFEEngine()
     elif args.chessevent:
