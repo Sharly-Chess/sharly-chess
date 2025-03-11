@@ -1,6 +1,7 @@
 import re
 import time
-from dataclasses import dataclass, field
+import weakref
+from _weakref import ReferenceType
 from datetime import datetime
 from functools import cached_property
 from logging import Logger
@@ -25,15 +26,23 @@ from common.logger import get_logger
 logger: Logger = get_logger()
 
 
-@dataclass
 class TimerHour:
     """A data wrapper around a stored timer hour."""
 
-    timer: 'Timer'
-    stored_timer_hour: StoredTimerHour
-    timestamp: int | None = field(init=False, default=None)
-    last_valid: bool = field(init=False, default=None)
-    error: str | None = field(default=None)
+    def __init__(
+            self,
+            timer: 'Timer',
+            stored_timer_hour: StoredTimerHour,
+    ):
+        self._timer_ref: 'ReferenceType[Timer]' = weakref.ref(timer)
+        self.stored_timer_hour: StoredTimerHour = stored_timer_hour
+        self.timestamp: int | None = None
+        self.last_valid: bool = False
+        self.error: str | None = None
+
+    @property
+    def timer(self) -> 'Timer':
+        return self._timer_ref()
 
     @property
     def datetime(self) -> datetime | None:
@@ -137,12 +146,16 @@ class Timer:
     """A data wrapper around a stored timer."""
 
     def __init__(self, event: 'Event', stored_timer: StoredTimer):
-        self.event: 'Event' = event
+        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_timer: StoredTimer = stored_timer
         self.timer_hours_by_id: dict[int, TimerHour] = {}
         self.valid: bool = True
         self.error: str | None = None
         self._build_timer_hours()
+
+    @property
+    def event(self) -> 'Event':
+        return self._event_ref()
 
     @property
     def id(self) -> int:
