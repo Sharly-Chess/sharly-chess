@@ -21,7 +21,7 @@ CREATE INDEX "player_first_name" ON "player" (
 
 CREATE INDEX "player_last_name" ON "player" (
     "last_name" COLLATE NOCASE
-)
+);
 
 CREATE INDEX "player_fide_id" ON "player" (
     "fide_id"
