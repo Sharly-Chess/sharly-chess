@@ -63,12 +63,13 @@
                                 <th class="center {{ extra_classes }}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
                                 {{ macros.extra_column_header("federation", extra_classes, extra_columns)}}
                                 <th class="center {{ extra_classes }}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
-                                {{ macros.extra_column_header("first-round", extra_classes, extra_columns)}}
                                 {% if document.is_crosstable %}
+                                    {{ macros.extra_column_header("first-round", extra_classes, extra_columns)}}
                                     {% for round in range(1, max_round + 1) %}
                                         <th class="right">{{ _('R %(round)d *** ROUND FOR PRINT VIEW', round=round) }}</th>
                                     {% endfor %}
                                 {% else %}
+                                    {{ macros.extra_column_header("club", extra_classes, extra_columns)}}
                                     <th class="left {{ extra_classes }}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
                                 {% endif %}
                                 {% if document.is_ranking or document.is_crosstable %}
@@ -103,12 +104,13 @@
                                     <td class="center {{ extra_classes }}">{{ player.category.short_name }}</td>
                                     {{ macros.extra_column_data("federation", player, extra_classes, extra_columns)}}
                                     <td class="center {{ extra_classes }}">{{ player.federation }}</td>
-                                    {{ macros.extra_column_data("first-round", player, extra_classes, extra_columns)}}
                                     {% if document.is_crosstable %}
+                                        {{ macros.extra_column_data("first-round", player, extra_classes, extra_columns)}}
                                         {% for crosstable_string in (player.crosstable_strings)[:max_round] %}
                                             <td class="right {{ extra_classes }}">{{ crosstable_string }}</td>
                                         {% endfor %}
                                     {% else %}
+                                         {{ macros.extra_column_data("club", player, extra_classes, extra_columns)}}
                                         <td class="left {{ extra_classes }}">{{ player.club }}</td>
                                     {% endif %}
                                     {% if document.is_ranking or document.is_crosstable %}

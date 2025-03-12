@@ -27,8 +27,10 @@ from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
+from web.session import SessionHandler
 
 logger: Logger = get_logger()
+
 
 class AdminWebContext(WebContext):
     """
@@ -768,6 +770,11 @@ class BaseAdminController(BaseController):
             'access_driver': access_driver(),
             'messages': Message.messages(web_context.request),
             'nav_tabs': nav_tabs,
+            'admin_events_show_details': (
+                SessionHandler.get_session_admin_events_show_details(
+                    web_context.request
+                )
+            ),
         }
         match modal:
             case None:

@@ -33,96 +33,98 @@
                 {{ _('No tournaments') }}
             {% endif %}
         </div>
-        <div class="{% if not event.chessevent_user_id or not event.chessevent_event_id %}text-secondary{% endif %}">
-            <i class="bi-download pe-1" ></i>
-            {% if event.chessevent_user_id and event.chessevent_event_id %}
-                {{ _(
-                    'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s',
-                    chessevent_user_id=event.chessevent_user_id or '-',
-                    chessevent_event_id=event.chessevent_event_id or '-') }}
-            {% elif not event.chessevent_user_id %}
-                {{ _('No ChessEvent identifier defined') }}
-            {% else %}
-                {{ _('No ChessEvent event defined') }}
-            {% endif %}
-        </div>
-        <div class="{% if not event.timers_by_id %}text-secondary{% endif %}">
-            <i class="bi-clock pe-1" ></i>
-            {% if event.timers_by_id %}
-                {{ _(
-                    'Timers: %(num)d',
-                    num=event.timers_by_id|length
-                ) }}
-            {% else %}
-                {{ _('No timers') }}
-            {% endif %}
-        </div>
-        <div class="{% if not event.basic_screens_by_id %}text-secondary{% endif %}">
-            <i class="bi-fullscreen pe-1" ></i>
-            {% if event.basic_screens_by_id %}
-                {{ _(
-                    'Screens: %(num)d',
-                    num=event.basic_screens_by_id|length
-                ) }}
-            {% else %}
-                {{ _('No screens') }}
-            {% endif %}
-        </div>
-        <div class="{% if not event.families_by_id %}text-secondary{% endif %}">
-            <i class="bi-arrows-fullscreen pe-1" ></i>
-            {% if event.families_by_id %}
-                {{ _(
-                    'Screen families: %(num)d',
-                    num=event.families_by_id|length
-                ) }}
-            {% else %}
-                {{ _('No screen families') }}
-            {% endif %}
-        </div>
-        <div class="{% if not event.rotators_by_id %}text-secondary{% endif %}">
-            <i class="bi-repeat pe-1" ></i>
-            {% if event.rotators_by_id %}
-                {{ _(
-                    'Rotators: %(num)d',
-                    num=event.rotators_by_id|length
-                ) }}
-            {% else %}
-                {{ _('No rotators') }}
-            {% endif %}
-        </div>
-        <div class="{% if not event.errors and not event.criticals %}text-secondary{% endif %}">
-            <i class="bi-bug pe-1" ></i>
-            {% if event.errors or event.criticals %}
-                {{ _(
-                    'Errors: %(num)d',
-                    num=event.errors|length + event.criticals|length
-                ) }}
-            {% else %}
-                {{ _('No errors') }}
-            {% endif %}
-        </div>
-        <div class="{% if not event.warnings %}text-secondary{% endif %}">
-            <i class="bi-repeat pe-1" ></i>
-            {% if event.warnings %}
-                {{ _(
-                    'Warnings: %(num)d',
-                    num=event.warnings|length
-                ) }}
-            {% else %}
-                {{ _('No warnings') }}
-            {% endif %}
-        </div>
-        <div class="{% if not event.infos %}text-secondary{% endif %}">
-            <i class="bi-repeat pe-1" ></i>
-            {% if event.infos %}
-                {{ _(
-                    'Informations: %(num)d',
-                    num=event.infos|length
-                ) }}
-            {% else %}
-                {{ _('No informations') }}
-            {% endif %}
-        </div>
+        {% if admin_events_show_details %}
+            <div class="{% if not event.chessevent_user_id or not event.chessevent_event_id %}text-secondary{% endif %}">
+                <i class="bi-download pe-1" ></i>
+                {% if event.chessevent_user_id and event.chessevent_event_id %}
+                    {{ _(
+                        'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s',
+                        chessevent_user_id=event.chessevent_user_id or '-',
+                        chessevent_event_id=event.chessevent_event_id or '-') }}
+                {% elif not event.chessevent_user_id %}
+                    {{ _('No ChessEvent identifier defined') }}
+                {% else %}
+                    {{ _('No ChessEvent event defined') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.timers_by_id %}text-secondary{% endif %}">
+                <i class="bi-clock pe-1" ></i>
+                {% if event.timers_by_id %}
+                    {{ _(
+                        'Timers: %(num)d',
+                        num=event.timers_by_id|length
+                    ) }}
+                {% else %}
+                    {{ _('No timers') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.basic_screens_by_id %}text-secondary{% endif %}">
+                <i class="bi-fullscreen pe-1" ></i>
+                {% if event.basic_screens_by_id %}
+                    {{ _(
+                        'Screens: %(num)d',
+                        num=event.basic_screens_by_id|length
+                    ) }}
+                {% else %}
+                    {{ _('No screens') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.families_by_id %}text-secondary{% endif %}">
+                <i class="bi-arrows-fullscreen pe-1" ></i>
+                {% if event.families_by_id %}
+                    {{ _(
+                        'Screen families: %(num)d',
+                        num=event.families_by_id|length
+                    ) }}
+                {% else %}
+                    {{ _('No screen families') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.rotators_by_id %}text-secondary{% endif %}">
+                <i class="bi-repeat pe-1" ></i>
+                {% if event.rotators_by_id %}
+                    {{ _(
+                        'Rotators: %(num)d',
+                        num=event.rotators_by_id|length
+                    ) }}
+                {% else %}
+                    {{ _('No rotators') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.errors and not event.criticals %}text-secondary{% endif %}">
+                <i class="bi-bug pe-1" ></i>
+                {% if event.errors or event.criticals %}
+                    {{ _(
+                        'Errors: %(num)d',
+                        num=event.errors|length + event.criticals|length
+                    ) }}
+                {% else %}
+                    {{ _('No errors') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.warnings %}text-secondary{% endif %}">
+                <i class="bi-repeat pe-1" ></i>
+                {% if event.warnings %}
+                    {{ _(
+                        'Warnings: %(num)d',
+                        num=event.warnings|length
+                    ) }}
+                {% else %}
+                    {{ _('No warnings') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.infos %}text-secondary{% endif %}">
+                <i class="bi-repeat pe-1" ></i>
+                {% if event.infos %}
+                    {{ _(
+                        'Informations: %(num)d',
+                        num=event.infos|length
+                    ) }}
+                {% else %}
+                    {{ _('No informations') }}
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 

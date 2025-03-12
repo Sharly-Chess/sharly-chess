@@ -141,6 +141,26 @@ class SessionHandler:
     def get_session_admin_rotators_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_ROTATORS_SHOW_DETAILS_KEY, False)
 
+    ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY: str = 'admin_tournaments_show_details'
+
+    @classmethod
+    def set_session_admin_tournaments_show_details(cls, request: HTMXRequest, b: bool):
+        request.session[cls.ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY]: bool = b
+
+    @classmethod
+    def get_session_admin_tournaments_show_details(cls, request: HTMXRequest) -> bool:
+        return request.session.get(cls.ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY, False)
+
+    ADMIN_EVENTS_SHOW_DETAILS_KEY: str = 'admin_events_show_details'
+
+    @classmethod
+    def set_session_admin_events_show_details(cls, request: HTMXRequest, b: bool):
+        request.session[cls.ADMIN_EVENTS_SHOW_DETAILS_KEY]: bool = b
+
+    @classmethod
+    def get_session_admin_events_show_details(cls, request: HTMXRequest) -> bool:
+        return request.session.get(cls.ADMIN_EVENTS_SHOW_DETAILS_KEY, False)
+
     ADMIN_SCREENS_SCREEN_TYPES_KEY: str = 'admin_screens_screen_types'
 
     @classmethod
