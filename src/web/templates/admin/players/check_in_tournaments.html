@@ -1,4 +1,4 @@
-<form class="d-inline-block" hx-post="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+<form class="d-inline-block" hx-post="{{ url }}" hx-target="body" hx-push-url="false" hx-indicator="#please-wait" >
     <span class="dropdown-center" >
         <button
             class="btn btn-outline-primary dropdown-toggle text-nowrap ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
@@ -41,6 +41,7 @@
                                         hx-patch="{{ url_for('admin-tournament-open-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                                         hx-target="body"
                                         hx-indicator="#please-wait"
+                                        hx-push-url="false"
                                     {% endif %}
                                     preload
                                 {% else %}

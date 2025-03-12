@@ -44,7 +44,8 @@ class FfeSearchController(BaseEventAdminController):
             template_name='/ffe_search_results.html',
             context= template_context | {
                 'search_results': players,
-            }
+            },
+            push_url=False
         )
         
     @get(
@@ -80,5 +81,5 @@ class FfeSearchController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             modal='player',
             action='create',
-            player_from_plugin=player,
+            player_from_plugin=player
         )

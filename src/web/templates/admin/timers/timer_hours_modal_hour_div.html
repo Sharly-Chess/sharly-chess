@@ -4,6 +4,7 @@
         <form
             hx-patch="{{ url_for('admin-timer-hour-update', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
             hx-indicator="#please-wait"
+            hx-push-url="false"
         >
             <div class="admin-timer-hour-div edit border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
                 <div class="d-flex p-2 gap-4 flex-column">
@@ -111,6 +112,7 @@
                             hx-post="{{ url_for('admin-timer-hour-clone', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
+                            hx-push-url="false"
                         >
                             <i class="bi-copy"></i>
                         </button>
@@ -119,6 +121,7 @@
                             hx-delete="{{ url_for('admin-timer-hour-delete', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
+                            hx-push-url="false"
                             {% if admin_timer.timer_hours_sorted_by_order|length <= 1 %}
                                 disabled
                             {% endif %}

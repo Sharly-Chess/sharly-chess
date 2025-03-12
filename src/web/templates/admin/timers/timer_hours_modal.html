@@ -20,6 +20,7 @@
                     hx-target="body"
                     hx-trigger="end"
                     hx-indicator="#please-wait"
+                    hx-push-url="false"
                 >
             {% else %}
                 <div class="d-flex flex-column gap-2">
@@ -60,6 +61,7 @@
                 {% else %}
                     hx-post="{{ url_for('admin-timer-hour-add', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id) }}"
                     hx-indicator="#please-wait"
+                    hx-push-url="false"
                 {% endif %}
             >
                 <i class="bi-plus-square-fill pe-1"></i>

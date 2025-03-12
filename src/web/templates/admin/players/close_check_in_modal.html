@@ -50,6 +50,7 @@
                     hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-last-rounds', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
+                    hx-push-url="false"
                 >
                     {{ _('Mark as forfeit for the rest of the tournament') }}
                 </button>
@@ -59,6 +60,7 @@
                     hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
+                    hx-push-url="false"
                 >
                     {{ _('Mark as forfeit for the coming round') }}
                 </button>
@@ -69,6 +71,7 @@
                     hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
+                    hx-push-url="false"
                 >
                     {{ _('Close the check-in') }}
                 </button>

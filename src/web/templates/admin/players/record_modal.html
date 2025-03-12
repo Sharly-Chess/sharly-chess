@@ -11,6 +11,7 @@
                 hx-patch="{{ url_for('admin-player-record', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
+                hx-push-url="false"
             >
                 <h4>
                     {{ _('Tournament record') }}

@@ -10,6 +10,7 @@
                 <form
                     hx-post="{{ url_for('user-login', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
                     hx-target="body"
+                    hx-push-url="false"
                 >
                     <div class="mb-3">
                         <label for="event-uniq-id" class="form-label">{{ _('Event') }}</label>
@@ -103,6 +104,7 @@
                                 hx-delete="{{ url_for('user-delete-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
+                                hx-push-url="false"
                             >{{ _('CLEAR THE RESULT') }}</button>
                         {% endif %}
                         <button
@@ -130,6 +132,7 @@
                             hx-patch="{{ url_for('user-toggle-check-in', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
+                            hx-push-url="false"
                         >{% if not player.check_in %}{{ _('CHECK-IN') }}{% else %}{{ _('CHECK-OUT') }}{% endif %}<br/><br/>{{ player.last_name }}<br/>{{ player.first_name }}<br/>{{ player.rating }}{{ player.rating_type }}</button>
                     </div>
                 </div>

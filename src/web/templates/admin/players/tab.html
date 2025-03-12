@@ -392,6 +392,7 @@
                                             hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
                                             hx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML"
                                             hx-indicator="#please-wait"
+                                            hx-push-url="false"
                                         {% endif %}
                                     ></i>
                                 </td>

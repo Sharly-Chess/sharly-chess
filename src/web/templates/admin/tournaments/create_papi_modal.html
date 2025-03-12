@@ -11,6 +11,7 @@
                 hx-post="{{ url_for('admin-tournament-papi-create', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
+                hx-push-url="false"
             >
                 <h5 class="text-danger">
                     {{ _('Warning: Papi file [%(path)s] not found, many features are disabled.', path=admin_tournament.file) }}

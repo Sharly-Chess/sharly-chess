@@ -45,6 +45,7 @@ class IndexController(BaseController):
         return HTMXTemplate(
             template_name='common/empty_modal.html',
             re_target='#modal-wrapper',
+            push_url=False
         )   
 
     @get(

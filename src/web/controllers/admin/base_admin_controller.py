@@ -877,6 +877,7 @@ class BaseAdminController(BaseController):
                 context=context,
                 re_target='#modal-wrapper',
                 trigger_event="modal_opened",
-                after="settle"
+                after="settle",
+                push_url=False
             )
         return HTMXTemplate(template_name='admin/index.html', context=context)

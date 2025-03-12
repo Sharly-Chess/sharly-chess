@@ -16,6 +16,7 @@
                         hx-target="body"
                         hx-delete="{{ url_for('user-delete-illegal-move', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
                         hx-indicator="#please-wait"
+                        hx-push-url="false"
                     ></i>
                 </span>
             {% endfor %}

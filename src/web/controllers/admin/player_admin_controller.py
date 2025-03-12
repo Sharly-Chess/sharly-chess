@@ -507,6 +507,7 @@ class PlayerAdminController(BaseEventAdminController):
             modal='player',
             action='create',
             player_fide_id=player_fide_id,
+            push_url=False
         )
 
     @get(

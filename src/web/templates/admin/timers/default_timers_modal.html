@@ -11,6 +11,7 @@
                 hx-patch="{{ url_for('default-timers-update', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
+                hx-push-url="false"
             >
                 <h4>
                     {{ _('Timers') }}

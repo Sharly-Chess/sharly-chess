@@ -530,7 +530,8 @@ class BaseEventAdminController(BaseAdminController):
                 context=template_context,
                 re_target='#modal-wrapper',
                 trigger_event="modal_opened",
-                after="settle"
+                after="settle",
+                push_url=False
             )
         return HTMXTemplate(template_name='admin/event_layout.html', context=template_context)
     

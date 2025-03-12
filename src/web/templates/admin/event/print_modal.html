@@ -11,6 +11,7 @@
                 hx-target="body"
                 hx-post="{{ url_for('admin-event-print', event_uniq_id=admin_event.uniq_id) }}"
                 hx-indicator="#please-wait"
+                hx-push-url="false"
             >
                 <h4 class="mt-3">
                     {{ _('Tournament') }}

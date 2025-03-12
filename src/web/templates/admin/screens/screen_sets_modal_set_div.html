@@ -97,6 +97,7 @@
                         class="btn btn-sm btn-primary text-nowrap mb-1"
                         hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
                         hx-indicator="#please-wait"
+                        hx-push-url="false"
                     >
                         <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Update') }}
@@ -163,6 +164,7 @@
                             hx-post="{{ url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
+                            hx-push-url="false"
                             preload
                         >
                             <i class="bi-copy"></i>
@@ -172,6 +174,7 @@
                             hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
+                            hx-push-url="false"
                             preload
                             {% if admin_screen.screen_sets_sorted_by_order|length <= 1 %}
                                 disabled

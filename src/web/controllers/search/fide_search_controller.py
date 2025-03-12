@@ -40,5 +40,6 @@ class FideSearchController(BaseEventAdminController):
             template_name='admin/players/fide_search_results.html',
             context= template_context | {
                 'search_results': players,
-            }
+            },
+            push_url=False
         )
