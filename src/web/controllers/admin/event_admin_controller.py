@@ -324,7 +324,7 @@ class EventAdminController(BaseEventAdminController):
                     SessionHandler.set_session_admin_screens_show_details(
                         request, admin_screens_show_details
                     )
-                screen_types: list[str] = (
+                screen_types: set[str] = (
                     SessionHandler.get_session_admin_screens_screen_types(request)
                 )
                 for screen_type, param in {
