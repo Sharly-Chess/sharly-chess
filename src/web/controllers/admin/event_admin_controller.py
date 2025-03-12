@@ -673,7 +673,7 @@ class EventAdminController(BaseEventAdminController):
             },
         )
 
-    datasheet_columns = [
+    DATASHEET_COLUMNS = [
         'last_name',
         'first_name',
         'yob',
@@ -692,15 +692,15 @@ class EventAdminController(BaseEventAdminController):
         'B',
     ]
     
-    @staticmethod
-    def get_players_datasheet_extra_columns() -> dict[int, ExtraColumn]:
+    @classmethod
+    def get_players_datasheet_extra_columns(cls) -> dict[int, ExtraColumn]:
         """Returns the extra data columns added by the plugins"""
         per_plugin_columns = plugin_manager.hook.get_extra_players_datasheet_columns()
         extra_columns = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 try:
-                    index = EventAdminController.datasheet_columns.index(extra_column.at)
+                    index = cls.DATASHEET_COLUMNS.index(extra_column.at)
                     c = extra_columns.setdefault(index, [])
                     c.append(extra_column)
                 except ValueError:
@@ -710,11 +710,11 @@ class EventAdminController(BaseEventAdminController):
         # order without affecting lower indexes
         return { key: extra_columns[key] for key in reversed(sorted(extra_columns)) }
         
-    @staticmethod
-    def get_players_datasheet_columns() -> list[str]:
+    @classmethod
+    def get_players_datasheet_columns(cls) -> list[str]:
         """Returns the names of the columns used in the datasheets that can be downloaded."""
        
-        header_columns = EventAdminController.datasheet_columns[:]
+        header_columns = cls.DATASHEET_COLUMNS[:]
         
         # Add plugin columns
         extra_columns = EventAdminController.get_players_datasheet_extra_columns()
@@ -724,13 +724,14 @@ class EventAdminController(BaseEventAdminController):
         return header_columns
             
 
-    @staticmethod
+    @classmethod
     def get_players_datasheet_data(
+        cls,
         players: list[Player],
     ) -> list[list[str | int | float]]:
         """Returns the data of the datasheets that can be downloaded."""
 
-        extra_columns = EventAdminController.get_players_datasheet_extra_columns()
+        extra_columns = cls.get_players_datasheet_extra_columns()
         
         def augment_row(row, player):
             for index, columns in extra_columns.items():
