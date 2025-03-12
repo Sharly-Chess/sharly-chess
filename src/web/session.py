@@ -279,27 +279,6 @@ class SessionHandler:
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, [])
         ]
 
-    ADMIN_PLAYERS_FILTER_LICENCES_KEY: str = 'admin_players_filter_licences'
-
-    @classmethod
-    def set_session_admin_players_filter_licences(
-        cls, request: HTMXRequest, licences: list[PlayerFFELicence]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_LICENCES_KEY]: list[
-            PlayerFFELicence
-        ] = licences
-
-    @classmethod
-    def get_session_admin_players_filter_licences(
-        cls, request: HTMXRequest
-    ) -> list[PlayerFFELicence]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
-        return [
-            d if isinstance(d, PlayerFFELicence) else PlayerFFELicence(d)
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_LICENCES_KEY, [])
-        ]
-
     ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'
 
     @classmethod

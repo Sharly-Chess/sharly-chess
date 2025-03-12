@@ -1,5 +1,57 @@
-<th scope="col" class="text-nowrap text-center">
+
+{% import '/common/macros.j2' as macros with context %}
+
+{% with url=url_for('ffe-admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') %}
+<th cope="col" class="text-nowrap text-center">
     <div class="d-flex align-items-center gap-1">
         {{ _('League. *** LEAGUE COLUMN HEADER FOR PLAYERS') }}
+        {% if admin_players_leagues|length > 1 %}
+            <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+                <span class="dropdown-center" >
+                    <button
+                        class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                    >
+                        <i
+                            class="bi-funnel {% if admin_players_filter_leagues|length not in [0, (admin_players_leagues|length)] %}text-danger{% endif %}"
+                            {{ macros.tooltip_attributes('info', _('Filter the leagues.'), 'top') }}
+                        ></i>
+                    </button>
+                    <ul class="dropdown-menu players-filter-league p-0">
+                        {% with name='admin_players_filter_leagues' %}
+                            {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
+                            <input type="hidden" name="{{ name }}" value="" />
+                            <li class="dropdown-item title text-nowrap">
+                                <input
+                                    type="checkbox"
+                                    {% if admin_players_filter_leagues|length == admin_players_leagues|length %}checked{% endif %}
+                                    onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                                />
+                                <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                                    <i class="bi-check-lg pe-1"></i>
+                                    {{ _('OK') }}
+                                </button>
+                            </li>
+                            <li class="dropdown-divider m-0"></li>
+                            {% for league in admin_players_leagues %}
+                                <li class="dropdown-item d-flex align-items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="{{ name }}-{{ loop.index }}"
+                                        name="{{ name }}"
+                                        value="{{ league }}"
+                                        {% if league in admin_players_filter_leagues %}checked{% endif %}
+                                        class="{{ name }}"
+                                    />
+                                    <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
+                                        {{ league }} ({{ ffe_league_counts[league] }})
+                                    </label>
+                                </li>
+                            {% endfor %}
+                        {% endwith %}
+                    </ul>
+                </span>
+            </form> 
+        {% endif %}
     </div>
 </th>
+{% endwith %}
