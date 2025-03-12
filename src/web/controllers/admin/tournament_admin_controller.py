@@ -488,7 +488,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/tournament-trf-export/{event_uniq_id:str}/{tournament_id:int}',
+        path='/admin/tournament-trf-export/{event_uniq_id:str}/{tournament_id:int}/{usage:str}',
         name='admin-tournament-trf-export',
     )
     async def admin_tournament_trf_export(
@@ -496,17 +496,18 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-        usage: TrfType = TrfType.PAIRING,
+        usage: str,
     ) -> File:
+        trf_type = TrfType(usage)
         context = TournamentAdminWebContext(
             request, event_uniq_id, None, tournament_id, None
         )
         tournament = context.admin_tournament
         temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.trf')
         with temp_file as file:
-            trf.dump(file, tournament.to_trf(usage))
+            trf.dump(file, tournament.to_trf(trf_type))
         return File(
-            path=temp_file.name, filename=f'{tournament.name}.{usage.file_extension}'
+            path=temp_file.name, filename=f'{tournament.name}.{trf_type.file_extension}'
         )
 
     @post(

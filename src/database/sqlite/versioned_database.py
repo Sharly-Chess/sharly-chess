@@ -25,7 +25,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
         self.auto_upgrade = auto_upgrade
 
     # The current Papi-web version
-    papi_web_version: Version = Version('2.4.24')
+    papi_web_version: Version = Version('2.4.25')
 
     @classmethod
     @abstractmethod

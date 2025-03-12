@@ -308,16 +308,16 @@ class Tournament:
         return self.stored_tournament.last_check_in_update
 
     @property
-    def last_ffe_upload(self) -> float:
-        return self.stored_tournament.last_ffe_upload
+    def ffe_last_upload(self) -> float:
+        return self.stored_tournament.ffe_last_upload
 
     @property
-    def last_ffe_rules_upload(self) -> float:
-        return self.stored_tournament.last_ffe_rules_upload
+    def ffe_last_rules_upload(self) -> float:
+        return self.stored_tournament.ffe_last_rules_upload
 
     @property
-    def last_chessevent_download_md5(self) -> str:
-        return self.stored_tournament.last_chessevent_download_md5
+    def chessevent_last_download_md5(self) -> str:
+        return self.stored_tournament.chessevent_last_download_md5
 
     @property
     def stored_tie_breaks(self) -> list[TieBreak] | None:
@@ -1000,12 +1000,12 @@ class Tournament:
     @property
     def ffe_upload_needed(self) -> NeedsUpload:
         try:
-            if self.stored_tournament.last_ffe_upload > self.file.lstat().st_mtime:
+            if self.stored_tournament.ffe_last_upload > self.file.lstat().st_mtime:
                 # last version already uploaded
                 return NeedsUpload.NO_CHANGE
             if (
                 time()
-                < self.stored_tournament.last_ffe_upload
+                < self.stored_tournament.ffe_last_upload
                 + PapiWebConfig().ffe_upload_delay
             ):
                 # last upload too recent
@@ -1018,7 +1018,7 @@ class Tournament:
     def ffe_rules_upload_needed(self) -> NeedsUpload:
         try:
             if (
-                self.stored_tournament.last_ffe_rules_upload
+                self.stored_tournament.ffe_last_rules_upload
                 > Path(self.rules).lstat().st_mtime
             ):
                 # last version already uploaded
@@ -1103,7 +1103,7 @@ class Tournament:
                     players_added += 1
                 event_database.set_tournament_check_in(self.id, True)
                 papi_database.open_check_in(1)
-                event_database.set_tournament_last_chessevent_download_md5(
+                event_database.set_tournament_chessevent_last_download_md5(
                     self.id, chessevent_download_md5
                 )
                 event_database.commit()
