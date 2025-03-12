@@ -10,7 +10,6 @@ from data.chessevent_player import ChessEventPlayer
 from data.chessevent_tournament import ChessEventTournament
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
-
 from data.tie_break import PapiTieBreak
 from data.util import (
     Result,

@@ -16,7 +16,7 @@ from common import (
 )
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
-from database.store import StoredTimerHour, StoredTimer
+from database.sqlite.event.event_store import StoredTimerHour, StoredTimer
 
 if TYPE_CHECKING:
     from data.event import Event

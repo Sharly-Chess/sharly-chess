@@ -24,10 +24,9 @@ from data.loader import EventLoader
 from data.player import Player, Club, Federation
 from data.util import PlayerGender, PlayerCategory, PrintSplit, TournamentRating, PrintDocument
 from data.tournament import Tournament
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredEvent
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
-from plugins.ffe.util import PlayerFFELicence
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
 )

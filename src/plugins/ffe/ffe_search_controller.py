@@ -1,7 +1,7 @@
 from typing import Any, TYPE_CHECKING
 
 from data.util import PlayerRatingType, TournamentRating
-from database.sqlite.fide_database import FideDatabase
+from database.sqlite.fide.fide_database import FideDatabase
 from litestar import get
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect

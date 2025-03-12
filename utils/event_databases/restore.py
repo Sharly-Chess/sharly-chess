@@ -38,12 +38,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     loader = EventBackupLoader()
     event_id = args.event
+    papi_web_version: Version = PapiWebConfig().version
     if args.version:
         version = Version(args.version)
-        if version > PapiWebConfig.version:
+        if version > papi_web_version:
             print_interactive_error(
                 f'Impossible to restore: Version selected ({version}) is newer'
-                f' than the latest Papi Web version {PapiWebConfig.version}'
+                f' than the latest Papi Web version {papi_web_version}'
             )
             sys.exit(1)
     else:

@@ -21,7 +21,7 @@ from common.logger import (
 )
 from data.tournament import Tournament
 from database.access.papi.papi_database import PapiDatabase
-from database.sqlite.event_database import EventDatabase
+from database.sqlite.event.event_database import EventDatabase
 
 logger: Logger = get_logger()
 

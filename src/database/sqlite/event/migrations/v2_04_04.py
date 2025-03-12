@@ -1,11 +1,11 @@
-from database.sqlite.event_migration import AbstractEventMigration
+from database.sqlite.migration import AbstractMigration
 
 
-class EventMigration(AbstractEventMigration):
+class Migration(AbstractMigration):
     def forward(self):
-        self._execute(
+        self.database.execute(
             'ALTER TABLE `screen` ADD `input_exit_button` INTEGER'
         )
-        self._execute(
+        self.database.execute(
             'ALTER TABLE `family` ADD `input_exit_button` INTEGER'
         )

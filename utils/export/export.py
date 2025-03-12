@@ -5,9 +5,11 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
+from packaging.version import Version
 
 from common import BASE_DIR
-from database.sqlite.event_migration import EventMigrationManager
+from database.sqlite.config.config_database import ConfigMigrationManager
+from database.sqlite.event.event_database import EventMigrationManager
 from pairing.bbp_pairings import BbpPairings
 from common.i18n import trusted_locales, untrusted_locales
 from common.papi_web_config import PapiWebConfig
@@ -27,7 +29,7 @@ BUILD_DIR: Path = BASE_DIR / 'build'
 DIST_DIR: Path = BASE_DIR / 'dist'
 DATA_DIR: Path = BASE_DIR / 'export-data'
 LOCALE_DIR: Path = BASE_DIR / 'locale'
-basename: str = f'papi-web-{PapiWebConfig.version}'
+basename: str = f'papi-web-{PapiWebConfig().version}'
 EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = EXPORT_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
@@ -75,6 +77,8 @@ def build_exe():
         'src/papi_web.py',
     ]
     for module in EventMigrationManager().migration_modules:
+        pyinstaller_params.append(f'--hiddenimport={module}')
+    for module in ConfigMigrationManager().migration_modules:
         pyinstaller_params.append(f'--hiddenimport={module}')
 
     files: list[Path] = []
@@ -239,13 +243,13 @@ def build_test():
 
 
 def update_readme():
-    papi_web_config: PapiWebConfig = PapiWebConfig()
+    papi_web_version: Version = PapiWebConfig().version
     readme: Path = Path('README.md')
-    if not re.match(r'^\d+\.\d+\.\d+$', str(papi_web_config.version)):
+    if not re.match(r'^\d+\.\d+\.\d+$', str(papi_web_version)):
         return
     if (
         input_interactive(
-            f'Do you want to update {readme} with version {papi_web_config.version} (y/N)?'
+            f'Do you want to update {readme} with version {papi_web_version} (y/N)?'
         ).upper()
         or 'N'
     ) != 'Y':
@@ -280,7 +284,7 @@ def update_readme():
             )
             return
     lines: list[str] = [
-        f'- **[Télécharger la dernière version stable ({papi_web_config.version})](https://github.com/papi-web-org/papi-web/releases/download/{papi_web_config.version}/papi-web-{papi_web_config.version}.zip)**\n'
+        f'- **[Télécharger la dernière version stable ({papi_web_version})](https://github.com/papi-web-org/papi-web/releases/download/{papi_web_version}/papi-web-{papi_web_version}.zip)**\n'
     ]
     with open(readme, 'w', encoding='utf-8') as f:
         for line in lines_before_comment + lines + lines_after_comment:
@@ -289,13 +293,13 @@ def update_readme():
 
 
 def update_pyproject():
-    papi_web_config: PapiWebConfig = PapiWebConfig()
+    papi_web_version: Version = PapiWebConfig().version
     pyproject_file: Path = Path('pyproject.toml')
     print_interactive_info(f'Updating {pyproject_file}...')
     with open(pyproject_file, 'r') as file:
         content = file.read()
     content = re.sub(
-        r'version\s*=\s*"[\d\\.]+"', f'version = "{papi_web_config.version}"', content
+        r'version\s*=\s*"[\d\\.]+"', f'version = "{papi_web_version}"', content
     )
     with open(pyproject_file, 'w') as file:
         file.write(content)
