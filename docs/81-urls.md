@@ -6,21 +6,33 @@ Cette page décrit les URLs utilisées par Papi-web.
 
 ## URLs publiques (affichées dans la barre d'URL)
 
-| URI                                                                                                                       | Name                                                       | Description |
-|---------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|-------------|
-| ``/``                                                                                                                     | ``index``                                                  |             |
-| ``/admin``                                                                                                                | ``admin``                                                  |             |
-| ``/admin/download-event-players/{event_uniq_id:str}``                                                                     | ``admin-download-event-players``                           |             |
-| ``/admin/event-print/{event_uniq_id:str}``                                                                                | ``admin-event-print``                                      |             |
-| ``/admin/event/{event_uniq_id:str}``                                                                                      | ``admin-event``                                            |             |
-| ``/admin/event/{event_uniq_id:str}/{admin_event_tab:str}``                                                                | ``admin-event-tab``                                        |             |
-| ``/admin/tournament-trf-export/{event_uniq_id:str}/{tournament_id:int}/{usage:str}``                                      | ``admin-tournament-trf-export``                            |             |
-| ``/admin/{admin_tab:str}``                                                                                                | ``admin-tab``                                              |             |
-| ``/user``                                                                                                                 | ``user``                                                   |             |
-| ``/user/event/{event_uniq_id:str}``                                                                                       | ``user-event``                                             |             |
-| ``/user/rotator/{event_uniq_id:str}/{rotator_id:int}``                                                                    | ``user-rotator``                                           |             |
-| ``/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}``                                                                 | ``user-screen``                                            |             |
-| ``/user/{user_tab:str}``                                                                                                  | ``user-tab``                                               |             |
+| URI                                                                                  | Name                                                       | Description |
+|--------------------------------------------------------------------------------------|------------------------------------------------------------|-------------|
+| ``/``                                                                                | ``index``                                                  |             |
+| ``/admin``                                                                           | ``admin``                                                  |             |
+| ``/admin/download-event-players/{event_uniq_id:str}``                                | ``admin-download-event-players``                           |             |
+| ``/admin/event-print/{event_uniq_id:str}``                                           | ``admin-event-print``                                      |             |
+| ``/admin/event/{event_uniq_id:str}``                                                 | ``admin-event``                                            |             |
+| ~~``/admin/event/{event_uniq_id:str}/{admin_event_tab:str}``~~                       | ``admin-event-tab``                                        |             |
+| ``/admin/event/{event_uniq_id:str}/config``                                          | ``admin-event-tab``                                        |             |
+| ``/admin/event/{event_uniq_id:str}/tournaments``                                     | ``admin-event-tab``                                        |             |
+| ``/admin/event/{event_uniq_id:str}/players``                                         | ``admin-event-tab``                                        |             |
+| ``/admin/event/{event_uniq_id:str}/screens``                                         | ``admin-event-tab``                                        |             |
+| ``/admin/event/{event_uniq_id:str}/families``                                        | ``admin-event-tab``                                        |             |
+| ``/admin/event/{event_uniq_id:str}/rotators``                                        | ``admin-event-tab``                                        |             |
+| ``/admin/event/{event_uniq_id:str}/timers``                                          | ``admin-event-tab``                                        |             |
+| ``/admin/tournament-trf-export/{event_uniq_id:str}/{tournament_id:int}/{usage:str}`` | ``admin-tournament-trf-export``                            |             |
+| ~~``/admin/{admin_tab:str}``~~                                                       | ``admin-tab``                                              |             |
+| ``/admin/config``                                                                    | ``admin-tab``                                              |             |
+| ``/admin/current_events``                                                            | ``admin-tab``                                              |             |
+| ``/admin/coming_events``                                                             | ``admin-tab``                                              |             |
+| ``/admin/passed_events``                                                             | ``admin-tab``                                              |             |
+| ``/admin/archives``                                                                  | ``admin-tab``                                              |             |
+| ``/user``                                                                            | ``user``                                                   |             |
+| ``/user/event/{event_uniq_id:str}``                                                  | ``user-event``                                             |             |
+| ``/user/rotator/{event_uniq_id:str}/{rotator_id:int}``                               | ``user-rotator``                                           |             |
+| ``/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}``                            | ``user-screen``                                            |             |
+| ``/user/{user_tab:str}``                                                             | ``user-tab``                                               |             |
 
 ## URLs non affichées
 
