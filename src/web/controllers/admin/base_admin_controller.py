@@ -607,7 +607,7 @@ class BaseAdminController(BaseController):
                 chessevent_event_id = admin_event.stored_event.chessevent_event_id
             case 'create':
                 public = False
-                federation = PapiWebConfig().default_federation
+                federation = PapiWebConfig().federation.name
                 hide_background_image = PapiWebConfig.default_hide_background_image
             case 'delete':
                 pass
