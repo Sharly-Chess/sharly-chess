@@ -32,7 +32,14 @@ Cette page décrit les URLs utilisées par Papi-web.
 | ``/user/event/{event_uniq_id:str}``                                                  | ``user-event``                                             |             |
 | ``/user/rotator/{event_uniq_id:str}/{rotator_id:int}``                               | ``user-rotator``                                           |             |
 | ``/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}``                            | ``user-screen``                                            |             |
-| ``/user/{user_tab:str}``                                                             | ``user-tab``                                               |             |
+| ~~``/user/{user_tab:str}``~~                                                         | ``user-tab``                                               |             |
+| ``/user/input``                                                                      | ``user-tab``                                               |             |
+| ``/user/boards``                                                                     | ``user-tab``                                               |             |
+| ``/user/players``                                                                    | ``user-tab``                                               |             |
+| ``/user/results``                                                                    | ``user-tab``                                               |             |
+| ``/user/ranking``                                                                    | ``user-tab``                                               |             |
+| ``/user/image``                                                                      | ``user-tab``                                               |             |
+| ``/user/rotator``                                                                    | ``user-tab``                                               |             |
 
 ## URLs non affichées
 
