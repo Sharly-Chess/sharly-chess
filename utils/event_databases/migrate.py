@@ -67,7 +67,7 @@ if __name__ == '__main__':
                     'Options "--event EVENT", "--all-events" and "--config" are '
                     'ignored when option "--all" is used.'
                 )
-            del args.event
+            args.event = None
             args.all_events = True
             args.config = True
         if args.event and args.all_events:
