@@ -1,23 +1,24 @@
-<div class="modal-dialog modal-dialog-centered admin-event-edit-modal d-block">
-    <form
-        hx-patch="{{ url_for('admin-config-update') }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    {{ _('Edition of papi-web settings') }}
-                </h2>
-            </div>
-            <div class="modal-body">
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-event-edit-modal d-block">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Edition of papi-web settings') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-patch="{{ url_for('admin-config-update') }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 {% if papi_web_config.force_edit %}
                     <h4>
                         {{ _('Please validate the global configuration of the application.') }}
                     </h4>
                 {% endif %}
                 <h4>
-                   {{ _('Application') }}
+                    {{ _('Application') }}
                 </h4>
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
@@ -40,7 +41,7 @@
                     </div>
                 </div>
                 <h4>
-                   {{ _('Internationalization') }}
+                    {{ _('Internationalization') }}
                 </h4>
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
@@ -116,33 +117,26 @@
                         {% endwith %}
                     </div>
                 </div>
-            </div>
-
-            <div class="modal-footer d-block">
-                <div class="row">
-                    <div class="col col-6 text-start">
-                        <button
-                            type="submit"
-                            class="text-nowrap white btn btn-primary"
-                        >
-                            <i class="bi-floppy-fill pe-1"></i>
-                            {{ _('Update') }}
-                        </button>
-                    </div>
-                    <div class="col col-6 text-end">
-                        {% if not papi_web_config.force_edit %}
-                            <button
-                                type="button"
-                                class="btn btn-secondary text-nowrap"
-                                data-bs-dismiss="modal"
-                            >
-                                <i class="bi-x-circle-fill"></i>
-                                {{ _('Cancel') }}
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
-    </form>
+
+        <div class="modal-footer">`
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Update') }}
+            </button>
+        </div>
+    </div>
 </div>
