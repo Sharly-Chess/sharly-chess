@@ -172,34 +172,6 @@ msgstr "Veuillez choisir l'évènement :"
 msgid "Your choice: "
 msgstr "Votre choix : "
 
-#: src/common/config_reader.py
-msgid "Configuration file [{file}] not found."
-msgstr "Fichier de configuration [{file}] non trouvé."
-
-#: src/common/config_reader.py
-msgid "Configuration file [{file}] is not a file."
-msgstr "Le fichier de configuration [{file}] n'est pas un fichier."
-
-#: src/common/config_reader.py
-msgid "Could not read file [{file}]."
-msgstr "Impossible de lire le fichier [{file}]"
-
-#: src/common/config_reader.py
-msgid "Duplicated section at line [{lineno}]."
-msgstr "Rubrique dupliquée à la ligne [{lineno}]."
-
-#: src/common/config_reader.py
-msgid "Duplicated option at line [{lineno}]."
-msgstr "Option dupliquée à la ligne [{lineno}]."
-
-#: src/common/config_reader.py
-msgid "Parsing error: [{ex}]."
-msgstr "Erreur de parsing : [{ex}]."
-
-#: src/common/config_reader.py
-msgid "Error: [{ex}]."
-msgstr "Erreur : [{ex}]."
-
 #: src/common/engine.py
 msgid "Checking Papi-web version..."
 msgstr "Vérification de la version de Papi-web..."
@@ -1385,8 +1357,9 @@ msgstr "Le contenu de l'URL [{url}] n'est pa valide (input[id=[{id]] introuvable
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisation d'une session vers [{url}]..."
 
-#: src/ffe/ffe_session.py src/plugins/ffe/templates/filter_ffe_licences.html
-#: src/plugins/ffe/templates/filter_leagues.html
+#: src/ffe/ffe_session.py
+#: src/plugins/ffe/templates/ffe_player_league_header.html
+#: src/plugins/ffe/templates/ffe_player_licence_header.html
 #: src/web/templates/admin/players/filter_categories.html
 #: src/web/templates/admin/players/filter_check_ins.html
 #: src/web/templates/admin/players/filter_clubs.html
@@ -1599,6 +1572,10 @@ msgstr "La ligue du·de la joueur·euse."
 msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
 msgstr "Ligue"
 
+#: src/plugins/ffe/templates/ffe_player_league_header.html
+msgid "Filter the leagues."
+msgstr "Filtrer les ligues."
+
 #: src/plugins/ffe/templates/ffe_player_licence_cell.html
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
@@ -1617,6 +1594,10 @@ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 #: src/plugins/ffe/templates/ffe_player_licence_header.html
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
+
+#: src/plugins/ffe/templates/ffe_player_licence_header.html
+msgid "Filter the licences."
+msgstr "Filtrer les licences."
 
 #: src/plugins/ffe/templates/ffe_search.html
 msgid "FFE database:"
@@ -1654,14 +1635,6 @@ msgstr "Homologation FFE : %(ffe_id)s"
 #: src/plugins/ffe/templates/ffe_tournament_card_block.html
 msgid "No FFE qualification"
 msgstr "Pas d'homologation FFE"
-
-#: src/plugins/ffe/templates/filter_ffe_licences.html
-msgid "Filter the licences."
-msgstr "Filtrer les licences."
-
-#: src/plugins/ffe/templates/filter_leagues.html
-msgid "Filter the leagues."
-msgstr "Filtrer les ligues."
 
 #: src/web/server_engine.py
 msgid "Opening the welcome page [{url}] in a browser..."
@@ -2764,6 +2737,24 @@ msgid "The text colour of the alert messages."
 msgstr "La couleur du texte des messages d'alerte."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/index/config_modal.html
+#: src/web/templates/admin/players/close_check_in_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
+msgid "Cancel"
+msgstr "Annuler"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -2798,24 +2789,6 @@ msgstr "Modifier"
 #: src/web/templates/admin/tournaments/tournament_modal.html
 msgid "Delete"
 msgstr "Supprimer"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/print_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/index/config_modal.html
-#: src/web/templates/admin/players/close_check_in_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/players/record_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/default_timers_modal.html
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#: src/web/templates/user/modals.html
-msgid "Cancel"
-msgstr "Annuler"
 
 #: src/web/templates/admin/event/print_modal.html
 msgid "Print"
@@ -3471,7 +3444,7 @@ msgstr "Langage par défaut :"
 
 #: src/web/templates/admin/index/config_tab.html
 msgid "Default federation:"
-msgstr ""
+msgstr "Fédération par défaut :"
 
 #: src/web/templates/admin/index/config_tab.html
 msgid "Launching the browser on server startup"
@@ -4614,13 +4587,13 @@ msgid "Drag the sets to order them."
 msgstr "Faites glisser les ensembles pour les ordonner."
 
 #: src/web/templates/admin/screens/screen_sets_modal.html
-msgid "Add a set"
-msgstr "Ajouter un ensemble"
-
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal.html
 msgid "Close"
 msgstr "Fermer"
+
+#: src/web/templates/admin/screens/screen_sets_modal.html
+msgid "Add a set"
+msgstr "Ajouter un ensemble"
 
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 msgid "The tournament of which you want to show the pairings, mandatory."
@@ -4919,12 +4892,12 @@ msgid "Do you want Papi-web to create the file?"
 msgstr "Voulez-vous que Papi-Web crée ce fichier ?"
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Yes, create the file"
-msgstr "Oui, créer le fichier"
-
-#: src/web/templates/admin/tournaments/create_papi_modal.html
 msgid "No, I will do it later"
 msgstr "Non, je le ferai plus tard"
+
+#: src/web/templates/admin/tournaments/create_papi_modal.html
+msgid "Yes, create the file"
+msgstr "Oui, créer le fichier"
 
 #: src/web/templates/admin/tournaments/tab.html
 msgid "Tournaments"
@@ -5530,4 +5503,25 @@ msgstr "contre"
 
 #~ msgid "Default federation"
 #~ msgstr "Fédération par défaut :"
+
+#~ msgid "Configuration file [{file}] not found."
+#~ msgstr "Fichier de configuration [{file}] non trouvé."
+
+#~ msgid "Configuration file [{file}] is not a file."
+#~ msgstr "Le fichier de configuration [{file}] n'est pas un fichier."
+
+#~ msgid "Could not read file [{file}]."
+#~ msgstr "Impossible de lire le fichier [{file}]"
+
+#~ msgid "Duplicated section at line [{lineno}]."
+#~ msgstr "Rubrique dupliquée à la ligne [{lineno}]."
+
+#~ msgid "Duplicated option at line [{lineno}]."
+#~ msgstr "Option dupliquée à la ligne [{lineno}]."
+
+#~ msgid "Parsing error: [{ex}]."
+#~ msgstr "Erreur de parsing : [{ex}]."
+
+#~ msgid "Error: [{ex}]."
+#~ msgstr "Erreur : [{ex}]."
 
