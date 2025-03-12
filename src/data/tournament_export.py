@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from common.i18n import _
 from data.util import TrfType
@@ -12,33 +13,39 @@ class AbstractTournamentExporter(ABC):
 
     @property
     @abstractmethod
-    def download_url(self) -> str:
-        """URL downloading the export file.
-        Should be formattable with {event_uniq_id} and {tournament_id}"""
+    def download_route(self) -> str:
+        """Route downloading the export file.
+        Should take as parameters event_uniq_id: str and tournament_id: int"""
         pass
+
+    @property
+    def route_parameters(self) -> dict[str, Any]:
+        return {}
 
 
 class Trf16TournamentExporter(AbstractTournamentExporter):
     @property
-    def download_url(self) -> str:
-        return (
-            '/admin/tournament-trf-export/{event_uniq_id}/{tournament_id}'
-            f'?usage={TrfType.RATING}'
-        )
+    def download_route(self) -> str:
+        return 'admin-tournament-trf-export'
 
     @property
     def name(self) -> str:
         return _('Export to TRF16 (rating)')
 
+    @property
+    def route_parameters(self) -> dict[str, Any]:
+        return {'usage': TrfType.RATING}
+
 
 class TrfBxTournamentExporter(AbstractTournamentExporter):
     @property
-    def download_url(self) -> str:
-        return (
-            '/admin/tournament-trf-export/{event_uniq_id}/{tournament_id}'
-            f'?usage={TrfType.PAIRING}'
-        )
+    def download_route(self) -> str:
+        return 'admin-tournament-trf-export'
 
     @property
     def name(self) -> str:
         return _('Export to TRF(bx) (pairing)')
+
+    @property
+    def route_parameters(self) -> dict[str, Any]:
+        return {'usage': TrfType.PAIRING}
