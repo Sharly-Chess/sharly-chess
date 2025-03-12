@@ -6708,24 +6708,3 @@ msgstr "vs"
 #~ msgid "Default federation"
 #~ msgstr ""
 
-#~ msgid "Configuration file [{file}] not found."
-#~ msgstr "File di configurazione [{file}] non trovato."
-
-#~ msgid "Configuration file [{file}] is not a file."
-#~ msgstr "Il file di configurazione [{file}] non è un file."
-
-#~ msgid "Could not read file [{file}]."
-#~ msgstr "Impossibile leggere il file [{file}]."
-
-#~ msgid "Duplicated section at line [{lineno}]."
-#~ msgstr "Sezione duplicata alla riga [{lineno}]."
-
-#~ msgid "Duplicated option at line [{lineno}]."
-#~ msgstr "Opzione duplicata alla riga [{lineno}]."
-
-#~ msgid "Parsing error: [{ex}]."
-#~ msgstr "Errore di analisi: [{ex}]."
-
-#~ msgid "Error: [{ex}]."
-#~ msgstr "Errore: [{ex}]."
-

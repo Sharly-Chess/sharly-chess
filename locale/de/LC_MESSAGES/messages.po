@@ -6696,24 +6696,3 @@ msgstr "vs."
 #~ msgid "Default federation"
 #~ msgstr ""
 
-#~ msgid "Configuration file [{file}] not found."
-#~ msgstr "Konfigurationsdatei [{file}] nicht gefunden."
-
-#~ msgid "Configuration file [{file}] is not a file."
-#~ msgstr "Konfigurationsdatei [{file}] ist keine Datei."
-
-#~ msgid "Could not read file [{file}]."
-#~ msgstr "Datei konnte nicht gelesen werden [{file}]."
-
-#~ msgid "Duplicated section at line [{lineno}]."
-#~ msgstr "Doppelter Abschnitt an der Zeile [{lineno}]."
-
-#~ msgid "Duplicated option at line [{lineno}]."
-#~ msgstr "Doppelte Option an der Zeile [{lineno}]."
-
-#~ msgid "Parsing error: [{ex}]."
-#~ msgstr "Parsing-Fehler: [{ex}]."
-
-#~ msgid "Error: [{ex}]."
-#~ msgstr "Fehler: [{ex}]."
-

@@ -5535,24 +5535,3 @@ msgstr ""
 #~ msgid "Default federation"
 #~ msgstr ""
 
-#~ msgid "Configuration file [{file}] not found."
-#~ msgstr ""
-
-#~ msgid "Configuration file [{file}] is not a file."
-#~ msgstr ""
-
-#~ msgid "Could not read file [{file}]."
-#~ msgstr ""
-
-#~ msgid "Duplicated section at line [{lineno}]."
-#~ msgstr ""
-
-#~ msgid "Duplicated option at line [{lineno}]."
-#~ msgstr ""
-
-#~ msgid "Parsing error: [{ex}]."
-#~ msgstr ""
-
-#~ msgid "Error: [{ex}]."
-#~ msgstr ""
-

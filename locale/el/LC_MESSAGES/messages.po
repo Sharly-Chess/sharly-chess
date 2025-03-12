@@ -6709,24 +6709,3 @@ msgstr "vs"
 #~ msgid "Default federation"
 #~ msgstr ""
 
-#~ msgid "Configuration file [{file}] not found."
-#~ msgstr "Το αρχείο ρύθμισης [{file}] δεν βρέθηκε."
-
-#~ msgid "Configuration file [{file}] is not a file."
-#~ msgstr "Το αρχείο ρύθμισης [{file}] δεν είναι αρχείο."
-
-#~ msgid "Could not read file [{file}]."
-#~ msgstr "Αδύνατη η ανάγνωση του αρχείου [{file}]."
-
-#~ msgid "Duplicated section at line [{lineno}]."
-#~ msgstr "Διπλό τμήμα στη γραμμή [{lineno}]."
-
-#~ msgid "Duplicated option at line [{lineno}]."
-#~ msgstr "Διπλή επιλογή στη γραμμή [{lineno}]."
-
-#~ msgid "Parsing error: [{ex}]."
-#~ msgstr "Σφάλμα ανάλυσης: [{ex}]."
-
-#~ msgid "Error: [{ex}]."
-#~ msgstr "Σφάλμα: [{ex}]."
-
