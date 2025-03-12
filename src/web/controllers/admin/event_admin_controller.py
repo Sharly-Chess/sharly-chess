@@ -26,7 +26,7 @@ from data.util import PlayerGender, PlayerCategory, PrintSplit, TournamentRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
-from plugins.ffe.util import PlayerFFELicence
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
 )
@@ -202,7 +202,6 @@ class EventAdminController(BaseEventAdminController):
         admin_players_filter_clubs: list[str] | None = None,
         admin_players_filter_clubs_search: str | None = None,
         admin_players_filter_genders: list[int] | None = None,
-        admin_players_filter_licences: list[int] | None = None,
         admin_players_filter_check_ins: list[int] | None = None,
         admin_players_filter_tournaments: list[int] | None = None,
         admin_players_filter_categories: list[int] | None = None,
@@ -255,15 +254,6 @@ class EventAdminController(BaseEventAdminController):
                             if query_param >= 0  # -1 must be ignored
                         ],
                     )
-                elif admin_players_filter_licences is not None:
-                    SessionHandler.set_session_admin_players_filter_licences(
-                        request,
-                        [
-                            PlayerFFELicence(query_param)
-                            for query_param in admin_players_filter_licences
-                            if query_param >= 0  # -1 must be ignored
-                        ],
-                    )
                 elif admin_players_filter_check_ins is not None:
                     SessionHandler.set_session_admin_players_filter_check_ins(
                         request,
@@ -309,9 +299,6 @@ class EventAdminController(BaseEventAdminController):
                     )
                     SessionHandler.set_session_admin_players_filter_clubs(request, [])
                     SessionHandler.set_session_admin_players_filter_genders(request, [])
-                    SessionHandler.set_session_admin_players_filter_licences(
-                        request, []
-                    )
                     SessionHandler.set_session_admin_players_filter_check_ins(
                         request, []
                     )
@@ -323,6 +310,7 @@ class EventAdminController(BaseEventAdminController):
                     )
                     SessionHandler.set_session_admin_players_filter_name(request, '')
                     SessionHandler.set_session_admin_players_filter_clubs_search(request, '')
+                    plugin_manager.hook.clear_player_filters(request=request)
             case 'screens':
                 if admin_screens_show_family_screens is not None:
                     SessionHandler.set_session_admin_screens_show_family_screens(
