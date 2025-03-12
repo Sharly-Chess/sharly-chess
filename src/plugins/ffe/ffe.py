@@ -26,9 +26,8 @@ from common.i18n import _
 
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 import web.controllers.base_controller as WebContextModule
-from . import migrations
 
-from .constants import PLUGIN_NAME, PLUGIN_VERSION
+from . import migrations, PLUGIN_NAME, PLUGIN_VERSION
 from .engine.ffe_engine import FFEEngine
 from .util import PlayerFFELicence
 from .ffe_database import FfeDatabase
