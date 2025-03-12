@@ -1,13 +1,15 @@
 from logging import Logger
 
+from plugins.chessevent.engine.event_selector import EventSelector
 from common.logger import get_logger
 from common.engine import Engine
-from ffe.event_selector import EventSelector
 
 logger: Logger = get_logger()
 
 
-class FFEEngine(Engine):
+class ChessEventEngine(Engine):
+    """The ChessEvent Engine."""
+
     def __init__(self):
         try:
             super().__init__()

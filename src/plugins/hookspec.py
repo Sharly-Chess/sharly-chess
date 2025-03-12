@@ -9,7 +9,7 @@ from common import APP_NAME
 from data.player import Player
 from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
-from plugins.migration import AbstractPluginMigrationManager
+from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -153,3 +153,7 @@ class AppHookSpecs:
     @hookspec
     def get_event_migration_manager(self) -> AbstractPluginMigrationManager:
         """Provide a migration manager for event databases"""
+
+    @hookspec
+    def get_engine_argument(self) -> PluginEngineArgument:
+        """Provide an engine argument"""

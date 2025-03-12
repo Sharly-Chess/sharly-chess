@@ -8,7 +8,6 @@ from pathlib import Path
 
 import chardet
 
-from chessevent.chessevent_session import ChessEventSession
 from common import TMP_DIR
 from common.i18n import _
 from common.logger import (
@@ -26,7 +25,8 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.access.papi.papi_template import create_empty_papi_database, PAPI_VERSIONS
-from ffe.ffe_session import FFESession
+from plugins.chessevent.engine.chessevent_session import ChessEventSession
+from plugins.ffe.engine.ffe_session import FFESession
 
 logger: Logger = get_logger()
 
