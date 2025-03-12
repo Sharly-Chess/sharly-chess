@@ -63,9 +63,9 @@ class StoredTournament:
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)
     last_check_in_update: float = field(default=0.0)
-    last_ffe_upload: float = field(default=0.0)
-    last_ffe_rules_upload: float = field(default=0.0)
-    last_chessevent_download_md5: str | None = field(default=None)
+    ffe_last_upload: float = field(default=0.0)
+    ffe_last_rules_upload: float = field(default=0.0)
+    chessevent_last_download_md5: str | None = field(default=None)
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

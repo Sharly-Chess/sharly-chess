@@ -1,10 +1,31 @@
 from pathlib import Path
+from types import ModuleType
+
+from packaging.version import Version
 
 from common import BASE_DIR
+from plugins.chessevent import migrations
 from plugins.hookspec import hookimpl
+from plugins.migration import AbstractPluginMigrationManager
 
 #: Name of the plugin that will be referenced in our configuration
 PLUGIN_NAME = "chessevent"
+
+PLUGIN_VERSION = Version('0.1.0')
+
+
+class ChessEventPluginMigrationManager(AbstractPluginMigrationManager):
+    @property
+    def plugin_name(self) -> str:
+        return PLUGIN_NAME
+
+    @property
+    def latest_plugin_version(self) -> Version:
+        return PLUGIN_VERSION
+
+    @property
+    def base_module(self) -> ModuleType:
+        return migrations
 
 
 @hookimpl
@@ -15,3 +36,8 @@ def get_templates_path() -> Path:
 @hookimpl
 def get_tournament_card_block_template() -> str:
     return "/chessevent_tournament_card_block.html"
+
+
+@hookimpl
+def get_event_migration_manager() -> AbstractPluginMigrationManager:
+    return ChessEventPluginMigrationManager()

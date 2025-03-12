@@ -79,18 +79,25 @@ class AbstractMigrationManager(ABC):
     def _reverse_ordered_migration_versions(self) -> list[Version]:
         return sorted(self.migration_versions, reverse=True)
 
+    def get_version(self, database: SQLiteVersionedDatabase) -> Version:
+        return database.version
+
+    def set_version(self, database: SQLiteVersionedDatabase, version: Version):
+        database.set_version(version)
+
     def migrate(
         self,
         database: SQLiteVersionedDatabase,
         target_version: Version,
         skip_commits: bool = False,
     ) -> bool:
+        current_version = self.get_version(database)
         if (
-            database.version != self.EMPTY_DATABASE_VERSION
-            and database.version < self.first_migration_version
+            current_version != self.EMPTY_DATABASE_VERSION
+            and current_version < self.first_migration_version
         ):
             self._log_error(
-                f'Database %{database.file.name} ({database.version}) '
+                f'Database %{database.file.name} ({current_version}) '
                 'impossible to migrate: version is prior to the first '
                 f'database version ({self.first_migration_version})'
             )
@@ -102,9 +109,9 @@ class AbstractMigrationManager(ABC):
                 f'({self.first_migration_version}).'
             )
             return False
-        if database.version > SQLiteVersionedDatabase.papi_web_version:
+        if current_version > SQLiteVersionedDatabase.papi_web_version:
             self._log_error(
-                f'Database {database.file.name} ({database.version}) '
+                f'Database {database.file.name} ({current_version}) '
                 f'impossible to migrate: version is after the '
                 f'current Papi-web version ({SQLiteVersionedDatabase.papi_web_version.public}).'
             )
@@ -119,11 +126,14 @@ class AbstractMigrationManager(ABC):
 
         migration_status = (
             self._rollback(database, target_version, skip_commits)
-            if database.version > target_version else
+            if current_version > target_version else
             self._upgrade(database, target_version, skip_commits)
         )
-        if migration_status and database.version != target_version:
-            database.set_version(target_version)
+        if (
+            migration_status and
+            self.get_version(database) != target_version
+        ):
+            self.set_version(database, target_version)
             if not skip_commits:
                 database.commit()
         return migration_status
@@ -135,14 +145,14 @@ class AbstractMigrationManager(ABC):
         skip_commits: bool,
     ) -> bool:
         while migration_version := self._next_migration_version(
-            database.version, target_version
+            self.get_version(database), target_version
         ):
             migration_class = self._version_to_migration_class(
                 migration_version
             )
             try:
                 migration_class(database).forward()
-                database.set_version(migration_version)
+                self.set_version(database, migration_version)
                 if not skip_commits:
                     database.commit()
                 logger.debug(
@@ -153,14 +163,10 @@ class AbstractMigrationManager(ABC):
             except OperationalError as e:
                 self._log_error(
                     f'Database {database.file.name} '
-                    f'({database.version}) could not be upgraded '
-                    f'to version {migration_version}: "{e}"'
+                    f'({self.get_version(database)}) could not be '
+                    f'upgraded to version {migration_version}: "{e}"'
                 )
                 return False
-        if database.version != target_version:
-            database.set_version(target_version)
-            if not skip_commits:
-                database.commit()
         return True
 
     def _rollback(
@@ -169,10 +175,11 @@ class AbstractMigrationManager(ABC):
         target_version: Version,
         skip_commits: bool,
     ) -> bool:
+        database_version = self.get_version(database)
         current_version = (
-            database.version if
-            database.version in self.migration_versions
-            else self._previous_migration_version(database.version)
+            database_version if
+            database_version in self.migration_versions
+            else self._previous_migration_version(database_version)
         )
         while current_version > target_version:
             migration_class = self._version_to_migration_class(
@@ -183,7 +190,7 @@ class AbstractMigrationManager(ABC):
             )
             try:
                 migration_class(database).backward()
-                database.set_version(previous_version)
+                self.set_version(database, previous_version)
                 if not skip_commits:
                     database.commit()
                 current_version = previous_version
@@ -195,8 +202,8 @@ class AbstractMigrationManager(ABC):
             except (OperationalError, NotImplementedError) as e:
                 self._log_error(
                     f'Database {database.file.name} '
-                    f'({database.version}) could not be downgraded '
-                    f'to version {previous_version}: "{e}"'
+                    f'({self.get_version(database)}) could not be '
+                    f'downgraded to version {previous_version}: "{e}"'
                 )
                 return False
         return True

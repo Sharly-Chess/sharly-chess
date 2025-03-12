@@ -1,18 +1,21 @@
-from pathlib import Path
-import pluggy  # type: ignore
-from typing import NamedTuple, Any, TYPE_CHECKING
 from collections.abc import Iterable, Callable
-from data.player import Player
+from pathlib import Path
+from typing import NamedTuple, Any, TYPE_CHECKING
+
+from litestar.contrib.htmx.request import HTMXRequest
+import pluggy  # type: ignore
+
 from common import APP_NAME
+from data.player import Player
 from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
-from litestar.contrib.htmx.request import HTMXRequest
+from plugins.migration import AbstractPluginMigrationManager
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
-    
+
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
 
@@ -108,7 +111,7 @@ class AppHookSpecs:
     @hookspec
     def set_player_default_ratings(self, federation: str, player: 'Player'):
         """Set default ratings for an unrated player"""
-        
+
     @hookspec(firstresult=True)
     def is_tournament_participation_possible(
         self, tournament: 'Tournament', player: Player
@@ -130,11 +133,11 @@ class AppHookSpecs:
     @hookspec
     def clear_player_filters(self, request: HTMXRequest):
         """Clear any filters set on the admin players tab"""
-        
+
     @hookspec
     def filter_player(self, web_context: HTMXRequest, player: Player) -> bool:
         """Returns True if the player should be in the admin player list, False otherwise """
-        
+
     @hookspec
     def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
@@ -146,3 +149,7 @@ class AppHookSpecs:
     @hookspec
     def get_extra_tournament_exporters(self) -> list[AbstractTournamentExporter]:
         """Provide extra exporting formats for tournaments"""
+
+    @hookspec
+    def get_event_migration_manager(self) -> AbstractPluginMigrationManager:
+        """Provide a migration manager for event databases"""

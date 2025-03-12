@@ -1,3 +1,4 @@
+import re
 import shutil
 import time
 from collections import Counter
@@ -38,6 +39,7 @@ from database.sqlite.versioned_database import SQLiteVersionedDatabase
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
+    from plugins.migration import AbstractPluginMigrationManager
 
 logger: Logger = get_logger()
 
@@ -63,6 +65,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         super().__init__(
             self.event_database_path(self.uniq_id), write, auto_upgrade
         )
+        self.plugin_versions: dict[str, Version] = {}
 
     @classmethod
     def from_parent(cls, parent: SQLiteVersionedDatabase) -> Self:
@@ -86,12 +89,12 @@ class EventDatabase(SQLiteVersionedDatabase):
     def insert_creation_values(self):
         version = PapiWebConfig().version
         today_str: str = format_timestamp_date()
-        format: str = '%Y-%m-%d %H:%M'
+        format_: str = '%Y-%m-%d %H:%M'
         event_start = time.mktime(
-            datetime.strptime(f'{today_str} 00:00', format).timetuple()
+            datetime.strptime(f'{today_str} 00:00', format_).timetuple()
         )
         event_stop = time.mktime(
-            datetime.strptime(f'{today_str} 23:59', format).timetuple()
+            datetime.strptime(f'{today_str} 23:59', format_).timetuple()
         )
         self.execute(
             "INSERT INTO `info` "
@@ -197,6 +200,16 @@ class EventDatabase(SQLiteVersionedDatabase):
         super().create()
         if populate:
             self._populate()
+        from plugins.manager import plugin_manager
+
+        migration_managers: list['AbstractPluginMigrationManager'] = (
+            plugin_manager.hook.get_event_migration_manager()
+        )
+        with EventDatabase(self.uniq_id, True) as database:
+            for migration_manager in migration_managers:
+                migration_manager.migrate(
+                    database, migration_manager.latest_plugin_version
+                )
 
     def _populate(self):
         try:
@@ -896,6 +909,56 @@ class EventDatabase(SQLiteVersionedDatabase):
         shutil.copy(self.file, backup.file)
         return backup
 
+    def get_plugin_version(self, plugin_name: str) -> Version | None:
+        """Retrieve the version of a plugin.
+        Returns None if the plugin is not installed"""
+        if plugin_name in self.plugin_versions:
+            return self.plugin_versions[plugin_name]
+        version_field = self.plugin_version_field(plugin_name)
+        try:
+            self.execute(f'SELECT `{version_field}` FROM `info`')
+        except OperationalError:
+            return None
+        version = Version(self._fetchone()[version_field])
+        self.plugin_versions[plugin_name] = version
+        return version
+
+    def set_plugin_version(self, plugin_name: str, version: Version):
+        version_field = self.plugin_version_field(plugin_name)
+        self.execute(
+            f'UPDATE `info` SET `{version_field}` = ?, `last_update` = ?',
+            (
+                f'{version.major}.{version.minor}.{version.micro}',
+                time.time(),
+            )
+        )
+        self.plugin_versions[plugin_name] = version
+
+    @staticmethod
+    def plugin_version_field(plugin_name: str):
+        safe_plugin_name = re.sub('[^a-z]+', '_', plugin_name.lower())
+        return f'{safe_plugin_name}_plugin_version'
+
+    def __enter__(self):
+        super().__enter__()
+        if not self.auto_upgrade:
+            return self
+        from plugins.manager import plugin_manager
+
+        migration_managers: list['AbstractPluginMigrationManager'] = (
+            plugin_manager.hook.get_event_migration_manager()
+        )
+        for migration_manager in migration_managers:
+            current_version = migration_manager.get_version(self)
+            latest_version = migration_manager.latest_plugin_version
+            if current_version < latest_version:
+                if not self.write:
+                    with EventDatabase(self.uniq_id, True):
+                        return self
+                migration_manager.migrate(self, latest_version)
+
+        return self
+
     """
     ---------------------------------------------------------------------------------
     StoredEvent
@@ -1351,10 +1414,10 @@ class EventDatabase(SQLiteVersionedDatabase):
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
-            last_ffe_upload=row['last_ffe_upload'],
+            ffe_last_upload=row['ffe_last_upload'],
             # needed to open event databases when version < 2.4.11 before checking the version
-            last_ffe_rules_upload=row.get('last_ffe_rules_upload', 0.0),
-            last_chessevent_download_md5=row['last_chessevent_download_md5'],
+            ffe_last_rules_upload=row.get('ffe_last_rules_upload', 0.0),
+            chessevent_last_download_md5=row['chessevent_last_download_md5'],
             # needed to open event databases when version < 2.4.23 before checking the version
             tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
         )
@@ -1408,9 +1471,9 @@ class EventDatabase(SQLiteVersionedDatabase):
             'last_result_update',
             'last_illegal_move_update',
             'last_check_in_update',
-            'last_ffe_upload',
-            'last_ffe_rules_upload',
-            'last_chessevent_download_md5',
+            'ffe_last_upload',
+            'ffe_last_rules_upload',
+            'chessevent_last_download_md5',
         ]
         params: list = [
             stored_tournament.uniq_id,
@@ -1439,9 +1502,9 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_tournament.last_result_update,
             stored_tournament.last_illegal_move_update,
             stored_tournament.last_check_in_update,
-            stored_tournament.last_ffe_upload,
-            stored_tournament.last_ffe_rules_upload,
-            stored_tournament.last_chessevent_download_md5,
+            stored_tournament.ffe_last_upload,
+            stored_tournament.ffe_last_rules_upload,
+            stored_tournament.chessevent_last_download_md5,
         ]
         if stored_tournament.id is None:
             protected_fields = [f'`{f}`' for f in fields]
@@ -1486,29 +1549,29 @@ class EventDatabase(SQLiteVersionedDatabase):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
         self.set_last_update()
 
-    def set_tournament_last_ffe_upload(self, tournament_id: int):
+    def set_tournament_ffe_last_upload(self, tournament_id: int):
         self.execute(
-            'UPDATE `tournament` SET `last_ffe_upload` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `ffe_last_upload` = ? WHERE `id` = ?',
             (
                 time.time(),
                 tournament_id,
             ),
         )
 
-    def set_tournament_last_ffe_rules_upload(self, tournament_id: int):
+    def set_tournament_ffe_last_rules_upload(self, tournament_id: int):
         self.execute(
-            'UPDATE `tournament` SET `last_ffe_rules_upload` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `ffe_last_rules_upload` = ? WHERE `id` = ?',
             (
                 time.time(),
                 tournament_id,
             ),
         )
 
-    def set_tournament_last_chessevent_download_md5(
+    def set_tournament_chessevent_last_download_md5(
         self, tournament_id: int, md5: str = None
     ):
         self.execute(
-            'UPDATE `tournament` SET `last_chessevent_download_md5` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `chessevent_last_download_md5` = ? WHERE `id` = ?',
             (
                 md5,
                 tournament_id,
@@ -1545,7 +1608,7 @@ class EventDatabase(SQLiteVersionedDatabase):
     def set_tournament_check_in(self, tournament_id: int, o: bool):
         """Opens (o is True) or closes (o is False) the check_in for the tournament."""
         self.execute(
-            'UPDATE `tournament` SET `check_in_open` = ?, `last_ffe_upload` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `check_in_open` = ?, `ffe_last_upload` = ? WHERE `id` = ?',
             (
                 1 if o else 0,
                 time.time(),

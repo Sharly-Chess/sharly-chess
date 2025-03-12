@@ -34,9 +34,16 @@
 | `message_background_color` | `TEXT`    |                            | La couleur de fond des messages d'alerte de l'évènement au format hexadécimal `#RRGGBB` (par défaut `#FFFF00`).                                                                                                                                                       |
 | `last_update`              | `FLOAT`   | NOT NULL                   | La date de la dernière mise à jour de l'évènement (timestamp).                                                                                                                                                                                                        |
 | `federation`               | `TEXT`    | NOT NULL<br/>DEFAULT 'NON' | Code de la fédération de l'évènement.                                                                                                                                                                                                                                 |
-| `chessevent_user_id`       | `TEXT`    |                            | L'identifiant utilisé pour le connexion à la plateforme ChessEvent.                                                                                                                                                                                                   |
-| `chessevent_password`      | `TEXT`    |                            | Le mot de passe utilisé pour le connexion à la plateforme ChessEvent.                                                                                                                                                                                                 |
-| `chessevent_event_id`      | `TEXT`    |                            | L'identifiant de l'évènement ChessEvent sur la plateforme.                                                                                                                                                                                                            |
+
+#### Champs de plugins
+
+| Plugin     | Champ                       | Type   | Contrainte | Description                                                           |
+|------------|-----------------------------|--------|------------|-----------------------------------------------------------------------|
+| chessevent | `chessevent_plugin_version` | `TEXT` |            | Le numéro de version du plugin `chessevent` (`x.y.z`).                |
+| chessevent | `chessevent_user_id`        | `TEXT` |            | L'identifiant utilisé pour le connexion à la plateforme ChessEvent.   |
+| chessevent | `chessevent_password`       | `TEXT` |            | Le mot de passe utilisé pour le connexion à la plateforme ChessEvent. |
+| chessevent | `chessevent_event_id`       | `TEXT` |            | L'identifiant de l'évènement ChessEvent sur la plateforme.            |
+| ffe        | `ffe_plugin_version`        | `TEXT` |            | Le numéro de version du plugin `ffe` (`x.y.z`).                       |
 
 ### table `timer` (chronomètre)
 
@@ -70,17 +77,11 @@
 | `name`                                | `TEXT`    | NOT NULL                                   | Le nom du tournoi.                                                                                                                                                                      |
 | `path`                                | `TEXT`    |                                            | Le chemin absolu ou relatif où est stocké le fichier du tournoi.                                                                                                                        |
 | `filename`                            | `TEXT`    |                                            | Le nom du fichier Papi du tournoi, sans l'extension `.papi`.                                                                                                                            |
-| `ffe_id`                              | `INTEGER` |                                            | Le numéro d'homologation du tournoi sur le site fédéral.                                                                                                                                |
-| `ffe_password`                        | `TEXT`    |                                            | Le code d'accès au tournoi sur le site fédéral (composé de 10 lettres majuscules).                                                                                                      |
 | `time_control_initial_time`           | `INTEGER` |                                            | Le temps initial à la pendule en secondes (peut être nul si incrément).                                                                                                                 |
 | `time_control_increment`              | `INTEGER` |                                            | L'incrément de temps gagné par les joueur·euses à chaque coup.                                                                                                                          |
 | `time_control_handicap_penalty_step`  | `INTEGER` |                                            | Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses).                  |
 | `time_control_handicap_penalty_value` | `INTEGER` |                                            | Le nombre de points de différences entre le classement des joueurs servant à calculer le nombre de pénalités appliquées au·à la joueur·euse le·la mieux classé·e.                       |
 | `time_control_handicap_min_time`      | `INTEGER` |                                            | Le temps minimal qui sera accordé au·à la joueur·euse le·la mieux classé·e même si la différence de classement est très importante.                                                     |
-| `chessevent_user_id`                  | `TEXT`    |                                            | L'identifiant utilisé pour le connexion à la plateforme ChessEvent.                                                                                                                     |
-| `chessevent_password`                 | `TEXT`    |                                            | Le mot de passe utilisé pour le connexion à la plateforme ChessEvent.                                                                                                                   |
-| `chessevent_event_id`                 | `TEXT`    |                                            | L'identifiant de l'évènement ChessEvent sur la plateforme.                                                                                                                              |
-| `chessevent_tournament_name`          | `TEXT`    |                                            | L'identifiant du tournoi sur la plateforme ChessEvent.                                                                                                                                  |
 | `record_illegal_moves`                | `INTEGER` |                                            | Le nombre maximum de coups illégaux que l'on peut enregistrer pour un·e joueur·euse par ronde. Si ce nombre n'est pas précisé, la configuration par défaut de l'évènement est utilisée. |
 | `rules`                               | `TEXT`    |                                            | L'URL ou le chemin sur le serveur du règlement du tournoi, au format PDF (par défaut, le règlement de l'évènement).                                                                     |
 | `check_in_open`                       | `INTEGER` |                                            | Booléen :<br/>- `1` : le pointage est ouvert ;<br/>- `0` : le pointage est fermé.                                                                                                       |
@@ -88,14 +89,26 @@
 | `last_illegal_move_update`            | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | La date de dernière modification des coups illégaux du tournoi.                                                                                                                         |
 | `last_result_update`                  | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | La date de dernière modification d'un résultat du tournoi.                                                                                                                              |
 | `last_check_in_update`                | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | La date de dernière modification du pointage du tournoi.                                                                                                                                |
-| `last_ffe_upload`                     | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | La date de dernier envoi du tournoi vers le site fédéral.                                                                                                                               |
-| `last_ffe_rules_upload`               | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | La date de dernier envoi du règlement du tournoi vers le site fédéral.                                                                                                                  |
-| `last_chessevent_download_md5`        | `TEXT`    |                                            | L'empreinte du dernier téléchargement du tournoi depuis la plateforme ChessEvent.                                                                                                       |
 | `first_board_number`                  | `INTEGER` |                                            | Le numéro du premier échiquier.                                                                                                                                                         |
 | `paired_bye_result`                   | `INTEGER` |                                            | Résultat attribué aux joueur·euses exempt·es.                                                                                                                                           |
 | `max_byes`                            | `INTEGER` |                                            | Le nombre maximum de byes auquel un·e joueur·euse peut prétendre                                                                                                                        |
 | `last_rounds_no_byes`                 | `INTEGER` |                                            | Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye                                                                                                  |
 | `tie_breaks`                          | `TEXT`    |                                            | Les départages utilisés au format JSON (liste de dictionnaires au format {'type': str, 'options': dict[str,any]})                                                                       |
+
+#### Champs de plugins
+
+| Plugin     | Champ                          | Type      | Contrainte               | Description                                                                        |
+|------------|--------------------------------|-----------|--------------------------|------------------------------------------------------------------------------------|
+| chessevent | `chessevent_user_id`           | `TEXT`    |                          | L'identifiant utilisé pour le connexion à la plateforme ChessEvent.                |
+| chessevent | `chessevent_password`          | `TEXT`    |                          | Le mot de passe utilisé pour le connexion à la plateforme ChessEvent.              |
+| chessevent | `chessevent_event_id`          | `TEXT`    |                          | L'identifiant de l'évènement ChessEvent sur la plateforme.                         |
+| chessevent | `chessevent_tournament_name`   | `TEXT`    |                          | L'identifiant du tournoi sur la plateforme ChessEvent.                             |
+| chessevent | `chessevent_last_download_md5` | `TEXT`    |                          | L'empreinte du dernier téléchargement du tournoi depuis la plateforme ChessEvent.  |
+| ffe        | `ffe_id`                       | `INTEGER` |                          | Le numéro d'homologation du tournoi sur le site fédéral.                           |
+| ffe        | `ffe_password`                 | `TEXT`    |                          | Le code d'accès au tournoi sur le site fédéral (composé de 10 lettres majuscules). |
+| ffe        | `ffe_last_upload`              | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0 | La date de dernier envoi du tournoi vers le site fédéral.                          |
+| ffe        | `ffe_last_rules_upload`        | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0 | La date de dernier envoi du règlement du tournoi vers le site fédéral.             |
+
 
 ### table `illegal_move` (coups illégaux)
 
