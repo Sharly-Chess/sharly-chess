@@ -17,9 +17,11 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from web.controllers.admin.base_admin_controller import AdminWebContext, BaseAdminController
 from web.messages import Message
+from web.session import SessionHandler
 from web.urls import admin_event_url
 
 logger: Logger = get_logger()
+
 
 class IndexAdminController(BaseAdminController):
     @classmethod
@@ -29,6 +31,7 @@ class IndexAdminController(BaseAdminController):
         admin_tab: str | None,
         locale: str | None = None,
         modal: str | None = None,
+        admin_events_show_details: bool | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
@@ -38,6 +41,10 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
+        if admin_events_show_details is not None:
+            SessionHandler.set_session_admin_events_show_details(
+                request, admin_events_show_details
+            )
         return cls._admin_render(web_context, modal=modal, data=data, errors=errors)
 
     @get(
@@ -49,11 +56,13 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         locale: str | None,
+        admin_events_show_details: bool | None,
     ) -> Template | ClientRedirect:
         return self._admin(
             request,
             admin_tab=None,
             locale=locale,
+            admin_events_show_details=admin_events_show_details,
         )
 
     @get(
@@ -66,11 +75,13 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_tab: str,
         locale: str | None,
+        admin_events_show_details: bool | None,
     ) -> Template | ClientRedirect:
         return self._admin(
             request,
             admin_tab=admin_tab,
             locale=locale,
+            admin_events_show_details=admin_events_show_details,
         )
 
     @get(
