@@ -30,7 +30,7 @@ from data.util import (
     ScreenType,
     PlayerGender,
 )
-from database.store import StoredEvent
+from database.sqlite.event.event_store import StoredEvent
 
 logger: Logger = get_logger()
 

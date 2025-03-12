@@ -12,16 +12,18 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 
-from common import format_timestamp_date
-from common.i18n import _, ngettext
+from common import format_timestamp_date, EXPERIMENTAL_FEATURES
+from common.i18n import _, ngettext, locale_localized_name, trusted_locales, untrusted_locales, default_locale
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader, ArchiveLoader
+from data.player import Federation
 from data.tie_break import PapiTieBreak
 from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
-from database.store import StoredEvent
+from database.sqlite.config.config_store import StoredConfig
+from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
@@ -605,7 +607,7 @@ class BaseAdminController(BaseController):
                 chessevent_event_id = admin_event.stored_event.chessevent_event_id
             case 'create':
                 public = False
-                federation = PapiWebConfig().default_federation
+                federation = PapiWebConfig().federation.name
                 hide_background_image = PapiWebConfig.default_hide_background_image
             case 'delete':
                 pass
@@ -656,6 +658,41 @@ class BaseAdminController(BaseController):
         )
 
     @classmethod
+    def _admin_validate_config_update_data(
+            cls,
+            data: dict[str, str] | None = None,
+    ) -> StoredConfig:
+        papi_web_config: PapiWebConfig = PapiWebConfig()
+        if data is None:
+            data = {}
+        errors: dict[str, str] = {}
+        log_level: int | None = WebContext.form_data_to_int(data, field := 'log_level')
+        if log_level and log_level not in papi_web_config.log_levels:
+            errors[field] = _('Invalid log level [{log_level}].').format(log_level=log_level)
+            data[field] = ''
+        launch_browser: bool | None = WebContext.form_data_to_bool(data, 'launch_browser')
+        federation_name: str | None = WebContext.form_data_to_str(data, field := 'federation')
+        federation: Federation | None = None
+        if federation_name:
+            if federation_name not in papi_web_config.federations:
+                errors[field] = _('Invalid federation [{federation}].').format(federation=federation_name)
+                data[field] = ''
+            else:
+                federation = Federation(federation_name)
+        locale: str | None = WebContext.form_data_to_str(data, field := 'locale')
+        if locale and locale not in papi_web_config.locales:
+            errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
+            data[field] = ''
+        return StoredConfig(
+            version=str(papi_web_config.version),
+            log_level=log_level,
+            launch_browser=launch_browser,
+            federation=federation.name if federation else None,
+            locale=locale,
+            errors=errors,
+        )
+
+    @classmethod
     def _admin_render(
         cls,
         web_context: AdminWebContext,
@@ -663,6 +700,7 @@ class BaseAdminController(BaseController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
+        papi_web_config: PapiWebConfig = PapiWebConfig()
         event_loader: EventLoader = EventLoader.get(request=web_context.request)
         archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
         nav_tabs: dict[str, dict[str, Any]] = {
@@ -707,12 +745,14 @@ class BaseAdminController(BaseController):
                 'icon_class': 'bi-archive',
             },
             'config': {
-                'title': _('Papi-web configuration'),
+                'title': _('Papi-web settings'),
                 'template': 'index/config_tab.html',
                 'icon_class': 'bi-gear',
                 'disabled': False,
             },
         }
+        if papi_web_config.force_edit:
+            web_context.admin_tab = 'config'
         if not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']:
             web_context.admin_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
@@ -732,13 +772,76 @@ class BaseAdminController(BaseController):
         match modal:
             case None:
                 pass
+            case 'config':
+                if data is None:
+                    papi_web_config: PapiWebConfig = PapiWebConfig()
+                    data = {
+                        'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
+                        'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),
+                        'federation': WebContext.value_to_form_data(papi_web_config.stored_config.federation),
+                        'locale': WebContext.value_to_form_data(papi_web_config.stored_config.locale),
+                    }
+                    stored_config: StoredConfig = cls._admin_validate_config_update_data(data)
+                    errors = stored_config.errors
+                if errors is None:
+                    errors = {}
+                log_level_options: dict[str, str] = {
+                    '': '-',
+                } | {
+                    str(log_level): log_level_str
+                    for log_level, log_level_str in papi_web_config.log_levels.items()
+                }
+                log_level_options[''] = _('By default - {option}').format(
+                    option=log_level_options[str(PapiWebConfig.default_log_level)]
+                )
+                launch_browser_options: dict[str, str] = {
+                    '': '-',
+                    'on': _('Automatically launch a browser when starting the server'),
+                    'off': _('Do nothing'),
+                }
+                launch_browser_options[''] = _('By default - {option}').format(
+                    option=launch_browser_options['on' if PapiWebConfig.default_launch_browser else 'off']
+                )
+                federation_options: dict[str, str] = {
+                    PapiWebConfig.default_federation: _('By default - {option}').format(
+                        option=f'{papi_web_config.default_federation} - {papi_web_config.federations[papi_web_config.default_federation]}'
+                    ),
+                } | {
+                    federation_id: f'{federation_id} - {federation_name}'
+                    for federation_id, federation_name in papi_web_config.federations.items()
+                    if federation_id != papi_web_config.default_federation
+                }
+                locale_options: dict[str, str] = {
+                    '': '-',
+                } | {
+                    locale: locale_localized_name(locale)
+                    for locale in trusted_locales
+                }
+                if EXPERIMENTAL_FEATURES:
+                    locale_options |= {
+                        locale: locale_localized_name(locale)
+                        for locale in untrusted_locales
+                    }
+                locale_options[''] = _('By default - {option}').format(
+                    option=locale_options[default_locale]
+                )
+                context |= {
+                    'log_level_options': log_level_options,
+                    'launch_browser_options': launch_browser_options,
+                    'locale_options': locale_options,
+                    'federation_options': federation_options,
+                    'modal': modal,
+                    'data': data,
+                    'errors': errors,
+                }
             case 'event':
+                action: str = 'create'
                 if data is None:
                     data = cls._prepare_event_modal_data(
-                        'create', web_context.request, None
+                        action, web_context.request, None
                     )
                     stored_event: StoredEvent = cls._admin_validate_event_update_data(
-                        'create', web_context.request, None, data
+                        action, web_context.request, None, data
                     )
                     errors = stored_event.errors
                 if errors is None:
@@ -754,8 +857,8 @@ class BaseAdminController(BaseController):
                     'background_images_jstree_data': cls.background_images_jstree_data(
                         data['background_image']
                     ),
-                    'modal': 'event',
-                    'action': 'create',
+                    'modal': modal,
+                    'action': action,
                     'data': data,
                     'errors': errors,
                 }

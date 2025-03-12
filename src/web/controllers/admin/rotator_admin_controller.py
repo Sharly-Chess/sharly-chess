@@ -13,8 +13,8 @@ from common.i18n import _
 from common.logger import get_logger
 from data.loader import EventLoader
 from data.rotator import Rotator
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredRotator
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredRotator
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,

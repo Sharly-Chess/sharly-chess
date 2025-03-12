@@ -36,8 +36,8 @@ from data.util import (
 )
 from data.util import TournamentPairing, Result
 from database.access.papi.papi_database import PapiDatabase
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredTournament
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredTournament
 from plugins.manager import plugin_manager
 
 logger: Logger = get_logger()

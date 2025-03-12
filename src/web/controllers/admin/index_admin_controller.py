@@ -1,7 +1,7 @@
 from logging import Logger
 from typing import Annotated
 
-from litestar import get, post
+from litestar import get, post, patch
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -10,8 +10,11 @@ from litestar.response import Template, Redirect
 
 from common.i18n import _
 from common.logger import get_logger
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredEvent
+from common.papi_web_config import PapiWebConfig
+from database.sqlite.config.config_database import ConfigDatabase
+from database.sqlite.config.config_store import StoredConfig
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredEvent
 from web.controllers.admin.base_admin_controller import AdminWebContext, BaseAdminController
 from web.messages import Message
 from web.urls import admin_event_url
@@ -135,4 +138,57 @@ class IndexAdminController(BaseAdminController):
             request,
             admin_tab=admin_tab,
             data=data,
+        )
+
+    @patch(
+        path='/admin/config-update',
+        name='admin-config-update',
+        cache=1,
+    )
+    async def htmx_admin_config_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect:
+        web_context: AdminWebContext = AdminWebContext(
+            request,
+            admin_tab='config',
+            data=data,
+        )
+        if web_context.error:
+            return web_context.error
+        stored_config: StoredConfig = self._admin_validate_config_update_data(data)
+        if stored_config.errors:
+            return self._admin_render(
+                web_context,
+                modal='config',
+                data=data,
+                errors=stored_config.errors,
+            )
+        with ConfigDatabase(write=True) as config_database:
+            stored_config.force_edit = False
+            config_database.update_stored_config(stored_config)
+            config_database.commit()
+            PapiWebConfig().reload()
+            Message.success(request, _('Papi-web settings has been updated.'))
+        return self._admin_render(
+            AdminWebContext(request, data=None, admin_tab='config')
+        )
+
+    @get(
+        path='/admin/config-modal',
+        name='admin-config-modal',
+        cache=1,
+    )
+    async def htmx_admin_config_modal(
+        self,
+        request: HTMXRequest,
+    ) -> Template | ClientRedirect:
+        return self._admin(
+            request,
+            admin_tab='config',
+            modal='config',
         )

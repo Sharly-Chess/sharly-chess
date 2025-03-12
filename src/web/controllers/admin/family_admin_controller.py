@@ -14,8 +14,8 @@ from common.logger import get_logger
 from data.family import Family
 from data.loader import EventLoader
 from data.util import ScreenType
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredFamily
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredFamily
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,

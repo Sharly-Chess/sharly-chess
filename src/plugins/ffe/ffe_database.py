@@ -166,7 +166,7 @@ class FfeDatabase(SQLiteDatabase):
                                 for field, function in translations.items()
                             }
                             query: str = f'INSERT INTO player({", ".join(map(lambda s: f"`{s}`", data.keys()))}) VALUES({", ".join(["?"] * len(data))})'
-                            self._execute(query, tuple(data.values()))
+                            self.execute(query, tuple(data.values()))
                             player_count += 1
                             if player_count % 1000 == 0:
                                 print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
@@ -272,16 +272,16 @@ class FfeDatabase(SQLiteDatabase):
         if limit:
             query += ' LIMIT ?'
             params += [limit, ]
-        self._execute(query, tuple(params), )
+        self.execute(query, tuple(params), )
         return (
             self.get_player_from_row(row)
             for row in self._fetchall()
         )
 
     def get_player_by_ffe_id(self, player_ffe_id: int) -> Player | None:
-        self._execute(f'SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
+        self.execute(f'SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
         return self.get_player_from_row(self._fetchone())
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self._execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
+        self.execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
         return self.get_player_from_row(self._fetchone())

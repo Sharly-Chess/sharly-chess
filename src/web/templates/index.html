@@ -74,16 +74,27 @@
                         </tr>
                     </tbody>
                 </table>
-                <button
-                    hx-get="{{ url_for('user') }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="btn btn-outline-primary btn-lg p-4 w-100"
-                    {{ macros.tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
+                <div
+                    {% if papi_web_config.force_edit %}
+                        disabled
+                        {{ macros.tooltip_attributes('info', _('The public screens are not available until the Papi-web settings have been validated.'), 'right') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
+                    {% endif %}
                 >
-                    {{ _('Events (public access)') }}
-                </button>
+                    <button
+                        hx-get="{{ url_for('user') }}"
+                        preload
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        class="btn btn-outline-primary btn-lg p-4 w-100"
+                        {% if papi_web_config.force_edit %}
+                            disabled
+                        {% endif %}
+                    >
+                        {{ _('Events (public access)') }}
+                    </button>
+                </div>
                 <div
                     {% if admin_auth %}
                         {{ macros.tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
@@ -92,6 +103,7 @@
                     {% endif %}
                 >
                     <button
+                        id="index-admin-button"
                         hx-get="{{ url_for('admin') }}"
                         preload
                         hx-target="body"
@@ -101,12 +113,29 @@
                             disabled
                         {% endif %}
                     >
-                        {{ _('Arbiter interface (private access)') }}
+                        {% if papi_web_config.force_edit %}
+                            {{ _('Papi-web settings (private access)') }}
+                        {% else %}
+                            {{ _('Arbiter interface (private access)') }}
+                        {% endif %}
                     </button>
                 </div>
             </div>
         </div>
     </div>
+    {% if admin_auth and papi_web_config.force_edit %}
+        {#
+            When editing the configuration is needed (after an upgrade),
+            open the config modal by click on the config button
+            (redirecting the client on a request to / is not possible
+            since HTMX is not loaded yet).
+        #}
+        <script>
+            $(document).ready(function(){
+                $('#index-admin-button').click();
+            });
+        </script>
+    {% endif %}
 {% endblock content %}
 
 {% block footer %}
