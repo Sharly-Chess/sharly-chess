@@ -1,48 +1,49 @@
-<div class="modal-dialog modal-dialog-centered admin-screen-edit-modal d-block">
-    <form
-        {% if action == 'create' %}
-            hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
-        {% elif action == 'clone' %}
-            hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-        {% elif action == 'update' %}
-            hx-patch="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-        {% elif action == 'delete' %}
-            hx-delete="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-        {% else %}
-            hx-get="{{ url_for('unknown-action-' ~ action) }}"
-        {% endif %}
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    {% if action in ['create', 'clone', ] %}
-                        {% if screen_type == 'input' %}
-                            {{ _('Input screen creation') }}
-                        {% elif screen_type == 'boards' %}
-                            {{ _('Boards screen creation') }}
-                        {% elif screen_type == 'players' %}
-                            {{ _('Players screen creation') }}
-                        {% elif screen_type == 'results' %}
-                            {{ _('Results screen creation') }}
-                        {% elif screen_type == 'ranking' %}
-                            {{ _('Ranking screen creation') }}
-                        {% elif screen_type == 'image' %}
-                            {{ _('Image screen creation') }}
-                        {% else %}
-                            ?
-                        {% endif %}
-                    {% elif action == 'update' %}
-                        {{ _('Edition of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
-                    {% elif action == 'delete' %}
-                        {{ _('Deletion of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-screen-edit-modal d-block">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action in ['create', 'clone', ] %}
+                    {% if screen_type == 'input' %}
+                        {{ _('Input screen creation') }}
+                    {% elif screen_type == 'boards' %}
+                        {{ _('Boards screen creation') }}
+                    {% elif screen_type == 'players' %}
+                        {{ _('Players screen creation') }}
+                    {% elif screen_type == 'results' %}
+                        {{ _('Results screen creation') }}
+                    {% elif screen_type == 'ranking' %}
+                        {{ _('Ranking screen creation') }}
+                    {% elif screen_type == 'image' %}
+                        {{ _('Image screen creation') }}
                     {% else %}
                         ?
                     {% endif %}
-                </h2>
-            </div>
-            <div class="modal-body">
+                {% elif action == 'update' %}
+                    {{ _('Edition of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                {% elif action == 'delete' %}
+                    {{ _('Deletion of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                {% else %}
+                    ?
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                {% if action == 'create' %}
+                    hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
+                {% elif action == 'clone' %}
+                    hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                {% elif action == 'update' %}
+                    hx-patch="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                {% elif action == 'delete' %}
+                    hx-delete="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                {% else %}
+                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 {% if action == 'delete' %}
                     <h4 class="text-danger">
                         {{ _('Warning: the deletion of a screen is permanent!') }}
@@ -303,38 +304,33 @@
                         {% endif %}
                     {% endwith %}
                 {% endif %}
-            </div>
-            <div class="modal-footer d-block">
-                <div class="row">
-                    <div class="col col-6 text-start">
-                        <button
-                            type="submit"
-                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-                        >
-                            <i class="bi-floppy-fill pe-1"></i>
-                            {% if action in ['create', 'clone', ] %}
-                                {{ _('Create') }}
-                            {% elif action == 'update' %}
-                                {{ _('Update') }}
-                            {% elif action == 'delete' %}
-                                {{ _('Delete') }}
-                            {% else %}
-                                ?
-                            {% endif %}
-                        </button>
-                    </div>
-                    <div class="col col-6 text-end">
-                        <button
-                            type="button"
-                            data-bs-dismiss="modal"
-                            class="btn btn-secondary text-nowrap"
-                        >
-                            <i class="bi-x-circle-fill pe-1"></i>
-                            {{ _('Cancel') }}
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
-    </form>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {% if action in ['create', 'clone', ] %}
+                    {{ _('Create') }}
+                {% elif action == 'update' %}
+                    {{ _('Update') }}
+                {% elif action == 'delete' %}
+                    {{ _('Delete') }}
+                {% else %}
+                    ?
+                {% endif %}
+            </button>
+        </div>
+    </div>
 </div>

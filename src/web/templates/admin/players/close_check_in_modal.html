@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-centered admin-close-check-in-modal d-block">
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-close-check-in-modal d-block">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -30,55 +30,49 @@
                 </div>
             </div>
         </div>
-        <div class="modal-footer d-block">
-            <div class="d-flex gap-4 flex-wrap">
-                <div class="d-flex gap-2 flex-grow-1">
-                    {% if admin_tournament.players_by_check_in_status[false] %}
-                        <button
-                            class="text-nowrap white btn btn-primary"
-                            aria-describedby="{{ id }}-help"
-                            hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-last-rounds', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            {{ _('Mark as forfeit for the rest of the tournament') }}
-                        </button>
-                        <button
-                            class="text-nowrap white btn btn-primary"
-                            aria-describedby="{{ id }}-help"
-                            hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            {{ _('Mark as forfeit for the coming round') }}
-                        </button>
-                    {% else %}
-                        <button
-                            class="text-nowrap white btn btn-primary"
-                            aria-describedby="{{ id }}-help"
-                            hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            {{ _('Close the check-in') }}
-                        </button>
-                    {% endif %}
-                </div>
-                <div>
-                    <button
-                        type="button"
-                        class="btn btn-secondary text-nowrap"
-                        hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
-                        preload
-                        hx-target="body"
-                        hx-trigger="click, keyup[key=='Escape'] from:body"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-x-circle-fill pe-1"></i>
-                        {{ _('Cancel') }}
-                    </button>
-                </div>
-            </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
+                preload
+                hx-target="body"
+                hx-trigger="click, keyup[key=='Escape'] from:body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            {% if admin_tournament.players_by_check_in_status[false] %}
+                <button
+                    class="text-nowrap white btn btn-primary"
+                    aria-describedby="{{ id }}-help"
+                    hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-last-rounds', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    {{ _('Mark as forfeit for the rest of the tournament') }}
+                </button>
+                <button
+                    class="text-nowrap white btn btn-primary"
+                    aria-describedby="{{ id }}-help"
+                    hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    {{ _('Mark as forfeit for the coming round') }}
+                </button>
+            {% else %}
+                <button
+                    class="text-nowrap white btn btn-primary"
+                    aria-describedby="{{ id }}-help"
+                    hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    {{ _('Close the check-in') }}
+                </button>
+            {% endif %}
         </div>
     </div>
 </div>

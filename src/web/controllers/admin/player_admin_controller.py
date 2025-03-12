@@ -590,13 +590,19 @@ class PlayerAdminController(BaseEventAdminController):
             )
         match action:
             case 'update':
-                web_context.admin_event.set_player_default_ratings(player)
+                plugin_manager.hook.set_player_default_ratings(
+                    federation=web_context.admin_event.federation,
+                    player=player
+                )
                 tournament: Tournament = player.tournament
                 tournament.update_player(player)
                 event_loader: EventLoader = EventLoader.get(request=request)
                 event_loader.clear_cache(event_uniq_id)
             case 'create':
-                web_context.admin_event.set_player_default_ratings(player)
+                plugin_manager.hook.set_player_default_ratings(
+                    federation=web_context.admin_event.federation,
+                    player=player
+                )
                 tournament: Tournament = player.tournament
                 if tournament.finished:
                     Message.error(

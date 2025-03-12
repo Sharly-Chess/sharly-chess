@@ -99,6 +99,10 @@ class AppHookSpecs:
     def augment_player_after_search(self, player: Player):
         """Add plugin specific data to a player"""
     
+    @hookspec
+    def set_player_default_ratings(self, federation: str, player: 'Player'):
+        """Set default ratings for an unrated player"""
+        
     @hookspec(firstresult=True)
     def is_tournament_participation_possible(
         self, tournament: 'Tournament', player: Player
