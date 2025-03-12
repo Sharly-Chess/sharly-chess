@@ -274,6 +274,13 @@ class EventDatabase(SQLiteVersionedDatabase):
                         i + 1: event_dict['timer_colors'][i]
                         for i in range(0, len(event_dict['timer_colors']))
                     }
+                today_str: str = format_timestamp_date()
+                event_start: float = time.mktime(
+                    datetime.strptime(f'{today_str} 00:00', '%Y-%m-%d %H:%M').timetuple()
+                )
+                event_stop: float = time.mktime(
+                    datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple()
+                )
                 if 'start' in event_dict:
                     event_start = time.mktime(
                         datetime.strptime(
