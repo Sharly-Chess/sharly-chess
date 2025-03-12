@@ -59,7 +59,7 @@ class AppHookSpecs:
     def get_base_admin_context(self) -> dict[str, Any]:
         """Provide plugin context for the AdminWebContext"""
         
-    @hookimpl
+    @hookspec
     def get_base_event_admin_context(web_context: 'BaseEventAdminWebContext') -> dict[str, Any]:
         """Provide plugin context for the BaseEventAdminWebContext"""
 

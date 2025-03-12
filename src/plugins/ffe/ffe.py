@@ -174,7 +174,7 @@ def get_base_event_admin_context(web_context: BaseEventAdminWebContext) -> dict[
         }
                 
         case _:
-            pass
+            return {}
         
         
 @hookimpl
