@@ -337,9 +337,12 @@ class EventAdminController(BaseEventAdminController):
                 }.items():
                     if param is not None:
                         if param:
-                            screen_types.append(screen_type)
+                            screen_types.add(screen_type)
                         else:
-                            screen_types.remove(screen_type)
+                            try:
+                                screen_types.remove(screen_type)
+                            except KeyError:
+                                pass
                         SessionHandler.set_session_admin_screens_screen_types(
                             request, screen_types
                         )

@@ -387,3 +387,16 @@ body[data-bs-theme=light] .btn-primary {
 [data-bs-theme=dark] table.prominent thead th *:focus {
     outline: 0.15rem solid rgba(var(--bs-body-bg-rgb), 0.70);
 }
+
+button.collapse-button {
+    border: none;
+    background-color: transparent;
+}
+
+button.collapse-button .bi-chevron-down {
+    transition: all 0.3s ease;
+}
+
+button.collapse-button[aria-expanded="true"] .bi-chevron-down {
+    transform: rotate(-90deg);
+}

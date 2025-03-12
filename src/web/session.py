@@ -165,16 +165,16 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_screens_screen_types(
-        cls, request: HTMXRequest, screen_types: list[str]
+        cls, request: HTMXRequest, screen_types: set[str]
     ):
-        request.session[cls.ADMIN_SCREENS_SCREEN_TYPES_KEY]: list[str] = screen_types
+        request.session[cls.ADMIN_SCREENS_SCREEN_TYPES_KEY]: list[str] = list(screen_types)
 
     @classmethod
-    def get_session_admin_screens_screen_types(cls, request: HTMXRequest) -> list[str]:
-        return request.session.get(
+    def get_session_admin_screens_screen_types(cls, request: HTMXRequest) -> set[str]:
+        return set(request.session.get(
             cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
             ['boards', 'input', 'players', 'results', 'ranking', 'image', ],
-        )
+        ))
 
     LOCALE_KEY: str = 'locale'
 
