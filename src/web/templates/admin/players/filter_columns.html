@@ -1,4 +1,10 @@
-<form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+<form
+    class="d-inline-block"
+    hx-get="{{ url }}"
+    hx-target="body"
+    hx-indicator="#please-wait"
+    hx-push-url="false"
+>   
     <span class="dropdown-center" >
         <button
             class="btn btn-outline-primary dropdown-toggle text-nowrap ms-1"

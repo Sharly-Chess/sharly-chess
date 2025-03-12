@@ -1,4 +1,10 @@
-<form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+<form
+    class="d-inline-block"
+    hx-get="{{ url }}"
+    hx-target="body"
+    hx-indicator="#please-wait"
+    hx-push-url="false"
+>
     {{ _('Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS') }}
     {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'tournament', admin_players_sort) }}
     <span class="dropdown-center" >

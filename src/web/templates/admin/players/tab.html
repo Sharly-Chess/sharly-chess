@@ -77,6 +77,7 @@
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}
+                                hx-push-url="false"
                             ></i>
                             <span id="players-table-counters" class="px-0">
                                 {{ admin_players|length }}/{{admin_event.player_count}}
@@ -87,6 +88,7 @@
                                 hx-vals='{"admin_players_clear_filters": "1"}'
                                 hx-target="body"
                                 hx-indicator="#please-wait"
+                                hx-push-url="false"
                                 {{ macros.tooltip_attributes('info', _('Clear all the filters.'), 'top') }}
                             ></i>
                         </div>
@@ -112,6 +114,7 @@
                                 hx-swap="multi:#players-table-body,#players-table-counters"
                                 hx-trigger="keyup changed delay:0.2s"
                                 hx-indicator="#please-wait"
+                                hx-push-url="false"
                                 value="{{ admin_players_filter_name }}"
                             />
                             <i
@@ -120,6 +123,7 @@
                                 hx-vals='{"admin_players_filter_name": ""}'
                                 hx-target="body"
                                 hx-indicator="#please-wait"
+                                hx-push-url="false"
                             ></i>
                         </div>
                     </th>

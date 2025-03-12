@@ -1,5 +1,11 @@
 {% if admin_players_genders|length > 1 %}
-    <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+    <form
+        class="d-inline-block"
+        hx-get="{{ url }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-push-url="false"
+    >
         <span class="dropdown-center" >
             <button
                 class="btn text-dark m-0 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
