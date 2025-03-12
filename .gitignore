@@ -35,4 +35,4 @@ __pycache__/
 
 *.log
 /mprofile_*.dat
-
+/.scc

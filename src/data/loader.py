@@ -15,8 +15,8 @@ from common import format_timestamp_date_time, unicode_normalize
 from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredEvent
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredEvent
 from common.logger import get_logger
 
 logger: Logger = get_logger()
@@ -336,7 +336,7 @@ class EventBackupLoader:
 
         compatible_versions = [
             version for version in self.versions(event_id)
-            if version <= PapiWebConfig.version
+            if version <= PapiWebConfig().version
         ]
         if not compatible_versions:
             return None

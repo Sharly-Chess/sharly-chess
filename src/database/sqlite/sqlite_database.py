@@ -62,13 +62,13 @@ class SQLiteDatabase:
             del self.database
             self.database = None
 
-    def _execute(self, query: str, params: tuple | dict[str, Any] = ()):
+    def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         self.cursor.execute(query, params)
 
-    def _executemany(self, query: str, params: Iterable[tuple | dict[str, Any]] = ()):
+    def executemany(self, query: str, params: Iterable[tuple | dict[str, Any]] = ()):
         self.cursor.executemany(query, params)
 
-    def _executescript(self, sql: str):
+    def executescript(self, sql: str):
         self.cursor.executescript(sql)
 
     def _fetchall(self) -> Iterator[dict[str, Any]]:

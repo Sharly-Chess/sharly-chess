@@ -167,7 +167,7 @@ class FideDatabase(SQLiteDatabase):
                         root.clear()
                         player_count += 1
                         if player_count % 1000 == 0:
-                            self._executemany(query, to_write)
+                            self.executemany(query, to_write)
                             print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
                             self.commit()
                             to_write.clear()
@@ -190,7 +190,7 @@ class FideDatabase(SQLiteDatabase):
                                 data['first_name'] = None
                             del data['name']
                 if to_write:
-                    self._executemany(query, to_write)
+                    self.executemany(query, to_write)
                     self.commit()
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
@@ -208,7 +208,7 @@ class FideDatabase(SQLiteDatabase):
         return True
 
     def read_federation_ids(self) -> Iterator[str]:
-        self._execute(
+        self.execute(
             'SELECT DISTINCT federation FROM `player` ORDER BY `federation`',
             (),
         )
@@ -284,7 +284,7 @@ class FideDatabase(SQLiteDatabase):
         if limit:
             query += ' LIMIT ?'
             params += [limit, ]
-        self._execute(query, tuple(params), )
+        self.execute(query, tuple(params), )
         return (
             self.get_player_from_row(row)
             for row in self._fetchall()
@@ -292,5 +292,5 @@ class FideDatabase(SQLiteDatabase):
 
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self._execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
+        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
         return self.get_player_from_row(self._fetchone())

@@ -1,28 +1,43 @@
-<div 
+<div
     class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
     style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
 >
     {% call() macros.section_title() %}
         <i class="bi-gear pe-1"></i>
-        {{ _('Papi-web configuration') }}
+        {{ _('Papi-web settings') }}
     {% endcall %}
     <div class="flex-grow-1"></div>
-    <div class="d-flex gap-2 ms-auto align-items-center">
-        <span {{ macros.tooltip_attributes('info', _('Add an event.'), 'top') }}>
-            <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-                hx-target="#modal-wrapper"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-plus-square-fill pe-1"></i>
-                {{ _('Create an event') }}
-            </button>
-        </span>
-    </div>
+        <div class="d-flex gap-2 ms-auto align-items-center">
+            <span {{ macros.tooltip_attributes('info', _('Edit the Papi-web settings.'), 'top') }}>
+                <button
+                    id="admin-config-edit-button"
+                    class="btn btn-outline-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-config-modal') }}"
+                    hx-target="#modal-wrapper"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-pencil-fill pe-1"></i>
+                    {{ _('Edit') }}
+                </button>
+            </span>
+            <span {{ macros.tooltip_attributes('info', _('Add an event.'), 'top') }}>
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
+                    hx-target="#modal-wrapper"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Create an event') }}
+                </button>
+            </span>
+        </div>
 </div>
 
 <table class="table table-striped table-sm table-hover w-auto bg-light mx-auto justify-content-center">
@@ -46,8 +61,59 @@
             <td>{% if papi_web_config.lan_url %}<a href="{{ papi_web_config.lan_url }}" target="_blank">{{ papi_web_config.lan_url }}</a>{% else %}<span class="fst-italic">-</span>{% endif %}</td>
         </tr>
         <tr>
+            <th scope="row" class="text-nowrap">{{ _('Default language') }}</th>
+            <td>
+                {% set l_info = locale_infos[papi_web_config.locale] %}
+                <img
+                    src="{{l_info.flag_url}}"
+                    alt="{{l_info.name}}"
+                    class="locale-flag"
+                />
+                {{ l_info.name }}
+                {% if l_info.experimental %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
+                {% if not papi_web_config.stored_config.locale %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">{{ _('Default federation:') }}</th>
+            <td>
+                <img
+                    class="player-federation-flag pe-1"
+                    src="{{ url_for('static', file_path='/images/federations/' ~ papi_web_config.federation ~ '.svg') }}"
+                />
+                {{ papi_web_config.federation.name }} - {{ papi_web_config.federations[papi_web_config.federation.name] }}
+                {% if not papi_web_config.stored_config.federation %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
             <th scope="row" class="text-nowrap">{{ _('Launching the browser on server startup') }}</th>
-            <td>{% if papi_web_config.web_launch_browser %}{{ _('Yes') }}{% else %}<span class="fst-italic">{{ _('No') }}</span>{% endif %}</td>
+            <td>
+                {% if papi_web_config.launch_browser %}{{ _('Yes') }}{% else %}{{ _('No') }}{% endif %}
+                {% if papi_web_config.stored_config.launch_browser is none %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">{{ _('Log level') }}</th>
+            <td>
+                {{ papi_web_config.log_levels[papi_web_config.log_level] }}
+                {% if not papi_web_config.stored_config.log_level %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Papi-web') }}</th>
@@ -118,5 +184,8 @@
         $('#htmx-version').html(htmx.version);
         $('#jquery-version').html(jQuery().jquery);
         $('#bootstrap-version').html(bootstrap.Tooltip.VERSION);
+        {% if admin_auth and papi_web_config.force_edit %}
+            $('#admin-config-edit-button').click();
+        {% endif %}
     });
 </script>

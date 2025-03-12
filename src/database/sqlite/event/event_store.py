@@ -4,7 +4,7 @@ from common.papi_web_config import PapiWebConfig
 from data.tie_break import TieBreak
 
 """
-All the classes of this module are basic data classes store in the event databases.
+All the classes of this module are basic data classes stored in the event databases.
 """
 
 

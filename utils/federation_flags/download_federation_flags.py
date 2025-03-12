@@ -5,7 +5,7 @@ from requests import get, Response, HTTPError
 from common.i18n import _
 from common.logger import print_interactive_error
 from common.papi_web_config import PapiWebConfig
-from database.sqlite.fide_database import FideDatabase
+from database.sqlite.fide.fide_database import FideDatabase
 
 
 def download_federation_url(federation_id: str, flag_file: Path, flag_url) -> bool:
@@ -29,6 +29,8 @@ def download_federation_flags(federation_ids: set[str]):
         match federation_id:
             case 'NON':
                 flag_url = 'https://www.svgrepo.com/download/448108/question.svg'
+            case 'FID':
+                flag_url = 'https://upload.wikimedia.org/wikipedia/de/2/26/Logo_FIDE.svg'
             case _:
                 flag_url = f'https://ratings.fide.com/svg/{federation_id}.svg'
         if not download_federation_url(federation_id, flag_file, flag_url):

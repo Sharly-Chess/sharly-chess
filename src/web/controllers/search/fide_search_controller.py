@@ -5,7 +5,7 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
 from data.player import Player
-from database.sqlite.fide_database import FideDatabase
+from database.sqlite.fide.fide_database import FideDatabase
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 
 

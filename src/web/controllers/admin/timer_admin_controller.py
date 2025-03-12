@@ -17,8 +17,8 @@ from common.i18n import _
 from common.logger import get_logger
 from data.loader import EventLoader
 from data.timer import Timer, TimerHour
-from database.sqlite.event_database import EventDatabase
-from database.store import StoredEvent, StoredTimer, StoredTimerHour
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredEvent, StoredTimer, StoredTimerHour
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
