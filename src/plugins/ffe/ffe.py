@@ -29,12 +29,13 @@ import web.controllers.base_controller as WebContextModule
 from . import migrations
 
 from .constants import PLUGIN_NAME, PLUGIN_VERSION
+from .engine.ffe_engine import FFEEngine
 from .util import PlayerFFELicence
 from .ffe_database import FfeDatabase
 from .ffe_session_handler import FFESessionHandler
 from .ffe_search_controller import FfeSearchController
 from .ffe_event_controller import FfeAdminEventController
-from ..migration import AbstractPluginMigrationManager
+from ..utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -501,3 +502,8 @@ def get_extra_player_columns() -> Iterable[ExtraAdminColumn]:
 @hookimpl
 def get_event_migration_manager() -> AbstractPluginMigrationManager:
     return FfePluginMigrationManager()
+
+
+@hookimpl
+def get_engine_argument() -> PluginEngineArgument:
+    return PluginEngineArgument('f', 'ffe', 'run the FFE utilities', FFEEngine)

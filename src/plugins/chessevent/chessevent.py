@@ -5,8 +5,9 @@ from packaging.version import Version
 
 from common import BASE_DIR
 from plugins.chessevent import migrations
+from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from plugins.hookspec import hookimpl
-from plugins.migration import AbstractPluginMigrationManager
+from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 #: Name of the plugin that will be referenced in our configuration
 PLUGIN_NAME = "chessevent"
@@ -41,3 +42,13 @@ def get_tournament_card_block_template() -> str:
 @hookimpl
 def get_event_migration_manager() -> AbstractPluginMigrationManager:
     return ChessEventPluginMigrationManager()
+
+
+@hookimpl
+def get_engine_argument() -> PluginEngineArgument:
+    return PluginEngineArgument(
+        'c',
+        'chessevent',
+        'download Papi files from Chess Event',
+        ChessEventEngine,
+    )

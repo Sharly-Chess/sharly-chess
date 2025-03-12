@@ -39,7 +39,7 @@ from database.sqlite.versioned_database import SQLiteVersionedDatabase
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
-    from plugins.migration import AbstractPluginMigrationManager
+    from plugins.utils import AbstractPluginMigrationManager
 
 logger: Logger = get_logger()
 

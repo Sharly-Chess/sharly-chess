@@ -1,33 +1,30 @@
 from logging import Logger
 
-from chessevent.action_selector import ActionSelector
 from common.exception import PapiWebException
 from common.i18n import _
+from common.singleton import Singleton
 from common.logger import (
     get_logger,
     print_interactive_input,
     input_interactive,
     print_interactive_error,
 )
-from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
+from plugins.ffe.engine.action_selector import ActionSelector
 
 logger: Logger = get_logger()
 
 
 class EventSelector(metaclass=Singleton):
-    """The CLI interface to select an event."""
-
     def __init__(self):
         self.__silent: bool = False
 
     @staticmethod
     def run() -> bool:
-        """The CLI interface function for selection of an event.
-        Returns True if all went well (might be unreachable).
-        Returns False if interrupted or if the user choses to quit."""
-        events: list[Event] = EventLoader.get(request=None).events_sorted_by_name
+        events: list[Event] = EventLoader.get(
+            request=None
+        ).events_with_tournaments_sorted_by_name
         if not events:
             print_interactive_error(_('No events found.'))
             return False

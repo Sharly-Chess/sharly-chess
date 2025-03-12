@@ -19,7 +19,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from data.util import NeedsUpload
-from ffe.ffe_session import FFESession
+from plugins.ffe.engine.ffe_session import FFESession
 
 logger: Logger = get_logger()
 
