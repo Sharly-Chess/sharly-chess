@@ -6,6 +6,7 @@ from typing import Self, TYPE_CHECKING
 
 from packaging.version import Version
 
+from common import PAPI_WEB_VERSION
 from common.exception import PapiWebException
 from common.logger import get_logger
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -23,9 +24,6 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
         super().__init__(file, write)
         self._version: Version | None = None
         self.auto_upgrade = auto_upgrade
-
-    # The current Papi-web version
-    papi_web_version: Version = Version('2.4.25')
 
     @classmethod
     @abstractmethod
@@ -65,15 +63,15 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
         """Upgrades the database version from the stored database version
         to the current Papi-web version.
         This may change the structure of the database."""
-        if self.version > self.papi_web_version:
+        if self.version > PAPI_WEB_VERSION:
             raise PapiWebException(
-                f'Your Papi-web version ({self.papi_web_version}) '
+                f'Your Papi-web version ({PAPI_WEB_VERSION}) '
                 f'can not open database {self.file.name} '
                 f'(version {self.version}), please upgrade.'
             )
         logger.info(f'Upgrading database {self.file.name}...')
         initial_version = self.version
-        if self.migration_manager.migrate(self, self.papi_web_version):
+        if self.migration_manager.migrate(self, PAPI_WEB_VERSION):
             logger.info(
                 'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
@@ -99,7 +97,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
 
                 database._version = database.migration_manager.EMPTY_DATABASE_VERSION
                 database.migration_manager.migrate(
-                    database, ConfigDatabase.papi_web_version
+                    database, PAPI_WEB_VERSION
                 )
                 database.insert_creation_values()
                 database.commit()
@@ -117,7 +115,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
             )
         super().__enter__()
 
-        if self.auto_upgrade and self.version < self.papi_web_version:
+        if self.auto_upgrade and self.version < PAPI_WEB_VERSION:
             if self.write:
                 self.upgrade()
             else:

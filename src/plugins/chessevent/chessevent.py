@@ -4,15 +4,10 @@ from types import ModuleType
 from packaging.version import Version
 
 from common import BASE_DIR
-from plugins.chessevent import migrations
+from plugins.chessevent import migrations, PLUGIN_NAME, PLUGIN_VERSION
 from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from plugins.hookspec import hookimpl
 from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
-
-#: Name of the plugin that will be referenced in our configuration
-PLUGIN_NAME = "chessevent"
-
-PLUGIN_VERSION = Version('0.1.0')
 
 
 class ChessEventPluginMigrationManager(AbstractPluginMigrationManager):

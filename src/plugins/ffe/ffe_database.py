@@ -32,7 +32,7 @@ from data.util import (
     PlayerTitle,
 )
 
-from plugins.ffe.constants import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_access_database import FfeAccessDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.util import PlayerFFELicence
