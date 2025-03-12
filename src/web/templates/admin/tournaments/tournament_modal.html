@@ -1,32 +1,33 @@
-<div class="modal-dialog modal-dialog-centered admin-tournament-edit-modal d-block">
-    <form
-        {% if action in ['create', 'clone', ] %}
-            hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
-        {% elif action == 'update' %}
-            hx-patch="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-        {% elif action == 'delete' %}
-            hx-delete="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-        {% else %}
-            hx-get="{{ url_for('unknown-action-' ~ action) }}"
-        {% endif %}
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    {% if action in ['create', 'clone', ] %}
-                        {{ _('Tournament creation') }}
-                    {% elif action == 'update' %}
-                        {{ _('Edition of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
-                    {% elif action == 'delete' %}
-                        {{ _('Deletion of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
-                    {% else %}
-                        ?
-                    {% endif %}
-                </h2>
-            </div>
-            <div class="modal-body">
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-tournament-edit-modal d-block">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action in ['create', 'clone', ] %}
+                    {{ _('Tournament creation') }}
+                {% elif action == 'update' %}
+                    {{ _('Edition of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
+                {% elif action == 'delete' %}
+                    {{ _('Deletion of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
+                {% else %}
+                    ?
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                {% if action in ['create', 'clone', ] %}
+                    hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% elif action == 'update' %}
+                    hx-patch="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                {% elif action == 'delete' %}
+                    hx-delete="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                {% else %}
+                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 {% if action == 'delete' %}
                     <h4 class="text-danger">
                         {{ _('Warning: the deletion of a tournament is permanent!') }}
@@ -322,51 +323,47 @@
                         </div>
                     {% endif %}
                 {% endif %}
-            </div>
-            <div class="modal-footer d-block">
-                <div class="d-flex flex-wrap gap-4">
-                    <div class="d-flex gap-2 flex-grow-1">
-                        <button
-                            type="submit"
-                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-                        >
-                            <i class="bi-floppy-fill pe-1"></i>
-                            {% if action in ['create', 'clone', ] %}
-                                {{ _('Create') }}
-                            {% elif action == 'update' %}
-                                {{ _('Update') }}
-                            {% elif action == 'delete' %}
-                                {{ _('Delete') }}
-                            {% else %}
-                                ?
-                            {% endif %}
-                        </button>
-                        {% if action in ['create', 'clone', ] %}
-                            <button
-                                type="button"
-                                hx-indicator="#please-wait"name="add_screens"
-                                hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
-                                hx-target="body"
-                                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-                            >
-                                <i class="bi-floppy-fill"></i>
-                                <i class="bi-plus-square-fill pe-1"></i>
-                                {{ _('Create and add default screens') }}
-                            </button>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <button
-                            type="button"
-                            data-bs-dismiss="modal"
-                            class="btn btn-secondary text-nowrap"
-                        >
-                            <i class="bi-x-circle-fill pe-1"></i>
-                            {{ _('Cancel') }}
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
-    </form>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {% if action in ['create', 'clone', ] %}
+                    {{ _('Create') }}
+                {% elif action == 'update' %}
+                    {{ _('Update') }}
+                {% elif action == 'delete' %}
+                    {{ _('Delete') }}
+                {% else %}
+                    ?
+                {% endif %}
+            </button>
+            {% if action in ['create', 'clone', ] %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    hx-indicator="#please-wait"name="add_screens"
+                    hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                >
+                    <i class="bi-floppy-fill"></i>
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Create and add default screens') }}
+                </button>
+            {% endif %}
+        </div>
+    </div>
 </div>

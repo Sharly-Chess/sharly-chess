@@ -103,7 +103,17 @@
                     });
                 }
 
-                function closeModal () {
+                function scrollToFirstError() {
+                    var errorElements = document.querySelectorAll('#modal-wrapper .is-invalid');
+                    if (errorElements.length > 0) {
+                        errorElements[0].scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                        });
+                    }
+                }
+
+                function closeModal() {
                     var myModalEl = document.getElementById('modal-wrapper');
                     var modal = bootstrap.Modal.getInstance(myModalEl)
                     modal.hide();
@@ -114,6 +124,9 @@
                     closeTooltips();
                     document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
                     activateTooltips();
+                    scrollToFirstError();
+
+                    // TODO we shouldn't do this for every modal
                     updateRecordByes();
                 });
 
