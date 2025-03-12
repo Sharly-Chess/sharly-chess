@@ -37,5 +37,5 @@ CREATE INDEX "player_fide_id" ON "player" (
 );
 
 CREATE INDEX "player_ffe_licence" ON "player" (
-    "ffe_licence_number"
+    "ffe_licence_number" COLLATE NOCASE
 );
