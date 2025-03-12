@@ -214,41 +214,6 @@ msgstr "Kies het evenement:"
 msgid "Your choice: "
 msgstr "Jouw keuze:"
 
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Configuration file [{file}] not found."
-msgstr "Configuratiebestand [{file}] niet gevonden."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Configuration file [{file}] is not a file."
-msgstr "Configuratiebestand [{file}] is geen bestand."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Could not read file [{file}]."
-msgstr "Kon bestand niet lezen [{file}]."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Duplicated section at line [{lineno}]."
-msgstr "Gedupliceerd gedeelte op regel [{lineno}]."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Duplicated option at line [{lineno}]."
-msgstr "Gedupliceerde optie op regel [{lineno}]."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Parsing error: [{ex}]."
-msgstr "Ontledingsfout: [{ex}]."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Error: [{ex}]."
-msgstr "Fout: [{ex}]."
-
 #: src/common/engine.py
 #, ai_translation
 msgid "Checking Papi-web version..."
@@ -1713,8 +1678,9 @@ msgstr "Inhoud van de URL [{url}] is niet geldig (input[id=[{id]] niet gevonden)
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialiseren van een sessie naar [{url}]..."
 
-#: src/ffe/ffe_session.py src/plugins/ffe/templates/filter_ffe_licences.html
-#: src/plugins/ffe/templates/filter_leagues.html
+#: src/ffe/ffe_session.py
+#: src/plugins/ffe/templates/ffe_player_league_header.html
+#: src/plugins/ffe/templates/ffe_player_licence_header.html
 #: src/web/templates/admin/players/filter_categories.html
 #: src/web/templates/admin/players/filter_check_ins.html
 #: src/web/templates/admin/players/filter_clubs.html
@@ -1973,6 +1939,11 @@ msgstr "De spelerscompetitie."
 msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
+#: src/plugins/ffe/templates/ffe_player_league_header.html
+#, ai_translation
+msgid "Filter the leagues."
+msgstr "Filter de competities."
+
 #: src/plugins/ffe/templates/ffe_player_licence_cell.html
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
@@ -1991,6 +1962,11 @@ msgstr ""
 #: src/plugins/ffe/templates/ffe_player_licence_header.html
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_licence_header.html
+#, ai_translation
+msgid "Filter the licences."
+msgstr "Filter de licenties."
 
 #: src/plugins/ffe/templates/ffe_search.html
 #, ai_translation
@@ -2032,16 +2008,6 @@ msgstr "FFE-kwalificatie: %(ffe_id)s"
 #, ai_translation
 msgid "No FFE qualification"
 msgstr "Geen FFE-kwalificatie"
-
-#: src/plugins/ffe/templates/filter_ffe_licences.html
-#, ai_translation
-msgid "Filter the licences."
-msgstr "Filter de licenties."
-
-#: src/plugins/ffe/templates/filter_leagues.html
-#, ai_translation
-msgid "Filter the leagues."
-msgstr "Filter de competities."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -3371,6 +3337,25 @@ msgid "The text colour of the alert messages."
 msgstr "De tekstkleur van de waarschuwingsberichten."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/index/config_modal.html
+#: src/web/templates/admin/players/close_check_in_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
+#, ai_translation
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -3408,25 +3393,6 @@ msgstr "Bijwerken"
 #, ai_translation
 msgid "Delete"
 msgstr "Verwijderen"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/print_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/index/config_modal.html
-#: src/web/templates/admin/players/close_check_in_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/players/record_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/default_timers_modal.html
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#: src/web/templates/user/modals.html
-#, ai_translation
-msgid "Cancel"
-msgstr "Annuleren"
 
 #: src/web/templates/admin/event/print_modal.html
 #, ai_translation
@@ -4048,8 +4014,10 @@ msgid "Enable/disable the details of the screen families on the cards below."
 msgstr "Schakel de details van de schermfamilies op de onderstaande kaarten in/uit."
 
 #: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/rotators/tab.html
 #: src/web/templates/admin/screens/tab.html
+#: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
 msgid "Details"
 msgstr "Details"
@@ -4311,6 +4279,10 @@ msgstr "Informatie: %(num)d"
 #, ai_translation
 msgid "No informations"
 msgstr "Geen informatie"
+
+#: src/web/templates/admin/index/events_tab.html
+msgid "Enable/disable the details of events on the cards below."
+msgstr ""
 
 #: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/players/tab.html
@@ -5545,15 +5517,15 @@ msgid "Drag the sets to order them."
 msgstr "Sleep de sets om ze te bestellen."
 
 #: src/web/templates/admin/screens/screen_sets_modal.html
-#, ai_translation
-msgid "Add a set"
-msgstr "Een set toevoegen"
-
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal.html
 #, ai_translation
 msgid "Close"
 msgstr "Sluiten"
+
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#, ai_translation
+msgid "Add a set"
+msgstr "Een set toevoegen"
 
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
@@ -5902,17 +5874,21 @@ msgid "Do you want Papi-web to create the file?"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Yes, create the file"
+msgid "No, I will do it later"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "No, I will do it later"
+msgid "Yes, create the file"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
 msgid "Tournaments"
 msgstr "Toernooien"
+
+#: src/web/templates/admin/tournaments/tab.html
+msgid "Enable/disable the details of tournaments on the cards below."
+msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
@@ -6717,4 +6693,25 @@ msgstr "vs"
 
 #~ msgid "Default federation"
 #~ msgstr ""
+
+#~ msgid "Configuration file [{file}] not found."
+#~ msgstr "Configuratiebestand [{file}] niet gevonden."
+
+#~ msgid "Configuration file [{file}] is not a file."
+#~ msgstr "Configuratiebestand [{file}] is geen bestand."
+
+#~ msgid "Could not read file [{file}]."
+#~ msgstr "Kon bestand niet lezen [{file}]."
+
+#~ msgid "Duplicated section at line [{lineno}]."
+#~ msgstr "Gedupliceerd gedeelte op regel [{lineno}]."
+
+#~ msgid "Duplicated option at line [{lineno}]."
+#~ msgstr "Gedupliceerde optie op regel [{lineno}]."
+
+#~ msgid "Parsing error: [{ex}]."
+#~ msgstr "Ontledingsfout: [{ex}]."
+
+#~ msgid "Error: [{ex}]."
+#~ msgstr "Fout: [{ex}]."
 

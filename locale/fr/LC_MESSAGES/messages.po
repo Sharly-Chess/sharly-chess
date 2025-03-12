@@ -3322,8 +3322,10 @@ msgid "Enable/disable the details of the screen families on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des familles d'écrans sur les cartes ci-dessous."
 
 #: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/rotators/tab.html
 #: src/web/templates/admin/screens/tab.html
+#: src/web/templates/admin/tournaments/tab.html
 msgid "Details"
 msgstr "Détails"
 
@@ -3557,6 +3559,10 @@ msgstr "Informations : %(num)d"
 #: src/web/templates/admin/index/event_card.html
 msgid "No informations"
 msgstr "Aucun message d'information"
+
+#: src/web/templates/admin/index/events_tab.html
+msgid "Enable/disable the details of events on the cards below."
+msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
 
 #: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/players/tab.html
@@ -4902,6 +4908,10 @@ msgstr "Oui, créer le fichier"
 #: src/web/templates/admin/tournaments/tab.html
 msgid "Tournaments"
 msgstr "Tournois"
+
+#: src/web/templates/admin/tournaments/tab.html
+msgid "Enable/disable the details of tournaments on the cards below."
+msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes ci-dessous."
 
 #: src/web/templates/admin/tournaments/tab.html
 msgid "Add a tournament to the event."
