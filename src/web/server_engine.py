@@ -119,17 +119,57 @@ class ServerEngine(Engine):
             pdb_on_exception=self.debug,
         )
         # This code is intended to check the uniformity of the paths and names used for the application URLs
-        # url_map: defaultdict[str, list[str]] = defaultdict(list[str])
-        # name_map: defaultdict[str, list[str]] = defaultdict(list[str])
-        # for route in app.routes:
-        #     for handler in route.route_handlers:
-        #         if handler.name:
-        #             url_map[handler.name].append(route.path)
-        #             name_map[route.path].append(handler.name)
-        # for name in sorted(url_map.keys()):
-        #     logger.warning(f'{name}: {url_map[name]}')
-        # for path in sorted(name_map.keys()):
-        #     logger.warning(f'{path}: {name_map[path]}')
+        #uris: dict[str, dict[str, str]] = {}
+        #for route in app.routes:
+        #    for handler in route.route_handlers:
+        #        if handler.name:
+        #            paths: list[str]
+        #            match route.path:
+        #                case '/admin/event/{event_uniq_id:str}/{admin_event_tab:str}':
+        #                    paths = [
+        #                        route.path.replace('{admin_event_tab:str}', tab) for tab in [
+        #                            'config', 'tournaments', 'players', 'screens', 'families', 'rotators', 'timers',
+        #                        ]
+        #                    ]
+        #                case '/admin/{admin_tab:str}':
+        #                    paths = [
+        #                        route.path.replace('{admin_tab:str}', tab) for tab in [
+        #                            'config', 'current_events', 'coming_events', 'passed_events', 'archives',
+        #                        ]
+        #                    ]
+        #                case'/user/event/{event_uniq_id:str}/{user_event_tab:str}':
+        #                    paths = [
+        #                        route.path.replace('{user_event_tab:str}', tab) for tab in [
+        #                            'input', 'boards', 'players', 'results', 'ranking', 'image', 'rotators',
+        #                        ]
+        #                    ]
+        #                case '/user/{user_tab:str}':
+        #                    paths = [
+        #                        route.path.replace('{user_tab:str}', tab) for tab in [
+        #                            'current_events', 'coming_events', 'passed_events',
+        #                        ]
+        #                    ]
+        #                case _:
+        #                    paths = [route.path, ]
+        #            entry_point: str = handler.handler_id.split(":", maxsplit=1)[0]
+        #            name = handler.name
+        #            http_method = list(handler.http_methods)[0]
+        #            controller_name = '.'.join(entry_point.split('.')[2:-1])
+        #            controller_method = entry_point.split('.')[-1]
+        #            uris |= {
+        #                path: {
+        #                    'name': name,
+        #                    'http_method': http_method,
+        #                    'controller_name': controller_name,
+        #                    'controller_method': controller_method,
+        #                }
+        #                for path in paths
+        #            }
+        #logger.info('| Method URI<br>Name | Controller method (``web.controllers.``) | |')
+        #logger.info('|-|-|-|')
+        #for path in sorted(uris.keys()):
+        #    uri: dict[str, str] = uris[path]
+        #    logger.info(f'| ``{uri["http_method"]} {path}``<br/>``{uri["name"]}`` | ``{uri["controller_name"]}``<br/>``{uri["controller_method"]}()`` | |')
         uvicorn.run(
             app,
             host=papi_web_config.web_host,
