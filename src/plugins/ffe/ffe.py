@@ -454,7 +454,7 @@ def get_extra_print_view_columns(
         case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
             return [
                 ExtraColumn(
-                    at="club",
+                    at="first-round" if document == PrintDocument.CROSSTABLE else "club",
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
                     classes="center",
                     value=lambda player: get_data(player.plugin_data, 'league'),
