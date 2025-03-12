@@ -893,7 +893,7 @@ class TournamentAdminController(BaseEventAdminController):
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-        
+
         template_context |= {
             'tournament': admin_tournament,
             'players': split_players,
