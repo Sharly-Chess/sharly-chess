@@ -9,6 +9,7 @@ from logging import Logger
 from pathlib import Path
 
 import unicodedata
+from packaging.version import Version
 
 from common.logger import get_logger
 
@@ -27,6 +28,7 @@ EXPERIMENTAL_FEATURES: bool = os.environ.get(
     '1',
 ]
 
+PAPI_WEB_VERSION = Version("2.4.25")
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 

@@ -16,7 +16,7 @@ from packaging.version import Version
 from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
-from common import TMP_DIR
+from common import PAPI_WEB_VERSION, TMP_DIR
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -424,7 +424,6 @@ class Engine:
     @classmethod
     def _send_custom_files(cls, custom_files: dict[str, Path]):
         """Sends the custom files to filebin.net and proposes to email the developers."""
-        papi_web_version: Version = PapiWebConfig().version
         print_interactive_info(_('Sending the files to a server...'))
         datetime_str: str = datetime.strftime(
             datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
@@ -446,7 +445,7 @@ class Engine:
             )
             subject: str = _(
                 '[Papi-web {version}] Request for the integration of custom files'
-            ).format(version=papi_web_version)
+            ).format(version=PAPI_WEB_VERSION)
             body: str = '<p>' + _('Hello,') + '</p>'
             body += '<p>' + _('I would like the following custom files to be added to a future version of Papi-web:') + '/p>'
             body += '<ul>'
@@ -482,8 +481,7 @@ class Engine:
         if not last_stable_version:
             print_interactive_warning(_('Checking the version failed.'))
             return None
-        papi_web_version: Version = PapiWebConfig().version
-        if last_stable_version == papi_web_version:
+        if last_stable_version == PAPI_WEB_VERSION:
             print_interactive_success(_('Your Papi-web version is up to date.'))
             return None
         last_stable_matches = re.match(
@@ -492,10 +490,10 @@ class Engine:
         )
         if re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
-            str(papi_web_version),
+            str(PAPI_WEB_VERSION),
         ):
             # 'normal' versions X.Y.Z
-            if last_stable_version > papi_web_version:
+            if last_stable_version > PAPI_WEB_VERSION:
                 print_interactive_warning(
                     _('A more recent version is available ([{version}]).').format(
                         version=last_stable_version
@@ -511,10 +509,10 @@ class Engine:
         if not (
             matches := re.match(
                 r'^(?P<major>\d+)\.(?P<minor>\d+)rc(?P<rc>\d+)$',
-                str(papi_web_version),
+                str(PAPI_WEB_VERSION),
             )
         ):
-            raise ValueError(f'Invalid Papi-web version [{str(papi_web_version)}]')
+            raise ValueError(f'Invalid Papi-web version [{str(PAPI_WEB_VERSION)}]')
         # 'release candidates' X.YrcN
         if last_stable_matches.group('major') > matches.group(
             'major'
@@ -523,7 +521,7 @@ class Engine:
                 _(
                     'A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).'
                 ).format(
-                    new_version=last_stable_version, old_version=papi_web_version
+                    new_version=last_stable_version, old_version=PAPI_WEB_VERSION
                 )
             )
             return None
