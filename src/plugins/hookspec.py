@@ -139,7 +139,7 @@ class AppHookSpecs:
         """Returns True if the player should be in the admin player list, False otherwise """
         
     @hookspec(firstresult=True)
-    def player_club_sort_key(self, player: Player) -> Callable[[Player], tuple]:
+    def player_club_sort_key(self, player: Player) -> tuple:
         """Returns a sort key for sorting the admin player list by club """
     
     @hookspec
