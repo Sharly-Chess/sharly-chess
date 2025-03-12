@@ -65,6 +65,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         super().__init__(
             self.event_database_path(self.uniq_id), write, auto_upgrade
         )
+        self.plugin_versions: dict[str, Version] = {}
 
     @classmethod
     def from_parent(cls, parent: SQLiteVersionedDatabase) -> Self:
@@ -199,6 +200,16 @@ class EventDatabase(SQLiteVersionedDatabase):
         super().create()
         if populate:
             self._populate()
+        from plugins.manager import plugin_manager
+
+        migration_managers: list['AbstractPluginMigrationManager'] = (
+            plugin_manager.hook.get_event_migration_manager()
+        )
+        with EventDatabase(self.uniq_id, True) as database:
+            for migration_manager in migration_managers:
+                migration_manager.migrate(
+                    database, migration_manager.latest_plugin_version
+                )
 
     def _populate(self):
         try:
@@ -901,12 +912,16 @@ class EventDatabase(SQLiteVersionedDatabase):
     def get_plugin_version(self, plugin_name: str) -> Version | None:
         """Retrieve the version of a plugin.
         Returns None if the plugin is not installed"""
+        if plugin_name in self.plugin_versions:
+            return self.plugin_versions[plugin_name]
         version_field = self.plugin_version_field(plugin_name)
         try:
             self.execute(f'SELECT `{version_field}` FROM `info`')
         except OperationalError:
             return None
-        return Version(self._fetchone()[version_field])
+        version = Version(self._fetchone()[version_field])
+        self.plugin_versions[plugin_name] = version
+        return version
 
     def set_plugin_version(self, plugin_name: str, version: Version):
         version_field = self.plugin_version_field(plugin_name)
@@ -917,6 +932,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                 time.time(),
             )
         )
+        self.plugin_versions[plugin_name] = version
 
     @staticmethod
     def plugin_version_field(plugin_name: str):
