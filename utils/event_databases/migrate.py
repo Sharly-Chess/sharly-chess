@@ -4,6 +4,7 @@ from typing import Iterator
 
 from packaging.version import Version
 
+from common import PAPI_WEB_VERSION
 from common.logger import print_interactive_info, print_interactive_error, print_interactive_success, \
     print_interactive_warning
 from data.loader import EventLoader
@@ -90,13 +91,13 @@ if __name__ == '__main__':
     ) -> Version:
         version: Version
         if version_string == 'current':
-            version: Version = SQLiteVersionedDatabase.papi_web_version
+            version: Version = PAPI_WEB_VERSION
         else:
             version = Version(version_string)
         correct_version: Version = max(
             min(
                 version,
-                SQLiteVersionedDatabase.papi_web_version,
+                PAPI_WEB_VERSION,
                 migration_manager.last_migration_version
             ),
             migration_manager.first_migration_version,

@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 
 from packaging.version import Version
 
+from common import PAPI_WEB_VERSION
 from common.logger import print_interactive_error, print_interactive_info
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventBackup, EventBackupLoader
@@ -38,13 +39,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
     loader = EventBackupLoader()
     event_id = args.event
-    papi_web_version: Version = PapiWebConfig().version
     if args.version:
         version = Version(args.version)
-        if version > papi_web_version:
+        if version > PAPI_WEB_VERSION:
             print_interactive_error(
                 f'Impossible to restore: Version selected ({version}) is newer'
-                f' than the latest Papi Web version {papi_web_version}'
+                f' than the latest Papi Web version {PAPI_WEB_VERSION}'
             )
             sys.exit(1)
     else:

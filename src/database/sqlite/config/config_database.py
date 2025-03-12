@@ -5,6 +5,7 @@ from typing import Any, Self
 
 from packaging.version import Version
 
+from common import PAPI_WEB_VERSION
 from common.logger import get_logger
 from database.sqlite.config import migrations
 from database.sqlite.config.config_store import StoredConfig
@@ -54,7 +55,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         return ConfigMigrationManager()
 
     def insert_creation_values(self):
-        version = self.papi_web_version
+        version = PAPI_WEB_VERSION
         self.execute(
             "INSERT INTO `info`(`version`, `force_edit`) VALUES(?, ?)",
             (f'{version.major}.{version.minor}.{version.micro}', True)

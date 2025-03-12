@@ -9,6 +9,7 @@ from types import ModuleType
 
 from packaging.version import Version
 
+from common import PAPI_WEB_VERSION
 from common.logger import print_interactive_error, get_logger
 from database.sqlite.versioned_database import SQLiteVersionedDatabase
 
@@ -109,18 +110,18 @@ class AbstractMigrationManager(ABC):
                 f'({self.first_migration_version}).'
             )
             return False
-        if current_version > SQLiteVersionedDatabase.papi_web_version:
+        if current_version > PAPI_WEB_VERSION:
             self._log_error(
                 f'Database {database.file.name} ({current_version}) '
                 f'impossible to migrate: version is after the '
-                f'current Papi-web version ({SQLiteVersionedDatabase.papi_web_version.public}).'
+                f'current Papi-web version ({PAPI_WEB_VERSION.public}).'
             )
             return False
-        if target_version > SQLiteVersionedDatabase.papi_web_version:
+        if target_version > PAPI_WEB_VERSION:
             self._log_error(
                 f'impossible to upgrade to version [{target_version.public}]: '
                 f' version is after the current Papi-web version '
-                f'({SQLiteVersionedDatabase.papi_web_version.public}).'
+                f'({PAPI_WEB_VERSION.public}).'
             )
             return False
 
