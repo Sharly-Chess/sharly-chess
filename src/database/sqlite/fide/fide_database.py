@@ -162,7 +162,6 @@ class FideDatabase(SQLiteDatabase):
                         data = {}
                         
                     if event == 'end' and elem.tag == 'player':
-                        query: str = f'INSERT INTO player({", ".join(data.keys())}) VALUES({", ".join(["?"] * len(data))})'
                         self.execute(query, tuple(data.values()))
                         player_count += 1
                         if player_count % 1000 == 0:
