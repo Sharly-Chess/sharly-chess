@@ -3322,8 +3322,10 @@ msgid "Enable/disable the details of the screen families on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des familles d'écrans sur les cartes ci-dessous."
 
 #: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/rotators/tab.html
 #: src/web/templates/admin/screens/tab.html
+#: src/web/templates/admin/tournaments/tab.html
 msgid "Details"
 msgstr "Détails"
 
@@ -3557,6 +3559,10 @@ msgstr "Informations : %(num)d"
 #: src/web/templates/admin/index/event_card.html
 msgid "No informations"
 msgstr "Aucun message d'information"
+
+#: src/web/templates/admin/index/events_tab.html
+msgid "Enable/disable the details of events on the cards below."
+msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
 
 #: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/players/tab.html
@@ -4904,6 +4910,10 @@ msgid "Tournaments"
 msgstr "Tournois"
 
 #: src/web/templates/admin/tournaments/tab.html
+msgid "Enable/disable the details of tournaments on the cards below."
+msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes ci-dessous."
+
+#: src/web/templates/admin/tournaments/tab.html
 msgid "Add a tournament to the event."
 msgstr "Ajouter un tournoi à l'évènement."
 
@@ -5503,25 +5513,4 @@ msgstr "contre"
 
 #~ msgid "Default federation"
 #~ msgstr "Fédération par défaut :"
-
-#~ msgid "Configuration file [{file}] not found."
-#~ msgstr "Fichier de configuration [{file}] non trouvé."
-
-#~ msgid "Configuration file [{file}] is not a file."
-#~ msgstr "Le fichier de configuration [{file}] n'est pas un fichier."
-
-#~ msgid "Could not read file [{file}]."
-#~ msgstr "Impossible de lire le fichier [{file}]"
-
-#~ msgid "Duplicated section at line [{lineno}]."
-#~ msgstr "Rubrique dupliquée à la ligne [{lineno}]."
-
-#~ msgid "Duplicated option at line [{lineno}]."
-#~ msgstr "Option dupliquée à la ligne [{lineno}]."
-
-#~ msgid "Parsing error: [{ex}]."
-#~ msgstr "Erreur de parsing : [{ex}]."
-
-#~ msgid "Error: [{ex}]."
-#~ msgstr "Erreur : [{ex}]."
 

@@ -214,41 +214,6 @@ msgstr "Välj evenemanget:"
 msgid "Your choice: "
 msgstr "Valet är ditt:"
 
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Configuration file [{file}] not found."
-msgstr "Inställningsfil [{file}] hittades inte."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Configuration file [{file}] is not a file."
-msgstr "Inställningsfil [{file}] är inte en fil."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Could not read file [{file}]."
-msgstr "Kunde inte läsa filen [{file}]."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Duplicated section at line [{lineno}]."
-msgstr "Duplicerad sektion vid linje [{lineno}]."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Duplicated option at line [{lineno}]."
-msgstr "Duplicerade alternativ vid linjen [{lineno}]."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Parsing error: [{ex}]."
-msgstr "Tolkningsfel: [{ex}]."
-
-#: src/common/config_reader.py
-#, ai_translation
-msgid "Error: [{ex}]."
-msgstr "Fel: [{ex}]."
-
 #: src/common/engine.py
 #, ai_translation
 msgid "Checking Papi-web version..."
@@ -1726,8 +1691,9 @@ msgstr "Innehållet i webbadressen [{url}] är inte giltigt (input[id=[{id]] hit
 msgid "Initializing a session to [{url}]..."
 msgstr "Initiera en session till [{url}]..."
 
-#: src/ffe/ffe_session.py src/plugins/ffe/templates/filter_ffe_licences.html
-#: src/plugins/ffe/templates/filter_leagues.html
+#: src/ffe/ffe_session.py
+#: src/plugins/ffe/templates/ffe_player_league_header.html
+#: src/plugins/ffe/templates/ffe_player_licence_header.html
 #: src/web/templates/admin/players/filter_categories.html
 #: src/web/templates/admin/players/filter_check_ins.html
 #: src/web/templates/admin/players/filter_clubs.html
@@ -1986,6 +1952,11 @@ msgstr "Spelarens liga."
 msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
 msgstr ""
 
+#: src/plugins/ffe/templates/ffe_player_league_header.html
+#, ai_translation
+msgid "Filter the leagues."
+msgstr "Filtrera ligorna."
+
 #: src/plugins/ffe/templates/ffe_player_licence_cell.html
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
@@ -2004,6 +1975,11 @@ msgstr ""
 #: src/plugins/ffe/templates/ffe_player_licence_header.html
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr ""
+
+#: src/plugins/ffe/templates/ffe_player_licence_header.html
+#, ai_translation
+msgid "Filter the licences."
+msgstr "Filtrera licenserna."
 
 #: src/plugins/ffe/templates/ffe_search.html
 #, ai_translation
@@ -2045,16 +2021,6 @@ msgstr "FFE:s kvalifikationer: %(ffe_id)s"
 #, ai_translation
 msgid "No FFE qualification"
 msgstr "Ingen FFE-behörighet"
-
-#: src/plugins/ffe/templates/filter_ffe_licences.html
-#, ai_translation
-msgid "Filter the licences."
-msgstr "Filtrera licenserna."
-
-#: src/plugins/ffe/templates/filter_leagues.html
-#, ai_translation
-msgid "Filter the leagues."
-msgstr "Filtrera ligorna."
 
 #: src/web/server_engine.py
 #, ai_translation
@@ -3384,6 +3350,25 @@ msgid "The text colour of the alert messages."
 msgstr "Meddelandenas textfärg."
 
 #: src/web/templates/admin/event/event_modal.html
+#: src/web/templates/admin/event/print_modal.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/index/config_modal.html
+#: src/web/templates/admin/players/close_check_in_modal.html
+#: src/web/templates/admin/players/player_modal.html
+#: src/web/templates/admin/players/record_modal.html
+#: src/web/templates/admin/rotators/rotator_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/timers/default_timers_modal.html
+#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
+#: src/web/templates/admin/timers/timer_modal.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#: src/web/templates/user/modals.html
+#, ai_translation
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: src/web/templates/admin/event/event_modal.html
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/players/player_modal.html
 #: src/web/templates/admin/rotators/rotator_modal.html
@@ -3421,25 +3406,6 @@ msgstr "Uppdatera"
 #, ai_translation
 msgid "Delete"
 msgstr "Ta bort"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/event/print_modal.html
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/index/config_modal.html
-#: src/web/templates/admin/players/close_check_in_modal.html
-#: src/web/templates/admin/players/player_modal.html
-#: src/web/templates/admin/players/record_modal.html
-#: src/web/templates/admin/rotators/rotator_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/timers/default_timers_modal.html
-#: src/web/templates/admin/timers/timer_hours_modal_hour_div.html
-#: src/web/templates/admin/timers/timer_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#: src/web/templates/user/modals.html
-#, ai_translation
-msgid "Cancel"
-msgstr "Avbryt"
 
 #: src/web/templates/admin/event/print_modal.html
 #, ai_translation
@@ -4063,8 +4029,10 @@ msgid "Enable/disable the details of the screen families on the cards below."
 msgstr "Aktivera/inaktivera detaljerna för skärmfamiljerna på korten nedan."
 
 #: src/web/templates/admin/families/tab.html
+#: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/rotators/tab.html
 #: src/web/templates/admin/screens/tab.html
+#: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
 msgid "Details"
 msgstr "Detaljer"
@@ -4328,6 +4296,10 @@ msgstr "Information: %(num)d"
 #, ai_translation
 msgid "No informations"
 msgstr "Inga uppgifter"
+
+#: src/web/templates/admin/index/events_tab.html
+msgid "Enable/disable the details of events on the cards below."
+msgstr ""
 
 #: src/web/templates/admin/index/events_tab.html
 #: src/web/templates/admin/players/tab.html
@@ -5562,15 +5534,15 @@ msgid "Drag the sets to order them."
 msgstr "Dra uppsättningarna för att beställa dem."
 
 #: src/web/templates/admin/screens/screen_sets_modal.html
-#, ai_translation
-msgid "Add a set"
-msgstr "Lägg till en uppsättning"
-
-#: src/web/templates/admin/screens/screen_sets_modal.html
 #: src/web/templates/admin/timers/timer_hours_modal.html
 #, ai_translation
 msgid "Close"
 msgstr "Stäng"
+
+#: src/web/templates/admin/screens/screen_sets_modal.html
+#, ai_translation
+msgid "Add a set"
+msgstr "Lägg till en uppsättning"
 
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
 #, ai_translation
@@ -5919,17 +5891,21 @@ msgid "Do you want Papi-web to create the file?"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "Yes, create the file"
+msgid "No, I will do it later"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/create_papi_modal.html
-msgid "No, I will do it later"
+msgid "Yes, create the file"
 msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation
 msgid "Tournaments"
 msgstr "Turneringar"
+
+#: src/web/templates/admin/tournaments/tab.html
+msgid "Enable/disable the details of tournaments on the cards below."
+msgstr ""
 
 #: src/web/templates/admin/tournaments/tab.html
 #, ai_translation

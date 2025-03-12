@@ -190,6 +190,7 @@ class EventAdminController(BaseEventAdminController):
         admin_screens_show_details: bool | None,
         admin_families_show_details: bool | None,
         admin_rotators_show_details: bool | None,
+        admin_tournaments_show_details: bool | None,
         admin_screens_show_boards: bool | None,
         admin_screens_show_input: bool | None,
         admin_screens_show_players: bool | None,
@@ -212,7 +213,10 @@ class EventAdminController(BaseEventAdminController):
             case 'config':
                 pass
             case 'tournaments':
-                pass
+                if admin_tournaments_show_details is not None:
+                    SessionHandler.set_session_admin_tournaments_show_details(
+                        request, admin_tournaments_show_details
+                    )
             case 'players':
                 if admin_players_sort is not None:
                     SessionHandler.set_session_admin_players_sort(

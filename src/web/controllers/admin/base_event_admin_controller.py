@@ -198,7 +198,12 @@ class BaseEventAdminController(BaseAdminController):
                 template_context |= {
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     'tournament_card_blocks': tournament_card_blocks,
-                    'tournament_exporters': tournament_exporters
+                    'tournament_exporters': tournament_exporters,
+                    'admin_tournaments_show_details': (
+                        SessionHandler.get_session_admin_tournaments_show_details(
+                            web_context.request
+                        )
+                    ),
                 }
             case 'players':
                 # Allow plugin to provide extra columns
