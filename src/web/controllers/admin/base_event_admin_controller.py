@@ -59,10 +59,13 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        per_plugin_context = plugin_manager.hook.get_base_event_admin_context(web_context=self)
+        plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
+
         return super().template_context | {
             'admin_event_tab': self.admin_event_tab,
             'admin_event': self.admin_event,
-        }
+        } | plugin_context
 
     def get_tournament_options(self) -> dict[str, str]:
         return {
@@ -174,7 +177,7 @@ class BaseEventAdminController(BaseAdminController):
                 web_context.admin_event_tab = 'tournaments'
             else:
                 web_context.admin_event_tab = 'config'
-                
+       
         template_context: dict[str, Any] = web_context.template_context | {
             'messages': Message.messages(web_context.request),
             'logging_levels': logging_levels,
@@ -360,8 +363,8 @@ class BaseEventAdminController(BaseAdminController):
                 # 3 all or no check_ins selected, or player matches
                 # 4 less than two tournaments, all or no tournaments selected, or player matches
                 # 5 less than two federations, all or no federations selected, or player matches
-                # 6 less than two leagues, all or no leagues selected, or player matches
-                # 7 less than two clubs, all or no clubs selected, or player matches
+                # 6 less than two clubs, all or no clubs selected, or player matches
+                
                 players: dict[int, Player] = {
                     p.id: p
                     for p in sorted(
@@ -418,6 +421,7 @@ class BaseEventAdminController(BaseAdminController):
                                     for filter_origin_part in filter_origin_parts
                                 }
                             )
+                            and all(plugin_manager.hook.filter_player(web_context=web_context, player=player))
                         ],
                         key=sort_key,
                     )

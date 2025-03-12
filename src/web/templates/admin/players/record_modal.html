@@ -1,16 +1,17 @@
-<div id="player-modal" class="modal-dialog modal-dialog-centered admin-record-edit-modal d-block">
-    <form
-        hx-patch="{{ url_for('admin-player-record', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    {{ admin_player.last_name }}{% if admin_player.first_name %} {{ admin_player.first_name }}{% endif %}
-                </h2>
-            </div>
-            <div class="modal-body">
+<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-record-edit-modal d-block">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ admin_player.last_name }}{% if admin_player.first_name %} {{ admin_player.first_name }}{% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-patch="{{ url_for('admin-player-record', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
                 <h4>
                     {{ _('Tournament record') }}
                 </h4>
@@ -185,30 +186,25 @@
                 </table>
                 <div class="fst-italic">{{ _('Maximum number of byes: %(max_byes)d', max_byes=admin_player.tournament.max_byes) }}</div>
                 <div class="fst-italic">{{ _('Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d', last_rounds_no_byes=admin_player.tournament.last_rounds_no_byes) }}</div>
-            </div>
-            <div class="modal-footer d-block">
-                <div class="row">
-                    <div class="col col-6 text-start">
-                        <button
-                            type="submit"
-                            class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-                        >
-                            <i class="bi-floppy-fill pe-1"></i>
-                            {{ _('Save') }}
-                        </button>
-                    </div>
-                    <div class="col col-6 text-end">
-                        <button
-                            type="button"
-                            class="btn btn-secondary text-nowrap"
-                            data-bs-dismiss="modal"
-                        >
-                            <i class="bi-x-circle-fill pe-1"></i>
-                            {{ _('Cancel') }}
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
-    </form>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Save') }}
+            </button>
+        </div>
+    </div>
 </div>

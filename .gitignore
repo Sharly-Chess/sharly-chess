@@ -33,5 +33,6 @@ __pycache__/
 /locale/*/LC_MESSAGES/messages.mo
 /locale/messages.pot
 
-*.dat
 *.log
+/mprofile_*.dat
+

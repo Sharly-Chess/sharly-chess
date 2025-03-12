@@ -6,10 +6,12 @@ from data.player import Player
 from common import APP_NAME
 from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
+from litestar.contrib.htmx.request import HTMXRequest
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
     from web.controllers.base_controller import BaseController
+    from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
     
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
@@ -58,6 +60,10 @@ class AppHookSpecs:
         """Provide plugin context for the AdminWebContext"""
         
     @hookspec
+    def get_base_event_admin_context(web_context: 'BaseEventAdminWebContext') -> dict[str, Any]:
+        """Provide plugin context for the BaseEventAdminWebContext"""
+
+    @hookspec
     def get_player_search_template(self) -> str:
         """Provide a path to the player search template"""
 
@@ -99,6 +105,10 @@ class AppHookSpecs:
     def augment_player_after_search(self, player: Player):
         """Add plugin specific data to a player"""
     
+    @hookspec
+    def set_player_default_ratings(self, federation: str, player: 'Player'):
+        """Set default ratings for an unrated player"""
+        
     @hookspec(firstresult=True)
     def is_tournament_participation_possible(
         self, tournament: 'Tournament', player: Player
@@ -116,6 +126,14 @@ class AppHookSpecs:
     @hookspec
     def get_extra_player_columns(self) -> Iterable[ExtraAdminColumn]:
         """Provide extra columns for the print view"""
+        
+    @hookspec
+    def clear_player_filters(self, request: HTMXRequest):
+        """Clear any filters set on the admin players tab"""
+        
+    @hookspec
+    def filter_player(self, web_context: HTMXRequest, player: Player) -> bool:
+        """Returns True if the player should be in the admin player list, False otherwise """
         
     @hookspec
     def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[ExtraColumn]:
