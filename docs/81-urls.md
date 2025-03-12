@@ -42,6 +42,8 @@ Cette page décrit les URLs utilisées par Papi-web.
 | ``GET /user/rotator/{event_uniq_id:str}/{rotator_id:int}``<br/>``user-rotator``                            | ``user.screen_user_controller.ScreenUserController``<br/>``htmx_user_rotator()``                                          |                              |
 | ``GET /user/screen/{event_uniq_id:str}/{screen_uniq_id:str}``<br/>``user-screen``                          | ``user.screen_user_controller.ScreenUserController``<br/>``htmx_user_screen()``                                           |                              |
 
+## URLs non affichées
+
 | Method URI<br>Name                                                                                                                                                 | Controller method (``web.controllers.``)                                                                                  |  |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|--|
 | ``GET /admin/config-modal``<br/>``admin-config-modal``                                                                                                             | ``admin.index_admin_controller.IndexAdminController``<br/>``htmx_admin_config_modal()``                                   |  |
@@ -134,6 +136,3 @@ Cette page décrit les URLs utilisées par Papi-web.
 | ``GET /user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}``<br/>``user-result-modal``                                   | ``user.tournament_user_controller.ResultUserController``<br/>``htmx_user_result_modal()``                                 |  |
 | ``GET /user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}``<br/>``user-rotator``                                                         | ``user.screen_user_controller.ScreenUserController``<br/>``htmx_user_rotator()``                                          |  |
 | ``PATCH /user/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}``<br/>``user-toggle-check-in``                          | ``user.tournament_user_controller.CheckInUserController``<br/>``htmx_user_toggle_check_in()``                             |  |
-
-## URLs non affichées
-
