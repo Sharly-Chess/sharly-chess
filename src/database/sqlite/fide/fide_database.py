@@ -162,14 +162,14 @@ class FideDatabase(SQLiteDatabase):
                         data = {}
                         
                     if event == 'end' and elem.tag == 'player':
-                        to_write.append(tuple(data))
+                        to_write.append(data)
                         player_count += 1
                         if player_count % 1000 == 0:
                             self.executemany(query, to_write)
                             print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
                             self.commit()
                             to_write.clear()
-                        
+
                     elif event == 'end' and elem.tag in fields:
                         (field_name, field_function) = fields[elem.tag]
                         data[field_name] = elem.text or ''
@@ -195,6 +195,7 @@ class FideDatabase(SQLiteDatabase):
                 _('Error while creating the database: {ex}.').format(ex=ex)
             )
             self.file.unlink(missing_ok=True)
+            raise ex
             if save:
                 save.rename(self.file)
             return False
