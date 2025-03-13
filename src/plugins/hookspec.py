@@ -1,4 +1,5 @@
 from collections.abc import Iterable, Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import NamedTuple, Any, TYPE_CHECKING
 
@@ -19,8 +20,8 @@ if TYPE_CHECKING:
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
 
-
-class PrintSplitOption(NamedTuple):
+@dataclass
+class PrintSplitOption:
     name: str
     url_name: str
     split_fn: Callable[
@@ -28,13 +29,14 @@ class PrintSplitOption(NamedTuple):
     ]
 
 
-class ExtraColumn(NamedTuple):
+@dataclass
+class ExtraColumn:
     at: str
     title: str
-    classes: str
     value: Callable[
         [Any], str
     ]
+    classes: str = ""
 
 
 class ExtraAdminColumn(NamedTuple):
@@ -149,6 +151,10 @@ class AppHookSpecs:
     @hookspec
     def get_extra_screen_columns(self, screen: ScreenType) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
+
+    @hookspec
+    def get_extra_players_datasheet_columns(self) -> Iterable[ExtraColumn]:
+        """Provide extra columns for the player download datasheets """
 
     @hookspec
     def get_extra_tournament_exporters(self) -> list[AbstractTournamentExporter]:

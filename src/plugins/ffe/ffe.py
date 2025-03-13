@@ -507,6 +507,32 @@ def get_extra_player_columns() -> Iterable[ExtraAdminColumn]:
             cell_template="/ffe_player_licence_cell.html",
         )
     ]
+    
+
+@hookimpl
+def get_extra_players_datasheet_columns() -> Iterable[ExtraColumn]:
+    return [
+        ExtraColumn(
+            at="tournament",
+            title="ffe_id",
+            value=lambda player: get_data(player.plugin_data, 'ffe_id'),
+        ),
+        ExtraColumn(
+            at="tournament",
+            title="ffe_licence_number",
+            value=lambda player: get_data(player.plugin_data, 'ffe_licence_number'),
+        ),
+        ExtraColumn(
+            at="tournament",
+            title="ffe_licence",
+            value=lambda player: get_data(player.plugin_data, 'ffe_licence').short_name,
+        ),
+        ExtraColumn(
+            at="club",
+            title="league",
+            value=lambda player: get_data(player.plugin_data, 'league'),
+        )        
+    ]
 
 
 @hookimpl
