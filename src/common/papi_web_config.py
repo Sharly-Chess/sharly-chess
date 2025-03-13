@@ -94,7 +94,8 @@ class PapiWebConfig(metaclass=Singleton):
     def reload(self):
         self.stored_config = self.load()
 
-    def load(self) -> StoredConfig:
+    @staticmethod
+    def load() -> StoredConfig:
         with ConfigDatabase() as config_database:
             return config_database.load_stored_config()
 
