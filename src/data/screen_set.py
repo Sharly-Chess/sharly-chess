@@ -1,10 +1,10 @@
 import math
 import weakref
-from _weakref import ReferenceType
 from collections.abc import Iterable
 from itertools import chain
 from logging import Logger
 from typing import Any, TYPE_CHECKING
+from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.i18n import _

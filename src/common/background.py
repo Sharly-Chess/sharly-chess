@@ -25,7 +25,7 @@ def inline_image_url(image: str | None) -> str:
     if not file.exists():
         file: Path = Path('src') / PapiWebConfig.embedded_custom_path / image
         if not file.exists():
-            logger.warning(f'Image [{file}] not found.')
+            logger.warning('Image [%s] not found.', file)
             return PapiWebConfig.error_background_image
     with open(file, 'rb') as f:
         data: bytes = f.read()

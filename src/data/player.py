@@ -8,13 +8,9 @@ from logging import Logger
 from typing import TYPE_CHECKING, Any, Self, Callable
 from trf import Player as TrfPlayer
 
-if TYPE_CHECKING:
-    from _weakref import ReferenceType
-    from data.tournament import Tournament
-
 from common.i18n import _
-from data.pairing import Pairing
 from common.logger import get_logger
+from data.pairing import Pairing
 from data.util import (
     PlayerGender,
     PlayerTitle,
@@ -24,6 +20,10 @@ from data.util import (
     PlayerRatingType,
     PlayerCategory,
 )
+
+if TYPE_CHECKING:
+    from _weakref import ReferenceType
+    from data.tournament import Tournament
 
 logger: Logger = get_logger()
 

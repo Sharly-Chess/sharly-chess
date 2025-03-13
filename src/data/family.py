@@ -1,8 +1,8 @@
 import weakref
-from _weakref import ReferenceType
-from functools import cached_property, cache
+from functools import cached_property
 from math import ceil
 from typing import TYPE_CHECKING
+from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.i18n import _
@@ -30,6 +30,7 @@ class Family:
         self._calculated_last: int | None = None
         self._calculated_number: int | None = None
         self._calculated_parts: int | None = None
+        self.error = None
 
     @property
     def event(self) -> 'Event':
@@ -175,7 +176,6 @@ class Family:
     def last_update_str(self) -> str | None:
         return format_timestamp_date_time(self.last_update)
 
-    @cache
     def _calculate_screens(self) -> bool:
         if not self.tournament.rounds:
             self.error = _(

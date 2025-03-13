@@ -1,11 +1,11 @@
 import fnmatch
 import weakref
-from _weakref import ReferenceType
 from collections.abc import Iterator
 from functools import cached_property
 from logging import Logger
 from typing import Self
 from typing import TYPE_CHECKING
+from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.background import inline_image_url

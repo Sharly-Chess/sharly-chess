@@ -13,7 +13,7 @@ from litestar.params import Body
 from litestar.response import Template
 
 from common import format_timestamp_date, EXPERIMENTAL_FEATURES
-from common.i18n import _, ngettext, locale_localized_name, trusted_locales, untrusted_locales, default_locale
+from common.i18n import _, ngettext, locale_localized_name, trusted_locales, untrusted_locales, DEFAULT_LOCALE
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
@@ -830,7 +830,7 @@ class BaseAdminController(BaseController):
                         for locale in untrusted_locales
                     }
                 locale_options[''] = _('By default - {option}').format(
-                    option=locale_options[default_locale]
+                    option=locale_options[DEFAULT_LOCALE]
                 )
                 context |= {
                     'log_level_options': log_level_options,
