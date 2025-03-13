@@ -1441,7 +1441,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         stored_tournament: StoredTournament,
     ) -> StoredTournament:
         per_plugin_player_data = plugin_manager.hook.tournament_data_for_db_write(stored_tournament=stored_tournament)
-        plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
+        plugin_data = {key: value for data in per_plugin_player_data for key, value in data.items()}
         
         # check_in_open is not updated here but in set_tournament_check_in()
         fields: list[str] = [
