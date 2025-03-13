@@ -202,13 +202,13 @@ def clear_player_filters(request: HTMXRequest):
 
 
 @hookimpl
-def filter_player(web_context: HTMXRequest, player: Player) -> bool:
+def filter_player(web_context: BaseEventAdminWebContext, player: Player) -> bool:
     filter_leagues: list[str] = (
         FFESessionHandler.get_session_admin_players_filter_leagues(
             web_context.request
         )
     )
-    filter_licences: list[str] = (
+    filter_licences: list[PlayerFFELicence] = (
         FFESessionHandler.get_session_admin_players_filter_licences(
             web_context.request
         )
