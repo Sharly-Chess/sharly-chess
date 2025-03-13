@@ -1417,7 +1417,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(stored_tournament=stored_tournament, row=row)
-        return stored_tournament;
+        return stored_tournament
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
         self.execute(
