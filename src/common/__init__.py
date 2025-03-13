@@ -49,7 +49,7 @@ except PermissionError as pe:
 #The base directory, differs for developers. base_dir must be used when looking for application files
 #(images, templates, ...) while user file should be search in the current directory.
 BASE_DIR: Path = (
-    Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS)
+    Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS) # type: ignore
 )
 
 
@@ -113,7 +113,12 @@ def show_duration(func):
         total_time = end_time - start_time
         # first item in the args, ie `args[0]` is `self`
         logger.warning(
-            f'{total_time:.4f}s {args[0].__class__.__name__}.{func.__name__}({args[1:]} {kwargs})'
+            '%.4fs %s.%s(%s %s)',
+            total_time,
+            args[0].__class__.__name__,
+            func.__name__,
+            args[1:],
+            kwargs
         )
         return result
 

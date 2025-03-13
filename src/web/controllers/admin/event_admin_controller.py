@@ -721,8 +721,8 @@ class EventAdminController(BaseEventAdminController):
         
         # Add plugin columns
         extra_columns = EventAdminController.get_players_datasheet_extra_columns()
-        for index, column in extra_columns.items():
-            header_columns[index:index] = column.title
+        for index, columns in extra_columns.items():
+            header_columns[index:index] = [column.title for column in columns]
             
         return header_columns
             

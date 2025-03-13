@@ -603,7 +603,10 @@ class Tournament:
         return fields
 
     @staticmethod
-    def _trf_bb_fields(result_class: type[Result] = Result, point_values: dict[Result, float] | None = None) -> dict[str, str]:
+    def _trf_bb_fields(
+        result_class: type[Result] = Result,
+        point_values: dict[Result, float] | None = None
+    ) -> dict[str, str]:
         fields: dict[str, str] = {}
         for result in [
             result_class.GAIN,

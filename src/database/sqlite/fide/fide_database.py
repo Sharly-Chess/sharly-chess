@@ -160,7 +160,7 @@ class FideDatabase(SQLiteDatabase):
                 for event, elem in context:
                     if event == 'start' and elem.tag == 'player':
                         data = {}
-                        
+
                     if event == 'end' and elem.tag == 'player':
                         to_write.append(data)
                         player_count += 1
@@ -177,7 +177,7 @@ class FideDatabase(SQLiteDatabase):
                         root.clear()
                         if field_function:
                             data[field_name] = field_function(data[field_name])
-                        
+
                         if field_name == 'name':
                             if ',' in data['name']:
                                 last_name, first_name = data['name'].split(',', maxsplit=1)
@@ -290,5 +290,5 @@ class FideDatabase(SQLiteDatabase):
 
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self.execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
+        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
         return self.get_player_from_row(self._fetchone())

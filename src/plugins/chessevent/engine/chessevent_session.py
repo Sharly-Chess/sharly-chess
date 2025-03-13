@@ -6,8 +6,8 @@ from requests.exceptions import ConnectionError, Timeout, RequestException, HTTP
 
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
-from data.tournament import Tournament
 from common.logger import get_logger, print_interactive_error
+from data.tournament import Tournament
 
 logger: Logger = get_logger()
 

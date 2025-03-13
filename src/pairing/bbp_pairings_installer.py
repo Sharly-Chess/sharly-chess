@@ -2,8 +2,8 @@ import shutil
 import platform
 from pathlib import Path
 
-from pairing.bbp_pairings import BbpPairings
 import requests
+from pairing.bbp_pairings import BbpPairings
 
 from common.logger import print_interactive_info, print_interactive_success
 
@@ -11,9 +11,6 @@ class BbpPairingsInstaller(BbpPairings):
     project_url: str = 'https://github.com/BieremaBoyzProgramming/bbpPairings'
     windows_build_filename: str = 'x86_64-pc-windows.zip'
     linux_build_filename: str = 'x86_64-pc-linux.tar.gz'
-
-    def __init__(self):
-        super().__init__()
 
     @classmethod
     def install(cls):
@@ -32,13 +29,13 @@ class BbpPairingsInstaller(BbpPairings):
         cls.bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
         archive_path: Path = cls.bbp_pairings_dir / build_filename
         print_interactive_info(f'Downloading {build_url}...')
-        response = requests.get(build_url, stream=True)
+        response = requests.get(build_url, stream=True, timeout=10)
         response.raise_for_status()
         with open(archive_path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-        print_interactive_success(f'Done.')
+        print_interactive_success('Done.')
         print_interactive_info(f'Installing to {cls.bbp_pairings_dir}...')
         shutil.unpack_archive(archive_path, cls.bbp_pairings_dir)
         archive_path.unlink(missing_ok=True)
-        print_interactive_success(f'Done.')
+        print_interactive_success('Done.')

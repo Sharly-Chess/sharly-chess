@@ -41,7 +41,7 @@ class BbpPairings:
 
         trf_file_path = TMP_DIR / 'tournament.trfx'
         pairings_file_path = TMP_DIR / 'pairings.txt'
-        with open(trf_file_path, 'w') as trf_file:
+        with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
             trf.dump(trf_file, tournament.to_trf(TrfType.PAIRING))
         try:
             subprocess.run(
@@ -57,7 +57,7 @@ class BbpPairings:
         finally:
             os.remove(trf_file_path)
         try:
-            with open(pairings_file_path) as pairing_file:
+            with open(pairings_file_path, encoding='utf-8') as pairing_file:
                 self._pairings_from_file(pairing_file, tournament)
         finally:
             os.remove(pairings_file_path)

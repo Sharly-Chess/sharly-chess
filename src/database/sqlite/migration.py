@@ -98,30 +98,34 @@ class AbstractMigrationManager(ABC):
             and current_version < self.first_migration_version
         ):
             self._log_error(
-                f'Database %{database.file.name} ({current_version}) '
+                'Database %s (%s) '
                 'impossible to migrate: version is prior to the first '
-                f'database version ({self.first_migration_version})'
+                'database version (%s)',
+                database.file.name, current_version, self.first_migration_version
             )
             return False
         if target_version < self.first_migration_version:
             self._log_error(
-                f'impossible to migrate to version [{target_version.public}]: '
-                f' version is prior to the first database version '
-                f'({self.first_migration_version}).'
+                'impossible to migrate to version [%s]: '
+                'version is prior to the first database version '
+                '(%s).',
+                target_version.public, self.first_migration_version
             )
             return False
         if current_version > PAPI_WEB_VERSION:
             self._log_error(
-                f'Database {database.file.name} ({current_version}) '
-                f'impossible to migrate: version is after the '
-                f'current Papi-web version ({PAPI_WEB_VERSION.public}).'
+                'Database %s (%s) '
+                'impossible to migrate: version is after the '
+                'current Papi-web version (%s).',
+                database.file.name, current_version, PAPI_WEB_VERSION.public
             )
             return False
         if target_version > PAPI_WEB_VERSION:
             self._log_error(
-                f'impossible to upgrade to version [{target_version.public}]: '
-                f' version is after the current Papi-web version '
-                f'({PAPI_WEB_VERSION.public}).'
+                'impossible to upgrade to version [%s]: '
+                ' version is after the current Papi-web version '
+                '(%s).',
+                target_version.public, PAPI_WEB_VERSION.public
             )
             return False
 
@@ -163,9 +167,10 @@ class AbstractMigrationManager(ABC):
                 )
             except OperationalError as e:
                 self._log_error(
-                    f'Database {database.file.name} '
-                    f'({self.get_version(database)}) could not be '
-                    f'upgraded to version {migration_version}: "{e}"'
+                    'Database %s '
+                    '(%s) could not be '
+                    'upgraded to version %s: "%s"',
+                    database.file.name, self.get_version(database), migration_version, e
                 )
                 return False
         return True
@@ -202,9 +207,10 @@ class AbstractMigrationManager(ABC):
                 )
             except (OperationalError, NotImplementedError) as e:
                 self._log_error(
-                    f'Database {database.file.name} '
-                    f'({self.get_version(database)}) could not be '
-                    f'downgraded to version {previous_version}: "{e}"'
+                    'Database %s '
+                    '(%s) could not be '
+                    'downgraded to version %s: "%s"',
+                    database.file.name, self.get_version(database), previous_version, e
                 )
                 return False
         return True

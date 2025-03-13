@@ -34,24 +34,20 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
     @abstractmethod
     def stored_version(self) -> Version:
         """Version stored in the database."""
-        pass
 
     @abstractmethod
     def set_version(self, version: Version):
         """Sets the version field stored in the database to `version`."""
-        pass
 
     @property
     @abstractmethod
     def migration_manager(self) -> 'AbstractMigrationManager':
         """Manager to use for migrations."""
-        pass
 
     @abstractmethod
     def insert_creation_values(self):
         """Insert into the database the creation values."""
-        pass
-    
+
     @property
     def version(self) -> Version:
         """Returns the Papi-web version which used the database."""
@@ -69,7 +65,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
                 f'can not open database {self.file.name} '
                 f'(version {self.version}), please upgrade.'
             )
-        logger.info(f'Upgrading database {self.file.name}...')
+        logger.info('Upgrading database %s...', self.file.name)
         initial_version = self.version
         if self.migration_manager.migrate(self, PAPI_WEB_VERSION):
             logger.info(
@@ -93,8 +89,6 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
             with self.from_parent(
                 SQLiteVersionedDatabase(self.file, True, False)
             ) as database:
-                from database.sqlite.config.config_database import ConfigDatabase
-
                 database._version = database.migration_manager.EMPTY_DATABASE_VERSION
                 database.migration_manager.migrate(
                     database, PAPI_WEB_VERSION
