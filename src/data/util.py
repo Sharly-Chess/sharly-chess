@@ -1283,8 +1283,8 @@ class PrintDocument(StrEnum):
             case _:
                 raise ValueError(f'Invalid print type: {self}')
 
-def get_plugin_data(plugin_name: str, plugin_data: dict[str, dict], field: str, default: Any = None):
-    return plugin_data.get(plugin_name, {}).get(field, default)
+def get_plugin_data(plugin_name: str, plugin_data: dict[str, dict] | None, field: str, default: Any = None):
+    return (plugin_data or {}).get(plugin_name, {}).get(field, default)
 
 
 class PointValueType(Enum):

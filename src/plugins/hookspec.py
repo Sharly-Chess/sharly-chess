@@ -10,10 +10,10 @@ from common import APP_NAME
 from data.player import Player
 from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
-from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
+    from database.sqlite.event.event_store import StoredTournament
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 
@@ -91,6 +91,26 @@ class AppHookSpecs:
         errors: dict[str, str]
     ) -> dict[str, Any]:
         """Validate player form fields"""
+
+    @hookspec
+    def get_tournament_form_fields_template(self) -> str:
+        """Provide a path to the template containing tournament form fields"""
+    
+    @hookspec
+    def get_tournament_form_data(
+        self, tournament: 'Tournament | None',
+    ) -> dict[str, Any]:
+        """Provide form data for the tournament form fields"""
+    
+    @hookspec
+    def get_validated_tournament_form_fields(
+        self,
+        action: str,
+        tournament: 'Tournament',
+        data: dict[str, str],
+        errors: dict[str, str]
+    ) -> dict[str, Any]:
+        """Validate tournament form fields"""
         
     @hookspec
     def get_db_player_fields(self) -> list[str]:
@@ -105,6 +125,18 @@ class AppHookSpecs:
     @hookspec
     def player_data_for_db_write(self, player: Player) -> dict[str, Any]:
         """Provide data for player fields to write to the database"""
+
+    @hookspec
+    def augment_tournament_after_db_fetch(self, stored_tournament: 'StoredTournament', row: dict[str, Any]):
+        """Add plugin specific data to a store tournaments after they are fetched from the database"""
+        
+    @hookspec
+    def tournament_data_for_db_write(self, stored_tournament: 'StoredTournament') -> dict[str, Any]:
+        """Provide data for tournament fields to write to the database"""
+    
+    @hookspec
+    def on_tournament_init(self, tournament: 'Tournament'):
+        """Do any tournament specific initialisation """
         
     @hookspec
     def augment_player_after_search(self, player: Player):
@@ -161,9 +193,9 @@ class AppHookSpecs:
         """Provide extra exporting formats for tournaments"""
 
     @hookspec
-    def get_event_migration_manager(self) -> AbstractPluginMigrationManager:
+    def get_event_migration_manager(self) -> 'AbstractPluginMigrationManager':
         """Provide a migration manager for event databases"""
 
     @hookspec
-    def get_engine_argument(self) -> PluginEngineArgument:
+    def get_engine_argument(self) -> 'PluginEngineArgument':
         """Provide an engine argument"""

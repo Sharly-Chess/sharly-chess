@@ -123,8 +123,6 @@ class TournamentAdminController(BaseEventAdminController):
         name: str | None = None
         path: str | None = None
         filename: str | None = None
-        ffe_id: int | None = None
-        ffe_password: str | None = None
         time_control_initial_time: int | None = None
         time_control_increment: int | None = None
         time_control_handicap_penalty_value: int | None = None
@@ -148,15 +146,6 @@ class TournamentAdminController(BaseEventAdminController):
                     errors['name'] = _('Please enter the tournament name.')
                 path = WebContext.form_data_to_str(data, 'path')
                 filename = WebContext.form_data_to_str(data, 'filename')
-                try:
-                    ffe_id = WebContext.form_data_to_int(data, 'ffe_id')
-                except ValueError:
-                    errors['ffe_id'] = _('The FFE ID is a positive integer.')
-                ffe_password = WebContext.form_data_to_str(data, 'ffe_password')
-                if ffe_password and not re.match('^[A-Z]{10}$', ffe_password):
-                    errors['ffe_password'] = _(
-                        'The password of the tournament on the FFE website is made of 10 uppercase letters.'
-                    )
                 time_control_initial_time = WebContext.form_data_to_int(
                     data, 'time_control_initial_time'
                 )
@@ -223,6 +212,10 @@ class TournamentAdminController(BaseEventAdminController):
                         )
                     )
 
+        # Have plugins validate their fields and return private plugin data
+        per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
+        plugin_data = { key: value for data in per_plugin_tournament_data for key, value in data.items() }
+        
         return StoredTournament(
             id=web_context.admin_tournament.id
             if action
@@ -235,8 +228,6 @@ class TournamentAdminController(BaseEventAdminController):
             name=name,
             path=path,
             filename=filename,
-            ffe_id=ffe_id,
-            ffe_password=ffe_password,
             time_control_initial_time=time_control_initial_time,
             time_control_increment=time_control_increment,
             time_control_handicap_penalty_value=time_control_handicap_penalty_value,
@@ -255,6 +246,7 @@ class TournamentAdminController(BaseEventAdminController):
             check_in_open=check_in_open,
             tie_breaks=tie_breaks,
             errors=errors,
+            plugin_data=plugin_data
         )
 
     @classmethod
@@ -309,8 +301,6 @@ class TournamentAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     path: str | None = None
                     filename: str | None = None
-                    ffe_id: int | None = None
-                    ffe_password: str | None = None
                     time_control_initial_time: int | None = None
                     time_control_increment: int | None = None
                     time_control_handicap_penalty_value: int | None = None
@@ -364,10 +354,6 @@ class TournamentAdminController(BaseEventAdminController):
                             filename = (
                                 web_context.admin_tournament.stored_tournament.filename
                             )
-                            ffe_id = (
-                                web_context.admin_tournament.stored_tournament.ffe_id
-                            )
-                            ffe_password = web_context.admin_tournament.stored_tournament.ffe_password
                             if web_context.admin_tournament.file_exists:
                                 (
                                     tie_break_1, tie_break_2, tie_break_3
@@ -376,6 +362,10 @@ class TournamentAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
+                    
+                    per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(tournament=web_context.admin_tournament)
+                    plugin_form_data = { key: value for data in per_plugin_form_data for key, value in data.items() }
+                    
                     data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'name': WebContext.value_to_form_data(name),
@@ -416,12 +406,11 @@ class TournamentAdminController(BaseEventAdminController):
                         'paired_bye_result': WebContext.value_to_form_data(paired_bye_result),
                         'max_byes': WebContext.value_to_form_data(max_byes),
                         'last_rounds_no_byes': WebContext.value_to_form_data(last_rounds_no_byes),
-                        'ffe_id': WebContext.value_to_form_data(ffe_id),
-                        'ffe_password': WebContext.value_to_form_data(ffe_password),
                         'tie_break_1': WebContext.value_to_form_data(tie_break_1),
                         'tie_break_2': WebContext.value_to_form_data(tie_break_2),
                         'tie_break_3': WebContext.value_to_form_data(tie_break_3),
-                    }
+                    } | plugin_form_data
+                    
                     stored_tournament: StoredTournament = (
                         cls._admin_validate_tournament_update_data(
                             action, web_context, data
@@ -430,12 +419,16 @@ class TournamentAdminController(BaseEventAdminController):
                     errors = stored_tournament.errors
                 if errors is None:
                     errors = {}
+                    
+                plugin_form_fields_templates = plugin_manager.hook.get_tournament_form_fields_template() or []
+                
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
                     ),
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     'tie_break_options': cls._get_tie_break_options(),
+                    'plugin_form_fields_templates': plugin_form_fields_templates,
                     'modal': modal,
                     'action': action,
                     'data': data,

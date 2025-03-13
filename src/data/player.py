@@ -175,7 +175,7 @@ class Player(TournamentPlayer):
         errors: dict[str, str] | None = None,
         
         # Plugins can add their own player data
-        plugin_data: dict[str, dict[str, Any]] = None
+        plugin_data: dict[str, dict[str, Any]] | None = None
     ):
         super().__init__(
             id,
@@ -216,11 +216,11 @@ class Player(TournamentPlayer):
         self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> 'Tournament | None':
         return self._tournament_ref() if self._tournament_ref else None
 
     @tournament.setter
-    def tournament(self, tournament: 'Tournament'):
+    def tournament(self, tournament: 'Tournament | None'):
         self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @staticmethod
