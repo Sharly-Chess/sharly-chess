@@ -364,7 +364,7 @@ class TournamentAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(tournament=web_context.admin_tournament)
-                    plugin_form_data = { key: value for data in per_plugin_form_data for key, value in data.items() }
+                    plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
                     
                     data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
