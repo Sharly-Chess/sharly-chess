@@ -137,7 +137,11 @@ class AppHookSpecs:
     @hookspec
     def filter_player(self, web_context: HTMXRequest, player: Player) -> bool:
         """Returns True if the player should be in the admin player list, False otherwise """
-
+        
+    @hookspec(firstresult=True)
+    def player_club_sort_key(self, player: Player) -> tuple:
+        """Returns a sort key for sorting the admin player list by club """
+    
     @hookspec
     def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""

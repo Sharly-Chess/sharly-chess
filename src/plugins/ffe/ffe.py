@@ -227,6 +227,17 @@ def filter_player(web_context: HTMXRequest, player: Player) -> bool:
 
 
 @hookimpl
+def player_club_sort_key(player: Player):
+    # We sort by league first
+    return (
+        get_data(player.plugin_data, 'league'),
+        player.club,
+        player.last_name,
+        player.first_name,
+    )
+
+
+@hookimpl
 def get_player_search_template() -> str:
     return "/ffe_search.html"
 

@@ -341,7 +341,7 @@ class BaseEventAdminController(BaseAdminController):
                             
                     case 'club':
                         def sort_key(player: Player):
-                            return (
+                            return plugin_manager.hook.player_club_sort_key(player=player) or (
                                 player.club,
                                 player.last_name,
                                 player.first_name,
