@@ -504,25 +504,21 @@ def get_extra_players_datasheet_columns() -> Iterable[ExtraColumn]:
         ExtraColumn(
             at="tournament",
             title="ffe_id",
-            classes="",
             value=lambda player: get_data(player.plugin_data, 'ffe_id'),
         ),
         ExtraColumn(
             at="tournament",
             title="ffe_licence_number",
-            classes="",
             value=lambda player: get_data(player.plugin_data, 'ffe_licence_number'),
         ),
         ExtraColumn(
             at="tournament",
             title="ffe_licence",
-            classes="",
             value=lambda player: get_data(player.plugin_data, 'ffe_licence').short_name,
         ),
         ExtraColumn(
             at="club",
             title="league",
-            classes="",
             value=lambda player: get_data(player.plugin_data, 'league'),
         )        
     ]
