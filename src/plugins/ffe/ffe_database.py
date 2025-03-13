@@ -83,6 +83,10 @@ class FfeDatabase(SQLiteDatabase):
                     return True
             else:
                 return True
+        return self.create()
+
+    def create(self) -> bool:
+        """Create the FFE database, returns True if the database is available after the call, False otherwise."""
         print_interactive_info(_('Downloading the FFE database...'))
         ffe_database_url: str = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
         local_zip_file: Path = TMP_DIR / os.path.basename(ffe_database_url)

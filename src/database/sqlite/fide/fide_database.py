@@ -162,7 +162,7 @@ class FideDatabase(SQLiteDatabase):
                         data = {}
                         
                     if event == 'end' and elem.tag == 'player':
-                        self.execute(query, tuple(data.values()))
+                        to_write.append(tuple(data))
                         player_count += 1
                         if player_count % 1000 == 0:
                             self.executemany(query, to_write)
