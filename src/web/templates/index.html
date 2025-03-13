@@ -87,6 +87,7 @@
                         preload
                         hx-target="body"
                         hx-indicator="#please-wait"
+                        hx-push-url="true"
                         class="btn btn-outline-primary btn-lg p-4 w-100"
                         {% if papi_web_config.force_edit %}
                             disabled
@@ -107,6 +108,7 @@
                         hx-get="{{ url_for('admin') }}"
                         preload
                         hx-target="body"
+                        hx-push-url="true"
                         hx-indicator="#please-wait"
                         class="btn btn-danger btn-lg p-1 w-100"
                         {% if not admin_auth %}

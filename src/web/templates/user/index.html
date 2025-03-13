@@ -6,6 +6,7 @@
         hx-get="{{ url_for('index') }}"
         preload
         hx-target="body"
+        hx-push-url="true"
         hx-trigger="click, keyup[key=='Escape'] from:body"
         hx-indicator="#please-wait"
         {{ macros.tooltip_attributes('info', _('Go back to the home page.'), 'top') }}
@@ -35,6 +36,7 @@
             hx-get="{{ url_for('user-tab', user_tab=nav_id) }}"
             preload
             hx-target="body"
+            hx-push-url="true"
             type="button"
             role="tab"
             hx-indicator="#please-wait"
