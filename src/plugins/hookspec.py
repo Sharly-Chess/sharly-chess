@@ -65,7 +65,7 @@ class AppHookSpecs:
         """Provide plugin context for the AdminWebContext"""
         
     @hookspec
-    def get_base_event_admin_context(web_context: 'BaseEventAdminWebContext') -> dict[str, Any]:
+    def get_base_event_admin_context(self, web_context: 'BaseEventAdminWebContext') -> dict[str, Any]:
         """Provide plugin context for the BaseEventAdminWebContext"""
 
     @hookspec
@@ -137,7 +137,7 @@ class AppHookSpecs:
         """Clear any filters set on the admin players tab"""
 
     @hookspec
-    def filter_player(self, web_context: HTMXRequest, player: Player) -> bool:
+    def filter_player(self, web_context: 'BaseEventAdminWebContext', player: Player) -> bool:
         """Returns True if the player should be in the admin player list, False otherwise """
         
     @hookspec(firstresult=True)
