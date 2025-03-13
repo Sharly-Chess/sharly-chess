@@ -195,7 +195,6 @@ class FideDatabase(SQLiteDatabase):
                 _('Error while creating the database: {ex}.').format(ex=ex)
             )
             self.file.unlink(missing_ok=True)
-            raise ex
             if save:
                 save.rename(self.file)
             return False
