@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/ffe_macros.j2' as ffe_macros %}
 
 {% with url=url_for('ffe-admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') %}
 <th scope="col" class="text-nowrap text-center w-1">
@@ -42,7 +43,7 @@
                                         class="{{ name }}"
                                     />
                                     <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                        {{ macros.ffe_licence(licence) }} ({{ ffe_licence_counts[licence] }})
+                                        {{ ffe_macros.ffe_licence(licence) }} ({{ ffe_licence_counts[licence] }})
                                     </label>
                                 </li>
                             {% endfor %}
