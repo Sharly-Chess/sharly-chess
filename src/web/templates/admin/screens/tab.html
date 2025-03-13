@@ -141,30 +141,30 @@
             <div class="row">
                 <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
                     {% with id='admin-screens-show-'~screen_type, name='admin_screens_show_'~screen_type %}
-                        <span
-                            class="form-check form-switch"
-                            {{ macros.tooltip_attributes('info', screen_data.checkbox_tooltip_text, 'top') }}
+                        <button
+                            type="button"
+                            class="collapse-button {% if not screen_type in admin_screens_screen_types %}collapsed{% endif %}"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#{{ id }}"
+                            aria-expanded="{{ 'true' if screen_type in admin_screens_screen_types else 'false' }}"
+                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+                            hx-vals='js:{ {{name}}: !$(event.target).closest("button").hasClass("collapsed")}'
+                            hx-swap="none"
                         >
-                            <input
-                                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
-                                hx-vals='{"{{ name }}": "{% if screen_type in admin_screens_screen_types %}false{% else %}true{% endif %}"}'
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                class="form-check-input"
-                                type="checkbox"
-                                id="{{ id }}"
-                                {% if screen_type in admin_screens_screen_types %}checked{% endif %} />
-
-                            <label for="{{ id }}" class="form-check-label d-inline-flex align-items-center gap-2">
+                            <span
+                                class="form-check-label d-inline-flex align-items-center gap-2"
+                                {{ macros.tooltip_attributes('info', screen_data.checkbox_tooltip_text, 'top') }}
+                            >
+                                <i class="bi bi-chevron-down"></i>
                                 {{ macros.screen_type_icon(screen_type, false) }}
                                 {{ screen_data.title }}
-                            </label>
-                        </span>
+                            </span>
+                        </button>
                     {% endwith %}
                 </div>
             </div>
 
-            {% if screen_type in admin_screens_screen_types %}
+            <div class="collapse {% if screen_type in admin_screens_screen_types %}show{% endif %}" id="admin-screens-show-{{ screen_type }}">
                 {% set ns = namespace(screen_found=false) %}
                 <div class="row mb-5">
                     {% for screen in screens %}
@@ -183,7 +183,7 @@
                         </div>
                     {% endif %}
                 </div>
-            {% endif %}
+            </div>
         {% endfor %}
     {% endwith %}
 {% endblock %}
