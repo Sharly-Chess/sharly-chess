@@ -34,8 +34,8 @@ from data.util import (
 
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_access_database import FfeAccessDatabase
-from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.util import PlayerFFELicence
+from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()
 
@@ -129,6 +129,32 @@ class FfeDatabase(SQLiteDatabase):
             save = self.file.with_suffix('.save')
             save.unlink(missing_ok=True)
             self.file.rename(save)
+
+        translations: dict[str, types.FunctionType] = {
+            'ffe_id': None,
+            'ffe_licence_number': lambda s: s.strip().upper() if s else None,
+            'last_name': lambda s: s.strip().upper(),
+            'first_name': capwords,
+            'gender': PlayerGender.from_papi_value,
+            'date_of_birth': lambda dt: dt.date() if dt else None,
+            'federation': None,
+            'standard_rating': int,
+            'rapid_rating': int,
+            'blitz_rating': int,
+            'standard_rating_type': PlayerRatingType.from_papi_value,
+            'rapid_rating_type': PlayerRatingType.from_papi_value,
+            'blitz_rating_type': PlayerRatingType.from_papi_value,
+            'fide_id': lambda s: int(s.strip()) if s else 0,
+            'fide_title': PlayerTitle.from_papi_value,
+            'ffe_licence': PlayerFFELicence.from_papi_value,
+            'league': None,
+            'city': None,
+            'club': None,
+        }
+        column_names = list(translations.keys())
+        bindings = [f':{column_name}' for column_name in column_names]
+        column_names = list(map(lambda s: f"`{s}`"))
+        query: str = f'INSERT INTO player({", ".join(column_names)}) VALUES({", ".join(bindings)})'
         try:
             with open(
                 PapiWebConfig.database_sql_path / 'create_ffe.sql', encoding='utf-8'
@@ -138,50 +164,36 @@ class FfeDatabase(SQLiteDatabase):
                 self.write = True
                 with self:
                     player_count: int = 0
+                    to_write: list[dict[str, Any]] = []
+                    data: dict[str, Any]
                     for player_dict in ffe_access_database.read_player_dicts():
                         try:
-                            translations: dict[str, types.FunctionType] = {
-                                'ffe_id': None,
-                                'ffe_licence_number': lambda s: s.strip().upper()
-                                if s
-                                else None,
-                                'last_name': lambda s: s.strip().upper(),
-                                'first_name': lambda s: capwords(s),
-                                'gender': PlayerGender.from_papi_value,
-                                'date_of_birth': lambda dt: dt.date() if dt else None,
-                                'federation': None,
-                                'standard_rating': int,
-                                'rapid_rating': int,
-                                'blitz_rating': int,
-                                'standard_rating_type': PlayerRatingType.from_papi_value,
-                                'rapid_rating_type': PlayerRatingType.from_papi_value,
-                                'blitz_rating_type': PlayerRatingType.from_papi_value,
-                                'fide_id': lambda s: int(s.strip()) if s else 0,
-                                'fide_title': PlayerTitle.from_papi_value,
-                                'ffe_licence': PlayerFFELicence.from_papi_value,
-                                'league': None,
-                                'city': None,
-                                'club': None,
-                            }
-                            data: dict[str, Any] = {
+                            data = {
                                 field: player_dict[field]
                                 if function is None
                                 else function(player_dict[field])
                                 for field, function in translations.items()
                             }
-                            query: str = f'INSERT INTO player({", ".join(map(lambda s: f"`{s}`", data.keys()))}) VALUES({", ".join(["?"] * len(data))})'
-                            self.execute(query, tuple(data.values()))
+                            to_write.append(data)
                             player_count += 1
                             if player_count % 1000 == 0:
-                                print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
-                    
+                                self.executemany(query, to_write)
+                                print_interactive_info(
+                                    _('{number} players written.').format(number=player_count),
+                                    end='\r'
+                                )
+                                to_write.clear()
+                                self.commit()
+
                         except ValueError:
                             print_interactive_warning(
                                 _(
                                     'Error reading the following row (player ignored): [{row}].'
                                 ).format(row=player_dict)
                             )
-                    self.commit()
+                    if to_write:
+                        self.executemany(query, to_write)
+                        self.commit()
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
                 _('Error while creating the database: {ex}.').format(ex=ex)
@@ -270,7 +282,7 @@ class FfeDatabase(SQLiteDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join([f'(last_name LIKE ?)', ] * len(tokens))
+        order_conditions = ' OR '.join(['(last_name LIKE ?)', ] * len(tokens))
         params += [f'{token}%' for token in tokens]
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
@@ -283,9 +295,9 @@ class FfeDatabase(SQLiteDatabase):
         )
 
     def get_player_by_ffe_id(self, player_ffe_id: int) -> Player | None:
-        self.execute(f'SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
+        self.execute('SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
         return self.get_player_from_row(self._fetchone())
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self.execute(f'SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
+        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
         return self.get_player_from_row(self._fetchone())
