@@ -13,6 +13,7 @@
         hx-get="{{ url_for('user-tab', user_tab=target_tab) }}"
         preload
         hx-target="body"
+        hx-push-url="true"
         hx-indicator="#please-wait"
         hx-trigger="click, keyup[key=='Escape'] from:body"
         hx-indicator="#please-wait"
