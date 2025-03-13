@@ -9,8 +9,5 @@ class AppPluginManager(PluginManager):
     we use elsewhere in our application.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
 plugin_manager = AppPluginManager(APP_NAME)
 plugin_manager.add_hookspecs(AppHookSpecs)

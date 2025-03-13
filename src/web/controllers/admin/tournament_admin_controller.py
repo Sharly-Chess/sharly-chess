@@ -15,18 +15,18 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
-from data.tie_break import PapiTieBreak, TieBreak
-from data.player import Player
-from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
-from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
+from data.tie_break import PapiTieBreak, TieBreak
+from data.player import Player
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
+from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
+from pairing.bbp_pairings import BbpPairings
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -788,14 +788,14 @@ class TournamentAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-    
+
     @staticmethod
     def split_players_by(split_by: PrintSplit, players: list[Player]) -> dict[str, list[Player]]:
         split_functions: dict[PrintSplit, Callable] = {
             PrintSplit.CLUB: lambda p: p.club,
             PrintSplit.CATEGORY: lambda p: p.category.short_name,
             PrintSplit.FEDERATION: lambda p: p.federation,
-        } 
+        }
 
         split_players: dict[str, list[Player]]
         if split_by == PrintSplit.CATEGORY:
@@ -845,7 +845,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        
+
         admin_tournament: Tournament = web_context.admin_tournament
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)
@@ -873,7 +873,7 @@ class TournamentAdminController(BaseEventAdminController):
         else:
             per_plugin_split_options = plugin_manager.hook.get_print_split_options()
             plugin_split_options = [option for options in per_plugin_split_options for option in options]
-        
+
             split_functions = {
                 PrintSplit.CLUB: partial(self.split_players_by, PrintSplit.CLUB),
                 PrintSplit.CATEGORY: partial(self.split_players_by, PrintSplit.CATEGORY),

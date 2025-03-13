@@ -72,11 +72,11 @@ class BaseEventAdminWebContext(AdminWebContext):
             self.value_to_form_data(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
         }
-        
+
     def get_print_split_options(self) -> dict[str, str]:
         per_plugin_split_options = plugin_manager.hook.get_print_split_options()
         plugin_split_options = [option for options in per_plugin_split_options for option in options]
-        
+
         return {
             self.value_to_form_data(split): PrintSplit(split).name
             for split in PrintSplit
@@ -169,7 +169,7 @@ class BaseEventAdminController(BaseAdminController):
                 'template': 'timers/tab.html',
             },
         }
-        
+
         if not web_context.admin_event_tab:
             if web_context.admin_event.player_count:
                 web_context.admin_event_tab = 'players'
@@ -177,13 +177,13 @@ class BaseEventAdminController(BaseAdminController):
                 web_context.admin_event_tab = 'tournaments'
             else:
                 web_context.admin_event_tab = 'config'
-       
+
         template_context: dict[str, Any] = web_context.template_context | {
             'messages': Message.messages(web_context.request),
             'logging_levels': logging_levels,
             'nav_tabs': nav_tabs,
         }
-        
+
         match web_context.admin_event_tab:
             case 'config':
                 pass
@@ -213,7 +213,7 @@ class BaseEventAdminController(BaseAdminController):
                     for extra_column in plugin_columns:
                         c = extra_columns.setdefault(extra_column.at, [])
                         c.append(extra_column)
-                
+
                 # The federations that will be shown on the federation select list
                 players_federations: list[Federation] = sorted(
                     {
@@ -264,9 +264,11 @@ class BaseEventAdminController(BaseAdminController):
                         for player in web_context.admin_event.players_by_id.values()
                     }
                 )
-                # The check-in statuses that will be selected on the check-in status select list and used to filter the players
+                # The check-in statuses that will be selected on the
+                # check-in status select list and used to filter the players
                 players_check_ins: list[bool | None] = [None, True, False]
-                # The check-in statuses that will be selected on the check-in status select list and used to filter the players
+                # The check-in statuses that will be selected on the
+                # check-in status select list and used to filter the players
                 filter_check_ins: list[bool | None] = (
                     SessionHandler.get_session_admin_players_filter_check_ins(
                         web_context.request
@@ -306,49 +308,49 @@ class BaseEventAdminController(BaseAdminController):
                     case 'alpha':
                         def sort_key(player: Player):
                             return player.last_name, player.first_name
-                    
+
                     case 'rating_desc':
-                        def sort_key(player: Player):
+                        def sort_key(player: Player): # pylint: disable=function-redefined
                             return -player.rating, player.last_name, player.first_name
-                    
+
                     case 'rating_asc':
-                        def sort_key(player: Player):
+                        def sort_key(player: Player): # pylint: disable=function-redefined
                             return player.rating, player.last_name, player.first_name
-                   
+
                     case 'yob_desc':
-                        def sort_key(player: Player):
+                        def sort_key(player: Player): # pylint: disable=function-redefined
                             return (
                                 -player.year_of_birth,
                                 player.last_name,
                                 player.first_name,
                             )
-                    
+
                     case 'yob_asc':
-                        def sort_key(player: Player):
+                        def sort_key(player: Player): # pylint: disable=function-redefined
                             return (
                                 player.year_of_birth,
                                 player.last_name,
                                 player.first_name,
                             )
-                    
+
                     case 'category_desc':
-                        def sort_key(player: Player):
+                        def sort_key(player: Player): # pylint: disable=function-redefined
                             return -player.category, player.last_name, player.first_name
-                    
+
                     case 'category_asc':
-                        def sort_key(player: Player):
+                        def sort_key(player: Player): # pylint: disable=function-redefined
                             return player.category, player.last_name, player.first_name
-                            
+
                     case 'club':
-                        def sort_key(player: Player):
+                        def sort_key(player: Player): # pylint: disable=function-redefined
                             return plugin_manager.hook.player_club_sort_key(player=player) or (
                                 player.club,
                                 player.last_name,
                                 player.first_name,
                             )
-                   
+
                     case 'tournament':
-                        def sort_key(player: Player):
+                        def sort_key(player: Player): # pylint: disable=function-redefined
                             return (
                                 web_context.admin_event.tournaments_by_id[
                                     player.tournament_id
@@ -357,7 +359,7 @@ class BaseEventAdminController(BaseAdminController):
                                 player.last_name,
                                 player.first_name,
                             )
-                    
+
                     case _:
                         raise ValueError(
                             f'sort={SessionHandler.get_session_admin_players_sort(web_context.request)}'
@@ -369,7 +371,7 @@ class BaseEventAdminController(BaseAdminController):
                 # 4 less than two tournaments, all or no tournaments selected, or player matches
                 # 5 less than two federations, all or no federations selected, or player matches
                 # 6 less than two clubs, all or no clubs selected, or player matches
-                
+
                 players: dict[int, Player] = {
                     p.id: p
                     for p in sorted(
@@ -533,4 +535,4 @@ class BaseEventAdminController(BaseAdminController):
                 after="settle"
             )
         return HTMXTemplate(template_name='admin/event_layout.html', context=template_context)
-    
+

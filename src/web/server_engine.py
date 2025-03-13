@@ -10,7 +10,7 @@ from litestar import Litestar
 from litestar.contrib.htmx.request import HTMXRequest
 
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
-from common import DEVEL_ENV, EXPERIMENTAL_FEATURES
+from common import DEVEL_ENV, EXPERIMENTAL_FEATURES, REQUEST_TIMEOUT
 from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import (
@@ -23,10 +23,9 @@ from database.sqlite.fide.fide_database import FideDatabase
 
 from plugins.manager import plugin_manager
 from plugins.registration import register_plugins
+from web.settings import route_handlers, template_config, middlewares, stores
 
 register_plugins()
-        
-from web.settings import route_handlers, template_config, middlewares, stores
 
 
 logger: Logger = get_logger()
@@ -40,7 +39,7 @@ def launch_browser(url: str):
     )
     while True:
         try:
-            requests.get(url)
+            requests.get(url, timeout=REQUEST_TIMEOUT)
             break
         except requests.RequestException as e:
             print_interactive_info(
@@ -58,7 +57,7 @@ class ServerEngine(Engine):
         self.debug = debug
         if self.updated:
             return
-        
+
         print_interactive_info(_('Starting Papi-web server, please wait...'))
         papi_web_config: PapiWebConfig = PapiWebConfig()
         print_interactive_info(
@@ -75,7 +74,9 @@ class ServerEngine(Engine):
 
         if EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed:
             if DEVEL_ENV:
-                print_interactive_info(_('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.'))
+                print_interactive_info(
+                    _('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.')
+                )
                 BbpPairingsInstaller().install()
             else:
                 raise FileNotFoundError('BBP Pairings not installed.')
@@ -118,58 +119,6 @@ class ServerEngine(Engine):
             stores=stores,
             pdb_on_exception=self.debug,
         )
-        # This code is intended to check the uniformity of the paths and names used for the application URLs
-        #uris: dict[str, dict[str, str]] = {}
-        #for route in app.routes:
-        #    for handler in route.route_handlers:
-        #        if handler.name:
-        #            paths: list[str]
-        #            match route.path:
-        #                case '/admin/event/{event_uniq_id:str}/{admin_event_tab:str}':
-        #                    paths = [
-        #                        route.path.replace('{admin_event_tab:str}', tab) for tab in [
-        #                            'config', 'tournaments', 'players', 'screens', 'families', 'rotators', 'timers',
-        #                        ]
-        #                    ]
-        #                case '/admin/{admin_tab:str}':
-        #                    paths = [
-        #                        route.path.replace('{admin_tab:str}', tab) for tab in [
-        #                            'config', 'current_events', 'coming_events', 'passed_events', 'archives',
-        #                        ]
-        #                    ]
-        #                case'/user/event/{event_uniq_id:str}/{user_event_tab:str}':
-        #                    paths = [
-        #                        route.path.replace('{user_event_tab:str}', tab) for tab in [
-        #                            'input', 'boards', 'players', 'results', 'ranking', 'image', 'rotators',
-        #                        ]
-        #                    ]
-        #                case '/user/{user_tab:str}':
-        #                    paths = [
-        #                        route.path.replace('{user_tab:str}', tab) for tab in [
-        #                            'current_events', 'coming_events', 'passed_events',
-        #                        ]
-        #                    ]
-        #                case _:
-        #                    paths = [route.path, ]
-        #            entry_point: str = handler.handler_id.split(":", maxsplit=1)[0]
-        #            name = handler.name
-        #            http_method = list(handler.http_methods)[0]
-        #            controller_name = '.'.join(entry_point.split('.')[2:-1])
-        #            controller_method = entry_point.split('.')[-1]
-        #            uris |= {
-        #                path: {
-        #                    'name': name,
-        #                    'http_method': http_method,
-        #                    'controller_name': controller_name,
-        #                    'controller_method': controller_method,
-        #                }
-        #                for path in paths
-        #            }
-        #logger.info('| Method URI<br>Name | Controller method (``web.controllers.``) | |')
-        #logger.info('|-|-|-|')
-        #for path in sorted(uris.keys()):
-        #    uri: dict[str, str] = uris[path]
-        #    logger.info(f'| ``{uri["http_method"]} {path}``<br/>``{uri["name"]}`` | ``{uri["controller_name"]}``<br/>``{uri["controller_method"]}()`` | |')
         uvicorn.run(
             app,
             host=papi_web_config.web_host,

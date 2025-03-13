@@ -31,7 +31,7 @@ class FfeAdminEventController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        
+
         match admin_event_tab:
             case 'players':
                 if admin_players_filter_leagues is not None:
@@ -58,7 +58,7 @@ class FfeAdminEventController(BaseEventAdminController):
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
-        
+
         return HTMXTemplate(
             template_name='admin/event_layout.html',
             context=template_context

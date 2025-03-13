@@ -4,7 +4,6 @@ from datetime import datetime
 from logging import Logger
 from typing import Annotated, Any
 
-from common.papi_web_config import PapiWebConfig
 from litestar import post, get, delete, patch
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
@@ -13,6 +12,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common.papi_web_config import PapiWebConfig
 from common.i18n import _
 from common.logger import get_logger
 from data.loader import EventLoader
@@ -443,13 +443,13 @@ class TimerAdminController(BaseEventAdminController):
             timer_hour_id=None,
             data=data,
         )
-        
+
         if data is None:
             data = {}
-            
+
         errors: dict[str, str] = {}
         stored_event: StoredEvent = web_context.admin_event.stored_event
-            
+
         timer_colors: dict[int, str | None] = {i: None for i in range(1, 4)}
         timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
         for i in range(1, 4):
@@ -470,7 +470,7 @@ class TimerAdminController(BaseEventAdminController):
                 errors[field] = _(
                     'Invalid delay [{delay}] (positive integer expected).'
                 ).format(delay=data[field])
-        
+
         if errors:
             return self._admin_event_timers_render(
                 request,
@@ -481,16 +481,16 @@ class TimerAdminController(BaseEventAdminController):
                 data=data,
                 errors=errors,
             )
-        
+
         stored_event.timer_colors=timer_colors
         stored_event.timer_delays=timer_delays
-            
+
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
             event_database.update_stored_event(stored_event)
             event_database.commit()
-            
+
         return self._admin_event_timers_render(
             request, event_uniq_id=event_uniq_id
         )

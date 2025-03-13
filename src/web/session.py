@@ -11,7 +11,7 @@ from data.util import PlayerGender, PlayerCategory
 
 if TYPE_CHECKING:
     from data.event import Event
-    
+
 logger: logging.Logger = get_logger()
 
 

@@ -16,7 +16,7 @@ from packaging.version import Version
 from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
-from common import PAPI_WEB_VERSION, TMP_DIR
+from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -366,16 +366,16 @@ class Engine:
                     for field_id, file in files.items():
                         logger.info('  - %s: [%s]', field_id, file)
             if not data and not files:
-                response: Response = request(method=method, url=url, timeout=10)
+                response: Response = request(method=method, url=url, timeout=REQUEST_TIMEOUT)
             elif not files:
-                response: Response = request(method=method, url=url, data=data, timeout=10)
+                response: Response = request(method=method, url=url, data=data, timeout=REQUEST_TIMEOUT)
             else:
                 handlers = {
                     file_id: open(file_name, 'rb')
                     for file_id, file_name in files.items()
                 }
                 response: Response = request(
-                    method=method, url=url, data=data, files=handlers, timeout=10,
+                    method=method, url=url, data=data, files=handlers, timeout=REQUEST_TIMEOUT,
                 )
                 for handler in handlers.values():
                     handler.close()

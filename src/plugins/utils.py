@@ -16,7 +16,7 @@ class AbstractPluginMigrationManager(AbstractMigrationManager, ABC):
     @abstractmethod
     def plugin_name(self) -> str:
         pass
-    
+
     @property
     @abstractmethod
     def latest_plugin_version(self) -> Version:

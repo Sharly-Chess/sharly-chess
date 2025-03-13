@@ -15,10 +15,10 @@ from common.logger import get_logger
 
 APP_NAME: str = 'papi-web'
 
-"""True when the program is running in a development environment, False if running as an EXE file."""
+# True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
-"""True when experimental features are enabled (relying on an environment variable), False otherwise."""
+# True when experimental features are enabled (relying on an environment variable), False otherwise.
 EXPERIMENTAL_FEATURES_ENV_VAR: str = 'PAPI_WEB_EXPERIMENTAL'
 EXPERIMENTAL_FEATURES: bool = os.environ.get(
     EXPERIMENTAL_FEATURES_ENV_VAR, ''
@@ -28,7 +28,9 @@ EXPERIMENTAL_FEATURES: bool = os.environ.get(
     '1',
 ]
 
-PAPI_WEB_VERSION = Version("2.4.25")
+PAPI_WEB_VERSION: Version = Version("2.4.25")
+
+REQUEST_TIMEOUT: int = 10
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 

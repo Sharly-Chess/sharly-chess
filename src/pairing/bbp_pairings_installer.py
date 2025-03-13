@@ -5,6 +5,7 @@ from pathlib import Path
 import requests
 from pairing.bbp_pairings import BbpPairings
 
+from common import REQUEST_TIMEOUT
 from common.logger import print_interactive_info, print_interactive_success
 
 class BbpPairingsInstaller(BbpPairings):
@@ -29,7 +30,7 @@ class BbpPairingsInstaller(BbpPairings):
         cls.bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
         archive_path: Path = cls.bbp_pairings_dir / build_filename
         print_interactive_info(f'Downloading {build_url}...')
-        response = requests.get(build_url, stream=True, timeout=10)
+        response = requests.get(build_url, stream=True, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         with open(archive_path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):

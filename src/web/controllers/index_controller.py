@@ -33,7 +33,7 @@ class IndexController(BaseController):
                 'messages': Message.messages(request),
             },
         )
-        
+
     @get(
         path='/empty-modal',
         name='empty-modal',
@@ -45,7 +45,7 @@ class IndexController(BaseController):
         return HTMXTemplate(
             template_name='common/empty_modal.html',
             re_target='#modal-wrapper',
-        )   
+        )
 
     @get(
         path='/favicon.ico',
