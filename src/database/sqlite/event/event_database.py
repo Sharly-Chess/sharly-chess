@@ -1417,7 +1417,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(stored_tournament=stored_tournament, row=row)
-        return stored_tournament
+        return stored_tournament;
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
         self.execute(
@@ -1441,7 +1441,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         stored_tournament: StoredTournament,
     ) -> StoredTournament:
         per_plugin_player_data = plugin_manager.hook.tournament_data_for_db_write(stored_tournament=stored_tournament)
-        plugin_data = {key: value for data in per_plugin_player_data for key, value in data.items()}
+        plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
         
         # check_in_open is not updated here but in set_tournament_check_in()
         fields: list[str] = [
@@ -1584,7 +1584,7 @@ class EventDatabase(SQLiteVersionedDatabase):
     def set_tournament_check_in(self, tournament_id: int, o: bool):
         """Opens (o is True) or closes (o is False) the check_in for the tournament."""
         self.execute(
-            'UPDATE `tournament` SET `check_in_open` = ?, `ffe_last_upload` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `check_in_open` = ?, `last_check_in_update` = ? WHERE `id` = ?',
             (
                 1 if o else 0,
                 time.time(),
