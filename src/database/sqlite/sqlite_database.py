@@ -1,5 +1,5 @@
 import json
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from logging import Logger
 from pathlib import Path
@@ -48,6 +48,9 @@ class SQLiteDatabase:
         db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
         self.database = connect(db_url, detect_types=1, uri=True)
         self.cursor = self.database.cursor()
+        if self.write:
+            self.cursor.execute('PRAGMA journal_mode=WAL')
+            self.commit()
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
@@ -59,8 +62,11 @@ class SQLiteDatabase:
             del self.database
             self.database = None
 
-    def execute(self, query: str, params: tuple = ()):
+    def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         self.cursor.execute(query, params)
+
+    def executemany(self, query: str, params: Iterable[tuple | dict[str, Any]] = ()):
+        self.cursor.executemany(query, params)
 
     def executescript(self, sql: str):
         self.cursor.executescript(sql)
