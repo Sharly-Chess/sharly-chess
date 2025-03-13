@@ -22,14 +22,14 @@
             {{ tournament.filename }}
         </span>
     </div>
-    <div class="d-flex gap-2 {% if not tournament.ffe_id %}text-secondary{% endif %}">
+    <div class="d-flex gap-2 {% if not tournament.plugin_data.ffe.ffe_id %}text-secondary{% endif %}">
         <img
             src="{{ url_for('static', file_path='/images/ffe.png') }}"
             style="height: 1.2em"
             class="p-0"
         />
-        {% if tournament.ffe_id %}
-            {{ _('FFE qualification: %(ffe_id)s', ffe_id=tournament.ffe_id) }}
+        {% if tournament.plugin_data.ffe.ffe_id %}
+            {{ _('FFE qualification: %(ffe_id)s', ffe_id=tournament.plugin_data.ffe.ffe_id) }}
         {% else %}
             {{ _('No FFE qualification') }}
         {% endif %}

@@ -38,6 +38,7 @@ from ..utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
+    from database.sqlite.event.event_store import StoredTournament
 
 """ The FFE league names. """
 ffe_leagues: dict[str, str] = {
@@ -92,13 +93,14 @@ def get_db_player_fields() -> list[str]:
 
 @hookimpl
 def augment_player_after_db_fetch(player: Player, row: dict[str, Any]):
+    if not player.plugin_data:
+        player.plugin_data = {}
     player.plugin_data[PLUGIN_NAME] = {
         'ffe_id': row['RefFFE'],
         'ffe_licence': PlayerFFELicence.from_papi_value(row['AffType'] or ''),
         'ffe_licence_number': row['NrFFE'] or '',
         'league': row['Ligue'] or '',
     }
-
 
 @hookimpl
 def player_data_for_db_write(player: Player) -> dict[str, Any]:
@@ -111,6 +113,42 @@ def player_data_for_db_write(player: Player) -> dict[str, Any]:
     }
 
 
+@hookimpl
+def augment_tournament_after_db_fetch(stored_tournament: 'StoredTournament', row: dict[str, Any]):
+    if not stored_tournament.plugin_data:
+        stored_tournament.plugin_data = {}
+    stored_tournament.plugin_data[PLUGIN_NAME] = {
+        'ffe_id': row.get('ffe_id', ''),
+        'ffe_password': row.get('ffe_password', ''),
+        'ffe_last_upload': row.get('ffe_last_upload', 0.0),
+        'ffe_last_rules_upload': row.get('ffe_last_rules_upload', 0.0),
+    }
+
+            
+@hookimpl
+def tournament_data_for_db_write(stored_tournament: 'StoredTournament') -> dict[str, Any]:
+    td = stored_tournament.plugin_data
+    return {
+        'ffe_id': get_data(td, 'ffe_id', None),
+        'ffe_password': get_data(td, 'ffe_password', None),
+        'ffe_last_upload': get_data(td, 'ffe_last_upload', 0.0),
+        'ffe_last_rules_upload': get_data(td, 'ffe_last_rules_upload', 0.0),
+    }
+
+    
+@hookimpl
+def on_tournament_init(tournament: 'Tournament'):
+    pd = tournament.stored_tournament.plugin_data
+    if not get_data(pd, 'ffe_id') or not get_data(pd, 'ffe_password'):
+        tournament.event.add_debug(
+            _(
+                'Certification number and FFE password not set, '
+                'operations on the FFE website will not be available.'
+            ),
+            tournament=tournament,
+        )
+
+        
 @hookimpl
 def get_controllers() -> Iterable[type[WebContextModule.BaseController]]:
     return [
@@ -276,7 +314,7 @@ def get_validated_player_form_fields(
     ffe_id: int | None = None
 
     if tournament:
-        # When adding a player, the tournament may not me chosen (in this case do not test)
+        # When adding a player, the tournament may not be chosen (in this case do not test)
         try:
             ffe_id = WebContextModule.WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
             ffe_ids = [ get_data(player.plugin_data, 'ffe_id', None) for player in tournament.players_by_id.values() ]
@@ -326,8 +364,58 @@ def get_validated_player_form_fields(
             "league": league,
         }
     }
+    
+
+@hookimpl
+def get_tournament_form_fields_template() -> str:
+    return "/ffe_tournament_form_fields.html"
 
 
+@hookimpl
+def get_tournament_form_data(
+    tournament: 'Tournament | None'
+) -> dict[str, Any]:
+    if not tournament:
+        return {
+            'ffe_id': '',
+            'ffe_password': ''
+        }
+
+    return {
+        'ffe_id': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_id', None)),
+        'ffe_password': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_password', None)),
+    }   
+    
+
+@hookimpl
+def get_validated_tournament_form_fields(
+    action: str,
+    tournament: 'Tournament | None',
+    data: dict[str, str],
+    errors: dict[str, str]
+) -> dict[str, Any]:
+    ffe_id = None
+    try:
+        ffe_id = WebContextModule.WebContext.form_data_to_int(data, 'ffe_id')
+    except ValueError:
+        errors['ffe_id'] = _('The FFE ID is a positive integer.')
+    ffe_password = WebContextModule.WebContext.form_data_to_str(data, 'ffe_password')
+    if ffe_password and not re.match('^[A-Z]{10}$', ffe_password):
+        errors['ffe_password'] = _(
+            'The password of the tournament on the FFE website is made of 10 uppercase letters.'
+        )
+        
+    # Keep data other than these two fields (such as file upload times)
+    previous_data = tournament.plugin_data.get(PLUGIN_NAME, {}) if tournament else {}
+                
+    return {
+        PLUGIN_NAME: previous_data | {
+            "ffe_id": ffe_id,
+            "ffe_password": ffe_password,
+        }
+    }
+    
+    
 @hookimpl
 def augment_player_after_search(player: Player):
     # Try to get more information by requesting the FFE database

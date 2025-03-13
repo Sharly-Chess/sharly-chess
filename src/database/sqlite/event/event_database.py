@@ -36,6 +36,7 @@ from database.sqlite.event.event_store import (
 )
 from database.sqlite.event import migrations
 from database.sqlite.versioned_database import SQLiteVersionedDatabase
+from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
@@ -200,7 +201,6 @@ class EventDatabase(SQLiteVersionedDatabase):
         super().create()
         if populate:
             self._populate()
-        from plugins.manager import plugin_manager
 
         migration_managers: list['AbstractPluginMigrationManager'] = (
             plugin_manager.hook.get_event_migration_manager()
@@ -441,8 +441,6 @@ class EventDatabase(SQLiteVersionedDatabase):
                             ],
                             optional_fields=[
                                 'filename',
-                                'ffe_id',
-                                'ffe_password',
                                 'time_control_initial_time',
                                 'time_control_increment',
                                 'time_control_handicap_penalty_value',
@@ -466,10 +464,6 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 path=None,
                                 filename=tournament_dict.get('filename', None),
                                 name=tournament_dict.get('name', None),
-                                ffe_id=tournament_dict.get('ffe_id', None),
-                                ffe_password=tournament_dict.get(
-                                    'ffe_password', None
-                                ),
                                 time_control_initial_time=tournament_dict.get(
                                     'time_control_initial_time', None
                                 ),
@@ -950,7 +944,6 @@ class EventDatabase(SQLiteVersionedDatabase):
         super().__enter__()
         if not self.auto_upgrade:
             return self
-        from plugins.manager import plugin_manager
 
         migration_managers: list['AbstractPluginMigrationManager'] = (
             plugin_manager.hook.get_event_migration_manager()
@@ -1383,14 +1376,12 @@ class EventDatabase(SQLiteVersionedDatabase):
 
     @classmethod
     def _row_to_stored_tournament(cls, row: dict[str, Any]) -> StoredTournament:
-        return StoredTournament(
+        stored_tournament = StoredTournament(
             id=row['id'],
             uniq_id=row['uniq_id'],
             name=row['name'],
             path=row['path'],
             filename=row['filename'],
-            ffe_id=row['ffe_id'],
-            ffe_password=row['ffe_password'],
             time_control_initial_time=row['time_control_initial_time'],
             time_control_increment=row['time_control_increment'],
             time_control_handicap_penalty_step=row[
@@ -1421,13 +1412,12 @@ class EventDatabase(SQLiteVersionedDatabase):
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
-            ffe_last_upload=row['ffe_last_upload'],
-            # needed to open event databases when version < 2.4.11 before checking the version
-            ffe_last_rules_upload=row.get('ffe_last_rules_upload', 0.0),
             chessevent_last_download_md5=row['chessevent_last_download_md5'],
             # needed to open event databases when version < 2.4.23 before checking the version
             tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
         )
+        plugin_manager.hook.augment_tournament_after_db_fetch(stored_tournament=stored_tournament, row=row)
+        return stored_tournament;
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
         self.execute(
@@ -1450,14 +1440,15 @@ class EventDatabase(SQLiteVersionedDatabase):
         self,
         stored_tournament: StoredTournament,
     ) -> StoredTournament:
+        per_plugin_player_data = plugin_manager.hook.tournament_data_for_db_write(stored_tournament=stored_tournament)
+        plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
+        
         # check_in_open is not updated here but in set_tournament_check_in()
         fields: list[str] = [
             'uniq_id',
             'name',
             'path',
             'filename',
-            'ffe_id',
-            'ffe_password',
             'time_control_initial_time',
             'time_control_increment',
             'time_control_handicap_penalty_step',
@@ -1478,17 +1469,14 @@ class EventDatabase(SQLiteVersionedDatabase):
             'last_result_update',
             'last_illegal_move_update',
             'last_check_in_update',
-            'ffe_last_upload',
-            'ffe_last_rules_upload',
             'chessevent_last_download_md5',
-        ]
+        ] + [field for field in plugin_data.keys()]
+        
         params: list = [
             stored_tournament.uniq_id,
             stored_tournament.name,
             stored_tournament.path,
             stored_tournament.filename,
-            stored_tournament.ffe_id,
-            stored_tournament.ffe_password,
             stored_tournament.time_control_initial_time,
             stored_tournament.time_control_increment,
             stored_tournament.time_control_handicap_penalty_step,
@@ -1509,10 +1497,9 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_tournament.last_result_update,
             stored_tournament.last_illegal_move_update,
             stored_tournament.last_check_in_update,
-            stored_tournament.ffe_last_upload,
-            stored_tournament.ffe_last_rules_upload,
             stored_tournament.chessevent_last_download_md5,
-        ]
+        ] + [value for value in plugin_data.values()]
+        
         if stored_tournament.id is None:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
@@ -1556,24 +1543,6 @@ class EventDatabase(SQLiteVersionedDatabase):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
         self.set_last_update()
 
-    def set_tournament_ffe_last_upload(self, tournament_id: int):
-        self.execute(
-            'UPDATE `tournament` SET `ffe_last_upload` = ? WHERE `id` = ?',
-            (
-                time.time(),
-                tournament_id,
-            ),
-        )
-
-    def set_tournament_ffe_last_rules_upload(self, tournament_id: int):
-        self.execute(
-            'UPDATE `tournament` SET `ffe_last_rules_upload` = ? WHERE `id` = ?',
-            (
-                time.time(),
-                tournament_id,
-            ),
-        )
-
     def set_tournament_chessevent_last_download_md5(
         self, tournament_id: int, md5: str = None
     ):
@@ -1615,7 +1584,7 @@ class EventDatabase(SQLiteVersionedDatabase):
     def set_tournament_check_in(self, tournament_id: int, o: bool):
         """Opens (o is True) or closes (o is False) the check_in for the tournament."""
         self.execute(
-            'UPDATE `tournament` SET `check_in_open` = ?, `ffe_last_upload` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `check_in_open` = ?, `last_check_in_update` = ? WHERE `id` = ?',
             (
                 1 if o else 0,
                 time.time(),

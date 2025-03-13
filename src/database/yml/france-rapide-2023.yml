@@ -40,8 +40,6 @@ tournaments:
   france-rapide:
     filename: "france-rapide-2023"
     name: "Championnat de France rapide 2023"
-    ffe_id: 59698
-    ffe_password: "ABCDEFGHIJ"
 screens:
   resultats:
     type: "results"

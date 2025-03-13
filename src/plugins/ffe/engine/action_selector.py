@@ -1,7 +1,9 @@
-import time
+from functools import partial
+from time import time, sleep
 from logging import Logger
 from pathlib import Path
 
+from plugins.ffe import PLUGIN_NAME
 import validators
 
 from common.i18n import _, ngettext
@@ -18,26 +20,74 @@ from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from data.util import NeedsUpload
+from data.util import NeedsUpload, get_plugin_data
 from plugins.ffe.engine.ffe_session import FFESession
 
 logger: Logger = get_logger()
 
-
+get_data = partial(get_plugin_data, PLUGIN_NAME)
 class ActionSelector(metaclass=Singleton):
+    
+    @staticmethod
+    def check_id_and_password(tournament: Tournament) -> bool:
+        pd = tournament.plugin_data
+        ffe_id = get_data(pd, 'ffe_id')
+        ffe_password = get_data(pd, 'ffe_password')
+        if not ffe_id or not ffe_password:
+            print_interactive_warning(
+                _(
+                    'FFE ID not defined for tournament [{tournament_uniq_id}].'
+                ).format(tournament_uniq_id=tournament.uniq_id)
+            )
+            return False
+        return True
+   
+    @classmethod
+    def ffe_last_upload(cls, tournament: Tournament) -> float:
+        return get_data(tournament.plugin_data, 'ffe_last_upload', 0.0)
+
+    @classmethod
+    def ffe_last_rules_upload(cls, tournament: Tournament) -> float:
+        return get_data(tournament.plugin_data, 'ffe_last_rules_upload', 0.0)
+     
+    @classmethod
+    def ffe_upload_needed(cls, tournament: Tournament) -> NeedsUpload:
+        try:
+            ffe_last_upload = cls.ffe_last_upload(tournament)
+            if ffe_last_upload > tournament.file.lstat().st_mtime:
+                # last version already uploaded
+                return NeedsUpload.NO_CHANGE
+            if (
+                time()
+                < ffe_last_upload
+                + PapiWebConfig().ffe_upload_delay
+            ):
+                # last upload too recent
+                return NeedsUpload.RECENT_CHANGE
+            return NeedsUpload.YES
+        except FileNotFoundError:
+            return NeedsUpload.NO_CHANGE
+
+    @classmethod
+    def ffe_rules_upload_needed(cls, tournament: Tournament) -> NeedsUpload:
+        try:
+            if (
+                cls.ffe_last_rules_upload(tournament)
+                > Path(tournament.rules).lstat().st_mtime
+            ):
+                # last version already uploaded
+                return NeedsUpload.NO_CHANGE
+            return NeedsUpload.YES
+        except FileNotFoundError:
+            return NeedsUpload.NO_CHANGE
+        
     @classmethod
     def __get_qualified_tournaments(cls, event: Event) -> list[Tournament]:
         if not event.tournaments_by_id:
             return []
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
-            if not tournament.ffe_id or not tournament.ffe_password:
-                print_interactive_warning(
-                    _(
-                        'FFE ID not defined for tournament [{tournament_uniq_id}].'
-                    ).format(tournament_uniq_id=tournament.uniq_id)
-                )
-            else:
+            if cls.check_id_and_password(tournament):
                 tournaments.append(tournament)
         return tournaments
 
@@ -49,12 +99,8 @@ class ActionSelector(metaclass=Singleton):
             return []
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
-            if not tournament.ffe_id or not tournament.ffe_password:
-                print_interactive_warning(
-                    _(
-                        'FFE ID not defined for tournament [{tournament_uniq_id}].'
-                    ).format(tournament_uniq_id=tournament.uniq_id)
-                )
+            if not cls.check_id_and_password(tournament):
+                pass
             elif not tournament.file:
                 print_interactive_warning(
                     _(
@@ -81,12 +127,8 @@ class ActionSelector(metaclass=Singleton):
             return []
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
-            if not tournament.ffe_id or not tournament.ffe_password:
-                print_interactive_warning(
-                    _(
-                        'FFE ID not defined for tournament [{tournament_uniq_id}].'
-                    ).format(tournament_uniq_id=tournament.uniq_id)
-                )
+            if not cls.check_id_and_password(tournament):
+                pass
             elif not tournament.rules:
                 print_interactive_warning(
                     _(
@@ -123,7 +165,7 @@ class ActionSelector(metaclass=Singleton):
         print_interactive_info(
             _('Tournaments: {tournament_ffe_ids}').format(
                 tournament_ffe_ids=', '.join(
-                    (str(tournament.ffe_id) for tournament in tournaments)
+                    (str(get_data(tournament.plugin_data, 'ffe_id')) for tournament in tournaments)
                 )
             )
         )
@@ -204,7 +246,7 @@ class ActionSelector(metaclass=Singleton):
                 return True
             updated_tournaments: list[Tournament] = []
             for tournament in tournaments:
-                if tournament.ffe_rules_upload_needed == NeedsUpload.YES:
+                if self.ffe_rules_upload_needed(tournament) == NeedsUpload.YES:
                     updated_tournaments.append(tournament)
             if not updated_tournaments:
                 print_interactive_info(
@@ -230,7 +272,7 @@ class ActionSelector(metaclass=Singleton):
                     updated_tournaments: list[Tournament] = []
                     recent_updates: int = 0
                     for tournament in tournaments:
-                        needs_upload: NeedsUpload = tournament.ffe_upload_needed
+                        needs_upload: NeedsUpload = self.ffe_upload_needed(tournament)
                         match needs_upload:
                             case NeedsUpload.YES:
                                 updated_tournaments.append(tournament)
@@ -258,7 +300,7 @@ class ActionSelector(metaclass=Singleton):
                             )
                     for tournament in updated_tournaments:
                         FFESession(tournament, debug=False).upload(set_visible=False)
-                    time.sleep(10)
+                    sleep(10)
             except KeyboardInterrupt:
                 print_interactive_info(_('End of upload (Ctrl-C)'))
                 return True

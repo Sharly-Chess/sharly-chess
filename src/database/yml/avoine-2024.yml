@@ -52,8 +52,6 @@ tournaments:
   avoine:
     filename: "avoine_2024"
     name: "Avoine 2024"
-    ffe_id: 62738
-    ffe_password: "ABCDEFGHIJ"
 screens:
   saisie-ec-fixes:
     name: "Tables fixes espace culturel"
