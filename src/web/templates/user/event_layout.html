@@ -41,6 +41,7 @@
             hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=nav_id) }}"
             preload
             hx-target="body"
+            hx-push-url="true"
             type="button"
             role="tab"
             hx-indicator="#please-wait"

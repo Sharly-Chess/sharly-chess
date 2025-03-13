@@ -35,6 +35,7 @@
             hx-get="{{ url_for('user-tab', user_tab=nav_id) }}"
             preload
             hx-target="body"
+            hx-push-url="true"
             type="button"
             role="tab"
             hx-indicator="#please-wait"
