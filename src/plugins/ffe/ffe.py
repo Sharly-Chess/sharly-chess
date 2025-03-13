@@ -3,7 +3,6 @@ import re
 from litestar.contrib.htmx.request import HTMXRequest
 
 from collections import Counter, defaultdict
-from dataclasses import dataclass
 
 from datetime import datetime
 from functools import partial

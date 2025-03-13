@@ -8,7 +8,6 @@ from common import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.player import Federation, Club
 from data.util import PlayerGender, PlayerCategory
-from plugins.ffe.util import PlayerFFELicence
 
 if TYPE_CHECKING:
     from data.event import Event

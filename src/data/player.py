@@ -1,5 +1,6 @@
 import base64
 import weakref
+from _weakref import ReferenceType
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date
@@ -22,7 +23,6 @@ from data.util import (
 )
 
 if TYPE_CHECKING:
-    from _weakref import ReferenceType
     from data.tournament import Tournament
 
 logger: Logger = get_logger()

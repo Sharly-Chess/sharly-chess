@@ -5,7 +5,6 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
-from packaging.version import Version
 
 from common import BASE_DIR
 from database.sqlite.config.config_database import ConfigMigrationManager
