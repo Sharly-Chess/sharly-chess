@@ -9,7 +9,7 @@ class FFESessionHandler:
     def set_session_admin_players_filter_leagues(
         cls, request: HTMXRequest, leagues: list[str]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY]: list[str] = (
+        request.session[cls.ADMIN_PLAYERS_FILTER_LEAGUES_KEY] = (
             leagues
         )
 
@@ -28,9 +28,7 @@ class FFESessionHandler:
     def set_session_admin_players_filter_licences(
         cls, request: HTMXRequest, licences: list[PlayerFFELicence]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_LICENCES_KEY]: list[
-            PlayerFFELicence
-        ] = licences
+        request.session[cls.ADMIN_PLAYERS_FILTER_LICENCES_KEY] = licences
 
     @classmethod
     def get_session_admin_players_filter_licences(

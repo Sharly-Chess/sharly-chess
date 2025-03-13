@@ -41,7 +41,7 @@ class Message:
         request: Request, errors: str | list[str] | Exception, level: int
     ) -> None:
         if '_messages' not in request.session:
-            request.session['_messages']: list[Message] = []
+            request.session['_messages'] = []
         texts: list[str]
         if isinstance(errors, list):
             texts = errors
