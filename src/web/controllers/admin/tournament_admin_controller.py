@@ -214,7 +214,7 @@ class TournamentAdminController(BaseEventAdminController):
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
-        plugin_data = { key: value for data in per_plugin_tournament_data for key, value in data.items() }
+        plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
         
         return StoredTournament(
             id=web_context.admin_tournament.id
