@@ -46,10 +46,6 @@ class StoredTournament:
     time_control_handicap_penalty_step: int | None
     time_control_handicap_penalty_value: int | None
     time_control_handicap_min_time: int | None
-    chessevent_user_id: str | None
-    chessevent_password: str | None
-    chessevent_event_id: str | None
-    chessevent_tournament_name: str | None
     record_illegal_moves: int | None
     rules: str | None
     first_board_number: int | None
@@ -62,7 +58,6 @@ class StoredTournament:
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)
     last_check_in_update: float = field(default=0.0)
-    chessevent_last_download_md5: str | None = field(default=None)
     errors: dict[str, str] = field(default_factory=dict[str, str])
     
     # Plugins can add their own tournament data
@@ -170,9 +165,6 @@ class StoredEvent:
     message_text: str | None = None
     message_color: str | None = None
     message_background_color: str | None = None
-    chessevent_user_id: str | None = None
-    chessevent_password: str | None = None
-    chessevent_event_id: str | None = None
     last_update: float = 0.0
     stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])
     stored_tournaments: list[StoredTournament] = field(
@@ -183,7 +175,9 @@ class StoredEvent:
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
-
+    # Plugins can add their own tournament data
+    plugin_data: dict[str, dict[str, Any]] | None = None
+    
 @dataclass
 class StoredIllegalMove:
     id: int | None

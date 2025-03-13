@@ -66,7 +66,7 @@ class EventAdminController(BaseEventAdminController):
         match modal:
             case None:
                 pass
-            case 'event':
+            case 'event':                
                 if data is None:
                     data = cls._prepare_event_modal_data(
                         action, request, web_context.admin_event
@@ -77,6 +77,8 @@ class EventAdminController(BaseEventAdminController):
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
+                    
+                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
                 template_context |= {
                     'federations': PapiWebConfig.federations,
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
@@ -95,6 +97,7 @@ class EventAdminController(BaseEventAdminController):
                     ]
                     else {},
                     'modal': 'event',
+                    'plugin_form_fields_templates': plugin_form_fields_templates,
                     'action': action,
                     'data': data,
                     'errors': errors,

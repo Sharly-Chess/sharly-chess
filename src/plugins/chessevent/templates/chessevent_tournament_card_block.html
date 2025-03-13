@@ -1,18 +1,20 @@
 {% if admin_tournaments_show_details %}
-    <div class="d-flex gap-2 pb-3 mb-3 border-bottom border-secondary {% if not tournament.chessevent_user_id or not tournament.chessevent_event_id or not tournament.chessevent_tournament_name %}text-secondary{% endif %}">
-        <i class="bi-download"></i>
-        {% if tournament.chessevent_user_id and tournament.chessevent_event_id and tournament.chessevent_tournament_name %}
-            {{ _(
-                'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s',
-                chessevent_user_id=tournament.chessevent_user_id,
-                chessevent_event_id=tournament.chessevent_event_id,
-                chessevent_tournament_name=tournament.chessevent_tournament_name) }}
-        {% elif not tournament.chessevent_user_id %}
-            {{ _('No ChessEvent identifier defined') }}
-        {% elif not tournament.chessevent_event_id %}
-            {{ _('No ChessEvent event defined') }}
-        {% else %}
-            {{ _('No ChessEvent tournament defined') }}
-        {% endif %}
-    </div>
+    {% with user_id=chessevent_utils.resolve_user_id(tournament), event_id=chessevent_utils.resolve_event_id(tournament), tournament_name=chessevent_utils.resolve_tournament_name(tournament) %}
+        <div class="d-flex gap-2 pb-3 mb-3 border-bottom border-secondary {% if not user_id or not event_id or not tournament_name %}text-secondary{% endif %}">
+            <i class="bi-download"></i>
+            {% if user_id and event_id and tournament_name %}
+                {{ _(
+                    'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s',
+                    chessevent_user_id=user_id,
+                    chessevent_event_id=event_id,
+                    chessevent_tournament_name=tournament_name) }}
+            {% elif not user_id %}
+                {{ _('No ChessEvent identifier defined') }}
+            {% elif not event_id %}
+                {{ _('No ChessEvent event defined') }}
+            {% else %}
+                {{ _('No ChessEvent tournament defined') }}
+            {% endif %}
+        </div>
+    {% endwith %}
 {% endif %}

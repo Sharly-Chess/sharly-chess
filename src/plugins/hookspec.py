@@ -13,6 +13,7 @@ from data.util import PrintDocument, ScreenType
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
+    from database.sqlite.event.event_store import StoredEvent
     from database.sqlite.event.event_store import StoredTournament
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
@@ -59,7 +60,7 @@ class AppHookSpecs:
     @hookspec
     def get_templates_path(self) -> Path:
         """Provide base path to any provided templates"""
-        
+    
     @hookspec
     def get_base_admin_context(self) -> dict[str, Any]:
         """Provide plugin context for the AdminWebContext"""
@@ -91,7 +92,15 @@ class AppHookSpecs:
         errors: dict[str, str]
     ) -> dict[str, Any]:
         """Validate player form fields"""
-
+        
+    @hookspec
+    def get_event_info_rows_template(self) -> str:
+        """Provide a path to the template containing event info rows form fields"""
+        
+    @hookspec
+    def get_event_card_block_template(self) -> str:
+        """Provide a path to the template to be added to event cards"""
+    
     @hookspec
     def get_tournament_form_fields_template(self) -> str:
         """Provide a path to the template containing tournament form fields"""
@@ -127,8 +136,16 @@ class AppHookSpecs:
         """Provide data for player fields to write to the database"""
 
     @hookspec
+    def augment_event_after_db_fetch(self, stored_event: 'StoredEvent', row: dict[str, Any]):
+        """Add plugin specific data to a stored event after they are fetched from the database"""
+ 
+    @hookspec
+    def event_data_for_db_write(self, stored_event: 'StoredEvent') -> dict[str, Any]:
+        """Provide data for event fields to write to the database"""
+
+    @hookspec
     def augment_tournament_after_db_fetch(self, stored_tournament: 'StoredTournament', row: dict[str, Any]):
-        """Add plugin specific data to a store tournaments after they are fetched from the database"""
+        """Add plugin specific data to a stored tournaments after they are fetched from the database"""
         
     @hookspec
     def tournament_data_for_db_write(self, stored_tournament: 'StoredTournament') -> dict[str, Any]:
@@ -153,7 +170,7 @@ class AppHookSpecs:
         """Test if a player can participate in a tournament"""
     
     @hookspec
-    def get_tournament_card_block_template(self) -> str:
+    def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
         """Provide a path to the template to be added to tournament cards"""
     
     @hookspec

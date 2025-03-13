@@ -312,9 +312,6 @@ class BaseAdminController(BaseController):
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
-        chessevent_user_id: str | None = None
-        chessevent_password: str | None = None
-        chessevent_event_id: str | None = None
         match action:
             case 'clone' | 'update' | 'create':
                 name = WebContext.form_data_to_str(data, field := 'name')
@@ -420,23 +417,15 @@ class BaseAdminController(BaseController):
                             'Invalid color [{color}] ([#RRGGBB] expected).'
                         ).format(color={data[field]})
                 pass
-                chessevent_user_id = WebContext.form_data_to_str(
-                    data, 'chessevent_user_id'
-                )
-                chessevent_password = WebContext.form_data_to_str(
-                    data, field := 'chessevent_password'
-                )
-                if chessevent_user_id and not chessevent_password:
-                    errors[field] = _(
-                        'Please enter a password for the ChessEvent connection.'
-                    )
-                chessevent_event_id = WebContext.form_data_to_str(
-                    data, 'chessevent_event_id'
-                )
             case 'delete':
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
+    
+        # Have plugins validate their fields and return private plugin data
+        per_plugin_tournament_data = plugin_manager.hook.get_validated_event_form_fields(action=action, event=admin_event, data=data, errors=errors)
+        plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
+        
         return StoredEvent(
             uniq_id=uniq_id,
             name=name,
@@ -454,14 +443,13 @@ class BaseAdminController(BaseController):
             message_text=message_text,
             message_color=message_color,
             message_background_color=message_background_color,
-            chessevent_user_id=chessevent_user_id,
-            chessevent_password=chessevent_password,
-            chessevent_event_id=chessevent_event_id,
             errors=errors,
             
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors = admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)},
-            timer_delays = admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)}
+            timer_delays = admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)},
+            
+            plugin_data=plugin_data
         )
 
     @staticmethod
@@ -587,9 +575,6 @@ class BaseAdminController(BaseController):
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
-        chessevent_user_id: str | None = None
-        chessevent_password: str | None = None
-        chessevent_event_id: str | None = None
         match action:
             case 'update' | 'clone':
                 public = admin_event.stored_event.public
@@ -604,9 +589,6 @@ class BaseAdminController(BaseController):
                 message_text = admin_event.stored_event.message_text
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
-                chessevent_user_id = admin_event.stored_event.chessevent_user_id
-                chessevent_password = admin_event.stored_event.chessevent_password
-                chessevent_event_id = admin_event.stored_event.chessevent_event_id
             case 'create':
                 public = False
                 federation = PapiWebConfig().federation.name
@@ -615,6 +597,10 @@ class BaseAdminController(BaseController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
+            
+        per_plugin_form_data = plugin_manager.hook.get_event_form_data(event=admin_event)
+        plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
+
         return (
             {
                 'uniq_id': WebContext.value_to_form_data(uniq_id),
@@ -648,15 +634,7 @@ class BaseAdminController(BaseController):
                 'message_background_color': WebContext.value_to_form_data(
                     message_background_color
                 ),
-                'chessevent_user_id': WebContext.value_to_form_data(chessevent_user_id),
-                'chessevent_password': WebContext.value_to_form_data(
-                    chessevent_password
-                ),
-                'chessevent_event_id': WebContext.value_to_form_data(
-                    chessevent_event_id
-                ),
-            }
-
+            } | plugin_form_data
         )
 
     @classmethod
@@ -765,6 +743,9 @@ class BaseAdminController(BaseController):
                 web_context.admin_tab = list(nav_tabs.keys())[
                     (nav_index + 1) % len(nav_tabs)
                 ]
+                
+        event_card_blocks = plugin_manager.hook.get_event_card_block_template()
+                
         context = web_context.template_context | {
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
@@ -775,6 +756,7 @@ class BaseAdminController(BaseController):
                     web_context.request
                 )
             ),
+            'event_card_blocks': event_card_blocks,
         }
         match modal:
             case None:
@@ -787,6 +769,7 @@ class BaseAdminController(BaseController):
                         'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),
                         'federation': WebContext.value_to_form_data(papi_web_config.stored_config.federation),
                         'locale': WebContext.value_to_form_data(papi_web_config.stored_config.locale),
+                        'plugin_form_fields_templates': plugin_form_fields_templates,
                     }
                     stored_config: StoredConfig = cls._admin_validate_config_update_data(data)
                     errors = stored_config.errors
@@ -853,6 +836,8 @@ class BaseAdminController(BaseController):
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
+                    
+                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
                 context |= {
                     'federations': PapiWebConfig.federations,
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
@@ -864,6 +849,7 @@ class BaseAdminController(BaseController):
                     'background_images_jstree_data': cls.background_images_jstree_data(
                         data['background_image']
                     ),
+                    'plugin_form_fields_templates': plugin_form_fields_templates,
                     'modal': modal,
                     'action': action,
                     'data': data,

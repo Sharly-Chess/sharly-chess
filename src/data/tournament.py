@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 
 from common.logger import get_logger
 from data.board import Board
-from data.chessevent_tournament import ChessEventTournament
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
@@ -75,16 +74,6 @@ class Tournament:
                     'The name of the Papi file is not set, by default [{filename}]'
                 ).format(filename=self.filename),
                 tournament=self,
-            )
-        if not self.chessevent_user_id or not self.chessevent_password:
-            self.event.add_debug(
-                _('ChessEvent connection not defined.'), tournament=self
-            )
-        elif not self.chessevent_event_id:
-            self.event.add_warning(_('ChessEvent event not set.'), tournament=self)
-        elif not self.chessevent_tournament_name:
-            self.event.add_warning(
-                _('ChessEvent tournament name not set.'), tournament=self
             )
         self._rounds: int = 0
         self._pairing: TournamentPairing | None = None
@@ -169,28 +158,6 @@ class Tournament:
     @property
     def time_control_handicap_min_time(self) -> int | None:
         return self.stored_tournament.time_control_handicap_min_time
-
-    @property
-    def chessevent_user_id(self) -> str | None:
-        if self.stored_tournament.chessevent_user_id:
-            return self.stored_tournament.chessevent_user_id
-        return self.event.chessevent_user_id
-
-    @property
-    def chessevent_password(self) -> str | None:
-        if self.stored_tournament.chessevent_password:
-            return self.stored_tournament.chessevent_password
-        return self.event.chessevent_password
-
-    @property
-    def chessevent_event_id(self) -> str | None:
-        if self.stored_tournament.chessevent_event_id:
-            return self.stored_tournament.chessevent_event_id
-        return self.event.chessevent_event_id
-
-    @property
-    def chessevent_tournament_name(self) -> str | None:
-        return self.stored_tournament.chessevent_tournament_name
 
     @property
     def record_illegal_moves(self) -> int:
@@ -282,10 +249,6 @@ class Tournament:
     @property
     def last_check_in_update(self) -> float:
         return self.stored_tournament.last_check_in_update
-
-    @property
-    def chessevent_last_download_md5(self) -> str:
-        return self.stored_tournament.chessevent_last_download_md5
 
     @property
     def stored_tie_breaks(self) -> list[TieBreak] | None:
@@ -1023,34 +986,6 @@ class Tournament:
             self._current_round,
             board.id,
         )
-
-    def write_chessevent_info_to_database(
-        self, chessevent_tournament: ChessEventTournament, chessevent_download_md5: str
-    ) -> int:
-        """Stores the information from the given `chessevent_tournament` in the event database.
-        For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
-        Returns the number of players added."""
-        players_added: int = 0
-        with PapiDatabase(self.file, write=True) as papi_database:
-            with EventDatabase(self.event.uniq_id, write=True) as event_database:
-                papi_database.write_chessevent_info(chessevent_tournament)
-                for player_papi_id, chessevent_player in enumerate(
-                    chessevent_tournament.players, start=2
-                ):
-                    papi_database.add_chessevent_player(
-                        player_papi_id,
-                        chessevent_player,
-                        chessevent_tournament.check_in_started,
-                    )
-                    players_added += 1
-                event_database.set_tournament_check_in(self.id, True)
-                papi_database.open_check_in(1)
-                event_database.set_tournament_chessevent_last_download_md5(
-                    self.id, chessevent_download_md5
-                )
-                event_database.commit()
-                papi_database.commit()
-        return players_added
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""

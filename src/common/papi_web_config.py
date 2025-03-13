@@ -332,9 +332,6 @@ class PapiWebConfig(metaclass=Singleton):
     """ The age of the oldest results shown on results screens (in minutes). """
     default_results_screen_max_age: int = 60
 
-    """ The ChessEvent download URL. """
-    chessevent_download_url: str = 'https://chessevent.echecs-bretagne.fr/download'
-
     """ The default first board number for tournaments. """
     default_first_board_number: int = 1
 

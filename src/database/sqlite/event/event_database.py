@@ -235,9 +235,6 @@ class EventDatabase(SQLiteVersionedDatabase):
                         'update_password',
                         'record_illegal_moves',
                         'rules',
-                        'chessevent_user_id',
-                        'chessevent_password',
-                        'chessevent_event_id',
                         'tournaments',
                         'timers',
                         'screens',
@@ -315,15 +312,6 @@ class EventDatabase(SQLiteVersionedDatabase):
                         timer_colors=timer_colors,
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
-                        chessevent_user_id=event_dict.get(
-                            'chessevent_user_id', None
-                        ),
-                        chessevent_password=event_dict.get(
-                            'chessevent_password', None
-                        ),
-                        chessevent_event_id=event_dict.get(
-                            'chessevent_event_id', None
-                        ),
                     )
                 )
                 timer_ids_by_uniq_id: dict[str, int] = {}
@@ -446,10 +434,6 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 'time_control_handicap_penalty_value',
                                 'time_control_handicap_penalty_step',
                                 'time_control_handicap_min_time',
-                                'chessevent_user_id',
-                                'chessevent_password',
-                                'chessevent_event_id',
-                                'chessevent_tournament_name',
                                 'time_control_initial_time',
                                 'time_control_increment',
                                 'time_control_handicap_penalty_value',
@@ -478,18 +462,6 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 ),
                                 time_control_handicap_min_time=tournament_dict.get(
                                     'time_control_handicap_min_time', None
-                                ),
-                                chessevent_user_id=tournament_dict.get(
-                                    'chessevent_user_id', None
-                                ),
-                                chessevent_password=tournament_dict.get(
-                                    'chessevent_password', None
-                                ),
-                                chessevent_event_id=tournament_dict.get(
-                                    'chessevent_event_id', None
-                                ),
-                                chessevent_tournament_name=tournament_dict.get(
-                                    'chessevent_tournament_name', None
                                 ),
                                 record_illegal_moves=None,
                                 rules=None,
@@ -967,7 +939,7 @@ class EventDatabase(SQLiteVersionedDatabase):
 
     def _row_to_stored_event(self, row: dict[str, Any]) -> StoredEvent:
         """Convert a row to a StoredEvent record."""
-        return StoredEvent(
+        stored_event = StoredEvent(
             uniq_id=self.uniq_id,
             version=row['version'],
             name=row['name'],
@@ -999,12 +971,10 @@ class EventDatabase(SQLiteVersionedDatabase):
             message_text=row.get('message_text', None),
             message_color=row.get('message_color', None),
             message_background_color=row.get('message_background_color', None),
-            # needed to open event databases when version < 2.4.21 before checking the version
-            chessevent_user_id=row.get('chessevent_user_id', None),
-            chessevent_password=row.get('chessevent_password', None),
-            chessevent_event_id=row.get('chessevent_event_id', None),
             last_update=row['last_update'],
         )
+        plugin_manager.hook.augment_event_after_db_fetch(stored_event=stored_event, row=row)
+        return stored_event
 
     def _get_stored_event(self) -> StoredEvent:
         """Gets all the information about the event in the database
@@ -1032,6 +1002,10 @@ class EventDatabase(SQLiteVersionedDatabase):
     def update_stored_event(self, stored_event: StoredEvent) -> StoredEvent:
         """Updates the event database with the information in the provided
         `stored_event`."""
+        
+        per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(stored_event=stored_event)
+        plugin_data = { key: value for data in per_plugin_event_data for key, value in data.items() }
+        
         fields: list[str] = [
             'name',
             'start',
@@ -1050,12 +1024,10 @@ class EventDatabase(SQLiteVersionedDatabase):
             'message_text',
             'message_color',
             'message_background_color',
-            'chessevent_user_id',
-            'chessevent_password',
-            'chessevent_event_id',
             'last_update',
-        ]
-        params: tuple = (
+        ] + [field for field in plugin_data.keys()]
+        
+        params: list = [
             stored_event.name,
             stored_event.start,
             stored_event.stop,
@@ -1073,11 +1045,9 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_event.message_text,
             stored_event.message_color,
             stored_event.message_background_color,
-            stored_event.chessevent_user_id,
-            stored_event.chessevent_password,
-            stored_event.chessevent_event_id,
             time.time(),
-        )
+        ] + [value for value in plugin_data.values()]
+        
         field_sets = (f'`{f}` = ?' for f in fields)
         self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
         return self._get_stored_event()
@@ -1392,10 +1362,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             ],
             time_control_handicap_min_time=row['time_control_handicap_min_time'],
             # needed to open event databases when version < 2.4.21 before checking the version
-            chessevent_user_id=row.get('chessevent_user_id', None),
-            chessevent_password=row.get('chessevent_password', None),
-            chessevent_event_id=row.get('chessevent_event_id', None),
-            chessevent_tournament_name=row['chessevent_tournament_name'],
             record_illegal_moves=row['record_illegal_moves'],
             # needed to open event databases when version < 2.4.11 before checking the version
             rules=row.get('rules', None),
@@ -1412,12 +1378,11 @@ class EventDatabase(SQLiteVersionedDatabase):
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
-            chessevent_last_download_md5=row['chessevent_last_download_md5'],
             # needed to open event databases when version < 2.4.23 before checking the version
             tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(stored_tournament=stored_tournament, row=row)
-        return stored_tournament;
+        return stored_tournament
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
         self.execute(
@@ -1440,8 +1405,8 @@ class EventDatabase(SQLiteVersionedDatabase):
         self,
         stored_tournament: StoredTournament,
     ) -> StoredTournament:
-        per_plugin_player_data = plugin_manager.hook.tournament_data_for_db_write(stored_tournament=stored_tournament)
-        plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
+        per_plugin_tournament_data = plugin_manager.hook.tournament_data_for_db_write(stored_tournament=stored_tournament)
+        plugin_data = { key: value for data in per_plugin_tournament_data for key, value in data.items() }
         
         # check_in_open is not updated here but in set_tournament_check_in()
         fields: list[str] = [
@@ -1454,10 +1419,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             'time_control_handicap_penalty_step',
             'time_control_handicap_penalty_value',
             'time_control_handicap_min_time',
-            'chessevent_user_id',
-            'chessevent_password',
-            'chessevent_event_id',
-            'chessevent_tournament_name',
             'record_illegal_moves',
             'rules',
             'first_board_number',
@@ -1469,7 +1430,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             'last_result_update',
             'last_illegal_move_update',
             'last_check_in_update',
-            'chessevent_last_download_md5',
         ] + [field for field in plugin_data.keys()]
         
         params: list = [
@@ -1482,10 +1442,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_tournament.time_control_handicap_penalty_step,
             stored_tournament.time_control_handicap_penalty_value,
             stored_tournament.time_control_handicap_min_time,
-            stored_tournament.chessevent_user_id,
-            stored_tournament.chessevent_password,
-            stored_tournament.chessevent_event_id,
-            stored_tournament.chessevent_tournament_name,
             stored_tournament.record_illegal_moves,
             stored_tournament.rules,
             stored_tournament.first_board_number,
@@ -1497,7 +1453,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_tournament.last_result_update,
             stored_tournament.last_illegal_move_update,
             stored_tournament.last_check_in_update,
-            stored_tournament.chessevent_last_download_md5,
         ] + [value for value in plugin_data.values()]
         
         if stored_tournament.id is None:
@@ -1542,17 +1497,6 @@ class EventDatabase(SQLiteVersionedDatabase):
         # references are not deleted on cascade as they should be!
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
         self.set_last_update()
-
-    def set_tournament_chessevent_last_download_md5(
-        self, tournament_id: int, md5: str = None
-    ):
-        self.execute(
-            'UPDATE `tournament` SET `chessevent_last_download_md5` = ? WHERE `id` = ?',
-            (
-                md5,
-                tournament_id,
-            ),
-        )
 
     def _set_tournament_last_illegal_move_update(self, tournament_id: int):
         self.execute(
