@@ -1,13 +1,15 @@
 from logging import Logger
 
 from common.logger import get_logger
-from data.tie_break import PapiTieBreak, TieBreak
+from data import tie_break
+from data.tie_break import AbstractTieBreak
 from data.util import (
     TournamentType,
     TournamentPairing,
     TournamentRating,
 )
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
+from plugins.ffe import tie_break as papi_tie_break
 
 logger: Logger = get_logger()
 
@@ -34,7 +36,7 @@ class ChessEventTournament:
         self.arbiter: str = ''
         self.start: float = 0.0
         self.end: float = 0.0
-        self.tie_breaks: list[TieBreak] = []
+        self.tie_breaks: list[AbstractTieBreak] = []
         self.rating: TournamentRating = TournamentRating.STANDARD
         self.ffe_id: int = 0
         self.players: list[ChessEventPlayer] = []
@@ -55,14 +57,7 @@ class ChessEventTournament:
             self.arbiter = str(chessevent_tournament_info[key := 'arbiter'])
             self.start = float(chessevent_tournament_info[key := 'start'])
             self.end = float(chessevent_tournament_info[key := 'end'])
-            for tie_break_index in range(3):
-                key = f'tie_break_{tie_break_index + 1}'
-                if chessevent_tournament_info[key]:
-                    self.tie_breaks.append(
-                        PapiTieBreak(
-                            int(chessevent_tournament_info[key])
-                        ).to_tie_break(self.rounds)
-                    )
+            self.tie_breaks = self._load_tie_breaks(chessevent_tournament_info)
             self.rating = TournamentRating(
                 int(chessevent_tournament_info[key := 'rating'])
             )
@@ -91,13 +86,28 @@ class ChessEventTournament:
             return
         self.error = False
 
-    def get_papi_tie_break(self, index: int):
-        try:
-            return PapiTieBreak.from_tie_break(
-                self.tie_breaks[index]
-            ).to_papi_value
-        except IndexError:
-            return PapiTieBreak.NONE.to_papi_value
+    @staticmethod
+    def _load_tie_breaks(tournament_info: dict) -> list[AbstractTieBreak]:
+        tie_break_by_chessevent_id = {
+            1: papi_tie_break.PapiBuchholzTieBreak(),
+            2: papi_tie_break.PapiBuchholzCutBottomTieBreak(),
+            3: papi_tie_break.PapiMedianBuchholzTieBreak(),
+            4: tie_break.ProgressiveScoresTieBreak(),
+            5: papi_tie_break.PapiPerformanceTieBreak(),
+            6: papi_tie_break.PapiSumOfBuchholzTieBreak(),
+            7: tie_break.WinsTieBreak(),
+            8: papi_tie_break.PapiKashdanTieBreak(),
+            9: tie_break.KoyaTieBreak(),
+            10: tie_break.SonnebornBergerTieBreak(),
+        }
+        return [
+            tie_break_ for tie_break_ in [
+                tie_break_by_chessevent_id.get(
+                    tournament_info[f'tie_break_{index}'], None
+                )
+                for index in range(1, 4)
+            ] if tie_break_ is not None
+        ]
         
     def __str__(self) -> str:
         return '\n'.join(
