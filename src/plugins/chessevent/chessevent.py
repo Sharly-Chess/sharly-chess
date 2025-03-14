@@ -14,7 +14,7 @@ from plugins.chessevent.utils import ChessEventUtils
 from plugins.hookspec import hookimpl
 from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
 
-import web.controllers.base_controller as WebContextModule
+import web.controllers.base_controller as web_context_module
 
 if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredEvent
@@ -131,9 +131,9 @@ def get_event_form_data(
         }
 
     return {
-        'chessevent_user_id': WebContextModule.WebContext.value_to_form_data(get_data(event.plugin_data, 'chessevent_user_id', '')),
-        'chessevent_password': WebContextModule.WebContext.value_to_form_data(get_data(event.plugin_data, 'chessevent_password', '')),
-        'chessevent_event_id': WebContextModule.WebContext.value_to_form_data(get_data(event.plugin_data, 'chessevent_event_id', '')),
+        'chessevent_user_id': web_context_module.WebContext.value_to_form_data(get_data(event.plugin_data, 'chessevent_user_id', '')),
+        'chessevent_password': web_context_module.WebContext.value_to_form_data(get_data(event.plugin_data, 'chessevent_password', '')),
+        'chessevent_event_id': web_context_module.WebContext.value_to_form_data(get_data(event.plugin_data, 'chessevent_event_id', '')),
     }
 
 
@@ -144,17 +144,17 @@ def get_validated_event_form_fields(
     data: dict[str, str],
     errors: dict[str, str]
 ) -> dict[str, Any]:
-    chessevent_user_id = WebContextModule.WebContext.form_data_to_str(
+    chessevent_user_id = web_context_module.WebContext.form_data_to_str(
         data, 'chessevent_user_id'
     )
-    chessevent_password = WebContextModule.WebContext.form_data_to_str(
+    chessevent_password = web_context_module.WebContext.form_data_to_str(
         data, field := 'chessevent_password'
     )
     if chessevent_user_id and not chessevent_password:
         errors[field] = _(
             'Please enter a password for the ChessEvent connection.'
         )
-    chessevent_event_id = WebContextModule.WebContext.form_data_to_str(
+    chessevent_event_id = web_context_module.WebContext.form_data_to_str(
         data, 'chessevent_event_id'
     )
 
@@ -197,10 +197,10 @@ def get_tournament_form_data(
         }
 
     return {
-        'chessevent_user_id': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'chessevent_user_id', '')),
-        'chessevent_password': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'chessevent_password', '')),
-        'chessevent_event_id': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'chessevent_event_id', '')),
-        'chessevent_tournament_name': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'chessevent_tournament_name', '')),
+        'chessevent_user_id': web_context_module.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'chessevent_user_id', '')),
+        'chessevent_password': web_context_module.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'chessevent_password', '')),
+        'chessevent_event_id': web_context_module.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'chessevent_event_id', '')),
+        'chessevent_tournament_name': web_context_module.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'chessevent_tournament_name', '')),
     }
 
 
@@ -212,16 +212,16 @@ def get_validated_tournament_form_fields(
     errors: dict[str, str]
 ) -> dict[str, Any]:
 
-    chessevent_user_id = WebContextModule.WebContext.form_data_to_str(
+    chessevent_user_id = web_context_module.WebContext.form_data_to_str(
         data, 'chessevent_user_id'
     )
-    chessevent_password = WebContextModule.WebContext.form_data_to_str(
+    chessevent_password = web_context_module.WebContext.form_data_to_str(
         data, 'chessevent_password'
     )
-    chessevent_event_id = WebContextModule.WebContext.form_data_to_str(
+    chessevent_event_id = web_context_module.WebContext.form_data_to_str(
         data, 'chessevent_event_id'
     )
-    chessevent_tournament_name = WebContextModule.WebContext.form_data_to_str(
+    chessevent_tournament_name = web_context_module.WebContext.form_data_to_str(
         data, 'chessevent_tournament_name'
     )
 

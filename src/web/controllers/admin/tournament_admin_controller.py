@@ -1,4 +1,3 @@
-import re
 from logging import Logger
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Callable
