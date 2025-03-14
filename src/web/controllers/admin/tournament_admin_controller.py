@@ -1,3 +1,4 @@
+import itertools
 import re
 from logging import Logger
 from tempfile import NamedTemporaryFile
@@ -5,6 +6,7 @@ from typing import Annotated, Any, Callable
 from collections import defaultdict
 from functools import partial
 
+from data.tournament_export import AbstractTournamentExporter, Trf16TournamentExporter, TrfBxTournamentExporter
 import trf
 from litestar import post, get, delete, patch
 from litestar.contrib.htmx.request import HTMXRequest
@@ -34,6 +36,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.base_controller import WebContext
 from web.messages import Message
+from web.session import SessionHandler
 
 logger: Logger = get_logger()
 
@@ -43,7 +46,6 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        admin_event_tab: str | None,
         tournament_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -54,7 +56,6 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         super().__init__(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab=admin_event_tab,
             data=data,
         )
         self.admin_tournament: Tournament | None = None
@@ -243,7 +244,6 @@ class TournamentAdminController(BaseEventAdminController):
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab='tournaments',
             tournament_id=tournament_id,
             data=data,
         )
@@ -254,6 +254,34 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
+        
+        tournament_card_blocks_and_data = plugin_manager.hook.get_tournament_card_block_template_and_data()
+        tournament_exporters: list[AbstractTournamentExporter] = [
+            Trf16TournamentExporter(),
+            TrfBxTournamentExporter()
+        ] + list(itertools.chain.from_iterable(
+            plugin_manager.hook.get_extra_tournament_exporters()
+        ))
+
+        tournament_card_blocks = [block_template for (block_template, data) in tournament_card_blocks_and_data]
+        tournament_card_block_data = {
+            key: value
+            for (block_template, data) in tournament_card_blocks_and_data
+            for key, value in data.items()
+        }
+
+        template_context |= {
+            'admin_event_tab': 'admin-event-tournaments-tab',
+            'paired_bye_result_options': cls._get_paired_bye_result_options(),
+            'tournament_card_blocks': tournament_card_blocks,
+            'tournament_exporters': tournament_exporters,
+            'admin_tournaments_show_details': (
+                SessionHandler.get_session_admin_tournaments_show_details(
+                    web_context.request
+                )
+            ),
+        } | tournament_card_block_data
+                
         match modal:
             case None:
                 pass
@@ -395,6 +423,28 @@ class TournamentAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
+    
+    @get(
+        path='/admin/{event_uniq_id:str}/tournaments',
+        name='admin-event-tournaments-tab',
+        cache=1,
+    )
+    async def htmx_admin_event_tournaments_tab(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        locale: str | None,
+        admin_tournaments_show_details: bool | None,
+    ) -> Template | ClientRedirect:
+        if admin_tournaments_show_details is not None:
+            SessionHandler.set_session_admin_tournaments_show_details(
+                request, admin_tournaments_show_details
+            )
+        self.set_locale(request, locale)
+        return self._admin_event_tournaments_render(
+            request,
+            event_uniq_id=event_uniq_id,
+        )
 
     @get(
         path='/admin/tournament-modal/create/{event_uniq_id:str}',
@@ -515,7 +565,6 @@ class TournamentAdminController(BaseEventAdminController):
                 web_context: TournamentAdminWebContext = TournamentAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
-                    admin_event_tab='tournaments',
                     tournament_id=tournament_id,
                     data=data,
                 )
@@ -786,7 +835,6 @@ class TournamentAdminController(BaseEventAdminController):
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab='tournaments',
             tournament_id=tournament_id,
             data=None,
         )

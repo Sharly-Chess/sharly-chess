@@ -22,6 +22,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.base_controller import WebContext
 from web.messages import Message
+from web.session import SessionHandler
 
 logger: Logger = get_logger()
 
@@ -31,7 +32,6 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        admin_event_tab: str | None,
         family_id: int | None,
         family_type: str | None,
         data: Annotated[
@@ -44,7 +44,6 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             request,
             data=data,
             event_uniq_id=event_uniq_id,
-            admin_event_tab=admin_event_tab,
         )
         self.admin_family: Family | None = None
         if self.error:
@@ -284,7 +283,6 @@ class FamilyAdminController(BaseEventAdminController):
         web_context: FamilyAdminWebContext = FamilyAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab='families',
             family_id=family_id,
             family_type=family_type,
             data=data,
@@ -293,7 +291,13 @@ class FamilyAdminController(BaseEventAdminController):
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
-        )
+        ) | {
+            'admin_event_tab': 'admin-event-families-tab',
+            'admin_families_show_details': SessionHandler.get_session_admin_families_show_details(
+                web_context.request,
+            )
+        }
+                        
         match modal:
             case None:
                 pass
@@ -447,6 +451,29 @@ class FamilyAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
+        path='/admin/{event_uniq_id:str}/families',
+        name='admin-event-families-tab',
+        cache=1,
+    )
+    async def htmx_admin_event_families_tab(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        locale: str | None,
+        admin_families_show_details: bool | None,
+    ) -> Template | ClientRedirect:
+        if admin_families_show_details is not None:
+            SessionHandler.set_session_admin_families_show_details(
+                request, admin_families_show_details
+            )
+            
+        self.set_locale(request, locale)
+        return self._admin_event_families_render(
+            request,
+            event_uniq_id=event_uniq_id,
+        )
+
+    @get(
         path='/admin/family-modal/create/{event_uniq_id:str}/{family_type:str}',
         name='admin-family-create-modal',
         cache=1,
@@ -503,7 +530,6 @@ class FamilyAdminController(BaseEventAdminController):
                 web_context: FamilyAdminWebContext = FamilyAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
-                    admin_event_tab='families',
                     family_id=family_id,
                     family_type=family_type,
                     data=data,

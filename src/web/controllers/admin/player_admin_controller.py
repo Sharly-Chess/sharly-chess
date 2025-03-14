@@ -3,6 +3,7 @@ from datetime import date
 from logging import Logger
 from typing import Annotated, Any
 
+from common import unicode_normalize
 from litestar import get, patch, delete, post
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
@@ -20,6 +21,7 @@ from data.pairing import Pairing
 from data.player import Player, Federation, Club
 from data.tournament import Tournament
 from data.util import (
+    PlayerCategory,
     PlayerGender,
     TournamentRating,
     PlayerRatingType,
@@ -33,8 +35,10 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
+from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
+from web.session import SessionHandler
 
 logger: Logger = get_logger()
 
@@ -55,7 +59,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         | None,
     ):
         super().__init__(
-            request, event_uniq_id=event_uniq_id, admin_event_tab='players', data=data
+            request, event_uniq_id=event_uniq_id, data=data
         )
         self.admin_player: Player | None = None
         self.admin_tournament: Tournament | None = None
@@ -290,6 +294,305 @@ class PlayerAdminController(BaseEventAdminController):
         )
         admin_event: Event = web_context.admin_event
         admin_player: Player = web_context.admin_player
+        
+        # Allow plugin to provide extra columns
+        per_plugin_columns = plugin_manager.hook.get_extra_player_columns()
+        extra_columns = {}
+        for plugin_columns in per_plugin_columns:
+            for extra_column in plugin_columns:
+                c = extra_columns.setdefault(extra_column.at, [])
+                c.append(extra_column)
+
+        # The federations that will be shown on the federation select list
+        players_federations: list[Federation] = sorted(
+            {
+                player.federation
+                for player in web_context.admin_event.players_by_id.values()
+            }
+        )
+        # The federations that will be selected on the federation select list and used to filter the players
+        filter_federations: list[Federation] = [
+            f
+            for f in SessionHandler.get_session_admin_players_filter_federations(
+                web_context.request
+            )
+            if f in players_federations
+        ]
+        # The clubs that will be shown on the club select list
+        players_clubs: list[Club] = sorted(
+            {
+                player.club
+                for player in web_context.admin_event.players_by_id.values()
+            }
+        )
+        # The clubs that will be selected on the club select list and used to filter the players
+        filter_clubs: list[Club] = [
+            c
+            for c in SessionHandler.get_session_admin_players_filter_clubs(
+                web_context.request
+            )
+            if c in players_clubs
+        ]
+        # The genders that will be shown on the gender select list
+        players_genders: list[PlayerGender] = sorted(
+            {
+                player.gender
+                for player in web_context.admin_event.players_by_id.values()
+            }
+        )
+        # The genders that will be selected on the gender select list and used to filter the players
+        filter_genders: list[PlayerGender] = (
+            SessionHandler.get_session_admin_players_filter_genders(
+                web_context.request
+            )
+        )
+        # The years or birth that will be shown on the year of birth select list
+        players_yobs: list[int] = sorted(
+            {
+                player.year_of_birth
+                for player in web_context.admin_event.players_by_id.values()
+            }
+        )
+        # The check-in statuses that will be selected on the
+        # check-in status select list and used to filter the players
+        players_check_ins: list[bool | None] = [None, True, False]
+        # The check-in statuses that will be selected on the
+        # check-in status select list and used to filter the players
+        filter_check_ins: list[bool | None] = (
+            SessionHandler.get_session_admin_players_filter_check_ins(
+                web_context.request
+            )
+        )
+        # The tournaments that will be selected on the tournament select list and used to filter the players
+        filter_tournaments: list[int] = (
+            SessionHandler.get_session_admin_players_filter_tournaments(
+                web_context.request
+            )
+        )
+        # The categories that will be shown on the category select list
+        players_categories: list[PlayerCategory] = sorted(
+            {player.category for player in admin_event.players_by_id.values()}
+        )
+        # The categories that will be selected on the category select list and used to filter the players
+        filter_categories: list[PlayerCategory] = (
+            SessionHandler.get_session_admin_players_filter_categories(
+                web_context.request
+            )
+        )
+        # The name the players must match
+        filter_name: str = SessionHandler.get_session_admin_players_filter_name(
+            web_context.request
+        )
+        filter_name_parts: list[str] = filter_name.split(' ')
+        # The origin (federation+league+club) the players must match
+        filter_origin: str = (
+            SessionHandler.get_session_admin_players_filter_clubs_search(
+                web_context.request
+            )
+        )
+        filter_origin_parts: list[str] = filter_origin.split(' ')
+        
+        per_plugin_context = plugin_manager.hook.get_player_admin_context(web_context=web_context)
+        plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
+
+        template_context |= plugin_context
+        
+        match SessionHandler.get_session_admin_players_sort(
+            web_context.request
+        ):
+            case 'alpha':
+                def sort_key(player: Player):
+                    return player.last_name, player.first_name
+
+            case 'rating_desc':
+                def sort_key(player: Player): # pylint: disable=function-redefined
+                    return -player.rating, player.last_name, player.first_name
+
+            case 'rating_asc':
+                def sort_key(player: Player): # pylint: disable=function-redefined
+                    return player.rating, player.last_name, player.first_name
+
+            case 'yob_desc':
+                def sort_key(player: Player): # pylint: disable=function-redefined
+                    return (
+                        -player.year_of_birth,
+                        player.last_name,
+                        player.first_name,
+                    )
+
+            case 'yob_asc':
+                def sort_key(player: Player): # pylint: disable=function-redefined
+                    return (
+                        player.year_of_birth,
+                        player.last_name,
+                        player.first_name,
+                    )
+
+            case 'category_desc':
+                def sort_key(player: Player): # pylint: disable=function-redefined
+                    return -player.category, player.last_name, player.first_name
+
+            case 'category_asc':
+                def sort_key(player: Player): # pylint: disable=function-redefined
+                    return player.category, player.last_name, player.first_name
+
+            case 'club':
+                def sort_key(player: Player): # pylint: disable=function-redefined
+                    return plugin_manager.hook.player_club_sort_key(player=player) or (
+                        player.club,
+                        player.last_name,
+                        player.first_name,
+                    )
+
+            case 'tournament':
+                def sort_key(player: Player): # pylint: disable=function-redefined
+                    return (
+                        web_context.admin_event.tournaments_by_id[
+                            player.tournament_id
+                        ].uniq_id,
+                        -player.rating,
+                        player.last_name,
+                        player.first_name,
+                    )
+
+            case _:
+                raise ValueError(
+                    f'sort={SessionHandler.get_session_admin_players_sort(web_context.request)}'
+                )
+        # 0 real players only
+        # 1 all or no genders selected, or player matches
+        # 2 all or no licences selected, or player matches
+        # 3 all or no check_ins selected, or player matches
+        # 4 less than two tournaments, all or no tournaments selected, or player matches
+        # 5 less than two federations, all or no federations selected, or player matches
+        # 6 less than two clubs, all or no clubs selected, or player matches
+
+        players: dict[int, Player] = {
+            p.id: p
+            for p in sorted(
+                [
+                    player
+                    for player in web_context.admin_event.players_by_id.values()
+                    if (
+                        player.ref_id > 1
+                        and len(filter_genders) in [0, 3]
+                        or player.gender.value in filter_genders
+                    )
+                    and (
+                        len(filter_categories) in [0, len(players_categories)]
+                        or player.category in filter_categories
+                    )
+                    and (
+                        len(filter_check_ins) in [0, 3]
+                        or (
+                            player.can_check_in_out
+                            and player.check_in in filter_check_ins
+                        )
+                        or (
+                            not player.can_check_in_out and None in filter_check_ins
+                        )
+                    )
+                    and (
+                        len(filter_tournaments)
+                        in [0, len(web_context.admin_event.tournaments_by_id)]
+                        or player.tournament_id in filter_tournaments
+                    )
+                    and (
+                        len(filter_federations) in [0, len(players_federations)]
+                        or player.federation in filter_federations
+                    )
+                    and (
+                        len(filter_clubs) in [0, len(players_clubs)]
+                        or player.club in filter_clubs
+                    )
+                    and all(
+                        {
+                            filter_name_part
+                            in unicode_normalize(
+                                f'{player.last_name} {player.first_name}'.lower()
+                            )
+                            for filter_name_part in filter_name_parts
+                        }
+                    )
+                    and all(
+                        {
+                            filter_origin_part
+                            in unicode_normalize(
+                                f'{player.federation} {player.club}'.lower()
+                            )
+                            for filter_origin_part in filter_origin_parts
+                        }
+                    )
+                    and all(plugin_manager.hook.filter_player(
+                        web_context=web_context,
+                        template_context=template_context,
+                        player=player
+                    ))
+                ],
+                key=sort_key,
+            )
+        }
+        
+        template_context |= {
+            'admin_event_tab': 'admin-event-players-tab',
+            'admin_players': players,
+            'admin_players_columns': [
+                'name',
+                'check_in',
+                'rating',
+                'federation',
+                'club',
+                'yob',
+                'category',
+                'mail',
+                'phone',
+                'gender',
+                'fixed',
+                'fide',
+                'owed_paid',
+                'tournament',
+                'comment',
+                'record',
+            ],
+            'admin_players_sort': SessionHandler.get_session_admin_players_sort(
+                web_context.request
+            ),
+            'admin_players_federations': players_federations,
+            'admin_players_clubs': players_clubs,
+            'admin_players_yobs': players_yobs,
+            'admin_players_categories': players_categories,
+            'admin_players_genders': players_genders,
+            'admin_players_check_ins': players_check_ins,
+            'admin_players_filter_columns': SessionHandler.get_session_admin_players_filter_columns(
+                web_context.request
+            ),
+            'admin_players_filter_federations': SessionHandler.get_session_admin_players_filter_federations(
+                web_context.request
+            ),
+            'admin_players_filter_clubs': SessionHandler.get_session_admin_players_filter_clubs(
+                web_context.request
+            ),
+            'admin_players_filter_clubs_search': SessionHandler.get_session_admin_players_filter_clubs_search(
+                web_context.request
+            ),
+            'admin_players_filter_genders': SessionHandler.get_session_admin_players_filter_genders(
+                web_context.request
+            ),
+            'admin_players_filter_check_ins': SessionHandler.get_session_admin_players_filter_check_ins(
+                web_context.request
+            ),
+            'admin_players_filter_tournaments': SessionHandler.get_session_admin_players_filter_tournaments(
+                web_context.request
+            ),
+            'admin_players_filter_categories': SessionHandler.get_session_admin_players_filter_categories(
+                web_context.request
+            ),
+            'admin_players_filter_name': SessionHandler.get_session_admin_players_filter_name(
+                web_context.request
+            ),
+            'admin_players_extra_columns': extra_columns,
+        }
+        
         match modal:
             case None:
                 pass
@@ -476,6 +779,132 @@ class PlayerAdminController(BaseEventAdminController):
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
 
+    @get(
+        path='/admin/{event_uniq_id:str}/players',
+        name='admin-event-players-tab',
+        cache=1,
+    )
+    async def htmx_admin_event_players_tab(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        locale: str | None,
+        admin_players_sort: str | None = None,
+        admin_players_filter_columns: list[str] | None = None,
+        admin_players_filter_federations: list[str] | None = None,
+        admin_players_filter_clubs: list[str] | None = None,
+        admin_players_filter_clubs_search: str | None = None,
+        admin_players_filter_genders: list[int] | None = None,
+        admin_players_filter_check_ins: list[int] | None = None,
+        admin_players_filter_tournaments: list[int] | None = None,
+        admin_players_filter_categories: list[int] | None = None,
+        admin_players_filter_name: str | None = None,
+        admin_players_clear_filters: int | None = None,
+    ) -> Template | ClientRedirect:
+        if admin_players_sort is not None:
+            SessionHandler.set_session_admin_players_sort(
+                request, admin_players_sort
+            )
+        elif admin_players_filter_columns is not None:
+            SessionHandler.set_session_admin_players_filter_columns(
+                request,
+                [
+                    column
+                    for column in admin_players_filter_columns
+                    if column  # '' must be ignored
+                ],
+            )
+        elif admin_players_filter_federations is not None:
+            SessionHandler.set_session_admin_players_filter_federations(
+                request,
+                [
+                    Federation.from_query_param(query_param)
+                    for query_param in admin_players_filter_federations
+                    if query_param  # '' must be ignored
+                ],
+            )
+        elif admin_players_filter_clubs is not None:
+            SessionHandler.set_session_admin_players_filter_clubs(
+                request,
+                [
+                    Club.from_query_param(query_param)
+                    for query_param in admin_players_filter_clubs
+                    if query_param  # '' must be ignored
+                ],
+            )
+        elif admin_players_filter_genders is not None:
+            SessionHandler.set_session_admin_players_filter_genders(
+                request,
+                [
+                    PlayerGender(query_param)
+                    for query_param in admin_players_filter_genders
+                    if query_param >= 0  # -1 must be ignored
+                ],
+            )
+        elif admin_players_filter_check_ins is not None:
+            SessionHandler.set_session_admin_players_filter_check_ins(
+                request,
+                [
+                    {
+                        0: None,
+                        1: False,
+                        2: True,
+                    }.get(query_param, None)
+                    for query_param in admin_players_filter_check_ins
+                    if query_param >= 0  # -1 must be ignored
+                ],
+            )
+        elif admin_players_filter_tournaments is not None:
+            SessionHandler.set_session_admin_players_filter_tournaments(
+                request,
+                [
+                    query_param
+                    for query_param in admin_players_filter_tournaments
+                    if query_param > 0  # 0 must be ignored
+                ],
+            )
+        elif admin_players_filter_categories is not None:
+            SessionHandler.set_session_admin_players_filter_categories(
+                request,
+                [
+                    PlayerCategory(query_param)
+                    for query_param in admin_players_filter_categories
+                    if query_param >= 0  # -1 must be ignored
+                ],
+            )
+        elif admin_players_filter_name is not None:
+            SessionHandler.set_session_admin_players_filter_name(
+                request, unicode_normalize(admin_players_filter_name).lower()
+            )
+        elif admin_players_filter_clubs_search is not None:
+            SessionHandler.set_session_admin_players_filter_clubs_search(
+                request, unicode_normalize(admin_players_filter_clubs_search).lower()
+            )
+        elif admin_players_clear_filters:
+            SessionHandler.set_session_admin_players_filter_federations(
+                request, []
+            )
+            SessionHandler.set_session_admin_players_filter_clubs(request, [])
+            SessionHandler.set_session_admin_players_filter_genders(request, [])
+            SessionHandler.set_session_admin_players_filter_check_ins(
+                request, []
+            )
+            SessionHandler.set_session_admin_players_filter_tournaments(
+                request, []
+            )
+            SessionHandler.set_session_admin_players_filter_categories(
+                request, []
+            )
+            SessionHandler.set_session_admin_players_filter_name(request, '')
+            SessionHandler.set_session_admin_players_filter_clubs_search(request, '')
+            plugin_manager.hook.clear_player_filters(request=request)
+        
+        self.set_locale(request, locale)
+        return self._admin_event_players_render(
+            request,
+            event_uniq_id=event_uniq_id,
+        )
+        
     @get(
         path='/admin/player-modal/create/{event_uniq_id:str}',
         name='admin-player-create-modal',

@@ -21,12 +21,12 @@
 {% endblock admin_header_back_button %}
 
 {% block admin_header_nav %}
-    {% for nav_id, nav_tab in nav_tabs.items() %}
+    {% for nav_route, nav_tab in nav_tabs.items() %}
         {% with active=(admin_event_tab == nav_id) %}
             <button
                 class="nav-link {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %} py-0"
                 id="nav-{{ nav_id }}-tab"
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab=nav_id) }}"
+                hx-get="{{ url_for(nav_route, event_uniq_id=admin_event.uniq_id) }}"
                 preload
                 hx-target="body"
                 hx-push-url="true"
