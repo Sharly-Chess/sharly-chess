@@ -186,15 +186,26 @@ class BaseEventAdminController(BaseAdminController):
 
         match web_context.admin_event_tab:
             case 'config':
-                pass
+                plugin_event_info_rows = plugin_manager.hook.get_event_info_rows_template()
+                template_context |= {
+                    'plugin_event_info_rows': plugin_event_info_rows,
+                }
             case 'tournaments':
-                tournament_card_blocks = plugin_manager.hook.get_tournament_card_block_template()
+                tournament_card_blocks_and_data = plugin_manager.hook.get_tournament_card_block_template_and_data()
                 tournament_exporters: list[AbstractTournamentExporter] = [
                     Trf16TournamentExporter(),
                     TrfBxTournamentExporter()
                 ] + list(itertools.chain.from_iterable(
                     plugin_manager.hook.get_extra_tournament_exporters()
                 ))
+                
+                tournament_card_blocks = [block_template for (block_template, data) in tournament_card_blocks_and_data]
+                tournament_card_block_data = {
+                    key: value
+                    for (block_template, data) in tournament_card_blocks_and_data
+                    for key, value in data.items()
+                }
+
                 template_context |= {
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     'tournament_card_blocks': tournament_card_blocks,
@@ -204,7 +215,7 @@ class BaseEventAdminController(BaseAdminController):
                             web_context.request
                         )
                     ),
-                }
+                } | tournament_card_block_data
             case 'players':
                 # Allow plugin to provide extra columns
                 per_plugin_columns = plugin_manager.hook.get_extra_player_columns()

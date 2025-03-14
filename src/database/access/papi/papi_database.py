@@ -6,8 +6,6 @@ from pathlib import Path
 from typing import NamedTuple, Pattern
 
 from common.logger import get_logger
-from data.chessevent_player import ChessEventPlayer
-from data.chessevent_tournament import ChessEventTournament
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
 from data.tie_break import PapiTieBreak
@@ -351,113 +349,6 @@ class PapiDatabase(AccessDatabase):
     @staticmethod
     def date_to_papi_date(d: date | None) -> str | None:
         return datetime(d.year, d.month, d.day).strftime('%d/%m/%Y') if d else None
-
-    def write_chessevent_info(self, chessevent_tournament: ChessEventTournament):
-        """Creates the tournament data from the ChessEvent Tournament data."""
-        default_rounds: int = 7
-        if not chessevent_tournament.rounds:
-            logger.warning(
-                'Number of rounds not set in ChessEvent, %d set by default.',
-                default_rounds,
-            )
-            chessevent_tournament.rounds = default_rounds
-        data: dict[str, str | int] = {
-            'Nom': chessevent_tournament.name,
-            'Genre': chessevent_tournament.type.to_papi_value,
-            'NbrRondes': chessevent_tournament.rounds,
-            'Pairing': chessevent_tournament.pairing.to_papi_value,
-            'Cadence': chessevent_tournament.time_control,
-            'Lieu': chessevent_tournament.location,
-            'Arbitre': chessevent_tournament.arbiter,
-            'DateDebut': self.timestamp_to_papi_date(chessevent_tournament.start),
-            'DateFin': self.timestamp_to_papi_date(chessevent_tournament.end),
-            'Dep1': PapiTieBreak.from_tie_break(
-                chessevent_tournament.tie_breaks[0]
-            ).to_papi_value,
-            'Dep2': PapiTieBreak.from_tie_break(
-                chessevent_tournament.tie_breaks[1]
-            ).to_papi_value,
-            'Dep3': PapiTieBreak.from_tie_break(
-                chessevent_tournament.tie_breaks[2]
-            ).to_papi_value,
-            'ClassElo': chessevent_tournament.rating.to_papi_value,
-            'Homologation': str(chessevent_tournament.ffe_id),
-        }
-        # queries: list[str] = []
-        # params: list[str] = []
-        # for name, value in data.items():
-        #     queries.append('UPDATE `info` SET `Value` = ? WHERE `Variable` = ?')
-        #     params.extend([value, name, ])
-        # self._execute('; '.join(queries), tuple(params))
-        for name, value in data.items():
-            query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
-            self._execute(
-                query,
-                (
-                    value,
-                    name,
-                ),
-            )
-
-    def add_chessevent_player(
-        self, player_papi_id: int, player: ChessEventPlayer, check_in_started: bool
-    ):
-        """Creates a player in the database from the given ChessEvent player.
-        If the player is not checked in when `check_in_started` is True,
-        removes the player from play for subsequent rounds which are not
-        specifically not-played rounds."""
-        data: dict[str, str | int | float | None] = {
-            'Ref': player_papi_id,
-            'RefFFE': player.ffe_id,
-            'NrFFE': player.ffe_license_number if player.ffe_license_number else None,
-            'Nom': player.last_name,
-            'Prenom': player.first_name,
-            'Sexe': player.gender.to_papi_value,
-            'NeLe': self.timestamp_to_papi_date(player.birth),
-            'Cat': player.category.to_papi_value,
-            'AffType': player.ffe_license.to_papi_value,
-            'Elo': player.standard_rating,
-            'Rapide': player.rapid_rating,
-            'Blitz': player.blitz_rating,
-            'Federation': player.federation,
-            'ClubRef': player.ffe_club_id,
-            'Club': player.ffe_club,
-            'Ligue': player.ffe_league,
-            'Fide': player.standard_rating_type.to_papi_value,
-            'RapideFide': player.rapide_rating_type.to_papi_value,
-            'BlitzFide': player.blitz_rating_type.to_papi_value,
-            'FideCode': player.fide_id if player.fide_id else None,
-            'FideTitre': player.title.to_papi_value,
-            'Pointe': check_in_started and player.check_in,
-            'InscriptionRegle': player.paid,
-            'InscriptionDu': player.fee,
-            'Tel': player.phone,
-            'EMail': player.email,
-            'Fixe': player.board,
-            'Flotteur': 'X' * 24,
-            'Pts': 0,
-            'PtA': 0,
-        }
-        for round_ in range(1, 25):
-            data[f'Rd{round_:0>2}Adv'] = None
-            if round_ not in player.skipped_rounds:
-                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                if player.check_in or not check_in_started:
-                    data[f'Rd{round_:0>2}Cl'] = 'R'
-                else:
-                    data[f'Rd{round_:0>2}Cl'] = 'F'
-            else:
-                data[f'Rd{round_:0>2}Cl'] = 'F'
-                match player.skipped_rounds[round_]:
-                    case 0.0:
-                        data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                    case 0.5:
-                        data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
-                    case _:
-                        raise ValueError
-        query: str = f'INSERT INTO `joueur`({", ".join(data.keys())}) VALUES ({", ".join(["?"] * len(data))})'
-        params = tuple(data.values())
-        self._execute(query, params)
 
     def delete_players_personal_data(self):
         """Delete all personal data (email and phone number) from the database."""

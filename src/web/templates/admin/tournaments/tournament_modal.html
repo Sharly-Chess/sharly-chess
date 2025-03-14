@@ -103,48 +103,6 @@
                     {% endfor %}
 
                     <h4>
-                        {{ _('Connections ChessEvent') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='chessevent_user_id',
-                                label=_('Chessevent ID:'),
-                                placeholder=_('E.g.: %(string)s', string='Z00000'),
-                                help_text=_('The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.password_input(
-                                name='chessevent_password',
-                                label=_('ChessEvent Password:'),
-                                placeholder=_('E.g.: my_password'),
-                                help_text=_('The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 mb-3">
-                            {{ admin_macros.text_input(
-                                name='chessevent_event_id',
-                                label=_('ChessEvent event:'),
-                                placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
-                                help_text=_('The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 mb-3">
-                            {{ admin_macros.text_input(
-                                name='chessevent_tournament_name',
-                                label=_('ChessEvent tournament:'),
-                                placeholder=_('E.g.: Tournoi A'),
-                                help_text=_('The name of the tournament on the ChessEvent platform.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
-
-                    <h4>
                         {{ _('Time control') }}
                     </h4>
                     <div class="row">
