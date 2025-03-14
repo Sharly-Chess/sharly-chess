@@ -198,7 +198,7 @@ class BaseEventAdminController(BaseAdminController):
                 ] + list(itertools.chain.from_iterable(
                     plugin_manager.hook.get_extra_tournament_exporters()
                 ))
-                
+
                 tournament_card_blocks = [block_template for (block_template, data) in tournament_card_blocks_and_data]
                 tournament_card_block_data = {
                     key: value

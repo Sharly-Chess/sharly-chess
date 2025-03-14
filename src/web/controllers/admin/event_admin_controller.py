@@ -77,7 +77,7 @@ class EventAdminController(BaseEventAdminController):
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
-                    
+
                 plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
                 template_context |= {
                     'federations': PapiWebConfig.federations,

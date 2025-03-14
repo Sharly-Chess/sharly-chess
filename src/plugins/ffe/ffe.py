@@ -124,7 +124,7 @@ def augment_tournament_after_db_fetch(stored_tournament: 'StoredTournament', row
         'ffe_last_rules_upload': row.get('ffe_last_rules_upload', 0.0),
     }
 
-            
+
 @hookimpl
 def tournament_data_for_db_write(stored_tournament: 'StoredTournament') -> dict[str, Any]:
     td = stored_tournament.plugin_data
@@ -135,7 +135,7 @@ def tournament_data_for_db_write(stored_tournament: 'StoredTournament') -> dict[
         'ffe_last_rules_upload': get_data(td, 'ffe_last_rules_upload', 0.0),
     }
 
-    
+
 @hookimpl
 def on_tournament_init(tournament: 'Tournament'):
     pd = tournament.stored_tournament.plugin_data
@@ -148,7 +148,7 @@ def on_tournament_init(tournament: 'Tournament'):
             tournament=tournament,
         )
 
-        
+
 @hookimpl
 def get_controllers() -> Iterable[type[WebContextModule.BaseController]]:
     return [
@@ -367,7 +367,7 @@ def get_validated_player_form_fields(
             "league": league,
         }
     }
-    
+
 
 @hookimpl
 def get_tournament_form_fields_template() -> str:
@@ -387,8 +387,8 @@ def get_tournament_form_data(
     return {
         'ffe_id': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_id', None)),
         'ffe_password': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_password', None)),
-    }   
-    
+    }
+
 
 @hookimpl
 def get_validated_tournament_form_fields(
@@ -407,18 +407,18 @@ def get_validated_tournament_form_fields(
         errors['ffe_password'] = _(
             'The password of the tournament on the FFE website is made of 10 uppercase letters.'
         )
-        
+
     # Keep data other than these two fields (such as file upload times)
     previous_data = tournament.plugin_data.get(PLUGIN_NAME, {}) if tournament else {}
-                
+
     return {
         PLUGIN_NAME: previous_data | {
             "ffe_id": ffe_id,
             "ffe_password": ffe_password,
         }
     }
-    
-    
+
+
 @hookimpl
 def augment_player_after_search(player: Player):
     # Try to get more information by requesting the FFE database

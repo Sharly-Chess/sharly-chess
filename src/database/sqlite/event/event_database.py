@@ -1000,10 +1000,10 @@ class EventDatabase(SQLiteVersionedDatabase):
     def update_stored_event(self, stored_event: StoredEvent) -> StoredEvent:
         """Updates the event database with the information in the provided
         `stored_event`."""
-        
+
         per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(stored_event=stored_event)
         plugin_data = { key: value for data in per_plugin_event_data for key, value in data.items() }
-        
+
         fields: list[str] = [
             'name',
             'start',
@@ -1024,7 +1024,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'message_background_color',
             'last_update',
         ] + [field for field in plugin_data.keys()]
-        
+
         params: list = [
             stored_event.name,
             stored_event.start,
@@ -1045,7 +1045,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_event.message_background_color,
             time.time(),
         ] + [value for value in plugin_data.values()]
-        
+
         field_sets = (f'`{f}` = ?' for f in fields)
         self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
         return self._get_stored_event()
@@ -1399,7 +1399,7 @@ class EventDatabase(SQLiteVersionedDatabase):
     ) -> StoredTournament:
         per_plugin_tournament_data = plugin_manager.hook.tournament_data_for_db_write(stored_tournament=stored_tournament)
         plugin_data = { key: value for data in per_plugin_tournament_data for key, value in data.items() }
-        
+
         # check_in_open is not updated here but in set_tournament_check_in()
         fields: list[str] = [
             'uniq_id',
@@ -1423,7 +1423,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'last_illegal_move_update',
             'last_check_in_update',
         ] + [field for field in plugin_data.keys()]
-        
+
         params: list = [
             stored_tournament.uniq_id,
             stored_tournament.name,
@@ -1446,7 +1446,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_tournament.last_illegal_move_update,
             stored_tournament.last_check_in_update,
         ] + [value for value in plugin_data.values()]
-        
+
         if stored_tournament.id is None:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(

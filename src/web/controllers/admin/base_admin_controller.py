@@ -421,11 +421,11 @@ class BaseAdminController(BaseController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
-    
+
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_event_form_fields(action=action, event=admin_event, data=data, errors=errors)
         plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
-        
+
         return StoredEvent(
             uniq_id=uniq_id,
             name=name,
@@ -448,7 +448,7 @@ class BaseAdminController(BaseController):
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors = admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)},
             timer_delays = admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)},
-            
+
             plugin_data=plugin_data
         )
 
@@ -597,7 +597,7 @@ class BaseAdminController(BaseController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
-            
+
         per_plugin_form_data = plugin_manager.hook.get_event_form_data(event=admin_event)
         plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
 
@@ -743,9 +743,9 @@ class BaseAdminController(BaseController):
                 web_context.admin_tab = list(nav_tabs.keys())[
                     (nav_index + 1) % len(nav_tabs)
                 ]
-                
+
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
-                
+
         context = web_context.template_context | {
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
@@ -836,7 +836,7 @@ class BaseAdminController(BaseController):
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
-                    
+
                 plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
                 context |= {
                     'federations': PapiWebConfig.federations,

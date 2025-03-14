@@ -98,7 +98,7 @@ class Tournament:
         ] | None = None
         self._point_value_type = PointValueType.STANDARD
         self._papi_read = False
-        
+
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
 
@@ -465,7 +465,7 @@ class Tournament:
             if tie_break := papi_tie_break.to_tie_break(self.rounds):
                 tie_breaks.append(tie_break)
         return tie_breaks
-    
+
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
         return self.stored_tournament.plugin_data or {}

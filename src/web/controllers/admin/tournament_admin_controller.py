@@ -199,7 +199,7 @@ class TournamentAdminController(BaseEventAdminController):
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
         plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
-        
+
         return StoredTournament(
             id=web_context.admin_tournament.id
             if action
@@ -328,10 +328,10 @@ class TournamentAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    
+
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(tournament=web_context.admin_tournament)
                     plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
-                    
+
                     data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'name': WebContext.value_to_form_data(name),
@@ -364,7 +364,7 @@ class TournamentAdminController(BaseEventAdminController):
                         'tie_break_2': WebContext.value_to_form_data(tie_break_2),
                         'tie_break_3': WebContext.value_to_form_data(tie_break_3),
                     } | plugin_form_data
-                    
+
                     stored_tournament: StoredTournament = (
                         cls._admin_validate_tournament_update_data(
                             action, web_context, data
@@ -373,9 +373,9 @@ class TournamentAdminController(BaseEventAdminController):
                     errors = stored_tournament.errors
                 if errors is None:
                     errors = {}
-                    
+
                 plugin_form_fields_templates = plugin_manager.hook.get_tournament_form_fields_template() or []
-                
+
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
