@@ -272,16 +272,9 @@ class ActionSelector(metaclass=Singleton):
                                     ).format(file=tournament.file, num=player_count)
                                 )
                             if action_choice == upload_answer:
-                                if not tournament.ffe_id or not tournament.ffe_password:
-                                    logger.warning(
-                                        _(
-                                            'FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'
-                                        ).format(tournament_name=tournament.name)
-                                    )
-                                else:
-                                    FFESession(tournament, debug=False).upload(
-                                        set_visible=True
-                                    )
+                                FFESession(tournament, debug=False).upload(
+                                    set_visible=True
+                                )
                         if frequency_choice == once_answer:
                             return True
                         time.sleep(chessevent_timeout)

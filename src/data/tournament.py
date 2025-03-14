@@ -5,8 +5,7 @@ from itertools import groupby
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
-from time import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from _weakref import ReferenceType
 
 from trf import Tournament as TrfTournament
@@ -81,14 +80,6 @@ class Tournament:
                 ).format(filename=self.filename),
                 tournament=self,
             )
-        if not self.stored_tournament.ffe_id or not self.stored_tournament.ffe_password:
-            self.event.add_debug(
-                _(
-                    'Certification number and FFE password not set, '
-                    'operations on the FFE website will not be available.'
-                ),
-                tournament=self,
-            )
         if not self.chessevent_user_id or not self.chessevent_password:
             self.event.add_debug(
                 _('ChessEvent connection not defined.'), tournament=self
@@ -119,6 +110,9 @@ class Tournament:
         ] | None = None
         self._point_value_type = PointValueType.STANDARD
         self._papi_read = False
+        
+        # Give plugin the chance to initialise their data
+        plugin_manager.hook.on_tournament_init(tournament=self)
 
     @property
     def event(self) -> 'Event':
@@ -150,8 +144,6 @@ class Tournament:
     def filename(self) -> str:
         if self.stored_tournament.filename:
             return self.stored_tournament.filename
-        if self.stored_tournament.ffe_id:
-            return str(self.stored_tournament.ffe_id)
         return self.uniq_id
 
     @property
@@ -161,22 +153,6 @@ class Tournament:
     @property
     def file_exists(self) -> bool:
         return self.file.exists()
-
-    @property
-    def ffe_id(self) -> int | None:
-        return self.stored_tournament.ffe_id
-
-    @property
-    def ffe_password(self) -> str | None:
-        return self.stored_tournament.ffe_password if self.ffe_id else None
-
-    @property
-    def shadowed_ffe_password(self) -> str | None:
-        return (
-            f'{self.ffe_password[:4] + "*" * (len(self.ffe_password) - 4)}'
-            if self.ffe_password
-            else None
-        )
 
     @property
     def time_control_initial_time(self) -> int | None:
@@ -310,14 +286,6 @@ class Tournament:
     @property
     def last_check_in_update(self) -> float:
         return self.stored_tournament.last_check_in_update
-
-    @property
-    def ffe_last_upload(self) -> float:
-        return self.stored_tournament.ffe_last_upload
-
-    @property
-    def ffe_last_rules_upload(self) -> float:
-        return self.stored_tournament.ffe_last_rules_upload
 
     @property
     def chessevent_last_download_md5(self) -> str:
@@ -535,6 +503,10 @@ class Tournament:
             if tie_break := papi_tie_break.to_tie_break(self.rounds):
                 tie_breaks.append(tie_break)
         return tie_breaks
+    
+    @property
+    def plugin_data(self) -> dict[str, dict[str, Any]]:
+        return self.stored_tournament.plugin_data or {}
 
     def to_trf(
         self,
@@ -1003,36 +975,6 @@ class Tournament:
                 weak_player.set_time_control(
                     weak_time, self.time_control_increment, False
                 )
-
-    @property
-    def ffe_upload_needed(self) -> NeedsUpload:
-        try:
-            if self.stored_tournament.ffe_last_upload > self.file.lstat().st_mtime:
-                # last version already uploaded
-                return NeedsUpload.NO_CHANGE
-            if (
-                time()
-                < self.stored_tournament.ffe_last_upload
-                + PapiWebConfig().ffe_upload_delay
-            ):
-                # last upload too recent
-                return NeedsUpload.RECENT_CHANGE
-            return NeedsUpload.YES
-        except FileNotFoundError:
-            return NeedsUpload.NO_CHANGE
-
-    @property
-    def ffe_rules_upload_needed(self) -> NeedsUpload:
-        try:
-            if (
-                self.stored_tournament.ffe_last_rules_upload
-                > Path(self.rules).lstat().st_mtime
-            ):
-                # last version already uploaded
-                return NeedsUpload.NO_CHANGE
-            return NeedsUpload.YES
-        except FileNotFoundError:
-            return NeedsUpload.NO_CHANGE
 
     def add_result(self, board: Board, white_result: Result):
         """Stores the given result for the given `board` in the current round.

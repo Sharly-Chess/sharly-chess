@@ -2,6 +2,7 @@
 All the classes of this module are basic data classes stored in the event databases.
 """
 from dataclasses import dataclass, field
+from typing import Any
 
 from common.papi_web_config import PapiWebConfig
 from data.tie_break import TieBreak
@@ -40,8 +41,6 @@ class StoredTournament:
     name: str
     path: str | None
     filename: str | None
-    ffe_id: int | None
-    ffe_password: str | None
     time_control_initial_time: int | None
     time_control_increment: int | None
     time_control_handicap_penalty_step: int | None
@@ -63,11 +62,11 @@ class StoredTournament:
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)
     last_check_in_update: float = field(default=0.0)
-    ffe_last_upload: float = field(default=0.0)
-    ffe_last_rules_upload: float = field(default=0.0)
     chessevent_last_download_md5: str | None = field(default=None)
     errors: dict[str, str] = field(default_factory=dict[str, str])
-
+    
+    # Plugins can add their own tournament data
+    plugin_data: dict[str, dict[str, Any]] | None = None
 
 @dataclass
 class StoredScreenSet:

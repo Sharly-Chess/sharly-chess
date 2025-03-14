@@ -4,12 +4,11 @@ from typing import TYPE_CHECKING
 
 from packaging.version import Version
 
-from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.migration import AbstractMigrationManager
 
 if TYPE_CHECKING:
     from common.engine import Engine
-
+    from database.sqlite.event.event_database import EventDatabase
 
 class AbstractPluginMigrationManager(AbstractMigrationManager, ABC):
     @property
@@ -22,13 +21,13 @@ class AbstractPluginMigrationManager(AbstractMigrationManager, ABC):
     def latest_plugin_version(self) -> Version:
         pass
 
-    def get_version(self, database: EventDatabase) -> Version:
+    def get_version(self, database: 'EventDatabase') -> Version:
         return (
             database.get_plugin_version(self.plugin_name)
             or self.EMPTY_DATABASE_VERSION
         )
 
-    def set_version(self, database: EventDatabase, version: Version):
+    def set_version(self, database: 'EventDatabase', version: Version):
         database.set_plugin_version(self.plugin_name, version)
 
 

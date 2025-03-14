@@ -1,26 +1,16 @@
 name: "Championnat 35 toutes catégories 2025"
 public: true
 federation: "FRA"
-chessevent_user_id: "cd35"
-chessevent_password: "Find it!"
-chessevent_event_id: "BRE_35_Championnat35TC2025"
 tournaments:
   T:
     filename: "35-tc-2025"
     name: "Championnat 35 TC 2025"
-    ffe_id: 64790
-    ffe_password: "ABCDEFGHIJ"
-    chessevent_tournament_name: "principal"
   T-34:
     filename: "35-tc-2025-34"
     name: "Championnat 35 TC 2025 r3-4"
-    ffe_id: 64791
-    ffe_password: "ABCDEFGHIJ"
   T-567:
     filename: "35-tc-2025-567"
     name: "Championnat 35 TC 2025 r5-7"
-    ffe_id: 64792
-    ffe_password: "ABCDEFGHIJ"
 screens:
   saisie:
     type: "input"

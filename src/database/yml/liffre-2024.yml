@@ -6,9 +6,6 @@ background_image: "FRA/BRE/35/F35046.png"
 background_color: "#d8d8d8"
 update_password: "mot_de_passe"
 record_illegal_moves: 0
-chessevent_user_id: "pascal"
-chessevent_password: "Find it!"
-chessevent_event_id: "BRE_35_OIL2024"
 timers:
   principal:
     hours:
@@ -78,24 +75,12 @@ tournaments:
   a:
     filename: "liffre-10-a"
     name: "Tournoi A"
-    ffe_id: 63050
-    ffe_password: "ABCDEFGHIJ"
-    chessevent_tournament_name: "A"
   b:
     filename: "liffre-10-b"
     name: "Tournoi B"
-    ffe_id: 63051
-    ffe_password: "ABCDEFGHIJ"
-    chessevent_tournament_name: "B"
   blitz:
     filename: "liffre-10-blitz"
     name: "Tournoi de blitz"
-    ffe_id: 64615
-    ffe_password: "ABCDEFGHIJ"
-    chessevent_user_id: "pascal"
-    chessevent_password: "Find it!"
-    chessevent_event_id: "BRE_35_OILBlitzLiffre2024"
-    chessevent_tournament_name: "BLITZ"
 screens:
 families:
   saisie-a:

@@ -1,3 +1,4 @@
+from functools import partial
 import re
 import time
 import webbrowser
@@ -20,8 +21,10 @@ from common.logger import (
     print_interactive_warning,
 )
 from data.tournament import Tournament
+from data.util import get_plugin_data
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
+from plugins.ffe import PLUGIN_NAME
 
 logger: Logger = get_logger()
 
@@ -45,6 +48,7 @@ UPLOAD_RULES_FILE_ID: str = 'ctl00$ContentPlaceHolderMain$UploadRI'
 
 FEES_DIR: Path = Path('fees')
 
+get_data = partial(get_plugin_data, PLUGIN_NAME)
 
 class FFESession(Session):
     """A requests session specialized for communication with the FFE website.
@@ -219,6 +223,9 @@ class FFESession(Session):
     def _ffe_auth(self) -> bool:
         """Authenticates on the FFE admin website."""
         assert self.ffe_state
+        
+        (ffe_id, ffe_password) = self.get_id_and_password()
+        
         print_interactive_info(_('Authenticating...'))
         url = FFE_URL + '/Default.aspx'
         post_data: dict[str, str] = {
@@ -227,8 +234,8 @@ class FFESession(Session):
                 VIEW_STATE_GENERATOR_INPUT_ID
             ],
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
-            'ctl00$TextLogin': str(self.tournament.ffe_id),
-            'ctl00$TextPassword': self.tournament.ffe_password,
+            'ctl00$TextLogin': str(ffe_id),
+            'ctl00$TextPassword': str(ffe_password),
             'ctl00$CmdLogin.x': '12',
             'ctl00$CmdLogin.y': '6',
         }
@@ -269,18 +276,22 @@ class FFESession(Session):
         return True
 
     def test_auth(self):
+        (ffe_id, ffe_password) = self.get_id_and_password(True)
+        
         """Tries to authenticate on the FFE admin website for the tournament."""
-        logger.info(_('Tournament [{ffe_id}]:').format(ffe_id=self.tournament.ffe_id))
+        logger.info(_('Tournament [{ffe_id}]:').format(ffe_id=ffe_id))
         if not self._ffe_init():
             return
         if not self._ffe_auth():
             return
 
     def get_fees(self):
+        (ffe_id, ffe_password) = self.get_id_and_password(True)
+        
         """Downloads the fees for the tournament."""
         print_interactive_info(
             _('Getting fees for tournament [{ffe_id}]...').format(
-                ffe_id=self.tournament.ffe_id
+                ffe_id=ffe_id
             )
         )
         if not self._ffe_init():
@@ -338,12 +349,34 @@ class FFESession(Session):
             _('Invoice saved to [{file}].').format(file=file.resolve())
         )
         return
+    
+    def get_id_and_password(self, do_log: bool = False) -> tuple[str | None, str | None]:
+        pd = self.tournament.plugin_data
+        ffe_id = get_data(pd, 'ffe_id')
+        ffe_password = get_data(pd, 'ffe_password')
+        if not ffe_id or not ffe_password:
+            if do_log:
+                logger.warning(
+                    _(
+                        'FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'
+                    ).format(tournament_name=self.tournament.name)
+                )
+                return (None, None)
+            else:
+                assert ffe_id
+                assert ffe_password
+        return (ffe_id, ffe_password)
 
     def upload(self, set_visible: bool):
         """Upload the tournament to the FFE admin website."""
+        
+        (ffe_id, ffe_password) = self.get_id_and_password(True)
+        if not ffe_id:
+            return
+                                     
         print_interactive_info(
             _('Sending tournament [{ffe_id}] ({file}) to the FFE website...').format(
-                ffe_id=self.tournament.ffe_id, file=self.tournament.file
+                ffe_id=ffe_id, file=self.tournament.file
             )
         )
         if not self._ffe_init():
@@ -401,7 +434,13 @@ class FFESession(Session):
         if error:
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
-            event_database.set_tournament_ffe_last_upload(self.tournament.id)
+            event_database.execute(
+                'UPDATE `tournament` SET `ffe_last_upload` = ? WHERE `id` = ?',
+                (
+                    time.time(),
+                    self.tournament.id,
+                ),
+            )
             event_database.commit()
         print_interactive_success(_('Results upload OK'))
         if not set_visible:
@@ -447,10 +486,16 @@ class FFESession(Session):
 
     def upload_rules(self):
         """Upload the rules of the tournament to the FFE admin website."""
+        
+        
+        (ffe_id, ffe_password) = self.get_id_and_password(True)
+        if not ffe_id:
+            return
+        
         print_interactive_info(
             _(
                 'Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...'
-            ).format(ffe_id=self.tournament.ffe_id, file=self.tournament.rules)
+            ).format(ffe_id=ffe_id, file=self.tournament.rules)
         )
         if not self._ffe_init():
             return
@@ -494,6 +539,12 @@ class FFESession(Session):
             logger.error(error)
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
-            event_database.set_tournament_ffe_last_rules_upload(self.tournament.id)
+            event_database.execute(
+                'UPDATE `tournament` SET `ffe_last_rules_upload` = ? WHERE `id` = ?',
+                (
+                    time.time(),
+                    self.tournament.id,
+                ),
+            )
             event_database.commit()
         logger.info('Rules upload OK')
