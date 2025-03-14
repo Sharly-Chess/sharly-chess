@@ -15,13 +15,12 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import ClientRedirect
 from pyexcel_ods3 import save_data
 
-from common import unicode_normalize
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
-from data.player import Player, Club, Federation
-from data.util import PlayerGender, PlayerCategory, PrintSplit, TournamentRating, PrintDocument
+from data.player import Player
+from data.util import PrintSplit, TournamentRating, PrintDocument
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -33,7 +32,6 @@ from web.controllers.admin.base_admin_controller import (
 from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
-from web.session import SessionHandler
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 
 logger: Logger = get_logger()
