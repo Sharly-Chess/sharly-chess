@@ -12,8 +12,8 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 
-from common import format_timestamp_date, EXPERIMENTAL_FEATURES
-from common.i18n import _, ngettext, locale_localized_name, trusted_locales, untrusted_locales, default_locale
+from common import format_timestamp_date, EXPERIMENTAL_FEATURES, REQUEST_TIMEOUT
+from common.i18n import _, ngettext, locale_localized_name, trusted_locales, untrusted_locales, DEFAULT_LOCALE
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
@@ -81,7 +81,7 @@ class AdminWebContext(WebContext):
     def template_context(self) -> dict[str, Any]:
         per_plugin_context = plugin_manager.hook.get_base_admin_context()
         plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
-        
+
         return super().template_context | {
             'admin_tab': self.admin_tab,
         } | plugin_context
@@ -216,7 +216,7 @@ class BaseAdminController(BaseController):
         if rules:
             if validators.url(rules):
                 try:
-                    response = requests.get(rules)
+                    response = requests.get(rules, timeout=REQUEST_TIMEOUT)
                     if response.status_code != 200:
                         errors[field] = _(
                             'URL [{url}] responded code [{code}].'
@@ -355,7 +355,7 @@ class BaseAdminController(BaseController):
                     if background_image := WebContext.form_data_to_str(data, field, ''):
                         if validators.url(background_image):
                             try:
-                                response = requests.get(background_image)
+                                response = requests.get(background_image, timeout=REQUEST_TIMEOUT)
                                 if response.status_code != 200:
                                     errors[field] = _(
                                         'URL [{url}] responded code [{code}].'
@@ -421,11 +421,11 @@ class BaseAdminController(BaseController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
-    
+
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_event_form_fields(action=action, event=admin_event, data=data, errors=errors)
         plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
-        
+
         return StoredEvent(
             uniq_id=uniq_id,
             name=name,
@@ -444,11 +444,11 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             errors=errors,
-            
+
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors = admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)},
             timer_delays = admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)},
-            
+
             plugin_data=plugin_data
         )
 
@@ -597,7 +597,7 @@ class BaseAdminController(BaseController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
-            
+
         per_plugin_form_data = plugin_manager.hook.get_event_form_data(event=admin_event)
         plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
 
@@ -743,9 +743,9 @@ class BaseAdminController(BaseController):
                 web_context.admin_tab = list(nav_tabs.keys())[
                     (nav_index + 1) % len(nav_tabs)
                 ]
-                
+
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
-                
+
         context = web_context.template_context | {
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
@@ -813,7 +813,7 @@ class BaseAdminController(BaseController):
                         for locale in untrusted_locales
                     }
                 locale_options[''] = _('By default - {option}').format(
-                    option=locale_options[default_locale]
+                    option=locale_options[DEFAULT_LOCALE]
                 )
                 context |= {
                     'log_level_options': log_level_options,
@@ -836,7 +836,7 @@ class BaseAdminController(BaseController):
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
-                    
+
                 plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
                 context |= {
                     'federations': PapiWebConfig.federations,

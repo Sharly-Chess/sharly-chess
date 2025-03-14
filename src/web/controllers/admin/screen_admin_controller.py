@@ -11,6 +11,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common import REQUEST_TIMEOUT
 from common.i18n import _
 from common.logger import get_logger
 from data.loader import EventLoader
@@ -226,7 +227,7 @@ class ScreenAdminController(BaseEventAdminController):
                             ).format(background_image=background_image)
                         else:
                             try:
-                                response = requests.get(background_image)
+                                response = requests.get(background_image, timeout=REQUEST_TIMEOUT)
                                 if response.status_code != 200:
                                     errors[field] = _(
                                         'URL [{url}] responded code [{code}].'

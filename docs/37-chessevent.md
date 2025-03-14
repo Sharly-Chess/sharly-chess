@@ -3,7 +3,7 @@
 >
 > **[Retour au sommaire de la documentation](../README.md)**
 >
-> ![](../web/static/images/papi-web-error.png)
+> ![](../src/web/static/images/papi-web-error.png)
 
 # Papi-web - Création des fichiers Papi des tournois à partir de la plateforme d'inscription en ligne Chess Event
 

@@ -16,9 +16,8 @@ from plugins.ffe.engine.action_selector import ActionSelector
 logger: Logger = get_logger()
 
 
+# NOTE(Amaras): this should just be a function
 class EventSelector(metaclass=Singleton):
-    def __init__(self):
-        self.__silent: bool = False
 
     @staticmethod
     def run() -> bool:

@@ -12,7 +12,7 @@ from packaging.version import Version
 
 from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES
 from common.i18n import (
-    default_locale,
+    DEFAULT_LOCALE,
     _, trusted_locales, untrusted_locales,
 )
 from common.logger import (
@@ -61,7 +61,7 @@ class PapiWebConfig(metaclass=Singleton):
     }
 
     def __init__(self):
-        if not default_locale:
+        if not DEFAULT_LOCALE:
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
@@ -71,18 +71,21 @@ class PapiWebConfig(metaclass=Singleton):
             self.event_path.mkdir(parents=True, exist_ok=True)
         except PermissionError as pe:
             logger.critical(
-                f'Could not create directory [{TMP_DIR.absolute()}]: {pe}'
+                'Could not create directory [%s]: %s',
+                TMP_DIR.absolute(),
+                pe,
             )
             raise pe
         logger.debug('ODBC drivers found:')
         for driver in pyodbc.drivers():
-            logger.debug(f' - {driver}')
+            logger.debug(' - %s', driver)
         logger.debug('System information:')
         logger.debug(
-            f' - Machine/processor: {platform.machine()}/{platform.processor()}'
+            ' - Machine/processor: %s/%s',
+            platform.machine(), platform.processor()
         )
-        logger.debug(f' - Platform: {platform.platform()}')
-        logger.debug(f' - Architecture: {" ".join(platform.architecture())}')
+        logger.debug(' - Platform: %s', platform.platform())
+        logger.debug(' - Architecture: %s', " ".join(platform.architecture()))
         self.locales: list[str] = trusted_locales
         if EXPERIMENTAL_FEATURES:
             self.locales += untrusted_locales
@@ -91,7 +94,8 @@ class PapiWebConfig(metaclass=Singleton):
     def reload(self):
         self.stored_config = self.load()
 
-    def load(self) -> StoredConfig:
+    @staticmethod
+    def load() -> StoredConfig:
         with ConfigDatabase() as config_database:
             return config_database.load_stored_config()
 
@@ -120,7 +124,7 @@ class PapiWebConfig(metaclass=Singleton):
 
     @property
     def locale(self) -> str:
-        return self.stored_config.locale or default_locale
+        return self.stored_config.locale or DEFAULT_LOCALE
 
     # The delay between two uploads to the FFE website.
     # TODO move this to the ffe plugin
@@ -147,55 +151,55 @@ class PapiWebConfig(metaclass=Singleton):
         """The project of the application."""
         return _('Papi-web project')
 
-    """ The path where event databases are stored. """
+    # The path where event databases are stored.
     event_path: Path = Path() / 'events'
 
-    """ The extension of event databases. """
+    # The extension of event databases.
     event_database_ext: str = 'db'
 
-    """ The extension of archives event databases. """
+    # The extension of archives event databases.
     event_archive_ext: str = 'arch'
 
-    """ The base path where event database backups are stored. """
+    # The base path where event database backups are stored.
     event_backup_base_path: Path = event_path / 'backups'
 
-    """ The extension of backup event databases. """
+    # The extension of backup event databases.
     event_backup_ext: str = 'backup'
 
-    """ The extension of federation databases. """
+    # The extension of federation databases.
     federation_database_ext: str = 'db'
 
-    """ The path to the user custom files. """
+    # The path to the user custom files.
     custom_path: Path = Path().absolute() / 'custom'
 
-    """ The path to the embedded custom files. """
+    # The path to the embedded custom files.
     embedded_custom_path: Path = BASE_DIR / 'src/custom'
 
-    """ The default path to the Papi files. """
+    # The default path to the Papi files.
     default_papi_path: Path = Path() / 'papi'
 
-    """ The extension of Papi files. """
+    # The extension of Papi files.
     papi_ext: str = 'papi'
 
-    """ The path to database source files (see below). """
+    # The path to database source files (see below).
     _database_path: Path = BASE_DIR / 'src/database'
 
-    """ The path to SQL files (used to create new event databases). """
+    # The path to SQL files (used to create new event databases).
     database_sql_path: Path = _database_path / 'sql'
 
-    """ The path to YAML files (used to create example databases). """
+    # The path to YAML files (used to create example databases).
     database_yml_path: Path = _database_path / 'yml'
 
-    """ The extension of YAML files. """
+    # The extension of YAML files.
     yml_ext: str = 'yml'
 
-    """ The versions of the libraries for which the version can be easily extracted. """
+    # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = litestar.__version__.formatted(short=True)
     jinja2_version: Version = jinja2.__version__
     uvicorn_version: Version = uvicorn.__version__
     pyodbc_version: Version = Version(pyodbc.version)
 
-    """ Other library versions, set manually and checked. """
+    # Other library versions, set manually and checked.
     bootstrap_version: Version = Version('5.3.3')
     assert (
         BASE_DIR / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist'
@@ -255,96 +259,96 @@ class PapiWebConfig(metaclass=Singleton):
         """The local URL of the application (with arbiter access)."""
         return self._url(self.local_ip)
 
-    """ The default number of illegal moves to record. """
+    # The default number of illegal moves to record.
     default_record_illegal_moves_number: int = 0
 
-    """ The default colors for the timers. """
+    # The default colors for the timers.
     default_timer_colors: dict[int, str] = {
         1: '#00FF00',
         2: '#FF7700',
         3: '#FF0000',
     }
 
-    """ The default delays for the timers. """
+    # The default delays for the timers.
     default_timer_delays: dict[int, int] = {
         1: 15,
         2: 5,
         3: 10,
     }
 
-    """ The default text colour for the alert messages. """
+    # The default text colour for the alert messages.
     default_message_color: str = '#FF0000'
 
-    """ The default background colour for the alert messages. """
+    # The default background colour for the alert messages.
     default_message_background_color: str = '#FFFF00'
 
-    """ True to show an exit button on input screens by default (may be changed for each screen). """
+    # True to show an exit button on input screens by default (may be changed for each screen).
     default_input_exit_button: bool = True
 
-    """ True to show unpaired players on players screens (may be changed for each screen). """
+    # True to show unpaired players on players screens (may be changed for each screen).
     default_players_show_unpaired: bool = True
 
-    """ The default delay between pages on rotators (in seconds). """
+    # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 15
 
-    """ The default text shown on timers before the start of a round. """
+    # The default text shown on timers before the start of a round.
     default_timer_round_text_before: str = 'Début de la ronde {} dans %s'
 
-    """ The default text shown on timers after the start of a round. """
+    # The default text shown on timers after the start of a round.
     default_timer_round_text_after: str = 'Ronde {} commencée depuis %s'
 
-    """ The delay before checking if the user index page has changed. """
+    # The delay before checking if the user index page has changed.
     user_index_update_delay: int = 10
 
-    """ The delay before checking if a user event page has changed. """
+    # The delay before checking if a user event page has changed.
     user_event_update_delay: int = 10
 
-    """ The delay before checking if a user screen page has changed. """
+    # The delay before checking if a user screen page has changed.
     user_screen_update_delay: int = 10
 
-    """ The numbers of columns allowed on pages with grids. """
+    # The numbers of columns allowed on pages with grids.
     allowed_columns: list[int] = [1, 2, 3, 4, 6]
 
-    """ The default number of columns. """
+    # The default number of columns.
     default_columns: int = 4
 
-    """ True to hide the background images by default. """
+    # True to hide the background images by default.
     default_hide_background_image: bool = False
 
-    """ The default event background image. """
+    # The default event background image.
     default_background_image: str = ''
 
-    """ The error background image. """
+    # The error background image.
     error_background_image: str = '/static/images/papi-web-error.png'
 
-    """ The default event background colour. """
+    # The default event background colour.
     default_background_color: str = '#ffffff'
 
-    """ The default background colour for arbiter pages. """
+    # The default background colour for arbiter pages.
     admin_background_color: str = ''
 
-    """ The default background colour for user pages. """
+    # The default background colour for user pages.
     user_background_color: str = default_background_color
 
-    """ The maximum number of results shown on results screens (0 = no limit). """
+    # The maximum number of results shown on results screens (0 = no limit).
     default_results_screen_limit: int = 0
 
-    """ The age of the oldest results shown on results screens (in minutes). """
+    # The age of the oldest results shown on results screens (in minutes).
     default_results_screen_max_age: int = 60
 
-    """ The default first board number for tournaments. """
+    # The default first board number for tournaments.
     default_first_board_number: int = 1
 
-    """ The default result for players paired bye. """
+    # The default result for players paired bye.
     default_paired_bye_result: Result = Result.GAIN
 
-    """ The default maximum number of byes for a player in a tournament. """
+    # The default maximum number of byes for a player in a tournament.
     default_max_byes: int = 1
 
-    """ The default last rounds of tournaments where byes are not allowed anymore. """
+    # The default last rounds of tournaments where byes are not allowed anymore.
     default_last_rounds_no_byes: int = 3
 
-    """ The default filter for the players columns. """
+    # The default filter for the players columns.
     default_players_filter_columns: list[str] = [
         'federation',
         'club',
@@ -364,7 +368,7 @@ class PapiWebConfig(metaclass=Singleton):
     # The default fédération when creating events or players
     default_federation: str = 'FID'
 
-    """ The federation names. """
+    # The federation names.
     federations: dict[str, str] = {
         'AFG': 'Afghanistan',
         'ALB': 'Albania',
@@ -574,4 +578,3 @@ class PapiWebConfig(metaclass=Singleton):
         'ZIM': 'Zimbabwe',
         'NON': 'None',
     }
-

@@ -705,7 +705,7 @@ class Event:
         return self._get_unused_item_uniq_id(
             base_uniq_id or _('rotator'), self.rotators_by_uniq_id
         )
-        
+
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
         return self.stored_event.plugin_data or {}

@@ -8,13 +8,9 @@ from logging import Logger
 from typing import TYPE_CHECKING, Any, Self, Callable
 from trf import Player as TrfPlayer
 
-if TYPE_CHECKING:
-    from _weakref import ReferenceType
-    from data.tournament import Tournament
-
 from common.i18n import _
-from data.pairing import Pairing
 from common.logger import get_logger
+from data.pairing import Pairing
 from data.util import (
     PlayerGender,
     PlayerTitle,
@@ -24,6 +20,10 @@ from data.util import (
     PlayerRatingType,
     PlayerCategory,
 )
+
+if TYPE_CHECKING:
+    from _weakref import ReferenceType
+    from data.tournament import Tournament
 
 logger: Logger = get_logger()
 
@@ -129,7 +129,7 @@ class TournamentPlayer:
             for pairing in self.pairings.values()
             if pairing.played or not only_played
         )
-    
+
     def max_possible_points(self, max_round: int | None = None, only_played: bool = False) -> float:
         if max_round is None:
             max_round = max(self.pairings)
@@ -159,7 +159,7 @@ class Player(TournamentPlayer):
         federation: Federation,
         title: PlayerTitle,
         pairings: dict[int, Pairing],
-        
+
         # Extra fields
         mail: str,
         phone: str,
@@ -173,7 +173,7 @@ class Player(TournamentPlayer):
         check_in: bool,
         tournament: 'Tournament | None' = None,
         errors: dict[str, str] | None = None,
-        
+
         # Plugins can add their own player data
         plugin_data: dict[str, dict[str, Any]] | None = None
     ):
@@ -301,7 +301,7 @@ class Player(TournamentPlayer):
             return ''
         if points == 0.5:
             return '½'
-        return '{:.1f}'.format(points).replace('.0', '').replace('.5', '½')
+        return f'{points:.1f}'.replace('.0', '').replace('.5', '½')
 
     def add_points(self, points: float):
         """If `self.points` is set, add `points` to it.
@@ -444,7 +444,8 @@ class Player(TournamentPlayer):
     @property
     def tie_break_values_as_strings(self) -> list[str]:
         """Returns the player's tie-break values as strings."""
-        assert self._tie_break_values is not None, 'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
+        assert self._tie_break_values is not None, \
+            'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
         return [
             self._points_str(self._tie_break_value_as_float(tie_break_value))
             for tie_break_value in self._tie_break_values
@@ -511,5 +512,6 @@ class Player(TournamentPlayer):
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (
             f'{self.__class__.__name__}'
-            f'(#{self.id} title={self.title.value} gender={self.gender.value} date_of_birth={self.date_of_birth} {self.last_name} {self.first_name} {self.club})'
+            f'(#{self.id} title={self.title.value} gender={self.gender.value} '
+            f'date_of_birth={self.date_of_birth} {self.last_name} {self.first_name} {self.club})'
         )

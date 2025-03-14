@@ -406,7 +406,7 @@ def sum_of_buchholz(
         for opponent in opponents
         if opponent is not None
     )
-    
+
 
 def average_of_buchholz(
     player: Player,
@@ -522,7 +522,7 @@ def sonneborn_berger(
                 voluntary_unplayed.pop(0)
             else:
                 general_contributions.pop(0)
-    
+
     return sum(
         map(
             lambda t: t.contribution,
@@ -735,7 +735,7 @@ def average_performance_rating_opponents(
             max_round=max_round
         )
         performance_ratings.append(opponent_tpr)
-    
+
     average = sum(performance_ratings) / len(performance_ratings)
     return round_fide(average)
 
@@ -909,7 +909,7 @@ def direct_encounter(
     tied_opponents = {
         opponent_id: opponent
         for opponent_id, opponent in tied_opponents.items()
-        if opponent_id is not None 
+        if opponent_id is not None
         and opponent.points_after(max_round) == final_points
     }
     if exclude_ids is not None:

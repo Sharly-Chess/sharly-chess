@@ -19,9 +19,6 @@ logger: Logger = get_logger()
 class EventSelector(metaclass=Singleton):
     """The CLI interface to select an event."""
 
-    def __init__(self):
-        self.__silent: bool = False
-
     @staticmethod
     def run() -> bool:
         """The CLI interface function for selection of an event.

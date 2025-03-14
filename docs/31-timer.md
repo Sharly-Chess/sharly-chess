@@ -3,7 +3,7 @@
 >
 > **[Retour au sommaire de la documentation](../README.md)**
 >
-> ![](../web/static/images/papi-web-error.png)
+> ![](../src/web/static/images/papi-web-error.png)
 
 # Papi-web - Utilisation d'un chronomètre
 
@@ -12,7 +12,7 @@
 >
 > **[Retour au sommaire de la documentation](../README.md)**
 >
-> ![](../web/static/images/papi-web-error.png)
+> ![](../src/web/static/images/papi-web-error.png)
 
 L'article 4.4 des règles générales pour les compétitions FIDE mentionne concernant la préparation de la salle de jeu :
 

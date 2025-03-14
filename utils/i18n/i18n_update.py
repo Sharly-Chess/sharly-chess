@@ -25,7 +25,7 @@ sys.path.extend(
 )
 
 from common.i18n import (
-    default_locale,
+    DEFAULT_LOCALE,
     locale_localized_name,
     locale_flag_url,
     trusted_locales,
@@ -69,7 +69,7 @@ class LocaleInfo:
         trusted: bool,
     ):
         self.id: str = id_
-        self.default: bool = id_ == default_locale
+        self.default: bool = id_ == DEFAULT_LOCALE
         self.locale_dir: Path = locale_dir
         self.po_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.po'
         self.mo_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.mo'
@@ -295,7 +295,7 @@ class LocaleInfo:
                 print_interactive_error(f'    - [{msg_id}]')
         empty_messages_max: int = 3
         if self.empty_optional_messages:
-            if self.id == default_locale:
+            if self.id == DEFAULT_LOCALE:
                 print_interactive_info(
                     f'  * Empty optional messages ({len(self.empty_optional_messages)}), not listed for the default locale.'
                 )

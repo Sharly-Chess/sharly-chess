@@ -11,6 +11,7 @@ from web.controllers.base_controller import BaseController, WebContext
 
 logger: Logger = get_logger()
 
+
 class UserWebContext(WebContext):
     """
     The basic user web context, where parameter user_tab is passed to the template engine to propagate the context.
@@ -51,7 +52,7 @@ class UserWebContext(WebContext):
         return super().template_context | {
             'user_tab': self.user_tab,
         }
-        
+
+
 class BaseUserController(BaseController):
     """An abstract class inherited by all the user controllers."""
-

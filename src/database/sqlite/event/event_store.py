@@ -1,12 +1,12 @@
+"""
+All the classes of this module are basic data classes stored in the event databases.
+"""
 from dataclasses import dataclass, field
 from typing import Any
 
 from common.papi_web_config import PapiWebConfig
 from data.tie_break import TieBreak
 
-"""
-All the classes of this module are basic data classes stored in the event databases.
-"""
 
 
 @dataclass
@@ -59,7 +59,7 @@ class StoredTournament:
     last_illegal_move_update: float = field(default=0.0)
     last_check_in_update: float = field(default=0.0)
     errors: dict[str, str] = field(default_factory=dict[str, str])
-    
+
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] | None = None
 
@@ -177,7 +177,7 @@ class StoredEvent:
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] | None = None
-    
+
 @dataclass
 class StoredIllegalMove:
     id: int | None

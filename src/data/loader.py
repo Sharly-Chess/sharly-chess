@@ -14,10 +14,10 @@ from packaging.version import Version
 from common import format_timestamp_date_time, unicode_normalize
 from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
+from common.logger import get_logger
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
-from common.logger import get_logger
 
 logger: Logger = get_logger()
 

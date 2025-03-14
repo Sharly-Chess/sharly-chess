@@ -27,7 +27,7 @@ logger: Logger = get_logger()
 
 get_data = partial(get_plugin_data, PLUGIN_NAME)
 class ActionSelector(metaclass=Singleton):
-    
+
     @staticmethod
     def check_id_and_password(tournament: Tournament) -> bool:
         pd = tournament.plugin_data
@@ -41,7 +41,7 @@ class ActionSelector(metaclass=Singleton):
             )
             return False
         return True
-   
+
     @classmethod
     def ffe_last_upload(cls, tournament: Tournament) -> float:
         return get_data(tournament.plugin_data, 'ffe_last_upload', 0.0)
@@ -49,7 +49,7 @@ class ActionSelector(metaclass=Singleton):
     @classmethod
     def ffe_last_rules_upload(cls, tournament: Tournament) -> float:
         return get_data(tournament.plugin_data, 'ffe_last_rules_upload', 0.0)
-     
+
     @classmethod
     def ffe_upload_needed(cls, tournament: Tournament) -> NeedsUpload:
         try:
@@ -80,7 +80,7 @@ class ActionSelector(metaclass=Singleton):
             return NeedsUpload.YES
         except FileNotFoundError:
             return NeedsUpload.NO_CHANGE
-        
+
     @classmethod
     def __get_qualified_tournaments(cls, event: Event) -> list[Tournament]:
         if not event.tournaments_by_id:
