@@ -19,7 +19,7 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
-from data.tie_break import TieBreak, TieBreakType, TieBreakOption
+from data.tie_break import AbstractTieBreak, TieBreakManager
 from data.util import Result as UtilResult
 from database.sqlite.migration import AbstractMigrationManager
 from database.sqlite.event.event_store import (
@@ -1531,33 +1531,35 @@ class EventDatabase(SQLiteVersionedDatabase):
     @classmethod
     def _load_tie_breaks_from_database_field(
         cls, tie_breaks_field: str | None
-    ) -> list[TieBreak] | None:
+    ) -> list[AbstractTieBreak] | None:
         """load tie breaks from the database field"""
         tie_break_list = cls.load_json_from_database_field(tie_breaks_field)
         if not tie_break_list:
             return None
         return [
-            TieBreak(
-                TieBreakType(tie_break_dict['type']),
-                {
-                    TieBreakOption(option): value
-                    for option, value in tie_break_dict['options'].items()
-                }
+            TieBreakManager.tie_break_from_id(
+                tie_break_dict['tie_break'],
+                [
+                    TieBreakManager.option_from_id(option_id, value)
+                    for option_id, value in tie_break_dict['options'].items()
+                ]
             ) for tie_break_dict in tie_break_list
         ]
 
     @classmethod
     def _dump_to_json_database_tie_breaks(
-            cls, tie_breaks: list[TieBreak] | None
+            cls, tie_breaks: list[AbstractTieBreak] | None
     ) -> str | None:
         """Serializes the tie breaks into JSON. Returns a serialization
-        with format [{'type': str, 'options': {str: value}}]."""
+        with format [{'tie_break': str, 'options': {str: value}}]."""
         if tie_breaks is None:
             return None
         return cls.dump_to_json_database_field([
             {
-                'type': tie_break.type,
-                'options': tie_break.options,
+                'tie_break': tie_break.id,
+                'options': {
+                    option.id: option.value for option in tie_break.options
+                }
             } for tie_break in tie_breaks
         ])
 
