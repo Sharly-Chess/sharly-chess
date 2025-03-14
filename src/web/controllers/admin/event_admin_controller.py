@@ -66,7 +66,7 @@ class EventAdminController(BaseEventAdminController):
         match modal:
             case None:
                 pass
-            case 'event':                
+            case 'event':
                 if data is None:
                     data = cls._prepare_event_modal_data(
                         action, request, web_context.admin_event
