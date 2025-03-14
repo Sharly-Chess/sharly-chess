@@ -341,7 +341,7 @@ class FFESession(Session):
             return False
         head: AdvancedTag = parser.getElementsByTagName('head')[0]
         head.insertBefore(base, head.getChildren()[0])
-        file: Path = Path(FEES_DIR, str(self.tournament.ffe_id) + '-fees.html')
+        file: Path = Path(FEES_DIR, str(get_data(self.tournament.plugin_data, 'ffe_id')) + '-fees.html')
         with open(file, 'w', encoding='utf-8') as f:
             f.write(parser.getHTML())
         webbrowser.open(f'file://{file.resolve()}', new=2)
