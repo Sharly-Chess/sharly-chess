@@ -1,13 +1,13 @@
 from functools import partial
 from pathlib import Path
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Iterable
+from typing import Any, TYPE_CHECKING
 
 from data.util import get_plugin_data
 from packaging.version import Version
 
-from common import BASE_DIR
 from common.i18n import _
+from plugins import PLUGINS_DIR
 from plugins.chessevent import migrations, PLUGIN_NAME, PLUGIN_VERSION
 from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from plugins.chessevent.utils import ChessEventUtils
@@ -19,10 +19,10 @@ import web.controllers.base_controller as WebContextModule
 if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
-    from data.event import Event
     from database.sqlite.event.event_store import StoredTournament
 
 get_data = partial(get_plugin_data, PLUGIN_NAME)
+
 
 class ChessEventPluginMigrationManager(AbstractPluginMigrationManager):
     @property
@@ -40,7 +40,7 @@ class ChessEventPluginMigrationManager(AbstractPluginMigrationManager):
 
 @hookimpl
 def get_templates_path() -> Path:
-    return BASE_DIR / 'src/plugins/chessevent/templates'
+    return PLUGINS_DIR / 'chessevent' / 'templates'
 
 
 @hookimpl

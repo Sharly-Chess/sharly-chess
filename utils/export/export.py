@@ -5,7 +5,6 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
-from packaging.version import Version
 
 from common import BASE_DIR
 from database.sqlite.config.config_database import ConfigMigrationManager
@@ -22,6 +21,7 @@ from common.logger import (
     print_interactive_success,
 )
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
+from plugins import PLUGINS_DIR
 from utils.i18n.i18n_update import I18nUpdater
 
 logger: Logger = get_logger()
@@ -140,7 +140,7 @@ def build_exe():
     files += [
         sql_dir / 'create_event.sql',
         sql_dir / 'create_fide.sql',
-        sql_dir / 'create_ffe.sql',
+        PLUGINS_DIR / 'ffe' / 'create_ffe.sql',
     ]
     yml_dir: Path = SOURCE_DIR / 'database' / 'yml'
     files += list(yml_dir.glob('*.yml'))
