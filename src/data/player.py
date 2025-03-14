@@ -452,10 +452,10 @@ class Player(TournamentPlayer):
         ]
 
     def compute_tie_break_values(
-        self, max_round: int | None = None
+        self, tournament: 'Tournament', max_round: int | None = None
     ):
         self._tie_break_values = [
-            tie_break.compute_player_value(self, max_round)
+            tie_break.compute_player_value(self, tournament, max_round)
             for tie_break in self.tournament.tie_breaks
         ]
 

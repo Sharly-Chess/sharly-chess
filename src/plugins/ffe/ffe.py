@@ -16,6 +16,7 @@ from common import BASE_DIR
 from common.i18n import _
 from common.logger import print_interactive_error
 from data.event import Event
+from data.tie_break import AbstractTieBreak
 from data.util import PlayerCategory, PlayerRatingType, PrintDocument, ScreenType, TournamentRating, get_plugin_data
 from data.player import Player
 
@@ -25,7 +26,7 @@ from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, Extra
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 import web.controllers.base_controller as WebContextModule
 
-from . import migrations, PLUGIN_NAME, PLUGIN_VERSION
+from . import migrations, PLUGIN_NAME, PLUGIN_VERSION, tie_break
 from .engine.ffe_engine import FFEEngine
 from .util import PlayerFFELicence
 from .ffe_database import FfeDatabase
@@ -632,3 +633,15 @@ def get_event_migration_manager() -> AbstractPluginMigrationManager:
 @hookimpl
 def get_engine_argument() -> PluginEngineArgument:
     return PluginEngineArgument('f', 'ffe', 'run the FFE utilities', FFEEngine)
+
+
+@hookimpl
+def get_extra_tie_break_classes() -> list[type[AbstractTieBreak]]:
+    return [
+        tie_break.PapiBuchholzTieBreak,
+        tie_break.PapiBuchholzCutBottomTieBreak,
+        tie_break.PapiMedianBuchholzTieBreak,
+        tie_break.PapiPerformanceTieBreak,
+        tie_break.PapiSumOfBuchholzTieBreak,
+        tie_break.PapiKashdanTieBreak,
+    ]

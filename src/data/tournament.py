@@ -17,10 +17,10 @@ from common.logger import get_logger
 
 from data.board import Board
 from data.pairing import Pairing
-from data.tie_break import PapiTieBreak, TieBreak
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
+from data.tie_break import AbstractTieBreak
 from data.util import (
     TrfType,
     BoardColor,
@@ -93,9 +93,7 @@ class Tournament:
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
         self._players_by_rank: dict[int, Player] | None = None
-        self._papi_tie_breaks: tuple[
-            PapiTieBreak, PapiTieBreak, PapiTieBreak
-        ] | None = None
+        self._tie_breaks: list[AbstractTieBreak] | None = None
         self._point_value_type = PointValueType.STANDARD
         self._papi_read = False
 
@@ -254,7 +252,7 @@ class Tournament:
         return self.stored_tournament.last_check_in_update
 
     @property
-    def stored_tie_breaks(self) -> list[TieBreak] | None:
+    def stored_tie_breaks(self) -> list[AbstractTieBreak] | None:
         return self.stored_tournament.tie_breaks
 
     @property
@@ -315,11 +313,9 @@ class Tournament:
         return self._arbiter
 
     @property
-    def papi_tie_breaks(
-        self
-    ) -> tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]:
+    def tie_breaks(self) -> list[AbstractTieBreak]:
         self.read_papi()
-        return self._papi_tie_breaks
+        return self._tie_breaks
 
     @property
     def players_by_id(self) -> dict[int, Player]:
@@ -459,14 +455,6 @@ class Tournament:
         return self._point_value_type.point_values
 
     @property
-    def tie_breaks(self) -> list[TieBreak]:
-        tie_breaks: list[TieBreak] = []
-        for papi_tie_break in self.papi_tie_breaks:
-            if tie_break := papi_tie_break.to_tie_break(self.rounds):
-                tie_breaks.append(tie_break)
-        return tie_breaks
-
-    @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
         return self.stored_tournament.plugin_data or {}
 
@@ -566,7 +554,7 @@ class Tournament:
                     self._rating,
                     self._rating_limit1,
                     self._rating_limit2,
-                    self._papi_tie_breaks,
+                    self._tie_breaks,
                     self._point_value_type,
                     self._location,
                     self._start_date,
@@ -582,7 +570,7 @@ class Tournament:
             self._current_round = 0
             self._rating_limit1 = None
             self._rating_limit2 = None
-            self._papi_tie_breaks = (PapiTieBreak.NONE,) * 3
+            self._tie_breaks = []
             self._location = ''
             self._start_date = ''
             self._end_date = ''
@@ -843,7 +831,7 @@ class Tournament:
             self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
             for player in self.players_by_id.values():
                 player.points = player.points_after(max_round)
-                player.compute_tie_break_values(max_round)
+                player.compute_tie_break_values(self, max_round)
             self._players_by_rank = {
                 rank: player
                 for rank, player in enumerate(
@@ -857,7 +845,7 @@ class Tournament:
         else:
             # set 0.0 tie-break values for all the players
             for player in self.players_by_id.values():
-                player.compute_tie_break_values(0)
+                player.compute_tie_break_values(self, 0)
             self._players_by_rank = self.players_by_trf_id
         for rank, player in self._players_by_rank.items():
             player.set_rank(rank)
@@ -1092,22 +1080,19 @@ class Tournament:
         if not self.file_exists:
             return
         with PapiDatabase(self.file, write=True) as papi_database:
-            if tie_breaks := self._update_papi_tie_breaks():
+            if (tie_breaks := self._update_tie_breaks()) is not None:
                 papi_database.update_tie_breaks(tie_breaks)
             papi_database.update_point_values(self._point_value_type)
             papi_database.commit()
 
-    def _update_papi_tie_breaks(
-        self
-    ) -> tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak] | None:
+    def _update_tie_breaks(self) -> list[AbstractTieBreak] | None:
         if self.stored_tie_breaks is None:
             return None
-        tie_breaks: list[PapiTieBreak] = [
-            PapiTieBreak.from_tie_break(tie_break)
-            for tie_break in self.stored_tie_breaks[:3]
-        ] + [PapiTieBreak.NONE] * (3 - len(self.stored_tie_breaks))
-        self._papi_tie_breaks = (tie_breaks[0], tie_breaks[1], tie_breaks[2])
-        return self._papi_tie_breaks
+        self._tie_breaks = [
+            tie_break for tie_break in self.stored_tie_breaks
+            if tie_break.papi_id is not None
+        ]
+        return self._tie_breaks
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players

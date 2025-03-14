@@ -22,7 +22,6 @@ from common.logger import (
 from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
-from data.tie_break import PapiTieBreak
 from data.tournament import Tournament
 from data.util import Result, get_plugin_data
 from database.access.papi.papi_database import PapiDatabase
@@ -122,9 +121,6 @@ class ActionSelector(metaclass=Singleton):
             'Arbitre': chessevent_tournament.arbiter,
             'DateDebut': database.timestamp_to_papi_date(chessevent_tournament.start),
             'DateFin': database.timestamp_to_papi_date(chessevent_tournament.end),
-            'Dep1': chessevent_tournament.get_papi_tie_break(0),
-            'Dep2': chessevent_tournament.get_papi_tie_break(1),
-            'Dep3': chessevent_tournament.get_papi_tie_break(2),
             'ClassElo': chessevent_tournament.rating.to_papi_value,
             'Homologation': str(chessevent_tournament.ffe_id),
         }
@@ -144,6 +140,7 @@ class ActionSelector(metaclass=Singleton):
                     name,
                 ),
             )
+        database.update_tie_breaks(chessevent_tournament.tie_breaks)
 
     @classmethod
     def write_chessevent_info_to_database(
