@@ -31,6 +31,7 @@ from data.util import (
     PlayerGender,
     PlayerTitle,
 )
+from plugins import PLUGINS_DIR
 
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_access_database import FfeAccessDatabase
@@ -157,7 +158,7 @@ class FfeDatabase(SQLiteDatabase):
         query: str = f'INSERT INTO player({", ".join(column_names)}) VALUES({", ".join(bindings)})'
         try:
             with open(
-                PapiWebConfig.database_sql_path / 'create_ffe.sql', encoding='utf-8'
+                PLUGINS_DIR / 'ffe' / 'create_ffe.sql', encoding='utf-8'
             ) as f:
                 self._create(f.read())
             with FfeAccessDatabase(local_mdb_file) as ffe_access_database:

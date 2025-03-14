@@ -32,6 +32,7 @@ from .ffe_database import FfeDatabase
 from .ffe_session_handler import FFESessionHandler
 from .ffe_search_controller import FfeSearchController
 from .ffe_event_controller import FfeAdminEventController
+from .. import PLUGINS_DIR
 from ..utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
@@ -158,7 +159,7 @@ def get_controllers() -> Iterable[type[WebContextModule.BaseController]]:
 
 @hookimpl
 def get_templates_path() -> Path:
-    return BASE_DIR / 'src/plugins/ffe/templates'
+    return PLUGINS_DIR / 'ffe' / 'templates'
 
 
 @hookimpl
