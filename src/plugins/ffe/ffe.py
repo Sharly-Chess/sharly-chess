@@ -3,7 +3,6 @@ import re
 from litestar.contrib.htmx.request import HTMXRequest
 
 from collections import Counter, defaultdict
-from dataclasses import dataclass
 
 from datetime import datetime
 from functools import partial
@@ -14,7 +13,6 @@ from typing import Any, TYPE_CHECKING, Iterable
 from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
-from common import BASE_DIR
 from common.logger import print_interactive_error
 from data.event import Event
 from data.util import PlayerCategory, PlayerRatingType, PrintDocument, ScreenType, TournamentRating, get_plugin_data
@@ -34,6 +32,7 @@ from .ffe_database import FfeDatabase
 from .ffe_session_handler import FFESessionHandler
 from .ffe_search_controller import FfeSearchController
 from .ffe_event_controller import FfeAdminEventController
+from .. import PLUGINS_DIR
 from ..utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
@@ -160,7 +159,7 @@ def get_controllers() -> Iterable[type[WebContextModule.BaseController]]:
 
 @hookimpl
 def get_templates_path() -> Path:
-    return BASE_DIR / 'src/plugins/ffe/templates'
+    return PLUGINS_DIR / 'ffe' / 'templates'
 
 
 @hookimpl
