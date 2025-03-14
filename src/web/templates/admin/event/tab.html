@@ -94,20 +94,6 @@
             </td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">{{ _('ChessEvent') }}</th>
-            <td class="{% if not admin_event.chessevent_user_id or not admin_event.chessevent_event_id %}fst-italic{% endif %}">
-                {% if admin_event.chessevent_user_id and admin_event.chessevent_event_id %}
-                    {{ admin_event.chessevent_user_id }}
-                    /
-                    {{ admin_event.chessevent_event_id }}
-                {% elif not admin_event.chessevent_user_id %}
-                    {{ _('No ChessEvent identifier defined') }}
-                {% else %}
-                    {{ _('No ChessEvent event defined') }}
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
             <th scope="row" class="text-nowrap">{{ _('Background image and colour') }}</th>
             <td class="text-nowrap">
                 <div style="width: 160px; height: 90px; background-image: url('{{ admin_event.background_url }}'); background-color: {{ admin_event.background_color }}; background-repeat: no-repeat; background-size: contain; background-position: center center;">
@@ -169,6 +155,11 @@
             <th scope="row" class="text-nowrap">{{ _('Last update') }}</th>
             <td class="text-nowrap">{{ admin_event.last_update_str }}</td>
         </tr>
+
+        {% for row in plugin_event_info_rows %}
+            {% include row %}
+        {% endfor %}
+
         {% for message in admin_event.messages %}
             <tr>
                 <td scope="row" colspan="2" class="text-nowrap {{ logging_levels[message.level].class }}">

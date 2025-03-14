@@ -3,11 +3,9 @@ import os
 import sys
 from logging import Logger
 
-from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from common import DEVEL_ENV
 from common.i18n import _
 from common.logger import get_logger
-from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.manager import plugin_manager
 from plugins.utils import PluginEngineArgument
 from web.server_engine import ServerEngine

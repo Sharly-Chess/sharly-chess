@@ -20,12 +20,19 @@ from common.logger import (
     print_interactive_success,
 )
 from common.singleton import Singleton
-from data.chessevent_tournament import ChessEventTournament
 from data.event import Event
 from data.loader import EventLoader
+from data.tie_break import PapiTieBreak
 from data.tournament import Tournament
+from data.util import Result, get_plugin_data
+from database.access.papi.papi_database import PapiDatabase
 from database.access.papi.papi_template import create_empty_papi_database, PAPI_VERSIONS
+from database.sqlite.event.event_database import EventDatabase
+from plugins.chessevent import PLUGIN_NAME
+from plugins.chessevent.data.chessevent_player import ChessEventPlayer
+from plugins.chessevent.data.chessevent_tournament import ChessEventTournament
 from plugins.chessevent.engine.chessevent_session import ChessEventSession
+from plugins.chessevent.utils import ChessEventUtils
 from plugins.ffe.engine.ffe_session import FFESession
 
 logger: Logger = get_logger()
@@ -33,6 +40,144 @@ logger: Logger = get_logger()
 
 class ActionSelector(metaclass=Singleton):
     """The CLI interface for ChessEvent."""
+
+    @classmethod
+    def add_chessevent_player(
+            cls, database: PapiDatabase, player_papi_id: int, player: ChessEventPlayer, check_in_started: bool
+    ):
+        """Creates a player in the database from the given ChessEvent player.
+        If the player is not checked in when `check_in_started` is True,
+        removes the player from play for subsequent rounds which are not
+        specifically not-played rounds."""
+        data: dict[str, str | int | float | None] = {
+            'Ref': player_papi_id,
+            'RefFFE': player.ffe_id,
+            'NrFFE': player.ffe_license_number if player.ffe_license_number else None,
+            'Nom': player.last_name,
+            'Prenom': player.first_name,
+            'Sexe': player.gender.to_papi_value,
+            'NeLe': database.timestamp_to_papi_date(player.birth),
+            'Cat': player.category.to_papi_value,
+            'AffType': player.ffe_license.to_papi_value,
+            'Elo': player.standard_rating,
+            'Rapide': player.rapid_rating,
+            'Blitz': player.blitz_rating,
+            'Federation': player.federation,
+            'ClubRef': player.ffe_club_id,
+            'Club': player.ffe_club,
+            'Ligue': player.ffe_league,
+            'Fide': player.standard_rating_type.to_papi_value,
+            'RapideFide': player.rapide_rating_type.to_papi_value,
+            'BlitzFide': player.blitz_rating_type.to_papi_value,
+            'FideCode': player.fide_id if player.fide_id else None,
+            'FideTitre': player.title.to_papi_value,
+            'Pointe': check_in_started and player.check_in,
+            'InscriptionRegle': player.paid,
+            'InscriptionDu': player.fee,
+            'Tel': player.phone,
+            'EMail': player.email,
+            'Fixe': player.board,
+            'Flotteur': 'X' * 24,
+            'Pts': 0,
+            'PtA': 0,
+        }
+        for round_ in range(1, 25):
+            data[f'Rd{round_:0>2}Adv'] = None
+            if round_ not in player.skipped_rounds:
+                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
+                if player.check_in or not check_in_started:
+                    data[f'Rd{round_:0>2}Cl'] = 'R'
+                else:
+                    data[f'Rd{round_:0>2}Cl'] = 'F'
+            else:
+                data[f'Rd{round_:0>2}Cl'] = 'F'
+                match player.skipped_rounds[round_]:
+                    case 0.0:
+                        data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
+                    case 0.5:
+                        data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
+                    case _:
+                        raise ValueError
+        query: str = f'INSERT INTO `joueur`({", ".join(data.keys())}) VALUES ({", ".join(["?"] * len(data))})'
+        params = tuple(data.values())
+        database._execute(query, params)
+
+    @classmethod
+    def write_chessevent_info(cls, database: PapiDatabase, chessevent_tournament: ChessEventTournament):
+        """Creates the tournament data from the ChessEvent Tournament data."""
+        default_rounds: int = 7
+        if not chessevent_tournament.rounds:
+            logger.warning(
+                'Number of rounds not set in ChessEvent, %d set by default.',
+                default_rounds,
+            )
+            chessevent_tournament.rounds = default_rounds
+        data: dict[str, str | int] = {
+            'Nom': chessevent_tournament.name,
+            'Genre': chessevent_tournament.type.to_papi_value,
+            'NbrRondes': chessevent_tournament.rounds,
+            'Pairing': chessevent_tournament.pairing.to_papi_value,
+            'Cadence': chessevent_tournament.time_control,
+            'Lieu': chessevent_tournament.location,
+            'Arbitre': chessevent_tournament.arbiter,
+            'DateDebut': database.timestamp_to_papi_date(chessevent_tournament.start),
+            'DateFin': database.timestamp_to_papi_date(chessevent_tournament.end),
+            'Dep1': chessevent_tournament.get_papi_tie_break(0),
+            'Dep2': chessevent_tournament.get_papi_tie_break(1),
+            'Dep3': chessevent_tournament.get_papi_tie_break(2),
+            'ClassElo': chessevent_tournament.rating.to_papi_value,
+            'Homologation': str(chessevent_tournament.ffe_id),
+        }
+        print(data)
+        # queries: list[str] = []
+        # params: list[str] = []
+        # for name, value in data.items():
+        #     queries.append('UPDATE `info` SET `Value` = ? WHERE `Variable` = ?')
+        #     params.extend([value, name, ])
+        # self._execute('; '.join(queries), tuple(params))
+        for name, value in data.items():
+            query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
+            database._execute(
+                query,
+                (
+                    value,
+                    name,
+                ),
+            )
+
+    @classmethod
+    def write_chessevent_info_to_database(
+        cls, tournament: Tournament, chessevent_tournament: ChessEventTournament, chessevent_download_md5: str
+    ) -> int:
+        """Stores the information from the given `chessevent_tournament` in the event database.
+        For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
+        Returns the number of players added."""
+        players_added: int = 0
+        with PapiDatabase(tournament.file, write=True) as papi_database:
+            with EventDatabase(tournament.event.uniq_id, write=True) as event_database:
+                cls.write_chessevent_info(papi_database, chessevent_tournament)
+                for player_papi_id, chessevent_player in enumerate(
+                    chessevent_tournament.players, start=2
+                ):
+                    cls.add_chessevent_player(
+                        papi_database,
+                        player_papi_id,
+                        chessevent_player,
+                        chessevent_tournament.check_in_started,
+                    )
+                    players_added += 1
+                event_database.set_tournament_check_in(tournament.id, True)
+                papi_database.open_check_in(1)
+                event_database.execute(
+                    'UPDATE `tournament` SET `chessevent_last_download_md5` = ? WHERE `id` = ?',
+                    (
+                        chessevent_download_md5,
+                        tournament.id,
+                    ),
+                )
+                event_database.commit()
+                papi_database.commit()
+        return players_added
 
     @classmethod
     def __get_chessevent_tournaments(cls, event: Event) -> Iterator[Tournament]:
@@ -43,7 +188,7 @@ class ActionSelector(metaclass=Singleton):
         if not event.tournaments_by_id:
             yield from ()
         for tournament in event.tournaments_by_id.values():
-            if not tournament.chessevent_tournament_name:
+            if not ChessEventUtils.resolve_tournament_name(tournament):
                 print_interactive_warning(
                     _(
                         'The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].'
@@ -242,7 +387,7 @@ class ActionSelector(metaclass=Singleton):
                                 continue
                             data_md5 = hashlib.md5(data.encode('utf-8')).hexdigest()
                             if (
-                                data_md5 == tournament.chessevent_last_download_md5
+                                data_md5 == get_plugin_data(PLUGIN_NAME, tournament.plugin_data, 'chessevent_last_download_md5')
                                 and tournament.file.exists()
                             ):
                                 print_interactive_info(
@@ -262,8 +407,8 @@ class ActionSelector(metaclass=Singleton):
                                 tournament.file, papi_version
                             ):
                                 player_count: int = (
-                                    tournament.write_chessevent_info_to_database(
-                                        chessevent_tournament, data_md5
+                                    self.write_chessevent_info_to_database(
+                                        tournament, chessevent_tournament, data_md5
                                     )
                                 )
                                 print_interactive_success(

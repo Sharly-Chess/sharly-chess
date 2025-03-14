@@ -102,6 +102,7 @@ def augment_player_after_db_fetch(player: Player, row: dict[str, Any]):
         'league': row['Ligue'] or '',
     }
 
+
 @hookimpl
 def player_data_for_db_write(player: Player) -> dict[str, Any]:
     pd = player.plugin_data
@@ -510,8 +511,11 @@ def is_tournament_participation_possible(
 
 
 @hookimpl
-def get_tournament_card_block_template() -> str:
-    return "/ffe_tournament_card_block.html"
+def get_tournament_card_block_template_and_data() -> tuple[str, dict[str, Any]]:
+    return (
+        "/ffe_tournament_card_block.html",
+        {}
+    )
 
 
 def split_players_by(split_by: str, players: list[Player]):

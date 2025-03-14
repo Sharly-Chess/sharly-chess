@@ -7,7 +7,7 @@ from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 from common import (
     format_timestamp_date_time,
@@ -377,18 +377,6 @@ class Event:
             or PapiWebConfig.default_message_background_color
         )
 
-    @property
-    def chessevent_user_id(self) -> str | None:
-        return self.stored_event.chessevent_user_id
-
-    @property
-    def chessevent_password(self) -> str | None:
-        return self.stored_event.chessevent_password
-
-    @property
-    def chessevent_event_id(self) -> str | None:
-        return self.stored_event.chessevent_event_id
-
     @cached_property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
         return sorted(
@@ -717,6 +705,10 @@ class Event:
         return self._get_unused_item_uniq_id(
             base_uniq_id or _('rotator'), self.rotators_by_uniq_id
         )
+        
+    @property
+    def plugin_data(self) -> dict[str, dict[str, Any]]:
+        return self.stored_event.plugin_data or {}
 
     def _add_message(
         self,

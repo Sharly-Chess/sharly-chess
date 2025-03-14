@@ -33,20 +33,12 @@
                 {{ _('No tournaments') }}
             {% endif %}
         </div>
+
+        {% for block in event_card_blocks %}
+            {% include block %}
+        {% endfor %}
+
         {% if admin_events_show_details %}
-            <div class="{% if not event.chessevent_user_id or not event.chessevent_event_id %}text-secondary{% endif %}">
-                <i class="bi-download pe-1" ></i>
-                {% if event.chessevent_user_id and event.chessevent_event_id %}
-                    {{ _(
-                        'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s',
-                        chessevent_user_id=event.chessevent_user_id or '-',
-                        chessevent_event_id=event.chessevent_event_id or '-') }}
-                {% elif not event.chessevent_user_id %}
-                    {{ _('No ChessEvent identifier defined') }}
-                {% else %}
-                    {{ _('No ChessEvent event defined') }}
-                {% endif %}
-            </div>
             <div class="{% if not event.timers_by_id %}text-secondary{% endif %}">
                 <i class="bi-clock pe-1" ></i>
                 {% if event.timers_by_id %}

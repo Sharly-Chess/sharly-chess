@@ -128,10 +128,6 @@ class TournamentAdminController(BaseEventAdminController):
         time_control_handicap_penalty_value: int | None = None
         time_control_handicap_penalty_step: int | None = None
         time_control_handicap_min_time: int | None = None
-        chessevent_user_id: str | None = None
-        chessevent_password: str | None = None
-        chessevent_event_id: str | None = None
-        chessevent_tournament_name: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
         first_board_number: int | None = None
@@ -160,18 +156,6 @@ class TournamentAdminController(BaseEventAdminController):
                 )
                 time_control_handicap_min_time = WebContext.form_data_to_int(
                     data, 'time_control_handicap_min_time'
-                )
-                chessevent_user_id = WebContext.form_data_to_str(
-                    data, 'chessevent_user_id'
-                )
-                chessevent_password = WebContext.form_data_to_str(
-                    data, 'chessevent_password'
-                )
-                chessevent_event_id = WebContext.form_data_to_str(
-                    data, 'chessevent_event_id'
-                )
-                chessevent_tournament_name = WebContext.form_data_to_str(
-                    data, 'chessevent_tournament_name'
                 )
                 record_illegal_moves = (
                     cls._admin_validate_record_illegal_moves_update_data(data, errors)
@@ -233,10 +217,6 @@ class TournamentAdminController(BaseEventAdminController):
             time_control_handicap_penalty_value=time_control_handicap_penalty_value,
             time_control_handicap_penalty_step=time_control_handicap_penalty_step,
             time_control_handicap_min_time=time_control_handicap_min_time,
-            chessevent_user_id=chessevent_user_id,
-            chessevent_password=chessevent_password,
-            chessevent_event_id=chessevent_event_id,
-            chessevent_tournament_name=chessevent_tournament_name,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
             first_board_number=first_board_number,
@@ -306,10 +286,6 @@ class TournamentAdminController(BaseEventAdminController):
                     time_control_handicap_penalty_value: int | None = None
                     time_control_handicap_penalty_step: int | None = None
                     time_control_handicap_min_time: int | None = None
-                    chessevent_user_id: str | None = None
-                    chessevent_password: str | None = None
-                    chessevent_event_id: str | None = None
-                    chessevent_tournament_name: str | None = None
                     record_illegal_moves: int | None = None
                     rules: str | None = None
                     first_board_number: int | None = None
@@ -327,16 +303,6 @@ class TournamentAdminController(BaseEventAdminController):
                             time_control_handicap_penalty_value = admin_tournament.stored_tournament.time_control_handicap_penalty_value
                             time_control_handicap_penalty_step = admin_tournament.stored_tournament.time_control_handicap_penalty_step
                             time_control_handicap_min_time = admin_tournament.stored_tournament.time_control_handicap_min_time
-                            chessevent_user_id = (
-                                admin_tournament.stored_tournament.chessevent_user_id
-                            )
-                            chessevent_password = (
-                                admin_tournament.stored_tournament.chessevent_password
-                            )
-                            chessevent_event_id = (
-                                admin_tournament.stored_tournament.chessevent_event_id
-                            )
-                            chessevent_tournament_name = admin_tournament.stored_tournament.chessevent_tournament_name
                             record_illegal_moves = (
                                 admin_tournament.stored_tournament.record_illegal_moves
                             )
@@ -385,18 +351,6 @@ class TournamentAdminController(BaseEventAdminController):
                         ),
                         'time_control_handicap_min_time': WebContext.value_to_form_data(
                             time_control_handicap_min_time
-                        ),
-                        'chessevent_user_id': WebContext.value_to_form_data(
-                            chessevent_user_id
-                        ),
-                        'chessevent_password': WebContext.value_to_form_data(
-                            chessevent_password
-                        ),
-                        'chessevent_event_id': WebContext.value_to_form_data(
-                            chessevent_event_id
-                        ),
-                        'chessevent_tournament_name': WebContext.value_to_form_data(
-                            chessevent_tournament_name
                         ),
                         'record_illegal_moves': WebContext.value_to_form_data(
                             record_illegal_moves

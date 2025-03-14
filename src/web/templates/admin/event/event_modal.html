@@ -139,38 +139,9 @@
                         </div>
                     </div>
 
-                    <h4>
-                        {{ _('Connection to the ChessEvent platform') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='chessevent_user_id',
-                                label=_('Chessevent ID:'),
-                                placeholder=_('E.g.: %(string)s', string='Z00000'),
-                                help_text=_('The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.password_input(
-                                name='chessevent_password',
-                                label=_('ChessEvent Password:'),
-                                placeholder=_('E.g.: my_password'),
-                                help_text=_('The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 mb-3">
-                            {{ admin_macros.text_input(
-                                name='chessevent_event_id',
-                                label=_('ChessEvent event:'),
-                                placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
-                                help_text=_('The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
+                    {% for form_fields_template in plugin_form_fields_templates %}
+                        {% include form_fields_template %}
+                    {% endfor %}
 
                     <h4>
                         {{ _('Results entry') }}
