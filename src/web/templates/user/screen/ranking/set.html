@@ -3,7 +3,7 @@
             class="ranking-screen-set"
     >
         <h2 class="set-title text-center">
-            {% if tournament.current_round %}
+            {% if ranking_round %}
                 {{ screen_set.name_for_ranking }}
             {% else %}
                 {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_ranking, round=tournament.current_round) }}
