@@ -16,8 +16,8 @@ def random_search_token() -> str:
     return ''.join(random.choice(string.ascii_lowercase) for _ in range(3))
 
 
-def random_search_id() -> int:
-    return random.randrange(1000000)
+def random_search_id() -> str:
+    return str(random.randrange(1000000))
 
 
 if test_fide:
@@ -55,7 +55,6 @@ if test_fide:
                 print(f'Performing {searches} name searches on the FIDE database (opening and closing each time)... ', end='')
                 start: float = time.time()
                 for _ in range(searches):
-                    token: str = random_search_token()
                     with FideDatabase() as fide_database:
                         #print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
                         fide_database.search_player(random_search_token(), limit=limit)
@@ -65,7 +64,6 @@ if test_fide:
                 with FideDatabase() as fide_database:
                     print(f'Performing {searches} name searches on the FIDE database (opening and closing once)... ', end='')
                     for _ in range(searches):
-                        token: str = random_search_token()
                         # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
                         fide_database.search_player(random_search_token(), limit=limit)
                 duration: float = time.perf_counter() - start
@@ -74,19 +72,17 @@ if test_fide:
                 print(f'Performing {searches} integer searches on the FIDE database (opening and closing each time)... ', end='')
                 start: float = time.time()
                 for _ in range(searches):
-                    id: int = random_search_id()
                     with FideDatabase() as fide_database:
                         #print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
-                        fide_database.search_player(str(id), limit=limit)
+                        fide_database.search_player(random_search_id(), limit=limit)
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
                 print(f'Performing {searches} integer searches on the FIDE database (opening and closing once)... ', end='')
                 start: float = time.time()
                 with FideDatabase() as fide_database:
                     for _ in range(searches):
-                        id: int = random_search_id()
                         #print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
-                        fide_database.search_player(str(id), limit=limit)
+                        fide_database.search_player(random_search_id(), limit=limit)
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
 
