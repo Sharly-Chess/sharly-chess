@@ -495,7 +495,7 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> File:
         trf_type = TrfType(usage)
         context = TournamentAdminWebContext(
-            request, event_uniq_id, None, tournament_id, None
+            request, event_uniq_id, tournament_id, None
         )
         tournament = context.admin_tournament
         temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.trf')
@@ -513,7 +513,7 @@ class TournamentAdminController(BaseEventAdminController):
         self, request: HTMXRequest, event_uniq_id: str, tournament_id: int
     ) -> Template | ClientRedirect:
         context = TournamentAdminWebContext(
-            request, event_uniq_id, None, tournament_id, None
+            request, event_uniq_id, tournament_id, None
         )
         tournament = context.admin_tournament
         BbpPairings().generate_pairings(tournament)
@@ -534,7 +534,7 @@ class TournamentAdminController(BaseEventAdminController):
         self, request: HTMXRequest, event_uniq_id: str, tournament_id: int,
     ) -> Template | ClientRedirect:
         context = TournamentAdminWebContext(
-            request, event_uniq_id, None, tournament_id, None
+            request, event_uniq_id, tournament_id, None
         )
         file = context.admin_tournament.file
         file.parent.mkdir(parents=True, exist_ok=True)
