@@ -1,13 +1,13 @@
 from logging import Logger
 
 from common.logger import get_logger
-from data.chessevent_player import ChessEventPlayer
 from data.tie_break import PapiTieBreak, TieBreak
 from data.util import (
     TournamentType,
     TournamentPairing,
     TournamentRating,
 )
+from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 
 logger: Logger = get_logger()
 
@@ -91,6 +91,14 @@ class ChessEventTournament:
             return
         self.error = False
 
+    def get_papi_tie_break(self, index: int):
+        try:
+            return PapiTieBreak.from_tie_break(
+                self.tie_breaks[index]
+            ).to_papi_value
+        except IndexError:
+            return PapiTieBreak.NONE.to_papi_value
+        
     def __str__(self) -> str:
         return '\n'.join(
             [

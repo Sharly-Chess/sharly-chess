@@ -1,9 +1,9 @@
+from dataclasses import dataclass
 from logging import Logger
 from typing import Callable
 
 from trf.Player import Game as TrfGame
 from common.logger import get_logger
-from dataclasses import dataclass
 
 from data.util import Result, BoardColor
 
@@ -78,7 +78,7 @@ class Pairing:
             Result.FULL_POINT_BYE,
             Result.PAIRING_ALLOCATED_BYE
         )
-    
+
     @property
     def played(self) -> bool:
         return not self.unplayed

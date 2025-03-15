@@ -15,7 +15,12 @@ from common.logger import get_logger
 from data.screen_set import ScreenSet
 from data.tournament import Tournament
 from data.util import ScreenType
-from web.controllers.user.base_screen_user_controller import BaseScreenUserController, BasicScreenOrFamilyUserWebContext, RotatorUserWebContext, ScreenUserWebContext
+from web.controllers.user.base_screen_user_controller import (
+    BaseScreenUserController,
+    BasicScreenOrFamilyUserWebContext,
+    RotatorUserWebContext,
+    ScreenUserWebContext
+)
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -43,7 +48,8 @@ class LoginUserWebContext(ScreenUserWebContext):
         self.password: str = self._form_data_to_str(field, None)
         if self.password is None:
             self._redirect_error('Missing password.')
-            
+
+
 class ScreenUserController(BaseScreenUserController):
     @post(
         path='/user/login/{event_uniq_id:str}/{screen_uniq_id:str}',
@@ -190,7 +196,7 @@ class ScreenUserController(BaseScreenUserController):
         screen_uniq_id: str,
     ) -> None:
         pass
-    
+
     @get(
         path=[
             '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',

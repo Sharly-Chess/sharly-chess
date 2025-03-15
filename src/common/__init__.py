@@ -15,10 +15,10 @@ from common.logger import get_logger
 
 APP_NAME: str = 'papi-web'
 
-"""True when the program is running in a development environment, False if running as an EXE file."""
+# True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
-"""True when experimental features are enabled (relying on an environment variable), False otherwise."""
+# True when experimental features are enabled (relying on an environment variable), False otherwise.
 EXPERIMENTAL_FEATURES_ENV_VAR: str = 'PAPI_WEB_EXPERIMENTAL'
 EXPERIMENTAL_FEATURES: bool = os.environ.get(
     EXPERIMENTAL_FEATURES_ENV_VAR, ''
@@ -28,7 +28,9 @@ EXPERIMENTAL_FEATURES: bool = os.environ.get(
     '1',
 ]
 
-PAPI_WEB_VERSION = Version("2.4.25")
+PAPI_WEB_VERSION: Version = Version("2.4.25")
+
+REQUEST_TIMEOUT: int = 10
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 
@@ -42,15 +44,14 @@ TMP_DIR: Path = Path('tmp')
 try:
     TMP_DIR.mkdir(parents=True, exist_ok=True)
 except PermissionError as pe:
-    logger.critical(f'Could not create directory [{TMP_DIR.absolute()}]: {pe}')
+    logger.critical('Could not create directory [%s]: %s', TMP_DIR.absolute(), pe)
     sys.exit()
 
-""" 
-The base directory, differs for developers. base_dir must be used when looking for application files 
-(images, templates, ...) while user file should be search in the current directory. 
-"""
+
+#The base directory, differs for developers. base_dir must be used when looking for application files
+#(images, templates, ...) while user file should be search in the current directory.
 BASE_DIR: Path = (
-    Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS)
+    Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS) # type: ignore
 )
 
 
@@ -114,7 +115,12 @@ def show_duration(func):
         total_time = end_time - start_time
         # first item in the args, ie `args[0]` is `self`
         logger.warning(
-            f'{total_time:.4f}s {args[0].__class__.__name__}.{func.__name__}({args[1:]} {kwargs})'
+            '%.4fs %s.%s(%s %s)',
+            total_time,
+            args[0].__class__.__name__,
+            func.__name__,
+            args[1:],
+            kwargs
         )
         return result
 

@@ -11,7 +11,6 @@ from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigMigrationManager, ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase, EventMigrationManager
 from database.sqlite.migration import AbstractMigrationManager
-from database.sqlite.versioned_database import SQLiteVersionedDatabase
 
 if __name__ == '__main__':
 

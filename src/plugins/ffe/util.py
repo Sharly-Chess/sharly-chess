@@ -38,20 +38,6 @@ class PlayerFFELicence(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
-    @classmethod
-    def from_chessevent_value(cls, value: int) -> Self:
-        match value:
-            case 0:
-                return cls.NONE
-            case 1:
-                return cls.N
-            case 2:
-                return cls.B
-            case 3:
-                return cls.A
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
     @property
     def name(self) -> str:
         match self:

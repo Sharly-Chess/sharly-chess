@@ -75,7 +75,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         elif player_from_plugin:
             # A player has been returned via a plugin search
             self.admin_player = player_from_plugin
-            
+
         if tournament_id:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
@@ -184,12 +184,12 @@ class PlayerAdminController(BaseEventAdminController):
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
             if action == 'create' and tournament and fide_id and fide_id in tournament.players_by_fide_id:
-                    errors[field] = _(
-                        'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
-                    ).format(
-                        fide_id=fide_id,
-                        tournament_uniq_id=tournament.uniq_id
-                    )
+                errors[field] = _(
+                    'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
+                ).format(
+                    fide_id=fide_id,
+                    tournament_uniq_id=tournament.uniq_id
+                )
         except ValueError:
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
@@ -224,11 +224,13 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
-        
+
         # Have plugins validate their fields and return private plugin data
-        per_plugin_player_data = plugin_manager.hook.get_validated_player_form_fields(action=action, tournament=tournament, data=data, errors=errors)
+        per_plugin_player_data = plugin_manager.hook.get_validated_player_form_fields(
+            action=action, tournament=tournament, data=data, errors=errors
+        )
         plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
-        
+
         return Player(
             id=web_context.admin_player.id if action != 'create' else None,
             first_name=first_name,
@@ -342,10 +344,10 @@ class PlayerAdminController(BaseEventAdminController):
                                 tournament_id = None
                         case _:
                             raise ValueError(f'action=[{action}]')
-                   
+
                     per_plugin_form_data = plugin_manager.hook.get_player_form_data(plugin_data=plugin_data)
                     plugin_form_data = { key: value for data in per_plugin_form_data for key, value in data.items() }
-                        
+
                     data = (
                         {
                             'last_name': WebContext.value_to_form_data(last_name),
@@ -395,17 +397,18 @@ class PlayerAdminController(BaseEventAdminController):
                     {  # force the choice of the tournament on player creation if several tournaments
                         '': '-',
                     } if (
-                         action == 'create' and len(admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id) > 1
+                        action == 'create' and
+                        len(admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id) > 1
                     ) else {
                     }
                 ) | {
                     str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
                     for tournament in admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
                 }
-                
+
                 plugin_search_templates = plugin_manager.hook.get_player_search_template() or []
                 plugin_form_fields_templates = plugin_manager.hook.get_player_form_fields_template() or []
-                
+
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
                     'tournament_ratings_strings': {
@@ -683,7 +686,7 @@ class PlayerAdminController(BaseEventAdminController):
             return web_context.error
         admin_player: Player = web_context.admin_player
         src_tournament: Tournament = admin_player.tournament
-        
+
         if admin_player.has_real_pairings:
             Message.error(
                 request,
@@ -697,7 +700,7 @@ class PlayerAdminController(BaseEventAdminController):
             )
         else:
             dst_tournament: Tournament = web_context.admin_tournament
-            
+
             if not dst_tournament.file_exists:
                 Message.error(
                     request,
@@ -715,7 +718,9 @@ class PlayerAdminController(BaseEventAdminController):
                         tournament_uniq_id=dst_tournament.uniq_id,
                     ),
                 )
-            elif plugin_error := plugin_manager.hook.is_tournament_participation_possible(tournament=dst_tournament, player=admin_player) or None:
+            elif plugin_error := (plugin_manager.hook.is_tournament_participation_possible(
+                tournament=dst_tournament, player=admin_player
+            ) or None):
                 Message.error(request, plugin_error)
             else:
                 dst_tournament.add_player(admin_player)
@@ -798,7 +803,10 @@ class PlayerAdminController(BaseEventAdminController):
                 if not(pairing.not_paired or pairing.result in [
                     Result.ZERO_POINT_BYE, Result.HALF_POINT_BYE, Result.FULL_POINT_BYE,
                 ]):
-                    logger.warning(f'Player [{admin_player}] already paired for round [{round_}].')
+                    logger.warning(
+                        'Player [%s] already paired for round [%d].',
+                        admin_player, round_
+                    )
                     return {}
                 result: Result = Result(int(data[field]))
                 if result == pairings[round_].result:
@@ -809,7 +817,7 @@ class PlayerAdminController(BaseEventAdminController):
                         continue
                     case Result.HALF_POINT_BYE | Result.FULL_POINT_BYE:
                         if round_ > admin_tournament.rounds - admin_tournament.last_rounds_no_byes:
-                            logger.warning(f'Bye not allowed for round [{round_}].')
+                            logger.warning('Bye not allowed for round [%d].', round_)
                             return {}
                         new_byes[round_] = result
                         continue
@@ -824,7 +832,7 @@ class PlayerAdminController(BaseEventAdminController):
                 case Result.FULL_POINT_BYE:
                     byes += 2
             if byes > admin_tournament.max_byes:
-                logger.warning(f'Too many byes.')
+                logger.warning('Too many byes.')
                 return {}
         return new_byes
 

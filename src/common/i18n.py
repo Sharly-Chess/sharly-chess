@@ -19,7 +19,7 @@ logger: Logger = get_logger()
 
 
 """ The default locale used when no default locale is set in the configuration file. """
-default_locale: str = 'en'
+DEFAULT_LOCALE: str = 'en'
 
 
 """ The directory where to find the i18n files. """
@@ -28,7 +28,7 @@ _locale_dir: Path = BASE_DIR / 'locale'
 
 """ Build a dict of all the translations with the available locales retrieved from the filesystem. """
 locales: list[str] = []
-locale_error: bool = False
+LOCALE_ERROR: bool = False
 _all_translations: dict[str, GNUTranslations] = {}
 for l_entry in _locale_dir.iterdir():
     if l_entry.is_dir():
@@ -55,27 +55,27 @@ for l_entry in _locale_dir.iterdir():
                         )
             except Exception as ex:
                 print_interactive_error(f'Could not load locale [{locale_name}]: {ex}.')
-                locale_error = True
+                LOCALE_ERROR = True
                 if not DEVEL_ENV:
                     sys.exit()
         else:
             print_interactive_error(
                 f'Invalid locale [{l_entry.name}], MO file [{mo_file}] not found.'
             )
-            locale_error = True
+            LOCALE_ERROR = True
             if not DEVEL_ENV:
                 sys.exit()
 
 
-""" The translators (assigned to the trusted locales). """
+# The translators (assigned to the trusted locales).
 translators: dict[str, list[dict[str, str | None]]] = {}
 
 
-""" Trusted locales are the ones shown to all the users. """
+# Trusted locales are the ones shown to all the users.
 trusted_locales: list[str] = []
 
 
-""" All the locales that are not trusted, show only when experimental_locales is set in papi-web.ini. """
+# All the locales that are not trusted, show only when experimental_locales is set in papi-web.ini.
 untrusted_locales: list[str] = []
 
 
@@ -83,20 +83,20 @@ untrusted_locales: list[str] = []
 # when the compilation of the PO files failed and no MO files are available.
 if not locales:
     print_interactive_error('No locale found.')
-    locale_error = True
-    default_locale = ''
+    LOCALE_ERROR = True
+    DEFAULT_LOCALE = ''
     if not DEVEL_ENV:
         sys.exit()
-elif default_locale not in locales:
+elif DEFAULT_LOCALE not in locales:
     print_interactive_error(
-        f'Default locale [{default_locale}] not found, defaults to [{locales[0]}].'
+        f'Default locale [{DEFAULT_LOCALE}] not found, defaults to [{locales[0]}].'
     )
-    locale_error = True
-    default_locale = locales[0]
+    LOCALE_ERROR = True
+    DEFAULT_LOCALE = locales[0]
     if not DEVEL_ENV:
         sys.exit()
 
-""" The translators (assigned to the trusted locales). """
+# The translators (assigned to the trusted locales).
 translators['en'] = [
     {
         'github_user': 'timothyarmes',
@@ -117,7 +117,7 @@ translators['fr'] = [
 trusted_locales = [locale for locale in translators if locale in locales]
 
 if EXPERIMENTAL_FEATURES:
-    """ Mark the untrusted locales as translated by an IA. """
+    # Mark the untrusted locales as translated by an IA.
     translators |= {
         locale: [
             {
@@ -128,13 +128,13 @@ if EXPERIMENTAL_FEATURES:
         for locale in locales
         if locale not in trusted_locales
     }
-    """ Other as considered untrusted. """
+    # Other as considered untrusted.
     untrusted_locales = list(set(locales) - set(trusted_locales))
 
-""" Initialize the current thread with the default locale. """
+# Initialize the current thread with the default locale.
 _thread_local_data = threading.local()
 
-if locale_error:
+if LOCALE_ERROR:
     if Path(sys.argv[0]).name != 'i18n_update.py':
         print_interactive_error(
             'Errors were found while loading locales, you should run i18n_update.'
@@ -147,17 +147,17 @@ def get_locale() -> str:
     try:
         return _thread_local_data.locale
     except AttributeError:
-        return default_locale
+        return DEFAULT_LOCALE
 
 
 def set_locale(locale: str) -> bool:
     """Sets the locale for the current thread, returns True if the given locale is recognized."""
     if locale in locales:
         _thread_local_data.locale = locale
-        logger.debug(f'Locale set to [{locale}].')
+        logger.debug('Locale set to [%s].', locale)
         return True
     else:
-        logger.warning(f'Unknown locale [{locale}].')
+        logger.warning('Unknown locale [%s].', locale)
         return False
 
 

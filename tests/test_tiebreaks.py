@@ -11,7 +11,7 @@ from src.data.util import (
     TournamentPairing,
     TournamentRating
 )
-from src.data.player import TournamentPlayer
+from src.data.player import TournamentPlayer, Federation
 from tie_breaks import individual
 
 
@@ -33,7 +33,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=2150,
                     pairings={
@@ -51,7 +51,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=2200,
                     pairings={
@@ -69,7 +69,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=2100,
                     pairings={
@@ -87,7 +87,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=2050,
                     pairings={
@@ -105,7 +105,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1450,
                     pairings={
@@ -123,7 +123,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1950,
                     pairings={
@@ -141,7 +141,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=2000,
                     pairings={
@@ -159,7 +159,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1850,
                     pairings={
@@ -177,7 +177,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1700,
                     pairings={
@@ -195,7 +195,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1650,
                     pairings={
@@ -213,7 +213,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1550,
                     pairings={
@@ -231,7 +231,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FIDE',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1500,
                     pairings={
@@ -249,7 +249,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1900,
                     pairings={
@@ -267,7 +267,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1800,
                     pairings={
@@ -285,7 +285,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1600,
                     pairings={
@@ -303,7 +303,7 @@ class SwissTieBreaks(unittest.TestCase):
                     None,
                     PlayerGender.NONE,
                     0,
-                    'FID',
+                    Federation('FID'),
                     PlayerTitle.NONE,
                     estimation=1750,
                     pairings={
@@ -1117,7 +1117,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             pairing=TournamentPairing.BERGER,
             players_by_id={
                 1: TournamentPlayer(
-                    1, 'Alyx', '', None, PlayerGender.NONE, 0, 'FID',
+                    1, 'Alyx', '', None, PlayerGender.NONE, 0, Federation('FID'),
                     PlayerTitle.NONE, estimation=2200,
                     pairings = {
                         1: Pairing(BoardColor.WHITE, 5, Result.DRAW),
@@ -1128,7 +1128,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                     }
                 ),
                 2: TournamentPlayer(
-                    2, 'Bruno', '', None, PlayerGender.NONE, 0, 'FID',
+                    2, 'Bruno', '', None, PlayerGender.NONE, 0, Federation('FID'),
                     PlayerTitle.NONE, estimation=2150,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 6, Result.GAIN),
@@ -1139,7 +1139,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                     }
                 ),
                 3: TournamentPlayer(
-                    3, 'Charline', '', None, PlayerGender.NONE, 0, 'FID',
+                    3, 'Charline', '', None, PlayerGender.NONE, 0, Federation('FID'),
                     PlayerTitle.NONE, estimation=2100,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 4, Result.GAIN),
@@ -1150,7 +1150,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                     }
                 ),
                 4: TournamentPlayer(
-                    4, 'David', '', None, PlayerGender.NONE, 0, 'FID',
+                    4, 'David', '', None, PlayerGender.NONE, 0, Federation('FID'),
                     PlayerTitle.NONE, estimation=2050,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 3, Result.LOSS),
@@ -1161,7 +1161,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                     }
                 ),
                 5: TournamentPlayer(
-                    5, 'Franck', '', None, PlayerGender.NONE, 0, 'FID',
+                    5, 'Franck', '', None, PlayerGender.NONE, 0, Federation('FID'),
                     PlayerTitle.NONE, estimation=1950,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 1, Result.DRAW),
@@ -1172,7 +1172,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
                     }
                 ),
                 6: TournamentPlayer(
-                    6, 'Helene', '', None, PlayerGender.NONE, 0, 'FID',
+                    6, 'Helene', '', None, PlayerGender.NONE, 0, Federation('FID'),
                     PlayerTitle.NONE, estimation=2000,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 2, Result.LOSS),

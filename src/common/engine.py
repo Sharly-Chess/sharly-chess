@@ -16,7 +16,7 @@ from packaging.version import Version
 from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
-from common import PAPI_WEB_VERSION, TMP_DIR
+from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -253,7 +253,7 @@ class Engine:
                         )
                     )
                     shutil.copy(src_file, tournament.file)
-                    logger.debug(str(src_file) + ' > ' + str(tournament.file))
+                    logger.debug('%s > %s', str(src_file), str(tournament.file))
                     tournaments_number += 1
         print_interactive_info(_('Recovering custom files...'))
         custom_files: list[Path] = []
@@ -294,7 +294,7 @@ class Engine:
                 )
             )
             for custom_file in custom_files:
-                logger.info(f'- {str(custom_file).replace(str(custom_dir), "")}')
+                logger.info('- %s' , str(custom_file).replace(str(custom_dir), ""))
             yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
             no_answer: str = _('N *** THE LETTER TO ANSWER NO')
             while True:
@@ -366,23 +366,23 @@ class Engine:
                     for field_id, file in files.items():
                         logger.info('  - %s: [%s]', field_id, file)
             if not data and not files:
-                response: Response = request(method=method, url=url)
+                response: Response = request(method=method, url=url, timeout=REQUEST_TIMEOUT)
             elif not files:
-                response: Response = request(method=method, url=url, data=data)
+                response: Response = request(method=method, url=url, data=data, timeout=REQUEST_TIMEOUT)
             else:
                 handlers = {
                     file_id: open(file_name, 'rb')
                     for file_id, file_name in files.items()
                 }
                 response: Response = request(
-                    method=method, url=url, data=data, files=handlers
+                    method=method, url=url, data=data, files=handlers, timeout=REQUEST_TIMEOUT,
                 )
                 for handler in handlers.values():
                     handler.close()
             response.raise_for_status()
             content: str = response.content.decode()
             if debug:
-                logger.info(f'content={content}')
+                logger.info('content=%s', content)
             return True
         except ConnectionError as ex:
             print_interactive_error(
@@ -452,7 +452,7 @@ class Engine:
             for filename in custom_files:
                 body += f'<li>{filename}</li>'
             body += '</ul>'
-            body += f'<p>' + _('Thanks :-)') + '/p>'
+            body += '<p>' + _('Thanks :-)') + '/p>'
             body += '<ul>'
             body += (
                 f'<li><a href="{bin_url}">' + _('View the files on filebin.net') + '</a></li>'

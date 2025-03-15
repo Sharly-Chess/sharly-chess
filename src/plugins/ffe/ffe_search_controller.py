@@ -1,18 +1,18 @@
 from typing import Any, TYPE_CHECKING
 
-from data.util import PlayerRatingType, TournamentRating
-from database.sqlite.fide.fide_database import FideDatabase
 from litestar import get
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
+from data.util import PlayerRatingType, TournamentRating
+from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 
 if TYPE_CHECKING:
     from data.player import Player
-    
+
 class FfeSearchController(BaseEventAdminController):
 
     @get(
@@ -46,7 +46,7 @@ class FfeSearchController(BaseEventAdminController):
                 'search_results': players,
             }
         )
-        
+
     @get(
         path='/ffe/create-from-ffe/{event_uniq_id:str}/{player_ffe_id:int}',
         name='ffe-create-from-modal',
@@ -71,10 +71,13 @@ class FfeSearchController(BaseEventAdminController):
                             TournamentRating.RAPID,
                             TournamentRating.BLITZ,
                         ]:
-                            if player.rating_types[rating_type] == PlayerRatingType.ESTIMATED and fide_player.rating_types[rating_type] != PlayerRatingType.ESTIMATED:
+                            if (
+                                player.rating_types[rating_type] == PlayerRatingType.ESTIMATED and
+                                fide_player.rating_types[rating_type] != PlayerRatingType.ESTIMATED
+                            ):
                                 player.ratings[rating_type] = fide_player.ratings[rating_type]
                                 player.rating_types[rating_type] = fide_player.rating_types[rating_type]
-                                    
+
         return PlayerAdminController._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,

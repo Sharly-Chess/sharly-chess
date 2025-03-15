@@ -7,7 +7,7 @@ from babel.messages.pofile import read_po, write_po
 from transformers import AutoTokenizer, MarianMTModel, MarianTokenizer
 from huggingface_hub import hf_hub_url
 
-from common.i18n import default_locale
+from common.i18n import DEFAULT_LOCALE
 from common.logger import (
     print_interactive_info,
     print_interactive_error,
@@ -27,11 +27,11 @@ class I18nTranslator:
         self.model_name: str
         if target_locale == 'pt':
             self.model_name = (
-                f'Helsinki-NLP/opus-mt-tc-big-{default_locale}-{self.target_locale}'
+                f'Helsinki-NLP/opus-mt-tc-big-{DEFAULT_LOCALE}-{self.target_locale}'
             )
         else:
             self.model_name = (
-                f'Helsinki-NLP/opus-mt-{default_locale}-{self.target_locale}'
+                f'Helsinki-NLP/opus-mt-{DEFAULT_LOCALE}-{self.target_locale}'
             )
         self.model_dir = Path() / 'utils' / 'i18n' / 'models' / self.model_name
         self.catalog: Catalog | None = None
@@ -90,7 +90,7 @@ class I18nTranslator:
         print_interactive_info(
             f'Missing translations, loading translator {self.target_locale}...'
         )
-        print_interactive_info(f'PO locale: {default_locale}')
+        print_interactive_info(f'PO locale: {DEFAULT_LOCALE}')
         print_interactive_info(f'Model: {self.model_name}')
         print_interactive_info('Checking model files...')
         if not self.check_model_files():

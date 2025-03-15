@@ -202,7 +202,7 @@ class PapiTieBreak(IntEnum):
         elif tournament_rounds <= 12:
             return 2
         return 3
-    
+
     @classmethod
     def from_tie_break(cls, tie_break: 'TieBreak') -> Self:
         match tie_break.type:
@@ -232,7 +232,7 @@ class PapiTieBreak(IntEnum):
 
 class TieBreakOption(StrEnum):
     """An enumeration representing the options of the tie-break functions"""
-    
+
     CUT = 'cut'
     CUT_TOP = 'cut_top'
     CUT_BOTTOM = 'cut_btm'

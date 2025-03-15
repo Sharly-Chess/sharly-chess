@@ -112,7 +112,7 @@ class FFESession(Session):
                     datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
                 )
                 debug_file = TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
-                with open(debug_file, 'w') as file:
+                with open(debug_file, 'w', encoding='utf-8') as file:
                     file.write(content)
                 logger.info('Raw content stored to %s.', debug_file)
             return content
@@ -223,9 +223,9 @@ class FFESession(Session):
     def _ffe_auth(self) -> bool:
         """Authenticates on the FFE admin website."""
         assert self.ffe_state
-        
+
         (ffe_id, ffe_password) = self.get_id_and_password()
-        
+
         print_interactive_info(_('Authenticating...'))
         url = FFE_URL + '/Default.aspx'
         post_data: dict[str, str] = {
@@ -277,7 +277,7 @@ class FFESession(Session):
 
     def test_auth(self):
         (ffe_id, ffe_password) = self.get_id_and_password(True)
-        
+
         """Tries to authenticate on the FFE admin website for the tournament."""
         logger.info(_('Tournament [{ffe_id}]:').format(ffe_id=ffe_id))
         if not self._ffe_init():
@@ -287,7 +287,7 @@ class FFESession(Session):
 
     def get_fees(self):
         (ffe_id, ffe_password) = self.get_id_and_password(True)
-        
+
         """Downloads the fees for the tournament."""
         print_interactive_info(
             _('Getting fees for tournament [{ffe_id}]...').format(
@@ -349,7 +349,7 @@ class FFESession(Session):
             _('Invoice saved to [{file}].').format(file=file.resolve())
         )
         return
-    
+
     def get_id_and_password(self, do_log: bool = False) -> tuple[str | None, str | None]:
         pd = self.tournament.plugin_data
         ffe_id = get_data(pd, 'ffe_id')
@@ -369,11 +369,11 @@ class FFESession(Session):
 
     def upload(self, set_visible: bool):
         """Upload the tournament to the FFE admin website."""
-        
+
         (ffe_id, ffe_password) = self.get_id_and_password(True)
         if not ffe_id:
             return
-                                     
+
         print_interactive_info(
             _('Sending tournament [{ffe_id}] ({file}) to the FFE website...').format(
                 ffe_id=ffe_id, file=self.tournament.file
@@ -486,12 +486,11 @@ class FFESession(Session):
 
     def upload_rules(self):
         """Upload the rules of the tournament to the FFE admin website."""
-        
-        
+
         (ffe_id, ffe_password) = self.get_id_and_password(True)
         if not ffe_id:
             return
-        
+
         print_interactive_info(
             _(
                 'Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...'

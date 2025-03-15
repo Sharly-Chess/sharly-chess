@@ -1,9 +1,6 @@
 import re
 
-from litestar.contrib.htmx.request import HTMXRequest
-
 from collections import Counter, defaultdict
-from dataclasses import dataclass
 
 from datetime import datetime
 from functools import partial
@@ -11,10 +8,12 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable
 
+from litestar.contrib.htmx.request import HTMXRequest
 from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
 from common import BASE_DIR
+from common.i18n import _
 from common.logger import print_interactive_error
 from data.event import Event
 from data.util import PlayerCategory, PlayerRatingType, PrintDocument, ScreenType, TournamentRating, get_plugin_data
@@ -22,7 +21,6 @@ from data.player import Player
 
 from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, ExtraColumn
 
-from common.i18n import _
 
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 import web.controllers.base_controller as WebContextModule
@@ -34,13 +32,14 @@ from .ffe_database import FfeDatabase
 from .ffe_session_handler import FFESessionHandler
 from .ffe_search_controller import FfeSearchController
 from .ffe_event_controller import FfeAdminEventController
+from .. import PLUGINS_DIR
 from ..utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
 
-""" The FFE league names. """
+# The FFE league names.
 ffe_leagues: dict[str, str] = {
     '': '',
     'ARA': 'Auvergne-Rhône-Alpes',
@@ -102,6 +101,7 @@ def augment_player_after_db_fetch(player: Player, row: dict[str, Any]):
         'league': row['Ligue'] or '',
     }
 
+
 @hookimpl
 def player_data_for_db_write(player: Player) -> dict[str, Any]:
     pd = player.plugin_data
@@ -124,7 +124,7 @@ def augment_tournament_after_db_fetch(stored_tournament: 'StoredTournament', row
         'ffe_last_rules_upload': row.get('ffe_last_rules_upload', 0.0),
     }
 
-            
+
 @hookimpl
 def tournament_data_for_db_write(stored_tournament: 'StoredTournament') -> dict[str, Any]:
     td = stored_tournament.plugin_data
@@ -135,7 +135,7 @@ def tournament_data_for_db_write(stored_tournament: 'StoredTournament') -> dict[
         'ffe_last_rules_upload': get_data(td, 'ffe_last_rules_upload', 0.0),
     }
 
-    
+
 @hookimpl
 def on_tournament_init(tournament: 'Tournament'):
     pd = tournament.stored_tournament.plugin_data
@@ -148,7 +148,7 @@ def on_tournament_init(tournament: 'Tournament'):
             tournament=tournament,
         )
 
-        
+
 @hookimpl
 def get_controllers() -> Iterable[type[WebContextModule.BaseController]]:
     return [
@@ -159,7 +159,7 @@ def get_controllers() -> Iterable[type[WebContextModule.BaseController]]:
 
 @hookimpl
 def get_templates_path() -> Path:
-    return BASE_DIR / 'src/plugins/ffe/templates'
+    return PLUGINS_DIR / 'ffe' / 'templates'
 
 
 @hookimpl
@@ -296,7 +296,7 @@ def get_player_form_data(
         ),
         'ffe_id': WebContextModule.WebContext.value_to_form_data(get_data(plugin_data, 'ffe_id', None)),
         'ffe_league': WebContextModule.WebContext.value_to_form_data(get_data(plugin_data, 'league', None)),
-    }   
+    }
 
 
 @hookimpl
@@ -320,15 +320,15 @@ def get_validated_player_form_fields(
             ffe_ids = [ get_data(player.plugin_data, 'ffe_id', None) for player in tournament.players_by_id.values() ]
 
             if action == 'create' and ffe_id and ffe_id in ffe_ids:
-                    errors[field] = _(
-                        'The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}].'
-                    ).format(
-                        ffe_id=ffe_id,
-                        tournament_uniq_id=tournament.uniq_id
-                    )
+                errors[field] = _(
+                    'The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}].'
+                ).format(
+                    ffe_id=ffe_id,
+                    tournament_uniq_id=tournament.uniq_id
+                )
         except ValueError:
             errors[field] = _('Invalid FFE ID [{ffe_id}].').format(ffe_id=data[field])
-   
+
     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
     try:
         ffe_licence = PlayerFFELicence(
@@ -336,7 +336,7 @@ def get_validated_player_form_fields(
         )
     except ValueError:
         errors[field] = f'Invalid FFE licence [{data[field]}].'
-    
+
     ffe_licence_number: str | None = WebContextModule.WebContext.form_data_to_str(
         data, field := 'ffe_licence_number'
     )
@@ -347,7 +347,10 @@ def get_validated_player_form_fields(
             ).format(ffe_licence_number=data[field])
         elif tournament:
             # When adding a player, the tournament may not me chosen (in this case do not test)
-            ffe_licence_numbers = [ player.plugin_data.get(PLUGIN_NAME, {}).get('ffe_licence_number', None) for player in tournament.players_by_id.values() ]
+            ffe_licence_numbers = [
+                player.plugin_data.get(PLUGIN_NAME, {}).get('ffe_licence_number')
+                for player in tournament.players_by_id.values()
+            ]
             if action == 'create' and ffe_licence_number in ffe_licence_numbers:
                 errors[field] = _(
                     'The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}].'
@@ -364,7 +367,7 @@ def get_validated_player_form_fields(
             "league": league,
         }
     }
-    
+
 
 @hookimpl
 def get_tournament_form_fields_template() -> str:
@@ -384,8 +387,8 @@ def get_tournament_form_data(
     return {
         'ffe_id': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_id', None)),
         'ffe_password': WebContextModule.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_password', None)),
-    }   
-    
+    }
+
 
 @hookimpl
 def get_validated_tournament_form_fields(
@@ -404,18 +407,18 @@ def get_validated_tournament_form_fields(
         errors['ffe_password'] = _(
             'The password of the tournament on the FFE website is made of 10 uppercase letters.'
         )
-        
+
     # Keep data other than these two fields (such as file upload times)
     previous_data = tournament.plugin_data.get(PLUGIN_NAME, {}) if tournament else {}
-                
+
     return {
         PLUGIN_NAME: previous_data | {
             "ffe_id": ffe_id,
             "ffe_password": ffe_password,
         }
     }
-    
-    
+
+
 @hookimpl
 def augment_player_after_search(player: Player):
     # Try to get more information by requesting the FFE database
@@ -496,7 +499,7 @@ def is_tournament_participation_possible(
             ffe_licence_number=get_data(player.plugin_data, 'ffe_licence_number', None),
             tournament_uniq_id=tournament.uniq_id,
         )
-    
+
     if (
         ffe_id and any(
             get_data(player_.plugin_data, 'ffe_id', None) == ffe_id
@@ -505,20 +508,23 @@ def is_tournament_participation_possible(
     ):
         # This string is not translated because the error should never happen
         return f'FFE ID [{ffe_id}] already present in tournament [{tournament.uniq_id}].'
-    
+
     return None
 
 
 @hookimpl
-def get_tournament_card_block_template() -> str:
-    return "/ffe_tournament_card_block.html"
+def get_tournament_card_block_template_and_data() -> tuple[str, dict[str, Any]]:
+    return (
+        "/ffe_tournament_card_block.html",
+        {}
+    )
 
 
 def split_players_by(split_by: str, players: list[Player]):
     split_functions = {
         "ffe-league": lambda p: p.plugin_data.get(PLUGIN_NAME, {}).get('league', None),
-    } 
-    
+    }
+
     split_players = defaultdict(list)
 
     # Split players by group
@@ -530,7 +536,7 @@ def split_players_by(split_by: str, players: list[Player]):
         key: split_players[key]
         for key in sorted(split_players.keys())
     }
-    
+
     return split_players
 
 
@@ -559,7 +565,7 @@ def get_extra_print_view_columns(
                     value=lambda player: get_data(player.plugin_data, 'league'),
                 )
             ]
-            
+
         case _:
             return []
 
@@ -576,7 +582,7 @@ def get_extra_screen_columns(screen: ScreenType) -> Iterable[ExtraColumn]:
                     value=lambda player: get_data(player.plugin_data, 'league'),
                 )
             ]
-            
+
         case _:
             return []
 
@@ -595,7 +601,7 @@ def get_extra_player_columns() -> Iterable[ExtraAdminColumn]:
             cell_template="/ffe_player_licence_cell.html",
         )
     ]
-    
+
 
 @hookimpl
 def get_extra_players_datasheet_columns() -> Iterable[ExtraColumn]:
@@ -619,7 +625,7 @@ def get_extra_players_datasheet_columns() -> Iterable[ExtraColumn]:
             at="club",
             title="league",
             value=lambda player: get_data(player.plugin_data, 'league'),
-        )        
+        )
     ]
 
 

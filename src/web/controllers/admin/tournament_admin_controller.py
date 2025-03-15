@@ -15,18 +15,18 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
-from data.tie_break import PapiTieBreak, TieBreak
-from data.player import Player
-from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
-from pairing.bbp_pairings import BbpPairings
 from common.i18n import _
 from common.logger import get_logger
+from data.tie_break import PapiTieBreak, TieBreak
+from data.player import Player
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
+from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
+from pairing.bbp_pairings import BbpPairings
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -128,10 +128,6 @@ class TournamentAdminController(BaseEventAdminController):
         time_control_handicap_penalty_value: int | None = None
         time_control_handicap_penalty_step: int | None = None
         time_control_handicap_min_time: int | None = None
-        chessevent_user_id: str | None = None
-        chessevent_password: str | None = None
-        chessevent_event_id: str | None = None
-        chessevent_tournament_name: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
         first_board_number: int | None = None
@@ -160,18 +156,6 @@ class TournamentAdminController(BaseEventAdminController):
                 )
                 time_control_handicap_min_time = WebContext.form_data_to_int(
                     data, 'time_control_handicap_min_time'
-                )
-                chessevent_user_id = WebContext.form_data_to_str(
-                    data, 'chessevent_user_id'
-                )
-                chessevent_password = WebContext.form_data_to_str(
-                    data, 'chessevent_password'
-                )
-                chessevent_event_id = WebContext.form_data_to_str(
-                    data, 'chessevent_event_id'
-                )
-                chessevent_tournament_name = WebContext.form_data_to_str(
-                    data, 'chessevent_tournament_name'
                 )
                 record_illegal_moves = (
                     cls._admin_validate_record_illegal_moves_update_data(data, errors)
@@ -215,7 +199,7 @@ class TournamentAdminController(BaseEventAdminController):
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
         plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
-        
+
         return StoredTournament(
             id=web_context.admin_tournament.id
             if action
@@ -233,10 +217,6 @@ class TournamentAdminController(BaseEventAdminController):
             time_control_handicap_penalty_value=time_control_handicap_penalty_value,
             time_control_handicap_penalty_step=time_control_handicap_penalty_step,
             time_control_handicap_min_time=time_control_handicap_min_time,
-            chessevent_user_id=chessevent_user_id,
-            chessevent_password=chessevent_password,
-            chessevent_event_id=chessevent_event_id,
-            chessevent_tournament_name=chessevent_tournament_name,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
             first_board_number=first_board_number,
@@ -306,10 +286,6 @@ class TournamentAdminController(BaseEventAdminController):
                     time_control_handicap_penalty_value: int | None = None
                     time_control_handicap_penalty_step: int | None = None
                     time_control_handicap_min_time: int | None = None
-                    chessevent_user_id: str | None = None
-                    chessevent_password: str | None = None
-                    chessevent_event_id: str | None = None
-                    chessevent_tournament_name: str | None = None
                     record_illegal_moves: int | None = None
                     rules: str | None = None
                     first_board_number: int | None = None
@@ -327,16 +303,6 @@ class TournamentAdminController(BaseEventAdminController):
                             time_control_handicap_penalty_value = admin_tournament.stored_tournament.time_control_handicap_penalty_value
                             time_control_handicap_penalty_step = admin_tournament.stored_tournament.time_control_handicap_penalty_step
                             time_control_handicap_min_time = admin_tournament.stored_tournament.time_control_handicap_min_time
-                            chessevent_user_id = (
-                                admin_tournament.stored_tournament.chessevent_user_id
-                            )
-                            chessevent_password = (
-                                admin_tournament.stored_tournament.chessevent_password
-                            )
-                            chessevent_event_id = (
-                                admin_tournament.stored_tournament.chessevent_event_id
-                            )
-                            chessevent_tournament_name = admin_tournament.stored_tournament.chessevent_tournament_name
                             record_illegal_moves = (
                                 admin_tournament.stored_tournament.record_illegal_moves
                             )
@@ -362,10 +328,10 @@ class TournamentAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    
+
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(tournament=web_context.admin_tournament)
                     plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
-                    
+
                     data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'name': WebContext.value_to_form_data(name),
@@ -386,18 +352,6 @@ class TournamentAdminController(BaseEventAdminController):
                         'time_control_handicap_min_time': WebContext.value_to_form_data(
                             time_control_handicap_min_time
                         ),
-                        'chessevent_user_id': WebContext.value_to_form_data(
-                            chessevent_user_id
-                        ),
-                        'chessevent_password': WebContext.value_to_form_data(
-                            chessevent_password
-                        ),
-                        'chessevent_event_id': WebContext.value_to_form_data(
-                            chessevent_event_id
-                        ),
-                        'chessevent_tournament_name': WebContext.value_to_form_data(
-                            chessevent_tournament_name
-                        ),
                         'record_illegal_moves': WebContext.value_to_form_data(
                             record_illegal_moves
                         ),
@@ -410,7 +364,7 @@ class TournamentAdminController(BaseEventAdminController):
                         'tie_break_2': WebContext.value_to_form_data(tie_break_2),
                         'tie_break_3': WebContext.value_to_form_data(tie_break_3),
                     } | plugin_form_data
-                    
+
                     stored_tournament: StoredTournament = (
                         cls._admin_validate_tournament_update_data(
                             action, web_context, data
@@ -419,9 +373,9 @@ class TournamentAdminController(BaseEventAdminController):
                     errors = stored_tournament.errors
                 if errors is None:
                     errors = {}
-                    
+
                 plugin_form_fields_templates = plugin_manager.hook.get_tournament_form_fields_template() or []
-                
+
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
@@ -781,14 +735,14 @@ class TournamentAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-    
+
     @staticmethod
     def split_players_by(split_by: PrintSplit, players: list[Player]) -> dict[str, list[Player]]:
         split_functions: dict[PrintSplit, Callable] = {
             PrintSplit.CLUB: lambda p: p.club,
             PrintSplit.CATEGORY: lambda p: p.category.short_name,
             PrintSplit.FEDERATION: lambda p: p.federation,
-        } 
+        }
 
         split_players: dict[str, list[Player]]
         if split_by == PrintSplit.CATEGORY:
@@ -838,7 +792,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        
+
         admin_tournament: Tournament = web_context.admin_tournament
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)
@@ -866,7 +820,7 @@ class TournamentAdminController(BaseEventAdminController):
         else:
             per_plugin_split_options = plugin_manager.hook.get_print_split_options()
             plugin_split_options = [option for options in per_plugin_split_options for option in options]
-        
+
             split_functions = {
                 PrintSplit.CLUB: partial(self.split_players_by, PrintSplit.CLUB),
                 PrintSplit.CATEGORY: partial(self.split_players_by, PrintSplit.CATEGORY),

@@ -15,6 +15,21 @@ logger: Logger = get_logger()
 class ChessEventPlayer:
     """A class representing a player information on ChessEvent."""
 
+    @staticmethod
+    def ffe_license_from_chessevent_value(value: int) -> PlayerFFELicence:
+        match value:
+            case 0:
+                return PlayerFFELicence.NONE
+            case 1:
+                return PlayerFFELicence.N
+            case 2:
+                return PlayerFFELicence.B
+            case 3:
+                return PlayerFFELicence.A
+            case _:
+                raise ValueError(f'Unknown value: {value}')
+            
+            
     def __init__(
         self,
         chessevent_player_info: dict[str, bool | str | int | dict[int, float] | None],
@@ -60,7 +75,7 @@ class ChessEventPlayer:
                 self.gender = PlayerGender(int(chessevent_player_info[key]))
             self.birth = float(chessevent_player_info[key := 'birth'])
             self.ffe_id = int(chessevent_player_info[key := 'ffe_id'])
-            self.ffe_license = PlayerFFELicence.from_chessevent_value(
+            self.ffe_license = self.ffe_license_from_chessevent_value(
                 int(chessevent_player_info[key := 'ffe_license'])
             )
             self.ffe_license_number = str(

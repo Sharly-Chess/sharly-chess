@@ -1,5 +1,4 @@
 import weakref
-from _weakref import ReferenceType
 from collections import Counter
 from functools import cached_property
 from itertools import groupby
@@ -7,37 +6,40 @@ from logging import Logger
 from operator import attrgetter
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+from _weakref import ReferenceType
 
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
+from common.logger import get_logger
+
+from data.board import Board
 from data.pairing import Pairing
 from data.tie_break import PapiTieBreak, TieBreak
-from data.util import TrfType, performance_bonus, round_fide
-
-if TYPE_CHECKING:
-    from data.event import Event
-
-from common.logger import get_logger
-from data.board import Board
-from data.chessevent_tournament import ChessEventTournament
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
 from data.util import (
+    TrfType,
     BoardColor,
-    NeedsUpload,
     TournamentRating,
     PlayerGender,
     PointValueType,
+    performance_bonus,
+    round_fide,
+    TournamentPairing,
+    Result
 )
-from data.util import TournamentPairing, Result
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
 from plugins.manager import plugin_manager
+
+if TYPE_CHECKING:
+    from data.event import Event
+
 
 logger: Logger = get_logger()
 
@@ -76,16 +78,6 @@ class Tournament:
                 ).format(filename=self.filename),
                 tournament=self,
             )
-        if not self.chessevent_user_id or not self.chessevent_password:
-            self.event.add_debug(
-                _('ChessEvent connection not defined.'), tournament=self
-            )
-        elif not self.chessevent_event_id:
-            self.event.add_warning(_('ChessEvent event not set.'), tournament=self)
-        elif not self.chessevent_tournament_name:
-            self.event.add_warning(
-                _('ChessEvent tournament name not set.'), tournament=self
-            )
         self._rounds: int = 0
         self._pairing: TournamentPairing | None = None
         self._rating: TournamentRating | None = None
@@ -106,7 +98,7 @@ class Tournament:
         ] | None = None
         self._point_value_type = PointValueType.STANDARD
         self._papi_read = False
-        
+
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
 
@@ -169,28 +161,6 @@ class Tournament:
     @property
     def time_control_handicap_min_time(self) -> int | None:
         return self.stored_tournament.time_control_handicap_min_time
-
-    @property
-    def chessevent_user_id(self) -> str | None:
-        if self.stored_tournament.chessevent_user_id:
-            return self.stored_tournament.chessevent_user_id
-        return self.event.chessevent_user_id
-
-    @property
-    def chessevent_password(self) -> str | None:
-        if self.stored_tournament.chessevent_password:
-            return self.stored_tournament.chessevent_password
-        return self.event.chessevent_password
-
-    @property
-    def chessevent_event_id(self) -> str | None:
-        if self.stored_tournament.chessevent_event_id:
-            return self.stored_tournament.chessevent_event_id
-        return self.event.chessevent_event_id
-
-    @property
-    def chessevent_tournament_name(self) -> str | None:
-        return self.stored_tournament.chessevent_tournament_name
 
     @property
     def record_illegal_moves(self) -> int:
@@ -282,10 +252,6 @@ class Tournament:
     @property
     def last_check_in_update(self) -> float:
         return self.stored_tournament.last_check_in_update
-
-    @property
-    def chessevent_last_download_md5(self) -> str:
-        return self.stored_tournament.chessevent_last_download_md5
 
     @property
     def stored_tie_breaks(self) -> list[TieBreak] | None:
@@ -487,7 +453,7 @@ class Tournament:
                 return self._current_round <= self._rounds - 2
             case _:
                 return False
-    
+
     @property
     def point_values(self) -> dict[Result, float]:
         return self._point_value_type.point_values
@@ -499,7 +465,7 @@ class Tournament:
             if tie_break := papi_tie_break.to_tie_break(self.rounds):
                 tie_breaks.append(tie_break)
         return tie_breaks
-    
+
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
         return self.stored_tournament.plugin_data or {}
@@ -571,7 +537,10 @@ class Tournament:
         return fields
 
     @staticmethod
-    def _trf_bb_fields(result_class: type[Result] = Result, point_values: dict[Result, float] | None = None) -> dict[str, str]:
+    def _trf_bb_fields(
+        result_class: type[Result] = Result,
+        point_values: dict[Result, float] | None = None
+    ) -> dict[str, str]:
         fields: dict[str, str] = {}
         for result in [
             result_class.GAIN,
@@ -734,7 +703,7 @@ class Tournament:
                     # Assumes a 0-0.5-1 scoring system.
                     vpoints = 2 * Result.GAIN.points(self.point_values)
         return vpoints
-    
+
     def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True):
         """Estimate the players after *max_round*.
         If *max_round* is None, use the current round if possible.
@@ -1024,34 +993,6 @@ class Tournament:
             board.id,
         )
 
-    def write_chessevent_info_to_database(
-        self, chessevent_tournament: ChessEventTournament, chessevent_download_md5: str
-    ) -> int:
-        """Stores the information from the given `chessevent_tournament` in the event database.
-        For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
-        Returns the number of players added."""
-        players_added: int = 0
-        with PapiDatabase(self.file, write=True) as papi_database:
-            with EventDatabase(self.event.uniq_id, write=True) as event_database:
-                papi_database.write_chessevent_info(chessevent_tournament)
-                for player_papi_id, chessevent_player in enumerate(
-                    chessevent_tournament.players, start=2
-                ):
-                    papi_database.add_chessevent_player(
-                        player_papi_id,
-                        chessevent_player,
-                        chessevent_tournament.check_in_started,
-                    )
-                    players_added += 1
-                event_database.set_tournament_check_in(self.id, True)
-                papi_database.open_check_in(1)
-                event_database.set_tournament_chessevent_last_download_md5(
-                    self.id, chessevent_download_md5
-                )
-                event_database.commit()
-                papi_database.commit()
-        return players_added
-
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""
         with PapiDatabase(self.file, write=True) as papi_database:
@@ -1080,7 +1021,7 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(player=player)
             plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
-        
+
             data: dict[str, str | int | float | None] = {
                 'Ref': (max(p.ref_id for p in self.players_by_id.values()) if self.players_by_id else 1) + 1,
                 'Nom': player.last_name,
@@ -1144,13 +1085,13 @@ class Tournament:
                         player, round_nb, player.pairings[round_nb]
                     )
             papi_database.commit()
-    
+
     def update_papi_database_from_stored_tournament(self):
         """Updates the papi database with all the
         values in common with the stored tournament."""
         if not self.file_exists:
             return
-        with (PapiDatabase(self.file, write=True) as papi_database):
+        with PapiDatabase(self.file, write=True) as papi_database:
             if tie_breaks := self._update_papi_tie_breaks():
                 papi_database.update_tie_breaks(tie_breaks)
             papi_database.update_point_values(self._point_value_type)

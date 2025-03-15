@@ -249,8 +249,8 @@ class WebContext:
                 # uppercase the locale to validate the phone number from the corresponding zone
                 phonenumbers.parse(data[field], get_locale().upper())
                 return data[field]
-            except NumberParseException:
-                raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)')
+            except NumberParseException as e:
+                raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)') from e
 
     @staticmethod
     def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
@@ -382,19 +382,23 @@ class BaseController(Controller):
             return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
         """
         try:
-            if_modified_since: float = httpdate_to_unixtime(
+            if_modified_since: int = httpdate_to_unixtime(
                 request.headers[self.IF_MODIFIED_SINCE_HEADER]
             )
             logger.debug(
-                f'request.headers[{self.IF_MODIFIED_SINCE_HEADER}]={request.headers[self.IF_MODIFIED_SINCE_HEADER]}'
+                'request.headers[%s]=%s',
+                self.IF_MODIFIED_SINCE_HEADER,
+                request.headers[self.IF_MODIFIED_SINCE_HEADER]
             )
-            logger.debug(f'if_modified_since={if_modified_since}')
+            logger.debug('if_modified_since=%d', if_modified_since)
             return if_modified_since
         except KeyError:
             return None
         except ValueError:
             logger.warning(
-                f'Invalid [{self.IF_MODIFIED_SINCE_HEADER}] header [{request.headers[self.IF_MODIFIED_SINCE_HEADER]}]'
+                'Invalid [%s] header [%s]',
+                self.IF_MODIFIED_SINCE_HEADER,
+                request.headers[self.IF_MODIFIED_SINCE_HEADER],
             )
             return None
 

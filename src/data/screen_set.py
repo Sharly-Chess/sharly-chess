@@ -1,10 +1,10 @@
 import math
 import weakref
-from _weakref import ReferenceType
 from collections.abc import Iterable
 from itertools import chain
 from logging import Logger
 from typing import Any, TYPE_CHECKING
+from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.i18n import _
@@ -45,7 +45,11 @@ class ScreenSet:
         self.stored_screen_set: StoredScreenSet | None = stored_screen_set
         self._family_ref: 'ReferenceType[Family] | None' = weakref.ref(family) if family else None
         self.family_part: int | None = family_part
-        self.uniq_id: str = f'{self.screen.uniq_id}_{self.stored_screen_set.order if self.stored_screen_set else self.family_part}'
+        self.uniq_id: str
+        if self.stored_screen_set:
+            self.uniq_id = f'{self.screen.uniq_id}_{self.stored_screen_set.order}'
+        else:
+            self.uniq_id = f'{self.screen.uniq_id}_{self.family_part}'
         fixed_boards_str: str | None = (
             self.stored_screen_set.fixed_boards_str
             if self.screen.type in [ScreenType.BOARDS, ScreenType.INPUT]

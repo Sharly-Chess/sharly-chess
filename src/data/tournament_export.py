@@ -16,7 +16,6 @@ class AbstractTournamentExporter(ABC):
     def download_route(self) -> str:
         """Route downloading the export file.
         Should take as parameters event_uniq_id: str and tournament_id: int"""
-        pass
 
     @property
     def route_parameters(self) -> dict[str, Any]:

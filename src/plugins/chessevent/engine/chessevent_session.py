@@ -6,8 +6,9 @@ from requests.exceptions import ConnectionError, Timeout, RequestException, HTTP
 
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
-from data.tournament import Tournament
 from common.logger import get_logger, print_interactive_error
+from data.tournament import Tournament
+from plugins.chessevent.utils import ChessEventUtils
 
 logger: Logger = get_logger()
 
@@ -15,6 +16,8 @@ logger: Logger = get_logger()
 class ChessEventSession(Session):
     """A Requests session specialised for communication with
     the ChessEvent platform."""
+
+    CHESSEVENT_DOWNLOAD_URL: str = 'https://chessevent.echecs-bretagne.fr/download'
 
     def __init__(self, tournament: Tournament):
         super().__init__()
@@ -25,13 +28,13 @@ class ChessEventSession(Session):
         If the data could be successfully retrieved and decode, returns
         it encoded as a JSON string.
         If an error occurred, logs ir and returns None"""
-        url: str = PapiWebConfig.chessevent_download_url
+        url: str = self.CHESSEVENT_DOWNLOAD_URL
         try:
             post: dict[str, str] = {
-                'user_id': self._tournament.chessevent_user_id,
-                'password': self._tournament.chessevent_password,
-                'event_id': self._tournament.chessevent_event_id,
-                'tournament_name': self._tournament.chessevent_tournament_name,
+                'user_id':  ChessEventUtils.resolve_user_id(self._tournament) or '',
+                'password': ChessEventUtils.resolve_password(self._tournament) or '',
+                'event_id': ChessEventUtils.resolve_event_id(self._tournament) or '',
+                'tournament_name': ChessEventUtils.resolve_tournament_name(self._tournament) or '',
             }
             chessevent_string: str = (
                 f'{post["user_id"]}:{"*" * 8}'

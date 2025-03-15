@@ -3,7 +3,7 @@
 >
 > **[Retour au sommaire de la documentation](../README.md)**
 >
-> ![](../web/static/images/papi-web-error.png)
+> ![](../src/web/static/images/papi-web-error.png)
 
 # Papi-web - Gestion d'un évènement avec plusieurs tournois
 

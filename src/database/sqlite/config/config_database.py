@@ -61,11 +61,9 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             (f'{version.major}.{version.minor}.{version.micro}', True)
         )
 
-    """
-    ---------------------------------------------------------------------------------
-    StoredConfig
-    ---------------------------------------------------------------------------------
-    """
+    # ---------------------------------------------------------------------------------
+    # StoredConfig
+    # ---------------------------------------------------------------------------------
 
     def _row_to_stored_config(self, row: dict[str, Any]) -> StoredConfig:
         """Convert a row to a StoredConfig record."""
@@ -108,4 +106,3 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         field_sets = (f'`{f}` = ?' for f in fields)
         self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
         return self._get_stored_config()
-

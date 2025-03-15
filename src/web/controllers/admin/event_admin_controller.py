@@ -4,8 +4,6 @@ from string import capwords
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
-from plugins.hookspec import ExtraColumn
-from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 import xlsxwriter
 from litestar import get, patch, delete, post, Response
 from litestar.contrib.htmx.request import HTMXRequest
@@ -27,6 +25,7 @@ from data.util import PlayerGender, PlayerCategory, PrintSplit, TournamentRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
+from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
@@ -35,6 +34,7 @@ from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
+from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 
 logger: Logger = get_logger()
 
@@ -77,6 +77,8 @@ class EventAdminController(BaseEventAdminController):
                     errors = stored_event.errors
                 if errors is None:
                     errors = {}
+
+                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
                 template_context |= {
                     'federations': PapiWebConfig.federations,
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
@@ -95,6 +97,7 @@ class EventAdminController(BaseEventAdminController):
                     ]
                     else {},
                     'modal': 'event',
+                    'plugin_form_fields_templates': plugin_form_fields_templates,
                     'action': action,
                     'data': data,
                     'errors': errors,
@@ -386,7 +389,7 @@ class EventAdminController(BaseEventAdminController):
             action=action,
             event_uniq_id=event_uniq_id,
         )
-        
+
     @get(
         path='/admin/print-modal/{event_uniq_id:str}',
         name='admin-print-modal',
@@ -643,7 +646,7 @@ class EventAdminController(BaseEventAdminController):
                 "round": data['round'],
             }
         )
-            
+
     @staticmethod
     def download_players_as_vcf(
         event_uniq_id: str,
@@ -694,7 +697,7 @@ class EventAdminController(BaseEventAdminController):
         'Bl',
         'B',
     ]
-    
+
     @classmethod
     def get_players_datasheet_extra_columns(cls) -> dict[int, ExtraColumn]:
         """Returns the extra data columns added by the plugins"""
@@ -708,24 +711,24 @@ class EventAdminController(BaseEventAdminController):
                     c.append(extra_column)
                 except ValueError:
                     pass
-        
+
         # The dict has keys sorted from high to low so that we can insert them in that
         # order without affecting lower indexes
         return { key: extra_columns[key] for key in reversed(sorted(extra_columns)) }
-        
+
     @classmethod
     def get_players_datasheet_columns(cls) -> list[str]:
         """Returns the names of the columns used in the datasheets that can be downloaded."""
-       
+
         header_columns = cls.DATASHEET_COLUMNS[:]
-        
+
         # Add plugin columns
         extra_columns = EventAdminController.get_players_datasheet_extra_columns()
         for index, columns in extra_columns.items():
             header_columns[index:index] = [column.title for column in columns]
-            
+
         return header_columns
-            
+
 
     @classmethod
     def get_players_datasheet_data(
@@ -735,12 +738,12 @@ class EventAdminController(BaseEventAdminController):
         """Returns the data of the datasheets that can be downloaded."""
 
         extra_columns = cls.get_players_datasheet_extra_columns()
-        
+
         def augment_row(row, player):
             for index, columns in extra_columns.items():
                 row[index:index] = [column.value(player) for column in columns]
             return row
-                
+
         rows = [
             augment_row([
                 player.last_name,
@@ -841,7 +844,7 @@ class EventAdminController(BaseEventAdminController):
             for player_id in player_ids
             if player_id
         ]
-        if not len(players):
+        if not players:
             players = web_context.admin_event.players_sorted_by_name
         match download_format:
             case 'vcf':
@@ -862,4 +865,3 @@ class EventAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'download_format={download_format}')
-

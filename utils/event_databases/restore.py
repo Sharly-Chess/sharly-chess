@@ -5,7 +5,6 @@ from packaging.version import Version
 
 from common import PAPI_WEB_VERSION
 from common.logger import print_interactive_error, print_interactive_info
-from common.papi_web_config import PapiWebConfig
 from data.loader import EventBackup, EventBackupLoader
 
 

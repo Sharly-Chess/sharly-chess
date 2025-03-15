@@ -138,7 +138,8 @@ class ScreenUserWebContext(ScreenOrRotatorUserWebContext):
         if screen_needed and not self.screen:
             self._redirect_error('Screen is mandatory.')
             return
-        
+
+
 class RotatorUserWebContext(ScreenOrRotatorUserWebContext):
     def __init__(
         self,
@@ -210,7 +211,7 @@ class BaseScreenUserController(BaseUserController):
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-        
+
         return HTMXTemplate(
             template_name='user/screen.html',
             context=web_context.template_context
