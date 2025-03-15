@@ -24,29 +24,6 @@
             <div>
                 {{ _('Columns:') }} {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
             </div>
-            <div class="{% if not family.menu_label %}text-secondary{% endif %}">
-                <i class="bi-hand-index pe-1"></i>
-                {% if family.menu_link %}
-                    {{ _('Menu link label: %(menu_label)s', menu_label=family.menu_label) }}
-                    {% if not family.menu_text %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
-                {% else %}
-                    <span class="fst-italic">
-                        {{ _('Menu link label: none') }}
-                    </span>
-                {% endif %}
-            </div>
-            <div class="{% if not family.menu %}text-secondary{% endif %}">
-                <i class="bi-three-dots pe-1"></i>
-                {% if family.menu %}{{ _('Menu: %(menu)s', menu=family.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
-            </div>
-            <div class="{% if not family.timer %}text-secondary{% endif %}">
-                <i class="bi-clock-fill pe-1"></i>
-                {% if family.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
-            </div>
             {% if family.type == 'input' %}
                 <div>
                     <i class="bi-x-circle pe-1"></i>
@@ -73,6 +50,49 @@
                     {% endif %}
                 </div>
             {% endif %}
+            {% if family.type == 'ranking' %}
+                <div class="{% if family.ranking_round %}text-secondary{% endif %}">
+                    {% if family.ranking_round %}
+                        {# _('Round: %(round)d', round=family.ranking_round) #}
+                    {% else %}
+                        {{ _('Round: the last one') }}
+                    {% endif %}
+                </div>
+                {% if family.ranking_min_points or family.ranking_max_points %}
+                    <div>
+                        {% if family.ranking_min_points and family.ranking_max_points %}
+                            {{ _('Points: %(min)d to %(max)d', min=family.ranking_min_points, max=family.ranking_max_points) }}
+                        {% elif family.ranking_min_points %}
+                            {{ _('Points: %(min)d or more', min=family.ranking_min_points) }}
+                        {% else %}
+                            {{ _('Points: up to %(max)d', max=family.ranking_max_points) }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="{% if not family.menu_label %}text-secondary{% endif %}">
+                <i class="bi-hand-index pe-1"></i>
+                {% if family.menu_link %}
+                    {{ _('Menu link label: %(menu_label)s', menu_label=family.menu_label) }}
+                    {% if not family.menu_text %}
+                        <span class="fst-italic">
+                            {{ _('(by default)') }}
+                        </span>
+                    {% endif %}
+                {% else %}
+                    <span class="fst-italic">
+                        {{ _('Menu link label: none') }}
+                    </span>
+                {% endif %}
+            </div>
+            <div class="{% if not family.menu %}text-secondary{% endif %}">
+                <i class="bi-three-dots pe-1"></i>
+                {% if family.menu %}{{ _('Menu: %(menu)s', menu=family.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
+            </div>
+            <div class="{% if not family.timer %}text-secondary{% endif %}">
+                <i class="bi-clock-fill pe-1"></i>
+                {% if family.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
+            </div>
             {% if family.message_text %}
                 <div
                         class="px-2 alert-message screen-alert-message"
