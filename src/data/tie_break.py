@@ -7,7 +7,7 @@ from contextlib import suppress
 from decimal import Decimal
 from math import isclose
 from types import UnionType
-from typing import Any, TYPE_CHECKING, Literal
+from typing import Any, TYPE_CHECKING
 
 from common.i18n import _
 from data.pairing import Pairing
@@ -25,16 +25,22 @@ OPTION_CLASSES: list[type['AbstractTieBreakOption']] = []
 
 
 def register_tie_break(cls):
+    """Decorator for tie-break classes.
+    Registers the class in TIE_BREAK_CLASSES"""
     TIE_BREAK_CLASSES.append(cls)
     return cls
 
 
 def register_option(cls):
+    """Decorator for tie-break option classes.
+    Registers the class in OPTION_CLASSES"""
     OPTION_CLASSES.append(cls)
     return cls
 
 
 class TieBreakManager:
+    """Entry class for interacting with tie-breaks"""
+
     @staticmethod
     def tie_break_types() -> list[type['AbstractTieBreak']]:
         return TIE_BREAK_CLASSES + list(itertools.chain.from_iterable(
@@ -47,6 +53,7 @@ class TieBreakManager:
 
     @classmethod
     def papi_compatible_tie_breaks(cls) -> list['AbstractTieBreak']:
+        """List of tie-breaks that can be used in papi"""
         return [
             tie_break_type() for tie_break_type in cls.tie_break_types()
             if tie_break_type().papi_id is not None
@@ -89,6 +96,8 @@ class TieBreakManager:
 
 
 class AbstractTieBreakOption(ABC):
+    """Abstract class representing an option of a tie-break"""
+
     def __init__(self, value: Any | None = None):
         self.value = value if value is not None else self.default_value
 
@@ -100,26 +109,37 @@ class AbstractTieBreakOption(ABC):
     @property
     @abstractmethod
     def id(self) -> str:
+        """Represents the option class in the database"""
         pass
 
     @property
     @abstractmethod
     def type(self) -> type | UnionType:
+        """Expected type for the value of the option"""
         pass
 
     @property
     @abstractmethod
     def default_value(self) -> Any:
+        """Value used as default for the option. 
+        Should be of type {self.type}"""
         pass
 
     def check_value(self):
-        pass
+        """Check the validity of the value. Raises a ValueError if invalid."""
+        if not isinstance(self.value, self.type):
+            raise ValueError(
+                f'Option [{self.id}={self.value}] '
+                f'does not match expected type [{self.type}]'
+            )
 
 
 class AbstractTieBreak(ABC):
+    """Abstract class representing a tie-break"""
+
     def __init__(self, options: list[AbstractTieBreakOption] | None = None):
         self.options: list[AbstractTieBreakOption] = options or []
-        self._check_options(options)
+        self.check_options()
 
     @property
     @abstractmethod
@@ -143,30 +163,34 @@ class AbstractTieBreak(ABC):
         tournament: 'Tournament',
         max_round: int | None = None,
     ) -> 'SupportsRichComparisonT':
+        """Compute the value of the tie-break for a player.
+        As tie-breaks are intended for ranking, 
+        the return type need to support rich comparison with himself"""
         pass
 
     @property
     def is_displayable(self) -> bool:
+        """Defines if the tie-break can be displayed
+        in a print view or a ranking screen"""
         return True
 
     @property
     def available_options(self) -> list[type[AbstractTieBreakOption]]:
+        """Types of options used for the player value computation"""
         return []
 
     @property
     def papi_id(self) -> str | None:
+        """Represents the tie-break in a Papi database.
+        If None, the tie-break will not appear in the database"""
         return None
 
-    def _check_options(self, options: list[AbstractTieBreakOption] | None):
-        """Checks the validity of each option, Raises a ValueError if:
-            - option is not part of tie-break available options
-            - option value does not have expected type
-            - two options are of the same type
-        """
-        if not options:
+    def check_options(self):
+        """Checks the validity of options, Raises a ValueError if invalid"""
+        if not self.options:
             return
         used_option_types: list[type[AbstractTieBreakOption]] = []
-        for option in options:
+        for option in self.options:
             option.check_value()
             option_type = type(option)
             if option_type in used_option_types:
@@ -176,16 +200,13 @@ class AbstractTieBreak(ABC):
                     f'Option [{option.id}] not available '
                     f'for tie-break [{self.name}]'
                 )
-            if not isinstance(option.value, option.type):
-                raise ValueError(
-                    f'Option [{option.id}={option.value}] '
-                    f'does not match expected type [{option.type}]'
-                )
             used_option_types.append(option_type)
 
     def _get_option(
         self, option_type: type[AbstractTieBreakOption]
     ) -> AbstractTieBreakOption:
+        """Retrieve an option from its type. If no option with this type 
+        exists in the options, returns on with the default value"""
         return next(
             (
                 option for option in self.options
@@ -194,13 +215,18 @@ class AbstractTieBreak(ABC):
             option_type(),
         )
 
-    def _get_option_values(self) -> list:
+    def get_option_values(self) -> list:
         """Retrieves for each of the available options
-        the corresponding value in an ordered list."""
+        the corresponding value in an ordered list.
+        Intended usage: option1, option2 = self.get_option_values()"""
         return [
             self._get_option(option_type).value
             for option_type in self.available_options
         ]
+
+
+class TieBreakUtils:
+    """Utilities for tie-breaks"""
 
     @staticmethod
     def adjusted_score(
@@ -244,44 +270,24 @@ class AbstractTieBreak(ABC):
         return score
 
     @staticmethod
-    def dummy_score(
+    def buchholz_dummy_score(
         player: 'Player',
-        pairing: Pairing,
         max_round: int = 1,
         fore_modifier: bool = False,
-        dummy_type: Literal['BH'] | Literal['SB'] = 'BH',
     ) -> float | tuple[float, Result]:
-        """Computes the dummy score for the given pairing after *max_round*.
-        If *dummy_type* is 'BH', returns the dummy score alone.
-        If *dummy_type* is 'SB', returns the dummy score and the equivalent result
-        for the given *pairing*.
-        The given *pairing* must be an unplayed round, otherwise this will give a ValueError.
-        """
-        if dummy_type == 'BH':
-            if not fore_modifier:
-                return player.points_after(max_round)
-            dummy = player.points_before(max_round)
-            last_pairing = player.pairings[max_round]
-            if last_pairing.result in (
-                Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE,
-                Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE
-            ):
-                dummy += last_pairing.result.points(player.point_values)
-            else:
-                dummy += Result.DRAW.points(player.point_values)
-            return dummy
-        elif dummy_type == 'SB':
-            dummy = player.points_after(max_round)
-            match pairing.result:
-                case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
-                    return dummy, Result.GAIN
-                case Result.HALF_POINT_BYE:
-                    return dummy, Result.DRAW
-                case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
-                    return dummy, Result.LOSS
-                case _:
-                    return dummy, pairing.result
-        raise ValueError(f'{dummy_type=}')
+        """Computes the dummy score for the given pairing after *max_round*."""
+        if not fore_modifier:
+            return player.points_after(max_round)
+        dummy = player.points_before(max_round)
+        last_pairing = player.pairings[max_round]
+        if last_pairing.result in (
+            Result.FULL_POINT_BYE, Result.PAIRING_ALLOCATED_BYE,
+            Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE
+        ):
+            dummy += last_pairing.result.points(player.point_values)
+        else:
+            dummy += Result.DRAW.points(player.point_values)
+        return dummy
 
 
 @register_option
@@ -303,6 +309,7 @@ class CutTieBreakOption(AbstractTieBreakOption):
         return 0
 
     def check_value(self):
+        super().check_value()
         if self.value < 0:
             raise ValueError(
                 f'Option {self.id} must be non-negative, got: {self.value}'
@@ -328,6 +335,7 @@ class CutTopTieBreakOption(AbstractTieBreakOption):
         return 0
 
     def check_value(self):
+        super().check_value()
         if self.value < 0:
             raise ValueError(
                 f'Option {self.id} must be non-negative, got: {self.value}'
@@ -353,6 +361,7 @@ class CutBottomTieBreakOption(AbstractTieBreakOption):
         return 0
 
     def check_value(self):
+        super().check_value()
         if self.value < 0:
             raise ValueError(
                 f'Option {self.id} must be non-negative, got: {self.value}'
@@ -607,7 +616,7 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
             tournament: 'Tournament',
             max_round: int | None = None,
     ) -> float:
-        cut, = self._get_option_values()
+        cut, = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         return sum(player.points_after(r) for r in range(1 + cut, max_round + 1))
@@ -687,9 +696,9 @@ class BuchholzTieBreak(AbstractTieBreak):
             PlayedModifierTieBreakOption,
         ]
 
-    def _check_options(self, options: list[AbstractTieBreakOption] | None):
-        super()._check_options(options)
-        cut_top, cut_bottom, _ = self._get_option_values()
+    def check_options(self):
+        super().check_options()
+        cut_top, cut_bottom, _ = self.get_option_values()
         if cut_top and cut_top < cut_bottom:
             raise ValueError(
                 f'{cut_top=} must be at most equal to {cut_bottom=}.'
@@ -701,7 +710,7 @@ class BuchholzTieBreak(AbstractTieBreak):
             tournament: 'Tournament',
             max_round: int | None = None,
     ) -> float:
-        cut_top, cut_btm, played_modifier = self._get_option_values()
+        cut_top, cut_btm, played_modifier = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         elif cut_top + cut_btm >= max_round:
@@ -713,7 +722,7 @@ class BuchholzTieBreak(AbstractTieBreak):
         }
         if tournament.pairing == TournamentPairing.BERGER:
             return sum(
-                self.adjusted_score(
+                TieBreakUtils.adjusted_score(
                     tournament.players_by_id[pairing.opponent_id],
                     tournament,
                     max_round,
@@ -732,11 +741,7 @@ class BuchholzTieBreak(AbstractTieBreak):
                 ))
             )
             if should_add_dummy:
-                dummy_points = self.dummy_score(
-                    player,
-                    pairing,
-                    max_round,
-                )
+                dummy_points = TieBreakUtils.buchholz_dummy_score(player, max_round)
                 if pairing.voluntary_unplayed:
                     # We must take those into account to ensure
                     # correct computations for cut-1
@@ -746,7 +751,7 @@ class BuchholzTieBreak(AbstractTieBreak):
                 continue
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             if tournament.pairing.swiss:
-                opponent_adjusted_score = self.adjusted_score(
+                opponent_adjusted_score = TieBreakUtils.adjusted_score(
                     opponent, tournament, max_round
                 )
             else:
@@ -795,9 +800,9 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
             PlayedModifierTieBreakOption,
         ]
 
-    def _check_options(self, options: list[AbstractTieBreakOption] | None):
-        super()._check_options(options)
-        cut_top, cut_bottom, _ = self._get_option_values()
+    def check_options(self):
+        super().check_options()
+        cut_top, cut_bottom, _ = self.get_option_values()
         if cut_top and cut_top < cut_bottom:
             raise ValueError(
                 f'{cut_top=} must be at most equal to {cut_bottom=}.'
@@ -809,7 +814,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
         tournament: 'Tournament',
         max_round: int | None = None,
     ) -> float:
-        cut_top, cut_btm, played_modifier = self._get_option_values()
+        cut_top, cut_btm, played_modifier = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         elif cut_top + cut_btm >= max_round:
@@ -821,11 +826,8 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
         }
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
-        dummy_points = self.dummy_score(
-            player,
-            pairings[min(pairings)],
-            max_round,
-            fore_modifier=True,
+        dummy_points = TieBreakUtils.buchholz_dummy_score(
+            player, max_round, fore_modifier=True
         )
         for pairing in pairings.values():
             should_add_dummy = (
@@ -844,7 +846,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
                     scores.append(dummy_points)
                 continue
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
-            opponent_adjusted_score = self.adjusted_score(
+            opponent_adjusted_score = TieBreakUtils.adjusted_score(
                 opponent, tournament, max_round, adjust_fore=True
             )
             scores.append(opponent_adjusted_score)
@@ -886,7 +888,7 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
         tournament: 'Tournament',
         max_round: int | None = None,
     ) -> float:
-        fore_modifier, = self._get_option_values()
+        fore_modifier, = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         opponents: list[Player | None] = [
@@ -932,7 +934,7 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
         tournament: 'Tournament',
         max_round: int | None = None,
     ) -> float:
-        fore_modifier, = self._get_option_values()
+        fore_modifier, = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         opponents: list[Player] = [
@@ -990,7 +992,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
         tournament: 'Tournament',
         max_round: int | None = None,
     ) -> float:
-        cut, played_modifier = self._get_option_values()
+        cut, played_modifier = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         if cut >= max_round:
@@ -1007,12 +1009,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
         voluntary_unplayed: list[SBContribution] = []
         for round_index, pairing in pairings.items():
             if pairing.unplayed and not played_modifier:
-                dummy, result = self.dummy_score(
-                    player,
-                    pairing,
-                    max_round,
-                    dummy_type='SB',
-                )
+                dummy, result = self._dummy_score(player, pairing, max_round)
                 value = dummy * result.points(tournament.point_values)
                 if not pairing.voluntary_unplayed:
                     general_contributions.append(SBContribution(dummy, value))
@@ -1022,7 +1019,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
                     pairing.unplayed and pairing.opponent_id is not None and played_modifier
             ):
                 opponent: Player = tournament.players_by_id[pairing.opponent_id]
-                opponent_score = self.adjusted_score(
+                opponent_score = TieBreakUtils.adjusted_score(
                     opponent, tournament, max_round
                 )
                 contribution = pairing.result.points(tournament.point_values) * opponent_score
@@ -1057,6 +1054,24 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
                 voluntary_unplayed + general_contributions
             )
         )
+
+    @staticmethod
+    def _dummy_score(
+        player: 'Player',
+        pairing: Pairing,
+        max_round: int = 1,
+    ) -> tuple[float, Result]:
+        """Computes the dummy score for the given pairing after *max_round*."""
+        dummy = player.points_after(max_round)
+        match pairing.result:
+            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+                return dummy, Result.GAIN
+            case Result.HALF_POINT_BYE:
+                return dummy, Result.DRAW
+            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
+                return dummy, Result.LOSS
+            case _:
+                return dummy, pairing.result
 
 
 @register_tie_break
@@ -1097,7 +1112,7 @@ class KoyaTieBreak(AbstractTieBreak):
         tournament: 'Tournament',
         max_round: int | None = None,
     ) -> float:
-        limit, = self._get_option_values()
+        limit, = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         if limit is None:
@@ -1199,9 +1214,9 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
             CutBottomTieBreakOption,
         ]
 
-    def _check_options(self, options: list[AbstractTieBreakOption] | None):
-        super()._check_options(options)
-        cut_top, cut_bottom = self._get_option_values()
+    def check_options(self):
+        super().check_options()
+        cut_top, cut_bottom = self.get_option_values()
         if cut_top and cut_top < cut_bottom:
             raise ValueError(
                 f'{cut_top=} must be at most equal to {cut_bottom=}.'
@@ -1213,7 +1228,7 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
         tournament: 'Tournament',
         max_round: int | None = None,
     ) -> int:
-        cut_top, cut_btm = self._get_option_values()
+        cut_top, cut_btm = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         if cut_top + cut_btm >= max_round:
@@ -1537,6 +1552,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
 
     @property
     def is_displayable(self) -> bool:
+        # tuple[float, bool] is not displayable
         return False
 
     def compute_player_value(
@@ -1554,7 +1570,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
         some players cannot be untied this way.
         If the second member is False, some ties might be broken, but there is no guarantee.
         """
-        exclude_ids, played_modifier = self._get_option_values()
+        exclude_ids, played_modifier = self.get_option_values()
         if max_round is None:
             max_round = max(player.pairings)
         final_points = player.points_after(max_round)

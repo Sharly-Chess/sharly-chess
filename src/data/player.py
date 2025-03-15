@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
-from typing import TYPE_CHECKING, Any, Self, Callable
+from typing import TYPE_CHECKING, Any, Self, Callable, SupportsFloat
 from trf import Player as TrfPlayer
 
 from common.i18n import _
@@ -50,6 +50,7 @@ class Federation:
 
     def __str__(self) -> str:
         return self.name
+
 
 @dataclass(frozen=True)
 @total_ordering
@@ -143,6 +144,7 @@ class TournamentPlayer:
     @property
     def estimation(self):
         return self._estimation or 0
+
 
 @total_ordering
 class Player(TournamentPlayer):
@@ -427,28 +429,15 @@ class Player(TournamentPlayer):
         self.time_control_increment = increment
         self.time_control_modified = modified
 
-    @staticmethod
-    def _tie_break_value_as_float(tie_break_value: int | float | tuple[float, ...]) -> float:
-        """Returns a player's tie-break value as a float."""
-        if isinstance(tie_break_value, int):
-            return float(tie_break_value)
-        elif isinstance(tie_break_value, float):
-            return tie_break_value
-        elif isinstance(tie_break_value, tuple):
-            return tie_break_value[0]
-        else:
-            raise ValueError(
-                f'Unrecognized tie-break value [{tie_break_value}]'
-            )
-
     @property
     def tie_break_values_as_strings(self) -> list[str]:
         """Returns the player's tie-break values as strings."""
         assert self._tie_break_values is not None, \
             'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
         return [
-            self._points_str(self._tie_break_value_as_float(tie_break_value))
+            self._points_str(float(tie_break_value))
             for tie_break_value in self._tie_break_values
+            if isinstance(tie_break_value, SupportsFloat)
         ]
 
     def compute_tie_break_values(
