@@ -455,7 +455,8 @@ class SwissTieBreaks(unittest.TestCase):
     def test_games_elected_to_play(self):
         tie_break_ = tie_break.RoundsElectedToPlayTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value(player, self.tournament)            for player in self.tournament.players_by_id.values()
+            player.id: tie_break_.compute_player_value(player, self.tournament)
+            for player in self.tournament.players_by_id.values()
         }
         expected = {
             2: 5,
@@ -586,7 +587,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_adjusted_score(self):
         results = {
-            player.id: tie_break.AbstractTieBreak.adjusted_score(
+            player.id: tie_break.TieBreakUtils.adjusted_score(
                 player, self.tournament
             )
             for player in self.tournament.players_by_id.values()
@@ -613,7 +614,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_adjusted_score_fore(self):
         results = {
-            player.id: tie_break.AbstractTieBreak.adjusted_score(
+            player.id: tie_break.TieBreakUtils.adjusted_score(
                 player, self.tournament, adjust_fore=True
             )
             for player in self.tournament.players_by_id.values()
