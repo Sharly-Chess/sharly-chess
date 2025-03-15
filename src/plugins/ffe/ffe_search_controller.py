@@ -28,7 +28,6 @@ class FfeSearchController(BaseEventAdminController):
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab='players',
             data=None,
         )
         if web_context.error:

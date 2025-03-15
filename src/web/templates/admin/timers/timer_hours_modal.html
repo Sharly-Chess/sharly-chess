@@ -44,7 +44,7 @@
                 {% if admin_timer_hour %}
                     disabled
                 {% else %}
-                    hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='timers') }}"
+                    hx-get="{{ url_for('admin-event-timers-tab', event_uniq_id=admin_event.uniq_id) }}"
                     preload
                     hx-target="body"
                     hx-indicator="#please-wait"

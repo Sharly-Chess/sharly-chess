@@ -10,6 +10,7 @@ from common import APP_NAME
 from data.player import Player
 from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
+from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -66,7 +67,7 @@ class AppHookSpecs:
         """Provide plugin context for the AdminWebContext"""
 
     @hookspec
-    def get_base_event_admin_context(self, web_context: 'BaseEventAdminWebContext') -> dict[str, Any]:
+    def get_player_admin_context(self, web_context: 'BaseEventAdminWebContext') -> dict[str, Any]:
         """Provide plugin context for the BaseEventAdminWebContext"""
 
     @hookspec
@@ -185,7 +186,7 @@ class AppHookSpecs:
         """Clear any filters set on the admin players tab"""
 
     @hookspec
-    def filter_player(self, web_context: 'BaseEventAdminWebContext', player: Player) -> bool:
+    def filter_player(self, web_context: 'BaseEventAdminWebContext', template_context: dict[str, Any], player: Player) -> bool:
         """Returns True if the player should be in the admin player list, False otherwise """
 
     @hookspec(firstresult=True)
@@ -209,9 +210,9 @@ class AppHookSpecs:
         """Provide extra exporting formats for tournaments"""
 
     @hookspec
-    def get_event_migration_manager(self) -> 'AbstractPluginMigrationManager':
+    def get_event_migration_manager(self) -> AbstractPluginMigrationManager:
         """Provide a migration manager for event databases"""
 
     @hookspec
-    def get_engine_argument(self) -> 'PluginEngineArgument':
+    def get_engine_argument(self) -> PluginEngineArgument:
         """Provide an engine argument"""

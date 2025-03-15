@@ -12,7 +12,7 @@
             {{ macros.tooltip_attributes('info', _('Enable/disable the details of tournaments on the cards below.'), 'top') }}
         >
             <input
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='tournaments') }}"
+                hx-get="{{ url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -25,7 +25,7 @@
     <span {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap ms-1"
-            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='tournaments') }}"
+            hx-get="{{ url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id) }}"
             preload
             hx-target="body"
             hx-indicator="#please-wait"
