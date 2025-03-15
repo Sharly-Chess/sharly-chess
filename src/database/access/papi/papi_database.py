@@ -100,6 +100,10 @@ class PapiDatabase(AccessDatabase):
             arbiter,
         )
 
+    def write_info(self, info: dict[str, str | int]):
+        for name, value in info.items():
+            self._update_var(name, value)
+
     def read_player_dict(
         self, player_papi_id: int
     ) -> dict[str, str | int | float | None]:

@@ -97,9 +97,7 @@ class ActionSelector(metaclass=Singleton):
                         data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
                     case _:
                         raise ValueError
-        query: str = f'INSERT INTO `joueur`({", ".join(data.keys())}) VALUES ({", ".join(["?"] * len(data))})'
-        params = tuple(data.values())
-        database._execute(query, params)
+        database.write_player_dict(data)
 
     @classmethod
     def write_chessevent_info(cls, database: PapiDatabase, chessevent_tournament: ChessEventTournament):
@@ -124,22 +122,7 @@ class ActionSelector(metaclass=Singleton):
             'ClassElo': chessevent_tournament.rating.to_papi_value,
             'Homologation': str(chessevent_tournament.ffe_id),
         }
-        print(data)
-        # queries: list[str] = []
-        # params: list[str] = []
-        # for name, value in data.items():
-        #     queries.append('UPDATE `info` SET `Value` = ? WHERE `Variable` = ?')
-        #     params.extend([value, name, ])
-        # self._execute('; '.join(queries), tuple(params))
-        for name, value in data.items():
-            query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
-            database._execute(
-                query,
-                (
-                    value,
-                    name,
-                ),
-            )
+        database.write_info(data)
         database.update_tie_breaks(chessevent_tournament.tie_breaks)
 
     @classmethod

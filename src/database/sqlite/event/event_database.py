@@ -892,7 +892,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             self.execute(f'SELECT `{version_field}` FROM `info`')
         except OperationalError:
             return None
-        version = Version(self._fetchone()[version_field])
+        version = Version(self.fetchone()[version_field])
         self.plugin_versions[plugin_name] = version
         return version
 
@@ -981,7 +981,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `info`',
             (),
         )
-        return self._row_to_stored_event(self._fetchone())
+        return self._row_to_stored_event(self.fetchone())
 
     def load_stored_event(self) -> StoredEvent:
         stored_event: StoredEvent = self._get_stored_event()
@@ -1073,7 +1073,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (timer_hour_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_timer_hour(row)
         return None
 
@@ -1082,7 +1082,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT MAX(`order`) AS order_max FROM `timer_hour` WHERE `timer_id` = ?',
             (timer_id,),
         )
-        row: dict[str, Any] = self._fetchone()
+        row: dict[str, Any] = self.fetchone()
         return (row['order_max'] if row['order_max'] else 0) + 1
 
     def get_stored_timer_next_round(self, timer_id: int) -> int:
@@ -1091,7 +1091,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (timer_id,),
         )
         highest_round: int = 0
-        for row in self._fetchall():
+        for row in self.fetchall():
             with suppress(ValueError):
                 highest_round = max(highest_round, int(row['uniq_id']))
         return highest_round + 1
@@ -1101,7 +1101,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `timer_hour` WHERE `timer_id` = ? ORDER BY `order`',
             (timer_id,),
         )
-        yield from map(self._row_to_stored_timer_hour, self._fetchall())
+        yield from map(self._row_to_stored_timer_hour, self.fetchall())
 
     def _write_stored_timer_hour(
         self,
@@ -1203,7 +1203,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                     'SELECT uniq_id FROM `timer_hour` WHERE `timer_id` = ?',
                     (stored_timer_hour.timer_id,),
                 )
-                uniq_ids: list[str] = [row['uniq_id'] for row in self._fetchall()]
+                uniq_ids: list[str] = [row['uniq_id'] for row in self.fetchall()]
                 uniq_id: str = f'{stored_timer_hour.uniq_id}-clone'
                 clone_index: int = 1
                 stored_timer_hour.uniq_id = uniq_id
@@ -1254,7 +1254,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (timer_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_timer(row)
         return None
 
@@ -1263,7 +1263,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT `id` FROM `timer` ORDER BY `uniq_id`',
             (),
         )
-        for row in self._fetchall():
+        for row in self.fetchall():
             yield row['id']
 
     def load_stored_timers(self) -> Iterator[StoredTimer]:
@@ -1382,7 +1382,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (tournament_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_tournament(row)
         return None
 
@@ -1391,7 +1391,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `tournament` ORDER BY `uniq_id`',
             (),
         )
-        yield from map(self._row_to_stored_tournament, self._fetchall())
+        yield from map(self._row_to_stored_tournament, self.fetchall())
 
     def _write_stored_tournament(
         self,
@@ -1586,7 +1586,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (illegal_move_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_illegal_move(row)
         return None
 
@@ -1602,7 +1602,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             ),
         )
         illegal_moves: Counter[int] = Counter[int]()
-        for row in self._fetchall():
+        for row in self.fetchall():
             illegal_moves[int(row['player_id'])] += 1
         return illegal_moves
 
@@ -1636,7 +1636,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                 player_id,
             ),
         )
-        row: dict[str, Any] = self._fetchone()
+        row: dict[str, Any] = self.fetchone()
         if not row:
             return False
         self.execute(
@@ -1686,7 +1686,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (result_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_result(row)
         return None
 
@@ -1748,7 +1748,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             ]
         self.execute(query, tuple(params))
         results: list[DataResult] = []
-        for row in self._fetchall():
+        for row in self.fetchall():
             try:
                 value: UtilResult = UtilResult.from_papi_value(int(row['value']))
             except ValueError:
@@ -1809,7 +1809,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (family_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_family(row)
         return None
 
@@ -1818,7 +1818,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `family` ORDER BY `uniq_id`',
             (),
         )
-        yield from map(self._row_to_stored_family, self._fetchall())
+        yield from map(self._row_to_stored_family, self.fetchall())
 
     def _write_stored_family(
         self,
@@ -1952,7 +1952,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (screen_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_screen(row)
         return None
 
@@ -1961,7 +1961,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `screen` ORDER BY `uniq_id`',
             (),
         )
-        for row in self._fetchall():
+        for row in self.fetchall():
             stored_screen: StoredScreen = self._row_to_stored_screen(row)
             stored_screen.stored_screen_sets = list(
                 self.load_stored_screen_sets(stored_screen.id)
@@ -2075,7 +2075,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'WHERE `screen_set`.`tournament_id` = ?',
             (tournament_id,),
         )
-        for row in self._fetchall():
+        for row in self.fetchall():
             self.delete_stored_screen(row['screen_id'])
 
     # ---------------------------------------------------------------------------------
@@ -2102,7 +2102,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (screen_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_screen_set(row)
         return None
 
@@ -2111,7 +2111,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT MAX(`order`) AS order_max FROM `screen_set` WHERE `screen_id` = ?',
             (screen_id,),
         )
-        row: dict[str, Any] = self._fetchone()
+        row: dict[str, Any] = self.fetchone()
         return (row['order_max'] if row['order_max'] else 0) + 1
 
     def load_stored_screen_sets(self, screen_id: int) -> Iterator[StoredScreenSet]:
@@ -2119,7 +2119,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `screen_set` WHERE `screen_id` = ? ORDER BY `order`',
             (screen_id,),
         )
-        yield from map(self._row_to_stored_screen_set, self._fetchall())
+        yield from map(self._row_to_stored_screen_set, self.fetchall())
 
     def reorder_stored_screen_sets(
         self,
@@ -2269,7 +2269,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (rotator_id,),
         )
         row: dict[str, Any]
-        if row := self._fetchone():
+        if row := self.fetchone():
             return self._row_to_stored_rotator(row)
         return None
 
@@ -2278,7 +2278,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `rotator` ORDER BY `uniq_id`',
             (),
         )
-        yield from map(self._row_to_stored_rotator, self._fetchall())
+        yield from map(self._row_to_stored_rotator, self.fetchall())
 
     def _write_stored_rotator(
         self,
