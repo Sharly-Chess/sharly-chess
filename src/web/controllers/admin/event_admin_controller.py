@@ -33,13 +33,14 @@ from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
+from web.urls import admin_event_players_url, admin_event_tournaments_url, admin_event_config_url
 
 logger: Logger = get_logger()
 
 
 class EventAdminController(BaseEventAdminController):
     @classmethod
-    def _admin_event_tab_render(
+    def _admin_event_config_render(
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
@@ -140,28 +141,6 @@ class EventAdminController(BaseEventAdminController):
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
 
-    def _admin_event(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: str | None = None,
-        locale: str | None = None,
-        modal: str | None = None,
-        action: str | None = None,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
-        self.set_locale(request, locale)
-        return self._admin_event_tab_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            modal=modal,
-            action=action,
-            data=data,
-            errors=errors,
-        )
-
     @get(
         path='/admin/event/{event_uniq_id:str}',
         name='admin-event',
@@ -172,22 +151,21 @@ class EventAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         locale: str | None,
-    ) -> Template | ClientRedirect:
-        
-        # if not web_context.admin_event_tab:
-        #     if web_context.admin_event.player_count:
-        #         web_context.admin_event_tab = 'players'
-        #     elif web_context.admin_event.tournaments_by_uniq_id:
-        #         web_context.admin_event_tab = 'tournaments'
-        #     else:
-        #         web_context.admin_event_tab = 'config'
-                
-        return self._admin_event(
+    ) -> Template | Redirect | ClientRedirect:
+        self.set_locale(request, locale)
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            locale=locale,
+            data=None,
         )
-        
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event.player_count:
+            return Redirect(admin_event_players_url(request, web_context.admin_event.uniq_id))
+        if web_context.admin_event.tournaments_by_uniq_id:
+            return Redirect(admin_event_tournaments_url(request, web_context.admin_event.uniq_id))
+        return Redirect(admin_event_config_url(request, web_context.admin_event.uniq_id))
+
     @get(
         path='/admin/{event_uniq_id:str}/config',
         name='admin-event-config-tab',
@@ -199,12 +177,11 @@ class EventAdminController(BaseEventAdminController):
         event_uniq_id: str,
         locale: str | None,
     ) -> Template | ClientRedirect:
-        return self._admin_event(
+        return self._admin_event_config_render(
             request,
             event_uniq_id=event_uniq_id,
-            locale=locale,
         )
-        
+
     @get(
         path='/admin/event-modal/{action:str}/{event_uniq_id:str}',
         name='admin-event-modal',
@@ -216,7 +193,7 @@ class EventAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event(
+        return self._admin_event_config_render(
             request,
             modal='event',
             action=action,
@@ -233,7 +210,7 @@ class EventAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: str | None = None,
     ) -> Template | ClientRedirect:
-        return self._admin_event(
+        return self._admin_event_config_render(
             request,
             modal='print',
             event_uniq_id=event_uniq_id,
@@ -265,7 +242,7 @@ class EventAdminController(BaseEventAdminController):
             action, request, web_context.admin_event, data
         )
         if stored_event.errors:
-            return self._admin_event_tab_render(
+            return self._admin_event_config_render(
                 request,
                 event_uniq_id=event_uniq_id,
                 modal='event',
@@ -310,7 +287,7 @@ class EventAdminController(BaseEventAdminController):
                         ),
                     )
                 event_loader.clear_cache(uniq_id)
-                return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
+                return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'clone':
                 EventDatabase(web_context.admin_event.uniq_id).clone(
                     new_uniq_id=uniq_id
@@ -323,7 +300,7 @@ class EventAdminController(BaseEventAdminController):
                     _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
                 )
                 event_loader.clear_cache(uniq_id)
-                return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
+                return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'delete':
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
@@ -455,7 +432,7 @@ class EventAdminController(BaseEventAdminController):
                         ).format(round=max_round)
 
         if len(errors):
-            return self._admin_event(
+            return self._admin_event_config_render(
                 request,
                 modal='print',
                 event_uniq_id=event_uniq_id,
