@@ -9,7 +9,7 @@ from data.util import (
     TournamentRating,
 )
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
-from plugins.ffe import tie_break as papi_tie_break
+from plugins.ffe import ffe_tie_break
 
 logger: Logger = get_logger()
 
@@ -89,14 +89,14 @@ class ChessEventTournament:
     @staticmethod
     def _load_tie_breaks(tournament_info: dict) -> list[AbstractTieBreak]:
         tie_break_by_chessevent_id = {
-            1: papi_tie_break.PapiBuchholzTieBreak(),
-            2: papi_tie_break.PapiBuchholzCutBottomTieBreak(),
-            3: papi_tie_break.PapiMedianBuchholzTieBreak(),
+            1: ffe_tie_break.PapiBuchholzTieBreak(),
+            2: ffe_tie_break.PapiBuchholzCutBottomTieBreak(),
+            3: ffe_tie_break.PapiMedianBuchholzTieBreak(),
             4: tie_break.ProgressiveScoresTieBreak(),
-            5: papi_tie_break.PapiPerformanceTieBreak(),
-            6: papi_tie_break.PapiSumOfBuchholzTieBreak(),
+            5: ffe_tie_break.PapiPerformanceTieBreak(),
+            6: ffe_tie_break.PapiSumOfBuchholzTieBreak(),
             7: tie_break.WinsTieBreak(),
-            8: papi_tie_break.PapiKashdanTieBreak(),
+            8: ffe_tie_break.PapiKashdanTieBreak(),
             9: tie_break.KoyaTieBreak(),
             10: tie_break.SonnebornBergerTieBreak(),
         }
