@@ -860,7 +860,7 @@ class Tournament:
                 player.compute_tie_break_values_after_round(0)
             self._players_by_rank = self.players_by_trf_id
         for rank, player in self._players_by_rank.items():
-            player.set_rank(rank)
+            player.rank = rank
         return self._players_by_rank
 
     @cached_property
