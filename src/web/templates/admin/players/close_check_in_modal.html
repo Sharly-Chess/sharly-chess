@@ -34,7 +34,7 @@
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') }}"
+                hx-get="{{ url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) }}"
                 preload
                 hx-target="body"
                 hx-trigger="click, keyup[key=='Escape'] from:body"

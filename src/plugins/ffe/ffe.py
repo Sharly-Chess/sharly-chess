@@ -169,67 +169,62 @@ def get_base_admin_context() -> dict[str, Any]:
     }
 
 @hookimpl
-def get_base_event_admin_context(web_context: BaseEventAdminWebContext) -> dict[str, Any]:
+def get_player_admin_context(web_context: BaseEventAdminWebContext) -> dict[str, Any]:
     admin_event: Event = web_context.admin_event
-    match web_context.admin_event_tab:
-        case 'players':
-            # The leagues that will be shown on the league select list
-            players_leagues: list[str] = sorted(
-                {
-                    get_data(player.plugin_data, 'league')
-                    for player in web_context.admin_event.players_by_id.values()
-                }
-            )
-
-            # The leagues that will be selected on the league select list and used to filter the players
-            filter_leagues: list[str] = [
-                league
-                for league in FFESessionHandler.get_session_admin_players_filter_leagues(
-                    web_context.request
-                )
-                if league in players_leagues
-            ]
-
-            # The licences that will be shown on the licence select list
-            players_licences: list[PlayerFFELicence] = sorted(
-                {
-                    get_data(player.plugin_data, 'ffe_licence')
-                    for player in admin_event.players_by_id.values()
-                }
-            )
-            # The licences that will be selected on the licence select list and used to filter the players
-            filter_licences: list[PlayerFFELicence] = (
-                FFESessionHandler.get_session_admin_players_filter_licences(
-                    web_context.request
-                )
-            )
-
-            league_counts: Counter[str] = Counter[str]()
-            for player in web_context.admin_event.players_by_id.values():
-                league_counts[get_data(player.plugin_data, 'league')] += 1
-
-            licence_counts: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
-            for player in web_context.admin_event.players_by_id.values():
-                licence_counts[get_data(player.plugin_data, 'ffe_licence')] += 1
-
-            return {
-                'admin_players_leagues': players_leagues,
-                'admin_filter_leagues': filter_leagues,
-                'admin_players_licences': players_licences,
-                'admin_filter_licences': filter_licences,
-                'ffe_league_counts': league_counts,
-                'ffe_licence_counts': licence_counts,
-
-                'admin_players_filter_leagues': FFESessionHandler.get_session_admin_players_filter_leagues(
-                    web_context.request
-                ),
-                'admin_players_filter_licences': FFESessionHandler.get_session_admin_players_filter_licences(
-                    web_context.request
-                ),
+    # The leagues that will be shown on the league select list
+    players_leagues: list[str] = sorted(
+        {
+            get_data(player.plugin_data, 'league')
+            for player in web_context.admin_event.players_by_id.values()
         }
+    )
 
-        case _:
-            return {}
+    # The leagues that will be selected on the league select list and used to filter the players
+    filter_leagues: list[str] = [
+        league
+        for league in FFESessionHandler.get_session_admin_players_filter_leagues(
+            web_context.request
+        )
+        if league in players_leagues
+    ]
+
+    # The licences that will be shown on the licence select list
+    players_licences: list[PlayerFFELicence] = sorted(
+        {
+            get_data(player.plugin_data, 'ffe_licence')
+            for player in admin_event.players_by_id.values()
+        }
+    )
+    # The licences that will be selected on the licence select list and used to filter the players
+    filter_licences: list[PlayerFFELicence] = (
+        FFESessionHandler.get_session_admin_players_filter_licences(
+            web_context.request
+        )
+    )
+
+    league_counts: Counter[str] = Counter[str]()
+    for player in web_context.admin_event.players_by_id.values():
+        league_counts[get_data(player.plugin_data, 'league')] += 1
+
+    licence_counts: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
+    for player in web_context.admin_event.players_by_id.values():
+        licence_counts[get_data(player.plugin_data, 'ffe_licence')] += 1
+
+    return {
+        'admin_players_leagues': players_leagues,
+        'admin_filter_leagues': filter_leagues,
+        'admin_players_licences': players_licences,
+        'admin_filter_licences': filter_licences,
+        'ffe_league_counts': league_counts,
+        'ffe_licence_counts': licence_counts,
+
+        'admin_players_filter_leagues': FFESessionHandler.get_session_admin_players_filter_leagues(
+            web_context.request
+        ),
+        'admin_players_filter_licences': FFESessionHandler.get_session_admin_players_filter_licences(
+            web_context.request
+        ),
+    }
 
 
 @hookimpl
@@ -239,7 +234,7 @@ def clear_player_filters(request: HTMXRequest):
 
 
 @hookimpl
-def filter_player(web_context: BaseEventAdminWebContext, player: Player) -> bool:
+def filter_player(web_context: BaseEventAdminWebContext, template_context: dict[str, Any], player: Player) -> bool:
     filter_leagues: list[str] = (
         FFESessionHandler.get_session_admin_players_filter_leagues(
             web_context.request
@@ -251,8 +246,8 @@ def filter_player(web_context: BaseEventAdminWebContext, player: Player) -> bool
         )
     )
 
-    admin_players_leagues = web_context.template_context['admin_players_leagues']
-    admin_players_licences = web_context.template_context['admin_players_licences']
+    admin_players_leagues = template_context['admin_players_leagues']
+    admin_players_licences = template_context['admin_players_licences']
 
     return (
         len(filter_leagues) in [0, len(admin_players_leagues)]

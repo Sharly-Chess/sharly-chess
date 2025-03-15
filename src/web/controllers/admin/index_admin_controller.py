@@ -29,13 +29,11 @@ class IndexAdminController(BaseAdminController):
         cls,
         request: HTMXRequest,
         admin_tab: str | None,
-        locale: str | None = None,
         modal: str | None = None,
         admin_events_show_details: bool | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        cls.set_locale(request, locale)
         web_context: AdminWebContext = AdminWebContext(
             request, data=None, admin_tab=admin_tab
         )
@@ -61,7 +59,6 @@ class IndexAdminController(BaseAdminController):
         return self._admin(
             request,
             admin_tab=None,
-            locale=locale,
             admin_events_show_details=admin_events_show_details,
         )
 
@@ -74,13 +71,11 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         admin_tab: str,
-        locale: str | None,
         admin_events_show_details: bool | None,
     ) -> Template | ClientRedirect:
         return self._admin(
             request,
             admin_tab=admin_tab,
-            locale=locale,
             admin_events_show_details=admin_events_show_details,
         )
 

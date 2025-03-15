@@ -2,7 +2,7 @@ import csv
 from logging import Logger
 from string import capwords
 from tempfile import NamedTemporaryFile
-from typing import Annotated, Any
+from typing import Annotated, Any, Iterable
 
 import xlsxwriter
 from litestar import get, patch, delete, post, Response
@@ -15,13 +15,12 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import ClientRedirect
 from pyexcel_ods3 import save_data
 
-from common import unicode_normalize
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
-from data.player import Player, Club, Federation
-from data.util import PlayerGender, PlayerCategory, PrintSplit, TournamentRating, PrintDocument
+from data.player import Player
+from data.util import PrintSplit, TournamentRating, PrintDocument
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -33,20 +32,19 @@ from web.controllers.admin.base_admin_controller import (
 from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
-from web.session import SessionHandler
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
+from web.urls import admin_event_players_url, admin_event_tournaments_url, admin_event_config_url
 
 logger: Logger = get_logger()
 
 
 class EventAdminController(BaseEventAdminController):
     @classmethod
-    def _admin_event_tab_render(
+    def _admin_event_config_render(
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: str | None = None,
-        admin_event_tab: str | None = None,
         modal: str | None = None,
         action: str | None = None,
         data: dict[str, str] | None = None,
@@ -55,7 +53,6 @@ class EventAdminController(BaseEventAdminController):
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab=admin_event_tab,
             data=data,
         )
         if web_context.error:
@@ -63,6 +60,13 @@ class EventAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
+        
+        plugin_event_info_rows = plugin_manager.hook.get_event_info_rows_template()
+        template_context |= {
+            'admin_event_tab': 'admin-event-config-tab',
+            'plugin_event_info_rows': plugin_event_info_rows,
+        }
+                
         match modal:
             case None:
                 pass
@@ -137,30 +141,6 @@ class EventAdminController(BaseEventAdminController):
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
 
-    def _admin_event(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: str | None = None,
-        admin_event_tab: str | None = None,
-        locale: str | None = None,
-        modal: str | None = None,
-        action: str | None = None,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
-        self.set_locale(request, locale)
-        return self._admin_event_tab_render(
-            request,
-            admin_event_tab=admin_event_tab,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            modal=modal,
-            action=action,
-            data=data,
-            errors=errors,
-        )
-
     @get(
         path='/admin/event/{event_uniq_id:str}',
         name='admin-event',
@@ -170,206 +150,34 @@ class EventAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        locale: str | None,
-    ) -> Template | ClientRedirect:
-        return self._admin_event(
+    ) -> Template | Redirect | ClientRedirect:
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab=None,
-            locale=locale,
+            data=None,
         )
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event.player_count:
+            return Redirect(admin_event_players_url(request, web_context.admin_event.uniq_id))
+        if web_context.admin_event.tournaments_by_uniq_id:
+            return Redirect(admin_event_tournaments_url(request, web_context.admin_event.uniq_id))
+        return Redirect(admin_event_config_url(request, web_context.admin_event.uniq_id))
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/{admin_event_tab:str}',
-        name='admin-event-tab',
+        path='/admin/{event_uniq_id:str}/config',
+        name='admin-event-config-tab',
         cache=1,
     )
-    async def htmx_admin_event_tab(
+    async def htmx_admin_event_config_tab(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        admin_event_tab: str,
         locale: str | None,
-        admin_screens_show_family_screens: bool | None,
-        admin_screens_show_details: bool | None,
-        admin_families_show_details: bool | None,
-        admin_rotators_show_details: bool | None,
-        admin_tournaments_show_details: bool | None,
-        admin_screens_show_boards: bool | None,
-        admin_screens_show_input: bool | None,
-        admin_screens_show_players: bool | None,
-        admin_screens_show_results: bool | None,
-        admin_screens_show_ranking: bool | None,
-        admin_screens_show_image: bool | None,
-        admin_players_sort: str | None = None,
-        admin_players_filter_columns: list[str] | None = None,
-        admin_players_filter_federations: list[str] | None = None,
-        admin_players_filter_clubs: list[str] | None = None,
-        admin_players_filter_clubs_search: str | None = None,
-        admin_players_filter_genders: list[int] | None = None,
-        admin_players_filter_check_ins: list[int] | None = None,
-        admin_players_filter_tournaments: list[int] | None = None,
-        admin_players_filter_categories: list[int] | None = None,
-        admin_players_filter_name: str | None = None,
-        admin_players_clear_filters: int | None = None,
     ) -> Template | ClientRedirect:
-        match admin_event_tab:
-            case 'config':
-                pass
-            case 'tournaments':
-                if admin_tournaments_show_details is not None:
-                    SessionHandler.set_session_admin_tournaments_show_details(
-                        request, admin_tournaments_show_details
-                    )
-            case 'players':
-                if admin_players_sort is not None:
-                    SessionHandler.set_session_admin_players_sort(
-                        request, admin_players_sort
-                    )
-                elif admin_players_filter_columns is not None:
-                    SessionHandler.set_session_admin_players_filter_columns(
-                        request,
-                        [
-                            column
-                            for column in admin_players_filter_columns
-                            if column  # '' must be ignored
-                        ],
-                    )
-                elif admin_players_filter_federations is not None:
-                    SessionHandler.set_session_admin_players_filter_federations(
-                        request,
-                        [
-                            Federation.from_query_param(query_param)
-                            for query_param in admin_players_filter_federations
-                            if query_param  # '' must be ignored
-                        ],
-                    )
-                elif admin_players_filter_clubs is not None:
-                    SessionHandler.set_session_admin_players_filter_clubs(
-                        request,
-                        [
-                            Club.from_query_param(query_param)
-                            for query_param in admin_players_filter_clubs
-                            if query_param  # '' must be ignored
-                        ],
-                    )
-                elif admin_players_filter_genders is not None:
-                    SessionHandler.set_session_admin_players_filter_genders(
-                        request,
-                        [
-                            PlayerGender(query_param)
-                            for query_param in admin_players_filter_genders
-                            if query_param >= 0  # -1 must be ignored
-                        ],
-                    )
-                elif admin_players_filter_check_ins is not None:
-                    SessionHandler.set_session_admin_players_filter_check_ins(
-                        request,
-                        [
-                            {
-                                0: None,
-                                1: False,
-                                2: True,
-                            }.get(query_param, None)
-                            for query_param in admin_players_filter_check_ins
-                            if query_param >= 0  # -1 must be ignored
-                        ],
-                    )
-                elif admin_players_filter_tournaments is not None:
-                    SessionHandler.set_session_admin_players_filter_tournaments(
-                        request,
-                        [
-                            query_param
-                            for query_param in admin_players_filter_tournaments
-                            if query_param > 0  # 0 must be ignored
-                        ],
-                    )
-                elif admin_players_filter_categories is not None:
-                    SessionHandler.set_session_admin_players_filter_categories(
-                        request,
-                        [
-                            PlayerCategory(query_param)
-                            for query_param in admin_players_filter_categories
-                            if query_param >= 0  # -1 must be ignored
-                        ],
-                    )
-                elif admin_players_filter_name is not None:
-                    SessionHandler.set_session_admin_players_filter_name(
-                        request, unicode_normalize(admin_players_filter_name).lower()
-                    )
-                elif admin_players_filter_clubs_search is not None:
-                    SessionHandler.set_session_admin_players_filter_clubs_search(
-                        request, unicode_normalize(admin_players_filter_clubs_search).lower()
-                    )
-                elif admin_players_clear_filters:
-                    SessionHandler.set_session_admin_players_filter_federations(
-                        request, []
-                    )
-                    SessionHandler.set_session_admin_players_filter_clubs(request, [])
-                    SessionHandler.set_session_admin_players_filter_genders(request, [])
-                    SessionHandler.set_session_admin_players_filter_check_ins(
-                        request, []
-                    )
-                    SessionHandler.set_session_admin_players_filter_tournaments(
-                        request, []
-                    )
-                    SessionHandler.set_session_admin_players_filter_categories(
-                        request, []
-                    )
-                    SessionHandler.set_session_admin_players_filter_name(request, '')
-                    SessionHandler.set_session_admin_players_filter_clubs_search(request, '')
-                    plugin_manager.hook.clear_player_filters(request=request)
-            case 'screens':
-                if admin_screens_show_family_screens is not None:
-                    SessionHandler.set_session_admin_screens_show_family_screens(
-                        request, admin_screens_show_family_screens
-                    )
-                if admin_screens_show_details is not None:
-                    SessionHandler.set_session_admin_screens_show_details(
-                        request, admin_screens_show_details
-                    )
-                screen_types: set[str] = (
-                    SessionHandler.get_session_admin_screens_screen_types(request)
-                )
-                for screen_type, param in {
-                    'boards': admin_screens_show_boards,
-                    'input': admin_screens_show_input,
-                    'players': admin_screens_show_players,
-                    'results': admin_screens_show_results,
-                    'ranking': admin_screens_show_ranking,
-                    'image': admin_screens_show_image,
-                }.items():
-                    if param is not None:
-                        if param:
-                            screen_types.add(screen_type)
-                        else:
-                            try:
-                                screen_types.remove(screen_type)
-                            except KeyError:
-                                pass
-                        SessionHandler.set_session_admin_screens_screen_types(
-                            request, screen_types
-                        )
-                        continue
-            case 'families':
-                if admin_families_show_details is not None:
-                    SessionHandler.set_session_admin_families_show_details(
-                        request, admin_families_show_details
-                    )
-            case 'rotators':
-                if admin_rotators_show_details is not None:
-                    SessionHandler.set_session_admin_rotators_show_details(
-                        request, admin_rotators_show_details
-                    )
-            case 'timers':
-                pass
-            case _:
-                raise ValueError(f'admin_event_tab={admin_event_tab}')
-        return self._admin_event(
+        return self._admin_event_config_render(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab=admin_event_tab,
-            locale=locale,
         )
 
     @get(
@@ -383,7 +191,7 @@ class EventAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event(
+        return self._admin_event_config_render(
             request,
             modal='event',
             action=action,
@@ -400,7 +208,7 @@ class EventAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: str | None = None,
     ) -> Template | ClientRedirect:
-        return self._admin_event(
+        return self._admin_event_config_render(
             request,
             modal='print',
             event_uniq_id=event_uniq_id,
@@ -422,7 +230,6 @@ class EventAdminController(BaseEventAdminController):
                 web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
-                    admin_event_tab=None,
                     data=data,
                 )
             case _:
@@ -433,7 +240,7 @@ class EventAdminController(BaseEventAdminController):
             action, request, web_context.admin_event, data
         )
         if stored_event.errors:
-            return self._admin_event_tab_render(
+            return self._admin_event_config_render(
                 request,
                 event_uniq_id=event_uniq_id,
                 modal='event',
@@ -478,7 +285,7 @@ class EventAdminController(BaseEventAdminController):
                         ),
                     )
                 event_loader.clear_cache(uniq_id)
-                return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
+                return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'clone':
                 EventDatabase(web_context.admin_event.uniq_id).clone(
                     new_uniq_id=uniq_id
@@ -491,7 +298,7 @@ class EventAdminController(BaseEventAdminController):
                     _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
                 )
                 event_loader.clear_cache(uniq_id)
-                return self._admin_event_tab_render(request, event_uniq_id=uniq_id)
+                return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'delete':
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
@@ -577,7 +384,6 @@ class EventAdminController(BaseEventAdminController):
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab=None,
             data=data,
         )
         if web_context.error:
@@ -624,7 +430,7 @@ class EventAdminController(BaseEventAdminController):
                         ).format(round=max_round)
 
         if len(errors):
-            return self._admin_event(
+            return self._admin_event_config_render(
                 request,
                 modal='print',
                 event_uniq_id=event_uniq_id,
@@ -699,10 +505,10 @@ class EventAdminController(BaseEventAdminController):
     ]
 
     @classmethod
-    def get_players_datasheet_extra_columns(cls) -> dict[int, ExtraColumn]:
+    def get_players_datasheet_extra_columns(cls) -> dict[int, list[ExtraColumn]]:
         """Returns the extra data columns added by the plugins"""
-        per_plugin_columns = plugin_manager.hook.get_extra_players_datasheet_columns()
-        extra_columns = {}
+        per_plugin_columns: list[Iterable[ExtraColumn]] = plugin_manager.hook.get_extra_players_datasheet_columns()
+        extra_columns: dict[int, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 try:
@@ -835,7 +641,7 @@ class EventAdminController(BaseEventAdminController):
         player_ids: list[int] | None = None,
     ) -> ClientRedirect | Response[str] | File:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request, event_uniq_id=event_uniq_id, admin_event_tab=None, data=None
+            request, event_uniq_id=event_uniq_id, data=None
         )
         if web_context.error:
             return web_context.error
