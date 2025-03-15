@@ -506,6 +506,6 @@ class Player(TournamentPlayer):
         if self.ref_id == 1:
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (
-            f'(#{self.id} rank={self.rank} title={self.title.value} gender={self.gender.value} '
+            f'(#{self.id} rank={self._rank} title={self.title.value} gender={self.gender.value} '
             f'name={self.last_name} {self.first_name} points={self.points})'
         )
