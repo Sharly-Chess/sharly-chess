@@ -638,10 +638,10 @@ def get_engine_argument() -> PluginEngineArgument:
 @hookimpl
 def get_extra_tie_break_classes() -> list[type[AbstractTieBreak]]:
     return [
-        tie_break.PapiBuchholzTieBreak,
-        tie_break.PapiBuchholzCutBottomTieBreak,
-        tie_break.PapiMedianBuchholzTieBreak,
-        tie_break.PapiPerformanceTieBreak,
-        tie_break.PapiSumOfBuchholzTieBreak,
-        tie_break.PapiKashdanTieBreak,
+        ffe_tie_break.PapiBuchholzTieBreak,
+        ffe_tie_break.PapiBuchholzCutBottomTieBreak,
+        ffe_tie_break.PapiMedianBuchholzTieBreak,
+        ffe_tie_break.PapiPerformanceTieBreak,
+        ffe_tie_break.PapiSumOfBuchholzTieBreak,
+        ffe_tie_break.PapiKashdanTieBreak,
     ]
