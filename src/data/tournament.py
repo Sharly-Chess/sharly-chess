@@ -464,7 +464,7 @@ class Tournament:
         first_round_pairing: BoardColor = BoardColor.WHITE,
         papi_legacy: bool = True,
     ) -> TrfTournament:
-        self.compute_player_ranks(self.max_ranking_round, papi_legacy)
+        self.compute_player_ranks_after_round(self.max_ranking_round, papi_legacy)
         return TrfTournament(
             name=self.name,
             city=self.location,
@@ -473,7 +473,7 @@ class Tournament:
             numplayers=len(self.players_by_id),
             chiefarbiter=self.arbiter,
             players=[
-                player.to_trf(
+                player.to_trf_after_round(
                     self._player_id_to_trf_id,
                     self.current_round + 1
                     if trf_type == TrfType.PAIRING
@@ -515,8 +515,8 @@ class Tournament:
         }
         for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
-                self._calculate_player_virtual_points(player, round_nb)
-                for round_nb in range(1, next_round)
+                self._calculate_player_virtual_points_at_round(player, round_)
+                for round_ in range(1, next_round)
             ]
             if sum(vpoints_history) > 0:
                 fields[f'XXA {trf_id:>4}'] = ' '.join(
@@ -580,9 +580,9 @@ class Tournament:
         self._papi_read = True
         self._calculate_current_round()
         self._set_players_illegal_moves()  # load illegal moves for the current round
-        self._calculate_points()
+        self._calculate_points_before_current_round()
         self._build_boards()
-        self.estimate_players(papi_legacy=True)
+        self.estimate_players_after_round(papi_legacy=True)
 
     def _calculate_current_round(self):
         """Computes which round is the current round.
@@ -624,20 +624,20 @@ class Tournament:
             if self._current_round == 0:
                 self._current_round = paired_rounds[-1]
 
-    def _calculate_points(self):
+    def _calculate_points_before_current_round(self):
         for player in self._players_by_id.values():
             if player.ref_id == 1:
                 continue
-            vpoints = self._calculate_player_virtual_points(player, self._current_round)
-            player.compute_points(self._current_round)
+            vpoints = self._calculate_player_virtual_points_at_round(player, self._current_round)
+            player.compute_points_before_round(self._current_round)
             player.vpoints = player.points + vpoints
 
-    def _calculate_player_virtual_points(
-        self, player: Player, round_number: int
+    def _calculate_player_virtual_points_at_round(
+        self, player: Player, round_: int
     ) -> float:
         vpoints = Result.LOSS.points(self.point_values)
         if self._pairing == TournamentPairing.HALEY:
-            if round_number <= 2 and player.rating >= self._rating_limit1:
+            if round_ <= 2 and player.rating >= self._rating_limit1:
                 vpoints = Result.GAIN.points(self.point_values)
         elif self._pairing == TournamentPairing.HALEY_SOFT:
             # Round 1: All players above rating_limit1 get 1 vpoint
@@ -646,14 +646,14 @@ class Tournament:
             # bottom of page #138 on
             # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
             # please remove if OK
-            if round_number <= 2 and player.rating >= self.rating_limit1:
+            if round_ <= 2 and player.rating >= self.rating_limit1:
                 vpoints = Result.GAIN.points(self.point_values)
-            elif round_number == 2 and player.rating < self.rating_limit1:
+            elif round_ == 2 and player.rating < self.rating_limit1:
                 vpoints = Result.DRAW.points(self.point_values)
         elif self._pairing == TournamentPairing.SAD:
             # Before the second to last round, we remove the virtual
             # points, and use a simple Swiss Dutch system.
-            if round_number <= self._rounds - 2:
+            if round_ <= self._rounds - 2:
                 # Each 1.5 points earned, virtual points go up by 0.5
                 # No player can have more than 2 points.
                 # At the start, players are sorted in three groups
@@ -667,7 +667,7 @@ class Tournament:
                 # NOTE(Amaras): // is implemented on float as well, so it's
                 # way simpler to implement than by applying the algorithm
                 # step by step.
-                points = player.points_before(round_number)
+                points = player.points_before_round(round_)
                 draw_points = Result.DRAW.points(self.point_values)
                 potential_vpoints = draw_points * (points // (3 * draw_points))
                 if player.rating >= self.rating_limit1:
@@ -692,12 +692,12 @@ class Tournament:
                     vpoints = 2 * Result.GAIN.points(self.point_values)
         return vpoints
 
-    def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True):
-        """Estimate the players after *max_round*.
-        If *max_round* is None, use the current round if possible.
+    def estimate_players_after_round(self, *, round_: int | None = None, papi_legacy: bool = True):
+        """Estimate the players after round *round_*.
+        If *round_* is None, use the current round if possible.
         If *papi_legacy* is True, use the computations reimplemented from Papi."""
-        if max_round is None:
-            max_round = self._current_round
+        if round_ is None:
+            round_ = self._current_round
         if self._current_round <= 1:
             return
         if not any(player.estimated for player in self.players_by_id.values()):
@@ -707,16 +707,16 @@ class Tournament:
         else:
             round_function = round_fide
 
-        max_possible_points = Result.GAIN.points(self.point_values) * max_round
+        max_possible_points = Result.GAIN.points(self.point_values) * round_
 
         # NOTE(Amaras): only points from played games should be counted
         players = sorted(
             self.players_by_id.values(),
-            key=lambda player: player.points_after(max_round, only_played=True)
+            key=lambda player: player.points_after_round(round_, only_played=True)
         )
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
-            for points, group in groupby(players, key=lambda player: player.points_after(max_round, only_played=True))
+            for points, group in groupby(players, key=lambda player: player.points_after_round(round_, only_played=True))
         }
 
         point_keys = sorted(players_by_points.keys())
@@ -818,20 +818,22 @@ class Tournament:
                 continue
             player.illegal_moves = illegal_moves[player.id]
 
-    def compute_player_ranks(
-        self, max_round: int | None = None, papi_legacy: bool = True
+    def compute_player_ranks_after_round(
+        self,
+        round_: int | None = None,
+        papi_legacy: bool = True
     ) -> dict[int, Player]:
-        """compute and return the ranks of all the players after round *max_round*."""
-        if max_round is None:
-            max_round = self.max_ranking_round
+        """compute and return the ranks of all the players after round *round_*."""
+        if round_ is None:
+            round_ = self.max_ranking_round
         else:
-            max_round = max(0, min(max_round, self.max_ranking_round))
-        if max_round:
+            round_ = max(0, min(round_, self.max_ranking_round))
+        if round_:
             # Estimate ratings to ensure we have a defined rating for everyone
-            self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
+            self.estimate_players_after_round(round_=round_, papi_legacy=papi_legacy)
             for player in self.players_by_id.values():
-                player.points = player.points_after(max_round)
-                player.compute_tie_break_values(self, max_round)
+                player.points = player.points_after_round(round_)
+                player.compute_tie_break_values_after_round(round_)
             self._players_by_rank = {
                 rank: player
                 for rank, player in enumerate(
@@ -845,7 +847,7 @@ class Tournament:
         else:
             # set 0.0 tie-break values for all the players
             for player in self.players_by_id.values():
-                player.compute_tie_break_values(self, 0)
+                player.compute_tie_break_values_after_round(0)
             self._players_by_rank = self.players_by_trf_id
         for rank, player in self._players_by_rank.items():
             player.set_rank(rank)
@@ -853,7 +855,7 @@ class Tournament:
 
     @cached_property
     def players_by_rank(self) -> dict[int, Player]:
-        self.compute_player_ranks()
+        self.compute_player_ranks_after_round()
         return self._players_by_rank
 
     def _build_boards(self):
