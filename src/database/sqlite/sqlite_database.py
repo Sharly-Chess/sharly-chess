@@ -71,12 +71,12 @@ class SQLiteDatabase:
     def executescript(self, sql: str):
         self.cursor.executescript(sql)
 
-    def _fetchall(self) -> Iterator[dict[str, Any]]:
+    def fetchall(self) -> Iterator[dict[str, Any]]:
         columns = [column[0] for column in self.cursor.description]
         for row in self.cursor.fetchall():
             yield dict(zip(columns, row))
 
-    def _fetchone(self) -> dict[str, Any]:
+    def fetchone(self) -> dict[str, Any]:
         columns = [column[0] for column in self.cursor.description]
         result = self.cursor.fetchone()
         return {} if result is None else dict(zip(columns, result))

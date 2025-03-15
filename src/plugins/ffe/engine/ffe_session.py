@@ -361,11 +361,11 @@ class FFESession(Session):
                         'FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'
                     ).format(tournament_name=self.tournament.name)
                 )
-                return (None, None)
+                return None, None
             else:
                 assert ffe_id
                 assert ffe_password
-        return (ffe_id, ffe_password)
+        return ffe_id, ffe_password
 
     def upload(self, set_visible: bool):
         """Upload the tournament to the FFE admin website."""
