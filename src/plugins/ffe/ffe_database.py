@@ -152,10 +152,10 @@ class FfeDatabase(SQLiteDatabase):
             'city': None,
             'club': None,
         }
-        column_names = list(translations.keys())
-        bindings = [f':{column_name}' for column_name in column_names]
-        column_names = list(map(lambda s: f"`{s}`"))
-        query: str = f'INSERT INTO player({", ".join(column_names)}) VALUES({", ".join(bindings)})'
+        column_names: list[str] = list(translations.keys())
+        bindings: list[str] = [f':{column_name}' for column_name in column_names]
+        escaped_column_names: list[str] = list(map(lambda s: f"`{s}`", column_names))
+        query: str = f'INSERT INTO player({", ".join(escaped_column_names)}) VALUES({", ".join(bindings)})'
         try:
             with open(
                 PLUGINS_DIR / 'ffe' / 'create_ffe.sql', encoding='utf-8'
