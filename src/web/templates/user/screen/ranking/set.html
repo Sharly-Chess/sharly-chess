@@ -45,7 +45,9 @@
                                 </th>
                                 {{ macros.extra_column_header("first-tie-break", extra_classes, extra_columns)}}
                                 {% for tie_break in tournament.tie_breaks %}
-                                    <th class="right">{{ tie_break.acronym }}</th>
+                                    {% if tie_break.is_displayable %}
+                                        <th class="right">{{ tie_break.acronym }}</th>
+                                    {% endif %}
                                 {% endfor %}
                                 {{ macros.extra_column_header("end", extra_classes, extra_columns)}}
                             </tr>

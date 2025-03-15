@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from contextlib import suppress
-from typing import Literal
 
 from common.i18n import _
 from data.pairing import Pairing
@@ -11,11 +10,16 @@ from data.util import TournamentPairing, Result, performance_bonus
 
 
 class AbstractPapiTieBreak(AbstractTieBreak, ABC):
+    """Implementation of the tie-breaks as in Papi.
+    Computation inaccuracies are reproduced"""
+
     @property
-    @abstractmethod
+    @abstractmethod  # AS the usage is for Papi, papi_id has to be implemented
     def papi_id(self) -> str:
         pass
 
+
+class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     @staticmethod
     def _papi_adjusted_score(
         player: 'Player',
@@ -53,52 +57,41 @@ class AbstractPapiTieBreak(AbstractTieBreak, ABC):
         pairing: Pairing,
         max_round: int = 1,
         round_index: int = 1,
-        dummy_type: Literal['BH'] | Literal['SB'] = 'BH',
-    ) -> float | tuple[float, Result]:
+    ) -> float:
         """Legacy: uses round_index for the computation"""
-        if dummy_type == 'BH':
-            dummy = player.points_before(round_index) + Result.DRAW.points(player.point_values) * (
-                        max_round - round_index)
-            match pairing.result:
-                case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
-                    return dummy + Result.LOSS.points(player.point_values)
-                case Result.HALF_POINT_BYE:
-                    return dummy + Result.DRAW.points(player.point_values)
-                case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
-                    return dummy + Result.GAIN.points(player.point_values)
-                case _:
-                    raise ValueError(f'{pairing.result=}')
-        elif dummy_type == 'SB':
-            dummy = player.points_after(max_round)
-            match pairing.result:
-                case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
-                    return dummy, Result.GAIN
-                case Result.HALF_POINT_BYE:
-                    return dummy, Result.DRAW
-                case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
-                    return dummy, Result.LOSS
-                case _:
-                    return dummy, pairing.result
-        raise ValueError(f'{dummy_type=}')
+        dummy = player.points_before(round_index) + Result.DRAW.points(player.point_values) * (
+                    max_round - round_index)
+        match pairing.result:
+            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+                return dummy + Result.LOSS.points(player.point_values)
+            case Result.HALF_POINT_BYE:
+                return dummy + Result.DRAW.points(player.point_values)
+            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
+                return dummy + Result.GAIN.points(player.point_values)
+            case _:
+                raise ValueError(f'{pairing.result=}')
 
     @staticmethod
-    def papi_buchholz_cut(tournament_rounds: int) -> int:
+    def _papi_buchholz_cut(tournament_rounds: int) -> int:
         if tournament_rounds <= 7:
             return 1
         elif tournament_rounds <= 12:
             return 2
         return 3
 
-    def _compute_papi_buchholz_player_value(
+    def compute_papi_buchholz_player_value(
         self,
         player: Player,
         tournament: Tournament,
         max_round: int | None,
-        cut_top: int = 0,
-        cut_btm: int = 0,
+        use_cut_top: bool = False,
+        use_cut_btm: bool = False,
     ) -> float:
         if max_round is None:
             max_round = max(player.pairings)
+        cut = self._papi_buchholz_cut(tournament.rounds)
+        cut_top = cut if use_cut_top else 0
+        cut_btm = cut if use_cut_btm else 0
         if cut_top + cut_btm >= max_round:
             return 0
         pairings: dict[int, Pairing] = {
@@ -144,7 +137,7 @@ class AbstractPapiTieBreak(AbstractTieBreak, ABC):
         return sum(scores[cut_btm:])
 
 
-class PapiBuchholzTieBreak(AbstractPapiTieBreak):
+class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     @property
     def name(self) -> str:
         return _('Buchholz')
@@ -167,12 +160,12 @@ class PapiBuchholzTieBreak(AbstractPapiTieBreak):
         tournament: 'Tournament',
         max_round: int | None = None
     ) -> float:
-        return self._compute_papi_buchholz_player_value(
+        return self.compute_papi_buchholz_player_value(
             player, tournament, max_round
         )
 
 
-class PapiBuchholzCutBottomTieBreak(AbstractPapiTieBreak):
+class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
     @property
     def name(self) -> str:
         return _('Buchholz cut bottom')
@@ -195,15 +188,12 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiTieBreak):
             tournament: 'Tournament',
             max_round: int | None = None
     ) -> float:
-        return self._compute_papi_buchholz_player_value(
-            player,
-            tournament,
-            max_round,
-            cut_btm=self.papi_buchholz_cut(tournament.rounds),
+        return self.compute_papi_buchholz_player_value(
+            player, tournament, max_round, use_cut_btm=True
         )
 
 
-class PapiMedianBuchholzTieBreak(AbstractPapiTieBreak):
+class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     @property
     def name(self) -> str:
         return _('Median Buchholz')
@@ -226,9 +216,12 @@ class PapiMedianBuchholzTieBreak(AbstractPapiTieBreak):
             tournament: 'Tournament',
             max_round: int | None = None
     ) -> float:
-        cut = self.papi_buchholz_cut(tournament.rounds)
-        return self._compute_papi_buchholz_player_value(
-            player, tournament, max_round, cut, cut
+        return self.compute_papi_buchholz_player_value(
+            player,
+            tournament,
+            max_round,
+            use_cut_top=True,
+            use_cut_btm=True,
         )
 
 
