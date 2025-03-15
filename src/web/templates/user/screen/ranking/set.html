@@ -3,10 +3,10 @@
             class="ranking-screen-set"
     >
         <h2 class="set-title text-center">
-            {% if ranking_round %}
-                {{ screen_set.name_for_ranking }}
+            {% if screen_set.screen.ranking_round %}
+                {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_ranking, round=screen_set.screen.ranking_round) }}
             {% else %}
-                {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_ranking, round=tournament.current_round) }}
+                {{ screen_set.name_for_ranking }}
             {% endif %}
         </h2>
         <div class="row screen-set-row mx-0 w-100">
