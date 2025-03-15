@@ -470,6 +470,13 @@ class ScreenAdminController(BaseEventAdminController):
                             name = web_context.admin_event.get_unused_screen_name(
                                 screen_type=ScreenType(screen_type)
                             )
+                            match screen_type:
+                                case 'ranking':
+                                    ranking_crosstable = False
+                                case 'input' | 'boards' | 'players' | 'ranking' | 'results' | 'image':
+                                    pass
+                                case _:
+                                    raise ValueError(f'screen_type=[{screen_type}]')
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
                                 base_uniq_id=web_context.admin_screen.uniq_id
