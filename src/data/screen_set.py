@@ -390,28 +390,6 @@ class ScreenSet:
         return self.items_lists
 
     @property
-    def players_by_rank_tuple_lists(
-        self,
-    ) -> Iterable[tuple[list[Player], list[Player]]]:
-        # TODO check that this method is really used
-        self._extract_players_by_rank()
-        if TYPE_CHECKING:
-            assert (
-                isinstance(self.items_lists, list)
-                and all(isinstance(item, list) for item in self.items_lists)
-                and all(
-                    isinstance(item, Player)
-                    for item in chain(*self.items_lists)
-                )
-            )
-        players_by_rank_lists: list[list[Player]] = self.items_lists
-        for players_by_rank in players_by_rank_lists:
-            yield (
-                players_by_rank[: (bound := math.ceil(len(players_by_rank) / 2))],
-                players_by_rank[bound:],
-            )
-
-    @property
     def first_player_by_rank(self) -> Player:
         if not self.first_item:
             self._extract_players_by_rank()
@@ -476,5 +454,5 @@ class ScreenSet:
 
     def __str__(self):
         return _('Tournament {tournament_uniq_id} ({numbers_str})').format(
-            tournameuniq_id=self.tournament.uniq_id, numbers_str=self.numbers_str
+            tournament_uniq_id=self.tournament.uniq_id, numbers_str=self.numbers_str
         )
