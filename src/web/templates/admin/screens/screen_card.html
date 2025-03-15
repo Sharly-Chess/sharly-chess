@@ -18,7 +18,7 @@
                 </div>
             {% endif %}
             {% if screen.type == 'ranking' %}
-                <div class="{% if screen.ranking_round %}text-secondary{% endif %}">
+                <div class="{% if not screen.ranking_round %}text-secondary{% endif %}">
                     {% if screen.ranking_round %}
                         {{ _('Round: %(round)d', round=screen.ranking_round) }}
                     {% else %}
