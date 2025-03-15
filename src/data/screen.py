@@ -25,8 +25,6 @@ if TYPE_CHECKING:
 
 logger: Logger = get_logger()
 
-DEFAULT_SHOW_UNPAIRED: bool = False
-
 
 class Screen:
     """A data wrapper around a stored screen."""
