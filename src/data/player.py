@@ -456,7 +456,8 @@ class Player(TournamentPlayer):
         assert self._rank, 'Player._rank is not set, call Tournament.compute_player_ranks_after_round() before.'
         return self._rank
 
-    def set_rank(self, rank: int):
+    @rank.setter
+    def rank(self, rank: int):
         self._rank = rank
 
     @cached_property
@@ -503,7 +504,6 @@ class Player(TournamentPlayer):
         if self.ref_id == 1:
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         return (
-            f'{self.__class__.__name__}'
-            f'(#{self.id} title={self.title.value} gender={self.gender.value} '
-            f'date_of_birth={self.date_of_birth} {self.last_name} {self.first_name} {self.club})'
+            f'(#{self.id} rank={self.rank} title={self.title.value} gender={self.gender.value} '
+            f'name={self.last_name} {self.first_name} points={self.points})'
         )

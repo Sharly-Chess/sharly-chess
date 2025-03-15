@@ -203,9 +203,15 @@ class ScreenSet:
         )
         if name is None:
             if self.first or self.last:
-                name = _('%f to %l')
+                if self.screen.ranking_crosstable:
+                    name = _('Ranking %f to %l')
+                else:
+                    name = _('Crosstable %f to %l')
             else:
-                name = '%t'
+                if self.screen.ranking_crosstable:
+                    name = _('%t ranking')
+                else:
+                    name = _('%t crosstable')
         name = name.replace('%t', str(self.tournament.name))
         if self.first_item is not None:
             name = name.replace(r'%f', str(self.first_player_by_rank.rank))
@@ -343,7 +349,31 @@ class ScreenSet:
 
     def _extract_players_by_rank(self):
         if self.items_lists is None:
-            self._extract_data(list(self.tournament.players_by_rank.values()))
+            self.tournament.compute_player_ranks_after_round(
+                self.tournament.correct_ranking_round(
+                    self.screen.ranking_round
+                )
+            )
+            print(f'{self.tournament.players_by_rank=}')
+            players = [
+                player
+                for player in self.tournament.players_by_rank.values()
+                if (
+                self.screen.ranking_min_points is None or player.points >= self.screen.ranking_min_points
+                ) and (
+                self.screen.ranking_max_points is None or player.points <= self.screen.ranking_max_points
+                )
+            ]
+            print(f'{players=}')
+            self._extract_data([
+                player
+                for player in self.tournament.players_by_rank.values()
+                if (
+                        self.screen.ranking_min_points is None or player.points >= self.screen.ranking_min_points
+                ) and (
+                        self.screen.ranking_max_points is None or player.points <= self.screen.ranking_max_points
+                )
+            ])
 
     @property
     def players_by_rank_lists(self) -> list[list[Player]]:

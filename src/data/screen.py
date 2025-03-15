@@ -184,18 +184,32 @@ class Screen:
 
     @staticmethod
     def default_ranking_screen_menu_text(
-        single_tournament: bool, first_last: bool
+        single_tournament: bool,
+            first_last: bool,
+            crosstable: bool,
     ) -> str:
         if single_tournament:
             if first_last:
-                return '%f-%l'
+                if crosstable:
+                    return _('Crosstable %f-%l')
+                else:
+                    return _('Crosstable')
             else:
-                return _('Ranking')
+                if crosstable:
+                    return _('Ranking %f-%l')
+                else:
+                    return _('Ranking')
         else:
             if first_last:
-                return '%t [%f-%l]'
+                if crosstable:
+                    return '%t crosstable [%f-%l]'
+                else:
+                    return '%t ranking [%f-%l]'
             else:
-                return _('%t (ranking)')
+                if crosstable:
+                    return '%t crosstable'
+                else:
+                    return _('%t ranking')
 
     @property
     def menu_label(self) -> str | None:
@@ -220,7 +234,7 @@ class Screen:
                     )
                 elif self.type == ScreenType.RANKING:
                     text = self.menu_text or self.default_ranking_screen_menu_text(
-                        single_tournament=single_tournament, first_last=first_last
+                        single_tournament=single_tournament, first_last=first_last, crosstable=self.ranking_crosstable
                     )
                 else:
                     text = self.menu_text
@@ -441,9 +455,25 @@ class Screen:
     def icon_str(self) -> str:
         return self.type.icon_str
 
+    @staticmethod
+    def screen_type_str(
+            type_: ScreenType,
+            crosstable: bool | None,
+    ) -> str:
+        if type_ == ScreenType.RANKING:
+            if crosstable:
+                return _('Crosstable')
+            else:
+                return _('Ranking')
+        else:
+            return str(type)
+
     @property
     def type_str(self) -> str:
-        return str(self.type)
+        return self.screen_type_str(
+            self.type,
+            self.ranking_crosstable if self.type == ScreenType.RANKING else None
+        )
 
     @cached_property
     def results_limit(self) -> int:
@@ -518,6 +548,38 @@ class Screen:
         ) // self.columns
         for i in range(self.columns):
             yield self._results[i * column_size : (i + 1) * column_size]
+
+    @property
+    def ranking_crosstable(self) -> bool:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_screen.ranking_crosstable == True
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_round(self) -> int | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_screen.ranking_round
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_min_points(self) -> int | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_screen.ranking_min_points
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_max_points(self) -> int | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_screen.ranking_max_points
+            case _:
+                raise ValueError(f'type=[{self.type}]')
 
     @property
     def last_update(self) -> float:

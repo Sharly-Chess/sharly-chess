@@ -818,6 +818,16 @@ class Tournament:
                 continue
             player.illegal_moves = illegal_moves[player.id]
 
+    def correct_ranking_round(
+            self,
+            ranking_round: int | None = None
+    ) -> int:
+        """Returns a correct round number that corresponds the best to a given round number."""
+        if ranking_round is None:
+            return self.max_ranking_round
+        else:
+            return max(0, min(ranking_round, self.max_ranking_round))
+
     def compute_player_ranks_after_round(
         self,
         round_: int | None = None,
