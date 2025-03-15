@@ -1,7 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/ffe_macros.j2' as ffe_macros %}
 
-{% with url=url_for('ffe-admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='players') %}
+{% with url=url_for('ffe-admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
 <th scope="col" class="text-nowrap text-center w-1">
     <div class="d-flex align-items-center gap-1">
         {{ _('FFE *** FFE COLUMN HEADER FOR PLAYERS') }}

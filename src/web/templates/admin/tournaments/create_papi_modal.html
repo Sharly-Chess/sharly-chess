@@ -21,7 +21,7 @@
         <div class="modal-footer">
             <button
                 type="button"
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='tournaments') }}"
+                hx-get="{{ url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id) }}"
                 preload
                 hx-target="body"
                 hx-indicator="#please-wait"
