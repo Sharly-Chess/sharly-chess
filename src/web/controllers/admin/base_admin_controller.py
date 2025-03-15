@@ -768,8 +768,7 @@ class BaseAdminController(BaseController):
                         'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
                         'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),
                         'federation': WebContext.value_to_form_data(papi_web_config.stored_config.federation),
-                        'locale': WebContext.value_to_form_data(papi_web_config.stored_config.locale),
-                        'plugin_form_fields_templates': plugin_form_fields_templates,
+                        'locale': WebContext.value_to_form_data(papi_web_config.stored_config.locale)
                     }
                     stored_config: StoredConfig = cls._admin_validate_config_update_data(data)
                     errors = stored_config.errors

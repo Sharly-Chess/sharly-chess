@@ -12,7 +12,7 @@
             {{ macros.tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
         >
             <input
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+                hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -30,7 +30,7 @@
             {{ macros.tooltip_attributes('info', _('Enable/disable the details of the screens on the cards below.'), 'top') }}
         >
             <input
-                hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+                hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -45,7 +45,7 @@
     <span {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+            hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
             preload
             hx-target="body"
             hx-indicator="#please-wait"
@@ -147,7 +147,7 @@
                             data-bs-toggle="collapse"
                             data-bs-target="#{{ id }}"
                             aria-expanded="{{ 'true' if screen_type in admin_screens_screen_types else 'false' }}"
-                            hx-get="{{ url_for('admin-event-tab', event_uniq_id=admin_event.uniq_id, admin_event_tab='screens') }}"
+                            hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
                             hx-vals='js:{ {{name}}: !$(event.target).closest("button").hasClass("collapsed")}'
                             hx-swap="none"
                         >
