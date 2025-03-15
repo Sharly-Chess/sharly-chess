@@ -2,7 +2,7 @@ import csv
 from logging import Logger
 from string import capwords
 from tempfile import NamedTemporaryFile
-from typing import Annotated, Any
+from typing import Annotated, Any, Iterable
 
 import xlsxwriter
 from litestar import get, patch, delete, post, Response
@@ -507,10 +507,10 @@ class EventAdminController(BaseEventAdminController):
     ]
 
     @classmethod
-    def get_players_datasheet_extra_columns(cls) -> dict[int, ExtraColumn]:
+    def get_players_datasheet_extra_columns(cls) -> dict[int, list[ExtraColumn]]:
         """Returns the extra data columns added by the plugins"""
-        per_plugin_columns = plugin_manager.hook.get_extra_players_datasheet_columns()
-        extra_columns = {}
+        per_plugin_columns: list[Iterable[ExtraColumn]] = plugin_manager.hook.get_extra_players_datasheet_columns()
+        extra_columns: dict[int, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 try:
