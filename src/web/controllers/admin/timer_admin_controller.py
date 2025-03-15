@@ -34,7 +34,6 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        admin_event_tab: str | None,
         timer_id: int | None,
         timer_hour_id: int | None,
         data: Annotated[
@@ -47,7 +46,6 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
             request,
             data=data,
             event_uniq_id=event_uniq_id,
-            admin_event_tab=admin_event_tab,
         )
         self.admin_timer: Timer | None = None
         self.admin_timer_hour: TimerHour | None = None
@@ -263,7 +261,6 @@ class TimerAdminController(BaseEventAdminController):
         web_context: TimerAdminWebContext = TimerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab='timers',
             timer_id=timer_id,
             timer_hour_id=timer_hour_id,
             data=data,
@@ -272,7 +269,10 @@ class TimerAdminController(BaseEventAdminController):
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
-        )
+        ) | {
+            'admin_event_tab': 'admin-event-timers-tab',
+        }
+        
         match modal:
             case None:
                 pass
@@ -405,6 +405,21 @@ class TimerAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
+        path='/admin/{event_uniq_id:str}/timers',
+        name='admin-event-timers-tab',
+        cache=1,
+    )
+    async def htmx_admin_event_timers_tab(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_timers_render(
+            request,
+            event_uniq_id=event_uniq_id,
+        )
+
+    @get(
         path='/admin/default-timers-modal/{event_uniq_id:str}',
         name='admin-default-timers-modal',
         cache=1,
@@ -437,7 +452,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template | ClientRedirect:
         web_context: TimerAdminWebContext = TimerAdminWebContext(
             request,
-            admin_event_tab='timers',
             event_uniq_id=event_uniq_id,
             timer_id=None,
             timer_hour_id=None,
@@ -548,7 +562,6 @@ class TimerAdminController(BaseEventAdminController):
             case 'update' | 'delete' | 'clone' | 'create':
                 web_context: TimerAdminWebContext = TimerAdminWebContext(
                     request,
-                    admin_event_tab='timers',
                     event_uniq_id=event_uniq_id,
                     timer_id=timer_id,
                     timer_hour_id=None,
@@ -816,7 +829,6 @@ class TimerAdminController(BaseEventAdminController):
             case 'delete' | 'clone' | 'update' | 'add' | 'reorder':
                 web_context: TimerAdminWebContext = TimerAdminWebContext(
                     request,
-                    admin_event_tab='timers',
                     event_uniq_id=event_uniq_id,
                     timer_id=timer_id,
                     timer_hour_id=timer_hour_id,

@@ -26,6 +26,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.base_controller import WebContext, BaseController
 from web.messages import Message
+from web.session import SessionHandler
 
 logger: Logger = get_logger()
 
@@ -35,7 +36,6 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        admin_event_tab: str | None,
         screen_id: int | None,
         screen_type: str | None,
         screen_set_id: int | None,
@@ -48,7 +48,6 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
         super().__init__(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab=admin_event_tab,
             data=data,
         )
         self.admin_screen: Screen | None = None
@@ -382,7 +381,6 @@ class ScreenAdminController(BaseEventAdminController):
         web_context: ScreenAdminWebContext = ScreenAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            admin_event_tab='screens',
             screen_id=screen_id,
             screen_type=screen_type,
             screen_set_id=screen_set_id,
@@ -392,7 +390,19 @@ class ScreenAdminController(BaseEventAdminController):
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
-        )
+        ) | {
+            'admin_event_tab': 'admin-event-screens-tab',
+            'admin_screens_show_family_screens': SessionHandler.get_session_admin_screens_show_family_screens(
+                web_context.request
+            ),
+            'admin_screens_show_details': SessionHandler.get_session_admin_screens_show_details(
+                web_context.request
+            ),
+            'admin_screens_screen_types': SessionHandler.get_session_admin_screens_screen_types(
+                web_context.request
+            ),
+        }
+        
         match modal:
             case None:
                 pass
@@ -622,6 +632,60 @@ class ScreenAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
+        path='/admin/{event_uniq_id:str}/screens',
+        name='admin-event-screens-tab',
+        cache=1,
+    )
+    async def htmx_admin_event_screens_tab(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        admin_screens_show_family_screens: bool | None,
+        admin_screens_show_details: bool | None,
+        admin_screens_show_boards: bool | None,
+        admin_screens_show_input: bool | None,
+        admin_screens_show_players: bool | None,
+        admin_screens_show_results: bool | None,
+        admin_screens_show_ranking: bool | None,
+        admin_screens_show_image: bool | None,
+    ) -> Template | ClientRedirect:
+        if admin_screens_show_family_screens is not None:
+            SessionHandler.set_session_admin_screens_show_family_screens(
+                request, admin_screens_show_family_screens
+            )
+        if admin_screens_show_details is not None:
+            SessionHandler.set_session_admin_screens_show_details(
+                request, admin_screens_show_details
+            )
+        screen_types: set[str] = (
+            SessionHandler.get_session_admin_screens_screen_types(request)
+        )
+        for screen_type, param in {
+            'boards': admin_screens_show_boards,
+            'input': admin_screens_show_input,
+            'players': admin_screens_show_players,
+            'results': admin_screens_show_results,
+            'ranking': admin_screens_show_ranking,
+            'image': admin_screens_show_image,
+        }.items():
+            if param is not None:
+                if param:
+                    screen_types.add(screen_type)
+                else:
+                    try:
+                        screen_types.remove(screen_type)
+                    except KeyError:
+                        pass
+                SessionHandler.set_session_admin_screens_screen_types(
+                    request, screen_types
+                )
+                continue
+        return self._admin_event_screens_render(
+            request,
+            event_uniq_id=event_uniq_id,
+        )
+
+    @get(
         path='/admin/screen-modal/create/{event_uniq_id:str}/{screen_type:str}',
         name='admin-screen-create-modal',
         cache=1,
@@ -679,7 +743,6 @@ class ScreenAdminController(BaseEventAdminController):
                 web_context: ScreenAdminWebContext = ScreenAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
-                    admin_event_tab='screens',
                     screen_id=screen_id,
                     screen_type=screen_type,
                     screen_set_id=None,
@@ -920,7 +983,6 @@ class ScreenAdminController(BaseEventAdminController):
                 web_context: ScreenAdminWebContext = ScreenAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
-                    admin_event_tab='screens',
                     screen_id=screen_id,
                     screen_type=None,
                     screen_set_id=screen_set_id,
