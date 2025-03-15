@@ -238,7 +238,7 @@ class TieBreakUtils:
         """Computes the adjusted score of the player for the purposes of their opponents' tie-breaks
         Only adjusts them in case of requested byes followed by all VUR.
         If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
-        games not already determined are considered a draw."""
+        games for the last round not determined over the board are considered as draws."""
         if max_round is None:
             max_round = max(player.pairings)
         if tournament.pairing == TournamentPairing.BERGER:
