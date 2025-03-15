@@ -14,7 +14,7 @@ from data.util import (
     TournamentRating
 )
 from data.player import TournamentPlayer, Federation
-from plugins.ffe import tie_break as papi_tie_break
+from plugins.ffe import ffe_tie_break
 
 
 @dataclass
@@ -666,7 +666,7 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_legacy(self):
-        tie_break_ = papi_tie_break.PapiBuchholzTieBreak()
+        tie_break_ = ffe_tie_break.PapiBuchholzTieBreak()
         results = {
             player.id: tie_break_.compute_player_value_after_round(player)
             for player in self.tournament.players_by_id.values()
@@ -692,7 +692,7 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_cut_legacy(self):
-        tie_break_ = papi_tie_break.PapiBuchholzCutBottomTieBreak()
+        tie_break_ = ffe_tie_break.PapiBuchholzCutBottomTieBreak()
         results = {
             player.id: tie_break_.compute_player_value_after_round(player)
             for player in self.tournament.players_by_id.values()
@@ -718,7 +718,7 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_median_legacy(self):
-        tie_break_ = papi_tie_break.PapiMedianBuchholzTieBreak()
+        tie_break_ = ffe_tie_break.PapiMedianBuchholzTieBreak()
         results = {
             player.id: tie_break_.compute_player_value_after_round(player)
             for player in self.tournament.players_by_id.values()
@@ -904,7 +904,7 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_tpr_legacy(self):
-        tie_break_ = papi_tie_break.PapiPerformanceTieBreak()
+        tie_break_ = ffe_tie_break.PapiPerformanceTieBreak()
         results = {
             player.id: tie_break_.compute_player_value_after_round(player)
             for player in self.tournament.players_by_id.values()
@@ -1073,7 +1073,7 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_kashdan_legacy(self):
-        tie_break_ = papi_tie_break.PapiKashdanTieBreak()
+        tie_break_ = ffe_tie_break.PapiKashdanTieBreak()
         results = {
             player.id: tie_break_.compute_player_value_after_round(player)
             for player in self.tournament.players_by_id.values()
