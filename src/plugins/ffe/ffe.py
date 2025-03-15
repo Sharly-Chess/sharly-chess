@@ -22,7 +22,7 @@ from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, Extra
 
 
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
-import web.controllers.base_controller as web_context_module
+from web.controllers.base_controller import BaseController, WebContext
 
 from . import migrations, PLUGIN_NAME, PLUGIN_VERSION
 from .engine.ffe_engine import FFEEngine
@@ -149,7 +149,7 @@ def on_tournament_init(tournament: 'Tournament'):
 
 
 @hookimpl
-def get_controllers() -> Iterable[type[web_context_module.BaseController]]:
+def get_controllers() -> Iterable[type[BaseController]]:
     return [
         FfeSearchController,
         FfeAdminEventController,
@@ -284,12 +284,12 @@ def get_player_form_data(
     plugin_data: dict[str, dict[str, Any]]
 ) -> dict[str, Any]:
     return {
-        'ffe_licence': web_context_module.WebContext.value_to_form_data(get_data(plugin_data, 'ffe_licence', None)),
-        'ffe_licence_number': web_context_module.WebContext.value_to_form_data(
+        'ffe_licence': WebContext.value_to_form_data(get_data(plugin_data, 'ffe_licence', None)),
+        'ffe_licence_number': WebContext.value_to_form_data(
             get_data(plugin_data, 'ffe_licence_number', None)
         ),
-        'ffe_id': web_context_module.WebContext.value_to_form_data(get_data(plugin_data, 'ffe_id', None)),
-        'ffe_league': web_context_module.WebContext.value_to_form_data(get_data(plugin_data, 'league', None)),
+        'ffe_id': WebContext.value_to_form_data(get_data(plugin_data, 'ffe_id', None)),
+        'ffe_league': WebContext.value_to_form_data(get_data(plugin_data, 'league', None)),
     }
 
 
@@ -300,7 +300,7 @@ def get_validated_player_form_fields(
     data: dict[str, str],
     errors: dict[str, str]
 ) -> dict[str, Any]:
-    league: str | None = web_context_module.WebContext.form_data_to_str(data, field := 'ffe_league')
+    league: str | None = WebContext.form_data_to_str(data, field := 'ffe_league')
     if league and league not in ffe_leagues:
         # should never happen, not translated.
         errors[field] = f'Invalid league value [{data[field]}].'
@@ -310,7 +310,7 @@ def get_validated_player_form_fields(
     if tournament:
         # When adding a player, the tournament may not be chosen (in this case do not test)
         try:
-            ffe_id = web_context_module.WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
+            ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
             ffe_ids = [ get_data(player.plugin_data, 'ffe_id', None) for player in tournament.players_by_id.values() ]
 
             if action == 'create' and ffe_id and ffe_id in ffe_ids:
@@ -326,12 +326,12 @@ def get_validated_player_form_fields(
     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
     try:
         ffe_licence = PlayerFFELicence(
-            web_context_module.WebContext.form_data_to_int(data, field := 'ffe_licence')
+            WebContext.form_data_to_int(data, field := 'ffe_licence')
         )
     except ValueError:
         errors[field] = f'Invalid FFE licence [{data[field]}].'
 
-    ffe_licence_number: str | None = web_context_module.WebContext.form_data_to_str(
+    ffe_licence_number: str | None = WebContext.form_data_to_str(
         data, field := 'ffe_licence_number'
     )
     if ffe_licence_number:
@@ -379,8 +379,8 @@ def get_tournament_form_data(
         }
 
     return {
-        'ffe_id': web_context_module.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_id', None)),
-        'ffe_password': web_context_module.WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_password', None)),
+        'ffe_id': WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_id', None)),
+        'ffe_password': WebContext.value_to_form_data(get_data(tournament.plugin_data, 'ffe_password', None)),
     }
 
 
@@ -393,10 +393,10 @@ def get_validated_tournament_form_fields(
 ) -> dict[str, Any]:
     ffe_id = None
     try:
-        ffe_id = web_context_module.WebContext.form_data_to_int(data, 'ffe_id')
+        ffe_id = WebContext.form_data_to_int(data, 'ffe_id')
     except ValueError:
         errors['ffe_id'] = _('The FFE ID is a positive integer.')
-    ffe_password = web_context_module.WebContext.form_data_to_str(data, 'ffe_password')
+    ffe_password = WebContext.form_data_to_str(data, 'ffe_password')
     if ffe_password and not re.match('^[A-Z]{10}$', ffe_password):
         errors['ffe_password'] = _(
             'The password of the tournament on the FFE website is made of 10 uppercase letters.'
