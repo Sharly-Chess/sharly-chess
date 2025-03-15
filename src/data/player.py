@@ -91,6 +91,7 @@ class TournamentPlayer:
         pairings: dict[int, Pairing],
         estimation: int | None = None,
         point_values: dict[Result, float] | None = None,
+        tournament: 'Tournament | None' = None,
     ):
         self.id: int | None = id
         self.last_name: str = last_name
@@ -103,6 +104,16 @@ class TournamentPlayer:
         self._estimation: int | None = estimation
         self.pairings: dict[int, Pairing] = pairings
         self._point_values: dict[Result, float] = point_values
+        self._tournament_ref: 'ReferenceType[Tournament] | None' = None
+        self.tournament: 'Tournament | None' = tournament
+
+    @property
+    def tournament(self) -> 'Tournament | None':
+        return self._tournament_ref() if self._tournament_ref else None
+
+    @tournament.setter
+    def tournament(self, tournament: 'Tournament | None'):
+        self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @property
     def point_values(self) -> dict[Result, float] | None:
@@ -190,6 +201,7 @@ class Player(TournamentPlayer):
             federation,
             title,
             pairings,
+            tournament=tournament,
         )
         self.mail: str = mail
         self.phone: str = phone
@@ -213,18 +225,8 @@ class Player(TournamentPlayer):
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
-        self._tournament_ref: 'ReferenceType[Tournament] | None' = None
-        self.tournament = tournament
         self.errors: dict[str, str] = errors or {}
         self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
-
-    @property
-    def tournament(self) -> 'Tournament | None':
-        return self._tournament_ref() if self._tournament_ref else None
-
-    @tournament.setter
-    def tournament(self, tournament: 'Tournament | None'):
-        self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @staticmethod
     def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:

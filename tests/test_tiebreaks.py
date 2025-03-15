@@ -13,14 +13,14 @@ from data.util import (
     TournamentPairing,
     TournamentRating
 )
-from data.player import TournamentPlayer, Federation
+from data.player import TournamentPlayer, Federation, Player
 from plugins.ffe import ffe_tie_break
 
 
 @dataclass
 class TieBreakTournament:
     rounds: int
-    players_by_id: dict[int, TournamentPlayer] = field(default_factory=dict)
+    players_by_id: dict[int, Player] = field(default_factory=dict)
     pairing: TournamentPairing = TournamentPairing.UNKNOWN
     rating: TournamentRating = TournamentRating.STANDARD
     point_values: dict[Result, float] | None = None
@@ -322,6 +322,8 @@ class SwissTieBreaks(unittest.TestCase):
             },
             pairing=TournamentPairing.STANDARD,
         )
+        for player in self.tournament.players_by_id.values():
+            player.tournament = self.tournament
 
     def test_points(self):
         results = {
@@ -1192,6 +1194,8 @@ class RoundRobinTieBreaks(unittest.TestCase):
                 )
             }
         )
+        for player in self.tournament.players_by_id.values():
+            player.tournament = self.tournament
 
     def test_all_players_met_each_other(self):
         results = {
