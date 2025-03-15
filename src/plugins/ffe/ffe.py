@@ -26,7 +26,7 @@ from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, Extra
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 import web.controllers.base_controller as WebContextModule
 
-from . import migrations, PLUGIN_NAME, PLUGIN_VERSION, tie_break
+from . import migrations, PLUGIN_NAME, PLUGIN_VERSION, ffe_tie_break
 from .engine.ffe_engine import FFEEngine
 from .util import PlayerFFELicence
 from .ffe_database import FfeDatabase
