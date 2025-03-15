@@ -1,5 +1,4 @@
 import itertools
-import re
 from logging import Logger
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Callable
@@ -254,7 +253,7 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
-        
+
         tournament_card_blocks_and_data = plugin_manager.hook.get_tournament_card_block_template_and_data()
         tournament_exporters: list[AbstractTournamentExporter] = [
             Trf16TournamentExporter(),
@@ -281,7 +280,7 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             ),
         } | tournament_card_block_data
-                
+
         match modal:
             case None:
                 pass
@@ -423,7 +422,7 @@ class TournamentAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)
-    
+
     @get(
         path='/admin/{event_uniq_id:str}/tournaments',
         name='admin-event-tournaments-tab',

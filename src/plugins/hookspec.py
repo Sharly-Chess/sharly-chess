@@ -103,6 +103,10 @@ class AppHookSpecs:
         """Provide a path to the template to be added to event cards"""
 
     @hookspec
+    def get_event_form_fields_template(self) -> str:
+        """Returns the path of the template for additional fields of the event modal"""
+
+    @hookspec
     def get_tournament_form_fields_template(self) -> str:
         """Provide a path to the template containing tournament form fields"""
 
