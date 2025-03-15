@@ -292,13 +292,13 @@ class FfeDatabase(SQLiteDatabase):
         self.execute(query, tuple(params), )
         return (
             self.get_player_from_row(row)
-            for row in self._fetchall()
+            for row in self.fetchall()
         )
 
     def get_player_by_ffe_id(self, player_ffe_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
-        return self.get_player_from_row(self._fetchone())
+        return self.get_player_from_row(self.fetchone())
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
-        return self.get_player_from_row(self._fetchone())
+        return self.get_player_from_row(self.fetchone())

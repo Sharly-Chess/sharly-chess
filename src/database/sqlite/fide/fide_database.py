@@ -210,7 +210,7 @@ class FideDatabase(SQLiteDatabase):
             'SELECT DISTINCT federation FROM `player` ORDER BY `federation`',
             (),
         )
-        yield from map(lambda row: row['federation'], self._fetchall())
+        yield from map(lambda row: row['federation'], self.fetchall())
 
     @staticmethod
     def get_player_from_row(row: dict[str, Any]) -> Player | None:
@@ -285,10 +285,10 @@ class FideDatabase(SQLiteDatabase):
         self.execute(query, tuple(params), )
         return (
             self.get_player_from_row(row)
-            for row in self._fetchall()
+            for row in self.fetchall()
         )
 
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
-        return self.get_player_from_row(self._fetchone())
+        return self.get_player_from_row(self.fetchone())
