@@ -150,9 +150,7 @@ class EventAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        locale: str | None,
     ) -> Template | Redirect | ClientRedirect:
-        self.set_locale(request, locale)
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,

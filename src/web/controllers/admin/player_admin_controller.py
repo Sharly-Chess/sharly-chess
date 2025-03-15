@@ -788,7 +788,6 @@ class PlayerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        locale: str | None,
         admin_players_sort: str | None = None,
         admin_players_filter_columns: list[str] | None = None,
         admin_players_filter_federations: list[str] | None = None,
@@ -898,8 +897,6 @@ class PlayerAdminController(BaseEventAdminController):
             SessionHandler.set_session_admin_players_filter_name(request, '')
             SessionHandler.set_session_admin_players_filter_clubs_search(request, '')
             plugin_manager.hook.clear_player_filters(request=request)
-        
-        self.set_locale(request, locale)
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,

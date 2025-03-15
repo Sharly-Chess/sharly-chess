@@ -640,7 +640,6 @@ class ScreenAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        locale: str | None,
         admin_screens_show_family_screens: bool | None,
         admin_screens_show_details: bool | None,
         admin_screens_show_boards: bool | None,
@@ -681,8 +680,6 @@ class ScreenAdminController(BaseEventAdminController):
                     request, screen_types
                 )
                 continue
-
-        self.set_locale(request, locale)
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,

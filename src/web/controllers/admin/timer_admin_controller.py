@@ -413,9 +413,7 @@ class TimerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        locale: str | None,
     ) -> Template | ClientRedirect:
-        self.set_locale(request, locale)
         return self._admin_event_timers_render(
             request,
             event_uniq_id=event_uniq_id,

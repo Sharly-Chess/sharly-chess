@@ -459,15 +459,12 @@ class FamilyAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        locale: str | None,
         admin_families_show_details: bool | None,
     ) -> Template | ClientRedirect:
         if admin_families_show_details is not None:
             SessionHandler.set_session_admin_families_show_details(
                 request, admin_families_show_details
             )
-            
-        self.set_locale(request, locale)
         return self._admin_event_families_render(
             request,
             event_uniq_id=event_uniq_id,

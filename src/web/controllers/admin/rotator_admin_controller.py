@@ -283,15 +283,12 @@ class RotatorAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        locale: str | None,
         admin_rotators_show_details: bool | None,
     ) -> Template | ClientRedirect:
         if admin_rotators_show_details is not None:
             SessionHandler.set_session_admin_rotators_show_details(
                 request, admin_rotators_show_details
             )
-        
-        self.set_locale(request, locale)
         return self._admin_event_rotators_render(
             request,
             event_uniq_id=event_uniq_id,
