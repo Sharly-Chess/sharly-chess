@@ -196,6 +196,22 @@ class ScreenSet:
         return name
 
     @property
+    def ranking_round(self) -> int:
+        return self.tournament.correct_ranking_round(self.screen.ranking_round)
+
+    @property
+    def ranking_crosstable(self) -> bool:
+        return self.screen.ranking_crosstable
+
+    @property
+    def ranking_min_points(self) -> int | None:
+        return self.screen.ranking_min_points
+
+    @property
+    def ranking_max_points(self) -> int | None:
+        return self.screen.ranking_max_points
+
+    @property
     def name_for_ranking(self) -> str | None:
         self._extract_players_by_rank()
         name: str | None = (
@@ -204,14 +220,14 @@ class ScreenSet:
         if name is None:
             if self.first or self.last:
                 if self.screen.ranking_crosstable:
-                    name = _('Ranking %f to %l')
-                else:
                     name = _('Crosstable %f to %l')
+                else:
+                    name = _('Ranking %f to %l')
             else:
                 if self.screen.ranking_crosstable:
-                    name = _('%t ranking')
-                else:
                     name = _('%t crosstable')
+                else:
+                    name = _('%t ranking')
         name = name.replace('%t', str(self.tournament.name))
         if self.first_item is not None:
             name = name.replace(r'%f', str(self.first_player_by_rank.rank))
@@ -349,31 +365,18 @@ class ScreenSet:
 
     def _extract_players_by_rank(self):
         if self.items_lists is None:
-            self.tournament.compute_player_ranks_after_round(
-                self.tournament.correct_ranking_round(
-                    self.screen.ranking_round
-                )
+            self.tournament.compute_player_ranks_after_round(self.ranking_round)
+            self._extract_data(
+                [
+                    player
+                    for player in self.tournament.players_by_rank.values()
+                    if (
+                        self.ranking_min_points is None or player.points >= self.ranking_min_points
+                    ) and (
+                        self.ranking_max_points is None or player.points <= self.ranking_max_points
+                    )
+                ]
             )
-            print(f'{self.tournament.players_by_rank=}')
-            players = [
-                player
-                for player in self.tournament.players_by_rank.values()
-                if (
-                self.screen.ranking_min_points is None or player.points >= self.screen.ranking_min_points
-                ) and (
-                self.screen.ranking_max_points is None or player.points <= self.screen.ranking_max_points
-                )
-            ]
-            print(f'{players=}')
-            self._extract_data([
-                player
-                for player in self.tournament.players_by_rank.values()
-                if (
-                        self.screen.ranking_min_points is None or player.points >= self.screen.ranking_min_points
-                ) and (
-                        self.screen.ranking_max_points is None or player.points <= self.screen.ranking_max_points
-                )
-            ])
 
     @property
     def players_by_rank_lists(self) -> list[list[Player]]:
