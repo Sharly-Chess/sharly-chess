@@ -27,10 +27,8 @@ from data.util import (
     TournamentRating,
     PlayerGender,
     PointValueType,
-    performance_bonus,
-    round_fide,
     TournamentPairing,
-    Result
+    Result, SharedUtils
 )
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
@@ -462,9 +460,8 @@ class Tournament:
         self,
         trf_type: TrfType,
         first_round_pairing: BoardColor = BoardColor.WHITE,
-        papi_legacy: bool = True,
     ) -> TrfTournament:
-        self.compute_player_ranks(self.max_ranking_round, papi_legacy)
+        self.compute_player_ranks(self.max_ranking_round)
         return TrfTournament(
             name=self.name,
             city=self.location,
@@ -582,7 +579,7 @@ class Tournament:
         self._set_players_illegal_moves()  # load illegal moves for the current round
         self._calculate_points()
         self._build_boards()
-        self.estimate_players(papi_legacy=True)
+        self.estimate_players()
 
     def _calculate_current_round(self):
         """Computes which round is the current round.
@@ -692,20 +689,15 @@ class Tournament:
                     vpoints = 2 * Result.GAIN.points(self.point_values)
         return vpoints
 
-    def estimate_players(self, *, max_round: int | None = None, papi_legacy: bool = True):
+    def estimate_players(self, *, max_round: int | None = None):
         """Estimate the players after *max_round*.
-        If *max_round* is None, use the current round if possible.
-        If *papi_legacy* is True, use the computations reimplemented from Papi."""
+        If *max_round* is None, use the current round if possible."""
         if max_round is None:
             max_round = self._current_round
         if self._current_round <= 1:
             return
         if not any(player.estimated for player in self.players_by_id.values()):
             return
-        if papi_legacy:
-            round_function = round
-        else:
-            round_function = round_fide
 
         max_possible_points = Result.GAIN.points(self.point_values) * max_round
 
@@ -731,7 +723,9 @@ class Tournament:
                 if not player.estimated
             ]
             if group_ratings:
-                average_rating = round_function(sum(group_ratings) / len(group_ratings))
+                average_rating = SharedUtils.round_ranking(
+                    sum(group_ratings) / len(group_ratings)
+                )
                 level_estimations[points] = average_rating
 
         # NOTE(Amaras): If there are no players with a rating, use the
@@ -743,12 +737,14 @@ class Tournament:
             estimation = level_estimations[points]
             if estimation > 0:
                 # No need to touch a group's estimation if it already has one
-                previous_bonus = round_function(
-                    performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+                previous_bonus = SharedUtils.performance_bonus(
+                    points / max_possible_points
                 )
                 previous_estimation = estimation
             elif previous_estimation > 0:
-                bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
+                bonus = SharedUtils.performance_bonus(
+                    points / max_possible_points
+                )
                 level_estimations[points] = previous_estimation - previous_bonus + bonus
                 previous_estimation = level_estimations[points]
                 previous_bonus = bonus
@@ -759,12 +755,14 @@ class Tournament:
         for points in point_keys:
             estimation = level_estimations[points]
             if estimation > 0:
-                previous_bonus = round_function(
-                    performance_bonus(points / max_possible_points, papi_legacy=papi_legacy)
+                previous_bonus = SharedUtils.performance_bonus(
+                    points / max_possible_points
                 )
                 previous_estimation = estimation
             elif previous_estimation > 0:
-                bonus = round_function(performance_bonus(points / max_possible_points, papi_legacy=papi_legacy))
+                bonus = SharedUtils.performance_bonus(
+                    points / max_possible_points
+                )
                 level_estimations[points] = previous_estimation - previous_bonus + bonus
                 previous_estimation = level_estimations[points]
                 previous_bonus = bonus
@@ -779,7 +777,6 @@ class Tournament:
             estimation = level_estimations[points]
             for player in test_group:
                 player.estimation = estimation
-
 
     def store_illegal_move(self, player: Player):
         """Store an illegal move for the given `player`, for the current
@@ -819,7 +816,7 @@ class Tournament:
             player.illegal_moves = illegal_moves[player.id]
 
     def compute_player_ranks(
-        self, max_round: int | None = None, papi_legacy: bool = True
+        self, max_round: int | None = None
     ) -> dict[int, Player]:
         """compute and return the ranks of all the players after round *max_round*."""
         if max_round is None:
@@ -828,7 +825,7 @@ class Tournament:
             max_round = max(0, min(max_round, self.max_ranking_round))
         if max_round:
             # Estimate ratings to ensure we have a defined rating for everyone
-            self.estimate_players(max_round=max_round, papi_legacy=papi_legacy)
+            self.estimate_players(max_round=max_round)
             for player in self.players_by_id.values():
                 player.points = player.points_after(max_round)
                 player.compute_tie_break_values(self, max_round)
