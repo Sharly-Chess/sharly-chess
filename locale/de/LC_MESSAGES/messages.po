@@ -3,217 +3,6 @@
 msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 msgstr "Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie die Skripte server.bat, ffe.bat und chessevent.bat."
 
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
-msgstr "Die ChessEvent-Verbindung ist für Turniere nicht definiert [{tournament_uniq_id}]."
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
-msgstr "Die Datei Papi ist nicht für Turniere definiert [{tournament_uniq_id}]."
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Tournament [{tournament_uniq_id}] has started."
-msgstr "Das Turnier [{tournament_uniq_id}] hat begonnen."
-
-#: src/chessevent/action_selector.py src/ffe/action_selector.py
-#, ai_translation
-msgid "Event: {event_name}"
-msgstr "Veranstaltung: {event_name}"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Unable to create Papi files since no tournaments are defined."
-msgstr "Papi-Dateien können nicht erstellt werden, da keine Turniere definiert sind."
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Tournaments: {tournament_names}"
-msgstr "Turniere: {tournament_names}"
-
-#: src/chessevent/action_selector.py
-#, fuzzy
-msgid "C *** THE LETTER TO ANSWER CREATE"
-msgstr "C"
-
-#: src/chessevent/action_selector.py src/ffe/action_selector.py
-#, fuzzy
-msgid "U *** THE LETTER TO ANSWER UPLOAD"
-msgstr "U"
-
-#: src/chessevent/action_selector.py src/chessevent/event_selector.py
-#: src/common/engine.py src/ffe/action_selector.py src/ffe/event_selector.py
-#, fuzzy
-msgid "Q *** THE LETTER TO ANSWER QUIT"
-msgstr "Q"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Create the Papi files"
-msgstr "Die Papi-Dateien erstellen"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Create the Papi files and send them to the FFE website"
-msgstr "Erstellen Sie die Papi-Dateien und senden Sie sie an die FFE-Website"
-
-#: src/chessevent/action_selector.py src/chessevent/event_selector.py
-#: src/ffe/action_selector.py src/ffe/event_selector.py
-#, ai_translation
-msgid "Quit"
-msgstr "Beenden"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Your choice (by default {default}): "
-msgstr "Ihre Wahl (standardmäßig {default}):"
-
-#: src/chessevent/action_selector.py src/ffe/action_selector.py
-#, ai_translation
-msgid "Action: {action}"
-msgstr "Maßnahme: {action}"
-
-#: src/chessevent/action_selector.py
-#, fuzzy
-msgid "1 *** THE LETTER TO ANSWER ONCE"
-msgstr "1"
-
-#: src/chessevent/action_selector.py
-#, fuzzy
-msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
-msgstr "C"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Once"
-msgstr "Einmal"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Continuously"
-msgstr "Kontinuierlich"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Frequency: {frequency}"
-msgstr "Häufigkeit: {frequency}"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Please choose the Papi version:"
-msgstr "Bitte wählen Sie die Papi-Version:"
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Papi version: {version}"
-msgstr "Papi-Version: {version}"
-
-#: src/chessevent/action_selector.py src/ffe/action_selector.py
-#, ai_translation
-msgid "This action can not be applied to the tournaments of this event."
-msgstr "Diese Aktion kann nicht auf die Turniere dieses Events angewendet werden."
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
-msgstr "Die Daten zum Turnier [{tournament_uniq_id}] konnten nicht dekodiert werden (Kodierung: [{encoding}]), gespeichert in Datei [{file}] (Fehlerzeile [{line}], Spalte [{column}], Position [{position}])."
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
-msgstr "Die Daten zum Turnier [{tournament_name}] auf ChessEvent sind unverändert."
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "Papi file [{file}] has been created (players: {num})."
-msgstr "Die Papi-Datei [{file}] wurde erstellt (Spieler: {num})."
-
-#: src/chessevent/action_selector.py
-#, ai_translation
-msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-msgstr "FFE-ID und Passwort sind für Turniere nicht korrekt festgelegt [{tournament_name}], Daten können nicht an die FFE-Website gesendet werden."
-
-#: src/chessevent/chessevent_session.py
-#, ai_translation
-msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
-msgstr "Authentifizierungsfehler (Code: [{code}]) für [{user_id}] ([{chessevent_string}])."
-
-#: src/chessevent/chessevent_session.py
-#, ai_translation
-msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
-msgstr "Zugriff verweigert (Code: [{code}]) für [{user_id}] zum Turnier [{tournament_name}] ([{chessevent_string}])."
-
-#: src/chessevent/chessevent_session.py
-#, ai_translation
-msgid "Missing parameter (code: [{code}]): [{error}]."
-msgstr "Fehlender Parameter (Code: [{code}]): [{error}]."
-
-#: src/chessevent/chessevent_session.py
-#, ai_translation
-msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
-msgstr "ID [{user_id}] nicht gefunden (Code: [{code}]): [{error}]."
-
-#: src/chessevent/chessevent_session.py
-#, ai_translation
-msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
-msgstr "Turnier [{tournament_name}] nicht gefunden (Code: [{code}]): [{error}]."
-
-#: src/chessevent/chessevent_session.py
-#, ai_translation
-msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
-msgstr "Ereignis [{event_id}] nicht gefunden (Code: [{code}]): [{error}]."
-
-#: src/chessevent/chessevent_session.py
-#, ai_translation
-msgid "Unknown response code: [{code}] ([{chessevent_string}])."
-msgstr "Unbekannter Antwortcode: [{code}] ([{chessevent_string}])."
-
-#: src/chessevent/chessevent_session.py src/common/engine.py
-#: src/ffe/ffe_session.py
-#, ai_translation
-msgid "Failed to read [{url}] (connection error): [{ex}]."
-msgstr "Nicht lesen [{url}] (Verbindungsfehler): [{ex}]."
-
-#: src/chessevent/chessevent_session.py src/common/engine.py
-#: src/ffe/ffe_session.py
-#, ai_translation
-msgid "Failed to read [{url}] (timeout): [{ex}]."
-msgstr "Nicht lesen [{url}] (Auszeit): [{ex}]."
-
-#: src/chessevent/chessevent_session.py src/common/engine.py
-#: src/ffe/ffe_session.py
-#, ai_translation
-msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
-msgstr "Nicht lesen [{url}] (Fehlercode [{errno}]): [{strerror}]."
-
-#: src/chessevent/chessevent_session.py src/common/engine.py
-#: src/ffe/ffe_session.py
-#, ai_translation
-msgid "Failed to read [{url}]: [{ex}]."
-msgstr "Nicht lesen [{url}]: [{ex}]."
-
-#: src/chessevent/event_selector.py src/ffe/event_selector.py
-#, ai_translation
-msgid "No events found."
-msgstr "Es wurden keine Veranstaltungen gefunden."
-
-#: src/chessevent/event_selector.py src/ffe/event_selector.py
-#, ai_translation
-msgid "One event found, press Enter (Q to quit): "
-msgstr "Ein Ereignis gefunden, drücken Sie Enter (Q zum Beenden):"
-
-#: src/chessevent/event_selector.py src/ffe/event_selector.py
-#, ai_translation
-msgid "Please choose the event:"
-msgstr "Bitte wählen Sie die Veranstaltung:"
-
-#: src/chessevent/event_selector.py src/ffe/event_selector.py
-#, ai_translation
-msgid "Your choice: "
-msgstr "Ihre Wahl:"
-
 #: src/common/engine.py
 #, ai_translation
 msgid "Checking Papi-web version..."
@@ -270,6 +59,14 @@ msgstr "Möchten Sie die Konfiguration der Version wiederherstellen [{version}] 
 msgid "Please choose the version to recover:"
 msgstr "Bitte wählen Sie die zu erholende Version:"
 
+#: src/common/engine.py src/plugins/chessevent/engine/action_selector.py
+#: src/plugins/chessevent/engine/event_selector.py
+#: src/plugins/ffe/engine/action_selector.py
+#: src/plugins/ffe/engine/event_selector.py
+#, fuzzy
+msgid "Q *** THE LETTER TO ANSWER QUIT"
+msgstr "Q"
+
 #: src/common/engine.py
 #, ai_translation
 msgid "  - [{q_uc}] Do not recover"
@@ -324,6 +121,30 @@ msgstr "Benutzerdefinierte Dateien wiederhergestellt: {num} (aus dem Verzeichnis
 #, ai_translation
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr "Möchten Sie diese benutzerdefinierten Dateien an die Papi-Web-Entwickler senden, um Futures-Versionen zu verbessern [{y_uc}/{n_lc}]?"
+
+#: src/common/engine.py src/plugins/chessevent/engine/chessevent_session.py
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Failed to read [{url}] (connection error): [{ex}]."
+msgstr "Nicht lesen [{url}] (Verbindungsfehler): [{ex}]."
+
+#: src/common/engine.py src/plugins/chessevent/engine/chessevent_session.py
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Failed to read [{url}] (timeout): [{ex}]."
+msgstr "Nicht lesen [{url}] (Auszeit): [{ex}]."
+
+#: src/common/engine.py src/plugins/chessevent/engine/chessevent_session.py
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
+msgstr "Nicht lesen [{url}] (Fehlercode [{errno}]): [{strerror}]."
+
+#: src/common/engine.py src/plugins/chessevent/engine/chessevent_session.py
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Failed to read [{url}]: [{ex}]."
+msgstr "Nicht lesen [{url}]: [{ex}]."
 
 #: src/common/engine.py
 #, ai_translation
@@ -879,111 +700,6 @@ msgstr "Turnier {tournament_uniq_id} ({numbers_str})"
 
 #: src/data/tie_break.py
 #, ai_translation
-msgid "None"
-msgstr "Keine"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Buchholz"
-msgstr "Buchholz"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Buchholz cut bottom"
-msgstr "Buchholz Schnittboden"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Median Buchholz"
-msgstr "Median Buchholz"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Progressive scores"
-msgstr "Progressive Werte"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Performance"
-msgstr "Leistung"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Sum of Buchholz"
-msgstr "Summe von Buchholz"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Number of wins"
-msgstr "Anzahl der Gewinne"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Kashdan"
-msgstr "Kashdan"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Koya"
-msgstr "Koya"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Sonnenborn-Berger"
-msgstr "Sonnenborn-Berger"
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-msgstr "Bu."
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "PS"
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "Perf *** ACRONYM FOR PERFORMANCE"
-msgstr "Perf"
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SBh"
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NW"
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "Ka. *** ACRONYM FOR KASHDAN"
-msgstr "Ka."
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "Ko. *** ACRONYM FOR KOYA"
-msgstr "Ko."
-
-#: src/data/tie_break.py
-#, fuzzy
-msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-msgstr "SB"
-
-#: src/data/tie_break.py
-#, ai_translation
 msgid "Cut"
 msgstr "Ausschneiden"
 
@@ -993,19 +709,13 @@ msgid "Cut top"
 msgstr "Nach oben schneiden"
 
 #: src/data/tie_break.py
-#, ai_translation
-msgid "Cut Bottom"
-msgstr "Unten schneiden"
+msgid "Cut bottom"
+msgstr ""
 
 #: src/data/tie_break.py
 #, ai_translation
 msgid "Played modifier"
 msgstr "Abgespielter Modifikator"
-
-#: src/data/tie_break.py
-#, ai_translation
-msgid "Papi legacy"
-msgstr "Papi-Vermächtnis"
 
 #: src/data/tie_break.py
 #, ai_translation
@@ -1024,6 +734,16 @@ msgstr "Spieler ausschließen"
 
 #: src/data/tie_break.py
 #, ai_translation
+msgid "Number of wins"
+msgstr "Anzahl der Gewinne"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
+msgstr "NW"
+
+#: src/data/tie_break.py
+#, ai_translation
 msgid "Number of games won"
 msgstr "Anzahl der gewonnenen Spiele"
 
@@ -1039,23 +759,56 @@ msgstr "Spiele gewonnen mit schwarz"
 
 #: src/data/tie_break.py
 #, ai_translation
-msgid "Rounds one Elected to Play"
-msgstr "Runde eins gewählt, um zu spielen"
+msgid "Progressive scores"
+msgstr "Progressive Werte"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgstr "PS"
 
 #: src/data/tie_break.py
 #, ai_translation
-msgid "Average of opponents Buchholz"
-msgstr "Durchschnitt der Gegner Buchholz"
+msgid "Rounds one Elected to Play"
+msgstr "Runde eins gewählt, um zu spielen"
+
+#: src/data/tie_break.py src/plugins/ffe/tie_break.py
+#, ai_translation
+msgid "Buchholz"
+msgstr "Buchholz"
 
 #: src/data/tie_break.py
 #, ai_translation
 msgid "Fore Buchholz"
 msgstr "Vor Buchholz"
 
+#: src/data/tie_break.py src/plugins/ffe/tie_break.py
+#, ai_translation
+msgid "Sum of Buchholz"
+msgstr "Summe von Buchholz"
+
+#: src/data/tie_break.py
+msgid "Average of opponents Buchholz"
+msgstr ""
+
+#: src/data/tie_break.py
+msgid "Sonnenborn-Berger"
+msgstr ""
+
 #: src/data/tie_break.py
 #, ai_translation
-msgid "Sonneborn-Berger"
-msgstr "Sonneborn-Berger"
+msgid "Koya"
+msgstr "Koya"
+
+#: src/data/tie_break.py
+#, fuzzy
+msgid "Ko. *** ACRONYM FOR PAPI KOYA"
+msgstr "Ko."
+
+#: src/data/tie_break.py src/plugins/ffe/tie_break.py
+#, ai_translation
+msgid "Kashdan"
+msgstr "Kashdan"
 
 #: src/data/tie_break.py
 #, ai_translation
@@ -1131,26 +884,6 @@ msgstr "Kein Verzeichnis für die Papi-Datei, standardmäßig [{path}]."
 #, ai_translation
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Der Name der Papi-Datei ist standardmäßig nicht festgelegt [{filename}]"
-
-#: src/data/tournament.py
-#, ai_translation
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr "Qualifikationsnummer und FFE-Passwort nicht festgelegt, Operationen auf der FFE-Website werden nicht verfügbar sein."
-
-#: src/data/tournament.py
-#, ai_translation
-msgid "ChessEvent connection not defined."
-msgstr "ChessEvent-Verbindung nicht definiert."
-
-#: src/data/tournament.py
-#, ai_translation
-msgid "ChessEvent event not set."
-msgstr "ChessEvent-Ereignis nicht gesetzt."
-
-#: src/data/tournament.py
-#, ai_translation
-msgid "ChessEvent tournament name not set."
-msgstr "ChessEvent Turniername nicht gesetzt."
 
 #: src/data/tournament_export.py
 #, ai_translation
@@ -1583,227 +1316,290 @@ msgstr "{number} Spieler geschrieben."
 msgid "Error while creating the database: {ex}."
 msgstr "Fehler beim Erstellen der Datenbank: {ex}."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/chessevent.py
 #, ai_translation
-msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
-msgstr "FFE ID nicht für Turniere definiert [{tournament_uniq_id}]."
+msgid "ChessEvent connection not defined."
+msgstr "ChessEvent-Verbindung nicht definiert."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/chessevent.py
 #, ai_translation
-msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
-msgstr "Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}]."
+msgid "ChessEvent event not set."
+msgstr "ChessEvent-Ereignis nicht gesetzt."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/chessevent.py
 #, ai_translation
-msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
-msgstr "Papi-Datei nicht gefunden [{file}] für Turnier [{tournament_uniq_id}]."
+msgid "ChessEvent tournament name not set."
+msgstr "ChessEvent Turniername nicht gesetzt."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/chessevent.py
 #, ai_translation
-msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
-msgstr "Regeldatei nicht für Turniere definiert [{tournament_uniq_id}]."
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Bitte geben Sie ein Passwort für die ChessEvent-Verbindung ein."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
-msgstr "Regeldatei definiert durch eine URL für Turnier [{tournament_uniq_id}]."
+msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
+msgstr "Die ChessEvent-Verbindung ist für Turniere nicht definiert [{tournament_uniq_id}]."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
-msgstr "Regeldatei [{file}] für Turniere nicht gefunden [{tournament_uniq_id}]."
+msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
+msgstr "Die Datei Papi ist nicht für Turniere definiert [{tournament_uniq_id}]."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "No FFE operations can be done on the tournaments of this event."
-msgstr "Auf den Turnieren dieser Veranstaltung können keine FFE-Operationen durchgeführt werden."
+msgid "Tournament [{tournament_uniq_id}] has started."
+msgstr "Das Turnier [{tournament_uniq_id}] hat begonnen."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
+#: src/plugins/ffe/engine/action_selector.py
 #, ai_translation
-msgid "Tournaments: {tournament_ffe_ids}"
-msgstr "Turniere: {tournament_ffe_ids}"
+msgid "Event: {event_name}"
+msgstr "Veranstaltung: {event_name}"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
+#, ai_translation
+msgid "Unable to create Papi files since no tournaments are defined."
+msgstr "Papi-Dateien können nicht erstellt werden, da keine Turniere definiert sind."
+
+#: src/plugins/chessevent/engine/action_selector.py
+#, ai_translation
+msgid "Tournaments: {tournament_names}"
+msgstr "Turniere: {tournament_names}"
+
+#: src/plugins/chessevent/engine/action_selector.py
 #, fuzzy
-msgid "T *** THE LETTER TO ANSWER TEST"
-msgstr "T"
+msgid "C *** THE LETTER TO ANSWER CREATE"
+msgstr "C"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
+#: src/plugins/ffe/engine/action_selector.py
 #, fuzzy
-msgid "V *** THE LETTER TO ANSWER VISIBLE"
-msgstr "V"
+msgid "U *** THE LETTER TO ANSWER UPLOAD"
+msgstr "U"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
+#, ai_translation
+msgid "Create the Papi files"
+msgstr "Die Papi-Dateien erstellen"
+
+#: src/plugins/chessevent/engine/action_selector.py
+#, ai_translation
+msgid "Create the Papi files and send them to the FFE website"
+msgstr "Erstellen Sie die Papi-Dateien und senden Sie sie an die FFE-Website"
+
+#: src/plugins/chessevent/engine/action_selector.py
+#: src/plugins/chessevent/engine/event_selector.py
+#: src/plugins/ffe/engine/action_selector.py
+#: src/plugins/ffe/engine/event_selector.py
+#, ai_translation
+msgid "Quit"
+msgstr "Beenden"
+
+#: src/plugins/chessevent/engine/action_selector.py
+#, ai_translation
+msgid "Your choice (by default {default}): "
+msgstr "Ihre Wahl (standardmäßig {default}):"
+
+#: src/plugins/chessevent/engine/action_selector.py
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Action: {action}"
+msgstr "Maßnahme: {action}"
+
+#: src/plugins/chessevent/engine/action_selector.py
 #, fuzzy
-msgid "F *** THE LETTER TO ANSWER FEES"
-msgstr "F"
+msgid "1 *** THE LETTER TO ANSWER ONCE"
+msgstr "1"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, fuzzy
-msgid "R *** THE LETTER TO ANSWER RULES"
-msgstr "R"
+msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
+msgstr "C"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "Test the tournament passwords on the FFE website"
-msgstr "Testen Sie die Passwörter des Turniers auf der FFE-Website"
+msgid "Once"
+msgstr "Einmal"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "Make the tournaments visible on the FFE website"
-msgstr "Machen Sie die Turniere auf der FFE-Website sichtbar"
+msgid "Continuously"
+msgstr "Kontinuierlich"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "Download fees invoices"
-msgstr "Download-Gebühren Rechnungen"
+msgid "Frequency: {frequency}"
+msgstr "Häufigkeit: {frequency}"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "Upload the rules of the tournaments"
-msgstr "Laden Sie die Regeln der Turniere hoch"
+msgid "Please choose the Papi version:"
+msgstr "Bitte wählen Sie die Papi-Version:"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "Upload the results of the tournaments"
-msgstr "Upload der Ergebnisse der Turniere"
+msgid "Papi version: {version}"
+msgstr "Papi-Version: {version}"
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
+#: src/plugins/ffe/engine/action_selector.py
 #, ai_translation
-msgid "Actions:"
-msgstr "Maßnahmen:"
+msgid "This action can not be applied to the tournaments of this event."
+msgstr "Diese Aktion kann nicht auf die Turniere dieses Events angewendet werden."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "No need to upload the rules to the FFE website (up to date)."
-msgstr "Keine Notwendigkeit, die Regeln auf die FFE-Website (bisher) hochzuladen."
+msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
+msgstr "Die Daten zum Turnier [{tournament_uniq_id}] konnten nicht dekodiert werden (Kodierung: [{encoding}]), gespeichert in Datei [{file}] (Fehlerzeile [{line}], Spalte [{column}], Position [{position}])."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "No need to upload the results to the FFE website (up to date)."
-msgstr "Es ist nicht erforderlich, die Ergebnisse auf die FFE-Website (bisher) hochzuladen."
+msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
+msgstr "Die Daten zum Turnier [{tournament_name}] auf ChessEvent sind unverändert."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/action_selector.py
 #, ai_translation
-msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
-msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
-msgstr[0] "{recent_updates} Turnier wurde vor weniger als {ffe_upload_delay} Sekunden aktualisiert, warten."
-msgstr[1] "{recent_updates} Turniere wurden vor weniger als {ffe_upload_delay} Sekunden aktualisiert, warten."
+msgid "Papi file [{file}] has been created (players: {num})."
+msgstr "Die Papi-Datei [{file}] wurde erstellt (Spieler: {num})."
 
-#: src/ffe/action_selector.py
+#: src/plugins/chessevent/engine/chessevent_session.py
 #, ai_translation
-msgid "End of upload (Ctrl-C)"
-msgstr "Ende des Uploads (Strg-C)"
+msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
+msgstr "Authentifizierungsfehler (Code: [{code}]) für [{user_id}] ([{chessevent_string}])."
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/chessevent_session.py
 #, ai_translation
-msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
-msgstr "Inhalt der URL [{url}] ist nicht gültig (input[id=[{id]] nicht gefunden)."
+msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
+msgstr "Zugriff verweigert (Code: [{code}]) für [{user_id}] zum Turnier [{tournament_name}] ([{chessevent_string}])."
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/chessevent_session.py
 #, ai_translation
-msgid "Initializing a session to [{url}]..."
-msgstr "Initialisieren einer Sitzung auf [{url}]..."
+msgid "Missing parameter (code: [{code}]): [{error}]."
+msgstr "Fehlender Parameter (Code: [{code}]): [{error}]."
 
-# Error: translation [In Ordnung.] is much too long compared to initial [OK]
-#: src/ffe/ffe_session.py
-#: src/plugins/ffe/templates/ffe_player_league_header.html
-#: src/plugins/ffe/templates/ffe_player_licence_header.html
-#: src/web/templates/admin/players/filter_categories.html
-#: src/web/templates/admin/players/filter_check_ins.html
-#: src/web/templates/admin/players/filter_clubs.html
-#: src/web/templates/admin/players/filter_columns.html
-#: src/web/templates/admin/players/filter_federations.html
-#: src/web/templates/admin/players/filter_genders.html
-#: src/web/templates/admin/players/filter_tournaments.html
+#: src/plugins/chessevent/engine/chessevent_session.py
 #, ai_translation
-msgid "OK"
-msgstr ""
+msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
+msgstr "ID [{user_id}] nicht gefunden (Code: [{code}]): [{error}]."
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/chessevent_session.py
 #, ai_translation
-msgid "Authenticating..."
-msgstr "Authentifizierung..."
+msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
+msgstr "Turnier [{tournament_name}] nicht gefunden (Code: [{code}]): [{error}]."
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/chessevent_session.py
 #, ai_translation
-msgid "Authentication failed."
-msgstr "Die Authentifizierung ist fehlgeschlagen."
+msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
+msgstr "Ereignis [{event_id}] nicht gefunden (Code: [{code}]): [{error}]."
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/chessevent_session.py
 #, ai_translation
-msgid "Tournament [{ffe_id}]:"
-msgstr "Turnier [{ffe_id}]:"
+msgid "Unknown response code: [{code}] ([{chessevent_string}])."
+msgstr "Unbekannter Antwortcode: [{code}] ([{chessevent_string}])."
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/event_selector.py
+#: src/plugins/ffe/engine/event_selector.py
 #, ai_translation
-msgid "Getting fees for tournament [{ffe_id}]..."
-msgstr "Gebühren für Turniere [{ffe_id}]..."
+msgid "No events found."
+msgstr "Es wurden keine Veranstaltungen gefunden."
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/event_selector.py
+#: src/plugins/ffe/engine/event_selector.py
 #, ai_translation
-msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
-msgstr "Gebühren Link nicht gefunden, überprüfen Sie, ob eine Papi-Datei bereits gesendet wurde und dass das Turnier nicht auf der FFE-Website archiviert wurde."
+msgid "One event found, press Enter (Q to quit): "
+msgstr "Ein Ereignis gefunden, drücken Sie Enter (Q zum Beenden):"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/event_selector.py
+#: src/plugins/ffe/engine/event_selector.py
 #, ai_translation
-msgid "Tournament exempt from registration fees."
-msgstr "Turnier von Registrierungsgebühren befreit."
+msgid "Please choose the event:"
+msgstr "Bitte wählen Sie die Veranstaltung:"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/engine/event_selector.py
+#: src/plugins/ffe/engine/event_selector.py
 #, ai_translation
-msgid "Invalid fees link text [{text}]."
-msgstr "Ungültige Gebühren Link Text [{text}]."
+msgid "Your choice: "
+msgstr "Ihre Wahl:"
 
-#: src/ffe/ffe_session.py
-#, ai_translation
-msgid "Invoice saved to [{file}]."
-msgstr "Rechnung gespeichert auf [{file}]."
+#: src/plugins/chessevent/templates/chessevent_event_card_block.html
+#, ai_translation, python-format
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
+msgstr "Schachereignis: %(chessevent_user_id)s / %(chessevent_event_id)s"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/templates/chessevent_event_card_block.html
+#: src/plugins/chessevent/templates/chessevent_event_info_rows.html
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
 #, ai_translation
-msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr "Senden des Turniers [{ffe_id}] ({file}) an die FFE-Website..."
+msgid "No ChessEvent identifier defined"
+msgstr "Keine ChessEvent-Kennung definiert"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/templates/chessevent_event_card_block.html
+#: src/plugins/chessevent/templates/chessevent_event_info_rows.html
+#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
 #, ai_translation
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr "Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht als beendet auf der FFE-Website markiert ist."
+msgid "No ChessEvent event defined"
+msgstr "Kein ChessEvent-Ereignis definiert"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
 #, ai_translation
-msgid "Results upload OK"
-msgstr "Ergebnisse hochladen OK"
+msgid "Connection to the ChessEvent platform"
+msgstr "Verbindung zur ChessEvent-Plattform"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
 #, ai_translation
-msgid "Making the tournament visible on the FFE website..."
-msgstr "Das Turnier auf der FFE-Website sichtbar machen..."
+msgid "Chessevent ID:"
+msgstr "Schachereignis-ID:"
 
-#: src/ffe/ffe_session.py
-#, ai_translation
-msgid "Display link not found, check that a Papi file has already been sent."
-msgstr "Link nicht gefunden anzeigen, überprüfen Sie, ob eine Papi-Datei bereits gesendet wurde."
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#: src/plugins/ffe/templates/ffe_player_form_fields.html
+#: src/plugins/ffe/templates/ffe_search.html
+#: src/plugins/ffe/templates/ffe_tournament_form_fields.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#, ai_translation, python-format
+msgid "E.g.: %(string)s"
+msgstr "Z.B.: %(string)s"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
 #, ai_translation
-msgid "Data is already displayed on the FFE website."
-msgstr "Daten werden bereits auf der FFE-Website angezeigt."
+msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr "Die ID, die zur Verbindung mit der ChessEvent-Plattform verwendet wird (standardmäßig können die Turniere überschrieben werden)."
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
 #, ai_translation
-msgid "Invalid display link text [{text}]"
-msgstr "Ungültiger Anzeigelink-Text [{text}]"
+msgid "ChessEvent Password:"
+msgstr "ChessEvent-Passwort:"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#: src/web/templates/admin/event/event_modal.html
 #, ai_translation
-msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr "Senden der Turnierregeln [{ffe_id}] ({file}) an die FFE-Website..."
+msgid "E.g.: my_password"
+msgstr "Z.B.: mein_Passwort"
 
-#: src/ffe/ffe_session.py
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
 #, ai_translation
-msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr "Regeln Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht als beendet auf der FFE-Website markiert ist."
+msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr "Das Passwort, das zur Verbindung mit der ChessEvent-Plattform verwendet wird (standardmäßig können die Turniere überschrieben werden)."
+
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#, ai_translation
+msgid "ChessEvent event:"
+msgstr "ChessEvent-Ereignis:"
+
+#: src/plugins/chessevent/templates/chessevent_event_form_fields.html
+#, ai_translation
+msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr "Der Name des Ereignisses auf der ChessEvent-Plattform (standardmäßig können die Turniere überschrieben werden)."
+
+#: src/plugins/chessevent/templates/chessevent_event_info_rows.html
+#, ai_translation
+msgid "ChessEvent"
+msgstr "Schachveranstaltung"
 
 #: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
 #, ai_translation, python-format
@@ -1811,28 +1607,53 @@ msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chesseve
 msgstr "Schachereignis: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 
 #: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/index/event_card.html
-#, ai_translation
-msgid "No ChessEvent identifier defined"
-msgstr "Keine ChessEvent-Kennung definiert"
-
-#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
-#: src/web/templates/admin/event/tab.html
-#: src/web/templates/admin/index/event_card.html
-#, ai_translation
-msgid "No ChessEvent event defined"
-msgstr "Kein ChessEvent-Ereignis definiert"
-
-#: src/plugins/chessevent/templates/chessevent_tournament_card_block.html
 #, ai_translation
 msgid "No ChessEvent tournament defined"
 msgstr "Kein ChessEvent Turnier definiert"
+
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+msgid "Connections ChessEvent"
+msgstr ""
+
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#, ai_translation
+msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
+msgstr "Die ID, die zur Verbindung mit der ChessEvent-Plattform verwendet wurde (standardmäßig die ChessEvent-ID, die für das Papi-Web-Event des Turniers definiert wurde)."
+
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#, ai_translation
+msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament)."
+msgstr "Das Passwort, das verwendet wird, um sich mit der ChessEvent-Plattform zu verbinden (standardmäßig das Passwort, das für das Papi-Web-Event des Turniers definiert wurde)."
+
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#, ai_translation
+msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
+msgstr "Die ID des Ereignisses auf der ChessEvent-Plattform (Standard der ChessEvent-Event-ID für das Papi-Web-Event des Turniers definiert)."
+
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#, ai_translation
+msgid "ChessEvent tournament:"
+msgstr "ChessEvent Turnier:"
+
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#, ai_translation
+msgid "E.g.: Tournoi A"
+msgstr "Z.B.: Tournoi A"
+
+#: src/plugins/chessevent/templates/chessevent_tournament_form_fields.html
+#, ai_translation
+msgid "The name of the tournament on the ChessEvent platform."
+msgstr "Der Name des Turniers auf der ChessEvent-Plattform."
 
 #: src/plugins/ffe/ffe.py
 #, ai_translation
 msgid "Error while updating the FFE database."
 msgstr "Fehler beim Aktualisieren der FFE-Datenbank."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgstr "Qualifikationsnummer und FFE-Passwort nicht festgelegt, Operationen auf der FFE-Website werden nicht verfügbar sein."
 
 #: src/plugins/ffe/ffe.py
 #, ai_translation
@@ -1853,6 +1674,16 @@ msgstr "Ungültige FFE-Lizenznummer [{ffe_licence_number}]."
 #, ai_translation
 msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Der Spieler mit der FFE-Lizenznummer [{ffe_licence_number}] spielt bereits Turniere [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "The FFE ID is a positive integer."
+msgstr "Die FFE-ID ist eine positive Ganzzahl."
+
+#: src/plugins/ffe/ffe.py
+#, ai_translation
+msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
+msgstr "Das Passwort des Turniers auf der FFE-Website besteht aus 10 Großbuchstaben."
 
 #: src/plugins/ffe/ffe.py
 #, ai_translation
@@ -1889,6 +1720,51 @@ msgstr "Download der FFE-Datenbank..."
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Fehler beim Lesen der folgenden Zeile (Spieler ignoriert): [{row}]."
 
+#: src/plugins/ffe/tie_break.py
+#, fuzzy
+msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
+msgstr "Bu."
+
+#: src/plugins/ffe/tie_break.py
+#, ai_translation
+msgid "Buchholz cut bottom"
+msgstr "Buchholz Schnittboden"
+
+#: src/plugins/ffe/tie_break.py
+#, fuzzy
+msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+#: src/plugins/ffe/tie_break.py
+#, ai_translation
+msgid "Median Buchholz"
+msgstr "Median Buchholz"
+
+#: src/plugins/ffe/tie_break.py
+#, fuzzy
+msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+#: src/plugins/ffe/tie_break.py
+#, ai_translation
+msgid "Performance"
+msgstr "Leistung"
+
+#: src/plugins/ffe/tie_break.py
+#, fuzzy
+msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
+msgstr "Perf"
+
+#: src/plugins/ffe/tie_break.py
+#, fuzzy
+msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
+msgstr "SBh"
+
+#: src/plugins/ffe/tie_break.py
+#, fuzzy
+msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
+msgstr "Ka."
+
 #: src/plugins/ffe/util.py
 #, ai_translation
 msgid "No FFE Licence"
@@ -1909,6 +1785,233 @@ msgstr "FFE-Genehmigung B (Freizeit)"
 msgid "FFE licence A (competition)"
 msgstr "FFE-Lizenz A (Wettbewerb)"
 
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
+msgstr "FFE ID nicht für Turniere definiert [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
+msgstr "Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+msgstr "Papi-Datei nicht gefunden [{file}] für Turnier [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
+msgstr "Regeldatei nicht für Turniere definiert [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
+msgstr "Regeldatei definiert durch eine URL für Turnier [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
+msgstr "Regeldatei [{file}] für Turniere nicht gefunden [{tournament_uniq_id}]."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "No FFE operations can be done on the tournaments of this event."
+msgstr "Auf den Turnieren dieser Veranstaltung können keine FFE-Operationen durchgeführt werden."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Tournaments: {tournament_ffe_ids}"
+msgstr "Turniere: {tournament_ffe_ids}"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, fuzzy
+msgid "T *** THE LETTER TO ANSWER TEST"
+msgstr "T"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, fuzzy
+msgid "V *** THE LETTER TO ANSWER VISIBLE"
+msgstr "V"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, fuzzy
+msgid "F *** THE LETTER TO ANSWER FEES"
+msgstr "F"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, fuzzy
+msgid "R *** THE LETTER TO ANSWER RULES"
+msgstr "R"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Test the tournament passwords on the FFE website"
+msgstr "Testen Sie die Passwörter des Turniers auf der FFE-Website"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Make the tournaments visible on the FFE website"
+msgstr "Machen Sie die Turniere auf der FFE-Website sichtbar"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Download fees invoices"
+msgstr "Download-Gebühren Rechnungen"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Upload the rules of the tournaments"
+msgstr "Laden Sie die Regeln der Turniere hoch"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Upload the results of the tournaments"
+msgstr "Upload der Ergebnisse der Turniere"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "Actions:"
+msgstr "Maßnahmen:"
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "No need to upload the rules to the FFE website (up to date)."
+msgstr "Keine Notwendigkeit, die Regeln auf die FFE-Website (bisher) hochzuladen."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "No need to upload the results to the FFE website (up to date)."
+msgstr "Es ist nicht erforderlich, die Ergebnisse auf die FFE-Website (bisher) hochzuladen."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
+msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
+msgstr[0] "{recent_updates} Turnier wurde vor weniger als {ffe_upload_delay} Sekunden aktualisiert, warten."
+msgstr[1] "{recent_updates} Turniere wurden vor weniger als {ffe_upload_delay} Sekunden aktualisiert, warten."
+
+#: src/plugins/ffe/engine/action_selector.py
+#, ai_translation
+msgid "End of upload (Ctrl-C)"
+msgstr "Ende des Uploads (Strg-C)"
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
+msgstr "Inhalt der URL [{url}] ist nicht gültig (input[id=[{id]] nicht gefunden)."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Initializing a session to [{url}]..."
+msgstr "Initialisieren einer Sitzung auf [{url}]..."
+
+# Error: translation [In Ordnung.] is much too long compared to initial [OK]
+#: src/plugins/ffe/engine/ffe_session.py
+#: src/plugins/ffe/templates/ffe_player_league_header.html
+#: src/plugins/ffe/templates/ffe_player_licence_header.html
+#: src/web/templates/admin/players/filter_categories.html
+#: src/web/templates/admin/players/filter_check_ins.html
+#: src/web/templates/admin/players/filter_clubs.html
+#: src/web/templates/admin/players/filter_columns.html
+#: src/web/templates/admin/players/filter_federations.html
+#: src/web/templates/admin/players/filter_genders.html
+#: src/web/templates/admin/players/filter_tournaments.html
+#, ai_translation
+msgid "OK"
+msgstr ""
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Authenticating..."
+msgstr "Authentifizierung..."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Authentication failed."
+msgstr "Die Authentifizierung ist fehlgeschlagen."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Tournament [{ffe_id}]:"
+msgstr "Turnier [{ffe_id}]:"
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Getting fees for tournament [{ffe_id}]..."
+msgstr "Gebühren für Turniere [{ffe_id}]..."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
+msgstr "Gebühren Link nicht gefunden, überprüfen Sie, ob eine Papi-Datei bereits gesendet wurde und dass das Turnier nicht auf der FFE-Website archiviert wurde."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Tournament exempt from registration fees."
+msgstr "Turnier von Registrierungsgebühren befreit."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Invalid fees link text [{text}]."
+msgstr "Ungültige Gebühren Link Text [{text}]."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Invoice saved to [{file}]."
+msgstr "Rechnung gespeichert auf [{file}]."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+msgstr "FFE-ID und Passwort sind für Turniere nicht korrekt festgelegt [{tournament_name}], Daten können nicht an die FFE-Website gesendet werden."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr "Senden des Turniers [{ffe_id}] ({file}) an die FFE-Website..."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgstr "Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht als beendet auf der FFE-Website markiert ist."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Results upload OK"
+msgstr "Ergebnisse hochladen OK"
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Making the tournament visible on the FFE website..."
+msgstr "Das Turnier auf der FFE-Website sichtbar machen..."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Display link not found, check that a Papi file has already been sent."
+msgstr "Link nicht gefunden anzeigen, überprüfen Sie, ob eine Papi-Datei bereits gesendet wurde."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Data is already displayed on the FFE website."
+msgstr "Daten werden bereits auf der FFE-Website angezeigt."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Invalid display link text [{text}]"
+msgstr "Ungültiger Anzeigelink-Text [{text}]"
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr "Senden der Turnierregeln [{ffe_id}] ({file}) an die FFE-Website..."
+
+#: src/plugins/ffe/engine/ffe_session.py
+#, ai_translation
+msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgstr "Regeln Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht als beendet auf der FFE-Website markiert ist."
+
 #: src/plugins/ffe/templates/ffe_player_form_fields.html
 #, ai_translation
 msgid "French Chess Federation"
@@ -1918,15 +2021,6 @@ msgstr "Französischer Schachverband"
 #, ai_translation
 msgid "Licence number:"
 msgstr "Lizenznummer:"
-
-#: src/plugins/ffe/templates/ffe_player_form_fields.html
-#: src/plugins/ffe/templates/ffe_search.html
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, python-format
-msgid "E.g.: %(string)s"
-msgstr "Z.B.: %(string)s"
 
 #: src/plugins/ffe/templates/ffe_player_form_fields.html
 #, ai_translation
@@ -2037,6 +2131,39 @@ msgstr "FFE-Qualifikation: %(ffe_id)s"
 msgid "No FFE qualification"
 msgstr "Keine FFE-Qualifikation"
 
+#: src/plugins/ffe/templates/ffe_tournament_form_fields.html
+msgid "Connection French Chess Federation"
+msgstr ""
+
+#: src/plugins/ffe/templates/ffe_tournament_form_fields.html
+#, ai_translation
+msgid "FFE certification number (optional):"
+msgstr "FFE-Qualifikationsnummer (fakultativ):"
+
+#: src/plugins/ffe/templates/ffe_tournament_form_fields.html
+#: src/web/templates/admin/families/family_modal.html
+#: src/web/templates/admin/screens/screen_modal.html
+#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
+#: src/web/templates/admin/tournaments/tournament_modal.html
+#, ai_translation, python-format
+msgid "E.g.: %(num)d"
+msgstr "Z.B.: %(num)d"
+
+#: src/plugins/ffe/templates/ffe_tournament_form_fields.html
+#, ai_translation
+msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
+msgstr "Die von der Französischen Föderation angegebene Qualifikationsnummer ist eine ganze Zahl, sie wird verwendet, um sich mit der FFE-Website zu verbinden."
+
+#: src/plugins/ffe/templates/ffe_tournament_form_fields.html
+#, ai_translation
+msgid "FFE password:"
+msgstr "FFE-Passwort:"
+
+#: src/plugins/ffe/templates/ffe_tournament_form_fields.html
+#, ai_translation
+msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
+msgstr "Das Passwort besteht aus 10 Großbuchstaben, es wird verwendet, um sich mit der FFE-Website zu verbinden."
+
 #: src/web/server_engine.py
 #, ai_translation
 msgid "Opening the welcome page [{url}] in a browser..."
@@ -2127,6 +2254,11 @@ msgstr "Ziehungspunkte (Halbpunkt bis zum Schluss)"
 #, ai_translation
 msgid "Points for loss (zero-point bye)"
 msgstr "Punkte für Verlust (Nullpunkt bye)"
+
+#: src/web/controllers/admin/base_admin_controller.py
+#, ai_translation
+msgid "None"
+msgstr "Keine"
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
@@ -2271,11 +2403,6 @@ msgstr "Bitte geben Sie ein Datum nach dem Startdatum ein."
 #, ai_translation
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr "Bitte geben Sie eine URL ein oder wählen Sie ein Bild auf der rechten Seite."
-
-#: src/web/controllers/admin/base_admin_controller.py
-#, ai_translation
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Bitte geben Sie ein Passwort für die ChessEvent-Verbindung ein."
 
 #: src/web/controllers/admin/base_admin_controller.py
 #, ai_translation
@@ -2773,16 +2900,6 @@ msgstr "Bitte geben Sie den Turniernamen ein."
 
 #: src/web/controllers/admin/tournament_admin_controller.py
 #, ai_translation
-msgid "The FFE ID is a positive integer."
-msgstr "Die FFE-ID ist eine positive Ganzzahl."
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
-msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-msgstr "Das Passwort des Turniers auf der FFE-Website besteht aus 10 Großbuchstaben."
-
-#: src/web/controllers/admin/tournament_admin_controller.py
-#, ai_translation
 msgid "Tie-break already in use."
 msgstr "Krawattenbruch bereits in Gebrauch."
 
@@ -3220,50 +3337,6 @@ msgstr "Das Standardverzeichnis der Papi-Dateien für die Turniere (absolute ode
 
 #: src/web/templates/admin/event/event_modal.html
 #, ai_translation
-msgid "Connection to the ChessEvent platform"
-msgstr "Verbindung zur ChessEvent-Plattform"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "Chessevent ID:"
-msgstr "Schachereignis-ID:"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr "Die ID, die zur Verbindung mit der ChessEvent-Plattform verwendet wird (standardmäßig können die Turniere überschrieben werden)."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "ChessEvent Password:"
-msgstr "ChessEvent-Passwort:"
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "E.g.: my_password"
-msgstr "Z.B.: mein_Passwort"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr "Das Passwort, das zur Verbindung mit der ChessEvent-Plattform verwendet wird (standardmäßig können die Turniere überschrieben werden)."
-
-#: src/web/templates/admin/event/event_modal.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "ChessEvent event:"
-msgstr "ChessEvent-Ereignis:"
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
-msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr "Der Name des Ereignisses auf der ChessEvent-Plattform (standardmäßig können die Turniere überschrieben werden)."
-
-#: src/web/templates/admin/event/event_modal.html
-#, ai_translation
 msgid "Password to enter results:"
 msgstr "Passwort für die Eingabe der Ergebnisse:"
 
@@ -3545,11 +3618,6 @@ msgstr "Standardverzeichnis der Papi-Dateien"
 #, ai_translation
 msgid "(by default)"
 msgstr "(standardmäßig)"
-
-#: src/web/templates/admin/event/tab.html
-#, ai_translation
-msgid "ChessEvent"
-msgstr "Schachveranstaltung"
 
 #: src/web/templates/admin/event/tab.html
 #, ai_translation
@@ -3860,14 +3928,6 @@ msgstr "Erster Vorstand:"
 #, ai_translation
 msgid "First player:"
 msgstr "Erster Spieler:"
-
-#: src/web/templates/admin/families/family_modal.html
-#: src/web/templates/admin/screens/screen_modal.html
-#: src/web/templates/admin/screens/screen_sets_modal_set_div.html
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation, python-format
-msgid "E.g.: %(num)d"
-msgstr "Z.B.: %(num)d"
 
 #: src/web/templates/admin/families/family_modal.html
 #: src/web/templates/admin/screens/screen_sets_modal_set_div.html
@@ -4243,11 +4303,6 @@ msgstr "Turniere: %(num)d"
 #, ai_translation
 msgid "No tournaments"
 msgstr "Keine Turniere"
-
-#: src/web/templates/admin/index/event_card.html
-#, ai_translation, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
-msgstr "Schachereignis: %(chessevent_user_id)s / %(chessevent_event_id)s"
 
 #: src/web/templates/admin/index/event_card.html
 #, ai_translation, python-format
@@ -6093,61 +6148,6 @@ msgstr "Name der Datei Papi (ohne Erweiterung):"
 #, ai_translation
 msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
 msgstr "Der Name der Papi-Datei, ohne die Erweiterung .papi (standardmäßig die FFE-Qualifikationsnummer des Turniers, dann die eindeutige ID des Turniers)."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "Connections (FFE and ChessEvent)"
-msgstr "Verbindungen (FFE und ChessEvent)"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "FFE certification number (optional):"
-msgstr "FFE-Qualifikationsnummer (fakultativ):"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
-msgstr "Die von der Französischen Föderation angegebene Qualifikationsnummer ist eine ganze Zahl, sie wird verwendet, um sich mit der FFE-Website zu verbinden."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "FFE password:"
-msgstr "FFE-Passwort:"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
-msgstr "Das Passwort besteht aus 10 Großbuchstaben, es wird verwendet, um sich mit der FFE-Website zu verbinden."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
-msgstr "Die ID, die zur Verbindung mit der ChessEvent-Plattform verwendet wurde (standardmäßig die ChessEvent-ID, die für das Papi-Web-Event des Turniers definiert wurde)."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament)."
-msgstr "Das Passwort, das verwendet wird, um sich mit der ChessEvent-Plattform zu verbinden (standardmäßig das Passwort, das für das Papi-Web-Event des Turniers definiert wurde)."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
-msgstr "Die ID des Ereignisses auf der ChessEvent-Plattform (Standard der ChessEvent-Event-ID für das Papi-Web-Event des Turniers definiert)."
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "ChessEvent tournament:"
-msgstr "ChessEvent Turnier:"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "E.g.: Tournoi A"
-msgstr "Z.B.: Tournoi A"
-
-#: src/web/templates/admin/tournaments/tournament_modal.html
-#, ai_translation
-msgid "The name of the tournament on the ChessEvent platform."
-msgstr "Der Name des Turniers auf der ChessEvent-Plattform."
 
 #: src/web/templates/admin/tournaments/tournament_modal.html
 #, ai_translation

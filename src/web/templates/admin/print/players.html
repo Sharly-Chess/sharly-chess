@@ -77,7 +77,9 @@
                                         <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
                                     </th>
                                     {% for tie_break in admin_tournament.tie_breaks %}
-                                        <th class="right">{{ tie_break.acronym }}</th>
+                                        {% if tie_break.is_displayable %}
+                                            <th class="right">{{ tie_break.acronym }}</th>
+                                        {% endif %}
                                     {% endfor %}
                                 {% endif %}
                                 {{ macros.extra_column_header("end", extra_classes, extra_columns)}}
