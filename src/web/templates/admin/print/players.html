@@ -4,7 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1">
         <title>{{ tournament.name }}</title>
         <style type="text/css">
-            {% include 'print.css' %}
+            {% include 'players.css' %}
             {{ extra_css }}
         </style>
     </head>
@@ -24,12 +24,12 @@
                     </div>
                     <table class="player-table">
                         <thead>
-                            {% include 'player_header.html' %}
+                            {% include '../../common/print/player_header.html' %}
                         </thead>
                         <tbody>
                             {% for player in players[split_by] %}
                                 {% with row_class='even' if loop.index is even else 'odd' %}
-                                    {% include 'player_row.html' %}
+                                    {% include '../../common/print/player_row.html' %}
                                 {% endwith %}
                                 {% set __ = n.append(1) %}
                             {% endfor %}
