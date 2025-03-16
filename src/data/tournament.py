@@ -515,7 +515,7 @@ class Tournament:
         }
         for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
-                self._calculate_player_virtual_points_at_round(player, round_)
+                self._calculate_player_virtual_points(player, at_round=round_)
                 for round_ in range(1, next_round)
             ]
             if sum(vpoints_history) > 0:
@@ -628,16 +628,18 @@ class Tournament:
         for player in self._players_by_id.values():
             if player.ref_id == 1:
                 continue
-            vpoints = self._calculate_player_virtual_points_at_round(player, self._current_round)
+            vpoints = self._calculate_player_virtual_points(player, at_round=self._current_round)
             player.compute_points(before_round=self._current_round)
             player.vpoints = player.points + vpoints
 
-    def _calculate_player_virtual_points_at_round(
-        self, player: Player, round_: int
+    def _calculate_player_virtual_points(
+        self,
+        player: Player,
+        at_round: int
     ) -> float:
         vpoints = Result.LOSS.points(self.point_values)
         if self._pairing == TournamentPairing.HALEY:
-            if round_ <= 2 and player.rating >= self._rating_limit1:
+            if at_round <= 2 and player.rating >= self._rating_limit1:
                 vpoints = Result.GAIN.points(self.point_values)
         elif self._pairing == TournamentPairing.HALEY_SOFT:
             # Round 1: All players above rating_limit1 get 1 vpoint
@@ -646,14 +648,14 @@ class Tournament:
             # bottom of page #138 on
             # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
             # please remove if OK
-            if round_ <= 2 and player.rating >= self.rating_limit1:
+            if at_round <= 2 and player.rating >= self.rating_limit1:
                 vpoints = Result.GAIN.points(self.point_values)
-            elif round_ == 2 and player.rating < self.rating_limit1:
+            elif at_round == 2 and player.rating < self.rating_limit1:
                 vpoints = Result.DRAW.points(self.point_values)
         elif self._pairing == TournamentPairing.SAD:
             # Before the second to last round, we remove the virtual
             # points, and use a simple Swiss Dutch system.
-            if round_ <= self._rounds - 2:
+            if at_round <= self._rounds - 2:
                 # Each 1.5 points earned, virtual points go up by 0.5
                 # No player can have more than 2 points.
                 # At the start, players are sorted in three groups
@@ -667,7 +669,7 @@ class Tournament:
                 # NOTE(Amaras): // is implemented on float as well, so it's
                 # way simpler to implement than by applying the algorithm
                 # step by step.
-                points = player.points_before(round_)
+                points = player.points_before(at_round)
                 draw_points = Result.DRAW.points(self.point_values)
                 potential_vpoints = draw_points * (points // (3 * draw_points))
                 if player.rating >= self.rating_limit1:
