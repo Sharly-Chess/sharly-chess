@@ -251,6 +251,8 @@ class TieBreakUtils:
                 if pairing.result in (
                     Result.FULL_POINT_BYE,
                     Result.PAIRING_ALLOCATED_BYE,
+                    Result.HALF_POINT_BYE,
+                    Result.ZERO_POINT_BYE,
                 ):
                     score += pairing.result.points(tournament.point_values)
                 else:
