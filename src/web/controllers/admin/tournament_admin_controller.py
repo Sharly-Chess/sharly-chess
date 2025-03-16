@@ -849,7 +849,7 @@ class TournamentAdminController(BaseEventAdminController):
         players: list[Player]
         match print_document:
             case PrintDocument.RANKING | PrintDocument.CROSSTABLE:
-                players = list(admin_tournament.compute_player_ranks_after_round(round).values())
+                players = list(admin_tournament.compute_player_ranks_after(round).values())
             case PrintDocument.PLAYER_LIST:
                 players = admin_tournament.players_by_name_with_unpaired
             case _:

@@ -21,7 +21,7 @@ class AbstractPapiTieBreak(AbstractTieBreak, ABC):
 
 class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     @staticmethod
-    def _papi_adjusted_score_after_round(
+    def _papi_adjusted_score_after(
         player: 'Player',
         round_: int,
     ) -> float:
@@ -30,7 +30,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         if round_ is None:
             round_ = max(player.pairings)
         if tournament.pairing == TournamentPairing.BERGER:
-            return player.points_after_round(round_)
+            return player.points_after(round_)
         score = 0
         for round_index, pairing in player.pairings.items():
             if round_index > round_:
@@ -52,14 +52,14 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         return score
 
     @staticmethod
-    def _papi_dummy_score_after_round(
+    def _papi_dummy_score_after(
         player: 'Player',
         pairing: Pairing,
         round_: int = 1,
         round_index: int = 1,
     ) -> float:
         """Legacy: uses round_index for the computation"""
-        dummy = player.points_before_round(round_index) + Result.DRAW.points(player.point_values) * (
+        dummy = player.points_before(round_index) + Result.DRAW.points(player.point_values) * (
                 round_ - round_index)
         match pairing.result:
             case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
@@ -79,7 +79,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
             return 2
         return 3
 
-    def compute_papi_buchholz_player_value_after_round(
+    def compute_papi_buchholz_player_value_after(
         self,
         player: Player,
         round_: int | None,
@@ -101,7 +101,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         }
         if tournament.pairing == TournamentPairing.BERGER:
             return sum(
-                self._papi_adjusted_score_after_round(
+                self._papi_adjusted_score_after(
                     tournament.players_by_id[pairing.opponent_id],
                     round_,
                 )
@@ -114,18 +114,18 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
             should_add_dummy = tournament.pairing.swiss and pairing.unplayed
 
             if should_add_dummy:
-                dummy_points = self._papi_dummy_score_after_round(
+                dummy_points = self._papi_dummy_score_after(
                     player, pairing, round_, round_index
                 )
                 scores.append(dummy_points)
                 continue
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             if tournament.pairing.swiss:
-                opponent_adjusted_score = self._papi_adjusted_score_after_round(
+                opponent_adjusted_score = self._papi_adjusted_score_after(
                     opponent, round_
                 )
             else:
-                opponent_adjusted_score = opponent.points_after_round(round_)
+                opponent_adjusted_score = opponent.points_after(round_)
             scores.append(opponent_adjusted_score)
         voluntary_unplayed = sorted(voluntary_unplayed)
         scores = sorted(scores)
@@ -153,12 +153,12 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     def acronym(self) -> str:
         return _('Bu. *** ACRONYM FOR PAPI BUCHHOLZ')
 
-    def compute_player_value_after_round(
+    def compute_player_value_after(
         self,
         player: 'Player',
         round_: int | None,
     ) -> float:
-        return self.compute_papi_buchholz_player_value_after_round(
+        return self.compute_papi_buchholz_player_value_after(
             player, round_
         )
 
@@ -180,12 +180,12 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
     def acronym(self) -> str:
         return _('Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM')
 
-    def compute_player_value_after_round(
+    def compute_player_value_after(
             self,
             player: 'Player',
             round_: int | None,
     ) -> float:
-        return self.compute_papi_buchholz_player_value_after_round(
+        return self.compute_papi_buchholz_player_value_after(
             player, round_, use_cut_btm=True
         )
 
@@ -207,12 +207,12 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     def acronym(self) -> str:
         return _('Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ')
 
-    def compute_player_value_after_round(
+    def compute_player_value_after(
             self,
             player: 'Player',
             round_: int | None,
     ) -> float:
-        return self.compute_papi_buchholz_player_value_after_round(
+        return self.compute_papi_buchholz_player_value_after(
             player,
             round_,
             use_cut_top=True,
@@ -237,7 +237,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
     def acronym(self) -> str:
         return _('Perf *** ACRONYM FOR PAPI PERFORMANCE')
 
-    def compute_player_value_after_round(
+    def compute_player_value_after(
             self,
             player: 'Player',
             round_: int | None,
@@ -287,7 +287,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
     def acronym(self) -> str:
         return _('SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ')
 
-    def compute_player_value_after_round(
+    def compute_player_value_after(
             self,
             player: 'Player',
             round_: int | None,
@@ -302,7 +302,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
         ]
         tie_break = PapiBuchholzTieBreak()
         return sum(
-            tie_break.compute_player_value_after_round(opponent, round_)
+            tie_break.compute_player_value_after(opponent, round_)
             for opponent in opponents if opponent is not None
         )
 
@@ -324,7 +324,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
     def acronym(self) -> str:
         return _('Ka. *** ACRONYM FOR PAPI KASHDAN')
 
-    def compute_player_value_after_round(
+    def compute_player_value_after(
             self,
             player: 'Player',
             round_: int | None,
