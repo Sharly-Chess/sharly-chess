@@ -1564,7 +1564,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             cls, tie_breaks: list[AbstractTieBreak] | None
     ) -> str | None:
         """Serializes the tie breaks into JSON. Returns a serialization
-        with format [{'tie_break': str, 'options': {str: value}}]."""
+        with format [{'type': str, 'options': {str: value}}]."""
         if tie_breaks is None:
             return None
         return cls.dump_to_json_database_field([

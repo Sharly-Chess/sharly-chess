@@ -109,8 +109,8 @@
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.number_input(
                                 name='time_control_initial_time',
-                                label=_('Initial time (optional):'),
-                                placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5),
+                                label=_('Initial time (optional, seconds):'),
+                                placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=5400, minutes=90),
                                 help_text=_('The initial time in seconds (may be empty if an increment is set).'),
                                 data=data, errors=errors
                             ) }}
@@ -118,8 +118,8 @@
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.number_input(
                                 name='time_control_increment',
-                                label=_('Increment (optional):'),
-                                placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=300, minutes=5),
+                                label=_('Increment (optional, seconds):'),
+                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
                                 help_text=_('The number of seconds added to the players\' clock at each move.'),
                                 data=data, errors=errors
                             ) }}
@@ -127,7 +127,7 @@
                         <div class="col-12 col-md-4 mb-3">
                             {{ admin_macros.number_input(
                                 name='time_control_handicap_penalty_value',
-                                label=_('Penalty (handicap):'),
+                                label=_('Penalty (handicap, seconds):'),
                                 placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
                                 help_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
                                 data=data, errors=errors
@@ -145,7 +145,7 @@
                         <div class="col-12 col-md-4 mb-3">
                             {{ admin_macros.number_input(
                                 name='time_control_handicap_min_time',
-                                label=_('Minimal time (handicap):'),
+                                label=_('Minimal time (handicap, seconds):'),
                                 placeholder=_('E.g.: %(seconds)d (seconds)', seconds=60),
                                 help_text=_('The minimum time, whatever the ranking difference between the two players.'),
                                 data=data, errors=errors
