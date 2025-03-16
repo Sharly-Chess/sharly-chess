@@ -557,13 +557,24 @@ def get_extra_print_view_columns(
                 ExtraColumn(
                     at="first-round" if document == PrintDocument.CROSSTABLE else "club",
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
-                    classes="center",
+                    classes="league text-start",
                     value=lambda player: get_data(player.plugin_data, 'league'),
                 )
             ]
 
         case _:
             return []
+
+
+@hookimpl
+def get_extra_print_view_css(
+    document: PrintDocument
+) -> str:
+    match document:
+        case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
+            return '.player-table .league { text-align: left; }'
+        case _:
+            return ''
 
 
 @hookimpl

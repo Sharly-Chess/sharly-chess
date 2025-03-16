@@ -200,6 +200,10 @@ class AppHookSpecs:
         """Provide extra columns for the print view"""
 
     @hookspec
+    def get_extra_print_view_css(self, document: PrintDocument) -> str:
+        """Provide extra CSS for the print view"""
+
+    @hookspec
     def get_extra_screen_columns(self, screen: ScreenType) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 
