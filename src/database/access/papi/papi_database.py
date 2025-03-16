@@ -8,7 +8,7 @@ from typing import NamedTuple, Pattern
 from common.logger import get_logger
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
-from data.tie_break import PapiTieBreak
+from data.tie_break import AbstractTieBreak, TieBreakManager
 from data.util import (
     Result,
     TournamentPairing,
@@ -33,7 +33,7 @@ class TournamentInfo(NamedTuple):
     rating: TournamentRating
     rating_limit1: int
     rating_limit2: int
-    tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
+    tie_breaks: list[AbstractTieBreak]
     point_value_type: PointValueType
     location: str
     start_date: str
@@ -73,11 +73,14 @@ class PapiDatabase(AccessDatabase):
         )
         rating_limit1: int = int(self._read_var('EloBase1'))
         rating_limit2: int = int(self._read_var('EloBase2'))
-        tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak] = (
-            PapiTieBreak.from_papi_value(self._read_var('Dep1')),
-            PapiTieBreak.from_papi_value(self._read_var('Dep2')),
-            PapiTieBreak.from_papi_value(self._read_var('Dep3')),
-        )
+        tie_breaks: list[AbstractTieBreak] = [
+            tie_break for tie_break in [
+                TieBreakManager.tie_break_from_papi_id(
+                    self._read_var(f'Dep{index}')
+                )
+                for index in range(1, 4)
+            ] if tie_break is not None
+        ]
         point_value_type: PointValueType = PointValueType.from_papi_value(self._read_var('DecomptePoints'))
         location: str = self._read_var('Lieu')
         start_date: str = self._read_var('DateDebut')
@@ -211,12 +214,13 @@ class PapiDatabase(AccessDatabase):
             (pairing.color_papi_value, opponent_id, result, player.ref_id),
         )
 
-    def update_tie_breaks(
-        self, tie_breaks: tuple[PapiTieBreak, PapiTieBreak, PapiTieBreak]
-    ):
-        for index, key in enumerate(('Dep1', 'Dep2', 'Dep3')):
-            self._update_var(key, tie_breaks[index].to_papi_value)
-
+    def update_tie_breaks(self, tie_breaks: list[AbstractTieBreak]):
+        for key in ('Dep1', 'Dep2', 'Dep3'):
+            while tie_breaks and tie_breaks[0].papi_id is None:
+                tie_breaks.pop(0)
+            self._update_var(
+                key, tie_breaks.pop(0).papi_id if tie_breaks else ''
+            )
     def update_point_values(
         self, point_value_type: PointValueType
     ):
@@ -228,8 +232,7 @@ class PapiDatabase(AccessDatabase):
         players: dict[int, Player] = {}
 
         per_plugin_fields = plugin_manager.hook.get_db_player_fields()
-        plugin_fields =  [field for fields in per_plugin_fields for field in fields]
-
+        plugin_fields = [field for fields in per_plugin_fields for field in fields]
         player_fields: list[str] = (
             [
                 'Ref',
