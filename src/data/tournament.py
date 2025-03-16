@@ -464,7 +464,7 @@ class Tournament:
         first_round_pairing: BoardColor = BoardColor.WHITE,
         papi_legacy: bool = True,
     ) -> TrfTournament:
-        self.compute_player_ranks_after(self.max_ranking_round, papi_legacy)
+        self.compute_player_ranks(after_round=self.max_ranking_round, papi_legacy=papi_legacy)
         return TrfTournament(
             name=self.name,
             city=self.location,
@@ -473,9 +473,9 @@ class Tournament:
             numplayers=len(self.players_by_id),
             chiefarbiter=self.arbiter,
             players=[
-                player.to_trf_after(
+                player.to_trf(
                     self._player_id_to_trf_id,
-                    self.current_round + 1
+                    after_round=self.current_round + 1
                     if trf_type == TrfType.PAIRING
                     else self.rounds,
                 )
@@ -582,7 +582,7 @@ class Tournament:
         self._set_players_illegal_moves()  # load illegal moves for the current round
         self._calculate_points_before_current_round()
         self._build_boards()
-        self.estimate_players_after(papi_legacy=True)
+        self.estimate_players(after_round=None, papi_legacy=True)
 
     def _calculate_current_round(self):
         """Computes which round is the current round.
@@ -629,7 +629,7 @@ class Tournament:
             if player.ref_id == 1:
                 continue
             vpoints = self._calculate_player_virtual_points_at_round(player, self._current_round)
-            player.compute_points_before(self._current_round)
+            player.compute_points(before_round=self._current_round)
             player.vpoints = player.points + vpoints
 
     def _calculate_player_virtual_points_at_round(
@@ -692,12 +692,12 @@ class Tournament:
                     vpoints = 2 * Result.GAIN.points(self.point_values)
         return vpoints
 
-    def estimate_players_after(self, *, round_: int | None = None, papi_legacy: bool = True):
+    def estimate_players(self, *, after_round: int | None, papi_legacy: bool = True):
         """Estimate the players after round *round_*.
         If *round_* is None, use the current round if possible.
         If *papi_legacy* is True, use the computations reimplemented from Papi."""
-        if round_ is None:
-            round_ = self._current_round
+        if after_round is None:
+            after_round = self._current_round
         if self._current_round <= 1:
             return
         if not any(player.estimated for player in self.players_by_id.values()):
@@ -707,16 +707,16 @@ class Tournament:
         else:
             round_function = round_fide
 
-        max_possible_points = Result.GAIN.points(self.point_values) * round_
+        max_possible_points = Result.GAIN.points(self.point_values) * after_round
 
         # NOTE(Amaras): only points from played games should be counted
         players = sorted(
             self.players_by_id.values(),
-            key=lambda player: player.points_after(round_, only_played=True)
+            key=lambda player: player.points_after(after_round, only_played=True)
         )
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
-            for points, group in groupby(players, key=lambda player: player.points_after(round_, only_played=True))
+            for points, group in groupby(players, key=lambda player: player.points_after(after_round, only_played=True))
         }
 
         point_keys = sorted(players_by_points.keys())
@@ -818,22 +818,22 @@ class Tournament:
                 continue
             player.illegal_moves = illegal_moves[player.id]
 
-    def compute_player_ranks_after(
+    def compute_player_ranks(
         self,
-        round_: int | None,
+        after_round: int | None,
         papi_legacy: bool = True
     ) -> dict[int, Player]:
         """compute and return the ranks of all the players after round *round_*."""
-        if round_ is None:
-            round_ = self.max_ranking_round
+        if after_round is None:
+            after_round = self.max_ranking_round
         else:
-            round_ = max(0, min(round_, self.max_ranking_round))
-        if round_:
+            after_round = max(0, min(after_round, self.max_ranking_round))
+        if after_round:
             # Estimate ratings to ensure we have a defined rating for everyone
-            self.estimate_players_after(round_=round_, papi_legacy=papi_legacy)
+            self.estimate_players(after_round=after_round, papi_legacy=papi_legacy)
             for player in self.players_by_id.values():
-                player.points = player.points_after(round_)
-                player.compute_tie_break_values_after(round_)
+                player.points = player.points_after(after_round)
+                player.compute_tie_break_values(after_round=after_round)
             self._players_by_rank = {
                 rank: player
                 for rank, player in enumerate(
@@ -847,7 +847,7 @@ class Tournament:
         else:
             # set 0.0 tie-break values for all the players
             for player in self.players_by_id.values():
-                player.compute_tie_break_values_after(0)
+                player.compute_tie_break_values(after_round=0)
             self._players_by_rank = self.players_by_trf_id
         for rank, player in self._players_by_rank.items():
             player.set_rank(rank)
@@ -855,7 +855,7 @@ class Tournament:
 
     @cached_property
     def players_by_rank(self) -> dict[int, Player]:
-        self.compute_player_ranks_after(round_=None)
+        self.compute_player_ranks(after_round=None)
         return self._players_by_rank
 
     def _build_boards(self):

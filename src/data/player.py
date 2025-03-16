@@ -287,9 +287,12 @@ class Player(TournamentPlayer):
     def point_values(self) -> dict[Result, float] | None:
         return self.tournament.point_values if self.tournament else None
 
-    def compute_points_before(self, round_: int):
+    def compute_points(
+            self,
+            before_round: int
+    ):
         """Computes and stores the points scored by the player before round `round_` (returns None)"""
-        self.points = self.points_before(round_)
+        self.points = self.points_before(before_round)
 
     def points_total(self) -> float:
         return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
@@ -308,10 +311,10 @@ class Player(TournamentPlayer):
         with suppress(TypeError):
             self.points += points
 
-    def to_trf_after(
+    def to_trf(
         self,
         player_id_to_trf_id: Callable[[int], int],
-        round_: int,
+        after_round: int,
     ) -> TrfPlayer:
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
@@ -324,12 +327,12 @@ class Player(TournamentPlayer):
             birthdate=self.date_of_birth.strftime('%Y/%m/%d')
             if self.date_of_birth
             else '',
-            points=self.points_after(round_),
+            points=self.points_after(after_round),
             rank=self.rank,
             games=[
                 result.to_trf(round_nb, player_id_to_trf_id)
                 for round_nb, result in self.pairings.items()
-                if round_nb <= round_
+                if round_nb <= after_round
             ],
         )
 
@@ -432,19 +435,19 @@ class Player(TournamentPlayer):
     def tie_break_values_as_strings(self) -> list[str]:
         """Returns the player's tie-break values as strings."""
         assert self._tie_break_values is not None, \
-            'Player._tie_break_values is not set, call Tournament.compute_player_ranks_after() before.'
+            'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
         return [
             self._points_str(float(tie_break_value))
             for tie_break_value in self._tie_break_values
             if isinstance(tie_break_value, SupportsFloat)
         ]
 
-    def compute_tie_break_values_after(
+    def compute_tie_break_values(
         self,
-        round_: int | None = None
+        after_round: int | None
     ):
         self._tie_break_values = [
-            tie_break.compute_player_value_after(self, round_)
+            tie_break.compute_player_value(self, after_round=after_round)
             for tie_break in self.tournament.tie_breaks
         ]
 
