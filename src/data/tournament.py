@@ -695,8 +695,8 @@ class Tournament:
         return vpoints
 
     def estimate_players(self, *, after_round: int | None, papi_legacy: bool = True):
-        """Estimate the players after round *round_*.
-        If *round_* is None, use the current round if possible.
+        """Estimate the players after round *after_round*.
+        If *after_round* is None, use the current round if possible.
         If *papi_legacy* is True, use the computations reimplemented from Papi."""
         if after_round is None:
             after_round = self._current_round
@@ -825,7 +825,7 @@ class Tournament:
         after_round: int | None,
         papi_legacy: bool = True
     ) -> dict[int, Player]:
-        """compute and return the ranks of all the players after round *round_*."""
+        """compute and return the ranks of all the players after round *after_round*."""
         if after_round is None:
             after_round = self.max_ranking_round
         else:

@@ -272,7 +272,7 @@ class TieBreakUtils:
         after_round: int = 1,
         fore_modifier: bool = False,
     ) -> float | tuple[float, Result]:
-        """Computes the dummy score for the given pairing after *round_*."""
+        """Computes the dummy score for the given pairing after *after_round*."""
         if not fore_modifier:
             return player.points_after(after_round)
         dummy = player.points_before(after_round)
@@ -1051,7 +1051,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
         pairing: Pairing,
         after_round: int = 1,
     ) -> tuple[float, Result]:
-        """Computes the dummy score for the given pairing after *round_*."""
+        """Computes the dummy score for the given pairing after *after_round*."""
         dummy = player.points_after(after_round)
         match pairing.result:
             case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
@@ -1549,7 +1549,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
             after_round: int | None,
     ) -> tuple[float, bool]:
         """ If all players with the same number of points as *player* before round
-        *round_* have played each other, returns the score *player* achieved against
+        *after_round* have played each other, returns the score *player* achieved against
         all tied opponents in the form (score, True).
         If not, returns the score achieved and a number of wins against all missing opponents
         in the form (virtual_score, False).
