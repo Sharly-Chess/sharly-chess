@@ -635,6 +635,7 @@ class Tournament:
     def _calculate_player_virtual_points(
         self,
         player: Player,
+        *,
         at_round: int
     ) -> float:
         vpoints = Result.LOSS.points(self.point_values)
@@ -694,7 +695,11 @@ class Tournament:
                     vpoints = 2 * Result.GAIN.points(self.point_values)
         return vpoints
 
-    def estimate_players(self, *, after_round: int | None, papi_legacy: bool = True):
+    def estimate_players(
+            self,
+            *,
+            after_round: int | None,
+            papi_legacy: bool = True):
         """Estimate the players after round *after_round*.
         If *after_round* is None, use the current round if possible.
         If *papi_legacy* is True, use the computations reimplemented from Papi."""
@@ -822,6 +827,7 @@ class Tournament:
 
     def compute_player_ranks(
         self,
+        *,
         after_round: int | None,
         papi_legacy: bool = True
     ) -> dict[int, Player]:

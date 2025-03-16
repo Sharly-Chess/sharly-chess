@@ -160,6 +160,7 @@ class AbstractTieBreak(ABC):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> 'SupportsRichComparisonT':
         """Compute the value of the tie-break for a player.
@@ -230,6 +231,7 @@ class TieBreakUtils:
     @staticmethod
     def adjusted_score(
         player: 'Player',
+        *,
         after_round: int | None,
         adjust_fore: bool = False,
     ) -> float:
@@ -269,6 +271,7 @@ class TieBreakUtils:
     @staticmethod
     def buchholz_dummy_score(
         player: 'Player',
+        *,
         after_round: int = 1,
         fore_modifier: bool = False,
     ) -> float | tuple[float, Result]:
@@ -467,6 +470,7 @@ class WinsTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> int:
         if after_round is None:
@@ -500,6 +504,7 @@ class GamesWonTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> int:
         if after_round is None:
@@ -531,6 +536,7 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> int:
         if after_round is None:
@@ -562,6 +568,7 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> int:
         if after_round is None:
@@ -606,6 +613,7 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> float:
         cut, = self.get_option_values()
@@ -635,6 +643,7 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> int:
         if after_round is None:
@@ -698,6 +707,7 @@ class BuchholzTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> float:
         cut_top, cut_btm, played_modifier = self.get_option_values()
@@ -801,6 +811,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> float:
         cut_top, cut_btm, played_modifier = self.get_option_values()
@@ -875,6 +886,7 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
@@ -921,6 +933,7 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
@@ -979,6 +992,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
@@ -1049,6 +1063,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
     def _dummy_score(
         player: 'Player',
         pairing: Pairing,
+        *,
         after_round: int = 1,
     ) -> tuple[float, Result]:
         """Computes the dummy score for the given pairing after *after_round*."""
@@ -1099,6 +1114,7 @@ class KoyaTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
@@ -1144,6 +1160,7 @@ class KashdanTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> int:
         if after_round is None:
@@ -1214,6 +1231,7 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
     def compute_player_value(
         self,
         player: 'Player',
+        *,
         after_round: int | None,
     ) -> int:
         tournament: 'Tournament' = player.tournament
@@ -1267,6 +1285,7 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> int:
         tournament: 'Tournament' = player.tournament
@@ -1315,6 +1334,7 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> int:
         tournament: 'Tournament' = player.tournament
@@ -1360,6 +1380,7 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> int:
         if after_round is None:
@@ -1486,6 +1507,7 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> int:
         if after_round is None:
@@ -1546,6 +1568,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> tuple[float, bool]:
         """ If all players with the same number of points as *player* before round

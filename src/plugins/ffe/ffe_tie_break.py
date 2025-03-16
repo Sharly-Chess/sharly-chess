@@ -23,6 +23,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     @staticmethod
     def _papi_adjusted_score(
         player: 'Player',
+        *,
         after_round: int,
     ) -> float:
         """Legacy: Unplayed rounds are counted as draws"""
@@ -55,6 +56,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     def _papi_dummy_score(
         player: 'Player',
         pairing: Pairing,
+        *,
         after_round: int = 1,
         round_index: int = 1,
     ) -> float:
@@ -80,11 +82,12 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         return 3
 
     def compute_papi_buchholz_player_value(
-        self,
-        player: Player,
-        after_round: int | None,
-        use_cut_top: bool = False,
-        use_cut_btm: bool = False,
+            self,
+            player: Player,
+            *,
+            after_round: int | None,
+            use_cut_top: bool = False,
+            use_cut_btm: bool = False,
     ) -> float:
         if after_round is None:
             after_round = max(player.pairings)
@@ -154,9 +157,10 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
         return _('Bu. *** ACRONYM FOR PAPI BUCHHOLZ')
 
     def compute_player_value(
-        self,
-        player: 'Player',
-        after_round: int | None,
+            self,
+            player: 'Player',
+            *,
+            after_round: int | None,
     ) -> float:
         return self.compute_papi_buchholz_player_value(
             player, after_round=after_round
@@ -183,6 +187,7 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> float:
         return self.compute_papi_buchholz_player_value(
@@ -210,6 +215,7 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> float:
         return self.compute_papi_buchholz_player_value(
@@ -240,6 +246,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
@@ -290,6 +297,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
@@ -327,6 +335,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
     def compute_player_value(
             self,
             player: 'Player',
+            *,
             after_round: int | None,
     ) -> float:
         """Legacy: unplayed rounds are counted"""

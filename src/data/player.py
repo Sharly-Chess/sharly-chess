@@ -119,7 +119,11 @@ class TournamentPlayer:
     def point_values(self) -> dict[Result, float] | None:
         return self._point_values
 
-    def points_before(self, round_: int, only_played: bool = False) -> float:
+    def points_before(
+            self,
+            before_round: int,
+            only_played: bool = False
+    ) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
         # is preserved in 3.6+ dict, because I can't be sure insertion order
         # is the correct (increasing) round order
@@ -129,11 +133,15 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index < round_ and
+            if round_index < before_round and
             (pairing.played or not only_played)
         )
 
-    def points_after(self, round_: int, only_played: bool = False) -> float:
+    def points_after(
+            self,
+            after_round: int,
+            only_played: bool = False
+    ) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
         # is preserved in 3.6+ dict, because I can't be sure insertion order
         # is the correct (increasing) round order
@@ -143,7 +151,7 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index <= round_ and
+            if round_index <= after_round and
             (pairing.played or not only_played)
         )
 
@@ -289,9 +297,10 @@ class Player(TournamentPlayer):
 
     def compute_points(
             self,
+            *,
             before_round: int
     ):
-        """Computes and stores the points scored by the player before round `round_` (returns None)"""
+        """Computes and stores the points scored by the player before round `before_round` (returns None)"""
         self.points = self.points_before(before_round)
 
     def points_total(self) -> float:
@@ -314,6 +323,8 @@ class Player(TournamentPlayer):
     def to_trf(
         self,
         player_id_to_trf_id: Callable[[int], int],
+        /,
+        *,
         after_round: int,
     ) -> TrfPlayer:
         return TrfPlayer(
@@ -444,6 +455,7 @@ class Player(TournamentPlayer):
 
     def compute_tie_break_values(
         self,
+        *,
         after_round: int | None
     ):
         self._tie_break_values = [
