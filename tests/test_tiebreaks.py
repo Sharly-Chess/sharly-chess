@@ -353,7 +353,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_win(self):
         tie_break_ = tie_break.WinsTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -379,7 +379,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_won(self):
         tie_break_ = tie_break.GamesWonTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -405,7 +405,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_played_with_black(self):
         tie_break_ = tie_break.GamesPlayedWithBlackTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -431,7 +431,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_won_with_black(self):
         tie_break_ = tie_break.GamesWonWithBlackTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -457,7 +457,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_games_elected_to_play(self):
         tie_break_ = tie_break.RoundsElectedToPlayTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -483,7 +483,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_progressive_scores(self):
         tie_break_ = tie_break.ProgressiveScoresTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -511,7 +511,7 @@ class SwissTieBreaks(unittest.TestCase):
             [tie_break.CutTieBreakOption(1)]
         )
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -537,7 +537,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_buchholz(self):
         tie_break_ = tie_break.BuchholzTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -566,7 +566,7 @@ class SwissTieBreaks(unittest.TestCase):
         )
         results = {
             i: tie_break_.compute_player_value_after_round(
-                self.tournament.players_by_id[i]
+                self.tournament.players_by_id[i], round_=None
             )
             for i in (5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15)
         }
@@ -644,7 +644,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_fore_buchholz(self):
         tie_break_ = tie_break.ForeBuchholzTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -670,7 +670,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_buchholz_legacy(self):
         tie_break_ = ffe_tie_break.PapiBuchholzTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -696,7 +696,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_buchholz_cut_legacy(self):
         tie_break_ = ffe_tie_break.PapiBuchholzCutBottomTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -722,7 +722,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_buchholz_median_legacy(self):
         tie_break_ = ffe_tie_break.PapiMedianBuchholzTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -748,7 +748,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_aob(self):
         aob = tie_break.AverageOfBuchholzTieBreak().compute_player_value_after_round
         results = {
-            player.id: round(aob(player), 2)
+            player.id: round(aob(player, round_=None), 2)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -774,7 +774,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_sonneborn_berger_swiss(self):
         tie_break_ = tie_break.SonnebornBergerTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -802,7 +802,7 @@ class SwissTieBreaks(unittest.TestCase):
             [tie_break.CutTieBreakOption(1)]
         )
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -828,7 +828,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_aro(self):
         tie_break_ = tie_break.AverageRatingOpponentsTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -856,7 +856,7 @@ class SwissTieBreaks(unittest.TestCase):
             [tie_break.CutBottomTieBreakOption(1)]
         )
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -882,7 +882,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_tpr(self):
         tie_break_ = tie_break.TournamentPerformanceRatingTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -908,7 +908,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_tpr_legacy(self):
         tie_break_ = ffe_tie_break.PapiPerformanceTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -934,7 +934,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_apro(self):
         tie_break_ = tie_break.AveragePerformanceRatingOpponentsTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -972,7 +972,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_ptp(self):
         tie_break_ = tie_break.PerfectTournamentPerformanceTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
             if player.id not in (2, 14)
         }
@@ -1000,13 +1000,13 @@ class SwissTieBreaks(unittest.TestCase):
         # to having all correct values
         self.assertEqual(
             tie_break_.compute_player_value_after_round(
-                self.tournament.players_by_id[2],
+                self.tournament.players_by_id[2], round_=None
             ),
             2217 # NOTE(Amaras): this should be 2216
         )
         self.assertEqual(
             tie_break_.compute_player_value_after_round(
-                self.tournament.players_by_id[14],
+                self.tournament.players_by_id[14], round_=None
             ),
             1940 # NOTE(Amaras): this should be 1942
         )
@@ -1014,7 +1014,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_average_perfect_performance_opponents(self):
         tie_break_ = tie_break.AveragePerfectPerformanceTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
             if player.id not in (3, 13)
         }
@@ -1037,13 +1037,13 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
         self.assertEqual(
             tie_break_.compute_player_value_after_round(
-                self.tournament.players_by_id[3],
+                self.tournament.players_by_id[3], round_=None
             ),
             1935 # NOTE(Amaras): should be 1934
         )
         self.assertEqual(
             tie_break_.compute_player_value_after_round(
-                self.tournament.players_by_id[13],
+                self.tournament.players_by_id[13], round_=None
             ),
             1908 # NOTE(Amaras): should be 1909
         )
@@ -1051,7 +1051,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_kashdan(self):
         tie_break_ = tie_break.KashdanTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -1077,7 +1077,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_kashdan_legacy(self):
         tie_break_ = ffe_tie_break.PapiKashdanTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -1104,7 +1104,7 @@ class SwissTieBreaks(unittest.TestCase):
         tie_break_ = tie_break.DirectEncounterTieBreak()
         results = {
             i: tie_break_.compute_player_value_after_round(
-                self.tournament.players_by_id[i],
+                self.tournament.players_by_id[i], round_=None
             )
             for i in (1, 3, 4, 16, 5, 8, 11)
         }
@@ -1225,7 +1225,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
     def test_sonneborn_berger_round_robin(self):
         tie_break_ = tie_break.SonnebornBergerTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -1239,7 +1239,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             [tie_break.CutTieBreakOption(1)]
         )
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -1251,7 +1251,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
     def test_koya(self):
         tie_break_ = tie_break.KoyaTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {
@@ -1263,7 +1263,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
     def test_direct_encounter(self):
         tie_break_ = tie_break.DirectEncounterTieBreak()
         results = {
-            player.id: tie_break_.compute_player_value_after_round(player)
+            player.id: tie_break_.compute_player_value_after_round(player, round_=None)
             for player in self.tournament.players_by_id.values()
         }
         expected = {

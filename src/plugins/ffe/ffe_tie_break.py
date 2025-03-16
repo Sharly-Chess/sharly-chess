@@ -156,7 +156,7 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None
+        round_: int | None,
     ) -> float:
         return self.compute_papi_buchholz_player_value_after_round(
             player, round_
@@ -183,7 +183,7 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None
+            round_: int | None,
     ) -> float:
         return self.compute_papi_buchholz_player_value_after_round(
             player, round_, use_cut_btm=True
@@ -210,7 +210,7 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None
+            round_: int | None,
     ) -> float:
         return self.compute_papi_buchholz_player_value_after_round(
             player,
@@ -240,7 +240,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None
+            round_: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
         if round_ is None:
@@ -290,7 +290,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None
+            round_: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
         if round_ is None:
@@ -327,7 +327,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None
+            round_: int | None,
     ) -> float:
         """Legacy: unplayed rounds are counted"""
         if round_ is None:

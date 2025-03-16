@@ -160,7 +160,7 @@ class AbstractTieBreak(ABC):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> 'SupportsRichComparisonT':
         """Compute the value of the tie-break for a player.
         As tie-breaks are intended for ranking, 
@@ -469,7 +469,7 @@ class WinsTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> int:
         if round_ is None:
             round_ = max(player.pairings)
@@ -502,7 +502,7 @@ class GamesWonTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> int:
         if round_ is None:
             round_ = max(player.pairings)
@@ -533,7 +533,7 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> int:
         if round_ is None:
             round_ = max(player.pairings)
@@ -564,7 +564,7 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> int:
         if round_ is None:
             round_ = max(player.pairings)
@@ -608,7 +608,7 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> float:
         cut, = self.get_option_values()
         if round_ is None:
@@ -637,7 +637,7 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> int:
         if round_ is None:
             round_ = max(player.pairings)
@@ -700,7 +700,7 @@ class BuchholzTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> float:
         cut_top, cut_btm, played_modifier = self.get_option_values()
         if round_ is None:
@@ -803,7 +803,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> float:
         cut_top, cut_btm, played_modifier = self.get_option_values()
         if round_ is None:
@@ -877,7 +877,7 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
         fore_modifier, = self.get_option_values()
@@ -923,7 +923,7 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
         fore_modifier, = self.get_option_values()
@@ -933,7 +933,7 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
             tournament.players_by_id[pairing.opponent_id]
             for round_index, pairing in player.pairings.items()
             if round_index <= round_ and pairing.opponent_id is not None
-               and pairing.played
+            and pairing.played
         ]
         tie_break = (
             ForeBuchholzTieBreak() if fore_modifier else BuchholzTieBreak()
@@ -981,7 +981,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
         cut, played_modifier = self.get_option_values()
@@ -1101,7 +1101,7 @@ class KoyaTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
         limit, = self.get_option_values()
@@ -1146,7 +1146,7 @@ class KashdanTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> int:
         if round_ is None:
             round_ = max(player.pairings)
@@ -1216,7 +1216,7 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
         self,
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
     ) -> int:
         tournament: 'Tournament' = player.tournament
         cut_top, cut_btm = self.get_option_values()
@@ -1269,7 +1269,7 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> int:
         tournament: 'Tournament' = player.tournament
         if round_ is None:
@@ -1317,7 +1317,7 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> int:
         tournament: 'Tournament' = player.tournament
         if round_ is None:
@@ -1362,7 +1362,7 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> int:
         if round_ is None:
             round_ = max(player.pairings)
@@ -1488,7 +1488,7 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> int:
         if round_ is None:
             round_ = max(player.pairings)
@@ -1548,7 +1548,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
     def compute_player_value_after_round(
             self,
             player: 'Player',
-            round_: int | None = None,
+            round_: int | None,
     ) -> tuple[float, bool]:
         """ If all players with the same number of points as *player* before round
         *round_* have played each other, returns the score *player* achieved against

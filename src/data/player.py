@@ -120,6 +120,12 @@ class TournamentPlayer:
         return self._point_values
 
     def points_before_round(self, round_: int, only_played: bool = False) -> float:
+        # NOTE(Amaras) this does not rely on the fact that insertion order
+        # is preserved in 3.6+ dict, because I can't be sure insertion order
+        # is the correct (increasing) round order
+        # NOTE(Amaras) if you were to include the current round
+        # in the computation, boards regularly change their ordering
+        # during the current round as results are added
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
@@ -128,6 +134,12 @@ class TournamentPlayer:
         )
 
     def points_after_round(self, round_: int, only_played: bool = False) -> float:
+        # NOTE(Amaras) this does not rely on the fact that insertion order
+        # is preserved in 3.6+ dict, because I can't be sure insertion order
+        # is the correct (increasing) round order
+        # NOTE(Amaras) if you were to include the current round
+        # in the computation, boards regularly change their ordering
+        # during the current round as results are added
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
@@ -141,17 +153,6 @@ class TournamentPlayer:
             for pairing in self.pairings.values()
             if pairing.played or not only_played
         )
-
-    # unused method
-    #def max_possible_points(self, after_round: int | None = None, only_played: bool = False) -> float:
-    #    if after_round is None:
-    #        after_round = max(self.pairings)
-    #    return sum(
-    #        Result.GAIN.points(self.point_values)
-    #        for round_index, pairing in self.pairings.items()
-    #        if round_index <= after_round and
-    #        (pairing.played or not only_played)
-    #    )
 
     @property
     def estimation(self):
@@ -288,12 +289,6 @@ class Player(TournamentPlayer):
 
     def compute_points_before_round(self, before_round: int):
         """Computes and stores the points scored by the player before round `before_round` (returns None)"""
-        # NOTE(Amaras) this does not rely on the fact that insertion order
-        # is preserved in 3.6+ dict, because I can't be sure insertion order
-        # is the correct (increasing) round order
-        # NOTE(Amaras) if you were to include the current round
-        # in the computation, boards regularly change their ordering
-        # during the current round as results are added
         self.points = self.points_before_round(before_round)
 
     def points_total(self) -> float:
