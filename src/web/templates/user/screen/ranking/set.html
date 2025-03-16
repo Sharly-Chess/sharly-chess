@@ -37,8 +37,15 @@
                                 <th class="center {{ extra_classes}}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
                                 {{ macros.extra_column_header("federation", extra_classes, extra_columns)}}
                                 <th class="center {{ extra_classes}}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
-                                {{ macros.extra_column_header("club", extra_classes, extra_columns)}}
-                                <th class="left {{ extra_classes}}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                                {% if screen_set.ranking_crosstable %}
+                                    {{ macros.extra_column_header("first-round", extra_classes, extra_columns)}}
+                                    {% for round in range(1, screen_set.ranking_round + 1) %}
+                                        <th class="right">{{ _('R %(round)d *** ROUND FOR PRINT VIEW', round=round) }}</th>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ macros.extra_column_header("club", extra_classes, extra_columns)}}
+                                    <th class="left {{ extra_classes}}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+                                {% endif %}
                                 {{ macros.extra_column_header("points", extra_classes, extra_columns)}}
                                 <th class="right {{ extra_classes}}">
                                     <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
@@ -70,13 +77,19 @@
                                         <td class="center {{ extra_classes}}">{{ player.category.short_name }}</td>
                                         {{ macros.extra_column_data("federation", player, extra_classes, extra_columns)}}
                                         <td class="center {{ extra_classes}}">{{ player.federation }}</td>
-                                        {{ macros.extra_column_data("club", player, extra_classes, extra_columns)}}
-                                        <td class="left {{ extra_classes}}">{{ player.club }}</td>
+                                        {% if screen_set.ranking_crosstable %}
+                                            {{ macros.extra_column_data("first-round", player, extra_classes, extra_columns)}}
+                                            {% for crosstable_string in player.crosstable_strings[:screen_set.ranking_round] %}
+                                                <td class="right {{ extra_classes }}">{{ crosstable_string }}</td>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ macros.extra_column_data("club", player, extra_classes, extra_columns)}}
+                                            <td class="left {{ extra_classes }}">{{ player.club }}</td>
+                                        {% endif %}
                                         {{ macros.extra_column_data("points", player, extra_classes, extra_columns)}}
-                                        <td class="right {{ extra_classes}}"><strong>{{ player.points_str }}</strong></td>
-                                        {{ macros.extra_column_data("first-tie-break", player, extra_classes, extra_columns)}}
-                                        {% for tie_break_string in player.tie_break_values_as_strings %}
-                                            <td class="center {{ extra_classes}}">{{ tie_break_string }}</td>
+                                        <td class="right {{ extra_classes }}"><strong>{{ player.points_str }}</strong></td>
+                                        {% for tie_break_string in player.tie_break_values_as_strings[:screen_set.ranking_round] %}
+                                            <td class="right {{ extra_classes }}">{{ tie_break_string }}</td>
                                         {% endfor %}
                                         {{ macros.extra_column_data("end", player, extra_classes, extra_columns)}}
                                     </tr>

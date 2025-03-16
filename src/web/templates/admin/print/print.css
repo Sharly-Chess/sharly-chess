@@ -1,0 +1,41 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    color: #000000;
+    background-color: #FFFFFF;
+}
+{# ========== COLORS ========== #}
+tr.even td { background-color: #FFFFFF; }
+tr.odd td { background-color: #E0E0E0; }
+{# ========== BORDERS ========== #}
+.player-table { border-collapse:collapse; }
+{# ========== WIDTH, MARGINS, PADDING ==========#}
+body { margin: 4px; }
+.player-table { width: 750px; }
+.player-table { padding: 2px; border-spacing: 0; }
+.split-by-title { margin: 16px 0 12px; }
+{# ========== FONT SIZE ========== #}
+.page-title { font-size: 24pt; }
+.page-subtitle { font-size: 16pt; }
+.split-by-title { font-size: 18px; }
+.crosstable .player-header *,
+.crosstable .player-row * { font-size: 10px; }
+{# ========== FONT WEIGHT ========== #}
+.player-header *,
+.page-title,
+.page-subtitle,
+.split-by-title { font-weight: bold; }
+.player-row .name,
+.player-row .points { font-weight: bold; }
+{# ========== TEXT ALIGN ========== #}
+.player-table .name,
+.player-table .club { text-align: left; }
+.player-table .rank,
+.player-table .title,
+.player-table .rating { text-align: right; }
+.player-table .category,
+.player-table .federation,
+.player-table .round,
+.player-table .points,
+.player-table .tie-break { text-align: center; }
