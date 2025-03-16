@@ -232,15 +232,13 @@ class TieBreakUtils:
     def adjusted_score(
         player: 'Player',
         tournament: 'Tournament',
-        max_round: int | None = None,
+        max_round: int,
         adjust_fore: bool = False,
     ) -> float:
         """Computes the adjusted score of the player for the purposes of their opponents' tie-breaks
         Only adjusts them in case of requested byes followed by all VUR.
         If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
         games for the last round not determined over the board are considered as draws."""
-        if max_round is None:
-            max_round = max(player.pairings)
         if tournament.pairing == TournamentPairing.BERGER:
             return player.points_after(max_round)
         score = 0
@@ -251,8 +249,6 @@ class TieBreakUtils:
                 if pairing.result in (
                     Result.FULL_POINT_BYE,
                     Result.PAIRING_ALLOCATED_BYE,
-                    Result.HALF_POINT_BYE,
-                    Result.ZERO_POINT_BYE,
                 ):
                     score += pairing.result.points(tournament.point_values)
                 else:
