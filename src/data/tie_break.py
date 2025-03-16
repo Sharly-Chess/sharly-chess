@@ -238,8 +238,6 @@ class TieBreakUtils:
         If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
         games not already determined are considered a draw."""
         tournament: 'Tournament' = player.tournament
-        if after_round is None:
-            after_round = max(player.pairings)
         if tournament.pairing == TournamentPairing.BERGER:
             return player.points_after(after_round)
         score = 0
