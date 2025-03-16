@@ -19,7 +19,7 @@ from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader, ArchiveLoader
 from data.player import Federation
-from data.tie_break import PapiTieBreak
+from data.tie_break import TieBreakManager
 from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
 from database.sqlite.config.config_store import StoredConfig
@@ -120,9 +120,9 @@ class BaseAdminController(BaseController):
 
     @staticmethod
     def _get_tie_break_options() -> dict[str, str]:
-        return {
-            WebContext.value_to_form_data(tie_break): tie_break.name
-            for tie_break in iter(PapiTieBreak)
+        return {'': _('None')} | {
+            WebContext.value_to_form_data(tie_break.id): tie_break.name
+            for tie_break in TieBreakManager.papi_compatible_tie_breaks()
         }
 
     @staticmethod

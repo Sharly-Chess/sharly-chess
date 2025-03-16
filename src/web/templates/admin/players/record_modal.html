@@ -108,7 +108,7 @@
                                 <td class="text-nowrap text-center">
                                     {{ score }}
                                 </td>
-                                {% if zero_point_bye_allowed %}
+                                {% if zero_point_bye_allowed and not opponent %}
                                     <td colspan="5" class="text-nowrap text-start">
                                         <select
                                             name="{{ name }}"
