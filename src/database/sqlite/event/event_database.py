@@ -1538,7 +1538,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             return None
         return [
             TieBreakManager.tie_break_from_id(
-                tie_break_dict['tie_break'],
+                tie_break_dict['type'],
                 [
                     TieBreakManager.option_from_id(option_id, value)
                     for option_id, value in tie_break_dict['options'].items()
@@ -1551,12 +1551,12 @@ class EventDatabase(SQLiteVersionedDatabase):
             cls, tie_breaks: list[AbstractTieBreak] | None
     ) -> str | None:
         """Serializes the tie breaks into JSON. Returns a serialization
-        with format [{'tie_break': str, 'options': {str: value}}]."""
+        with format [{'type': str, 'options': {str: value}}]."""
         if tie_breaks is None:
             return None
         return cls.dump_to_json_database_field([
             {
-                'tie_break': tie_break.id,
+                'type': tie_break.id,
                 'options': {
                     option.id: option.value for option in tie_break.options
                 }
