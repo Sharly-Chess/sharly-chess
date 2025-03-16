@@ -35,7 +35,7 @@ class Migration(AbstractMigration):
                 'chessevent_password': row['password'],
                 'chessevent_event_id': row['event_id'],
             }
-            for row in self.database._fetchall()
+            for row in self.database.fetchall()
         }
         if len(chessevent_connections) == 1:
             # Set the ChessEvent connection as the event default ChessEvent connection
@@ -51,7 +51,7 @@ class Migration(AbstractMigration):
             self.database.execute(
                 'SELECT `id`, `chessevent_id` FROM `tournament` WHERE `chessevent_id` IS NOT NULL'
             )
-            for row in self.database._fetchall():
+            for row in self.database.fetchall():
                 chessevent_connection: dict[str, Any] = (
                     chessevent_connections[row['chessevent_id']]
                 )

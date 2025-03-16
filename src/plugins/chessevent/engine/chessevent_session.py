@@ -5,7 +5,6 @@ from requests import Session, Response
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger, print_interactive_error
 from data.tournament import Tournament
 from plugins.chessevent.utils import ChessEventUtils

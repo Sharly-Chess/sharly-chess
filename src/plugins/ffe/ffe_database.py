@@ -152,10 +152,10 @@ class FfeDatabase(SQLiteDatabase):
             'city': None,
             'club': None,
         }
-        column_names = list(translations.keys())
-        bindings = [f':{column_name}' for column_name in column_names]
-        column_names = list(map(lambda s: f"`{s}`"))
-        query: str = f'INSERT INTO player({", ".join(column_names)}) VALUES({", ".join(bindings)})'
+        column_names: list[str] = list(translations.keys())
+        bindings: list[str] = [f':{column_name}' for column_name in column_names]
+        escaped_column_names: list[str] = list(map(lambda s: f"`{s}`", column_names))
+        query: str = f'INSERT INTO player({", ".join(escaped_column_names)}) VALUES({", ".join(bindings)})'
         try:
             with open(
                 PLUGINS_DIR / 'ffe' / 'create_ffe.sql', encoding='utf-8'
@@ -292,13 +292,13 @@ class FfeDatabase(SQLiteDatabase):
         self.execute(query, tuple(params), )
         return (
             self.get_player_from_row(row)
-            for row in self._fetchall()
+            for row in self.fetchall()
         )
 
     def get_player_by_ffe_id(self, player_ffe_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
-        return self.get_player_from_row(self._fetchone())
+        return self.get_player_from_row(self.fetchone())
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
-        return self.get_player_from_row(self._fetchone())
+        return self.get_player_from_row(self.fetchone())
