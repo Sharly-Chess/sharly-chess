@@ -1,8 +1,10 @@
 import re
 
 from collections import Counter, defaultdict
+from collections.abc import Callable
 
 from datetime import datetime
+from decimal import Decimal
 from functools import partial
 from pathlib import Path
 from types import ModuleType
@@ -26,6 +28,7 @@ from web.controllers.base_controller import BaseController, WebContext
 
 from . import migrations, PLUGIN_NAME, PLUGIN_VERSION, ffe_tie_break
 from .engine.ffe_engine import FFEEngine
+from .ffe_tie_break import papi_performance_bonus
 from .util import PlayerFFELicence
 from .ffe_database import FfeDatabase
 from .ffe_session_handler import FFESessionHandler
@@ -667,3 +670,13 @@ def get_extra_tie_break_classes() -> list[type[AbstractTieBreak]]:
         ffe_tie_break.PapiSumOfBuchholzTieBreak,
         ffe_tie_break.PapiKashdanTieBreak,
     ]
+
+
+@hookimpl
+def get_performance_bonus_function() -> Callable[[float], int]:
+    return papi_performance_bonus
+
+
+@hookimpl
+def get_round_ranking_function() -> Callable[[float | Decimal], int]:
+    return round

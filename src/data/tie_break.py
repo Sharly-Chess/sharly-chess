@@ -11,7 +11,7 @@ from typing import Any, TYPE_CHECKING
 
 from common.i18n import _
 from data.pairing import Pairing
-from data.util import Result, BoardColor, TournamentPairing, round_fide, performance_bonus
+from data.util import Result, BoardColor, TournamentPairing, StaticUtils
 from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
@@ -1260,7 +1260,7 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
         if not ratings:
             return 0
         average = sum(ratings) / len(ratings)
-        return round_fide(average)
+        return StaticUtils.round_ranking(average)
 
 
 @register_tie_break
@@ -1309,8 +1309,8 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
         max_score = len(ratings) * Result.GAIN.points(tournament.point_values)
         average = sum(ratings) / len(ratings)
         fractional_score = round(score / max_score, 2)
-        bonus = performance_bonus(fractional_score)
-        return round_fide(average + bonus)
+        bonus = StaticUtils.performance_bonus(fractional_score)
+        return StaticUtils.round_ranking(average + bonus)
 
 
 @register_tie_break
@@ -1355,7 +1355,7 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
             performance_ratings.append(opponent_tpr)
 
         average = sum(performance_ratings) / len(performance_ratings)
-        return round_fide(average)
+        return StaticUtils.round_ranking(average)
 
 
 @register_tie_break
@@ -1416,9 +1416,9 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
             first_estimation, ratings, tournament.point_values
         )
         if isclose(first_expected_score, actual_score, abs_tol=0.01):
-            return round_fide(first_estimation)
+            return StaticUtils.round_ranking(first_estimation)
         second_estimation = first_estimation * actual_score / first_expected_score
-        second_estimation = round_fide(float(second_estimation))
+        second_estimation = StaticUtils.round_ranking(float(second_estimation))
         second_expected_score = self._expected_score(
             second_estimation, ratings, tournament.point_values
         )
@@ -1438,7 +1438,7 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
                 high = mid
             else:
                 low = mid
-        mid = round_fide(mid)
+        mid = StaticUtils.round_ranking(mid)
         while self._expected_score(
             mid, ratings, tournament.point_values
         ) >= actual_score:
@@ -1447,7 +1447,7 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
             mid, ratings, tournament.point_values
         ) < actual_score:
             mid += 1
-        return round_fide(mid)
+        return StaticUtils.round_ranking(mid)
 
     @classmethod
     def _expected_score(
@@ -1529,7 +1529,7 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
 
         if not ptp:
             return 0
-        return round_fide(sum(ptp) / len(ptp))
+        return StaticUtils.round_ranking(sum(ptp) / len(ptp))
 
 
 @register_tie_break
