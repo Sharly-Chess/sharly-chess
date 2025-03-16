@@ -28,11 +28,11 @@
                 {% if screen.ranking_min_points or screen.ranking_max_points %}
                     <div>
                         {% if screen.ranking_min_points and screen.ranking_max_points %}
-                            {{ _('Points: %(min)d to %(max)d', min=screen.ranking_min_points, max=screen.ranking_max_points) }}
+                            {{ _('Points: %(min)s to %(max)s', min='%0.2f' % screen.ranking_min_points, max='%0.2f' % screen.ranking_max_points) }}
                         {% elif screen.ranking_min_points %}
-                            {{ _('Points: %(min)d or more', min=screen.ranking_min_points) }}
+                            {{ _('Points: %(min)s or more', min='%0.2f' % screen.ranking_min_points) }}
                         {% else %}
-                            {{ _('Points: up to %(max)d', max=screen.ranking_max_points) }}
+                            {{ _('Points: up to %(max)s', max='%0.2f' % screen.ranking_max_points) }}
                         {% endif %}
                     </div>
                 {% endif %}
