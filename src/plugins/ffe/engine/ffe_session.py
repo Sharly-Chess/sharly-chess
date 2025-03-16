@@ -341,7 +341,7 @@ class FFESession(Session):
             return False
         head: AdvancedTag = parser.getElementsByTagName('head')[0]
         head.insertBefore(base, head.getChildren()[0])
-        file: Path = Path(FEES_DIR, str(self.tournament.ffe_id) + '-fees.html')
+        file: Path = Path(FEES_DIR, str(get_data(self.tournament.plugin_data, 'ffe_id')) + '-fees.html')
         with open(file, 'w', encoding='utf-8') as f:
             f.write(parser.getHTML())
         webbrowser.open(f'file://{file.resolve()}', new=2)
@@ -361,11 +361,11 @@ class FFESession(Session):
                         'FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'
                     ).format(tournament_name=self.tournament.name)
                 )
-                return (None, None)
+                return None, None
             else:
                 assert ffe_id
                 assert ffe_password
-        return (ffe_id, ffe_password)
+        return ffe_id, ffe_password
 
     def upload(self, set_visible: bool):
         """Upload the tournament to the FFE admin website."""

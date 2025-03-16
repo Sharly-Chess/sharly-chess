@@ -82,7 +82,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `info`',
             (),
         )
-        return self._row_to_stored_config(self._fetchone())
+        return self._row_to_stored_config(self.fetchone())
 
     def load_stored_config(self) -> StoredConfig:
         return self._get_stored_config()
