@@ -53,7 +53,6 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin(
         self,
         request: HTMXRequest,
-        locale: str | None,
         admin_events_show_details: bool | None,
     ) -> Template | ClientRedirect:
         return self._admin(
