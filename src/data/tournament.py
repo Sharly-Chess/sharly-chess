@@ -820,7 +820,7 @@ class Tournament:
 
     def compute_player_ranks_after(
         self,
-        round_: int | None = None,
+        round_: int | None,
         papi_legacy: bool = True
     ) -> dict[int, Player]:
         """compute and return the ranks of all the players after round *round_*."""
@@ -855,7 +855,7 @@ class Tournament:
 
     @cached_property
     def players_by_rank(self) -> dict[int, Player]:
-        self.compute_player_ranks_after()
+        self.compute_player_ranks_after(round_=None)
         return self._players_by_rank
 
     def _build_boards(self):

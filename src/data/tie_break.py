@@ -230,7 +230,7 @@ class TieBreakUtils:
     @staticmethod
     def adjusted_score_after(
         player: 'Player',
-        round_: int | None = None,
+        round_: int | None,
         adjust_fore: bool = False,
     ) -> float:
         """Computes the adjusted score of the player for the purposes of their opponents' tie-breaks
