@@ -35,14 +35,8 @@ __pycache__/
 
 *.log
 /mprofile_*.dat
-/.scc
-
-src/.scc
-
-src/.scc-shm
-
-src/.scc-wal
-
 *.db-shm
-
 *.db-wal
+.scc
+.scc-wal
+.scc-shm
