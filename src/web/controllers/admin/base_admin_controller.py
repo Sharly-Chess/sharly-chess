@@ -79,7 +79,7 @@ class AdminWebContext(WebContext):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        per_plugin_context = plugin_manager.hook.get_base_admin_context()
+        per_plugin_context = plugin_manager.hook.get_base_admin_template_context()
         plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
 
         return super().template_context | {
