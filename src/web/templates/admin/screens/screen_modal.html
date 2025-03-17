@@ -214,6 +214,26 @@
                             </div>
                         {% endif %}
 
+                        {% if screen_type == 'ranking' %}
+                            <div class="row">
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/ranking_crosstable.html' %}
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/ranking_round.html' %}
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/ranking_min_points.html' %}
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/ranking_max_points.html' %}
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/alert_message.html' %}
+                                </div>
+                            </div>
+                        {% endif %}
+
                         {% if screen_type == 'results' %}
                             <div class="row">
                                 <div class="col-12 col-md-6 mb-3">
@@ -257,14 +277,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-12 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if screen_type == 'ranking' %}
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     {% include '../common/modal/alert_message.html' %}

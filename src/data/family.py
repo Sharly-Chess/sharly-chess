@@ -102,7 +102,9 @@ class Family:
             )
         elif self.type == ScreenType.RANKING:
             text = self.menu_text or Screen.default_ranking_screen_menu_text(
-                single_tournament=single_tournament, first_last=True
+                single_tournament=single_tournament,
+                first_last=True,
+                crosstable=self.ranking_crosstable,
             )
         else:
             text = self.menu_text
@@ -133,12 +135,47 @@ class Family:
         return self.stored_family.players_show_unpaired
 
     @property
+    def ranking_crosstable(self) -> bool:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_family.ranking_crosstable == True
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_round(self) -> int | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_family.ranking_round
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_min_points(self) -> float | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_family.ranking_min_points
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_max_points(self) -> float | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_family.ranking_max_points
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
     def icon_str(self) -> str:
         return self.type.icon_str
 
     @property
     def type_str(self) -> str:
-        return str(self.type)
+        return Screen.screen_type_str(
+            self.type,
+            self.ranking_crosstable if self.type == ScreenType.RANKING else None
+        )
 
     @property
     def first(self) -> int | None:

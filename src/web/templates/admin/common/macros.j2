@@ -155,6 +155,8 @@ default_checkbox_text: another message to replace "by default"
 default_value: the value to be set when the default checkbox is checked
 select_options: a dict[str, str], keys are the select values and values are the select texts
 number_min: the minimum value for numbers
+number_max: the maximum value for numbers
+number_step: the step value for numbers
 disabled: if set to true, the field will be disabled
 hx_get: the hx-get attribute of the input, optional
 hx_target: the hx-target attribute of the input, optional
@@ -174,7 +176,9 @@ hx_indicator_img: the URL of the image of the indicator, optional
     default_checkbox_text='',
     default_value='',
     select_options={},
-    number_min=0,
+    number_min='',
+    number_max='',
+    number_step='',
     disabled=false,
     hx_get='',
     hx_target='',
@@ -265,8 +269,14 @@ hx_indicator_img: the URL of the image of the indicator, optional
                         id="{{ id }}"
                         name="{{ name }}"
                         type="{{ input_type }}"
-                        {% if number_min %}
+                        {% if number_min != '' %}
                             min="{{ number_min }}"
+                        {% endif %}
+                        {% if number_max != '' %}
+                            max="{{ number_max }}"
+                        {% endif %}
+                        {% if number_step != '' %}
+                            step="{{ number_step }}"
                         {% endif %}
                         class="form-control {% if error or (name in errors) %}is-invalid{% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
@@ -387,7 +397,9 @@ hx_indicator_img: the URL of the image of the indicator, optional
     default_checkbox=false,
     default_checkbox_text='',
     default_value='',
-    number_min=0,
+    min='',
+    max='',
+    step='',
     disabled=false
 ) %}
     {{ _generic_input(
@@ -402,7 +414,9 @@ hx_indicator_img: the URL of the image of the indicator, optional
         default_checkbox=default_checkbox,
         default_checkbox_text=default_checkbox_text,
         default_value=default_value,
-        number_min=number_min,
+        number_min=min,
+        number_max=max,
+        number_step=step,
         disabled=disabled,
     ) }}
 {% endmacro %}

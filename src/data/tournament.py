@@ -825,6 +825,16 @@ class Tournament:
                 continue
             player.illegal_moves = illegal_moves[player.id]
 
+    def correct_ranking_round(
+            self,
+            ranking_round: int | None = None
+    ) -> int:
+        """Returns a correct round number that corresponds the best to a given round number."""
+        if ranking_round is None:
+            return self.max_ranking_round
+        else:
+            return max(0, min(ranking_round, self.max_ranking_round))
+
     def compute_player_ranks(
         self,
         *,
@@ -858,7 +868,7 @@ class Tournament:
                 player.compute_tie_break_values(after_round=0)
             self._players_by_rank = self.players_by_trf_id
         for rank, player in self._players_by_rank.items():
-            player.set_rank(rank)
+            player.rank = rank
         return self._players_by_rank
 
     @cached_property

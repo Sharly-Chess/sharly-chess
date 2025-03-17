@@ -112,7 +112,7 @@ def get_base_admin_template_context() -> dict[str, Any]:
         'ffe_search_available': FfeDatabase().exists(),
         'ffe_leagues': ffe_leagues
     }
-    
+
 
 @hookimpl
 def get_engine_argument() -> PluginEngineArgument:
@@ -122,7 +122,7 @@ def get_engine_argument() -> PluginEngineArgument:
 # ---------------------------------------------------------------------------------
 # Players
 # ---------------------------------------------------------------------------------
-    
+
 @hookimpl
 def get_db_player_fields() -> list[str]:
     return ['RefFFE', 'AffType', 'NrFFE', 'Ligue']
@@ -208,7 +208,7 @@ def get_player_admin_template_context(web_context: PlayerAdminWebContext) -> dic
             web_context.request
         ),
     }
-    
+
 
 @hookimpl
 def get_player_search_template() -> str:
@@ -480,7 +480,7 @@ def get_extra_players_datasheet_columns() -> Iterable[ExtraColumn]:
             value=lambda player: get_data(player.plugin_data, 'league'),
         )
     ]
-    
+
 # ---------------------------------------------------------------------------------
 # Tournaments
 # ---------------------------------------------------------------------------------
@@ -519,7 +519,7 @@ def on_tournament_init(tournament: 'Tournament'):
             ),
             tournament=tournament,
         )
-        
+
 
 @hookimpl
 def get_tournament_form_fields_template() -> str:
@@ -581,7 +581,7 @@ def get_tournament_card_block_template_and_data() -> tuple[str, dict[str, Any]]:
 
 # ---------------------------------------------------------------------------------
 # Printing
-# ---------------------------------------------------------------------------------  
+# ---------------------------------------------------------------------------------
 
 
 @hookimpl
@@ -625,17 +625,28 @@ def get_extra_print_view_columns(
                 ExtraColumn(
                     at="first-round" if document == PrintDocument.CROSSTABLE else "club",
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
-                    classes="center",
+                    classes="league text-start",
                     value=lambda player: get_data(player.plugin_data, 'league'),
                 )
             ]
 
         case _:
             return []
-        
+
 # ---------------------------------------------------------------------------------
 # User screens
-# ---------------------------------------------------------------------------------  
+# ---------------------------------------------------------------------------------
+
+@hookimpl
+def get_extra_print_view_css(
+    document: PrintDocument
+) -> str:
+    match document:
+        case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
+            return '.player-table .league { text-align: left; }'
+        case _:
+            return ''
+
 
 @hookimpl
 def get_extra_screen_columns(screen: ScreenType) -> Iterable[ExtraColumn]:
@@ -655,8 +666,8 @@ def get_extra_screen_columns(screen: ScreenType) -> Iterable[ExtraColumn]:
 
 # ---------------------------------------------------------------------------------
 # Tie breaks
-# ---------------------------------------------------------------------------------  
-    
+# ---------------------------------------------------------------------------------
+
 @hookimpl
 def get_extra_tie_break_classes() -> list[type[AbstractTieBreak]]:
     return [

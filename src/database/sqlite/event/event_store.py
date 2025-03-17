@@ -95,6 +95,10 @@ class StoredScreen:
     background_image: str | None
     background_color: str | None
     results_tournament_ids: list[int] = field(default_factory=list[int])
+    ranking_crosstable: bool | None = None
+    ranking_round: int | None = None
+    ranking_min_points: float | None = None
+    ranking_max_points: float | None = None
     stored_screen_sets: list[StoredScreenSet] = field(
         default_factory=list[StoredScreenSet]
     )
@@ -120,6 +124,10 @@ class StoredFamily:
     timer_id: int | None
     input_exit_button: bool | None
     players_show_unpaired: bool | None
+    ranking_crosstable: bool | None
+    ranking_round: int | None
+    ranking_min_points: float | None
+    ranking_max_points: float | None
     first: int | None
     last: int | None
     parts: int | None

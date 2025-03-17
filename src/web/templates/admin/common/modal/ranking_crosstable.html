@@ -1,0 +1,7 @@
+{{ admin_macros.select_input(
+    name='ranking_crosstable',
+    label=_('Type:'),
+    help_text=_('The crosstable shows all the results of the players, while the club is printed when displaying raking only.'),
+    select_options=ranking_crosstable_options,
+    data=data, errors=errors
+) }}
