@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Sequence
 
 from litestar.contrib.htmx.request import HTMXRequest
 
@@ -178,173 +178,43 @@ class SessionHandler:
     @classmethod
     def get_session_locale(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.LOCALE_KEY, PapiWebConfig().locale)
-
-    ADMIN_PLAYERS_SORT_KEY: str = 'admin_players_sort'
-
+    
     @classmethod
-    def set_session_admin_players_sort(cls, request: HTMXRequest, players_sort: str):
-        assert players_sort in [
-            'alpha',
-            'rating_desc',
-            'rating_asc',
-            'yob_desc',
-            'yob_asc',
-            'category_desc',
-            'category_asc',
-            'club',
-            'tournament',
+    def set_session_data_from_query_params(
+        cls,
+        request: HTMXRequest,
+        data: dict[
+            str,
+            tuple[
+                Sequence[str | int] | str | int | None,  # query param(s)
+                Callable[[str | int], Any] | None,   # transform
+                Callable[[str | int], bool] | None   # condition
+            ]
         ]
-        request.session[cls.ADMIN_PLAYERS_SORT_KEY] = players_sort
-
-    @classmethod
-    def get_session_admin_players_sort(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_SORT_KEY, 'alpha')
-
-    ADMIN_PLAYERS_FILTER_COLUMNS_KEY: str = 'admin_players_filter_columns'
-
-    @classmethod
-    def set_session_admin_players_filter_columns(
-        cls, request: HTMXRequest, columns: list[str]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY] = columns
+        for key, (query_params, transform, condition) in data.items():
+            if transform is None:
+                transform = lambda x: x
+            if condition is None:
+                condition = lambda x: x # '' must be ignored
+                
+            if query_params is not None:
+                if isinstance(query_params, str | int) and condition(query_params):
+                    request.session[key] = transform(query_params)
+                elif isinstance(query_params, list) :
+                    request.session[key] = [
+                        transform(query_param)
+                        for query_param in query_params
+                        if condition(query_param)
+                    ]
 
     @classmethod
-    def get_session_admin_players_filter_columns(
-        cls, request: HTMXRequest
-    ) -> list[str]:
-        return request.session.get(
-            cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY,
-            PapiWebConfig.default_players_filter_columns,
-        )
-
-    ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY: str = 'admin_players_filter_federations'
-
-    @classmethod
-    def set_session_admin_players_filter_federations(
-        cls, request: HTMXRequest, federations: list[Federation]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY] = federations
-
-    @classmethod
-    def get_session_admin_players_filter_federations(
-        cls, request: HTMXRequest
-    ) -> list[Federation]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
-        return [
-            d if isinstance(d, Federation) else Federation(d)
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, [])
-        ]
-
-    ADMIN_PLAYERS_FILTER_CLUBS_KEY: str = 'admin_players_filter_clubs'
-
-    @classmethod
-    def set_session_admin_players_filter_clubs(
-        cls, request: HTMXRequest, clubs: list[Club]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY] = (
-            clubs
-        )
-
-    @classmethod
-    def get_session_admin_players_filter_clubs(
-        cls, request: HTMXRequest
-    ) -> list[Club]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
-        return [
-            d
-            if isinstance(d, Club)
-            else Club(d)
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
-        ]
-
-    ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY: str = 'admin_players_filter_clubs_search'
-
-    @classmethod
-    def set_session_admin_players_filter_clubs_search(cls, request: HTMXRequest, origin: str):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY] = origin
-
-    @classmethod
-    def get_session_admin_players_filter_clubs_search(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY, '')
-
-    ADMIN_PLAYERS_FILTER_GENDERS_KEY: str = 'admin_players_filter_genders'
-
-    @classmethod
-    def set_session_admin_players_filter_genders(
-        cls, request: HTMXRequest, genders: list[PlayerGender]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY] = (
-            genders
-        )
-
-    @classmethod
-    def get_session_admin_players_filter_genders(
-        cls, request: HTMXRequest
-    ) -> list[PlayerGender]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
-        return [
-            d if isinstance(d, PlayerGender) else PlayerGender(d)
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, [])
-        ]
-
-    ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'
-
-    @classmethod
-    def set_session_admin_players_filter_check_ins(
-        cls, request: HTMXRequest, check_ins: list[bool | None]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY] = check_ins
-
-    @classmethod
-    def get_session_admin_players_filter_check_ins(
-        cls, request: HTMXRequest
-    ) -> list[bool | None]:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY, [])
-
-    ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY: str = 'admin_players_filter_tournaments'
-
-    @classmethod
-    def set_session_admin_players_filter_tournaments(
-        cls, request: HTMXRequest, tournament_ids: list[int]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY] = (
-            tournament_ids
-        )
-
-    @classmethod
-    def get_session_admin_players_filter_tournaments(
-        cls, request: HTMXRequest
-    ) -> list[int]:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY, [])
-
-    ADMIN_PLAYERS_FILTER_CATEGORIES_KEY: str = 'admin_players_filter_categories'
-
-    @classmethod
-    def set_session_admin_players_filter_categories(
-        cls, request: HTMXRequest, categories: list[PlayerCategory]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY] = categories
-
-    @classmethod
-    def get_session_admin_players_filter_categories(
-        cls, request: HTMXRequest
-    ) -> list[PlayerCategory]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
-        return [
-            d if isinstance(d, PlayerCategory) else PlayerCategory(d)
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, [])
-        ]
-
-    ADMIN_PLAYERS_FILTER_NAME_KEY: str = 'admin_players_filter_name'
-
-    @classmethod
-    def set_session_admin_players_filter_name(cls, request: HTMXRequest, name: str):
-        request.session[cls.ADMIN_PLAYERS_FILTER_NAME_KEY] = name
-
-    @classmethod
-    def get_session_admin_players_filter_name(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, '')
+    def get_session_data(cls, request: HTMXRequest, items: list[tuple[str, Any, Callable[[Any], Any] | None]]):
+        data = []
+        for key, value, transform in items:
+            session_data = request.session.get(key, value)
+            if transform and isinstance(session_data, list):
+                data.append([transform(item) for item in session_data])
+            else:
+                data.append(transform(session_data) if transform else session_data)
+        return data
