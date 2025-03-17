@@ -232,7 +232,7 @@ class TieBreakUtils:
     def adjusted_score(
         player: 'Player',
         *,
-        after_round: int | None,
+        after_round: int,
         adjust_fore: bool = False,
     ) -> float:
         """Computes the adjusted score of the player for the purposes of their opponents' tie-breaks
