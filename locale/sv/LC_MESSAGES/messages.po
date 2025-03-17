@@ -498,10 +498,21 @@ msgstr "Av spelare"
 msgid "%t (by player)"
 msgstr "%t (per spelare)"
 
+#, python-format
+msgid "Crosstable %f-%l"
+msgstr ""
+
+msgid "Crosstable"
+msgstr ""
+
+#, python-format
+msgid "Ranking %f-%l"
+msgstr ""
+
 msgid "Ranking"
 msgstr ""
 
-msgid "%t (ranking)"
+msgid "%t ranking"
 msgstr ""
 
 #, ai_translation
@@ -536,6 +547,17 @@ msgstr "Siffrorna {first} och {last} är inte förenliga ({first} > {last})."
 msgid "%f to %l"
 msgstr "%f till %l"
 
+#, python-format
+msgid "Crosstable %f to %l"
+msgstr ""
+
+#, python-format
+msgid "Ranking %f to %l"
+msgstr ""
+
+msgid "%t crosstable"
+msgstr ""
+
 #, ai_translation
 msgid "boards {board_numbers}"
 msgstr "styrelser {board_numbers}"
@@ -545,90 +567,6 @@ msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Turnering {tournament_uniq_id} ({numbers_str})"
 
 #, ai_translation
-msgid "None"
-msgstr "Inget"
-
-#, ai_translation
-msgid "Buchholz"
-msgstr "Buchholz Ordförande"
-
-#, ai_translation
-msgid "Buchholz cut bottom"
-msgstr "Buchholz skär botten"
-
-#, ai_translation
-msgid "Median Buchholz"
-msgstr "Median Buchholz Ordförande"
-
-#, ai_translation
-msgid "Progressive scores"
-msgstr "Progressiva poäng"
-
-#, ai_translation
-msgid "Performance"
-msgstr "Prestanda"
-
-#, ai_translation
-msgid "Sum of Buchholz"
-msgstr "Summan av Buchholz"
-
-#, ai_translation
-msgid "Number of wins"
-msgstr "Antal vinster"
-
-#, ai_translation
-msgid "Kashdan"
-msgstr "Kashdan Ordförande"
-
-#, ai_translation
-msgid "Koya"
-msgstr "Koya Ordförande"
-
-#, ai_translation
-msgid "Sonnenborn-Berger"
-msgstr "Sonnenborn-Berger"
-
-#, fuzzy
-msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-msgstr "Bu."
-
-#, fuzzy
-msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-#, fuzzy
-msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-#, fuzzy
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "PS"
-
-#, fuzzy
-msgid "Perf *** ACRONYM FOR PERFORMANCE"
-msgstr "Perf"
-
-#, fuzzy
-msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SBh"
-
-#, fuzzy
-msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NW"
-
-#, fuzzy
-msgid "Ka. *** ACRONYM FOR KASHDAN"
-msgstr "Ka."
-
-#, fuzzy
-msgid "Ko. *** ACRONYM FOR KOYA"
-msgstr "Ko."
-
-#, fuzzy
-msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-msgstr "SB"
-
-#, ai_translation
 msgid "Cut"
 msgstr "Styckningsdelar"
 
@@ -636,17 +574,12 @@ msgstr "Styckningsdelar"
 msgid "Cut top"
 msgstr "Klipp överst"
 
-#, ai_translation
-msgid "Cut Bottom"
-msgstr "Klipp ner"
+msgid "Cut bottom"
+msgstr ""
 
 #, ai_translation
 msgid "Played modifier"
 msgstr "Spelad modifier"
-
-#, ai_translation
-msgid "Papi legacy"
-msgstr "Papi-arv"
 
 #, ai_translation
 msgid "Fore modifier"
@@ -661,6 +594,13 @@ msgid "Exclude players"
 msgstr "Uteslut spelare"
 
 #, ai_translation
+msgid "Number of wins"
+msgstr "Antal vinster"
+
+msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
+msgstr ""
+
+#, ai_translation
 msgid "Number of games won"
 msgstr "Antal vunna spel"
 
@@ -673,20 +613,46 @@ msgid "Games won with black"
 msgstr "Spel vann med svart"
 
 #, ai_translation
+msgid "Progressive scores"
+msgstr "Progressiva poäng"
+
+msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgstr ""
+
+#, ai_translation
 msgid "Rounds one Elected to Play"
 msgstr "Rundor en Vald att spela"
 
 #, ai_translation
-msgid "Average of opponents Buchholz"
-msgstr "Genomsnitt av motståndare Buchholz"
+msgid "Buchholz"
+msgstr "Buchholz Ordförande"
 
 #, ai_translation
 msgid "Fore Buchholz"
 msgstr "Före Buchholz"
 
 #, ai_translation
-msgid "Sonneborn-Berger"
-msgstr "Sonneborn-Berger Ordförande"
+msgid "Sum of Buchholz"
+msgstr "Summan av Buchholz"
+
+#, ai_translation
+msgid "Average of opponents Buchholz"
+msgstr "Genomsnitt av motståndare Buchholz"
+
+#, ai_translation
+msgid "Sonnenborn-Berger"
+msgstr "Sonnenborn-Berger"
+
+#, ai_translation
+msgid "Koya"
+msgstr "Koya Ordförande"
+
+msgid "Ko. *** ACRONYM FOR PAPI KOYA"
+msgstr ""
+
+#, ai_translation
+msgid "Kashdan"
+msgstr "Kashdan Ordförande"
 
 #, ai_translation
 msgid "Average rating of opponents"
@@ -1033,9 +999,6 @@ msgstr ""
 msgid "Crosstable after round #{round}"
 msgstr ""
 
-msgid "Crosstable"
-msgstr ""
-
 #, ai_translation
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
@@ -1077,6 +1040,10 @@ msgid "Error while creating the database: {ex}."
 msgstr "Fel när databasen skapades: {ex}."
 
 #, ai_translation
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Ange ett lösenord för ChessEvent-anslutningen."
+
+#, ai_translation
 msgid "ChessEvent connection not defined."
 msgstr "ChessEvent-anslutningen är inte definierad."
 
@@ -1087,10 +1054,6 @@ msgstr "ChessEvent är inte bestämt."
 #, ai_translation
 msgid "ChessEvent tournament name not set."
 msgstr "ChessEvent turneringsnamn inte bestämt."
-
-#, ai_translation
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Ange ett lösenord för ChessEvent-anslutningen."
 
 #, ai_translation
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
@@ -1324,10 +1287,6 @@ msgid "Error while updating the FFE database."
 msgstr "Fel vid uppdatering av FFE- databasen."
 
 #, ai_translation
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr "Kvalifikationsnummer och FFE-lösenord är inte satta, verksamheten på FFE:s webbplats kommer inte att vara tillgänglig."
-
-#, ai_translation
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Spelaren med FFE ID [{ffe_id}] spelar redan turnering [{tournament_uniq_id}]."
 
@@ -1344,16 +1303,20 @@ msgid "The player with FFE licence number [{ffe_licence_number}] already plays t
 msgstr "Spelaren med FFE-licensnummer [{ffe_licence_number}] spelar redan turnering [{tournament_uniq_id}]."
 
 #, ai_translation
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr "FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}]."
+
+#, ai_translation
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgstr "Kvalifikationsnummer och FFE-lösenord är inte satta, verksamheten på FFE:s webbplats kommer inte att vara tillgänglig."
+
+#, ai_translation
 msgid "The FFE ID is a positive integer."
 msgstr "FFE ID är ett positivt heltal."
 
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Lösenordet för turneringen på FFE webbplats är gjord av 10 stora bokstäver."
-
-#, ai_translation
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
-msgstr "FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}]."
 
 #, ai_translation
 msgid "League"
@@ -1378,6 +1341,36 @@ msgstr "Laddar ner FFE- databasen..."
 #, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Fel vid läsning av följande rad (spelare ignorerad): [{row}]."
+
+msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
+msgstr ""
+
+#, ai_translation
+msgid "Buchholz cut bottom"
+msgstr "Buchholz skär botten"
+
+msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr ""
+
+#, ai_translation
+msgid "Median Buchholz"
+msgstr "Median Buchholz Ordförande"
+
+msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
+msgstr ""
+
+#, ai_translation
+msgid "Performance"
+msgstr "Prestanda"
+
+msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
+msgstr ""
+
+msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
+msgstr ""
+
+msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
+msgstr ""
 
 #, ai_translation
 msgid "No FFE Licence"
@@ -1759,6 +1752,10 @@ msgid "Points for loss (zero-point bye)"
 msgstr "Poäng för förlust (nollpunktsbye)"
 
 #, ai_translation
+msgid "None"
+msgstr "Inget"
+
+#, ai_translation
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr "Färg #1 används tills {delay_1} minuter innan rundorna börjar (fördröjning #1), färgen ändras sedan gradvis till färg #2 ({delay_2} minuter innan rundorna börjar)."
 
@@ -1801,6 +1798,9 @@ msgstr "Visa endast parade spelare"
 #, ai_translation
 msgid "Display all the players, paired and unpaired"
 msgstr "Visa alla spelare, parade och oparade"
+
+msgid "Ranking only"
+msgstr ""
 
 #, ai_translation
 msgid "Invalid value [{value}]."
@@ -2442,6 +2442,31 @@ msgstr "Visa en skärmutgångsknapp:"
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "När du inte visar utgångsknappen, kan användare inte av misstag avsluta inmatningsskärmar."
 
+msgid "Type:"
+msgstr ""
+
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgstr ""
+
+msgid "Maximum number of points (included):"
+msgstr ""
+
+msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr ""
+
+msgid "Minimum number of points (included):"
+msgstr ""
+
+msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr ""
+
+#, ai_translation
+msgid "Round:"
+msgstr "Omgång:"
+
+msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
+msgstr ""
+
 #, ai_translation
 msgid "Display of unpaired players:"
 msgstr "Display av oparade spelare:"
@@ -2687,10 +2712,6 @@ msgid "The type of document to print."
 msgstr "Typ av dokument att skriva ut."
 
 #, ai_translation
-msgid "Round:"
-msgstr "Omgång:"
-
-#, ai_translation
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr "Den runda för vilken dokumentet trycks (förvaltar till den sista möjliga omgången)."
 
@@ -2782,6 +2803,43 @@ msgstr "Urval: %(selection)s"
 msgid "Columns:"
 msgstr "Kolumner:"
 
+#, ai_translation
+msgid "Exit button:"
+msgstr "Utgångsknapp:"
+
+#, ai_translation
+msgid "yes"
+msgstr "Ja, det är jag."
+
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
+#, ai_translation
+msgid "no"
+msgstr ""
+
+#, ai_translation
+msgid "Unpaired: displayed"
+msgstr "Oparerad: visas"
+
+#, ai_translation
+msgid "Unpaired: hidden"
+msgstr "Oparerad: gömd"
+
+msgid "Round: the last finished round"
+msgstr ""
+
+#, python-format
+msgid "Points: %(min)s to %(max)s"
+msgstr ""
+
+#, python-format
+msgid "Points: %(min)s or more"
+msgstr ""
+
+#, python-format
+msgid "Points: up to %(max)s"
+msgstr ""
+
 #, ai_translation, python-format
 msgid "Menu link label: %(menu_label)s"
 msgstr "Menylänk etikett: %(menu_label)s"
@@ -2805,28 +2863,6 @@ msgstr "Tidpunkt: %(timer_uniq_id)s"
 #, ai_translation
 msgid "Timer: none"
 msgstr "Timer: inget"
-
-#, ai_translation
-msgid "Exit button:"
-msgstr "Utgångsknapp:"
-
-#, ai_translation
-msgid "yes"
-msgstr "Ja, det är jag."
-
-# Error: translation [Ingen känd frekvens:] is much too long compared to
-# initial [no]
-#, ai_translation
-msgid "no"
-msgstr ""
-
-#, ai_translation
-msgid "Unpaired: displayed"
-msgstr "Oparerad: visas"
-
-#, ai_translation
-msgid "Unpaired: hidden"
-msgstr "Oparerad: gömd"
 
 #, ai_translation, python-format
 msgid "Boards from #%(first)d to #%(last)d"
@@ -3891,50 +3927,6 @@ msgstr "Ändra spelarens turnering."
 msgid "No players."
 msgstr "Inga spelare."
 
-#, fuzzy
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Rk."
-
-#, fuzzy
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nb."
-
-#, fuzzy
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Name"
-
-#, fuzzy
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-#, fuzzy
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapid"
-
-#, fuzzy
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-#, fuzzy
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat"
-
-#, fuzzy
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
-msgstr "Fed"
-
-#, fuzzy, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
-msgstr "R %(round)d"
-
-#, fuzzy
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
-#, fuzzy
-msgid "Pts *** POINTS FOR PRINT VIEW"
-msgstr "Pts"
-
 #, ai_translation, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Rotationsfördröjning: %(seconds)d sek."
@@ -4064,6 +4056,10 @@ msgstr "Inga ruttnare."
 #, ai_translation, python-format
 msgid "Type: %(screen_type)s"
 msgstr "Typ: %(screen_type)s"
+
+#, python-format
+msgid "Round: %(round)d"
+msgstr ""
 
 #, ai_translation, python-format
 msgid "Max number: %(num)d"
@@ -4842,6 +4838,50 @@ msgstr "Bildskärmar visar en bild (lokal eller fjärr)."
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator roterar automatiskt mellan flera skärmar."
 
+#, fuzzy
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
+
+#, fuzzy
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+#, fuzzy
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+#, fuzzy
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+#, fuzzy
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+#, fuzzy
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+#, fuzzy
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat"
+
+#, fuzzy
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr "Fed"
+
+#, fuzzy, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+#, fuzzy
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
+
+#, fuzzy
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
+
 #, ai_translation
 msgid "Go back to the events page."
 msgstr "Gå tillbaka till händelsesidan."
@@ -5192,4 +5232,46 @@ msgstr "vs"
 
 #~ msgid "Minimal time (handicap):"
 #~ msgstr "Minimal tid (handikapp):"
+
+#~ msgid "%t (ranking)"
+#~ msgstr ""
+
+#~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+#~ msgstr "Bu."
+
+#~ msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+#~ msgstr "Tr."
+
+#~ msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+#~ msgstr "Me."
+
+#~ msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+#~ msgstr "PS"
+
+#~ msgid "Perf *** ACRONYM FOR PERFORMANCE"
+#~ msgstr "Perf"
+
+#~ msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+#~ msgstr "SBh"
+
+#~ msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+#~ msgstr "NW"
+
+#~ msgid "Ka. *** ACRONYM FOR KASHDAN"
+#~ msgstr "Ka."
+
+#~ msgid "Ko. *** ACRONYM FOR KOYA"
+#~ msgstr "Ko."
+
+#~ msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+#~ msgstr "SB"
+
+#~ msgid "Cut Bottom"
+#~ msgstr "Klipp ner"
+
+#~ msgid "Papi legacy"
+#~ msgstr "Papi-arv"
+
+#~ msgid "Sonneborn-Berger"
+#~ msgstr "Sonneborn-Berger Ordförande"
 

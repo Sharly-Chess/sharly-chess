@@ -31,7 +31,7 @@
             help_text=_('The player\'s Uniq ID for the French federation (do not change).') if action != 'delete' else '',
             disabled=true,
             error=action == 'delete',
-            number_min=1,
+            min=1,
             data=data, errors=errors
         ) }}
     </div>

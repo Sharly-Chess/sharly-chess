@@ -376,10 +376,21 @@ msgstr ""
 msgid "%t (by player)"
 msgstr ""
 
+#, python-format
+msgid "Crosstable %f-%l"
+msgstr ""
+
+msgid "Crosstable"
+msgstr ""
+
+#, python-format
+msgid "Ranking %f-%l"
+msgstr ""
+
 msgid "Ranking"
 msgstr ""
 
-msgid "%t (ranking)"
+msgid "%t ranking"
 msgstr ""
 
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
@@ -407,74 +418,22 @@ msgstr ""
 msgid "%f to %l"
 msgstr ""
 
+#, python-format
+msgid "Crosstable %f to %l"
+msgstr ""
+
+#, python-format
+msgid "Ranking %f to %l"
+msgstr ""
+
+msgid "%t crosstable"
+msgstr ""
+
 msgid "boards {board_numbers}"
 msgstr ""
 
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr ""
-
-msgid "None"
-msgstr ""
-
-msgid "Buchholz"
-msgstr ""
-
-msgid "Buchholz cut bottom"
-msgstr ""
-
-msgid "Median Buchholz"
-msgstr ""
-
-msgid "Progressive scores"
-msgstr ""
-
-msgid "Performance"
-msgstr ""
-
-msgid "Sum of Buchholz"
-msgstr ""
-
-msgid "Number of wins"
-msgstr ""
-
-msgid "Kashdan"
-msgstr ""
-
-msgid "Koya"
-msgstr ""
-
-msgid "Sonnenborn-Berger"
-msgstr ""
-
-msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-msgstr "Bu."
-
-msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "PS"
-
-msgid "Perf *** ACRONYM FOR PERFORMANCE"
-msgstr "Perf"
-
-msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SBh"
-
-msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NW"
-
-msgid "Ka. *** ACRONYM FOR KASHDAN"
-msgstr "Ka."
-
-msgid "Ko. *** ACRONYM FOR KOYA"
-msgstr "Ko."
-
-msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-msgstr "SB"
 
 msgid "Cut"
 msgstr ""
@@ -482,13 +441,10 @@ msgstr ""
 msgid "Cut top"
 msgstr ""
 
-msgid "Cut Bottom"
+msgid "Cut bottom"
 msgstr ""
 
 msgid "Played modifier"
-msgstr ""
-
-msgid "Papi legacy"
 msgstr ""
 
 msgid "Fore modifier"
@@ -500,6 +456,12 @@ msgstr ""
 msgid "Exclude players"
 msgstr ""
 
+msgid "Number of wins"
+msgstr ""
+
+msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
+msgstr "NW"
+
 msgid "Number of games won"
 msgstr ""
 
@@ -509,16 +471,37 @@ msgstr ""
 msgid "Games won with black"
 msgstr ""
 
+msgid "Progressive scores"
+msgstr ""
+
+msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgstr "PS"
+
 msgid "Rounds one Elected to Play"
 msgstr ""
 
-msgid "Average of opponents Buchholz"
+msgid "Buchholz"
 msgstr ""
 
 msgid "Fore Buchholz"
 msgstr ""
 
-msgid "Sonneborn-Berger"
+msgid "Sum of Buchholz"
+msgstr ""
+
+msgid "Average of opponents Buchholz"
+msgstr ""
+
+msgid "Sonnenborn-Berger"
+msgstr ""
+
+msgid "Koya"
+msgstr ""
+
+msgid "Ko. *** ACRONYM FOR PAPI KOYA"
+msgstr "Ko."
+
+msgid "Kashdan"
 msgstr ""
 
 msgid "Average rating of opponents"
@@ -773,9 +756,6 @@ msgstr ""
 msgid "Crosstable after round #{round}"
 msgstr ""
 
-msgid "Crosstable"
-msgstr ""
-
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
 
@@ -806,6 +786,9 @@ msgstr ""
 msgid "Error while creating the database: {ex}."
 msgstr ""
 
+msgid "Please enter a password for the ChessEvent connection."
+msgstr ""
+
 msgid "ChessEvent connection not defined."
 msgstr ""
 
@@ -813,9 +796,6 @@ msgid "ChessEvent event not set."
 msgstr ""
 
 msgid "ChessEvent tournament name not set."
-msgstr ""
-
-msgid "Please enter a password for the ChessEvent connection."
 msgstr ""
 
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
@@ -995,9 +975,6 @@ msgstr ""
 msgid "Error while updating the FFE database."
 msgstr ""
 
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr ""
-
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -1010,13 +987,16 @@ msgstr ""
 msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
 msgstr ""
 
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgstr ""
+
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-msgstr ""
-
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "League"
@@ -1036,6 +1016,33 @@ msgstr ""
 
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
+
+msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
+msgstr "Bu."
+
+msgid "Buchholz cut bottom"
+msgstr ""
+
+msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+msgid "Median Buchholz"
+msgstr ""
+
+msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+msgid "Performance"
+msgstr ""
+
+msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
+msgstr "Perf"
+
+msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
+msgstr "SBh"
+
+msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
+msgstr "Ka."
 
 msgid "No FFE Licence"
 msgstr ""
@@ -1334,6 +1341,9 @@ msgstr ""
 msgid "Points for loss (zero-point bye)"
 msgstr ""
 
+msgid "None"
+msgstr ""
+
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr ""
 
@@ -1365,6 +1375,9 @@ msgid "Display only paired players"
 msgstr ""
 
 msgid "Display all the players, paired and unpaired"
+msgstr ""
+
+msgid "Ranking only"
 msgstr ""
 
 msgid "Invalid value [{value}]."
@@ -1861,6 +1874,30 @@ msgstr ""
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr ""
 
+msgid "Type:"
+msgstr ""
+
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgstr ""
+
+msgid "Maximum number of points (included):"
+msgstr ""
+
+msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr ""
+
+msgid "Minimum number of points (included):"
+msgstr ""
+
+msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr ""
+
+msgid "Round:"
+msgstr ""
+
+msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
+msgstr ""
+
 msgid "Display of unpaired players:"
 msgstr ""
 
@@ -2051,9 +2088,6 @@ msgstr ""
 msgid "The type of document to print."
 msgstr ""
 
-msgid "Round:"
-msgstr ""
-
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
@@ -2126,6 +2160,36 @@ msgstr ""
 msgid "Columns:"
 msgstr ""
 
+msgid "Exit button:"
+msgstr ""
+
+msgid "yes"
+msgstr ""
+
+msgid "no"
+msgstr ""
+
+msgid "Unpaired: displayed"
+msgstr ""
+
+msgid "Unpaired: hidden"
+msgstr ""
+
+msgid "Round: the last finished round"
+msgstr ""
+
+#, python-format
+msgid "Points: %(min)s to %(max)s"
+msgstr ""
+
+#, python-format
+msgid "Points: %(min)s or more"
+msgstr ""
+
+#, python-format
+msgid "Points: up to %(max)s"
+msgstr ""
+
 #, python-format
 msgid "Menu link label: %(menu_label)s"
 msgstr ""
@@ -2145,21 +2209,6 @@ msgid "Timer: %(timer_uniq_id)s"
 msgstr ""
 
 msgid "Timer: none"
-msgstr ""
-
-msgid "Exit button:"
-msgstr ""
-
-msgid "yes"
-msgstr ""
-
-msgid "no"
-msgstr ""
-
-msgid "Unpaired: displayed"
-msgstr ""
-
-msgid "Unpaired: hidden"
 msgstr ""
 
 #, python-format
@@ -3010,40 +3059,6 @@ msgstr ""
 msgid "No players."
 msgstr ""
 
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Rk."
-
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nb."
-
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Name"
-
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapid"
-
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat."
-
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
-msgstr "Fed."
-
-#, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
-msgstr "R %(round)d"
-
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
-msgid "Pts *** POINTS FOR PRINT VIEW"
-msgstr "Pts"
-
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
@@ -3147,6 +3162,10 @@ msgstr ""
 
 #, python-format
 msgid "Type: %(screen_type)s"
+msgstr ""
+
+#, python-format
+msgid "Round: %(round)d"
 msgstr ""
 
 #, python-format
@@ -3781,6 +3800,40 @@ msgstr ""
 msgid "Rotator automatically rotate between multiple screens."
 msgstr ""
 
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
+
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat."
+
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr "Fed."
+
+#, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
+
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
+
 msgid "Go back to the events page."
 msgstr ""
 
@@ -3907,118 +3960,4 @@ msgstr ""
 
 msgid "vs"
 msgstr ""
-
-#~ msgid "Players found in the Papi_file : %(num)d"
-#~ msgstr ""
-
-#~ msgid "Paired bye points: %(string)s"
-#~ msgstr ""
-
-#~ msgid "Paired bye points:"
-#~ msgstr ""
-
-#~ msgid "The points scored by players who are paired bye."
-#~ msgstr ""
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-#~ msgstr ""
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-#~ msgstr ""
-
-#~ msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-#~ msgstr "League"
-
-#~ msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Origin"
-
-#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-#~ msgstr "FFE"
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
-#~ msgstr ""
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-#~ msgstr ""
-
-#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-#~ msgstr ""
-
-#~ msgid "Sort the players by origin (federation, league, club)."
-#~ msgstr ""
-
-#~ msgid "Option is obsolete, set environment variable [{var}=1] instead."
-#~ msgstr ""
-
-#~ msgid "Locale [{locale}] not found."
-#~ msgstr ""
-
-#~ msgid "Option not set."
-#~ msgstr ""
-
-#~ msgid "Section not found."
-#~ msgstr ""
-
-#~ msgid "The following languages are available:"
-#~ msgstr ""
-
-#~ msgid "Invalid log level [{level}], by default [{default}]."
-#~ msgstr ""
-
-#~ msgid "Option not set, by default [{default}]."
-#~ msgstr ""
-
-#~ msgid "Invalid host configuration [{host}], by default [{default}]."
-#~ msgstr ""
-
-#~ msgid "Invalid port [{port}], by default [{default}]."
-#~ msgstr ""
-
-#~ msgid "Invalid delay [{delay}], by default [{default}]"
-#~ msgstr ""
-
-#~ msgid "Section not found, default configuration set."
-#~ msgstr ""
-
-#~ msgid "Your file {ini_file} has been saved as {ini_file_org}."
-#~ msgstr ""
-
-#~ msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
-#~ msgstr ""
-
-#~ msgid "Adding lines to {file}..."
-#~ msgstr ""
-
-#~ msgid "[i18n] # Added by Papi-web {version}"
-#~ msgstr ""
-
-#~ msgid "# The line below has been commented by Papi-web {version}"
-#~ msgstr ""
-
-#~ msgid "Your file {ini_file} has been modified."
-#~ msgstr ""
-
-#~ msgid "Could not write to {ini_file}: {ex}."
-#~ msgstr ""
-
-#~ msgid "Port [{port}] already in use, can not start Papi-web server."
-#~ msgstr ""
-
-#~ msgid "Default federation"
-#~ msgstr ""
-
-#~ msgid "Connections (FFE and ChessEvent)"
-#~ msgstr ""
-
-#~ msgid "Initial time (optional):"
-#~ msgstr ""
-
-#~ msgid "Increment (optional):"
-#~ msgstr ""
-
-#~ msgid "Penalty (handicap):"
-#~ msgstr ""
-
-#~ msgid "Minimal time (handicap):"
-#~ msgstr ""
 

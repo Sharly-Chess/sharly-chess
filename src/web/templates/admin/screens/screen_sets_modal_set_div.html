@@ -54,7 +54,7 @@
                                     if admin_screen.type in ['boards', 'input'] else
                                     _('The number of the first player to select, optional (the first player by alphabetical order by default).'),
                                 data=data, errors=errors,
-                                number_min=1
+                                min=1
                             ) }}
                         </div>
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
@@ -74,7 +74,7 @@
                                     if admin_screen.type in ['boards', 'input'] else
                                     _('The number of the last player to select, optional (the last player by alphabetical order by default).'),
                                 data=data, errors=errors,
-                                number_min=1
+                                min=1
                             ) }}
                         </div>
                         {% if admin_screen.type in ['boards', 'input'] %}
