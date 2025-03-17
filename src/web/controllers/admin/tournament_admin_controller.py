@@ -18,10 +18,10 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from common.logger import get_logger
-from data.tie_break import PapiTieBreak, TieBreak
 from data.player import Player
 from data.event import Event
 from data.loader import EventLoader
+from data.tie_break import AbstractTieBreak, TieBreakManager
 from data.tournament import Tournament
 from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
 from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
@@ -134,7 +134,7 @@ class TournamentAdminController(BaseEventAdminController):
         paired_bye_result: int | None = None
         max_byes: int | None = None
         last_rounds_no_byes: int | None = None
-        tie_breaks: list[TieBreak] | None = None
+        tie_breaks: list[AbstractTieBreak] | None = None
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
@@ -180,21 +180,18 @@ class TournamentAdminController(BaseEventAdminController):
 
         if action == 'update':
             tie_breaks = []
-            papi_tie_breaks: list[PapiTieBreak] = []
+            used_tie_break_types: list[type[AbstractTieBreak]] = []
             for index in range(1, 4):
                 field = f'tie_break_{index}'
-                tie_break = PapiTieBreak(
-                    WebContext.form_data_to_int(data, field, PapiTieBreak.NONE)
-                )
-                if tie_break != PapiTieBreak.NONE:
-                    if tie_break in papi_tie_breaks:
-                        errors[field] = _('Tie-break already in use.')
-                    papi_tie_breaks.append(tie_break)
-                    tie_breaks.append(
-                        tie_break.to_tie_break(
-                            web_context.admin_tournament.rounds
-                        )
-                    )
+                tie_break_id = WebContext.form_data_to_str(data, field)
+                if not tie_break_id:
+                    continue
+                tie_break = TieBreakManager.tie_break_from_id(tie_break_id)
+                if type(tie_break) in used_tie_break_types:
+                    errors[field] = _('Tie-break already in use.')
+                    break
+                used_tie_break_types.append(type(tie_break))
+                tie_breaks.append(tie_break)
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
@@ -319,9 +316,9 @@ class TournamentAdminController(BaseEventAdminController):
                     paired_bye_result: float | None = None
                     max_byes: int | None = None
                     last_rounds_no_byes: int | None = None
-                    tie_break_1: PapiTieBreak | None = None
-                    tie_break_2: PapiTieBreak | None = None
-                    tie_break_3: PapiTieBreak | None = None
+                    tie_break_1: str | None = None
+                    tie_break_2: str | None = None
+                    tie_break_3: str | None = None
                     match action:
                         case 'update' | 'clone':
                             path = web_context.admin_tournament.stored_tournament.path
@@ -348,9 +345,11 @@ class TournamentAdminController(BaseEventAdminController):
                                 web_context.admin_tournament.stored_tournament.filename
                             )
                             if web_context.admin_tournament.file_exists:
-                                (
-                                    tie_break_1, tie_break_2, tie_break_3
-                                ) = web_context.admin_tournament.papi_tie_breaks
+                                tie_breaks = web_context.admin_tournament.tie_breaks
+                                tie_break_1, tie_break_2, tie_break_3 = (
+                                    tie_breaks.pop(0).id if tie_breaks else None
+                                    for _ in range(3)
+                                )
                         case 'clone' | 'create' | 'delete':
                             pass
                         case _:
@@ -850,7 +849,7 @@ class TournamentAdminController(BaseEventAdminController):
         players: list[Player]
         match print_document:
             case PrintDocument.RANKING | PrintDocument.CROSSTABLE:
-                players = list(admin_tournament.compute_player_ranks(round).values())
+                players = list(admin_tournament.compute_player_ranks(after_round=round).values())
             case PrintDocument.PLAYER_LIST:
                 players = admin_tournament.players_by_name_with_unpaired
             case _:
@@ -891,7 +890,7 @@ class TournamentAdminController(BaseEventAdminController):
             'players': split_players,
             'title': print_document.to_title(round),
             'document': print_document,
-            'max_round': round,
+            'ranking_round': round,
             'extra_columns': extra_columns,
         }
         return HTMXTemplate(

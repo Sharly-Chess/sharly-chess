@@ -13,9 +13,11 @@ from data.util import PrintDocument, ScreenType
 from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
 
 if TYPE_CHECKING:
+    from data.tie_break import AbstractTieBreak
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredEvent
     from database.sqlite.event.event_store import StoredTournament
+    from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 
@@ -220,3 +222,7 @@ class AppHookSpecs:
     @hookspec
     def get_engine_argument(self) -> PluginEngineArgument:
         """Provide an engine argument"""
+
+    @hookspec
+    def get_extra_tie_break_classes(self) -> list[type['AbstractTieBreak']]:
+        """Provide extra tournament tie breaks"""

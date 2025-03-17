@@ -138,7 +138,6 @@ def build_exe():
     files += [file for file in jstree_dir.glob('**/*') if file.is_file()]
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [
-        sql_dir / 'create_event.sql',
         sql_dir / 'create_fide.sql',
         PLUGINS_DIR / 'ffe' / 'create_ffe.sql',
     ]

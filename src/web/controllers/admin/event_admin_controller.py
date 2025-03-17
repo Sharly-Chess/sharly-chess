@@ -173,7 +173,6 @@ class EventAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        locale: str | None,
     ) -> Template | ClientRedirect:
         return self._admin_event_config_render(
             request,

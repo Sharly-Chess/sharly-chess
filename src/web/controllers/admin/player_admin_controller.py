@@ -35,7 +35,6 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
