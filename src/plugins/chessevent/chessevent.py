@@ -37,6 +37,14 @@ class ChessEventPluginMigrationManager(AbstractPluginMigrationManager):
     def base_module(self) -> ModuleType:
         return migrations
 
+# ---------------------------------------------------------------------------------
+# Initialisation and configuration
+# ---------------------------------------------------------------------------------
+
+@hookimpl
+def get_event_migration_manager() -> AbstractPluginMigrationManager:
+    return ChessEventPluginMigrationManager()
+
 
 @hookimpl
 def get_templates_path() -> Path:
@@ -44,19 +52,17 @@ def get_templates_path() -> Path:
 
 
 @hookimpl
-def on_tournament_init(tournament: 'Tournament'):
-    pd = tournament.stored_tournament.plugin_data
-    if not get_data(pd, 'chessevent_user_id') or not get_data(pd, 'chessevent_password'):
-        tournament.event.add_debug(
-            _('ChessEvent connection not defined.'), tournament=tournament
-        )
-    elif not get_data(pd, 'chessevent_event_id'):
-        tournament.event.add_warning(_('ChessEvent event not set.'), tournament=tournament)
-    elif not get_data(pd, 'chessevent_tournament_name'):
-        tournament.event.add_warning(
-            _('ChessEvent tournament name not set.'), tournament=tournament
-        )
+def get_engine_argument() -> PluginEngineArgument:
+    return PluginEngineArgument(
+        'c',
+        'chessevent',
+        'download Papi files from Chess Event',
+        ChessEventEngine,
+    )
 
+# ---------------------------------------------------------------------------------
+# Events
+# ---------------------------------------------------------------------------------
 
 @hookimpl
 def augment_event_after_db_fetch(stored_event: 'StoredEvent', row: dict[str, Any]):
@@ -76,31 +82,6 @@ def event_data_for_db_write(stored_event: 'StoredEvent') -> dict[str, Any]:
         'chessevent_user_id': get_data(td, 'chessevent_user_id'),
         'chessevent_password': get_data(td, 'chessevent_password'),
         'chessevent_event_id': get_data(td, 'chessevent_event_id'),
-    }
-
-
-@hookimpl
-def augment_tournament_after_db_fetch(stored_tournament: 'StoredTournament', row: dict[str, Any]):
-    if not stored_tournament.plugin_data:
-        stored_tournament.plugin_data = {}
-    stored_tournament.plugin_data[PLUGIN_NAME] = {
-        'chessevent_user_id': row.get('chessevent_user_id', ''),
-        'chessevent_password': row.get('chessevent_password' ''),
-        'chessevent_event_id': row.get('chessevent_event_id' ''),
-        'chessevent_tournament_name': row['chessevent_tournament_name'],    
-        'chessevent_last_download_md5': row['chessevent_last_download_md5'],
-    }
-
-
-@hookimpl
-def tournament_data_for_db_write(stored_tournament: 'StoredTournament') -> dict[str, Any]:
-    td = stored_tournament.plugin_data
-    return {
-        'chessevent_user_id': get_data(td, 'chessevent_user_id', None),
-        'chessevent_password': get_data(td, 'chessevent_password', None),
-        'chessevent_event_id': get_data(td, 'chessevent_event_id', None),
-        'chessevent_tournament_name': get_data(td, 'chessevent_tournament_name', ''),
-        'chessevent_last_download_md5': get_data(td, 'chessevent_last_download_md5', ''),
     }
 
 
@@ -168,16 +149,50 @@ def get_validated_event_form_fields(
             "chessevent_event_id": chessevent_event_id,
         }
     }
+    
+# ---------------------------------------------------------------------------------
+# Tournaments
+# ---------------------------------------------------------------------------------  
+
+@hookimpl
+def augment_tournament_after_db_fetch(stored_tournament: 'StoredTournament', row: dict[str, Any]):
+    if not stored_tournament.plugin_data:
+        stored_tournament.plugin_data = {}
+    stored_tournament.plugin_data[PLUGIN_NAME] = {
+        'chessevent_user_id': row.get('chessevent_user_id', ''),
+        'chessevent_password': row.get('chessevent_password' ''),
+        'chessevent_event_id': row.get('chessevent_event_id' ''),
+        'chessevent_tournament_name': row['chessevent_tournament_name'],    
+        'chessevent_last_download_md5': row['chessevent_last_download_md5'],
+    }
 
 
 @hookimpl
-def get_tournament_card_block_template_and_data() -> tuple[str, dict[str, Any]]:
-    return (
-        "/chessevent_tournament_card_block.html",
-        {
-            "chessevent_utils": ChessEventUtils
-        }
-    )
+def tournament_data_for_db_write(stored_tournament: 'StoredTournament') -> dict[str, Any]:
+    td = stored_tournament.plugin_data
+    return {
+        'chessevent_user_id': get_data(td, 'chessevent_user_id', None),
+        'chessevent_password': get_data(td, 'chessevent_password', None),
+        'chessevent_event_id': get_data(td, 'chessevent_event_id', None),
+        'chessevent_tournament_name': get_data(td, 'chessevent_tournament_name', ''),
+        'chessevent_last_download_md5': get_data(td, 'chessevent_last_download_md5', ''),
+    }
+
+
+@hookimpl
+def on_tournament_init(tournament: 'Tournament'):
+    pd = tournament.stored_tournament.plugin_data
+    if not get_data(pd, 'chessevent_user_id') or not get_data(pd, 'chessevent_password'):
+        tournament.event.add_debug(
+            _('ChessEvent connection not defined.'), tournament=tournament
+        )
+    elif not get_data(pd, 'chessevent_event_id'):
+        tournament.event.add_warning(_('ChessEvent event not set.'), tournament=tournament)
+    elif not get_data(pd, 'chessevent_tournament_name'):
+        tournament.event.add_warning(
+            _('ChessEvent tournament name not set.'), tournament=tournament
+        )
+
 
 @hookimpl
 def get_tournament_form_fields_template() -> str:
@@ -239,15 +254,10 @@ def get_validated_tournament_form_fields(
 
 
 @hookimpl
-def get_event_migration_manager() -> AbstractPluginMigrationManager:
-    return ChessEventPluginMigrationManager()
-
-
-@hookimpl
-def get_engine_argument() -> PluginEngineArgument:
-    return PluginEngineArgument(
-        'c',
-        'chessevent',
-        'download Papi files from Chess Event',
-        ChessEventEngine,
+def get_tournament_card_block_template_and_data() -> tuple[str, dict[str, Any]]:
+    return (
+        "/chessevent_tournament_card_block.html",
+        {
+            "chessevent_utils": ChessEventUtils
+        }
     )
