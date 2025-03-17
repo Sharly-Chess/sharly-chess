@@ -391,7 +391,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         filter_origin_parts: list[str] = filter_origin.split(' ')
         
-        per_plugin_context = plugin_manager.hook.get_player_admin_context(web_context=web_context)
+        per_plugin_context = plugin_manager.hook.get_player_admin_template_context(web_context=web_context)
         plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
 
         template_context |= plugin_context
