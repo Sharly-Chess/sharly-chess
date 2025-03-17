@@ -465,7 +465,7 @@ class Player(TournamentPlayer):
 
     @property
     def rank(self) -> int:
-        assert self._rank, 'Player._rank is not set, call Tournament.compute_player_ranks_after() before.'
+        assert self._rank, 'Player._rank is not set, call Tournament.compute_player_ranks() before.'
         return self._rank
 
     def set_rank(self, rank: int):

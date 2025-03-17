@@ -590,7 +590,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_adjusted_score(self):
         results = {
             player.id: tie_break.TieBreakUtils.adjusted_score(
-                player, after_round=None,
+                player, after_round=self.tournament.rounds,
             )
             for player in self.tournament.players_by_id.values()
         }
@@ -617,7 +617,7 @@ class SwissTieBreaks(unittest.TestCase):
     def test_adjusted_score_fore(self):
         results = {
             player.id: tie_break.TieBreakUtils.adjusted_score(
-                player, after_round=None, adjust_fore=True
+                player, after_round=self.tournament.rounds, adjust_fore=True
             )
             for player in self.tournament.players_by_id.values()
         }
