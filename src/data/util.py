@@ -60,11 +60,15 @@ class SharedUtils:
         )
 
     @classmethod
-    def performance_bonus(cls, fractional_score: float) -> int:
+    def performance_bonus(cls, fractional_score: float) -> int | float:
         return cls._get_function(
             'get_performance_bonus_function',
             StaticUtils.performance_bonus
         )(fractional_score)
+
+    @classmethod
+    def rounded_performance_bonus(cls, fractional_score: float) -> int:
+        return cls.round_ranking(cls.performance_bonus(fractional_score))
 
     @classmethod
     def round_ranking(cls, num: float | Decimal) -> int:

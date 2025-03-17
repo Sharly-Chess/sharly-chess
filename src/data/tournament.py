@@ -741,12 +741,12 @@ class Tournament:
             estimation = level_estimations[points]
             if estimation > 0:
                 # No need to touch a group's estimation if it already has one
-                previous_bonus = SharedUtils.performance_bonus(
+                previous_bonus = SharedUtils.rounded_performance_bonus(
                     points / max_possible_points
                 )
                 previous_estimation = estimation
             elif previous_estimation > 0:
-                bonus = SharedUtils.performance_bonus(
+                bonus = SharedUtils.rounded_performance_bonus(
                     points / max_possible_points
                 )
                 level_estimations[points] = previous_estimation - previous_bonus + bonus
@@ -759,12 +759,12 @@ class Tournament:
         for points in point_keys:
             estimation = level_estimations[points]
             if estimation > 0:
-                previous_bonus = SharedUtils.performance_bonus(
+                previous_bonus = SharedUtils.rounded_performance_bonus(
                     points / max_possible_points
                 )
                 previous_estimation = estimation
             elif previous_estimation > 0:
-                bonus = SharedUtils.performance_bonus(
+                bonus = SharedUtils.rounded_performance_bonus(
                     points / max_possible_points
                 )
                 level_estimations[points] = previous_estimation - previous_bonus + bonus

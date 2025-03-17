@@ -673,7 +673,7 @@ def get_extra_tie_break_classes() -> list[type[AbstractTieBreak]]:
 
 
 @hookimpl
-def get_performance_bonus_function() -> Callable[[float], int]:
+def get_performance_bonus_function() -> Callable[[float], int | float]:
     return papi_performance_bonus
 
 

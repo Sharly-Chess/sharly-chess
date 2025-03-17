@@ -10,7 +10,7 @@ from data.tournament import Tournament
 from data.util import TournamentPairing, Result, StaticUtils
 
 
-def papi_performance_bonus(fractional_score: float) -> int:
+def papi_performance_bonus(fractional_score: float) -> int | float:
     performance_table = StaticUtils.PERFORMANCE_TABLE[:-1] + [677, 677]
     percent = 100 * fractional_score
     index = floor(abs(50 - percent))

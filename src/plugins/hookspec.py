@@ -271,7 +271,7 @@ class AppHookSpecs:
         """Provide extra tournament tie breaks"""
 
     @hookspec(firstresult=True)
-    def get_performance_bonus_function(self) -> Callable[[float], int]:
+    def get_performance_bonus_function(self) -> Callable[[float], int | float]:
         """Provide a function to compute the performance bonus"""
 
     @hookspec(firstresult=True)
