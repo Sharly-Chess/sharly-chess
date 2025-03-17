@@ -100,7 +100,6 @@ if test_ffe:
         print(f'Performing {searches} searches on the FFE database...')
         start: float = time.perf_counter()
         for _ in range(searches):
-            token: str = random_search_token()
             with FfeDatabase() as ffe_database:
                 ffe_database.search_player(random_search_token(), limit=limit)
         duration: float = time.perf_counter() - start
