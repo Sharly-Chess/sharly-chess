@@ -246,7 +246,7 @@ class AppHookSpecs:
         """Provide print splitting options"""
 
     @hookspec
-    def split_players_by(self, split_by: str, players: list[Player]):
+    def split_printed_players_by(self, split_by: str, players: list[Player]):
         """Split players by the chosen split option"""
 
     @hookspec

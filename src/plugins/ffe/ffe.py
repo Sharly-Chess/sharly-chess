@@ -590,12 +590,12 @@ def get_print_split_options() -> Iterable[PrintSplitOption]:
         PrintSplitOption(
             name=_('League'),
             url_name="ffe-league",
-            split_fn=partial(split_players_by, "ffe-league"),
+            split_fn=partial(split_printed_players_by, "ffe-league"),
         ),
     ]
 
 
-def split_players_by(split_by: str, players: list[Player]):
+def split_printed_players_by(split_by: str, players: list[Player]):
     split_functions = {
         "ffe-league": lambda p: p.plugin_data.get(PLUGIN_NAME, {}).get('league', None),
     }
