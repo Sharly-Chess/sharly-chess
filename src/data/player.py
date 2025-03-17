@@ -91,6 +91,7 @@ class TournamentPlayer:
         pairings: dict[int, Pairing],
         estimation: int | None = None,
         point_values: dict[Result, float] | None = None,
+        tournament: 'Tournament | None' = None,
     ):
         self.id: int | None = id
         self.last_name: str = last_name
@@ -103,24 +104,54 @@ class TournamentPlayer:
         self._estimation: int | None = estimation
         self.pairings: dict[int, Pairing] = pairings
         self._point_values: dict[Result, float] = point_values
+        self._tournament_ref: 'ReferenceType[Tournament] | None' = None
+        self.tournament: 'Tournament | None' = tournament
+
+    @property
+    def tournament(self) -> 'Tournament | None':
+        return self._tournament_ref() if self._tournament_ref else None
+
+    @tournament.setter
+    def tournament(self, tournament: 'Tournament | None'):
+        self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @property
     def point_values(self) -> dict[Result, float] | None:
         return self._point_values
 
-    def points_before(self, max_round: int, only_played: bool = False) -> float:
+    def points_before(
+            self,
+            before_round: int,
+            only_played: bool = False
+    ) -> float:
+        # NOTE(Amaras) this does not rely on the fact that insertion order
+        # is preserved in 3.6+ dict, because I can't be sure insertion order
+        # is the correct (increasing) round order
+        # NOTE(Amaras) if you were to include the current round
+        # in the computation, boards regularly change their ordering
+        # during the current round as results are added
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index < max_round and
+            if round_index < before_round and
             (pairing.played or not only_played)
         )
 
-    def points_after(self, max_round: int, only_played: bool = False) -> float:
+    def points_after(
+            self,
+            after_round: int,
+            only_played: bool = False
+    ) -> float:
+        # NOTE(Amaras) this does not rely on the fact that insertion order
+        # is preserved in 3.6+ dict, because I can't be sure insertion order
+        # is the correct (increasing) round order
+        # NOTE(Amaras) if you were to include the current round
+        # in the computation, boards regularly change their ordering
+        # during the current round as results are added
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index <= max_round and
+            if round_index <= after_round and
             (pairing.played or not only_played)
         )
 
@@ -129,16 +160,6 @@ class TournamentPlayer:
             pairing.result.points(self.point_values)
             for pairing in self.pairings.values()
             if pairing.played or not only_played
-        )
-
-    def max_possible_points(self, max_round: int | None = None, only_played: bool = False) -> float:
-        if max_round is None:
-            max_round = max(self.pairings)
-        return sum(
-            Result.GAIN.points(self.point_values)
-            for round_index, pairing in self.pairings.items()
-            if round_index <= max_round and
-            (pairing.played or not only_played)
         )
 
     @property
@@ -189,6 +210,7 @@ class Player(TournamentPlayer):
             federation,
             title,
             pairings,
+            tournament=tournament,
         )
         self.mail: str = mail
         self.phone: str = phone
@@ -212,18 +234,8 @@ class Player(TournamentPlayer):
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
-        self._tournament_ref: 'ReferenceType[Tournament] | None' = None
-        self.tournament = tournament
         self.errors: dict[str, str] = errors or {}
         self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
-
-    @property
-    def tournament(self) -> 'Tournament | None':
-        return self._tournament_ref() if self._tournament_ref else None
-
-    @tournament.setter
-    def tournament(self, tournament: 'Tournament | None'):
-        self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @staticmethod
     def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
@@ -283,16 +295,13 @@ class Player(TournamentPlayer):
     def point_values(self) -> dict[Result, float] | None:
         return self.tournament.point_values if self.tournament else None
 
-    def compute_points(self, max_round: int):
-        """Computes and stores the points of the player,
-        from round 1 to round `max_round` (returns None)"""
-        # NOTE(Amaras) this does not rely on the fact that insertion order
-        # is preserved in 3.6+ dict, because I can't be sure insertion order
-        # is the correct (increasing) round order
-        # NOTE(Amaras) if you were to include the current round
-        # in the computation, boards regularly change their ordering
-        # during the current round as results are added
-        self.points = self.points_before(max_round)
+    def compute_points(
+            self,
+            *,
+            before_round: int
+    ):
+        """Computes and stores the points scored by the player before round `before_round` (returns None)"""
+        self.points = self.points_before(before_round)
 
     def points_total(self) -> float:
         return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
@@ -312,7 +321,11 @@ class Player(TournamentPlayer):
             self.points += points
 
     def to_trf(
-        self, player_id_to_trf_id: Callable[[int], int], max_round: int,
+        self,
+        player_id_to_trf_id: Callable[[int], int],
+        /,
+        *,
+        after_round: int,
     ) -> TrfPlayer:
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
@@ -325,12 +338,12 @@ class Player(TournamentPlayer):
             birthdate=self.date_of_birth.strftime('%Y/%m/%d')
             if self.date_of_birth
             else '',
-            points=self.points_after(max_round),
+            points=self.points_after(after_round),
             rank=self.rank,
             games=[
                 result.to_trf(round_nb, player_id_to_trf_id)
                 for round_nb, result in self.pairings.items()
-                if round_nb <= max_round
+                if round_nb <= after_round
             ],
         )
 
@@ -441,10 +454,12 @@ class Player(TournamentPlayer):
         ]
 
     def compute_tie_break_values(
-        self, tournament: 'Tournament', max_round: int | None = None
+        self,
+        *,
+        after_round: int | None
     ):
         self._tie_break_values = [
-            tie_break.compute_player_value(self, tournament, max_round)
+            tie_break.compute_player_value(self, after_round=after_round)
             for tie_break in self.tournament.tie_breaks
         ]
 

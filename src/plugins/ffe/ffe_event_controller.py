@@ -1,7 +1,6 @@
-from typing import Any
 from litestar import get
 from litestar.response import Template
-from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar_htmx import HTMXRequest, ClientRedirect
 
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 from web.controllers.admin.player_admin_controller import PlayerAdminController
