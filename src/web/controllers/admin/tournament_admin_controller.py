@@ -782,7 +782,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def split_players_by(split_by: PrintSplit, players: list[Player]) -> dict[str, list[Player]]:
+    def split_printed_players_by(split_by: PrintSplit, players: list[Player]) -> dict[str, list[Player]]:
         split_functions: dict[PrintSplit, Callable] = {
             PrintSplit.CLUB: lambda p: p.club,
             PrintSplit.CATEGORY: lambda p: p.category.short_name,
@@ -866,9 +866,9 @@ class TournamentAdminController(BaseEventAdminController):
             plugin_split_options = [option for options in per_plugin_split_options for option in options]
 
             split_functions = {
-                PrintSplit.CLUB: partial(self.split_players_by, PrintSplit.CLUB),
-                PrintSplit.CATEGORY: partial(self.split_players_by, PrintSplit.CATEGORY),
-                PrintSplit.FEDERATION: partial(self.split_players_by, PrintSplit.FEDERATION),
+                PrintSplit.CLUB: partial(self.split_printed_players_by, PrintSplit.CLUB),
+                PrintSplit.CATEGORY: partial(self.split_printed_players_by, PrintSplit.CATEGORY),
+                PrintSplit.FEDERATION: partial(self.split_printed_players_by, PrintSplit.FEDERATION),
             } | {
                 plugin_option.url_name: plugin_option.split_fn
                 for plugin_option in plugin_split_options
