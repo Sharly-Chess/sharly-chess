@@ -1545,13 +1545,11 @@ class EventDatabase(SQLiteVersionedDatabase):
             tie_break_id = tie_break_dict['type']
             options: list[AbstractTieBreakOption] = []
             for option_id, value in tie_break_dict['options'].items():
-                if option := TieBreakManager.option_from_id(
-                        option_id, value
-                ) is not None:
+                if option := TieBreakManager.option_from_id(option_id, value):
                     options.append(option)
             if tie_break := TieBreakManager.tie_break_from_id(
                 tie_break_id, options
-            ) is not None:
+            ):
                 tie_breaks.append(tie_break)
         return tie_breaks
 
