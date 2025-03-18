@@ -167,8 +167,9 @@ class FideDatabase(SQLiteDatabase):
                         if player_count % 1000 == 0:
                             self.executemany(query, to_write)
                             print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
-                            self.commit()
                             to_write.clear()
+                        if player_count % 100_000 == 0:
+                            self.commit()
 
                     elif event == 'end' and elem.tag in fields:
                         (field_name, field_function) = fields[elem.tag]

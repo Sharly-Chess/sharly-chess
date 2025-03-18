@@ -184,6 +184,7 @@ class FfeDatabase(SQLiteDatabase):
                                     end='\r'
                                 )
                                 to_write.clear()
+                            if player_count % 100_000 == 0:
                                 self.commit()
 
                         except ValueError:
