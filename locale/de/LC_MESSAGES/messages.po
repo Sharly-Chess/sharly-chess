@@ -521,7 +521,7 @@ msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id
 msgstr "Kein Bildschirm vom Typ [{screen_type}] für das Bildschirmmenü [{screen_uniq_id}]."
 
 #, ai_translation
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr "Muster [{pattern}] kann von Bildschirmfamilien verwendet werden."
 
 #, ai_translation

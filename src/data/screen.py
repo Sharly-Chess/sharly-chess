@@ -354,7 +354,7 @@ class Screen:
                     if self.family_id is None:
                         self.event.add_warning(
                             _(
-                                'Pattern [{pattern}] can be used by screen families.'
+                                'Pattern [{pattern}] can be used by screen families only.'
                             ).format(pattern=menu_part)
                         )
                     else:

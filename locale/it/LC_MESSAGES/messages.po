@@ -520,7 +520,7 @@ msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id
 msgstr "Nessuna schermata di tipo [{screen_type}] per il menu dello schermo [{screen_uniq_id}]."
 
 #, ai_translation
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr "Il modello [{pattern}] può essere utilizzato dalle famiglie dello schermo."
 
 #, ai_translation

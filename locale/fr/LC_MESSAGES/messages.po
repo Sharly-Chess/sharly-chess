@@ -396,7 +396,7 @@ msgstr "Classement %t"
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr "Aucun écran de type [{screen_type}] pour le menu de l'écran [{screen_uniq_id}]."
 
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr "Le motif [{pattern}] ne peut être utilisé que pour les familles d'écrans."
 
 msgid "Pattern [{pattern}] matches no screen."

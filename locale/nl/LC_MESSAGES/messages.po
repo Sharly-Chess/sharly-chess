@@ -520,7 +520,7 @@ msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id
 msgstr "Geen scherm van het type [{screen_type}] voor het schermmenu [{screen_uniq_id}]."
 
 #, ai_translation
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr "Patroon [{pattern}] kan gebruikt worden door schermfamilies."
 
 #, ai_translation

@@ -396,7 +396,7 @@ msgstr ""
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr ""
 
 msgid "Pattern [{pattern}] matches no screen."

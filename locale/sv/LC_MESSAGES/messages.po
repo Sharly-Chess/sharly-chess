@@ -520,7 +520,7 @@ msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id
 msgstr "Ingen skärm av typen [{screen_type}] för menyn på skärmen [{screen_uniq_id}]."
 
 #, ai_translation
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr "Mönster [{pattern}] kan användas av skärmfamiljer."
 
 #, ai_translation
