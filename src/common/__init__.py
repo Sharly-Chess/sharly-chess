@@ -28,7 +28,7 @@ EXPERIMENTAL_FEATURES: bool = os.environ.get(
     '1',
 ]
 
-PAPI_WEB_VERSION: Version = Version("2.4.26")
+PAPI_WEB_VERSION: Version = Version("2.4.27")
 
 REQUEST_TIMEOUT: int = 10
 

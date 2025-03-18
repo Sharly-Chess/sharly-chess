@@ -1,5 +1,5 @@
 import weakref
-from functools import cached_property
+from functools import cached_property, cache
 from math import ceil
 from typing import TYPE_CHECKING
 from _weakref import ReferenceType
@@ -213,6 +213,7 @@ class Family:
     def last_update_str(self) -> str | None:
         return format_timestamp_date_time(self.last_update)
 
+    @cache
     def _calculate_screens(self) -> bool:
         if not self.tournament.rounds:
             self.error = _(

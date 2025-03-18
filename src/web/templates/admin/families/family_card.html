@@ -120,7 +120,7 @@
                     {{ loop.index }}.
                     {% if family.tournament.current_round and family.type in ['boards', 'input'] %}
                         {{ _('Boards from #%(first)d to #%(last)d', first=screen.screen_sets_sorted_by_order[0].first_board.id, last=screen.screen_sets_sorted_by_order[0].last_board.id) }}
-                    {% elif family.type == 'players' %}
+                    {% elif family.type in ['boards', 'input', 'players', ] %}
                         {{ _('Players from #%(first)s to #%(last)s', first=screen.screen_sets_sorted_by_order[0].first_player_by_name.last_name[:8], last=screen.screen_sets_sorted_by_order[0].last_player_by_name.last_name[:8]) }}
                     {% else %}
                         {{ _('Players from #%(first)d to #%(last)d', first=screen.screen_sets_sorted_by_order[0].first_player_by_rank.rank, last=screen.screen_sets_sorted_by_order[0].last_player_by_rank.rank) }}
