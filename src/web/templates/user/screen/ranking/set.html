@@ -28,7 +28,7 @@
                                     {% endfor %}
                                 {% else %}
                                     <tr class="odd">
-                                        <td class="left {{ extra_classes}}" colspan="{{ 8 + tournament.tie_breaks|length + extra_columns|length }}">
+                                        <td class="text-start" colspan="{{ 8 + tournament.tie_breaks|length + extra_columns|length }}">
                                             {{ _('No players.') }}
                                         </td>
                                     </tr>
