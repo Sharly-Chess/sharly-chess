@@ -625,7 +625,7 @@ def get_extra_print_view_columns(
                 ExtraColumn(
                     at="first-round" if document == PrintDocument.CROSSTABLE else "club",
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
-                    classes="league text-start",
+                    classes="league text-center",
                     value=lambda player: get_data(player.plugin_data, 'league'),
                 )
             ]
@@ -633,20 +633,20 @@ def get_extra_print_view_columns(
         case _:
             return []
 
-# ---------------------------------------------------------------------------------
-# User screens
-# ---------------------------------------------------------------------------------
-
 @hookimpl
 def get_extra_print_view_css(
     document: PrintDocument
 ) -> str:
     match document:
         case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
-            return '.player-table .league { text-align: left; }'
+            return '.player-table .league { text-align: center; }'
         case _:
             return ''
 
+
+# ---------------------------------------------------------------------------------
+# User screens
+# ---------------------------------------------------------------------------------
 
 @hookimpl
 def get_extra_screen_columns(screen: ScreenType) -> Iterable[ExtraColumn]:

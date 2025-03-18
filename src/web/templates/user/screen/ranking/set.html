@@ -19,12 +19,12 @@
                             ranking_round=screen_set.ranking_round
                         %}
                             <thead>
-                                {% include '../../../common/print/player_header.html' %}
+                                {% include '/common/print/player_header.html' %}
                             </thead>
                             <tbody>
                                 {% if players %}
                                     {% for player in players %}
-                                        {% include '../../../common/print/player_row.html' %}
+                                        {% include '/common/print/player_row.html' %}
                                     {% endfor %}
                                 {% else %}
                                     <tr class="odd">

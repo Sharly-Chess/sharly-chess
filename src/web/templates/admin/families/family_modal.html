@@ -97,6 +97,14 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        {% if family_type == 'ranking' %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/ranking_crosstable.html' %}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/ranking_round.html' %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <h4 class="mt-4">
@@ -143,6 +151,25 @@
                                 min=1
                             ) }}
                         </div>
+                        {% if family_type == 'ranking' %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/ranking_min_points.html' %}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/ranking_max_points.html' %}
+                            </div>
+                        {% endif %}
+                        {% if family_type == 'players' %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/show_unpaired.html' %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <h4 class="mt-4">
+                        {{ _('Layout') }}
+                    </h4>
+                    <div class="row">
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.number_input(
                                 name='parts',
@@ -173,12 +200,6 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                    </div>
-
-                    <h4 class="mt-4">
-                        {{ _('Layout') }}
-                    </h4>
-                    <div class="row">
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.select_input(
                                 name='timer_id',
@@ -197,6 +218,18 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        {% if family_type == 'input' %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/exit_button.html' %}
+                            </div>
+                        {% endif %}
+                        {% with
+                            message_help_text=_('When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).')
+                        %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/alert_message.html' %}
+                            </div>
+                        {% endwith %}
                     </div>
 
                     <h4 class="mt-4">
@@ -242,59 +275,6 @@
                         </script>
                     </div>
 
-                    <h4>
-                        {{ _('Display') }}
-                    </h4>
-                    {% with
-                        message_help_text=_('When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).')
-                    %}
-                        {% if family_type == 'input' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/exit_button.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% if family_type == 'boards' %}
-                            <div class="row">
-                                <div class="col-12 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% if family_type == 'players' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/show_unpaired.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% if family_type == 'ranking' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/ranking_crosstable.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/ranking_round.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/ranking_min_points.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/ranking_max_points.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endwith %}
                 {% endif %}
             </form>
         </div>

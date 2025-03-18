@@ -25,12 +25,12 @@
                     </div>
                     <table class="player-table">
                         <thead>
-                            {% include '../../common/print/player_header.html' %}
+                            {% include '/common/print/player_header.html' %}
                         </thead>
                         <tbody>
                             {% for player in players[split_by] %}
                                 {% with row_class='even' if loop.index is even else 'odd' %}
-                                    {% include '../../common/print/player_row.html' %}
+                                    {% include '/common/print/player_row.html' %}
                                 {% endwith %}
                                 {% set __ = n.append(1) %}
                             {% endfor %}

@@ -107,7 +107,104 @@
                                 ) }}
                             </div>
                         {% endif %}
+                        {% if screen_type == 'ranking' %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/ranking_crosstable.html' %}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {% include '../common/modal/ranking_round.html' %}
+                            </div>
+                        {% endif %}
+                        {% if screen_type == 'image' %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.text_input(
+                                    name='background_image',
+                                    label=_('Background image:'),
+                                    placeholder=_('E.g.: https://my.club.us/tournament.jpg'),
+                                    help_text=_('The URL of the image to display.'),
+                                    default_checkbox=true,
+                                    default_checkbox_text=_('no background image'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.color_input(
+                                    name='background_color',
+                                    label=_('Background colour:'),
+                                    help_text=_('The background colour is used when the image does not fill the whole screen.'),
+                                    default_checkbox=true,
+                                    default_color=admin_event.background_color,
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
                     </div>
+
+                    {% if screen_type in ['players', 'ranking', 'results', ] %}
+                        <h4>
+                            {{ _('Selection') }}
+                        </h4>
+                        <div class="row">
+                            {% if screen_type == 'players' %}
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/show_unpaired.html' %}
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/alert_message.html' %}
+                                </div>
+                            {% endif %}
+                            {% if screen_type == 'ranking' %}
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/ranking_min_points.html' %}
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/ranking_max_points.html' %}
+                                </div>
+                            {% endif %}
+                            {% if screen_type == 'results' %}
+                                <div class="col-12 col-md-6 mb-3">
+                                    {{ admin_macros.number_input(
+                                        name='results_limit',
+                                        label=_('Maximum number of results displayed:'),
+                                        placeholder=_('E.g.: %(num)d', num=30),
+                                        help_text=_('The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).'),
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    {{ admin_macros.number_input(
+                                        name='results_max_age',
+                                        label=_('Maximum age of the results:'),
+                                        placeholder=_('E.g.: %(minutes)d (minutes)', minutes=45),
+                                        help_text=_('The maximum age of the results, in minutes (by default %(minutes)d minutes).', minutes=papi_web_config.default_results_screen_max_age),
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">{{ _('Tournaments displayed:') }}</label>
+                                    <div class="d-flex flex-wrap gap-3">
+                                        {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
+                                            {% with id='results-tournament-' ~ tournament.id, name='results_tournament_' ~ tournament.id %}
+                                                <span class="text-nowrap">
+                                                    <input
+                                                        name="{{ name }}"
+                                                        type="checkbox" id="{{ id }}"
+                                                        class=""
+                                                        {% if data[name] == 'on' %}checked{% endif %} />
+                                                    <label for="{{ id }}" class="form-label ms-1">
+                                                        {{ tournament.name }}
+                                                    </label>
+                                                </span>
+                                            {% endwith %}
+                                        {% endfor %}
+                                    </div>
+                                    <div id="" class="form-text">
+                                        {{ _('When not tournament is selected, the results of all the tournaments are displayed.') }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
 
                     {% if screen_type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
                         <h4>
@@ -131,6 +228,18 @@
                                     help_text=_('The number of columns used to display data.'),
                                     data=data, errors=errors
                                 ) }}
+                            </div>
+                            {% if screen_type == 'input' %}
+                                <div class="col-12 col-md-6 mb-3">
+                                    {% include '../common/modal/exit_button.html' %}
+                                </div>
+                            {% endif %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {% with
+                                    message_help_text=_('When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).')
+                                %}
+                                    {% include '../common/modal/alert_message.html' %}
+                                {% endwith %}
                             </div>
                         </div>
 
@@ -177,144 +286,6 @@
                             </script>
                         </div>
                     {% endif %}
-
-                    <h4>
-                        {{ _('Display') }}
-                    </h4>
-                    {% with
-                        message_help_text=_('When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).')
-                    %}
-                        {% if screen_type == 'input' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/exit_button.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if screen_type == 'boards' %}
-                            <div class="row">
-                                <div class="col-12 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if screen_type == 'players' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/show_unpaired.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if screen_type == 'ranking' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/ranking_crosstable.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/ranking_round.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/ranking_min_points.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/ranking_max_points.html' %}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if screen_type == 'results' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {{ admin_macros.number_input(
-                                        name='results_limit',
-                                        label=_('Maximum number of results displayed:'),
-                                        placeholder=_('E.g.: %(num)d', num=30),
-                                        help_text=_('The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).'),
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {{ admin_macros.number_input(
-                                        name='results_max_age',
-                                        label=_('Maximum age of the results:'),
-                                        placeholder=_('E.g.: %(minutes)d (minutes)', minutes=45),
-                                        help_text=_('The maximum age of the results, in minutes (by default %(minutes)d minutes).', minutes=papi_web_config.default_results_screen_max_age),
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                                <div class="col-12 mb-3">
-                                    <label class="form-label">{{ _('Tournaments displayed:') }}</label>
-                                    <div class="d-flex flex-wrap gap-3">
-                                        {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
-                                            {% with id='results-tournament-' ~ tournament.id, name='results_tournament_' ~ tournament.id %}
-                                                <span class="text-nowrap">
-                                                    <input
-                                                        name="{{ name }}"
-                                                        type="checkbox" id="{{ id }}"
-                                                        class=""
-                                                        {% if data[name] == 'on' %}checked{% endif %} />
-                                                    <label for="{{ id }}" class="form-label ms-1">
-                                                        {{ tournament.name }}
-                                                    </label>
-                                                </span>
-                                            {% endwith %}
-                                        {% endfor %}
-                                    </div>
-                                    <div id="" class="form-text">
-                                        {{ _('When not tournament is selected, the results of all the tournaments are displayed.') }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if screen_type == 'image' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {{ admin_macros.text_input(
-                                        name='background_image',
-                                        label=_('Background image:'),
-                                        placeholder=_('E.g.: https://my.club.us/tournament.jpg'),
-                                        help_text=_('The URL of the image to display.'),
-                                        default_checkbox=true,
-                                        default_checkbox_text=_('no background image'),
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {{ admin_macros.color_input(
-                                        name='background_color',
-                                        label=_('Background colour:'),
-                                        help_text=_('The background colour is used when the image does not fill the whole screen.'),
-                                        default_checkbox=true,
-                                        default_color=admin_event.background_color,
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 mb-3">
-                                    {% include '../common/modal/alert_message.html' %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endwith %}
                 {% endif %}
             </form>
         </div>
