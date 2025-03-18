@@ -1451,10 +1451,10 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
 
     @classmethod
     def _expected_score(
-            cls,
-            player_rating: int,
-            opponent_ratings: Iterable[int],
-            point_values: dict[Result, float] | None = None,
+        cls,
+        player_rating: int,
+        opponent_ratings: Iterable[int],
+        point_values: dict[Result, float] | None = None,
     ) -> Decimal:
         chances = [
             cls.win_chances(player_rating, opponent_rating)
@@ -1566,10 +1566,10 @@ class DirectEncounterTieBreak(AbstractTieBreak):
         return False
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'Player',
+        *,
+        after_round: int | None,
     ) -> tuple[float, bool]:
         """ If all players with the same number of points as *player* before round
         *after_round* have played each other, returns the score *player* achieved against

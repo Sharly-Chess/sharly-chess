@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, StrEnum, IntEnum
+from functools import lru_cache
 from logging import Logger
 from math import floor
 from typing import Any, Self
@@ -29,6 +30,7 @@ class StaticUtils:
     ]
 
     @classmethod
+    @lru_cache(maxsize=32)
     def performance_bonus(cls, fractional_score: float) -> int:
         percent = 100 * fractional_score
         index = floor(abs(50 - percent))

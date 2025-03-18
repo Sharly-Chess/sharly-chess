@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from contextlib import suppress
+from functools import cache, lru_cache
 from math import floor
 
 from common.i18n import _
@@ -10,6 +11,7 @@ from data.tournament import Tournament
 from data.util import TournamentPairing, Result, StaticUtils
 
 
+@lru_cache(maxsize=32)
 def papi_performance_bonus(fractional_score: float) -> int | float:
     performance_table = StaticUtils.PERFORMANCE_TABLE[:-1] + [677, 677]
     percent = 100 * fractional_score
@@ -90,6 +92,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
                 raise ValueError(f'{pairing.result=}')
 
     @staticmethod
+    @cache
     def _papi_buchholz_cut(tournament_rounds: int) -> int:
         if tournament_rounds <= 7:
             return 1

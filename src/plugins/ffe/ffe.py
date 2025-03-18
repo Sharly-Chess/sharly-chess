@@ -671,6 +671,9 @@ def get_extra_tie_break_classes() -> list[type[AbstractTieBreak]]:
         ffe_tie_break.PapiKashdanTieBreak,
     ]
 
+# ---------------------------------------------------------------------------------
+# Shared utils
+# ---------------------------------------------------------------------------------
 
 @hookimpl
 def get_performance_bonus_function() -> Callable[[float], int | float]:
