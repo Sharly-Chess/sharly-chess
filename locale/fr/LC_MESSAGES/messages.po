@@ -2180,6 +2180,9 @@ msgstr "Aucun écran"
 msgid "Edit the properties of the screen family."
 msgstr "Éditer les propriétés de la famille d'écrans."
 
+msgid "Go to the first screen."
+msgstr "Aller au premier écran."
+
 msgid "Clone the screen family."
 msgstr "Dupliquer la famille d'écrans."
 
@@ -3069,6 +3072,9 @@ msgstr "(aucun écran)"
 msgid "Edit the properties of the rotator."
 msgstr "Éditer les propriétés de l'écran rotatif."
 
+msgid "Go to the rotator."
+msgstr "Aller à l'écran rotatif."
+
 msgid "Clone the rotator."
 msgstr "Dupliquer l'écran rotatif."
 
@@ -3187,6 +3193,9 @@ msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
 
 msgid "Boards"
 msgstr "Échiquiers"
+
+msgid "Go to the screen."
+msgstr "Aller à l'écran."
 
 msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"

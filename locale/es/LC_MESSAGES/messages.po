@@ -2801,6 +2801,9 @@ msgstr "Sin pantallas"
 msgid "Edit the properties of the screen family."
 msgstr "Edite las propiedades de la familia de pantalla."
 
+msgid "Go to the first screen."
+msgstr ""
+
 #, ai_translation
 msgid "Clone the screen family."
 msgstr "Clonó la familia de la pantalla."
@@ -3916,6 +3919,9 @@ msgstr "(sin pantallas)"
 msgid "Edit the properties of the rotator."
 msgstr "Edite las propiedades del rotador."
 
+msgid "Go to the rotator."
+msgstr ""
+
 #, ai_translation
 msgid "Clone the rotator."
 msgstr "Clonó el rotor."
@@ -4061,6 +4067,9 @@ msgstr "Edite los juegos de reproductores mostrados en la pantalla."
 #, ai_translation
 msgid "Boards"
 msgstr "Juntas"
+
+msgid "Go to the screen."
+msgstr ""
 
 #, ai_translation
 msgid "Input screen creation"

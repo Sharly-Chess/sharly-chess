@@ -298,6 +298,10 @@ class Family:
         return screens_by_uniq_id
 
     @cached_property
+    def calculated_first_screen_id(self) -> str | None:
+        return next(iter(self.screens_by_uniq_id.keys()))
+
+    @cached_property
     def calculated_first(self) -> int | None:
         self._calculate_screens()
         return self._calculated_first

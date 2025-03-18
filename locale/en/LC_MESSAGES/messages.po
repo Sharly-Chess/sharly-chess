@@ -2180,6 +2180,9 @@ msgstr ""
 msgid "Edit the properties of the screen family."
 msgstr ""
 
+msgid "Go to the first screen."
+msgstr ""
+
 msgid "Clone the screen family."
 msgstr ""
 
@@ -3069,6 +3072,9 @@ msgstr ""
 msgid "Edit the properties of the rotator."
 msgstr ""
 
+msgid "Go to the rotator."
+msgstr ""
+
 msgid "Clone the rotator."
 msgstr ""
 
@@ -3186,6 +3192,9 @@ msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
 msgid "Boards"
+msgstr ""
+
+msgid "Go to the screen."
 msgstr ""
 
 msgid "Input screen creation"
