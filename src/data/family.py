@@ -272,6 +272,7 @@ class Family:
                             self.tournament.players_by_name_with_unpaired
                         )
                 else:
+                    self.tournament.compute_player_ranks(after_round=self.ranking_round)
                     total_items_number = len(
                         self.tournament.players_by_rank
                     )

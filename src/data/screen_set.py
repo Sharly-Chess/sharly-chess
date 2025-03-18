@@ -197,7 +197,9 @@ class ScreenSet:
 
     @property
     def ranking_round(self) -> int:
-        return self.tournament.correct_ranking_round(self.screen.ranking_round)
+        return self.tournament.correct_ranking_round(
+            self.screen.ranking_round
+        )
 
     @property
     def ranking_crosstable(self) -> bool:
@@ -365,7 +367,6 @@ class ScreenSet:
 
     def _extract_players_by_rank(self):
         if self.items_lists is None:
-            self.tournament.compute_player_ranks(after_round=self.ranking_round)
             self._extract_data(
                 [
                     player
@@ -440,7 +441,7 @@ class ScreenSet:
                     return _('boards from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
-        else:
+        elif self.type in [ScreenType.PLAYERS]:
             match (self.first, self.last):
                 case (None, None):
                     return _('all the players')
@@ -452,6 +453,20 @@ class ScreenSet:
                     )
                 case (None, last) if last is not None:
                     return _('players from start to #{last}').format(last=last)
+                case _:
+                    raise ValueError(f'first={self.first}, last={self.last}')
+        else:
+            match (self.first, self.last):
+                case (None, None):
+                    return _('the whole ranking')
+                case (first, None) if first is not None:
+                    return _('ranking from #{first} to end').format(first=first)
+                case (first, last) if first is not None and last is not None:
+                    return _('ranking from #{first} to #{last}').format(
+                        first=first, last=last
+                    )
+                case (None, last) if last is not None:
+                    return _('ranking from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
 

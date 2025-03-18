@@ -842,10 +842,7 @@ class Tournament:
         papi_legacy: bool = True
     ) -> dict[int, Player]:
         """compute and return the ranks of all the players after round *after_round*."""
-        if after_round is None:
-            after_round = self.max_ranking_round
-        else:
-            after_round = max(0, min(after_round, self.max_ranking_round))
+        after_round = self.correct_ranking_round(after_round)
         if after_round:
             # Estimate ratings to ensure we have a defined rating for everyone
             self.estimate_players(after_round=after_round, papi_legacy=papi_legacy)
@@ -873,7 +870,8 @@ class Tournament:
 
     @cached_property
     def players_by_rank(self) -> dict[int, Player]:
-        self.compute_player_ranks(after_round=None)
+        assert self._players_by_rank is not None, \
+            'Tournament._players_by_rank is not set, call Tournament.compute_player_ranks() before.'
         return self._players_by_rank
 
     def _build_boards(self):

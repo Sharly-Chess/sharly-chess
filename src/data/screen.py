@@ -553,7 +553,10 @@ class Screen:
     def ranking_crosstable(self) -> bool:
         match self.type:
             case ScreenType.RANKING:
-                return self.stored_screen.ranking_crosstable == True
+                if self.stored_screen:
+                    return self.stored_screen.ranking_crosstable == True
+                else:
+                    return self.family.ranking_crosstable
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -561,7 +564,10 @@ class Screen:
     def ranking_round(self) -> int | None:
         match self.type:
             case ScreenType.RANKING:
-                return self.stored_screen.ranking_round
+                if self.stored_screen:
+                    return self.stored_screen.ranking_round
+                else:
+                    return self.family.ranking_round
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -569,7 +575,10 @@ class Screen:
     def ranking_min_points(self) -> int | None:
         match self.type:
             case ScreenType.RANKING:
-                return self.stored_screen.ranking_min_points
+                if self.stored_screen:
+                    return self.stored_screen.ranking_min_points
+                else:
+                    return self.family.ranking_min_points
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -577,7 +586,10 @@ class Screen:
     def ranking_max_points(self) -> int | None:
         match self.type:
             case ScreenType.RANKING:
-                return self.stored_screen.ranking_max_points
+                if self.stored_screen:
+                    return self.stored_screen.ranking_max_points
+                else:
+                    return self.family.ranking_max_points
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
