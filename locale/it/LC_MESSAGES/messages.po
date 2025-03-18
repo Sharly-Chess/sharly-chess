@@ -545,96 +545,6 @@ msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Torneo {tournament_uniq_id} ({numbers_str})"
 
 #, ai_translation
-msgid "None"
-msgstr "Nessuno"
-
-# Error: translation [BuchholzCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Buchholz]
-#, ai_translation
-msgid "Buchholz"
-msgstr ""
-
-#, ai_translation
-msgid "Buchholz cut bottom"
-msgstr "Fondo taglio Buchholz"
-
-#, ai_translation
-msgid "Median Buchholz"
-msgstr "Buchholz mediano"
-
-#, ai_translation
-msgid "Progressive scores"
-msgstr "Punteggi progressivi"
-
-#, ai_translation
-msgid "Performance"
-msgstr "Prestazioni"
-
-#, ai_translation
-msgid "Sum of Buchholz"
-msgstr "Somma di Buchholz"
-
-#, ai_translation
-msgid "Number of wins"
-msgstr "Numero di vittorie"
-
-# Error: translation [KashdanCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Kashdan]
-#, ai_translation
-msgid "Kashdan"
-msgstr ""
-
-# Error: translation [KoyaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Koya]
-#, ai_translation
-msgid "Koya"
-msgstr ""
-
-#, ai_translation
-msgid "Sonnenborn-Berger"
-msgstr "Sonnenborn-Berger"
-
-#, fuzzy
-msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-msgstr "Bu."
-
-#, fuzzy
-msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-#, fuzzy
-msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-#, fuzzy
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "PS"
-
-#, fuzzy
-msgid "Perf *** ACRONYM FOR PERFORMANCE"
-msgstr "Perf"
-
-#, fuzzy
-msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SBh"
-
-#, fuzzy
-msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NW"
-
-#, fuzzy
-msgid "Ka. *** ACRONYM FOR KASHDAN"
-msgstr "Ka."
-
-#, fuzzy
-msgid "Ko. *** ACRONYM FOR KOYA"
-msgstr "Ko."
-
-#, fuzzy
-msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-msgstr "SB"
-
-#, ai_translation
 msgid "Cut"
 msgstr "Taglia"
 
@@ -642,17 +552,12 @@ msgstr "Taglia"
 msgid "Cut top"
 msgstr "Taglia superiore"
 
-#, ai_translation
-msgid "Cut Bottom"
-msgstr "Taglia in basso"
+msgid "Cut bottom"
+msgstr ""
 
 #, ai_translation
 msgid "Played modifier"
 msgstr "Modificatore riprodotto"
-
-#, ai_translation
-msgid "Papi legacy"
-msgstr "Eredità Papi"
 
 #, ai_translation
 msgid "Fore modifier"
@@ -667,6 +572,13 @@ msgid "Exclude players"
 msgstr "Escludi giocatori"
 
 #, ai_translation
+msgid "Number of wins"
+msgstr "Numero di vittorie"
+
+msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
+msgstr ""
+
+#, ai_translation
 msgid "Number of games won"
 msgstr "Numero di partite vinte"
 
@@ -679,12 +591,21 @@ msgid "Games won with black"
 msgstr "Giochi vinti con il nero"
 
 #, ai_translation
+msgid "Progressive scores"
+msgstr "Punteggi progressivi"
+
+msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgstr ""
+
+#, ai_translation
 msgid "Rounds one Elected to Play"
 msgstr "Giri uno eletto a giocare"
 
+# Error: translation [BuchholzCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Buchholz]
 #, ai_translation
-msgid "Average of opponents Buchholz"
-msgstr "Media degli avversari Buchholz"
+msgid "Buchholz"
+msgstr ""
 
 # Error: translation [Fore BuchholzCity name (optional, probably does not need
 # a translation)] is much too long compared to initial [Fore Buchholz]
@@ -693,8 +614,31 @@ msgid "Fore Buchholz"
 msgstr ""
 
 #, ai_translation
-msgid "Sonneborn-Berger"
-msgstr "Sonneborn-Berger"
+msgid "Sum of Buchholz"
+msgstr "Somma di Buchholz"
+
+#, ai_translation
+msgid "Average of opponents Buchholz"
+msgstr "Media degli avversari Buchholz"
+
+#, ai_translation
+msgid "Sonnenborn-Berger"
+msgstr "Sonnenborn-Berger"
+
+# Error: translation [KoyaCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Koya]
+#, ai_translation
+msgid "Koya"
+msgstr ""
+
+msgid "Ko. *** ACRONYM FOR PAPI KOYA"
+msgstr ""
+
+# Error: translation [KashdanCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Kashdan]
+#, ai_translation
+msgid "Kashdan"
+msgstr ""
 
 #, ai_translation
 msgid "Average rating of opponents"
@@ -1078,6 +1022,10 @@ msgid "Error while creating the database: {ex}."
 msgstr "Errore durante la creazione del database: {ex}."
 
 #, ai_translation
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Inserire una password per la connessione ChessEvent."
+
+#, ai_translation
 msgid "ChessEvent connection not defined."
 msgstr "Connessione a scacchiEvent non definita."
 
@@ -1088,10 +1036,6 @@ msgstr "Evento a scacchi non impostato."
 #, ai_translation
 msgid "ChessEvent tournament name not set."
 msgstr "Nome del torneo di ChessEvent non impostato."
-
-#, ai_translation
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Inserire una password per la connessione ChessEvent."
 
 #, ai_translation
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
@@ -1325,10 +1269,6 @@ msgid "Error while updating the FFE database."
 msgstr "Errore durante l'aggiornamento del database FFE."
 
 #, ai_translation
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr "Numero di qualifica e password FFE non impostati, le operazioni sul sito FFE non saranno disponibili."
-
-#, ai_translation
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Il giocatore con FFE ID [{ffe_id}] gioca già il torneo [{tournament_uniq_id}]."
 
@@ -1345,16 +1285,20 @@ msgid "The player with FFE licence number [{ffe_licence_number}] already plays t
 msgstr "Il giocatore con il numero di licenza FFE [{ffe_licence_number}] gioca già il torneo [{tournament_uniq_id}]."
 
 #, ai_translation
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr "Licenza FFE [{ffe_licence_number}] già presente nel torneo [{tournament_uniq_id}]."
+
+#, ai_translation
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgstr "Numero di qualifica e password FFE non impostati, le operazioni sul sito FFE non saranno disponibili."
+
+#, ai_translation
 msgid "The FFE ID is a positive integer."
 msgstr "L'ID FFE è un intero positivo."
 
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "La password del torneo sul sito FFE è composta da 10 lettere maiuscole."
-
-#, ai_translation
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
-msgstr "Licenza FFE [{ffe_licence_number}] già presente nel torneo [{tournament_uniq_id}]."
 
 #, ai_translation
 msgid "League"
@@ -1379,6 +1323,36 @@ msgstr "Scaricamento del database FFE..."
 #, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Errore nel leggere la seguente riga (giocatore ignorato): [{row}]."
+
+msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
+msgstr ""
+
+#, ai_translation
+msgid "Buchholz cut bottom"
+msgstr "Fondo taglio Buchholz"
+
+msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr ""
+
+#, ai_translation
+msgid "Median Buchholz"
+msgstr "Buchholz mediano"
+
+msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
+msgstr ""
+
+#, ai_translation
+msgid "Performance"
+msgstr "Prestazioni"
+
+msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
+msgstr ""
+
+msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
+msgstr ""
+
+msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
+msgstr ""
 
 #, ai_translation
 msgid "No FFE Licence"
@@ -1760,6 +1734,10 @@ msgid "Points for loss (zero-point bye)"
 msgstr "Punti di perdita (bye a zero punti)"
 
 #, ai_translation
+msgid "None"
+msgstr "Nessuno"
+
+#, ai_translation
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr "Il colore #1 viene usato fino a {delay_1} minuti prima dell'inizio dei giri (ritardo #1), il colore poi cambia gradualmente fino al colore #2 ({delay_2} minuti prima dell'inizio dei giri)."
 
@@ -2015,6 +1993,15 @@ msgstr "Timer [{timer_id}] non trovato."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Non è possibile specificare il numero di parti e il numero di elementi per parte."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 msgid "Papi-web settings has been updated."
 msgstr ""
@@ -5189,4 +5176,43 @@ msgstr "vs"
 
 #~ msgid "Minimal time (handicap):"
 #~ msgstr "Tempo minimo (handicap):"
+
+#~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+#~ msgstr "Bu."
+
+#~ msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+#~ msgstr "Tr."
+
+#~ msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+#~ msgstr "Me."
+
+#~ msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+#~ msgstr "PS"
+
+#~ msgid "Perf *** ACRONYM FOR PERFORMANCE"
+#~ msgstr "Perf"
+
+#~ msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+#~ msgstr "SBh"
+
+#~ msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+#~ msgstr "NW"
+
+#~ msgid "Ka. *** ACRONYM FOR KASHDAN"
+#~ msgstr "Ka."
+
+#~ msgid "Ko. *** ACRONYM FOR KOYA"
+#~ msgstr "Ko."
+
+#~ msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+#~ msgstr "SB"
+
+#~ msgid "Cut Bottom"
+#~ msgstr "Taglia in basso"
+
+#~ msgid "Papi legacy"
+#~ msgstr "Eredità Papi"
+
+#~ msgid "Sonneborn-Berger"
+#~ msgstr "Sonneborn-Berger"
 

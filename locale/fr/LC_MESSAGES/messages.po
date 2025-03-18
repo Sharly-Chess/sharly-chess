@@ -413,82 +413,16 @@ msgstr "échiquiers {board_numbers}"
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
 
-msgid "None"
-msgstr "Aucun"
-
-msgid "Buchholz"
-msgstr "Buchholz"
-
-msgid "Buchholz cut bottom"
-msgstr "Buchholz tronqué"
-
-msgid "Median Buchholz"
-msgstr "Buchholz médian"
-
-msgid "Progressive scores"
-msgstr "Cumulatif"
-
-msgid "Performance"
-msgstr "Performance"
-
-msgid "Sum of Buchholz"
-msgstr "Somme des Buchholz"
-
-msgid "Number of wins"
-msgstr "Nombre de victiores"
-
-msgid "Kashdan"
-msgstr "Kashdan"
-
-msgid "Koya"
-msgstr "Koya"
-
-msgid "Sonnenborn-Berger"
-msgstr "Sonnenborn-Berger"
-
-msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-msgstr "Bu."
-
-msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "Cu."
-
-msgid "Perf *** ACRONYM FOR PERFORMANCE"
-msgstr "Perf"
-
-msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SBh"
-
-msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NV"
-
-msgid "Ka. *** ACRONYM FOR KASHDAN"
-msgstr "Ka."
-
-msgid "Ko. *** ACRONYM FOR KOYA"
-msgstr "Ko."
-
-msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-msgstr "SB"
-
 msgid "Cut"
 msgstr "Coupure"
 
 msgid "Cut top"
 msgstr "Coupure en haut"
 
-msgid "Cut Bottom"
+msgid "Cut bottom"
 msgstr "Coupure en bas"
 
 msgid "Played modifier"
-msgstr ""
-
-msgid "Papi legacy"
 msgstr ""
 
 msgid "Fore modifier"
@@ -500,6 +434,12 @@ msgstr "Limite"
 msgid "Exclude players"
 msgstr ""
 
+msgid "Number of wins"
+msgstr "Nombre de victiores"
+
+msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
+msgstr "NV"
+
 msgid "Number of games won"
 msgstr "Nombre de parties gagnées"
 
@@ -509,17 +449,38 @@ msgstr "Nombre de parties jouées avec les noirs"
 msgid "Games won with black"
 msgstr "Nombre de parties gagnées avec les noirs"
 
+msgid "Progressive scores"
+msgstr "Cumulatif"
+
+msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgstr "Cu."
+
 msgid "Rounds one Elected to Play"
 msgstr "Rondes jouées"
 
-msgid "Average of opponents Buchholz"
-msgstr "Moyenne du Buchholz des adversaires"
+msgid "Buchholz"
+msgstr "Buchholz"
 
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
-msgid "Sonneborn-Berger"
-msgstr "Sonneborn-Berger"
+msgid "Sum of Buchholz"
+msgstr "Somme des Buchholz"
+
+msgid "Average of opponents Buchholz"
+msgstr "Moyenne du Buchholz des adversaires"
+
+msgid "Sonnenborn-Berger"
+msgstr "Sonnenborn-Berger"
+
+msgid "Koya"
+msgstr "Koya"
+
+msgid "Ko. *** ACRONYM FOR PAPI KOYA"
+msgstr "Ko."
+
+msgid "Kashdan"
+msgstr "Kashdan"
 
 msgid "Average rating of opponents"
 msgstr "Classement ELO moyen des adversaires"
@@ -806,6 +767,9 @@ msgstr "{number} joueur·euses enregistré·es."
 msgid "Error while creating the database: {ex}."
 msgstr "Erreur à la création de la base de données : {ex}."
 
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Veuillez entrer un mot de passe pour la connexion à ChessEvent."
+
 msgid "ChessEvent connection not defined."
 msgstr "Connexion à ChessEvent non définie."
 
@@ -814,9 +778,6 @@ msgstr "Évènement ChessEvent non défini."
 
 msgid "ChessEvent tournament name not set."
 msgstr "Nom du tournoi ChessEvent non défini."
-
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Veuillez entrer un mot de passe pour la connexion à ChessEvent."
 
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
 msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tournament_uniq_id}]."
@@ -995,9 +956,6 @@ msgstr "Le nom du tournoi sur la plateforme ChessEvent."
 msgid "Error while updating the FFE database."
 msgstr "Erreur pendant la mise à jour de la base de données FFE."
 
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr "Le numéro d'homologation et le mot de passe FFE ne sont pas définis, les opérations sur le site web FFE ne seront pas disponibles."
-
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse avec l'identifiant FFE [{ffe_id}] joue déjà le tournoi [{tournament_uniq_id}]."
 
@@ -1010,14 +968,17 @@ msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
 msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déjà le tournoi [{tournament_uniq_id}]."
 
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament_uniq_id}]."
+
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgstr "Le numéro d'homologation et le mot de passe FFE ne sont pas définis, les opérations sur le site web FFE ne seront pas disponibles."
+
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
-
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
-msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament_uniq_id}]."
 
 msgid "League"
 msgstr "Ligue"
@@ -1036,6 +997,33 @@ msgstr "Téléchargement de la base de données de la FFE..."
 
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
+
+msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
+msgstr "Bu."
+
+msgid "Buchholz cut bottom"
+msgstr "Buchholz tronqué"
+
+msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+msgid "Median Buchholz"
+msgstr "Buchholz médian"
+
+msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+msgid "Performance"
+msgstr "Performance"
+
+msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
+msgstr "er"
+
+msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
+msgstr "SBh"
+
+msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
+msgstr "Ka."
 
 msgid "No FFE Licence"
 msgstr "Aucune licence FFE"
@@ -1334,6 +1322,9 @@ msgstr "Points de match nul (demi-point joker)"
 msgid "Points for loss (zero-point bye)"
 msgstr "Points de défaite (zéro point joker)"
 
+msgid "None"
+msgstr "Aucun"
+
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr "La couleur n°1 est utilisée jusqu'à {delay_1} minutes avant le début des rondes (délai n°1), la couleur change ensuite progressivement jusqu'à la couleur n°2 ({delay_2} minutes avant le début des rondes)."
 
@@ -1531,6 +1522,15 @@ msgstr "Le chronomètre [{timer_id}] n'existe pas."
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr "La famile [{family_uniq_id}] a été créée."
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr "La famile [{family_uniq_id}] a été modifiée."
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr "La famile [{family_uniq_id}] a été supprimée."
 
 msgid "Papi-web settings has been updated."
 msgstr "La configuration de Papi-web a été mise à jour."
@@ -3907,97 +3907,4 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 
 msgid "vs"
 msgstr "contre"
-
-#~ msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-#~ msgstr "Ligue"
-
-#~ msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Origine"
-
-#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-#~ msgstr "FFE"
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
-#~ msgstr "Licence FFE : %(ffe_licence_number)s (expirée)."
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-#~ msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
-
-#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-#~ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
-
-#~ msgid "Sort the players by origin (federation, league, club)."
-#~ msgstr "Trier les joueur·euses par origine (fédération, ligue, club)."
-
-#~ msgid "Option is obsolete, set environment variable [{var}=1] instead."
-#~ msgstr "Option obsolète, veuillez positionner la variable d'environnement [{var}=1] à la place."
-
-#~ msgid "Locale [{locale}] not found."
-#~ msgstr "Langue [{locale}] introuvable."
-
-#~ msgid "Option not set."
-#~ msgstr "Option non définie."
-
-#~ msgid "Section not found."
-#~ msgstr "Rubrique non trouvée."
-
-#~ msgid "The following languages are available:"
-#~ msgstr "Les langues suivantes sont disponibles :"
-
-#~ msgid "Invalid log level [{level}], by default [{default}]."
-#~ msgstr "Niveau de log [{level}] non valide, par défaut [{default}]."
-
-#~ msgid "Option not set, by default [{default}]."
-#~ msgstr "Option non définie, par défaut [{default}]."
-
-#~ msgid "Invalid host configuration [{host}], by default [{default}]."
-#~ msgstr "Hôte [{host}] non valide, par défaut [{default}]."
-
-#~ msgid "Invalid port [{port}], by default [{default}]."
-#~ msgstr "Port [{port}] non valide, par défaut [{default}]."
-
-#~ msgid "Invalid delay [{delay}], by default [{default}]"
-#~ msgstr "Délai [{delay}] non valide, par défaut [{default}]."
-
-#~ msgid "Section not found, default configuration set."
-#~ msgstr "Rubrique non trouvée, configuration par défaut."
-
-#~ msgid "Your file {ini_file} has been saved as {ini_file_org}."
-#~ msgstr "Votre fichier {ini_file} a été sauvegardé dans {ini_file_org}."
-
-#~ msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
-#~ msgstr "Impossible de sauvegarder {ini_file} dans {ini_file_org} : {ex}."
-
-#~ msgid "Adding lines to {file}..."
-#~ msgstr "Ajout de lignes à {file}..."
-
-#~ msgid "[i18n] # Added by Papi-web {version}"
-#~ msgstr "[i18n] # Ajouté par Papi-web {version}"
-
-#~ msgid "# The line below has been commented by Papi-web {version}"
-#~ msgstr "# La ligne ci-dessous a été commentée par Papi-web {version}"
-
-#~ msgid "Your file {ini_file} has been modified."
-#~ msgstr "Votre fichier {ini_file} a été modifié."
-
-#~ msgid "Could not write to {ini_file}: {ex}."
-#~ msgstr "Impossible d'écrire dans {ini_file} : {ex}."
-
-#~ msgid "Default federation"
-#~ msgstr "Fédération par défaut :"
-
-#~ msgid "Connections (FFE and ChessEvent)"
-#~ msgstr "Connexions (FFE et ChessEvent)"
-
-#~ msgid "Initial time (optional):"
-#~ msgstr "Temps initial (facultatif) :"
-
-#~ msgid "Increment (optional):"
-#~ msgstr "Incrément (facultatif) :"
-
-#~ msgid "Penalty (handicap):"
-#~ msgstr "Pénalité (handicap) :"
-
-#~ msgid "Minimal time (handicap):"
-#~ msgstr "Temps minimal (handicap) :"
 
