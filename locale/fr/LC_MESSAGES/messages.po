@@ -380,12 +380,12 @@ msgstr "%t (par ordre alpha.)"
 msgid "Crosstable %f-%l"
 msgstr "Grille américaine %f-%l"
 
-msgid "Crosstable"
-msgstr "Grille américaine"
-
 #, python-format
 msgid "Ranking %f-%l"
 msgstr "Classement %f-%l"
+
+msgid "Crosstable"
+msgstr "Grille américaine"
 
 msgid "Ranking"
 msgstr "Classement"
@@ -431,6 +431,18 @@ msgstr "Grille américaine %t"
 
 msgid "boards {board_numbers}"
 msgstr "échiquiers {board_numbers}"
+
+msgid "the whole ranking"
+msgstr "classement complet"
+
+msgid "ranking from #{first} to end"
+msgstr "classement de {first} à la fin"
+
+msgid "ranking from #{first} to #{last}"
+msgstr "classement de {first} à {last}"
+
+msgid "ranking from start to #{last}"
+msgstr "classement du début à {last}"
 
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
@@ -2336,6 +2348,9 @@ msgstr "Dernier échiquier :"
 msgid "Last player:"
 msgstr "Dernier·e joueur·euse :"
 
+msgid "Layout"
+msgstr "Présentation"
+
 msgid "On a given number of screens:"
 msgstr "Sur un nombre fixe d'écrans"
 
@@ -2366,9 +2381,6 @@ msgstr "Le nombre d'échiquiers par écran, facultatif (le nombre d'écrans s'ad
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s'adapte au nombre de joueur·euses)."
 
-msgid "Layout"
-msgstr "Présentation"
-
 msgid "Timer:"
 msgstr "Chronomètre :"
 
@@ -2377,6 +2389,9 @@ msgstr "Le chronomètre affiché sur les écrans de la famille."
 
 msgid "The number of columns used to display data."
 msgstr "Le nombre de colonnes utilisé pour afficher les données."
+
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
+msgstr "Lorsqu'il n'est pas défini au niveau de la famille, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas des écrans de la famille n'est pas affiché si aucun message d'alerte n'est configuré)."
 
 msgid "Menus"
 msgstr "Menus"
@@ -2412,9 +2427,6 @@ msgstr "Exemple : Joueur·euses %%f-%%l"
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
-
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
-msgstr "Lorsqu'il n'est pas défini au niveau de la famille, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas des écrans de la famille n'est pas affiché si aucun message d'alerte n'est configuré)."
 
 msgid "Screen families"
 msgstr "Familles d'écrans"
@@ -3264,23 +3276,11 @@ msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
 
-msgid "The timer displayed on the screen."
-msgstr "Le chronomètre qui sera affiché en haut de l'écran."
+msgid "E.g.: https://my.club.us/tournament.jpg"
+msgstr "Exemple : https://mon.club.fr/affiche.jpg"
 
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'es 'écran."
-
-msgid "Check the box to allow other screens to display a link to this screen."
-msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
-
-msgid "E.g.: Link to my screen"
-msgstr "Exemple : Link vers mon écran"
-
-msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
-
-msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
-msgstr "Lorsqu'il n'est pas défini au niveau de l'écran, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas de l'écran n'est pas affiché si aucun message d'alerte n'est configuré)."
+msgid "The URL of the image to display."
+msgstr "L'URL de l'image à afficher."
 
 msgid "Maximum number of results displayed:"
 msgstr "Nombre maximum de résultats affichés :"
@@ -3305,11 +3305,23 @@ msgstr "Tournois affichés :"
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
 
-msgid "E.g.: https://my.club.us/tournament.jpg"
-msgstr "Exemple : https://mon.club.fr/affiche.jpg"
+msgid "The timer displayed on the screen."
+msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 
-msgid "The URL of the image to display."
-msgstr "L'URL de l'image à afficher."
+msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgstr "Lorsqu'il n'est pas défini au niveau de l'écran, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas de l'écran n'est pas affiché si aucun message d'alerte n'est configuré)."
+
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'es 'écran."
+
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
+
+msgid "E.g.: Link to my screen"
+msgstr "Exemple : Link vers mon écran"
+
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
 
 #, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"

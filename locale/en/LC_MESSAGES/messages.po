@@ -380,11 +380,11 @@ msgstr ""
 msgid "Crosstable %f-%l"
 msgstr ""
 
-msgid "Crosstable"
-msgstr ""
-
 #, python-format
 msgid "Ranking %f-%l"
+msgstr ""
+
+msgid "Crosstable"
 msgstr ""
 
 msgid "Ranking"
@@ -430,6 +430,18 @@ msgid "%t crosstable"
 msgstr ""
 
 msgid "boards {board_numbers}"
+msgstr ""
+
+msgid "the whole ranking"
+msgstr ""
+
+msgid "ranking from #{first} to end"
+msgstr ""
+
+msgid "ranking from #{first} to #{last}"
+msgstr ""
+
+msgid "ranking from start to #{last}"
 msgstr ""
 
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
@@ -2336,6 +2348,9 @@ msgstr ""
 msgid "Last player:"
 msgstr ""
 
+msgid "Layout"
+msgstr ""
+
 msgid "On a given number of screens:"
 msgstr ""
 
@@ -2366,9 +2381,6 @@ msgstr ""
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr ""
 
-msgid "Layout"
-msgstr ""
-
 msgid "Timer:"
 msgstr ""
 
@@ -2376,6 +2388,9 @@ msgid "The timer displayed on the screens of the family."
 msgstr ""
 
 msgid "The number of columns used to display data."
+msgstr ""
+
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr ""
 
 msgid "Menus"
@@ -2411,9 +2426,6 @@ msgid "E.g.: Players %%f-%%l"
 msgstr ""
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
-msgstr ""
-
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr ""
 
 msgid "Screen families"
@@ -3264,22 +3276,10 @@ msgstr ""
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
-msgid "The timer displayed on the screen."
+msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr ""
-
-msgid "Check the box to allow other screens to display a link to this screen."
-msgstr ""
-
-msgid "E.g.: Link to my screen"
-msgstr ""
-
-msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr ""
-
-msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgid "The URL of the image to display."
 msgstr ""
 
 msgid "Maximum number of results displayed:"
@@ -3305,10 +3305,22 @@ msgstr ""
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr ""
 
-msgid "E.g.: https://my.club.us/tournament.jpg"
+msgid "The timer displayed on the screen."
 msgstr ""
 
-msgid "The URL of the image to display."
+msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgstr ""
+
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr ""
+
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr ""
+
+msgid "E.g.: Link to my screen"
+msgstr ""
+
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr ""
 
 #, python-format
