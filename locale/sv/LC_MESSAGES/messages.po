@@ -545,90 +545,6 @@ msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Turnering {tournament_uniq_id} ({numbers_str})"
 
 #, ai_translation
-msgid "None"
-msgstr "Inget"
-
-#, ai_translation
-msgid "Buchholz"
-msgstr "Buchholz Ordförande"
-
-#, ai_translation
-msgid "Buchholz cut bottom"
-msgstr "Buchholz skär botten"
-
-#, ai_translation
-msgid "Median Buchholz"
-msgstr "Median Buchholz Ordförande"
-
-#, ai_translation
-msgid "Progressive scores"
-msgstr "Progressiva poäng"
-
-#, ai_translation
-msgid "Performance"
-msgstr "Prestanda"
-
-#, ai_translation
-msgid "Sum of Buchholz"
-msgstr "Summan av Buchholz"
-
-#, ai_translation
-msgid "Number of wins"
-msgstr "Antal vinster"
-
-#, ai_translation
-msgid "Kashdan"
-msgstr "Kashdan Ordförande"
-
-#, ai_translation
-msgid "Koya"
-msgstr "Koya Ordförande"
-
-#, ai_translation
-msgid "Sonnenborn-Berger"
-msgstr "Sonnenborn-Berger"
-
-#, fuzzy
-msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-msgstr "Bu."
-
-#, fuzzy
-msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-#, fuzzy
-msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-#, fuzzy
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "PS"
-
-#, fuzzy
-msgid "Perf *** ACRONYM FOR PERFORMANCE"
-msgstr "Perf"
-
-#, fuzzy
-msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SBh"
-
-#, fuzzy
-msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NW"
-
-#, fuzzy
-msgid "Ka. *** ACRONYM FOR KASHDAN"
-msgstr "Ka."
-
-#, fuzzy
-msgid "Ko. *** ACRONYM FOR KOYA"
-msgstr "Ko."
-
-#, fuzzy
-msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-msgstr "SB"
-
-#, ai_translation
 msgid "Cut"
 msgstr "Styckningsdelar"
 
@@ -636,17 +552,12 @@ msgstr "Styckningsdelar"
 msgid "Cut top"
 msgstr "Klipp överst"
 
-#, ai_translation
-msgid "Cut Bottom"
-msgstr "Klipp ner"
+msgid "Cut bottom"
+msgstr ""
 
 #, ai_translation
 msgid "Played modifier"
 msgstr "Spelad modifier"
-
-#, ai_translation
-msgid "Papi legacy"
-msgstr "Papi-arv"
 
 #, ai_translation
 msgid "Fore modifier"
@@ -661,6 +572,13 @@ msgid "Exclude players"
 msgstr "Uteslut spelare"
 
 #, ai_translation
+msgid "Number of wins"
+msgstr "Antal vinster"
+
+msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
+msgstr ""
+
+#, ai_translation
 msgid "Number of games won"
 msgstr "Antal vunna spel"
 
@@ -673,20 +591,46 @@ msgid "Games won with black"
 msgstr "Spel vann med svart"
 
 #, ai_translation
+msgid "Progressive scores"
+msgstr "Progressiva poäng"
+
+msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgstr ""
+
+#, ai_translation
 msgid "Rounds one Elected to Play"
 msgstr "Rundor en Vald att spela"
 
 #, ai_translation
-msgid "Average of opponents Buchholz"
-msgstr "Genomsnitt av motståndare Buchholz"
+msgid "Buchholz"
+msgstr "Buchholz Ordförande"
 
 #, ai_translation
 msgid "Fore Buchholz"
 msgstr "Före Buchholz"
 
 #, ai_translation
-msgid "Sonneborn-Berger"
-msgstr "Sonneborn-Berger Ordförande"
+msgid "Sum of Buchholz"
+msgstr "Summan av Buchholz"
+
+#, ai_translation
+msgid "Average of opponents Buchholz"
+msgstr "Genomsnitt av motståndare Buchholz"
+
+#, ai_translation
+msgid "Sonnenborn-Berger"
+msgstr "Sonnenborn-Berger"
+
+#, ai_translation
+msgid "Koya"
+msgstr "Koya Ordförande"
+
+msgid "Ko. *** ACRONYM FOR PAPI KOYA"
+msgstr ""
+
+#, ai_translation
+msgid "Kashdan"
+msgstr "Kashdan Ordförande"
 
 #, ai_translation
 msgid "Average rating of opponents"
@@ -1077,6 +1021,10 @@ msgid "Error while creating the database: {ex}."
 msgstr "Fel när databasen skapades: {ex}."
 
 #, ai_translation
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Ange ett lösenord för ChessEvent-anslutningen."
+
+#, ai_translation
 msgid "ChessEvent connection not defined."
 msgstr "ChessEvent-anslutningen är inte definierad."
 
@@ -1087,10 +1035,6 @@ msgstr "ChessEvent är inte bestämt."
 #, ai_translation
 msgid "ChessEvent tournament name not set."
 msgstr "ChessEvent turneringsnamn inte bestämt."
-
-#, ai_translation
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Ange ett lösenord för ChessEvent-anslutningen."
 
 #, ai_translation
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
@@ -1324,10 +1268,6 @@ msgid "Error while updating the FFE database."
 msgstr "Fel vid uppdatering av FFE- databasen."
 
 #, ai_translation
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr "Kvalifikationsnummer och FFE-lösenord är inte satta, verksamheten på FFE:s webbplats kommer inte att vara tillgänglig."
-
-#, ai_translation
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Spelaren med FFE ID [{ffe_id}] spelar redan turnering [{tournament_uniq_id}]."
 
@@ -1344,16 +1284,20 @@ msgid "The player with FFE licence number [{ffe_licence_number}] already plays t
 msgstr "Spelaren med FFE-licensnummer [{ffe_licence_number}] spelar redan turnering [{tournament_uniq_id}]."
 
 #, ai_translation
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr "FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}]."
+
+#, ai_translation
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgstr "Kvalifikationsnummer och FFE-lösenord är inte satta, verksamheten på FFE:s webbplats kommer inte att vara tillgänglig."
+
+#, ai_translation
 msgid "The FFE ID is a positive integer."
 msgstr "FFE ID är ett positivt heltal."
 
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Lösenordet för turneringen på FFE webbplats är gjord av 10 stora bokstäver."
-
-#, ai_translation
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
-msgstr "FFE-licens [{ffe_licence_number}] som redan finns i turneringen [{tournament_uniq_id}]."
 
 #, ai_translation
 msgid "League"
@@ -1378,6 +1322,36 @@ msgstr "Laddar ner FFE- databasen..."
 #, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Fel vid läsning av följande rad (spelare ignorerad): [{row}]."
+
+msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
+msgstr ""
+
+#, ai_translation
+msgid "Buchholz cut bottom"
+msgstr "Buchholz skär botten"
+
+msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr ""
+
+#, ai_translation
+msgid "Median Buchholz"
+msgstr "Median Buchholz Ordförande"
+
+msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
+msgstr ""
+
+#, ai_translation
+msgid "Performance"
+msgstr "Prestanda"
+
+msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
+msgstr ""
+
+msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
+msgstr ""
+
+msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
+msgstr ""
 
 #, ai_translation
 msgid "No FFE Licence"
@@ -1759,6 +1733,10 @@ msgid "Points for loss (zero-point bye)"
 msgstr "Poäng för förlust (nollpunktsbye)"
 
 #, ai_translation
+msgid "None"
+msgstr "Inget"
+
+#, ai_translation
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr "Färg #1 används tills {delay_1} minuter innan rundorna börjar (fördröjning #1), färgen ändras sedan gradvis till färg #2 ({delay_2} minuter innan rundorna börjar)."
 
@@ -2014,6 +1992,15 @@ msgstr "Timer [{timer_id}] hittades inte."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Det är inte möjligt att ange antalet delar och antalet objekt per del."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 msgid "Papi-web settings has been updated."
 msgstr ""
@@ -5192,4 +5179,43 @@ msgstr "vs"
 
 #~ msgid "Minimal time (handicap):"
 #~ msgstr "Minimal tid (handikapp):"
+
+#~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+#~ msgstr "Bu."
+
+#~ msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+#~ msgstr "Tr."
+
+#~ msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+#~ msgstr "Me."
+
+#~ msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+#~ msgstr "PS"
+
+#~ msgid "Perf *** ACRONYM FOR PERFORMANCE"
+#~ msgstr "Perf"
+
+#~ msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+#~ msgstr "SBh"
+
+#~ msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+#~ msgstr "NW"
+
+#~ msgid "Ka. *** ACRONYM FOR KASHDAN"
+#~ msgstr "Ka."
+
+#~ msgid "Ko. *** ACRONYM FOR KOYA"
+#~ msgstr "Ko."
+
+#~ msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+#~ msgstr "SB"
+
+#~ msgid "Cut Bottom"
+#~ msgstr "Klipp ner"
+
+#~ msgid "Papi legacy"
+#~ msgstr "Papi-arv"
+
+#~ msgid "Sonneborn-Berger"
+#~ msgstr "Sonneborn-Berger Ordförande"
 
