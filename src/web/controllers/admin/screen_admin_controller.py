@@ -865,7 +865,7 @@ class ScreenAdminController(BaseEventAdminController):
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been deleted.').format(
-                            screen_uniq_id=stored_screen.uniq_id
+                            screen_uniq_id=web_context.admin_screen.id
                         ),
                     )
                 case _:

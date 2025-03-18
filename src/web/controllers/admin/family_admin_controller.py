@@ -590,20 +590,25 @@ class FamilyAdminController(BaseEventAdminController):
                     stored_family = event_database.add_stored_family(stored_family)
                     event_database.commit()
                     Message.success(
-                        request, f'La famille [{stored_family.uniq_id}] a été créée.'
+                        request, _('Family [{family_uniq_id}] has been created.').format(
+                            family_uniq_id=stored_family.uniq_id
+                        )
                     )
                 case 'update':
                     stored_family = event_database.update_stored_family(stored_family)
                     event_database.commit()
                     Message.success(
-                        request, f'La famille [{stored_family.uniq_id}] a été modifiée.'
+                        request, _('Family [{family_uniq_id}] has been updated.').format(
+                            family_uniq_id=stored_family.uniq_id
+                        )
                     )
                 case 'delete':
                     event_database.delete_stored_family(web_context.admin_family.id)
                     event_database.commit()
                     Message.success(
-                        request,
-                        f'La famille [{web_context.admin_family.uniq_id}] a été supprimée.',
+                        request, _('Family [{family_uniq_id}] has been deleted.').format(
+                            family_uniq_id=web_context.admin_family.id
+                        )
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')

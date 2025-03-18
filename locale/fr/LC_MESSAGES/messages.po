@@ -472,7 +472,7 @@ msgid "Number of wins"
 msgstr "Nombre de victoires"
 
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
-msgstr "NW"
+msgstr "NV"
 
 msgid "Number of games won"
 msgstr "Nombre de parties gagnées"
@@ -1556,6 +1556,15 @@ msgstr "Le chronomètre [{timer_id}] n'existe pas."
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr "La famile [{family_uniq_id}] a été créée."
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr "La famile [{family_uniq_id}] a été modifiée."
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr "La famile [{family_uniq_id}] a été supprimée."
 
 msgid "Papi-web settings has been updated."
 msgstr "La configuration de Papi-web a été mise à jour."
@@ -3972,7 +3981,4 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 
 msgid "vs"
 msgstr "contre"
-
-#~ msgid "Cut Bottom"
-#~ msgstr "Coupure en bas"
 
