@@ -45,76 +45,22 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
-                        {# can not use admin_macros.select_input() here because of dynamic-select #}
-                        {% with id='federation', name='federation' %}
-                            <div>
-                                <div class="d-flex align-items-center">
-                                    <label for="{{ name }}" class="form-check-label flex-grow-1 mb-1">
-                                        {{ _('Federation:') }}
-                                    </label>
-                                </div>
-                                <select
-                                    id="{{ id }}"
-                                    name="{{ name }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    data-dynamic-select
-                                >
-                                    {% for federation_id, federation_name in federation_options.items() %}
-                                        <option
-                                                value="{{ federation_id }}"
-                                                {% if federation_id == data[name] %}selected{%endif %}
-                                                data-img="{{ url_for('static', file_path='/images/federations/' ~ (federation_id or papi_web_config.default_federation) ~ '.svg') }}"
-                                        >
-                                            {{ federation_name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The default federation for your events.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endwith %}
-                    </div>
+                        {{ admin_macros.select_input(
+                            name='federation',
+                            label=_('Federation:'),
+                            help_text=_('The default federation for your events.'),
+                            select_options=federation_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>  
                     <div class="col-12 col-md-6 mb-3">
-                        {# can not use admin_macros.select_input() here because of dynamic-select #}
-                        {% with id='locale', name='locale' %}
-                            <div>
-                                <div class="d-flex align-items-center">
-                                    <label for="{{ name }}" class="form-check-label flex-grow-1 mb-1">
-                                        {{ _('Language:') }}
-                                    </label>
-                                </div>
-                                <select
-                                    id="{{ id }}"
-                                    name="{{ name }}"
-                                    class="form-control {% if name in errors %}is-invalid{% else %}is-valid{% endif %}"
-                                    data-dynamic-select
-                                >
-                                    {% for locale, locale_info in locale_infos.items() %}
-                                        <option
-                                                value="{{ locale }}"
-                                                {% if locale == data[name] %}selected{%endif %}
-                                                data-img="{{ locale_info.flag_url }}"
-                                        >
-                                            {{ locale_info.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <div id="{{ id }}-help" class="form-text">
-                                    {{ _('The default language used.') }}
-                                </div>
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endwith %}
+                        {{ admin_macros.select_input(
+                            name='locale',
+                            label=_('Language:'),
+                            help_text=_('The default language used.'),
+                            select_options=locale_options,
+                            data=data, errors=errors
+                        ) }}
                     </div>
                 </div>
             </form>
