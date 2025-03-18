@@ -19,7 +19,11 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
-from data.tie_break import AbstractTieBreak, TieBreakManager
+from data.tie_break import (
+    AbstractTieBreak,
+    AbstractTieBreakOption,
+    TieBreakManager,
+)
 from data.util import Result as UtilResult
 from database.sqlite.migration import AbstractMigrationManager
 from database.sqlite.event.event_store import (
@@ -1536,15 +1540,20 @@ class EventDatabase(SQLiteVersionedDatabase):
         tie_break_list = cls.load_json_from_database_field(tie_breaks_field)
         if not tie_break_list:
             return None
-        return [
-            TieBreakManager.tie_break_from_id(
-                tie_break_dict['type'],
-                [
-                    TieBreakManager.option_from_id(option_id, value)
-                    for option_id, value in tie_break_dict['options'].items()
-                ]
-            ) for tie_break_dict in tie_break_list
-        ]
+        tie_breaks: list[AbstractTieBreak] = []
+        for tie_break_dict in tie_break_list:
+            tie_break_id = tie_break_dict['type']
+            options: list[AbstractTieBreakOption] = []
+            for option_id, value in tie_break_dict['options'].items():
+                if option := TieBreakManager.option_from_id(
+                        option_id, value
+                ) is not None:
+                    options.append(option)
+            if tie_break := TieBreakManager.tie_break_from_id(
+                tie_break_id, options
+            ) is not None:
+                tie_breaks.append(tie_break)
+        return tie_breaks
 
     @classmethod
     def _dump_to_json_database_tie_breaks(

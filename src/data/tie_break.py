@@ -77,21 +77,31 @@ class TieBreakManager:
         cls,
         tie_break_id: str,
         options: list['AbstractTieBreakOption'] | None = None
-    ) -> 'AbstractTieBreak':
+    ) -> 'AbstractTieBreak | None':
+        """Returns The tie-break matching the ID
+        or None if no tie-break is found for that ID"""
         return next(
-            tie_break_type(options)
-            for tie_break_type in cls.tie_break_types()
-            if tie_break_type().id == tie_break_id
+            (
+                tie_break_type(options)
+                for tie_break_type in cls.tie_break_types()
+                if tie_break_type().id == tie_break_id
+            ),
+            None,
         )
 
     @classmethod
     def option_from_id(
         cls, option_id: str, value: Any | None = None
-    ) -> 'AbstractTieBreakOption':
+    ) -> 'AbstractTieBreakOption | None':
+        """Returns The tie-break option matching the ID
+        or None if no option is found for that ID"""
         return next(
-            option_type(value)
-            for option_type in cls.option_types()
-            if option_type().id == option_id
+            (
+                option_type(value)
+                for option_type in cls.option_types()
+                if option_type().id == option_id
+            ),
+            None,
         )
 
 
