@@ -545,96 +545,6 @@ msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Τουρνουά {tournament_uniq_id} ({numbers_str})"
 
 #, ai_translation
-msgid "None"
-msgstr "Καμία"
-
-# Error: translation [ΜπούχχολζCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Buchholz]
-#, ai_translation
-msgid "Buchholz"
-msgstr ""
-
-#, ai_translation
-msgid "Buchholz cut bottom"
-msgstr "Buchholz κομμένο κάτω μέρος"
-
-#, ai_translation
-msgid "Median Buchholz"
-msgstr "Μέσος όρος Buchholz"
-
-#, ai_translation
-msgid "Progressive scores"
-msgstr "Προοδευτική βαθμολογία"
-
-#, ai_translation
-msgid "Performance"
-msgstr "Επιδόσεις"
-
-#, ai_translation
-msgid "Sum of Buchholz"
-msgstr "Σύνολο Buchholz"
-
-#, ai_translation
-msgid "Number of wins"
-msgstr "Αριθμός κερδών"
-
-# Error: translation [ΚασντάνCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Kashdan]
-#, ai_translation
-msgid "Kashdan"
-msgstr ""
-
-# Error: translation [ΚόγιαCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Koya]
-#, ai_translation
-msgid "Koya"
-msgstr ""
-
-#, ai_translation
-msgid "Sonnenborn-Berger"
-msgstr "Sonnenborn-Berger"
-
-#, fuzzy
-msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-msgstr "Bu."
-
-#, fuzzy
-msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-#, fuzzy
-msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-#, fuzzy
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "PS"
-
-#, fuzzy
-msgid "Perf *** ACRONYM FOR PERFORMANCE"
-msgstr "Perf"
-
-#, fuzzy
-msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SBh"
-
-#, fuzzy
-msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NW"
-
-#, fuzzy
-msgid "Ka. *** ACRONYM FOR KASHDAN"
-msgstr "Ka."
-
-#, fuzzy
-msgid "Ko. *** ACRONYM FOR KOYA"
-msgstr "Ko."
-
-#, fuzzy
-msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-msgstr "SB"
-
-#, ai_translation
 msgid "Cut"
 msgstr "Κόψιμο"
 
@@ -642,17 +552,12 @@ msgstr "Κόψιμο"
 msgid "Cut top"
 msgstr "Κόψτε το πάνω μέρος"
 
-#, ai_translation
-msgid "Cut Bottom"
-msgstr "Κόψτε το κάτω μέρος"
+msgid "Cut bottom"
+msgstr ""
 
 #, ai_translation
 msgid "Played modifier"
 msgstr "Αναπαραγωγή τροποποιητή"
-
-#, ai_translation
-msgid "Papi legacy"
-msgstr "Κληρονομιά του μπαμπά"
 
 #, ai_translation
 msgid "Fore modifier"
@@ -667,6 +572,13 @@ msgid "Exclude players"
 msgstr "Αποκλείστε τους παίκτες"
 
 #, ai_translation
+msgid "Number of wins"
+msgstr "Αριθμός κερδών"
+
+msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
+msgstr ""
+
+#, ai_translation
 msgid "Number of games won"
 msgstr "Αριθμός παιχνιδιών που κέρδισε"
 
@@ -679,20 +591,52 @@ msgid "Games won with black"
 msgstr "Παιχνίδια κέρδισε με το μαύρο"
 
 #, ai_translation
+msgid "Progressive scores"
+msgstr "Προοδευτική βαθμολογία"
+
+msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgstr ""
+
+#, ai_translation
 msgid "Rounds one Elected to Play"
 msgstr "Rounds one Elected to Play"
 
+# Error: translation [ΜπούχχολζCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Buchholz]
 #, ai_translation
-msgid "Average of opponents Buchholz"
-msgstr "Μέσος όρος αντιπάλων Buchholz"
+msgid "Buchholz"
+msgstr ""
 
 #, ai_translation
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
 #, ai_translation
-msgid "Sonneborn-Berger"
-msgstr "Σόνμπορν- ΜπέργκερCity name (optional, probably does not need a translation)"
+msgid "Sum of Buchholz"
+msgstr "Σύνολο Buchholz"
+
+#, ai_translation
+msgid "Average of opponents Buchholz"
+msgstr "Μέσος όρος αντιπάλων Buchholz"
+
+#, ai_translation
+msgid "Sonnenborn-Berger"
+msgstr "Sonnenborn-Berger"
+
+# Error: translation [ΚόγιαCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Koya]
+#, ai_translation
+msgid "Koya"
+msgstr ""
+
+msgid "Ko. *** ACRONYM FOR PAPI KOYA"
+msgstr ""
+
+# Error: translation [ΚασντάνCity name (optional, probably does not need a
+# translation)] is much too long compared to initial [Kashdan]
+#, ai_translation
+msgid "Kashdan"
+msgstr ""
 
 #, ai_translation
 msgid "Average rating of opponents"
@@ -1072,6 +1016,10 @@ msgid "Error while creating the database: {ex}."
 msgstr "Σφάλμα κατά τη δημιουργία της βάσης δεδομένων: {ex}."
 
 #, ai_translation
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Παρακαλώ εισάγετε έναν κωδικό πρόσβασης για τη σύνδεση ChessEvent."
+
+#, ai_translation
 msgid "ChessEvent connection not defined."
 msgstr "Δεν ορίζεται σύνδεση σκακιού."
 
@@ -1082,10 +1030,6 @@ msgstr "Δεν έχει οριστεί εκδήλωση σκακιού."
 #, ai_translation
 msgid "ChessEvent tournament name not set."
 msgstr "Το όνομα τουρνουά του Σκακιού δεν έχει οριστεί."
-
-#, ai_translation
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Παρακαλώ εισάγετε έναν κωδικό πρόσβασης για τη σύνδεση ChessEvent."
 
 #, ai_translation
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
@@ -1319,10 +1263,6 @@ msgid "Error while updating the FFE database."
 msgstr "Σφάλμα κατά την ενημέρωση της βάσης δεδομένων FFE."
 
 #, ai_translation
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr "Ο αριθμός προσόντων και ο κωδικός πρόσβασης FFE δεν έχουν οριστεί, οι λειτουργίες στην ιστοσελίδα του FFE δεν θα είναι διαθέσιμες."
-
-#, ai_translation
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Ο παίκτης με FFE ID [{ffe_id}] ήδη παίζει τουρνουά [{tournament_uniq_id}]."
 
@@ -1339,16 +1279,20 @@ msgid "The player with FFE licence number [{ffe_licence_number}] already plays t
 msgstr "Ο παίκτης με αριθμό άδειας FFE [{ffe_licence_number}] ήδη παίζει τουρνουά [{tournament_uniq_id}]."
 
 #, ai_translation
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr "FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}]."
+
+#, ai_translation
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgstr "Ο αριθμός προσόντων και ο κωδικός πρόσβασης FFE δεν έχουν οριστεί, οι λειτουργίες στην ιστοσελίδα του FFE δεν θα είναι διαθέσιμες."
+
+#, ai_translation
 msgid "The FFE ID is a positive integer."
 msgstr "Η ταυτότητα FFE είναι ένας θετικός ακέραιος αριθμός."
 
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Ο κωδικός πρόσβασης του τουρνουά στην ιστοσελίδα του FFE είναι κατασκευασμένος από 10 κεφαλαία γράμματα."
-
-#, ai_translation
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
-msgstr "FFE άδεια [{ffe_licence_number}] είναι ήδη παρούσα στο τουρνουά [{tournament_uniq_id}]."
 
 #, ai_translation
 msgid "League"
@@ -1373,6 +1317,36 @@ msgstr "Κατεβάζω τη βάση δεδομένων του FFE..."
 #, ai_translation
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Σφάλμα ανάγνωσης της ακόλουθης σειράς (αγνοείται ο παίκτης): [{row}]."
+
+msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
+msgstr ""
+
+#, ai_translation
+msgid "Buchholz cut bottom"
+msgstr "Buchholz κομμένο κάτω μέρος"
+
+msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr ""
+
+#, ai_translation
+msgid "Median Buchholz"
+msgstr "Μέσος όρος Buchholz"
+
+msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
+msgstr ""
+
+#, ai_translation
+msgid "Performance"
+msgstr "Επιδόσεις"
+
+msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
+msgstr ""
+
+msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
+msgstr ""
+
+msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
+msgstr ""
 
 #, ai_translation
 msgid "No FFE Licence"
@@ -1754,6 +1728,10 @@ msgid "Points for loss (zero-point bye)"
 msgstr "Σημεία απώλειας (μηδενικό αντίο)"
 
 #, ai_translation
+msgid "None"
+msgstr "Καμία"
+
+#, ai_translation
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr "Χρώμα #1 χρησιμοποιείται μέχρι {delay_1} λεπτά πριν από την έναρξη των γύρων (Delay #1), το χρώμα στη συνέχεια αλλάζει σταδιακά μέχρι το χρώμα #2 ({delay_2} λεπτά πριν από την έναρξη των γύρων)."
 
@@ -2009,6 +1987,15 @@ msgstr "Ο χρονοδιακόπτης [{timer_id}] δεν βρέθηκε."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Ο προσδιορισμός του αριθμού των μερών και του αριθμού των στοιχείων ανά μέρος δεν είναι δυνατός."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 msgid "Papi-web settings has been updated."
 msgstr ""
@@ -5190,4 +5177,43 @@ msgstr "vs"
 
 #~ msgid "Minimal time (handicap):"
 #~ msgstr "Ελάχιστος χρόνος (χειροκίνητος):"
+
+#~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
+#~ msgstr "Bu."
+
+#~ msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
+#~ msgstr "Tr."
+
+#~ msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
+#~ msgstr "Me."
+
+#~ msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
+#~ msgstr "PS"
+
+#~ msgid "Perf *** ACRONYM FOR PERFORMANCE"
+#~ msgstr "Perf"
+
+#~ msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
+#~ msgstr "SBh"
+
+#~ msgid "NW *** ACRONYM FOR NUMBER OF WINS"
+#~ msgstr "NW"
+
+#~ msgid "Ka. *** ACRONYM FOR KASHDAN"
+#~ msgstr "Ka."
+
+#~ msgid "Ko. *** ACRONYM FOR KOYA"
+#~ msgstr "Ko."
+
+#~ msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
+#~ msgstr "SB"
+
+#~ msgid "Cut Bottom"
+#~ msgstr "Κόψτε το κάτω μέρος"
+
+#~ msgid "Papi legacy"
+#~ msgstr "Κληρονομιά του μπαμπά"
+
+#~ msgid "Sonneborn-Berger"
+#~ msgstr "Σόνμπορν- ΜπέργκερCity name (optional, probably does not need a translation)"
 
