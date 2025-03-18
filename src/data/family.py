@@ -7,6 +7,8 @@ from _weakref import ReferenceType
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
+from data.board import Board
+from data.player import Player
 from data.screen import Screen
 from data.util import ScreenType
 from database.sqlite.event.event_store import StoredFamily
@@ -274,7 +276,15 @@ class Family:
                 else:
                     self.tournament.compute_player_ranks(after_round=self.ranking_round)
                     total_items_number = len(
-                        self.tournament.players_by_rank
+                        [
+                            player
+                            for player in self.tournament.players_by_rank.values()
+                            if (
+                                       self.ranking_min_points is None or player.points >= self.ranking_min_points
+                               ) and (
+                                       self.ranking_max_points is None or player.points <= self.ranking_max_points
+                               )
+                        ]
                     )
                 if self.first:
                     if self.first > total_items_number:
