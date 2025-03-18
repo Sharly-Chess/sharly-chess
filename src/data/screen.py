@@ -193,10 +193,10 @@ class Screen:
                 if crosstable:
                     return _('Crosstable %f-%l')
                 else:
-                    return _('Crosstable')
+                    return _('Ranking %f-%l')
             else:
                 if crosstable:
-                    return _('Ranking %f-%l')
+                    return _('Crosstable')
                 else:
                     return _('Ranking')
         else:
