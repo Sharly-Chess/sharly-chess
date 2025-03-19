@@ -212,7 +212,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         with EventDatabase(self.uniq_id, True) as database:
             for migration_manager in migration_managers:
                 migration_manager.migrate(
-                    database, migration_manager.latest_plugin_version
+                    database, migration_manager.plugin.version
                 )
 
     def _populate(self):
@@ -886,22 +886,22 @@ class EventDatabase(SQLiteVersionedDatabase):
         shutil.copy(self.file, backup.file)
         return backup
 
-    def get_plugin_version(self, plugin_name: str) -> Version | None:
+    def get_plugin_version(self, plugin_id: str) -> Version | None:
         """Retrieve the version of a plugin.
         Returns None if the plugin is not installed"""
-        if plugin_name in self.plugin_versions:
-            return self.plugin_versions[plugin_name]
-        version_field = self.plugin_version_field(plugin_name)
+        if plugin_id in self.plugin_versions:
+            return self.plugin_versions[plugin_id]
+        version_field = self.plugin_version_field(plugin_id)
         try:
             self.execute(f'SELECT `{version_field}` FROM `info`')
         except OperationalError:
             return None
         version = Version(self.fetchone()[version_field])
-        self.plugin_versions[plugin_name] = version
+        self.plugin_versions[plugin_id] = version
         return version
 
-    def set_plugin_version(self, plugin_name: str, version: Version):
-        version_field = self.plugin_version_field(plugin_name)
+    def set_plugin_version(self, plugin_id: str, version: Version):
+        version_field = self.plugin_version_field(plugin_id)
         self.execute(
             f'UPDATE `info` SET `{version_field}` = ?, `last_update` = ?',
             (
@@ -909,12 +909,12 @@ class EventDatabase(SQLiteVersionedDatabase):
                 time.time(),
             )
         )
-        self.plugin_versions[plugin_name] = version
+        self.plugin_versions[plugin_id] = version
 
     @staticmethod
-    def plugin_version_field(plugin_name: str):
-        safe_plugin_name = re.sub('[^a-z]+', '_', plugin_name.lower())
-        return f'{safe_plugin_name}_plugin_version'
+    def plugin_version_field(plugin_id: str):
+        safe_plugin_id = re.sub('[^a-z]+', '_', plugin_id.lower())
+        return f'{safe_plugin_id}_plugin_version'
 
     def __enter__(self):
         super().__enter__()
@@ -926,7 +926,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         )
         for migration_manager in migration_managers:
             current_version = migration_manager.get_version(self)
-            latest_version = migration_manager.latest_plugin_version
+            latest_version = migration_manager.plugin.version
             if current_version < latest_version:
                 if not self.write:
                     with EventDatabase(self.uniq_id, True):

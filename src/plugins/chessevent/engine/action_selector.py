@@ -23,7 +23,7 @@ from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from data.util import Result, get_plugin_data
+from data.util import Result
 from database.access.papi.papi_database import PapiDatabase
 from database.access.papi.papi_template import create_empty_papi_database, PAPI_VERSIONS
 from database.sqlite.event.event_database import EventDatabase
@@ -33,6 +33,7 @@ from plugins.chessevent.data.chessevent_tournament import ChessEventTournament
 from plugins.chessevent.engine.chessevent_session import ChessEventSession
 from plugins.chessevent.utils import ChessEventUtils
 from plugins.ffe.engine.ffe_session import FFESession
+from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
 
@@ -367,7 +368,11 @@ class ActionSelector(metaclass=Singleton):
                                 continue
                             data_md5 = hashlib.md5(data.encode('utf-8')).hexdigest()
                             if (
-                                data_md5 == get_plugin_data(PLUGIN_NAME, tournament.plugin_data, 'chessevent_last_download_md5')
+                                data_md5 == PluginUtils.get_plugin_data(
+                                    PLUGIN_NAME,
+                                    tournament.plugin_data,
+                                    'chessevent_last_download_md5',
+                                )
                                 and tournament.file.exists()
                             ):
                                 print_interactive_info(
