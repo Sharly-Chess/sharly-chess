@@ -21,10 +21,10 @@ from common.logger import (
     print_interactive_warning,
 )
 from data.tournament import Tournament
-from data.util import get_plugin_data
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import PLUGIN_NAME
+from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
 
@@ -48,7 +48,7 @@ UPLOAD_RULES_FILE_ID: str = 'ctl00$ContentPlaceHolderMain$UploadRI'
 
 FEES_DIR: Path = Path('fees')
 
-get_data = partial(get_plugin_data, PLUGIN_NAME)
+get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 class FFESession(Session):
     """A requests session specialized for communication with the FFE website.

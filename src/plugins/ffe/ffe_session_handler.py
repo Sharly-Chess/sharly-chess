@@ -1,6 +1,7 @@
 from litestar.contrib.htmx.request import HTMXRequest
 
-from .util import PlayerFFELicence
+from plugins.ffe.util import PlayerFFELicence
+
 
 class FFESessionHandler:
     ADMIN_PLAYERS_FILTER_LEAGUES_KEY: str = 'admin_players_filter_leagues'

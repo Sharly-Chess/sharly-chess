@@ -20,12 +20,15 @@ from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from data.util import NeedsUpload, get_plugin_data
+from data.util import NeedsUpload
 from plugins.ffe.engine.ffe_session import FFESession
+from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
 
-get_data = partial(get_plugin_data, PLUGIN_NAME)
+get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
+
 class ActionSelector(metaclass=Singleton):
 
     @staticmethod

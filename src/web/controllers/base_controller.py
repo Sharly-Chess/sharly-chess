@@ -315,6 +315,7 @@ class WebContext:
         papi_web_config: PapiWebConfig = PapiWebConfig()
         now: float = time.time()
         locale_infos: dict[str, Any] = {}
+        locale_options: dict[str, str] = {}
         for locale in papi_web_config.locales:
             name: str = f'{locale_localized_name(locale)}'
             name_and_warning: str
@@ -329,6 +330,7 @@ class WebContext:
                 'flag_url': locale_flag_url(locale),
                 'experimental': locale not in trusted_locales,
             }
+            locale_options[locale] = name
         return {
             'DEVEL_ENV': DEVEL_ENV,
             'EXPERIMENTAL_FEATURES': EXPERIMENTAL_FEATURES,
@@ -339,6 +341,7 @@ class WebContext:
             'background_info': self.background_info,
             'theme': self.theme,
             'locale_infos': locale_infos,
+            'locale_options': locale_options,
             'locale': SessionHandler.get_session_locale(self.request),
         }
 
