@@ -405,7 +405,7 @@ class TimerAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/{event_uniq_id:str}/timers',
+        path='/admin/event/{event_uniq_id:str}/timers',
         name='admin-event-timers-tab',
         cache=1,
     )

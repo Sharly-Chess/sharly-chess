@@ -1,8 +1,10 @@
 import re
 
 from collections import Counter, defaultdict
+from collections.abc import Callable
 
 from datetime import datetime
+from decimal import Decimal
 from functools import partial
 from pathlib import Path
 from types import ModuleType
@@ -25,6 +27,7 @@ from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
+from plugins.ffe.ffe_tie_break import papi_performance_bonus
 from plugins.ffe.util import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, ExtraColumn
 from plugins.utils import AbstractPlugin, AbstractPluginMigrationManager, PluginEngineArgument
@@ -694,3 +697,16 @@ class FfePlugin(AbstractPlugin):
             ffe_tie_break.PapiSumOfBuchholzTieBreak,
             ffe_tie_break.PapiKashdanTieBreak,
         ]
+
+# ---------------------------------------------------------------------------------
+# Shared utils
+# ---------------------------------------------------------------------------------
+
+@hookimpl
+def get_performance_bonus_function() -> Callable[[float], int | float]:
+    return papi_performance_bonus
+
+
+@hookimpl
+def get_round_ranking_function() -> Callable[[float | Decimal], int]:
+    return round

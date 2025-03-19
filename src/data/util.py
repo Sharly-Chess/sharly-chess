@@ -1,10 +1,10 @@
-"""A file grouping all the "utility" classes/enum: Result, Color, PlayerTitle,
-PlayerSex, TournamentPairing, TournamentRating"""
+"""A file grouping all the "utility" classes/enum"""
 
+from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, StrEnum, IntEnum
-from itertools import islice
+from functools import lru_cache
 from logging import Logger
 from math import floor
 from typing import Any, Self
@@ -14,20 +14,70 @@ from common.logger import get_logger
 
 logger: Logger = get_logger()
 
-try:
-    import itertools
 
-    batched = itertools.batched
-except AttributeError:
+def get_plugin_data(plugin_name: str, plugin_data: dict[str, dict] | None, field: str, default: Any = None):
+    return (plugin_data or {}).get(plugin_name, {}).get(field, default)
 
-    def batched(iterable, n: int):
-        """Batch data from the *iterable* into tuples of length *n*.
-        The last batch may be shorter than *n*"""
-        if n < 1:
-            raise ValueError('n must be at least 1')
-        iterator = iter(iterable)
-        while batch := tuple(islice(iterator, n)):
-            yield batch
+
+class StaticUtils:
+    """Class containing the static utils functions"""
+
+    PERFORMANCE_TABLE: list[int] = [
+        0, 7, 14, 21, 29, 36, 43, 50, 57, 65, 72, 80, 87, 95, 102, 110, 117,
+        125, 133, 141, 149, 158, 166, 175, 184, 193, 202, 211, 220, 230, 240,
+        251, 262, 273, 284, 296, 309, 322, 336, 351, 366, 383, 401, 422,
+        444, 470, 501, 538, 589, 677, 800
+    ]
+
+    @classmethod
+    @lru_cache(maxsize=32)
+    def performance_bonus(cls, fractional_score: float) -> int:
+        percent = 100 * fractional_score
+        index = floor(abs(50 - percent))
+        bonus = cls.PERFORMANCE_TABLE[index]
+        if fractional_score < 0.5:
+            bonus *= -1
+        return bonus
+
+    @staticmethod
+    def round_ranking(num: float | Decimal) -> int:
+        lowest_int = int(num)
+        if num - lowest_int >= 0.5:
+            return lowest_int + 1
+        return lowest_int
+
+
+class SharedUtils:
+    """Class containing the shared utils functions,
+    i.e. utils functions which can be overwritten by plugins"""
+    @staticmethod
+    def _get_function(
+        plugin_function_name: str, default_function: Callable
+    ) -> Callable:
+        from plugins.manager import plugin_manager
+
+        return (
+            getattr(plugin_manager.hook, plugin_function_name)()
+            or default_function
+        )
+
+    @classmethod
+    def performance_bonus(cls, fractional_score: float) -> int | float:
+        return cls._get_function(
+            'get_performance_bonus_function',
+            StaticUtils.performance_bonus
+        )(fractional_score)
+
+    @classmethod
+    def rounded_performance_bonus(cls, fractional_score: float) -> int:
+        return cls.round_ranking(cls.performance_bonus(fractional_score))
+
+    @classmethod
+    def round_ranking(cls, num: float | Decimal) -> int:
+        return cls._get_function(
+            'get_round_ranking_function',
+            StaticUtils.round_ranking
+        )(num)
 
 
 class PapiResult(IntEnum):
@@ -661,6 +711,7 @@ class PlayerGender(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+
 class PlayerCategory(IntEnum):
     NONE = 0
     U8 = 1
@@ -1179,47 +1230,6 @@ class TrfType(StrEnum):
                 return 'trfx'
             case _:
                 raise ValueError(f'Unknown value: {self}')
-
-
-def round_fide(num: float | Decimal):
-    lowest_int = int(num)
-    if num - lowest_int >= 0.5:
-        return lowest_int + 1
-    return lowest_int
-
-
-performance_table: list[int] = [
-    0, 7, 14, 21, 29, 36, 43, 50, 57, 65, 72, 80, 87, 95, 102, 110, 117,
-    125, 133, 141, 149, 158, 166, 175, 184, 193, 202, 211, 220, 230, 240,
-    251, 262, 273, 284, 296, 309, 322, 336, 351, 366, 383, 401, 422,
-    444, 470, 501, 538, 589, 677, 800
-]
-
-papi_performance_table: list[int] = performance_table[:-1] + [677, 677]
-
-
-def performance_bonus(
-    fractional_score: float,
-    /, *,
-    papi_legacy: bool = False,
-) -> int:
-    percent = 100 * fractional_score
-    index = floor(abs(50 - percent))
-    percent_int = floor(percent)
-    if papi_legacy:
-        bonus = papi_performance_table[index]
-        smaller_difference = percent - percent_int
-        if smaller_difference > 0:
-            smaller_difference *= (
-                papi_performance_table[index+1]
-                - bonus
-            )
-            bonus += smaller_difference
-    else:
-        bonus = performance_table[index]
-    if fractional_score < 0.5:
-        bonus *= -1
-    return bonus
 
 
 class PrintSplit(StrEnum):

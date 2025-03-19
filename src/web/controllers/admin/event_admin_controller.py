@@ -84,7 +84,7 @@ class EventAdminController(BaseEventAdminController):
 
                 plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
                 template_context |= {
-                    'federations': PapiWebConfig.federations,
+                    'federation_options': cls._get_federation_options(None),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         PapiWebConfig.default_record_illegal_moves_number
                     ),
@@ -165,7 +165,7 @@ class EventAdminController(BaseEventAdminController):
         return Redirect(admin_event_config_url(request, web_context.admin_event.uniq_id))
 
     @get(
-        path='/admin/{event_uniq_id:str}/config',
+        path='/admin/event/{event_uniq_id:str}/config',
         name='admin-event-config-tab',
         cache=1,
     )

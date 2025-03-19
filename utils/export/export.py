@@ -129,11 +129,6 @@ def build_exe():
     files += [
         htmx_sortable_file,
     ]
-    dynamic_select_dir = lib_dir / 'dynamic-select'
-    files += [
-        dynamic_select_dir / 'dynamic-select.js',
-        dynamic_select_dir / 'dynamic-select.css',
-    ]
     jstree_dir = lib_dir / 'jstree' / f'jstree-{PapiWebConfig.jstree_version}-dist'
     files += [file for file in jstree_dir.glob('**/*') if file.is_file()]
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
