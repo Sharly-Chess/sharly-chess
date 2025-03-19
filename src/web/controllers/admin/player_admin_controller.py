@@ -779,7 +779,7 @@ class PlayerAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/{event_uniq_id:str}/players',
+        path='/admin/event/{event_uniq_id:str}/players',
         name='admin-event-players-tab',
         cache=1,
     )
