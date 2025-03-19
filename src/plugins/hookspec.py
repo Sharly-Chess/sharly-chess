@@ -1,5 +1,6 @@
 from collections.abc import Iterable, Callable
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import NamedTuple, Any, TYPE_CHECKING
 
@@ -268,3 +269,15 @@ class AppHookSpecs:
     @hookspec
     def get_extra_tie_break_classes(self) -> list[type['AbstractTieBreak']]:
         """Provide extra tournament tie breaks"""
+
+    # ---------------------------------------------------------------------------------
+    # Shared utils
+    # ---------------------------------------------------------------------------------
+
+    @hookspec(firstresult=True)
+    def get_performance_bonus_function(self) -> Callable[[float], int | float]:
+        """Provide a function to compute the performance bonus"""
+
+    @hookspec(firstresult=True)
+    def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
+        """Provide a function to round a ranking to an integer"""
