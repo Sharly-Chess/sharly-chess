@@ -165,7 +165,7 @@ class EventAdminController(BaseEventAdminController):
         return Redirect(admin_event_config_url(request, web_context.admin_event.uniq_id))
 
     @get(
-        path='/admin/{event_uniq_id:str}/config',
+        path='/admin/event/{event_uniq_id:str}/config',
         name='admin-event-config-tab',
         cache=1,
     )
