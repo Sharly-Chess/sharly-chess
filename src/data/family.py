@@ -299,7 +299,7 @@ class Family:
 
     @cached_property
     def calculated_first_screen_id(self) -> str | None:
-        return next(iter(self.screens_by_uniq_id.keys()))
+        return next(iter(self.screens_by_uniq_id.keys()), None)
 
     @cached_property
     def calculated_first(self) -> int | None:
