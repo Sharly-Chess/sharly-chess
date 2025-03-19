@@ -1,8 +1,8 @@
-from collections.abc import Iterable, Callable
-from dataclasses import dataclass
+from collections.abc import Callable
 from decimal import Decimal
+from collections.abc import Iterable
 from pathlib import Path
-from typing import NamedTuple, Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from litestar.contrib.htmx.request import HTMXRequest
 import pluggy  # type: ignore
@@ -11,7 +11,13 @@ from common import APP_NAME
 from data.player import Player
 from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
-from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
+from plugins.utils import (
+    AbstractPluginMigrationManager,
+    ExtraAdminColumn,
+    ExtraColumn,
+    PluginEngineArgument,
+    PrintSplitOption,
+)
 
 if TYPE_CHECKING:
     from data.tie_break import AbstractTieBreak
@@ -24,30 +30,6 @@ if TYPE_CHECKING:
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
-
-@dataclass
-class PrintSplitOption:
-    name: str
-    url_name: str
-    split_fn: Callable[
-        [list[Player]], dict[str, list[Player]]
-    ]
-
-
-@dataclass
-class ExtraColumn:
-    at: str
-    title: str
-    value: Callable[
-        [Any], str
-    ]
-    classes: str = ""
-
-
-class ExtraAdminColumn(NamedTuple):
-    at: str
-    header_template: str
-    cell_template: str
 
 
 class AppHookSpecs:

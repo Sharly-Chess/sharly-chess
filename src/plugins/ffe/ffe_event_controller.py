@@ -2,11 +2,11 @@ from litestar import get
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, ClientRedirect
 
+from plugins.ffe.ffe_session_handler import FFESessionHandler
+from plugins.ffe.util import PlayerFFELicence
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 
-from .util import PlayerFFELicence
-from .ffe_session_handler import FFESessionHandler
 
 class FfeAdminEventController(BaseEventAdminController):
     
