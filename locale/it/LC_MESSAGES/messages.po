@@ -2834,6 +2834,9 @@ msgstr "Nessuna schermata"
 msgid "Edit the properties of the screen family."
 msgstr "Modifica le proprietà della famiglia dello schermo."
 
+msgid "Go to the first screen."
+msgstr ""
+
 #, ai_translation
 msgid "Clone the screen family."
 msgstr "Clonare la famiglia dello schermo."
@@ -3949,6 +3952,9 @@ msgstr "(Nessun schermo)"
 msgid "Edit the properties of the rotator."
 msgstr "Modificare le proprietà del rotatore."
 
+msgid "Go to the rotator."
+msgstr ""
+
 #, ai_translation
 msgid "Clone the rotator."
 msgstr "Clonare il rotatore."
@@ -4094,6 +4100,9 @@ msgstr "Modifica i set di giocatori visualizzati sullo schermo."
 #, ai_translation
 msgid "Boards"
 msgstr "Quadri"
+
+msgid "Go to the screen."
+msgstr ""
 
 #, ai_translation
 msgid "Input screen creation"
