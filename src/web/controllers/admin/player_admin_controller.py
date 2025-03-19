@@ -293,6 +293,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         admin_event: Event = web_context.admin_event
         admin_player: Player = web_context.admin_player
+        papi_web_config: PapiWebConfig = PapiWebConfig()
         
         # Allow plugin to provide extra columns
         per_plugin_columns = plugin_manager.hook.get_extra_player_columns()
@@ -596,6 +597,10 @@ class PlayerAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'player':
+                federation_options = cls._get_federation_options(
+                    papi_web_config.stored_config.federation or PapiWebConfig.default_federation
+                )
+                
                 if data is None:
                     first_name: str | None = None
                     last_name: str | None = None
@@ -647,6 +652,11 @@ class PlayerAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
 
+                    federation_options = cls._get_federation_options(
+                        papi_web_config.stored_config.federation or PapiWebConfig.default_federation
+                        if federation is None else None
+                    )
+
                     per_plugin_form_data = plugin_manager.hook.get_player_form_data(plugin_data=plugin_data)
                     plugin_form_data = { key: value for data in per_plugin_form_data for key, value in data.items() }
 
@@ -688,13 +698,6 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 if errors is None:
                     errors = {}
-                federation_ids: list[str] = [
-                    admin_event.federation,
-                ] + [
-                    federation_id
-                    for federation_id in PapiWebConfig.federations
-                    if federation_id != admin_event.federation
-                ]
                 tournament_options: dict[str, str] = (
                     {  # force the choice of the tournament on player creation if several tournaments
                         '': '-',
@@ -745,11 +748,8 @@ class PlayerAdminController(BaseEventAdminController):
                     'licence_options': {
                         str(licence.value): licence.name for licence in PlayerFFELicence
                     },
+                    'federation_options': federation_options,
                     'tournament_options': tournament_options,
-                    'federations': {
-                        federation_id: PapiWebConfig.federations[federation_id]
-                        for federation_id in federation_ids
-                    },
                     'fide_search_available': FideDatabase().exists(),
                     'plugin_search_templates': plugin_search_templates,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
