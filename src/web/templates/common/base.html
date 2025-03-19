@@ -25,9 +25,6 @@
             {# https://github.com/vakata/jstree #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/themes/default/style.min.css') }}" type="text/css" />
             <script src="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/jstree.min.js') }}"></script>
-            {# https://codeshack.io/dynamic-select-images-html-javascript/ #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/dynamic-select/dynamic-select.css') }}" type="text/css" />
-            <script src="{{ url_for('static', file_path='/lib/dynamic-select/dynamic-select.js') }}"></script>
             <script>
                 function setSize() {
                     {#  We store the size of the viewport, without the scrollbars, in CSS variables #}
@@ -122,7 +119,6 @@
 
                 window.addEventListener("modal_opened", function(event) {
                     closeTooltips();
-                    document.querySelectorAll('[data-dynamic-select]').forEach(select => new DynamicSelect(select));
                     activateTooltips();
                     scrollToFirstError();
 

@@ -1,10 +1,10 @@
 from functools import partial
 from data.tournament import Tournament
-from data.util import get_plugin_data
+from plugins.chessevent import PLUGIN_NAME
+from plugins.utils import PluginUtils
 
-from .chessevent import PLUGIN_NAME
+get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
-get_data = partial(get_plugin_data, PLUGIN_NAME)
 
 class ChessEventUtils:
     @staticmethod

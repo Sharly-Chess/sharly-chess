@@ -671,7 +671,7 @@ class ScreenAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/{event_uniq_id:str}/screens',
+        path='/admin/event/{event_uniq_id:str}/screens',
         name='admin-event-screens-tab',
         cache=1,
     )

@@ -424,7 +424,7 @@ class TournamentAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/{event_uniq_id:str}/tournaments',
+        path='/admin/event/{event_uniq_id:str}/tournaments',
         name='admin-event-tournaments-tab',
         cache=1,
     )

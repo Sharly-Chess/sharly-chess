@@ -483,7 +483,7 @@ class FamilyAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/{event_uniq_id:str}/families',
+        path='/admin/event/{event_uniq_id:str}/families',
         name='admin-event-families-tab',
         cache=1,
     )
