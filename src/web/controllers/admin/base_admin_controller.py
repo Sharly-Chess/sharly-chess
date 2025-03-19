@@ -88,7 +88,7 @@ class AdminWebContext(WebContext):
 
 
 class BaseAdminController(BaseController):
-    """An base class inherited by all the admin controllers."""
+    """A base class inherited by all the admin controllers."""
 
     @staticmethod
     def _get_federation_options(default_federation: str | None):
