@@ -30,13 +30,14 @@ __pycache__/
 
 # Generated database files
 *.db
-/locale/*/LC_MESSAGES/messages.mo
-/locale/messages.pot
-
-*.log
-/mprofile_*.dat
 *.db-shm
 *.db-wal
 .scc
 .scc-wal
 .scc-shm
+
+/locale/*/LC_MESSAGES/messages.mo
+/locale/messages.pot
+
+*.log
+/mprofile_*.dat
