@@ -1,0 +1,22 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    color: #000000;
+    background-color: #FFFFFF;
+}
+{# ========== COLORS ========== #}
+tr.even td { background-color: #FFFFFF; }
+tr.odd td { background-color: #E0E0E0; }
+{# ========== WIDTH, MARGINS, PADDING ==========#}
+body { margin: 4px; }
+.split-by-title { margin: 16px 0 12px; }
+{# ========== FONT SIZE ========== #}
+.page-title { font-size: 24pt; }
+.page-subtitle { font-size: 16pt; }
+.split-by-title { font-size: 18px; }
+{# ========== FONT WEIGHT ========== #}
+.page-title,
+.page-subtitle,
+.split-by-title { font-weight: bold; }
+{# ========== TEXT ALIGN ========== #}

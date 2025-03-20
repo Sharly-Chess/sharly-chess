@@ -1,0 +1,36 @@
+<tr id="player-{{ player.id }}" class="player-row {{ row_class }}">
+    {{ macros.extra_column_data("rank", player, extra_columns)}}
+    <td class="rank text-end">
+        {% if ranking or crosstable %}
+            {{ player.rank }}
+        {% else %}
+            {{ n|length }}
+        {% endif %}
+    </td>
+    {{ macros.extra_column_data("title", player, extra_columns)}}
+    <td class="title text-end">{{ player.title.short_name }}</td>
+    {{ macros.extra_column_data("name", player, extra_columns)}}
+    <td class="name text-start fw-bold">{{ player.last_name }} {{ player.first_name }}</td>
+    {{ macros.extra_column_data("elo", player, extra_columns)}}
+    <td class="rating text-end">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+    {{ macros.extra_column_data("category", player, extra_columns)}}
+    <td class="category text-center">{{ player.category.short_name }}</td>
+    {{ macros.extra_column_data("federation", player, extra_columns)}}
+    <td class="federation text-center">{{ player.federation }}</td>
+    {% if crosstable %}
+        {{ macros.extra_column_data("first-round", player, extra_columns)}}
+        {% for crosstable_string in (player.crosstable_strings)[:ranking_round] %}
+            <td class="round text-center">{{ crosstable_string }}</td>
+        {% endfor %}
+    {% else %}
+         {{ macros.extra_column_data("club", player, extra_columns)}}
+        <td class="club text-start">{{ player.club }}</td>
+    {% endif %}
+    {% if ranking or crosstable %}
+        <td class="points text-center fw-bold">{{ player.points_str }}</td>
+        {% for tie_break_string in player.tie_break_values_as_strings %}
+            <td class="tie-break text-center">{{ tie_break_string }}</td>
+        {% endfor %}
+    {% endif %}
+    {{ macros.extra_column_data("end", extra_columns)}}
+</tr>

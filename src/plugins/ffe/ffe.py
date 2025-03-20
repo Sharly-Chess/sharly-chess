@@ -120,7 +120,7 @@ class FfePlugin(AbstractPlugin):
         return {
             'ffe_search_available': FfeDatabase().exists(),
             'ffe_leagues': self.FFE_LEAGUES
-        }
+}
 
     @hookimpl
     def get_engine_argument(self) -> PluginEngineArgument:
@@ -211,7 +211,6 @@ class FfePlugin(AbstractPlugin):
             'admin_filter_licences': filter_licences,
             'ffe_league_counts': league_counts,
             'ffe_licence_counts': licence_counts,
-
             'admin_players_filter_leagues': FFESessionHandler.get_session_admin_players_filter_leagues(
                 web_context.request
             ),
@@ -662,6 +661,17 @@ class FfePlugin(AbstractPlugin):
 
             case _:
                 return []
+
+    @hookimpl
+    def get_extra_print_view_css(
+        self,
+        document: PrintDocument
+    ) -> str:
+        match document:
+            case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
+                return '.player-table .league { text-align: center; }'
+            case _:
+                return ''
 
     # ---------------------------------------------------------------------------------
     # User screens

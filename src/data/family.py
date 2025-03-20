@@ -1,5 +1,5 @@
 import weakref
-from functools import cached_property
+from functools import cached_property, cache
 from math import ceil
 from typing import TYPE_CHECKING
 from _weakref import ReferenceType
@@ -7,6 +7,8 @@ from _weakref import ReferenceType
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
+from data.board import Board
+from data.player import Player
 from data.screen import Screen
 from data.util import ScreenType
 from database.sqlite.event.event_store import StoredFamily
@@ -102,7 +104,9 @@ class Family:
             )
         elif self.type == ScreenType.RANKING:
             text = self.menu_text or Screen.default_ranking_screen_menu_text(
-                single_tournament=single_tournament, first_last=True
+                single_tournament=single_tournament,
+                first_last=True,
+                crosstable=self.ranking_crosstable,
             )
         else:
             text = self.menu_text
@@ -133,12 +137,47 @@ class Family:
         return self.stored_family.players_show_unpaired
 
     @property
+    def ranking_crosstable(self) -> bool:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_family.ranking_crosstable == True
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_round(self) -> int | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_family.ranking_round
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_min_points(self) -> float | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_family.ranking_min_points
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def ranking_max_points(self) -> float | None:
+        match self.type:
+            case ScreenType.RANKING:
+                return self.stored_family.ranking_max_points
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
     def icon_str(self) -> str:
         return self.type.icon_str
 
     @property
     def type_str(self) -> str:
-        return str(self.type)
+        return Screen.screen_type_str(
+            self.type,
+            self.ranking_crosstable if self.type == ScreenType.RANKING else None
+        )
 
     @property
     def first(self) -> int | None:
@@ -176,6 +215,7 @@ class Family:
     def last_update_str(self) -> str | None:
         return format_timestamp_date_time(self.last_update)
 
+    @cache
     def _calculate_screens(self) -> bool:
         if not self.tournament.rounds:
             self.error = _(
@@ -234,8 +274,17 @@ class Family:
                             self.tournament.players_by_name_with_unpaired
                         )
                 else:
+                    self.tournament.compute_player_ranks(after_round=self.ranking_round)
                     total_items_number = len(
-                        self.tournament.players_by_rank
+                        [
+                            player
+                            for player in self.tournament.players_by_rank.values()
+                            if (
+                                       self.ranking_min_points is None or player.points >= self.ranking_min_points
+                               ) and (
+                                       self.ranking_max_points is None or player.points <= self.ranking_max_points
+                               )
+                        ]
                     )
                 if self.first:
                     if self.first > total_items_number:

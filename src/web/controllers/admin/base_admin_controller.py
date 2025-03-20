@@ -210,6 +210,14 @@ class BaseAdminController(BaseController):
         return options
 
     @staticmethod
+    def _get_ranking_crosstable_options() -> dict[str, str]:
+        options: dict[str, str] = {
+            'on': _('Crosstable'),
+            'off': _('Ranking only'),
+        }
+        return options
+
+    @staticmethod
     def _admin_validate_record_illegal_moves_update_data(
         data: dict[str, str] | None,
         errors: dict[str, str],

@@ -819,14 +819,21 @@ class Tournament:
                 continue
             player.illegal_moves = illegal_moves[player.id]
 
+    def correct_ranking_round(
+            self,
+            ranking_round: int | None = None
+    ) -> int:
+        """Returns a correct round number that corresponds the best to a given round number."""
+        if ranking_round is None:
+            return self.max_ranking_round
+        else:
+            return max(0, min(ranking_round, self.max_ranking_round))
+
     def compute_player_ranks(
         self, *, after_round: int | None
     ) -> dict[int, Player]:
         """compute and return the ranks of all the players after round *after_round*."""
-        if after_round is None:
-            after_round = self.max_ranking_round
-        else:
-            after_round = max(0, min(after_round, self.max_ranking_round))
+        after_round = self.correct_ranking_round(after_round)
         if after_round:
             # Estimate ratings to ensure we have a defined rating for everyone
             self.estimate_players(after_round=after_round)
@@ -849,12 +856,13 @@ class Tournament:
                 player.compute_tie_break_values(after_round=0)
             self._players_by_rank = self.players_by_trf_id
         for rank, player in self._players_by_rank.items():
-            player.set_rank(rank)
+            player.rank = rank
         return self._players_by_rank
 
     @cached_property
     def players_by_rank(self) -> dict[int, Player]:
-        self.compute_player_ranks(after_round=None)
+        assert self._players_by_rank is not None, \
+            'Tournament._players_by_rank is not set, call Tournament.compute_player_ranks() before.'
         return self._players_by_rank
 
     def _build_boards(self):

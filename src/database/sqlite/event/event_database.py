@@ -501,6 +501,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 'players_show_unpaired',
                                 'results_limit',
                                 'results_tournament_uniq_ids',
+                                'ranking_crosstable',
                                 'background_image',
                                 'background_color',
                                 'name',
@@ -528,6 +529,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                         results_limit: int | None = None
                         results_max_age: int | None = None
                         results_tournament_ids: list[int] | None = None
+                        ranking_crosstable: bool | None = None
                         background_image: str | None = None
                         background_color: str | None = None
                         match type_:
@@ -565,7 +567,9 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 else:
                                     results_tournament_ids = []
                             case 'ranking':
-                                pass
+                                ranking_crosstable: bool = screen_dict.get(
+                                    'ranking_crosstable', None
+                                )
                             case 'image':
                                 background_image: str = screen_dict.get(
                                     'background_image', None
@@ -610,6 +614,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                     results_limit=results_limit,
                                     results_max_age=results_max_age,
                                     results_tournament_ids=results_tournament_ids,
+                                    ranking_crosstable=ranking_crosstable,
                                     background_image=background_image,
                                     background_color=background_color,
                                 )
@@ -694,6 +699,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 'timer_uniq_id',
                                 'input_exit_button',
                                 'players_show_unpaired',
+                                'ranking_crosstable',
                                 'name',
                                 'columns',
                                 'menu_link',
@@ -724,6 +730,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                         )
                         input_exit_button: bool | None = None
                         players_show_unpaired: bool | None = None
+                        ranking_crosstable: bool | None = None
                         match type_:
                             case 'boards':
                                 pass
@@ -736,7 +743,9 @@ class EventDatabase(SQLiteVersionedDatabase):
                                     'players_show_unpaired', False
                                 )
                             case 'ranking':
-                                pass
+                                ranking_crosstable = family_dict.get(
+                                    'ranking_crosstable', False
+                                )
                             case _:
                                 raise ValueError(f'type={type_}')
                         match type_:
@@ -762,6 +771,10 @@ class EventDatabase(SQLiteVersionedDatabase):
                                     timer_id=timer_id,
                                     input_exit_button=input_exit_button,
                                     players_show_unpaired=players_show_unpaired,
+                                    ranking_crosstable=ranking_crosstable,
+                                    ranking_round=None,
+                                    ranking_min_points=None,
+                                    ranking_max_points=None,
                                     first=family_dict.get('first', None),
                                     last=family_dict.get('last', None),
                                     parts=family_dict.get('parts', None),
@@ -1793,6 +1806,13 @@ class EventDatabase(SQLiteVersionedDatabase):
             players_show_unpaired=cls.load_bool_from_database_field(
                 row['players_show_unpaired']
             ),
+            # needed to open event databases when version < 2.4.25 before checking the version
+            ranking_crosstable=cls.load_bool_from_database_field(
+                row.get('ranking_crosstable', None)
+            ),
+            ranking_round=row.get('ranking_round', None),
+            ranking_min_points=row.get('ranking_min_points', None),
+            ranking_max_points=row.get('ranking_max_points', None),
             columns=row['columns'],
             menu_link=cls.load_bool_from_database_field(row['menu_link']),
             menu_text=row['menu_text'],
@@ -1844,6 +1864,10 @@ class EventDatabase(SQLiteVersionedDatabase):
             'timer_id',
             'input_exit_button',
             'players_show_unpaired',
+            'ranking_crosstable',
+            'ranking_round',
+            'ranking_min_points',
+            'ranking_max_points',
             'first',
             'last',
             'parts',
@@ -1865,6 +1889,10 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_family.timer_id,
             stored_family.input_exit_button,
             stored_family.players_show_unpaired,
+            stored_family.ranking_crosstable,
+            stored_family.ranking_round,
+            stored_family.ranking_min_points,
+            stored_family.ranking_max_points,
             stored_family.first,
             stored_family.last,
             stored_family.parts,
@@ -1942,6 +1970,13 @@ class EventDatabase(SQLiteVersionedDatabase):
             results_tournament_ids=cls.load_json_from_database_field(
                 row['results_tournament_ids']
             ),
+            # needed to open event databases when version < 2.4.25 before checking the version
+            ranking_crosstable=cls.load_bool_from_database_field(
+                row.get('ranking_crosstable', None)
+            ),
+            ranking_round=row.get('ranking_round', None),
+            ranking_min_points=row.get('ranking_min_points', None),
+            ranking_max_points=row.get('ranking_max_points', None),
             background_image=row['background_image'],
             background_color=row['background_color'],
             # needed to open event databases when version < 2.4.16 before checking the version
@@ -2003,6 +2038,10 @@ class EventDatabase(SQLiteVersionedDatabase):
             'results_limit',
             'results_max_age',
             'results_tournament_ids',
+            'ranking_crosstable',
+            'ranking_round',
+            'ranking_min_points',
+            'ranking_max_points',
             'background_image',
             'background_color',
             'message_default',
@@ -2028,6 +2067,10 @@ class EventDatabase(SQLiteVersionedDatabase):
             self.dump_to_json_database_field(stored_screen.results_tournament_ids, [])
             if stored_screen.type == 'results'
             else None,
+            stored_screen.ranking_crosstable if stored_screen.type == 'ranking' else None,
+            stored_screen.ranking_round if stored_screen.type == 'ranking' else None,
+            stored_screen.ranking_min_points if stored_screen.type == 'ranking' else None,
+            stored_screen.ranking_max_points if stored_screen.type == 'ranking' else None,
             stored_screen.background_image if stored_screen.type == 'image' else None,
             stored_screen.background_color if stored_screen.type == 'image' else None,
             stored_screen.message_default,

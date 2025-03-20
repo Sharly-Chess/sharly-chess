@@ -376,16 +376,27 @@ msgstr "Par ordre alpha."
 msgid "%t (by player)"
 msgstr "%t (par ordre alpha.)"
 
+#, python-format
+msgid "Crosstable %f-%l"
+msgstr "Grille américaine %f-%l"
+
+#, python-format
+msgid "Ranking %f-%l"
+msgstr "Classement %f-%l"
+
+msgid "Crosstable"
+msgstr "Grille américaine"
+
 msgid "Ranking"
 msgstr "Classement"
 
-msgid "%t (ranking)"
-msgstr "%t (classement)"
+msgid "%t ranking"
+msgstr "Classement %t"
 
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr "Aucun écran de type [{screen_type}] pour le menu de l'écran [{screen_uniq_id}]."
 
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr "Le motif [{pattern}] ne peut être utilisé que pour les familles d'écrans."
 
 msgid "Pattern [{pattern}] matches no screen."
@@ -407,8 +418,31 @@ msgstr "Les nombres {first} et {last} ne sont pas compatibles ({first} > {last})
 msgid "%f to %l"
 msgstr "%f to %l"
 
+#, python-format
+msgid "Crosstable %f to %l"
+msgstr "Grille américaine %f à %l"
+
+#, python-format
+msgid "Ranking %f to %l"
+msgstr "Classement %f à %l"
+
+msgid "%t crosstable"
+msgstr "Grille américaine %t"
+
 msgid "boards {board_numbers}"
 msgstr "échiquiers {board_numbers}"
+
+msgid "the whole ranking"
+msgstr "classement complet"
+
+msgid "ranking from #{first} to end"
+msgstr "classement de {first} à la fin"
+
+msgid "ranking from #{first} to #{last}"
+msgstr "classement de {first} à {last}"
+
+msgid "ranking from start to #{last}"
+msgstr "classement du début à {last}"
 
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
@@ -435,7 +469,7 @@ msgid "Exclude players"
 msgstr ""
 
 msgid "Number of wins"
-msgstr "Nombre de victiores"
+msgstr "Nombre de victoires"
 
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
 msgstr "NV"
@@ -734,9 +768,6 @@ msgstr "Classement après la ronde {round}"
 msgid "Crosstable after round #{round}"
 msgstr "Grille américaine après la ronde {round}"
 
-msgid "Crosstable"
-msgstr "Grille américaine"
-
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "La base de données FIDE [{file}] est introuvable, voulez-vous la créer (O/n) ? "
 
@@ -1017,7 +1048,7 @@ msgid "Performance"
 msgstr "Performance"
 
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
-msgstr "er"
+msgstr "Perf"
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
 msgstr "SBh"
@@ -1357,6 +1388,9 @@ msgstr "Afficher seulement les joueur·euses apparié·es"
 
 msgid "Display all the players, paired and unpaired"
 msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
+
+msgid "Ranking only"
+msgstr "Classement seulement"
 
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
@@ -1861,6 +1895,30 @@ msgstr "Affichage d'un bouton de sortie d'écran :"
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
 
+msgid "Type:"
+msgstr "Type :"
+
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgstr "La grille américaine montre tous les résultats des joueur·euses, tandis que c'est le club qui est affiché lors qu'on ne montre que le classement."
+
+msgid "Maximum number of points (included):"
+msgstr "Nombre maximum de points (inclus) :"
+
+msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr "Le nombre maximum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
+
+msgid "Minimum number of points (included):"
+msgstr "Nombre minimum de points (inclus) :"
+
+msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
+
+msgid "Round:"
+msgstr "Ronde :"
+
+msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
+msgstr "La ronde après laquelle le classement est affiché (si vide, la dernière ronde terminée)."
+
 msgid "Display of unpaired players:"
 msgstr "Affichage des joueur·euses non apparié·es"
 
@@ -2051,9 +2109,6 @@ msgstr "Document :"
 msgid "The type of document to print."
 msgstr "Le type de document à imprimer."
 
-msgid "Round:"
-msgstr "Ronde :"
-
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernière ronde possible)."
 
@@ -2126,6 +2181,36 @@ msgstr "Sélection: %(selection)s"
 msgid "Columns:"
 msgstr "Colonnes :"
 
+msgid "Exit button:"
+msgstr "Bouton de sortie :"
+
+msgid "yes"
+msgstr "oui"
+
+msgid "no"
+msgstr "non"
+
+msgid "Unpaired: displayed"
+msgstr "Non apparié·es : affiché·es"
+
+msgid "Unpaired: hidden"
+msgstr "Non apparié·es : caché·es"
+
+msgid "Round: the last finished round"
+msgstr "Ronde : la dernière ronde terminée"
+
+#, python-format
+msgid "Points: %(min)s to %(max)s"
+msgstr "Points : %(min)s à %(max)s"
+
+#, python-format
+msgid "Points: %(min)s or more"
+msgstr "Points: %(min)s ou plus"
+
+#, python-format
+msgid "Points: up to %(max)s"
+msgstr "Points: %(max)s ou moins"
+
 #, python-format
 msgid "Menu link label: %(menu_label)s"
 msgstr "Étiquette de menu : %(menu_label)s"
@@ -2146,21 +2231,6 @@ msgstr "Chronomètre : %(timer_uniq_id)s"
 
 msgid "Timer: none"
 msgstr "Chronomètre : aucun"
-
-msgid "Exit button:"
-msgstr "Bouton de sortie :"
-
-msgid "yes"
-msgstr "oui"
-
-msgid "no"
-msgstr "non"
-
-msgid "Unpaired: displayed"
-msgstr "Non apparié·es : affiché·es"
-
-msgid "Unpaired: hidden"
-msgstr "Non apparié·es : caché·es"
 
 #, python-format
 msgid "Boards from #%(first)d to #%(last)d"
@@ -2290,6 +2360,9 @@ msgstr "Dernier échiquier :"
 msgid "Last player:"
 msgstr "Dernier·e joueur·euse :"
 
+msgid "Layout"
+msgstr "Présentation"
+
 msgid "On a given number of screens:"
 msgstr "Sur un nombre fixe d'écrans"
 
@@ -2320,9 +2393,6 @@ msgstr "Le nombre d'échiquiers par écran, facultatif (le nombre d'écrans s'ad
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s'adapte au nombre de joueur·euses)."
 
-msgid "Layout"
-msgstr "Présentation"
-
 msgid "Timer:"
 msgstr "Chronomètre :"
 
@@ -2331,6 +2401,9 @@ msgstr "Le chronomètre affiché sur les écrans de la famille."
 
 msgid "The number of columns used to display data."
 msgstr "Le nombre de colonnes utilisé pour afficher les données."
+
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
+msgstr "Lorsqu'il n'est pas défini au niveau de la famille, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas des écrans de la famille n'est pas affiché si aucun message d'alerte n'est configuré)."
 
 msgid "Menus"
 msgstr "Menus"
@@ -2366,9 +2439,6 @@ msgstr "Exemple : Joueur·euses %%f-%%l"
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
-
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
-msgstr "Lorsqu'il n'est pas défini au niveau de la famille, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas des écrans de la famille n'est pas affiché si aucun message d'alerte n'est configuré)."
 
 msgid "Screen families"
 msgstr "Familles d'écrans"
@@ -3013,40 +3083,6 @@ msgstr "Changer le joueur de tournoi."
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Pl."
-
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nr"
-
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Nom"
-
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapide"
-
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat."
-
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
-msgstr "Féd."
-
-#, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
-msgstr "R %(round)d"
-
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
-msgid "Pts *** POINTS FOR PRINT VIEW"
-msgstr "Pts"
-
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
@@ -3156,6 +3192,10 @@ msgid "Type: %(screen_type)s"
 msgstr "Type : %(screen_type)s"
 
 #, python-format
+msgid "Round: %(round)d"
+msgstr "Ronde : %(round)d"
+
+#, python-format
 msgid "Max number: %(num)d"
 msgstr "Nombre max : %(num)d"
 
@@ -3254,23 +3294,11 @@ msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
 
-msgid "The timer displayed on the screen."
-msgstr "Le chronomètre qui sera affiché en haut de l'écran."
+msgid "E.g.: https://my.club.us/tournament.jpg"
+msgstr "Exemple : https://mon.club.fr/affiche.jpg"
 
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'es 'écran."
-
-msgid "Check the box to allow other screens to display a link to this screen."
-msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
-
-msgid "E.g.: Link to my screen"
-msgstr "Exemple : Link vers mon écran"
-
-msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
-
-msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
-msgstr "Lorsqu'il n'est pas défini au niveau de l'écran, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas de l'écran n'est pas affiché si aucun message d'alerte n'est configuré)."
+msgid "The URL of the image to display."
+msgstr "L'URL de l'image à afficher."
 
 msgid "Maximum number of results displayed:"
 msgstr "Nombre maximum de résultats affichés :"
@@ -3295,11 +3323,23 @@ msgstr "Tournois affichés :"
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
 
-msgid "E.g.: https://my.club.us/tournament.jpg"
-msgstr "Exemple : https://mon.club.fr/affiche.jpg"
+msgid "The timer displayed on the screen."
+msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 
-msgid "The URL of the image to display."
-msgstr "L'URL de l'image à afficher."
+msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgstr "Lorsqu'il n'est pas défini au niveau de l'écran, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas de l'écran n'est pas affiché si aucun message d'alerte n'est configuré)."
+
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'es 'écran."
+
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
+
+msgid "E.g.: Link to my screen"
+msgstr "Exemple : Link vers mon écran"
+
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
 
 #, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
@@ -3789,6 +3829,40 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusieurs écrans."
+
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Pl."
+
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nr"
+
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Nom"
+
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapide"
+
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat."
+
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr "Féd."
+
+#, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
+
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
 
 msgid "Go back to the events page."
 msgstr "Revenir à la page des évènements."

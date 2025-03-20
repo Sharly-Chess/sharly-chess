@@ -157,7 +157,7 @@
                             help_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
                             disabled=action == 'delete',
                             error=action == 'delete',
-                            number_min=1,
+                            min=1,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -222,7 +222,7 @@
                             help_text=_('The player\'s FIDE ID (do not change).') if action != 'delete' else '',
                             disabled=true,
                             error=action == 'delete',
-                            number_min=1,
+                            min=1,
                             data=data, errors=errors
                         ) }}
                     </div>

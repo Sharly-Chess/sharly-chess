@@ -196,6 +196,24 @@ class ScreenSet:
         return name
 
     @property
+    def ranking_round(self) -> int:
+        return self.tournament.correct_ranking_round(
+            self.screen.ranking_round
+        )
+
+    @property
+    def ranking_crosstable(self) -> bool:
+        return self.screen.ranking_crosstable
+
+    @property
+    def ranking_min_points(self) -> int | None:
+        return self.screen.ranking_min_points
+
+    @property
+    def ranking_max_points(self) -> int | None:
+        return self.screen.ranking_max_points
+
+    @property
     def name_for_ranking(self) -> str | None:
         self._extract_players_by_rank()
         name: str | None = (
@@ -203,9 +221,15 @@ class ScreenSet:
         )
         if name is None:
             if self.first or self.last:
-                name = _('%f to %l')
+                if self.screen.ranking_crosstable:
+                    name = _('Crosstable %f to %l')
+                else:
+                    name = _('Ranking %f to %l')
             else:
-                name = '%t'
+                if self.screen.ranking_crosstable:
+                    name = _('%t crosstable')
+                else:
+                    name = _('%t ranking')
         name = name.replace('%t', str(self.tournament.name))
         if self.first_item is not None:
             name = name.replace(r'%f', str(self.first_player_by_rank.rank))
@@ -343,7 +367,17 @@ class ScreenSet:
 
     def _extract_players_by_rank(self):
         if self.items_lists is None:
-            self._extract_data(list(self.tournament.players_by_rank.values()))
+            self._extract_data(
+                [
+                    player
+                    for player in self.tournament.players_by_rank.values()
+                    if (
+                        self.ranking_min_points is None or player.points >= self.ranking_min_points
+                    ) and (
+                        self.ranking_max_points is None or player.points <= self.ranking_max_points
+                    )
+                ]
+            )
 
     @property
     def players_by_rank_lists(self) -> list[list[Player]]:
@@ -358,28 +392,6 @@ class ScreenSet:
                 )
             )
         return self.items_lists
-
-    @property
-    def players_by_rank_tuple_lists(
-        self,
-    ) -> Iterable[tuple[list[Player], list[Player]]]:
-        # TODO check that this method is really used
-        self._extract_players_by_rank()
-        if TYPE_CHECKING:
-            assert (
-                isinstance(self.items_lists, list)
-                and all(isinstance(item, list) for item in self.items_lists)
-                and all(
-                    isinstance(item, Player)
-                    for item in chain(*self.items_lists)
-                )
-            )
-        players_by_rank_lists: list[list[Player]] = self.items_lists
-        for players_by_rank in players_by_rank_lists:
-            yield (
-                players_by_rank[: (bound := math.ceil(len(players_by_rank) / 2))],
-                players_by_rank[bound:],
-            )
 
     @property
     def first_player_by_rank(self) -> Player:
@@ -429,7 +441,7 @@ class ScreenSet:
                     return _('boards from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
-        else:
+        elif self.type in [ScreenType.PLAYERS]:
             match (self.first, self.last):
                 case (None, None):
                     return _('all the players')
@@ -443,8 +455,22 @@ class ScreenSet:
                     return _('players from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
+        else:
+            match (self.first, self.last):
+                case (None, None):
+                    return _('the whole ranking')
+                case (first, None) if first is not None:
+                    return _('ranking from #{first} to end').format(first=first)
+                case (first, last) if first is not None and last is not None:
+                    return _('ranking from #{first} to #{last}').format(
+                        first=first, last=last
+                    )
+                case (None, last) if last is not None:
+                    return _('ranking from start to #{last}').format(last=last)
+                case _:
+                    raise ValueError(f'first={self.first}, last={self.last}')
 
     def __str__(self):
         return _('Tournament {tournament_uniq_id} ({numbers_str})').format(
-            tournameuniq_id=self.tournament.uniq_id, numbers_str=self.numbers_str
+            tournament_uniq_id=self.tournament.uniq_id, numbers_str=self.numbers_str
         )
