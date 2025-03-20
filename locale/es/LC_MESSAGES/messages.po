@@ -1729,6 +1729,10 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr "USO EN SUS PROPIOS RIESGOS"
 
 #, ai_translation
+msgid "By default - {option}"
+msgstr "Por defecto - {option}"
+
+#, ai_translation
 msgid "No recording"
 msgstr "Sin grabación"
 
@@ -1737,10 +1741,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] "{num} movimiento ilegal max"
 msgstr[1] "{num} movimientos ilegales max"
-
-#, ai_translation
-msgid "By default - {option}"
-msgstr "Por defecto - {option}"
 
 #, ai_translation
 msgid "Points for gain (full-point bye)"
@@ -2025,6 +2025,15 @@ msgstr "Temporizador [{timer_id}] no encontrado."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "No es posible especificar el número de piezas y el número de elementos por pieza."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 #, ai_translation
 msgid "Papi-web settings has been updated."
@@ -3244,6 +3253,9 @@ msgstr "Idioma:"
 #, ai_translation
 msgid "The default language used."
 msgstr "El idioma predeterminado utilizado."
+
+msgid "Plugins"
+msgstr ""
 
 #, ai_translation
 msgid "Edit the Papi-web settings."

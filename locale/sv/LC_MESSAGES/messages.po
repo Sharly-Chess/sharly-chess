@@ -783,14 +783,10 @@ msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
-# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #, ai_translation
 msgid "U8"
 msgstr ""
 
-# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
-# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
-# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -821,12 +817,6 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
-# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #, ai_translation
 msgid "20+"
 msgstr ""
@@ -835,9 +825,6 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
-# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
-# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
-# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -1013,9 +1000,6 @@ msgstr "Parningar per spelare"
 msgid "No split"
 msgstr "Ingen uppdelning"
 
-# Error: translation [Denna förordning träder i kraft den tjugonde dagen efter
-# det att den har offentliggjorts i Europeiska unionens officiella tidning.]
-# is much too long compared to initial [Category]
 # Error: translation [Denna förordning träder i kraft den tjugonde dagen efter
 # det att den har offentliggjorts i Europeiska unionens officiella tidning.]
 # is much too long compared to initial [Category]
@@ -1782,6 +1766,10 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr "ANVÄNDNING VID DINA EGNA RISKER"
 
 #, ai_translation
+msgid "By default - {option}"
+msgstr "Som standard - {option}"
+
+#, ai_translation
 msgid "No recording"
 msgstr "Ingen inspelning"
 
@@ -1790,10 +1778,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] "{num} olagligt drag max"
 msgstr[1] "{num} olagliga förflyttningar max"
-
-#, ai_translation
-msgid "By default - {option}"
-msgstr "Som standard - {option}"
 
 #, ai_translation
 msgid "Points for gain (full-point bye)"
@@ -2078,6 +2062,15 @@ msgstr "Timer [{timer_id}] hittades inte."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Det är inte möjligt att ange antalet delar och antalet objekt per del."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 #, ai_translation
 msgid "Papi-web settings has been updated."
@@ -2518,7 +2511,6 @@ msgstr "När du inte visar utgångsknappen, kan användare inte av misstag avslu
 # Error: translation [Typ: Ursprunglig hänvisning till den nationella
 # lagstiftningen: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . .] is much too long compared to initial [Type:]
 #, ai_translation
 msgid "Type:"
@@ -2896,8 +2888,6 @@ msgstr "Utgångsknapp:"
 msgid "yes"
 msgstr "Ja, det är jag."
 
-# Error: translation [Ingen känd frekvens:] is much too long compared to
-# initial [no]
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
 #, ai_translation
@@ -3307,6 +3297,9 @@ msgstr "Språk:"
 msgid "The default language used."
 msgstr "Standardspråket som används."
 
+msgid "Plugins"
+msgstr ""
+
 #, ai_translation
 msgid "Edit the Papi-web settings."
 msgstr "Redigera inställningarna för papi- webb."
@@ -3351,8 +3344,6 @@ msgstr "Starta webbläsaren vid serverstart"
 msgid "Yes"
 msgstr "Ja, det är jag."
 
-# Error: translation [Ej tillämpligt] is much too long compared to initial
-# [No]
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
 #, ai_translation
@@ -5119,8 +5110,6 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
-# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
-# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #, ai_translation

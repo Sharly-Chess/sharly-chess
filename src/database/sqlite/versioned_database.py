@@ -57,9 +57,9 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
 
     def upgrade(self):
         """Upgrades the database version from the stored database version
-        to the current Papi-web version.
+        to the latest version.
         This may change the structure of the database."""
-        if self.version > PAPI_WEB_VERSION:
+        if self.version > self.migration_manager.latest_version:
             raise PapiWebException(
                 f'Your Papi-web version ({PAPI_WEB_VERSION}) '
                 f'can not open database {self.file.name} '
@@ -67,7 +67,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
             )
         logger.info('Upgrading database %s...', self.file.name)
         initial_version = self.version
-        if self.migration_manager.migrate(self, PAPI_WEB_VERSION):
+        if self.migration_manager.migrate(self):
             logger.info(
                 'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
@@ -90,9 +90,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
                 SQLiteVersionedDatabase(self.file, True, False)
             ) as database:
                 database._version = database.migration_manager.EMPTY_DATABASE_VERSION
-                database.migration_manager.migrate(
-                    database, PAPI_WEB_VERSION
-                )
+                database.migration_manager.migrate(database)
                 database.insert_creation_values()
                 database.commit()
             logger.info('Database [%s] has been created.', self.file)
@@ -109,7 +107,10 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
             )
         super().__enter__()
 
-        if self.auto_upgrade and self.version < PAPI_WEB_VERSION:
+        if (
+            self.auto_upgrade and
+            self.version < self.migration_manager.latest_version
+        ):
             if self.write:
                 self.upgrade()
             else:

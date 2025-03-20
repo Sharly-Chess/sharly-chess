@@ -80,6 +80,10 @@ class AbstractMigrationManager(ABC):
     def _reverse_ordered_migration_versions(self) -> list[Version]:
         return sorted(self.migration_versions, reverse=True)
 
+    @property
+    def latest_version(self) -> Version:
+        return PAPI_WEB_VERSION
+
     def get_version(self, database: SQLiteVersionedDatabase) -> Version:
         return database.version
 
@@ -89,10 +93,16 @@ class AbstractMigrationManager(ABC):
     def migrate(
         self,
         database: SQLiteVersionedDatabase,
-        target_version: Version,
+        target_version: Version | None = None,
         skip_commits: bool = False,
     ) -> bool:
+        """Migrate *database* to the version *target_version*.
+        *target_version* defaults to the latest version."""
+        if target_version is None:
+            target_version = self.latest_version
         current_version = self.get_version(database)
+        if target_version == current_version:
+            return True
         if (
             current_version != self.EMPTY_DATABASE_VERSION
             and current_version < self.first_migration_version
@@ -104,28 +114,36 @@ class AbstractMigrationManager(ABC):
                 database.file.name, current_version, self.first_migration_version
             )
             return False
-        if target_version < self.first_migration_version:
+        if (
+            target_version != self.EMPTY_DATABASE_VERSION
+            and target_version < self.first_migration_version
+        ):
             self._log_error(
                 'impossible to migrate to version [%s]: '
-                'version is prior to the first database version '
-                '(%s).',
-                target_version.public, self.first_migration_version
+                'version is prior to the first database version [%s].',
+                target_version.public,
+                self.first_migration_version,
             )
             return False
-        if current_version > PAPI_WEB_VERSION:
+        if current_version > self.latest_version:
             self._log_error(
-                'Database %s (%s) '
-                'impossible to migrate: version is after the '
-                'current Papi-web version (%s).',
-                database.file.name, current_version, PAPI_WEB_VERSION.public
+                'Database [%s] impossible to migrate: version [%s] '
+                'is after the latest version [%s] available '
+                'in the current Papi-web version [%s].',
+                database.file.name,
+                current_version,
+                self.latest_version.public,
+                PAPI_WEB_VERSION.public,
             )
             return False
-        if target_version > PAPI_WEB_VERSION:
+        if target_version > self.latest_version:
             self._log_error(
                 'impossible to upgrade to version [%s]: '
-                ' version is after the current Papi-web version '
-                '(%s).',
-                target_version.public, PAPI_WEB_VERSION.public
+                ' version is after the latest version '
+                '[%s] available in this Papi-Web version [%s].',
+                target_version.public,
+                self.latest_version.public,
+                PAPI_WEB_VERSION.public,
             )
             return False
 
@@ -136,6 +154,7 @@ class AbstractMigrationManager(ABC):
         )
         if (
             migration_status and
+            target_version != self.EMPTY_DATABASE_VERSION and
             self.get_version(database) != target_version
         ):
             self.set_version(database, target_version)
@@ -196,7 +215,8 @@ class AbstractMigrationManager(ABC):
             )
             try:
                 migration_class(database).backward()
-                self.set_version(database, previous_version)
+                if previous_version != self.EMPTY_DATABASE_VERSION:
+                    self.set_version(database, previous_version)
                 if not skip_commits:
                     database.commit()
                 current_version = previous_version

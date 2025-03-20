@@ -63,8 +63,8 @@ except PermissionError as pe:
     sys.exit()
 
 
-#The base directory, differs for developers. base_dir must be used when looking for application files
-#(images, templates, ...) while user file should be search in the current directory.
+# The base directory, differs for developers. base_dir must be used when looking for application files
+# (images, templates, ...) while user file should be search in the current directory.
 BASE_DIR: Path = (
     Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS) # type: ignore
 )

@@ -63,6 +63,21 @@
                         ) }}
                     </div>
                 </div>
+                <h4>
+                    {{ _('Plugins') }}
+                </h4>
+                {% for plugin in plugins %}
+                    <div class="row">
+                        {{ admin_macros.switch_input(
+                            name=plugin.form_key,
+                            label='',
+                            placeholder=plugin.name,
+                            disabled=not plugin.is_state_editable,
+                            help_text='',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endfor %}
             </form>
         </div>
 

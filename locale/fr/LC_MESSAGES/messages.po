@@ -1333,6 +1333,9 @@ msgstr "URL LAN/WAN : {lan_url}"
 msgid "USE AT YOUR OWN RISKS"
 msgstr "UTILISEZ À VOS PROPRES RISQUES"
 
+msgid "By default - {option}"
+msgstr "Par défaut - {option}"
+
 msgid "No recording"
 msgstr "Pas d'enregistrement"
 
@@ -1340,9 +1343,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] "Maximum {num} coup illégal"
 msgstr[1] "Maximum {num} coups illégaux"
-
-msgid "By default - {option}"
-msgstr "Par défaut - {option}"
 
 msgid "Points for gain (full-point bye)"
 msgstr "Points de victoire (point joker)"
@@ -2508,6 +2508,9 @@ msgstr "Langage :"
 
 msgid "The default language used."
 msgstr "Le langage par défaut utilisé."
+
+msgid "Plugins"
+msgstr "Plug-ins"
 
 msgid "Edit the Papi-web settings."
 msgstr "Éditer la configuration de Papi-web."

@@ -1,7 +1,10 @@
-from database.sqlite.migration import AbstractMigration
+from typing import override
+
+from plugins.utils import AbstractPluginMigration
 
 
-class Migration(AbstractMigration):
+class Migration(AbstractPluginMigration):
+    @override
     def forward(self):
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `ffe_last_upload`'
@@ -18,6 +21,7 @@ class Migration(AbstractMigration):
             f'`deprecated_last_ffe_rules_upload` TO `ffe_last_rules_upload`'
         )
 
+    @override
     def backward(self):
 
         self.database.execute(

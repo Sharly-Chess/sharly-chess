@@ -8,7 +8,6 @@ from common.papi_web_config import PapiWebConfig
 from data.tie_break import AbstractTieBreak
 
 
-
 @dataclass
 class StoredTimerHour:
     id: int | None
@@ -185,6 +184,7 @@ class StoredEvent:
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] | None = None
+
 
 @dataclass
 class StoredIllegalMove:

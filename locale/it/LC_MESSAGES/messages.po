@@ -650,14 +650,10 @@ msgstr "Giri uno eletto a giocare"
 
 # Error: translation [BuchholzCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Buchholz]
-# Error: translation [BuchholzCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Buchholz]
 #, ai_translation
 msgid "Buchholz"
 msgstr ""
 
-# Error: translation [Fore BuchholzCity name (optional, probably does not need
-# a translation)] is much too long compared to initial [Fore Buchholz]
 # Error: translation [Fore BuchholzCity name (optional, probably does not need
 # a translation)] is much too long compared to initial [Fore Buchholz]
 #, ai_translation
@@ -678,8 +674,6 @@ msgstr "Sonnenborn-Berger"
 
 # Error: translation [KoyaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Koya]
-# Error: translation [KoyaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Koya]
 #, ai_translation
 msgid "Koya"
 msgstr ""
@@ -688,8 +682,6 @@ msgstr ""
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
 msgstr "Ko."
 
-# Error: translation [KashdanCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Kashdan]
 # Error: translation [KashdanCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Kashdan]
 #, ai_translation
@@ -810,8 +802,6 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
-# Error: translation [U12City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U12]
 #, ai_translation
 msgid "U12"
 msgstr ""
@@ -822,8 +812,6 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
-# Error: translation [U16City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U16]
 #, ai_translation
 msgid "U16"
 msgstr ""
@@ -832,8 +820,6 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
-# Error: translation [U20City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #, ai_translation
@@ -1783,6 +1769,10 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr "UTILIZZO AI TUOI PERICOLOSI"
 
 #, ai_translation
+msgid "By default - {option}"
+msgstr "Per impostazione predefinita - {option}"
+
+#, ai_translation
 msgid "No recording"
 msgstr "Nessuna registrazione"
 
@@ -1791,10 +1781,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] "{num} mossa illegale max"
 msgstr[1] "{num} movimenti illegali max"
-
-#, ai_translation
-msgid "By default - {option}"
-msgstr "Per impostazione predefinita - {option}"
 
 #, ai_translation
 msgid "Points for gain (full-point bye)"
@@ -2079,6 +2065,15 @@ msgstr "Timer [{timer_id}] non trovato."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Non è possibile specificare il numero di parti e il numero di elementi per parte."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 #, ai_translation
 msgid "Papi-web settings has been updated."
@@ -3298,6 +3293,9 @@ msgstr "Lingua:"
 #, ai_translation
 msgid "The default language used."
 msgstr "La lingua predefinita usata."
+
+msgid "Plugins"
+msgstr ""
 
 #, ai_translation
 msgid "Edit the Papi-web settings."
@@ -5107,8 +5105,6 @@ msgstr "Numero massimo di risultati: illimitato"
 msgid "Image:"
 msgstr "Immagine:"
 
-# Error: translation [Rnd.BoaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Rnd.Boa]
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
 #, ai_translation

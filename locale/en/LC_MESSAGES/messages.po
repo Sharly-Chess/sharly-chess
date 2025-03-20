@@ -1333,6 +1333,9 @@ msgstr ""
 msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
+msgid "By default - {option}"
+msgstr ""
+
 msgid "No recording"
 msgstr ""
 
@@ -1340,9 +1343,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "By default - {option}"
-msgstr ""
 
 msgid "Points for gain (full-point bye)"
 msgstr ""
@@ -1555,6 +1555,15 @@ msgid "Timer [{timer_id}] not found."
 msgstr ""
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Papi-web settings has been updated."
@@ -2498,6 +2507,9 @@ msgid "Language:"
 msgstr ""
 
 msgid "The default language used."
+msgstr ""
+
+msgid "Plugins"
 msgstr ""
 
 msgid "Edit the Papi-web settings."

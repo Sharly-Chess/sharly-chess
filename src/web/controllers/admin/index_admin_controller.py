@@ -12,9 +12,10 @@ from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.config.config_store import StoredConfig
+from database.sqlite.config.config_store import StoredConfig, StoredPlugin
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import AdminWebContext, BaseAdminController
 from web.messages import Message
 from web.session import SessionHandler
@@ -165,20 +166,31 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
-        stored_config: StoredConfig = self._admin_validate_config_update_data(data)
-        if stored_config.errors:
+        stored_config: StoredConfig = (
+            self._admin_validate_config_update_data(data)
+        )
+        stored_plugins: list[StoredPlugin] = (
+            self._admin_validate_plugins_update_data(data)
+        )
+        errors = stored_config.errors
+        for plugin in stored_plugins:
+            errors |= plugin.errors
+        if errors:
             return self._admin_render(
                 web_context,
                 modal='config',
                 data=data,
-                errors=stored_config.errors,
+                errors=errors,
             )
         with ConfigDatabase(write=True) as config_database:
             stored_config.force_edit = False
             config_database.update_stored_config(stored_config)
+            for stored_plugin in stored_plugins:
+                config_database.update_stored_plugin(stored_plugin)
             config_database.commit()
-            PapiWebConfig().reload()
-            Message.success(request, _('Papi-web settings has been updated.'))
+        PapiWebConfig().reload()
+        plugin_manager.reload_register()
+        Message.success(request, _('Papi-web settings has been updated.'))
         return self._admin_render(
             AdminWebContext(request, data=None, admin_tab='config')
         )

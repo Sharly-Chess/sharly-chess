@@ -1753,6 +1753,10 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr "GEBRUIK OP UW EIGEN RISICO'S"
 
 #, ai_translation
+msgid "By default - {option}"
+msgstr "Standaard - {option}"
+
+#, ai_translation
 msgid "No recording"
 msgstr "Geen opname"
 
@@ -1761,10 +1765,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] "{num} illegale verplaatsing max"
 msgstr[1] "{num} illegale bewegingen max"
-
-#, ai_translation
-msgid "By default - {option}"
-msgstr "Standaard - {option}"
 
 #, ai_translation
 msgid "Points for gain (full-point bye)"
@@ -2049,6 +2049,15 @@ msgstr "Timer [{timer_id}] niet gevonden."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Het opgeven van het aantal onderdelen en het aantal items per onderdeel is niet mogelijk."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 #, ai_translation
 msgid "Papi-web settings has been updated."
@@ -3268,6 +3277,9 @@ msgstr "Taal:"
 #, ai_translation
 msgid "The default language used."
 msgstr "De standaardtaal gebruikt."
+
+msgid "Plugins"
+msgstr ""
 
 #, ai_translation
 msgid "Edit the Papi-web settings."
@@ -4833,8 +4845,6 @@ msgstr "Een URL, of het pad naar het regelsbestand op de server, in PDF-formaat 
 msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
 msgstr "Het maximale aantal illegale bewegingen dat per ronde kan worden geregistreerd voor een speler (van 0 naar 3, standaard %(default)d)."
 
-# Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
-# long compared to initial [Pairings]
 # Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
 # long compared to initial [Pairings]
 #, ai_translation

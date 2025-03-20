@@ -20,16 +20,8 @@ from common.logger import (
 )
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.fide.fide_database import FideDatabase
-
 from plugins.manager import plugin_manager
-from plugins.registration import register_plugins
-
-# NOTE(Amaras): in order to properly use the plugins' web code, they MUST
-# be registered before importing web.settings.
-# Not doing so results in provided templates not being found
-register_plugins()
-
-from web.settings import route_handlers, template_config, middlewares, stores # pylint: disable=wrong-import-position
+from web.settings import route_handlers, template_config, middlewares, stores
 
 logger: Logger = get_logger()
 

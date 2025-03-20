@@ -1,5 +1,5 @@
+from functools import cached_property
 from pathlib import Path
-from types import ModuleType
 from typing import Any, TYPE_CHECKING, override
 
 from packaging.version import Version
@@ -10,7 +10,7 @@ from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from plugins.chessevent.utils import ChessEventUtils
 from plugins.hookspec import hookimpl
-from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument, AbstractPlugin
+from plugins.utils import PluginMigrationManager, PluginEngineArgument, AbstractPlugin
 
 from web.controllers.base_controller import WebContext
 
@@ -36,28 +36,23 @@ class ChessEventPlugin(AbstractPlugin):
     def version(self) -> Version:
         return Version('0.1.0')
 
+    @override
+    @property
+    def default_is_enabled(self) -> bool:
+        return True
+
+    @override
+    @cached_property
+    def migration_manager(self) -> PluginMigrationManager:
+        return PluginMigrationManager(self, migrations)
+
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
     # ---------------------------------------------------------------------------------
 
-    class ChessEventPluginMigrationManager(AbstractPluginMigrationManager):
-        @override
-        @property
-        def plugin(self) -> AbstractPlugin:
-            return ChessEventPlugin()
-
-        @override
-        @property
-        def base_module(self) -> ModuleType:
-            return migrations
-
     @hookimpl
-    def get_event_migration_manager(self) -> AbstractPluginMigrationManager:
-        return self.ChessEventPluginMigrationManager()
-
-    @hookimpl
-    def get_templates_path(self) -> Path:
-        return PLUGINS_DIR / 'chessevent' / 'templates'
+    def get_event_migration_manager(self) -> PluginMigrationManager:
+        return self.migration_manager
 
     @hookimpl
     def get_engine_argument(self) -> PluginEngineArgument:
