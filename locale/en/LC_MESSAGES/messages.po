@@ -1333,6 +1333,9 @@ msgstr ""
 msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
+msgid "By default - {option}"
+msgstr ""
+
 msgid "No recording"
 msgstr ""
 
@@ -1340,9 +1343,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "By default - {option}"
-msgstr ""
 
 msgid "Points for gain (full-point bye)"
 msgstr ""
@@ -2902,6 +2902,9 @@ msgstr ""
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
+msgid "Add"
+msgstr ""
+
 msgid "Tournament record"
 msgstr ""
 
@@ -2982,7 +2985,7 @@ msgstr ""
 msgid "Add a tournament before adding players."
 msgstr ""
 
-msgid "Create a player"
+msgid "Add player"
 msgstr ""
 
 msgid "Clear all the filters."
@@ -3981,4 +3984,7 @@ msgstr ""
 
 msgid "vs"
 msgstr ""
+
+#~ msgid "Create a player"
+#~ msgstr ""
 

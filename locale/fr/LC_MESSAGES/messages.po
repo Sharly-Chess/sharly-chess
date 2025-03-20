@@ -1333,6 +1333,9 @@ msgstr "URL LAN/WAN : {lan_url}"
 msgid "USE AT YOUR OWN RISKS"
 msgstr "UTILISEZ À VOS PROPRES RISQUES"
 
+msgid "By default - {option}"
+msgstr "Par défaut - {option}"
+
 msgid "No recording"
 msgstr "Pas d'enregistrement"
 
@@ -1340,9 +1343,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] "Maximum {num} coup illégal"
 msgstr[1] "Maximum {num} coups illégaux"
-
-msgid "By default - {option}"
-msgstr "Par défaut - {option}"
 
 msgid "Points for gain (full-point bye)"
 msgstr "Points de victoire (point joker)"
@@ -2911,6 +2911,9 @@ msgstr "Commentaire :"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
+msgid "Add"
+msgstr "Ajouter"
+
 msgid "Tournament record"
 msgstr "Historique"
 
@@ -2991,8 +2994,8 @@ msgstr "Aucun fichier Papi pour les tournois de l'évènement, on ne peut pas aj
 msgid "Add a tournament before adding players."
 msgstr "Ajoutez un tournoi pour pouvoir ajouter des joueur·euses."
 
-msgid "Create a player"
-msgstr "Créer un·e joueur·euse"
+msgid "Add player"
+msgstr "Ajouter"
 
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
@@ -3990,4 +3993,7 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 
 msgid "vs"
 msgstr "contre"
+
+#~ msgid "Create a player"
+#~ msgstr "Créer un·e joueur·euse"
 
