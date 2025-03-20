@@ -23,19 +23,3 @@ CREATE TABLE `player` (
     `date_of_birth` INTEGER,
     PRIMARY KEY(`id` AUTOINCREMENT)
 );
-
-CREATE INDEX `player_last_name` ON `player` (
-    `last_name` COLLATE NOCASE
-);
-
-CREATE INDEX `player_first_name` ON `player` (
-    `first_name` COLLATE NOCASE
-);
-
-CREATE INDEX `player_fide_id` ON `player` (
-    `fide_id`
-);
-
-CREATE INDEX `player_ffe_licence` ON `player` (
-    `ffe_licence_number` COLLATE NOCASE
-);

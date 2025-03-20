@@ -209,7 +209,17 @@ class FfeDatabase(SQLiteDatabase):
         print_interactive_success(
             _('{number} players written.').format(number=player_count)
         )
+        self.create_indexes()
         return True
+
+    def create_indexes(self) -> None:
+        self.write = True
+        with self:
+            self.execute('CREATE INDEX `player_last_name` ON `player`(`last_name` COLLATE NOCASE)')
+            self.execute('CREATE INDEX `player_first_name` ON `player`(`first_name` COLLATE NOCASE)')
+            self.execute('CREATE INDEX `player_fide_id` ON `player`(`fide_id`)')
+            self.execute('CREATE INDEX `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)')
+            self.commit()
 
     @staticmethod
     def get_player_from_row(row: dict[str, Any]) -> Player | None:
