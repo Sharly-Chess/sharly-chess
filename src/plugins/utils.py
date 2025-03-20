@@ -64,6 +64,12 @@ class AbstractPlugin(ABC):
 
     @property
     @abstractmethod
+    def description(self) -> str:
+        """Briefly describes the features of the plugin."""
+        pass
+
+    @property
+    @abstractmethod
     def version(self) -> Version:
         pass
 

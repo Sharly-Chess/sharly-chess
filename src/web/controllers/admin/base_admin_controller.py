@@ -799,6 +799,7 @@ class BaseAdminController(BaseController):
         context = web_context.template_context | {
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
+            'plugins': plugin_manager.all_plugins,
             'messages': Message.messages(web_context.request),
             'nav_tabs': nav_tabs,
             'admin_events_show_details': (
@@ -873,7 +874,6 @@ class BaseAdminController(BaseController):
                     'launch_browser_options': launch_browser_options,
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'plugins': plugin_manager.all_plugins,
                     'federation_options': cls._get_federation_options(PapiWebConfig.default_federation),
                     'modal': modal,
                     'data': data,

@@ -1078,6 +1078,9 @@ msgstr "{number} Spieler geschrieben."
 msgid "Error while creating the database: {ex}."
 msgstr "Fehler beim Erstellen der Datenbank: {ex}."
 
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
 #, ai_translation
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Bitte geben Sie ein Passwort für die ChessEvent-Verbindung ein."
@@ -1321,6 +1324,9 @@ msgstr "Z.B.: Tournoi A"
 #, ai_translation
 msgid "The name of the tournament on the ChessEvent platform."
 msgstr "Der Name des Turniers auf der ChessEvent-Plattform."
+
+msgid "French Federation specific features (player search, leagues, Papi compatibility)"
+msgstr ""
 
 #, ai_translation
 msgid "Error while updating the FFE database."
@@ -3377,6 +3383,12 @@ msgstr "Zugriffstreiber (nicht gefunden)"
 #, ai_translation
 msgid "Other ODBC drivers found on the server"
 msgstr "Andere ODBC-Treiber auf dem Server gefunden"
+
+msgid "On"
+msgstr ""
+
+msgid "Off"
+msgstr ""
 
 #, ai_translation, python-format
 msgid "Unique ID: %(uniq_id)s"

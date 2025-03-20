@@ -1054,6 +1054,9 @@ msgstr "{number} spelers geschreven."
 msgid "Error while creating the database: {ex}."
 msgstr "Fout bij het aanmaken van de database: {ex}."
 
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
 #, ai_translation
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Voer een wachtwoord in voor de ChessEvent-verbinding."
@@ -1297,6 +1300,9 @@ msgstr "B.v.: Tournoi A"
 #, ai_translation
 msgid "The name of the tournament on the ChessEvent platform."
 msgstr "De naam van het toernooi op het ChessEvent platform."
+
+msgid "French Federation specific features (player search, leagues, Papi compatibility)"
+msgstr ""
 
 #, ai_translation
 msgid "Error while updating the FFE database."
@@ -3348,6 +3354,12 @@ msgstr "Toegangsstuurprogramma (niet gevonden)"
 #, ai_translation
 msgid "Other ODBC drivers found on the server"
 msgstr "Andere ODBC-drivers gevonden op de server"
+
+msgid "On"
+msgstr ""
+
+msgid "Off"
+msgstr ""
 
 #, ai_translation, python-format
 msgid "Unique ID: %(uniq_id)s"

@@ -1067,6 +1067,9 @@ msgstr "{number} Skrivna spelare."
 msgid "Error while creating the database: {ex}."
 msgstr "Fel när databasen skapades: {ex}."
 
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
 #, ai_translation
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Ange ett lösenord för ChessEvent-anslutningen."
@@ -1310,6 +1313,9 @@ msgstr "T.ex.: Tournoi A"
 #, ai_translation
 msgid "The name of the tournament on the ChessEvent platform."
 msgstr "Namnet på turneringen på ChessEvent-plattformen."
+
+msgid "French Federation specific features (player search, leagues, Papi compatibility)"
+msgstr ""
 
 #, ai_translation
 msgid "Error while updating the FFE database."
@@ -3369,6 +3375,12 @@ msgstr "Åtkomstdrivrutin (finns inte)"
 #, ai_translation
 msgid "Other ODBC drivers found on the server"
 msgstr "Andra ODBC-drivrutiner hittades på servern"
+
+msgid "On"
+msgstr ""
+
+msgid "Off"
+msgstr ""
 
 #, ai_translation, python-format
 msgid "Unique ID: %(uniq_id)s"

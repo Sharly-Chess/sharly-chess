@@ -33,6 +33,14 @@ class ChessEventPlugin(AbstractPlugin):
 
     @override
     @property
+    def description(self) -> str:
+        return _(
+            'Support for the ChessEvent platform used '
+            'for organising tournaments in France'
+        )
+
+    @override
+    @property
     def version(self) -> Version:
         return Version('0.1.0')
 

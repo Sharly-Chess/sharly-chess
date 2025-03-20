@@ -54,6 +54,14 @@ class FfePlugin(AbstractPlugin):
 
     @override
     @property
+    def description(self) -> str:
+        return _(
+            'French Federation specific features '
+            '(player search, leagues, Papi compatibility)'
+        )
+
+    @override
+    @property
     def version(self) -> Version:
         return Version('0.1.1')
 
