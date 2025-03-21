@@ -3459,10 +3459,6 @@ msgid "Enable/disable the details of events on the cards below."
 msgstr "Aktivieren/deaktivieren Sie die Details der Ereignisse auf den Karten unten."
 
 #, ai_translation
-msgid "Refresh this page."
-msgstr "Aktualisieren Sie diese Seite."
-
-#, ai_translation
 msgid "Open/close check-in."
 msgstr "Check-in öffnen/schließen."
 
@@ -3944,6 +3940,10 @@ msgstr "Fügen Sie ein Turnier vor dem Hinzufügen von Spielern hinzu."
 
 msgid "Add player"
 msgstr ""
+
+#, ai_translation
+msgid "Refresh this page."
+msgstr "Aktualisieren Sie diese Seite."
 
 #, ai_translation
 msgid "Clear all the filters."

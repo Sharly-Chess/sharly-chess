@@ -3442,10 +3442,6 @@ msgid "Enable/disable the details of events on the cards below."
 msgstr "Ενεργοποιήστε/απενεργοποιήστε τις λεπτομέρειες των γεγονότων στις παρακάτω κάρτες."
 
 #, ai_translation
-msgid "Refresh this page."
-msgstr "Ανανέωση αυτής της σελίδας."
-
-#, ai_translation
 msgid "Open/close check-in."
 msgstr "Ανοίξτε/κλείστε το check-in."
 
@@ -3930,6 +3926,10 @@ msgstr "Προσθέστε ένα τουρνουά πριν από την προ
 
 msgid "Add player"
 msgstr ""
+
+#, ai_translation
+msgid "Refresh this page."
+msgstr "Ανανέωση αυτής της σελίδας."
 
 #, ai_translation
 msgid "Clear all the filters."

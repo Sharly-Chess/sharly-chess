@@ -808,6 +808,7 @@ class BaseAdminController(BaseController):
                 )
             ),
             'event_card_blocks': event_card_blocks,
+            'row_cycler': cls.get_cycler(['odd', 'even'])
         }
 
         match modal:

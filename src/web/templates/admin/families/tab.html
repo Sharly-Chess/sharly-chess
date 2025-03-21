@@ -22,17 +22,6 @@
                 {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
-    <span class="pe-3" {{ macros.tooltip_attributes('info', 'Refresh this page.', 'top') }}>
-        <button
-            class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for('admin-event-families-tab', event_uniq_id=admin_event.uniq_id) }}"
-            preload
-            hx-target="body"
-            hx-indicator="#please-wait"
-        >
-            <i class="bi-arrow-clockwise"></i>
-        </button>
-    </span>
     <span
             class="dropdown-end pe-0"
             {% if not admin_event.tournaments_by_id %}

@@ -17,17 +17,6 @@
                 {% include 'check_in_tournaments.html' %}
             {% endif %}
             {% include 'filter_columns.html' %}
-            <span {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}>
-                <button
-                    class="btn btn-outline-primary text-nowrap ms-1"
-                    hx-get="{{ url }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    <i class="bi-arrow-clockwise"></i>
-                </button>
-            </span>
             <span
                 {% if admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
                     {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
