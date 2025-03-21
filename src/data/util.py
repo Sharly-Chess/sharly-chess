@@ -877,7 +877,7 @@ class PlayerRatingType(IntEnum):
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
         match value:
-            case 'E':
+            case 'E' | None:
                 return cls.ESTIMATED
             case 'N':
                 return cls.NATIONAL

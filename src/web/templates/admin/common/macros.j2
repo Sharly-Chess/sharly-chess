@@ -161,6 +161,8 @@ disabled: if set to true, the field will be disabled
 hx_get: the hx-get attribute of the input, optional
 hx_target: the hx-target attribute of the input, optional
 hx_indicator_img: the URL of the image of the indicator, optional
+hx_on_before_request: the JS to run before the HTMX request (text inputs only)
+hx_on_after_request: the JS to run after the HTMX request (text inputs only)
 #}
 
 {% macro _generic_input(
@@ -183,7 +185,9 @@ hx_indicator_img: the URL of the image of the indicator, optional
     hx_get='',
     hx_target='',
     hx_indicator_img='',
-    hx_trigger=''
+    hx_trigger='',
+    hx_on_before_request='',
+    hx_on_after_request=''
 ) %}
     <!-- {{ input_type }}_input({{ name }}) -->
         {% set id=name|replace('_', '-') %}
@@ -295,6 +299,12 @@ hx_indicator_img: the URL of the image of the indicator, optional
                         {% if hx_trigger %}
                             hx-trigger="{{ hx_trigger }}"
                         {% endif %}
+                        {% if hx_on_before_request %}
+                            hx-on::before-request="{{ hx_on_before_request }}"
+                        {% endif %}
+                        {% if hx_on_after_request %}
+                            hx-on::after-request="{{ hx_on_after_request }}"
+                        {% endif %}
                     />
                     {% if input_type == 'password' %}
                         <i
@@ -364,7 +374,9 @@ hx_indicator_img: the URL of the image of the indicator, optional
     hx_get='',
     hx_trigger='',
     hx_target='',
-    hx_indicator_img=''
+    hx_indicator_img='',
+    hx_on_before_request='',
+    hx_on_after_request=''
 ) %}
     {{ _generic_input(
         name=name,
@@ -383,6 +395,8 @@ hx_indicator_img: the URL of the image of the indicator, optional
         hx_trigger=hx_trigger,
         hx_target=hx_target,
         hx_indicator_img=hx_indicator_img,
+        hx_on_before_request=hx_on_before_request,
+        hx_on_after_request=hx_on_after_request,
     ) }}
 {% endmacro %}
 

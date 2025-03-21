@@ -6,7 +6,6 @@ from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 from functools import partial, cached_property
-from pathlib import Path
 from typing import Any, TYPE_CHECKING, Iterable, override
 
 from litestar.contrib.htmx.request import HTMXRequest
@@ -15,11 +14,11 @@ from packaging.version import Version
 
 from common.i18n import _
 from common.logger import print_interactive_error
+from common.network import connected
 from data.event import Event
 from data.tie_break import AbstractTieBreak
 from data.util import PlayerCategory, PlayerRatingType, PrintDocument, ScreenType, TournamentRating
 from data.player import Player
-from plugins import PLUGINS_DIR
 from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
@@ -127,7 +126,7 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
-            'ffe_search_available': FfeDatabase().exists(),
+            'ffe_search_available': FfeDatabase().exists() or connected(),
             'ffe_leagues': self.FFE_LEAGUES
 }
 

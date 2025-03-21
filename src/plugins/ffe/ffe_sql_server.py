@@ -1,0 +1,295 @@
+from collections.abc import Iterator
+from contextlib import suppress
+from logging import Logger
+from pathlib import Path
+from string import capwords
+from typing import Any
+
+from common.exception import PapiWebException
+from common.i18n import _
+from common.logger import get_logger
+from common.network import connected
+from data.player import Player
+from data.util import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
+from database.sql_server.sql_server import SqlServer, SqlServerCredentials
+from plugins.ffe import PLUGIN_NAME
+from plugins.ffe.util import PlayerFFELicence
+
+logger: Logger = get_logger()
+
+
+class FFESqlServer(SqlServer):
+
+    CREDENTIALS_FILE: Path = Path(__file__).parent / '.credentials'
+
+    def __init__(
+        self,
+    ):
+        super().__init__(
+            self.CREDENTIALS_FILE,
+            timeout=5
+        )
+        if not connected():
+            error: str = _('Not connected to internet.')
+            logger.error(error)
+            raise PapiWebException(error)
+
+    @staticmethod
+    def dump_credentials(
+        host: str,
+        user: str,
+        password: str,
+        database: str,
+    ):
+        SqlServerCredentials.dump(
+            FFESqlServer.CREDENTIALS_FILE,
+            host,
+            user,
+            password,
+            database,
+        )
+
+    PLAYER_FIELDS: tuple[str, ...] = (
+        'Ref', 'NrFFE',
+        'Nom', 'Prenom', 'Sexe', 'NeLe',
+        'Cat',
+        # not allowed: 'EC', 'Adresse', 'CP', 'TelDom', 'TelBur', 'TelPort', 'Fax', 'EMail',
+        'Federation',
+        'ClubRef',
+        # not allowed: 'OldClubRef', 'Mute',
+        'Elo',
+        # not allowed: 'Elo10', 'Fide10', 'Elo01', 'Fide01',
+        # not needed 'Elo03',
+        'Fide03',  # RapideFide
+        'Elo06',  # Blitz
+        'Fide06',  # BlitzFide
+        'Rapide',
+        # not allowed: 'Perf', 'NbrParties', 'FideNbrParties',
+        'Fide',
+        'FideCode',
+        'FideTitre',
+        'AffType',
+        # not needed 'Actif',
+        # not allowed: 'BordereauRef', 'OldAffType', 'OldBordereauRef',
+        # not allowed: 'Suspendu', 'MuteState', 'AJoue',
+        # not allowed: 'Revue', 'RevueDu', 'RevueDuParClub', 'RevueDebut', 'NewsLetter',
+        # not allowed: 'Password', 'MaJ',
+    )
+
+    CLUB_FIELDS: tuple[str, ...] = (
+        # unused 'Ref',
+        # unused 'NrFFE',
+        'Nom',
+        # not allowed: 'Intitule',
+        'Commune',
+        # not allowed: 'CommuneRef', 'ComiteRef',
+        'Ligue',
+        # not allowed: 'Adresse', 'CP', 'SalleAdresse', 'SalleCP', 'Latitude', 'Longitude',
+        # not allowed: 'Tel', 'Fax', 'EMail', 'URL',
+        # not needed 'Actif',
+        # not allowed: 'Ouverture', 'President', 'Secretaire', 'Tresorier', 'Technique', 'Jeune',
+        # not allowed: 'WebAdmin', 'WebAdminEMail', 'WebAutorisation',
+        # not allowed: 'Repport', 'Nouveau', 'Electeur', 'Situation', 'PrefNr', 'PrefDate', 'Prefecture',
+        # not allowed: 'NbrAffPrecedent', 'NbrBPrecedent', 'NbrAffA', 'NbrAffB', 'NbrJourOuvre',
+        # not allowed: 'DivisionAdulte', 'DivisionJeune', 'DivisionFeminine', 'Label', 'Imprimer',
+        # not allowed: 'Edoc', 'Handicape', 'QPV', 'Palmares', 'Login', 'Password', 'MaJ',
+    )
+
+    @staticmethod
+    def get_player_from_row(row: dict[str, Any]) -> Player | None:
+        return Player(
+            id=0,
+            first_name=capwords(row['Prenom']) if row['Prenom'] else '',
+            last_name=row['Nom'].upper(),
+            date_of_birth=row['NeLe'],
+            gender=PlayerGender.from_papi_value(row['Sexe']),
+            mail='',
+            phone='',
+            comment='',
+            owed=0.0,
+            paid=0.0,
+            title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+            ratings={
+                TournamentRating.STANDARD: row['Elo'],
+                TournamentRating.RAPID: row['Rapide'],
+                TournamentRating.BLITZ: row['Elo06'],
+            },
+            rating_types={
+                TournamentRating.STANDARD: PlayerRatingType.from_papi_value(row['Fide']),
+                TournamentRating.RAPID: PlayerRatingType.from_papi_value(row['Fide03']),
+                TournamentRating.BLITZ: PlayerRatingType.from_papi_value(row['Fide06']),
+            },
+            fide_id=row['FideCode'],
+            federation=row['Federation'],
+            club=row['ClubNom'],
+            fixed=0,
+            check_in=False,  # not taken into account when updating/creating/deleting the player
+            pairings={},  # Pairings are read from Papi but not used
+            tournament=None,
+            plugin_data={
+                PLUGIN_NAME: {
+                    "ffe_id": row['Ref'],
+                    "ffe_licence": PlayerFFELicence.from_papi_value(row['AffType']),
+                    "ffe_licence_number": row['NrFFE'],
+                    "league": row['ClubLigue'],
+                }
+            }
+        ) if row else None
+
+    def get_player_fields(self) -> list[str]:
+        return [
+            f'joueur.{f} AS {f}'
+            for f in self.PLAYER_FIELDS
+        ]
+
+    def get_club_fields(self) -> list[str]:
+        return [
+            f'club.{f} AS Club{f}'
+            for f in self.CLUB_FIELDS
+        ]
+
+    def get_empty_club_fields(self) -> list[str]:
+        return [
+            f'\'\' AS Club{f}'
+            for f in self.CLUB_FIELDS
+        ]
+
+    def search_player_error(
+        self,
+        string: str,
+        limit: int = 0,  # no limit set if no param or null param passed
+    ) -> Iterator[Player]:
+        """Searches the SQL server for the given tokens, raises PapiWebException on error."""
+        tokens: list[str] = string.upper().split(' ')
+        player_str_fields: tuple[tuple[str, str, str], ...] = (
+            ('joueur.Nom', '%', '%'),
+            ('joueur.Prenom', '', '%'),
+            ('joueur.NrFFE', '', '')
+        )
+        club_str_fields: tuple[tuple[str, str, str], ...] = (
+            ('club.Nom', '%', '%'),
+            ('club.Ligue', '%', '%'),
+            ('club.Commune', '%', '%'),
+        )
+        player_int_fields: tuple[str, ...] = (
+            'joueur.FideCode',
+        )
+        club_int_fields: tuple[str, ...] = (
+        )
+        player_and_club_conditions: list[str] = []
+        player_only_conditions: list[str] = []
+        player_and_club_params: list[Any] = []
+        player_only_params: list[Any] = []
+        for token in tokens:
+            player_and_club_expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in player_str_fields + club_str_fields]
+            player_and_club_token_params: list[str] = [f'{field[1]}{token}{field[2]}' for field in player_str_fields + club_str_fields]
+            player_only_expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in player_str_fields]
+            player_only_token_params: list[str] = [f'{field[1]}{token}{field[2]}' for field in player_str_fields]
+            int_value: int
+            with suppress(ValueError):
+                int_value = int(token.strip())
+                player_and_club_expressions += [f'({field} = ?)' for field in player_int_fields + club_int_fields]
+                player_and_club_token_params += [int_value, ] * len(player_int_fields + club_int_fields)
+                player_only_expressions += [f'({field} = ?)' for field in player_int_fields]
+                player_only_token_params += [int_value, ] * len(player_int_fields)
+            player_and_club_conditions += [' OR '.join(player_and_club_expressions), ]
+            player_only_conditions += [' OR '.join(player_only_expressions), ]
+            player_and_club_params += player_and_club_token_params
+            player_only_params += player_only_token_params
+        player_and_club_condition: str = ' AND '.join(
+            map(lambda condition: f'({condition})', player_and_club_conditions)
+        )
+        player_only_condition: str = ' AND '.join(
+            map(lambda condition: f'({condition})', player_only_conditions)
+        )
+        order = ' OR '.join(['(UPPER(joueur.Nom) LIKE ?)', ] * len(tokens))
+        order_params: list[Any] = [f'{token}%' for token in tokens]
+        query: str = (
+            f'(SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} FROM joueur JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE {player_and_club_condition} '
+            f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom) '
+            f'UNION '
+            f'(SELECT {", ".join(self.get_player_fields() + self.get_empty_club_fields())} FROM joueur '
+            f'WHERE joueur.ClubRef = 0 AND {player_only_condition} '
+            f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom) '
+        )
+        print(f'{query=}')
+        params: list[Any] = player_and_club_params + order_params + player_only_params + order_params
+        if limit:
+            query += ' OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY'
+            params += [limit, ]
+        self.execute(query, tuple(params), )
+        return (
+            self.get_player_from_row(row)
+            for row in self.fetchall()
+        )
+
+    def search_player(
+        self,
+        string: str,
+        limit: int = 0,  # no limit set if no param or null param passed
+    ) -> Iterator[Player]:
+        """Searches the SQL server for the given tokens, raises PapiWebException on error."""
+        tokens: list[str] = string.upper().split(' ')
+        str_search_fields: tuple[tuple[str, str, str], ...] = (
+            ('joueur.Nom', '%', '%'),
+            ('joueur.Prenom', '', '%'),
+            ('joueur.NrFFE', '', '')
+        )
+        int_search_fields: tuple[str, ...] = (
+            'joueur.FideCode',
+        )
+        conditions: list[str] = []
+        params: list[Any] = []
+        for token in tokens:
+            expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in str_search_fields]
+            params += [f'{field[1]}{token}{field[2]}' for field in str_search_fields]
+            int_value: int
+            with suppress(ValueError):
+                int_value = int(token.strip())
+                expressions += [f'({field} = ?)' for field in int_search_fields]
+                params += [int_value, ] * len(int_search_fields)
+            conditions += [' OR '.join(expressions), ]
+        condition: str = ' AND '.join(map(lambda c: f'({c})', conditions))
+        order = ' OR '.join(['(UPPER(joueur.Nom) LIKE ?)', ] * len(tokens))
+        params += [f'{token}%' for token in tokens]
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} FROM joueur JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE {condition} '
+            f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom'
+        )
+        if limit:
+            query += ' OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY'
+            params += [limit, ]
+        self.execute(query, tuple(params), )
+        return (
+            self.get_player_from_row(row)
+            for row in self.fetchall()
+        )
+
+    def _get_player_by_id(
+        self,
+        field: str,
+        id_: int,
+    ) -> Player | None:
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} FROM joueur JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE {field} = ?'
+        )
+        self.execute(query, (id_, ), )
+        if row := self.fetchone():
+            return self.get_player_from_row(row)
+        else:
+            return None
+
+    def get_player_by_ffe_id(
+        self,
+        player_ffe_id: int,
+    ) -> Player | None:
+        return self._get_player_by_id('joueur.Ref', player_ffe_id)
+
+    def get_player_by_fide_id(
+        self,
+        player_fide_id: int,
+    ) -> Player | None:
+        return self._get_player_by_id('joueur.FideCode', player_fide_id)

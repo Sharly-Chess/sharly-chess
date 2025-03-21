@@ -41,3 +41,5 @@ __pycache__/
 
 *.log
 /mprofile_*.dat
+
+.credentials

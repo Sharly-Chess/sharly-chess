@@ -376,27 +376,16 @@ msgstr ""
 msgid "%t (by player)"
 msgstr ""
 
-#, python-format
-msgid "Crosstable %f-%l"
-msgstr ""
-
-#, python-format
-msgid "Ranking %f-%l"
-msgstr ""
-
-msgid "Crosstable"
-msgstr ""
-
 msgid "Ranking"
 msgstr ""
 
-msgid "%t ranking"
+msgid "%t (ranking)"
 msgstr ""
 
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
-msgid "Pattern [{pattern}] can be used by screen families only."
+msgid "Pattern [{pattern}] can be used by screen families."
 msgstr ""
 
 msgid "Pattern [{pattern}] matches no screen."
@@ -418,30 +407,7 @@ msgstr ""
 msgid "%f to %l"
 msgstr ""
 
-#, python-format
-msgid "Crosstable %f to %l"
-msgstr ""
-
-#, python-format
-msgid "Ranking %f to %l"
-msgstr ""
-
-msgid "%t crosstable"
-msgstr ""
-
 msgid "boards {board_numbers}"
-msgstr ""
-
-msgid "the whole ranking"
-msgstr ""
-
-msgid "ranking from #{first} to end"
-msgstr ""
-
-msgid "ranking from #{first} to #{last}"
-msgstr ""
-
-msgid "ranking from start to #{last}"
 msgstr ""
 
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
@@ -768,6 +734,27 @@ msgstr ""
 msgid "Crosstable after round #{round}"
 msgstr ""
 
+msgid "Crosstable"
+msgstr ""
+
+msgid "Connection to the FFE server failed: {error}."
+msgstr ""
+
+msgid "Connection to the FFE server failed."
+msgstr ""
+
+msgid "Connection to the FFE database failed: {error}."
+msgstr ""
+
+msgid "Connection to the FFE database failed."
+msgstr ""
+
+msgid "Request to the FFE database failed: {error}."
+msgstr ""
+
+msgid "Request to the FFE database failed."
+msgstr ""
+
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
 
@@ -796,9 +783,6 @@ msgid "{number} players written."
 msgstr ""
 
 msgid "Error while creating the database: {ex}."
-msgstr ""
-
-msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr ""
 
 msgid "Please enter a password for the ChessEvent connection."
@@ -987,9 +971,6 @@ msgstr ""
 msgid "The name of the tournament on the ChessEvent platform."
 msgstr ""
 
-msgid "French Federation specific features (player search, leagues, Papi compatibility)"
-msgstr ""
-
 msgid "Error while updating the FFE database."
 msgstr ""
 
@@ -1035,6 +1016,28 @@ msgstr ""
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
 
+msgid "{num} player found in {seconds:.2f} seconds."
+msgid_plural "{num} players found in {seconds:.2f} seconds."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "No players found in {seconds:.2f} seconds."
+msgstr ""
+
+msgid "{num} player found."
+msgid_plural "{num} players found."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "No players found."
+msgstr ""
+
+msgid "No local database."
+msgstr ""
+
+msgid "Not connected to internet."
+msgstr ""
+
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
 msgstr "Bu."
 
@@ -1054,7 +1057,7 @@ msgid "Performance"
 msgstr ""
 
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
-msgstr "Perf"
+msgstr "Perf."
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
 msgstr "SBh"
@@ -1259,10 +1262,10 @@ msgstr ""
 msgid "FFE database:"
 msgstr ""
 
-msgid "The FFE database is not available."
+msgid "No internet connection and no local database."
 msgstr ""
 
-msgid "No results."
+msgid "Searching..."
 msgstr ""
 
 #, python-format
@@ -1339,9 +1342,6 @@ msgstr ""
 msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
-msgid "By default - {option}"
-msgstr ""
-
 msgid "No recording"
 msgstr ""
 
@@ -1349,6 +1349,9 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "By default - {option}"
+msgstr ""
 
 msgid "Points for gain (full-point bye)"
 msgstr ""
@@ -1393,9 +1396,6 @@ msgid "Display only paired players"
 msgstr ""
 
 msgid "Display all the players, paired and unpaired"
-msgstr ""
-
-msgid "Ranking only"
 msgstr ""
 
 msgid "Invalid value [{value}]."
@@ -1901,30 +1901,6 @@ msgstr ""
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr ""
 
-msgid "Type:"
-msgstr ""
-
-msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
-msgstr ""
-
-msgid "Maximum number of points (included):"
-msgstr ""
-
-msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
-msgstr ""
-
-msgid "Minimum number of points (included):"
-msgstr ""
-
-msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
-msgstr ""
-
-msgid "Round:"
-msgstr ""
-
-msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
-msgstr ""
-
 msgid "Display of unpaired players:"
 msgstr ""
 
@@ -2115,6 +2091,9 @@ msgstr ""
 msgid "The type of document to print."
 msgstr ""
 
+msgid "Round:"
+msgstr ""
+
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
@@ -2187,36 +2166,6 @@ msgstr ""
 msgid "Columns:"
 msgstr ""
 
-msgid "Exit button:"
-msgstr ""
-
-msgid "yes"
-msgstr ""
-
-msgid "no"
-msgstr ""
-
-msgid "Unpaired: displayed"
-msgstr ""
-
-msgid "Unpaired: hidden"
-msgstr ""
-
-msgid "Round: the last finished round"
-msgstr ""
-
-#, python-format
-msgid "Points: %(min)s to %(max)s"
-msgstr ""
-
-#, python-format
-msgid "Points: %(min)s or more"
-msgstr ""
-
-#, python-format
-msgid "Points: up to %(max)s"
-msgstr ""
-
 #, python-format
 msgid "Menu link label: %(menu_label)s"
 msgstr ""
@@ -2238,6 +2187,21 @@ msgstr ""
 msgid "Timer: none"
 msgstr ""
 
+msgid "Exit button:"
+msgstr ""
+
+msgid "yes"
+msgstr ""
+
+msgid "no"
+msgstr ""
+
+msgid "Unpaired: displayed"
+msgstr ""
+
+msgid "Unpaired: hidden"
+msgstr ""
+
 #, python-format
 msgid "Boards from #%(first)d to #%(last)d"
 msgstr ""
@@ -2254,9 +2218,6 @@ msgid "No screens"
 msgstr ""
 
 msgid "Edit the properties of the screen family."
-msgstr ""
-
-msgid "Go to the first screen."
 msgstr ""
 
 msgid "Clone the screen family."
@@ -2366,9 +2327,6 @@ msgstr ""
 msgid "Last player:"
 msgstr ""
 
-msgid "Layout"
-msgstr ""
-
 msgid "On a given number of screens:"
 msgstr ""
 
@@ -2399,6 +2357,9 @@ msgstr ""
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr ""
 
+msgid "Layout"
+msgstr ""
+
 msgid "Timer:"
 msgstr ""
 
@@ -2406,9 +2367,6 @@ msgid "The timer displayed on the screens of the family."
 msgstr ""
 
 msgid "The number of columns used to display data."
-msgstr ""
-
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr ""
 
 msgid "Menus"
@@ -2444,6 +2402,9 @@ msgid "E.g.: Players %%f-%%l"
 msgstr ""
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
+msgstr ""
+
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr ""
 
 msgid "Screen families"
@@ -2515,9 +2476,6 @@ msgstr ""
 msgid "The default language used."
 msgstr ""
 
-msgid "Plugins"
-msgstr ""
-
 msgid "Edit the Papi-web settings."
 msgstr ""
 
@@ -2568,12 +2526,6 @@ msgid "Access driver (not found)"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
-msgstr ""
-
-msgid "On"
-msgstr ""
-
-msgid "Off"
 msgstr ""
 
 #, python-format
@@ -2634,6 +2586,9 @@ msgid "No informations"
 msgstr ""
 
 msgid "Enable/disable the details of events on the cards below."
+msgstr ""
+
+msgid "Refresh this page."
 msgstr ""
 
 msgid "Open/close check-in."
@@ -2703,6 +2658,9 @@ msgid "Download the information of the selected players (ODS format)."
 msgstr ""
 
 msgid "Download the information of the selected players (XLSX format)."
+msgstr ""
+
+msgid "No results."
 msgstr ""
 
 msgid "Filter the categories."
@@ -2923,9 +2881,6 @@ msgstr ""
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
-msgid "Add"
-msgstr ""
-
 msgid "Tournament record"
 msgstr ""
 
@@ -3006,10 +2961,7 @@ msgstr ""
 msgid "Add a tournament before adding players."
 msgstr ""
 
-msgid "Add player"
-msgstr ""
-
-msgid "Refresh this page."
+msgid "Create a player"
 msgstr ""
 
 msgid "Clear all the filters."
@@ -3101,6 +3053,40 @@ msgstr ""
 msgid "No players."
 msgstr ""
 
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
+
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat."
+
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr "Fed."
+
+#, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
+
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
+
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
@@ -3124,9 +3110,6 @@ msgid "(no screens)"
 msgstr ""
 
 msgid "Edit the properties of the rotator."
-msgstr ""
-
-msgid "Go to the rotator."
 msgstr ""
 
 msgid "Clone the rotator."
@@ -3210,10 +3193,6 @@ msgid "Type: %(screen_type)s"
 msgstr ""
 
 #, python-format
-msgid "Round: %(round)d"
-msgstr ""
-
-#, python-format
 msgid "Max number: %(num)d"
 msgstr ""
 
@@ -3250,9 +3229,6 @@ msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
 msgid "Boards"
-msgstr ""
-
-msgid "Go to the screen."
 msgstr ""
 
 msgid "Input screen creation"
@@ -3312,10 +3288,22 @@ msgstr ""
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
-msgid "E.g.: https://my.club.us/tournament.jpg"
+msgid "The timer displayed on the screen."
 msgstr ""
 
-msgid "The URL of the image to display."
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr ""
+
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr ""
+
+msgid "E.g.: Link to my screen"
+msgstr ""
+
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr ""
+
+msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
 msgstr ""
 
 msgid "Maximum number of results displayed:"
@@ -3341,22 +3329,10 @@ msgstr ""
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr ""
 
-msgid "The timer displayed on the screen."
+msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
-msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
-msgstr ""
-
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr ""
-
-msgid "Check the box to allow other screens to display a link to this screen."
-msgstr ""
-
-msgid "E.g.: Link to my screen"
-msgstr ""
-
-msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgid "The URL of the image to display."
 msgstr ""
 
 #, python-format
@@ -3848,40 +3824,6 @@ msgstr ""
 msgid "Rotator automatically rotate between multiple screens."
 msgstr ""
 
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Rk."
-
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nb."
-
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Name"
-
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapid"
-
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat."
-
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
-msgstr "Fed."
-
-#, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
-msgstr "R %(round)d"
-
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
-msgid "Pts *** POINTS FOR PRINT VIEW"
-msgstr "Pts"
-
 msgid "Go back to the events page."
 msgstr ""
 
@@ -4009,6 +3951,6 @@ msgstr ""
 msgid "vs"
 msgstr ""
 
-#~ msgid "Create a player"
+#~ msgid "The FFE database is not available."
 #~ msgstr ""
 

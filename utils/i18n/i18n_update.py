@@ -145,7 +145,7 @@ class LocaleInfo:
     @staticmethod
     def escape_gh_md(string: str) -> str:
         """Escapes a string for GitHub markdown."""
-        return string.replace('*', '\*')
+        return string.replace('*', '\\*')
 
     @staticmethod
     def message_is_empty(msg: Message):
