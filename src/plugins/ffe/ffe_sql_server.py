@@ -27,7 +27,7 @@ class FFESqlServer(SqlServer):
     ):
         super().__init__(
             self.CREDENTIALS_FILE,
-            timeout=5
+            timeout=10
         )
         if not connected():
             error: str = _('Not connected to internet.')
@@ -154,76 +154,6 @@ class FFESqlServer(SqlServer):
             for f in self.CLUB_FIELDS
         ]
 
-    def search_player_error(
-        self,
-        string: str,
-        limit: int = 0,  # no limit set if no param or null param passed
-    ) -> Iterator[Player]:
-        """Searches the SQL server for the given tokens, raises PapiWebException on error."""
-        tokens: list[str] = string.upper().split(' ')
-        player_str_fields: tuple[tuple[str, str, str], ...] = (
-            ('joueur.Nom', '%', '%'),
-            ('joueur.Prenom', '', '%'),
-            ('joueur.NrFFE', '', '')
-        )
-        club_str_fields: tuple[tuple[str, str, str], ...] = (
-            ('club.Nom', '%', '%'),
-            ('club.Ligue', '%', '%'),
-            ('club.Commune', '%', '%'),
-        )
-        player_int_fields: tuple[str, ...] = (
-            'joueur.FideCode',
-        )
-        club_int_fields: tuple[str, ...] = (
-        )
-        player_and_club_conditions: list[str] = []
-        player_only_conditions: list[str] = []
-        player_and_club_params: list[Any] = []
-        player_only_params: list[Any] = []
-        for token in tokens:
-            player_and_club_expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in player_str_fields + club_str_fields]
-            player_and_club_token_params: list[str] = [f'{field[1]}{token}{field[2]}' for field in player_str_fields + club_str_fields]
-            player_only_expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in player_str_fields]
-            player_only_token_params: list[str] = [f'{field[1]}{token}{field[2]}' for field in player_str_fields]
-            int_value: int
-            with suppress(ValueError):
-                int_value = int(token.strip())
-                player_and_club_expressions += [f'({field} = ?)' for field in player_int_fields + club_int_fields]
-                player_and_club_token_params += [int_value, ] * len(player_int_fields + club_int_fields)
-                player_only_expressions += [f'({field} = ?)' for field in player_int_fields]
-                player_only_token_params += [int_value, ] * len(player_int_fields)
-            player_and_club_conditions += [' OR '.join(player_and_club_expressions), ]
-            player_only_conditions += [' OR '.join(player_only_expressions), ]
-            player_and_club_params += player_and_club_token_params
-            player_only_params += player_only_token_params
-        player_and_club_condition: str = ' AND '.join(
-            map(lambda condition: f'({condition})', player_and_club_conditions)
-        )
-        player_only_condition: str = ' AND '.join(
-            map(lambda condition: f'({condition})', player_only_conditions)
-        )
-        order = ' OR '.join(['(UPPER(joueur.Nom) LIKE ?)', ] * len(tokens))
-        order_params: list[Any] = [f'{token}%' for token in tokens]
-        query: str = (
-            f'(SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} FROM joueur JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {player_and_club_condition} '
-            f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom) '
-            f'UNION '
-            f'(SELECT {", ".join(self.get_player_fields() + self.get_empty_club_fields())} FROM joueur '
-            f'WHERE joueur.ClubRef = 0 AND {player_only_condition} '
-            f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom) '
-        )
-        print(f'{query=}')
-        params: list[Any] = player_and_club_params + order_params + player_only_params + order_params
-        if limit:
-            query += ' OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY'
-            params += [limit, ]
-        self.execute(query, tuple(params), )
-        return (
-            self.get_player_from_row(row)
-            for row in self.fetchall()
-        )
-
     def search_player(
         self,
         string: str,
@@ -231,33 +161,39 @@ class FFESqlServer(SqlServer):
     ) -> Iterator[Player]:
         """Searches the SQL server for the given tokens, raises PapiWebException on error."""
         tokens: list[str] = string.upper().split(' ')
-        str_search_fields: tuple[tuple[str, str, str], ...] = (
+        str_fields: tuple[tuple[str, str, str], ...] = (
             ('joueur.Nom', '%', '%'),
             ('joueur.Prenom', '', '%'),
-            ('joueur.NrFFE', '', '')
+            ('joueur.NrFFE', '', ''),
+            ('club.Nom', '%', '%'),
+            ('club.Ligue', '%', '%'),
+            ('club.Commune', '%', '%'),
         )
-        int_search_fields: tuple[str, ...] = (
+        int_fields: tuple[str, ...] = (
             'joueur.FideCode',
         )
         conditions: list[str] = []
         params: list[Any] = []
         for token in tokens:
-            expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in str_search_fields]
-            params += [f'{field[1]}{token}{field[2]}' for field in str_search_fields]
+            token_expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in str_fields]
+            token_params: list[str] = [f'{field[1]}{token}{field[2]}' for field in str_fields]
             int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
-                expressions += [f'({field} = ?)' for field in int_search_fields]
-                params += [int_value, ] * len(int_search_fields)
-            conditions += [' OR '.join(expressions), ]
+                token_expressions += [f'({field} = ?)' for field in int_fields]
+                token_params += [int_value, ] * len(int_fields)
+            conditions += [' OR '.join(token_expressions), ]
+            params += token_params
         condition: str = ' AND '.join(map(lambda c: f'({c})', conditions))
         order = ' OR '.join(['(UPPER(joueur.Nom) LIKE ?)', ] * len(tokens))
         params += [f'{token}%' for token in tokens]
         query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} FROM joueur JOIN club on joueur.ClubRef = club.Ref '
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
             f'WHERE {condition} '
             f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom'
         )
+        print(f'{query=}')
         if limit:
             query += ' OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY'
             params += [limit, ]
