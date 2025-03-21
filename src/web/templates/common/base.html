@@ -25,6 +25,45 @@
             {# https://github.com/vakata/jstree #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/themes/default/style.min.css') }}" type="text/css" />
             <script src="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/jstree.min.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-2.7.4.min.js') }}"></script>
+            <script>
+                htmx.defineExtension('morphdom-swap', {
+                    isInlineSwap: function(swapStyle) {
+                        return swapStyle === 'morphdom' || swapStyle === 'morphdom-innerHTML' || swapStyle === 'morphdom-outerHTML'
+                    },
+                    handleSwap: function(swapStyle, target, fragment, settleInfo) {
+                        options = {
+                            onNodeAdded: function (node) {
+                                if (node.nodeName === 'SCRIPT' && node.src) {
+                                    var script = document.createElement('script');
+                                    script.src = node.src;
+                                    node.replaceWith(script)
+                                }
+                            },
+                            onBeforeElUpdated: function (fromEl, toEl) {
+                                if (fromEl.nodeName === "SCRIPT" && toEl.nodeName === "SCRIPT") {
+                                    console.log('onBeforeElUpdated')
+                                    var script = document.createElement('script');
+                                    [...toEl.attributes].forEach( attr => { script.setAttribute(attr.nodeName, attr.nodeValue) })
+                                    script.innerHTML = toEl.innerHTML;
+                                    fromEl.replaceWith(script)
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }
+                        if (swapStyle === 'morphdom') {
+                            if (fragment.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+                                morphdom(target, fragment.firstElementChild || fragment.firstChild, options)
+                                return [target]
+                            } else {
+                                morphdom(target, fragment.outerHTML, options)
+                                return [target]
+                            }
+                        }
+                    }
+                })
+            </script>
             <script>
                 function setSize() {
                     {#  We store the size of the viewport, without the scrollbars, in CSS variables #}
@@ -157,7 +196,7 @@
         {% endif %}
     </head>
     <body
-        hx-ext="multi-swap,preload"
+        hx-ext="multi-swap,preload,morphdom-swap"
         hx-swap="transition:true"
     >
         <div id="messages" class="w-50 position-fixed top-0 end-0 m-2" style="z-index: 100">
