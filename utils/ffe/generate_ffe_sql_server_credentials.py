@@ -46,7 +46,7 @@ def main():
         args.password,
         args.database,
     )
-    print_interactive_success('The credentials have been written to {FFESqlServer.CREDENTIALS_FILE}.')
+    print_interactive_success(f'The credentials have been written to {FFESqlServer.CREDENTIALS_FILE}.')
     print_interactive_info('Now testing the remote database...')
     try:
         with FFESqlServer() as ffe_sql_server:
