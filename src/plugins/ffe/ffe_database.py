@@ -275,6 +275,7 @@ class FfeDatabase(SQLiteDatabase):
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
             ('first_name', '', '%'),
+            ('league', '%', '%'),
             ('club', '%', '%'),
             ('city', '%', '%'),
             ('ffe_licence_number', '', '')
