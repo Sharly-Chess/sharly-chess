@@ -20,6 +20,21 @@ PAPI_WEB_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 # True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
+logger: Logger = get_logger()
+
+if DEVEL_ENV:
+    import tomllib
+    from contextlib import suppress
+    with suppress(KeyError):
+        with open('pyproject.toml', 'rb') as f:
+            version = tomllib.load(f)['project']['version']
+        if Version(version) != PAPI_WEB_VERSION:
+            logger.critical(
+                'Installed %s version %s does not match defined version %s. Run `pip install -e .` then run %s again.',
+                APP_NAME, PAPI_WEB_VERSION, version, APP_NAME)
+            raise ValueError(f'{PAPI_WEB_VERSION=}, {version=}')
+
+
 # True when experimental features are enabled (relying on an environment variable), False otherwise.
 EXPERIMENTAL_FEATURES_ENV_VAR: str = 'PAPI_WEB_EXPERIMENTAL'
 EXPERIMENTAL_FEATURES: bool = os.environ.get(
@@ -36,7 +51,6 @@ REQUEST_TIMEOUT: int = 10
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 
 
-logger: Logger = get_logger()
 
 
 """ The temporary directory. """
