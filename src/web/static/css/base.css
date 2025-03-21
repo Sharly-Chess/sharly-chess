@@ -348,6 +348,15 @@ body[data-bs-theme=light] .btn-primary {
     outline: 0.15rem solid rgba(var(--bs-body-bg-rgb), 0.70);
 }
 
+table > tbody > tr.odd > * {
+    --bs-table-color-type: var(--bs-table-striped-color);
+    --bs-table-bg-type: var(--bs-table-striped-bg);
+}
+
+table th.padded-header {
+    padding-top: 60px;
+}
+
 button.collapse-button {
     border: none;
     background-color: transparent;
