@@ -460,22 +460,31 @@ class EventAdminController(BaseEventAdminController):
         """Returns a file with all the vCards of the players."""
         data: str = ''
         for player in players:
-            if player.mail or player.phone:
-                data += 'BEGIN:VCARD\n'
-                data += 'VERSION:3.0\n'
-                if player.first_name:
-                    data += f'N:{capwords(player.last_name)};{player.first_name}\n'
-                    data += f'FN:{player.first_name} {capwords(player.last_name)}\n'
-                else:
-                    data += f'N:{capwords(player.last_name)}\n'
-                    data += f'FN:{capwords(player.last_name)}\n'
-                data += f'ORG:{player.club}\n'
-                data += f'item1.TEL:{player.phone}\n'
-                data += 'item1.X-ABLabel:' + _('Personal') + '\n'
-                data += f'item2.EMAIL;type=INTERNET:{player.mail}\n'
-                data += 'item2.X-ABLabel:' + _('Personal') + '\n'
-                data += 'CATEGORIES:' + _('Chess') + '\n'
-                data += 'END:VCARD\n\n'
+            if not (player.mail or player.phone):
+                continue
+            data += (
+                'BEGIN:VCARD\n'
+                'VERSION:3.0\n'
+            )
+            if player.first_name:
+                data += (
+                    f'N:{capwords(player.last_name)};{player.first_name}\n'
+                    f'FN:{player.first_name} {capwords(player.last_name)}\n'
+                )
+            else:
+                data += (
+                    f'N:{capwords(player.last_name)}\n'
+                    f'FN:{capwords(player.last_name)}\n'
+                )
+            data += (
+                f'ORG:{player.club}\n'
+                f'item1.TEL:{player.phone}\n'
+                f'item1.X-ABLabel:{_('Personal')}\n'
+                f'item2.EMAIL;type=INTERNET:{player.mail}\n'
+                f'item2.X-ABLabel:{_('Personal')}\n'
+                f'CATEGORIES:{_('Chess')}\n'
+                'END:VCARD\n\n'
+            )
         return Response(
             content=data,
             media_type='text/x-vcard',
