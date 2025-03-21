@@ -27,7 +27,7 @@
                         </div>
                         <div class="col text-end">
                             {% for format, tooltip_text in {
-                                'vcf': _('Download the vCards of the selected players (VCF format).'),
+                                'vcf': _('Download the vCards of the selected players (VCF format). Warning: players without phone or email won\'t be included.'),
                                 'csv': _('Download the information of the selected players (CSV format).'),
                                 'ods': _('Download the information of the selected players (ODS format).'),
                                 'xlsx': _('Download the information of the selected players (XLSX format).'),
@@ -50,14 +50,13 @@
                         <input
                             type="checkbox"
                             id="{{ name }}-{{ loop.index }}"
-                            name="{% if player.mail or player.phone %}{{ name }}{% endif %}"
+                            name="{{ name }}"
                             value="{{ player.id }}"
-                            {% if not (player.mail or player.phone) %}disabled{% endif %}
-                            class="{% if player.mail or player.phone %}{{ name }}{% endif %} {{ name }}_{{ column }}"
+                            class="{{ name }} {{ name }}_{{ column }}"
                         />
                         <label
                             for="{{ name }}-{{ loop.index }}"
-                            class="form-label w-100 my-0 p-0 text-start {% if not (player.mail or player.phone) %}text-secondary{% endif %}"
+                            class="form-label w-100 my-0 p-0 text-start"
                         >
                             <img
                                 class="player-federation-flag ms-1 ps-1 pe-1"

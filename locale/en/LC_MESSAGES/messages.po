@@ -2696,7 +2696,7 @@ msgstr ""
 msgid "Download the players."
 msgstr ""
 
-msgid "Download the vCards of the selected players (VCF format)."
+msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
 msgstr ""
 
 msgid "Download the information of the selected players (CSV format)."
@@ -4010,5 +4010,8 @@ msgid "vs"
 msgstr ""
 
 #~ msgid "Create a player"
+#~ msgstr ""
+
+#~ msgid "Download the vCards of the selected players (VCF format)."
 #~ msgstr ""
 
