@@ -167,8 +167,9 @@ class FideDatabase(SQLiteDatabase):
                         if player_count % 1000 == 0:
                             self.executemany(query, to_write)
                             print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
-                            self.commit()
                             to_write.clear()
+                        if player_count % 100_000 == 0:
+                            self.commit()
 
                     elif event == 'end' and elem.tag in fields:
                         (field_name, field_function) = fields[elem.tag]
@@ -203,7 +204,16 @@ class FideDatabase(SQLiteDatabase):
         print_interactive_success(
             _('{number} players written.').format(number=player_count)
         )
+        self.create_indexes()
         return True
+
+    def create_indexes(self) -> None:
+        self.write = True
+        with self:
+            self.execute('CREATE INDEX `player_first_name` ON `player` (`first_name` COLLATE NOCASE)')
+            self.execute('CREATE INDEX `player_last_name` ON `player` (`last_name` COLLATE NOCASE)')
+            self.execute('CREATE INDEX `player_fide_id` ON `player` (`fide_id`)')
+            self.commit()
 
     def read_federation_ids(self) -> Iterator[str]:
         self.execute(
