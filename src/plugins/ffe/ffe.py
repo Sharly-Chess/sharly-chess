@@ -5,9 +5,8 @@ from collections.abc import Callable
 
 from datetime import datetime
 from decimal import Decimal
-from functools import partial
+from functools import partial, cached_property
 from pathlib import Path
-from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, override
 
 from litestar.contrib.htmx.request import HTMXRequest
@@ -30,7 +29,7 @@ from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_tie_break import papi_performance_bonus
 from plugins.ffe.util import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, ExtraColumn
-from plugins.utils import AbstractPlugin, AbstractPluginMigrationManager, PluginEngineArgument
+from plugins.utils import AbstractPlugin, PluginEngineArgument, PluginMigrationManager
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -48,13 +47,38 @@ class FfePlugin(AbstractPlugin):
     def id(self) -> str:
         return PLUGIN_NAME
 
+    @override
     @property
     def name(self) -> str:
         return 'FFE'
 
+    @override
+    @property
+    def description(self) -> str:
+        return _(
+            'French Federation specific features '
+            '(player search, leagues, Papi compatibility)'
+        )
+
+    @override
     @property
     def version(self) -> Version:
         return Version('0.1.1')
+
+    @override
+    @property
+    def default_is_enabled(self) -> bool:
+        return True
+
+    @override
+    @property
+    def is_state_editable(self) -> bool:
+        return False
+
+    @override
+    @cached_property
+    def migration_manager(self) -> PluginMigrationManager:
+        return PluginMigrationManager(self, migrations)
 
     # The FFE league names.
     FFE_LEAGUES: dict[str, str] = {
@@ -89,20 +113,9 @@ class FfePlugin(AbstractPlugin):
         if not FfeDatabase().check():
             print_interactive_error(_('Error while updating the FFE database.'))
 
-    class FfePluginMigrationManager(AbstractPluginMigrationManager):
-        @override
-        @property
-        def plugin(self) -> AbstractPlugin:
-            return FfePlugin()
-
-        @override
-        @property
-        def base_module(self) -> ModuleType:
-            return migrations
-
     @hookimpl
-    def get_event_migration_manager(self) -> AbstractPluginMigrationManager:
-        return self.FfePluginMigrationManager()
+    def get_event_migration_manager(self) -> PluginMigrationManager:
+        return self.migration_manager
 
     @hookimpl
     def get_controllers(self) -> Iterable[type[BaseController]]:
@@ -110,10 +123,6 @@ class FfePlugin(AbstractPlugin):
             FfeSearchController,
             FfeAdminEventController,
         ]
-
-    @hookimpl
-    def get_templates_path(self) -> Path:
-        return PLUGINS_DIR / 'ffe' / 'templates'
 
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:

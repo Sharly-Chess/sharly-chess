@@ -22,7 +22,7 @@ from data.player import Federation
 from data.tie_break import TieBreakManager
 from data.util import Result
 from database.access.access_database import access_driver, odbc_drivers
-from database.sqlite.config.config_store import StoredConfig
+from database.sqlite.config.config_store import StoredConfig, StoredPlugin
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
@@ -701,6 +701,28 @@ class BaseAdminController(BaseController):
         )
 
     @classmethod
+    def _admin_validate_plugins_update_data(
+        cls, data: dict[str, str] | None = None
+    ) -> list[StoredPlugin]:
+        if data is None:
+            data = {}
+        stored_plugins: list[StoredPlugin] = []
+        for plugin in plugin_manager.all_plugins:
+            if not plugin.is_state_editable:
+                continue
+            errors: dict[str, str] = {}
+            stored_plugins.append(
+                StoredPlugin(
+                    name=plugin.id,
+                    is_enabled=WebContext.form_data_to_bool(
+                        data, plugin.form_key, False
+                    ),
+                    errors=errors,
+                )
+            )
+        return stored_plugins
+
+    @classmethod
     def _admin_render(
         cls,
         web_context: AdminWebContext,
@@ -773,10 +795,11 @@ class BaseAdminController(BaseController):
                 ]
 
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
-                
+
         context = web_context.template_context | {
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
+            'plugins': plugin_manager.all_plugins,
             'messages': Message.messages(web_context.request),
             'nav_tabs': nav_tabs,
             'admin_events_show_details': (
@@ -786,7 +809,7 @@ class BaseAdminController(BaseController):
             ),
             'event_card_blocks': event_card_blocks,
         }
-        
+
         match modal:
             case None:
                 pass
@@ -799,8 +822,19 @@ class BaseAdminController(BaseController):
                         'federation': WebContext.value_to_form_data(papi_web_config.stored_config.federation),
                         'locale': WebContext.value_to_form_data(papi_web_config.stored_config.locale),
                     }
-                    stored_config: StoredConfig = cls._admin_validate_config_update_data(data)
+                    for plugin in plugin_manager.all_plugins:
+                        data[plugin.form_key] = (
+                            WebContext.value_to_form_data(plugin.is_enabled)
+                        )
+                    stored_config: StoredConfig = (
+                        cls._admin_validate_config_update_data(data)
+                    )
+                    stored_plugins: list[StoredPlugin] = (
+                        cls._admin_validate_plugins_update_data(data)
+                    )
                     errors = stored_config.errors
+                    for stored_plugin in stored_plugins:
+                        errors |= stored_plugin.errors
                 if errors is None:
                     errors = {}
                 log_level_options: dict[str, str] = {
@@ -870,7 +904,10 @@ class BaseAdminController(BaseController):
                         data['background_image']
                     ),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(papi_web_config.stored_config.federation or PapiWebConfig.default_federation),
+                    'federation_options': cls._get_federation_options(
+                        papi_web_config.stored_config.federation
+                        or PapiWebConfig.default_federation
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,

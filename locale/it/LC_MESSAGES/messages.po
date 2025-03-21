@@ -650,14 +650,10 @@ msgstr "Giri uno eletto a giocare"
 
 # Error: translation [BuchholzCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Buchholz]
-# Error: translation [BuchholzCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Buchholz]
 #, ai_translation
 msgid "Buchholz"
 msgstr ""
 
-# Error: translation [Fore BuchholzCity name (optional, probably does not need
-# a translation)] is much too long compared to initial [Fore Buchholz]
 # Error: translation [Fore BuchholzCity name (optional, probably does not need
 # a translation)] is much too long compared to initial [Fore Buchholz]
 #, ai_translation
@@ -678,8 +674,6 @@ msgstr "Sonnenborn-Berger"
 
 # Error: translation [KoyaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Koya]
-# Error: translation [KoyaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Koya]
 #, ai_translation
 msgid "Koya"
 msgstr ""
@@ -688,8 +682,6 @@ msgstr ""
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
 msgstr "Ko."
 
-# Error: translation [KashdanCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Kashdan]
 # Error: translation [KashdanCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Kashdan]
 #, ai_translation
@@ -810,8 +802,6 @@ msgstr "U10"
 
 # Error: translation [U12City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U12]
-# Error: translation [U12City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U12]
 #, ai_translation
 msgid "U12"
 msgstr ""
@@ -822,8 +812,6 @@ msgstr "U14"
 
 # Error: translation [U16City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U16]
-# Error: translation [U16City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U16]
 #, ai_translation
 msgid "U16"
 msgstr ""
@@ -832,8 +820,6 @@ msgstr ""
 msgid "U18"
 msgstr "U18"
 
-# Error: translation [U20City name (optional, probably does not need a
-# translation)] is much too long compared to initial [U20]
 # Error: translation [U20City name (optional, probably does not need a
 # translation)] is much too long compared to initial [U20]
 #, ai_translation
@@ -1084,6 +1070,9 @@ msgstr "{number} giocatori scritti."
 msgid "Error while creating the database: {ex}."
 msgstr "Errore durante la creazione del database: {ex}."
 
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
 #, ai_translation
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Inserire una password per la connessione ChessEvent."
@@ -1327,6 +1316,9 @@ msgstr "E.g.: Tournoi A"
 #, ai_translation
 msgid "The name of the tournament on the ChessEvent platform."
 msgstr "Il nome del torneo sulla piattaforma ChessEvent."
+
+msgid "French Federation specific features (player search, leagues, Papi compatibility)"
+msgstr ""
 
 #, ai_translation
 msgid "Error while updating the FFE database."
@@ -2079,6 +2071,15 @@ msgstr "Timer [{timer_id}] non trovato."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Non è possibile specificare il numero di parti e il numero di elementi per parte."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 #, ai_translation
 msgid "Papi-web settings has been updated."
@@ -3299,6 +3300,9 @@ msgstr "Lingua:"
 msgid "The default language used."
 msgstr "La lingua predefinita usata."
 
+msgid "Plugins"
+msgstr ""
+
 #, ai_translation
 msgid "Edit the Papi-web settings."
 msgstr "Modifica le impostazioni Papi-web."
@@ -3366,6 +3370,12 @@ msgstr "Driver di accesso (non trovato)"
 #, ai_translation
 msgid "Other ODBC drivers found on the server"
 msgstr "Altri driver ODBC trovati sul server"
+
+msgid "On"
+msgstr ""
+
+msgid "Off"
+msgstr ""
 
 #, ai_translation, python-format
 msgid "Unique ID: %(uniq_id)s"
@@ -5109,8 +5119,6 @@ msgstr "Numero massimo di risultati: illimitato"
 msgid "Image:"
 msgstr "Immagine:"
 
-# Error: translation [Rnd.BoaCity name (optional, probably does not need a
-# translation)] is much too long compared to initial [Rnd.Boa]
 # Error: translation [Rnd.BoaCity name (optional, probably does not need a
 # translation)] is much too long compared to initial [Rnd.Boa]
 #, ai_translation

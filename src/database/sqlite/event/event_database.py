@@ -44,7 +44,7 @@ from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
-    from plugins.utils import AbstractPluginMigrationManager
+    from plugins.utils import PluginMigrationManager
 
 logger: Logger = get_logger()
 
@@ -206,14 +206,12 @@ class EventDatabase(SQLiteVersionedDatabase):
         if populate:
             self._populate()
 
-        migration_managers: list['AbstractPluginMigrationManager'] = (
+        migration_managers: list['PluginMigrationManager'] = (
             plugin_manager.hook.get_event_migration_manager()
         )
         with EventDatabase(self.uniq_id, True) as database:
             for migration_manager in migration_managers:
-                migration_manager.migrate(
-                    database, migration_manager.plugin.version
-                )
+                migration_manager.migrate(database)
 
     def _populate(self):
         try:
@@ -934,12 +932,12 @@ class EventDatabase(SQLiteVersionedDatabase):
         if not self.auto_upgrade:
             return self
 
-        migration_managers: list['AbstractPluginMigrationManager'] = (
+        migration_managers: list['PluginMigrationManager'] = (
             plugin_manager.hook.get_event_migration_manager()
         )
         for migration_manager in migration_managers:
             current_version = migration_manager.get_version(self)
-            latest_version = migration_manager.plugin.version
+            latest_version = migration_manager.latest_version
             if current_version < latest_version:
                 if not self.write:
                     with EventDatabase(self.uniq_id, True):

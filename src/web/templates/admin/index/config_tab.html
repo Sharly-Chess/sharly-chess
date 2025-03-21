@@ -119,64 +119,82 @@
             <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Papi-web') }}</th>
             <td>{{ papi_web_config['version'] }}</td>
         </tr>
+        {% if DEVEL_ENV %}
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Uvicorn') }}</th>
+                <td>{{ papi_web_config.uvicorn_version }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='LiteStar') }}</th>
+                <td>{{ papi_web_config.litestar_version }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Jinja2') }}</th>
+                <td>{{ papi_web_config.jinja2_version }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='HTMX') }}</th>
+                <td id="htmx-version"></td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jQuery') }}</th>
+                <td id="jquery-version"></td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Bootstrap') }}</th>
+                <td id="bootstrap-version"></td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='SortableJS') }}</th>
+                <td>{{ papi_web_config.sortable_version }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jsTree') }}</th>
+                <td>{{ papi_web_config.jstree_version }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='PyODBC') }}</th>
+                <td>{{ papi_web_config.pyodbc_version }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{
+                    _('Access driver (found)')
+                    if access_driver in odbc_drivers else
+                    _('Access driver (not found)') }}
+                </th>
+                <td>{{ access_driver }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">
+                    {{ _('Other ODBC drivers found on the server') }}
+                </th>
+                <td>
+                    {% for odbc_driver in odbc_drivers %}
+                        {% if odbc_driver != access_driver %}
+                            <div class="{% if odbc_driver == access_driver %}access-driver{% endif %}">
+                                {{ odbc_driver }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endif %}
         <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Uvicorn') }}</th>
-            <td>{{ papi_web_config.uvicorn_version }}</td>
+            <th scope="row" class="text-nowrap">{{ _('Plugins') }}</th>
+            <td scope="row"></td>
         </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='LiteStar') }}</th>
-            <td>{{ papi_web_config.litestar_version }}</td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Jinja2') }}</th>
-            <td>{{ papi_web_config.jinja2_version }}</td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='HTMX') }}</th>
-            <td id="htmx-version"></td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jQuery') }}</th>
-            <td id="jquery-version"></td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Bootstrap') }}</th>
-            <td id="bootstrap-version"></td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='SortableJS') }}</th>
-            <td>{{ papi_web_config.sortable_version }}</td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jsTree') }}</th>
-            <td>{{ papi_web_config.jstree_version }}</td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='PyODBC') }}</th>
-            <td>{{ papi_web_config.pyodbc_version }}</td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">{{
-                _('Access driver (found)')
-                if access_driver in odbc_drivers else
-                _('Access driver (not found)') }}
-            </th>
-            <td>{{ access_driver }}</td>
-        </tr>
-        <tr>
-            <th scope="row" class="text-nowrap">
-                {{ _('Other ODBC drivers found on the server') }}
-            </th>
-            <td>
-                {% for odbc_driver in odbc_drivers %}
-                    {% if odbc_driver != access_driver %}
-                        <div class="{% if odbc_driver == access_driver %}access-driver{% endif %}">
-                            {{ odbc_driver }}
-                        </div>
+        {% for plugin in plugins %}
+            <tr>
+                <th scope="row" class="text-nowrap">{{ plugin.name }}</th>
+                <td>
+                    {% if plugin.is_enabled %}
+                        {{ _('On') }}
+                    {% else %}
+                        {{ _('Off') }}
                     {% endif %}
-                {% endfor %}
-            </td>
-        </tr>
+                </td>
+            </tr>
+        {% endfor %}
     </tbody>
 </table>
 <script>

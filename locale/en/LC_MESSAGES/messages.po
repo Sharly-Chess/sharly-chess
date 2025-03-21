@@ -798,6 +798,9 @@ msgstr ""
 msgid "Error while creating the database: {ex}."
 msgstr ""
 
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
 msgid "Please enter a password for the ChessEvent connection."
 msgstr ""
 
@@ -982,6 +985,9 @@ msgid "E.g.: Tournoi A"
 msgstr ""
 
 msgid "The name of the tournament on the ChessEvent platform."
+msgstr ""
+
+msgid "French Federation specific features (player search, leagues, Papi compatibility)"
 msgstr ""
 
 msgid "Error while updating the FFE database."
@@ -1555,6 +1561,15 @@ msgid "Timer [{timer_id}] not found."
 msgstr ""
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Papi-web settings has been updated."
@@ -2500,6 +2515,9 @@ msgstr ""
 msgid "The default language used."
 msgstr ""
 
+msgid "Plugins"
+msgstr ""
+
 msgid "Edit the Papi-web settings."
 msgstr ""
 
@@ -2550,6 +2568,12 @@ msgid "Access driver (not found)"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
+msgstr ""
+
+msgid "On"
+msgstr ""
+
+msgid "Off"
 msgstr ""
 
 #, python-format

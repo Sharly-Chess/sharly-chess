@@ -133,13 +133,6 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
-plugin_template_paths: list[Path] = plugin_manager.hook.get_templates_path()
-
-template_dirs: list[Path] = [
-    BASE_DIR / 'src/web/templates',
-    *[path for path in plugin_template_paths],
-]
-
 class PapiWebEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
@@ -166,6 +159,11 @@ class PapiWebEnvironment(Environment):
     def join_path(self, template: str, parent: str) -> str:
         return str(Path(parent).parent / template)
 
+
+template_dirs: list[Path] = [
+    BASE_DIR / 'src/web/templates',
+    *[path for path in plugin_manager.template_paths],
+]
 
 template_engine: JinjaTemplateEngine = JinjaTemplateEngine(
     engine_instance=PapiWebEnvironment(template_dirs),

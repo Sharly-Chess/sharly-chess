@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from sqlite3 import OperationalError
-from typing import Literal
+from typing import Literal, override
 
-from database.sqlite.migration import AbstractMigration
+from plugins.utils import AbstractPluginMigration
 
 
 @dataclass
@@ -17,7 +17,8 @@ class Column:
         return f'deprecated_{self.name}'
 
 
-class Migration(AbstractMigration):
+class Migration(AbstractPluginMigration):
+    @override
     def forward(self):
         # TODO replace by column creation once deprecated columns have been globally deleted
         self.database.execute(
@@ -49,6 +50,7 @@ class Migration(AbstractMigration):
                     f'`{column.name}` {column.type_declaration}'
                 )
 
+    @override
     def backward(self):
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `ffe_id`'

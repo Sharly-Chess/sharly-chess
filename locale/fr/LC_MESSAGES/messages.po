@@ -798,6 +798,9 @@ msgstr "{number} joueur·euses enregistré·es."
 msgid "Error while creating the database: {ex}."
 msgstr "Erreur à la création de la base de données : {ex}."
 
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France"
+
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Veuillez entrer un mot de passe pour la connexion à ChessEvent."
 
@@ -983,6 +986,9 @@ msgstr "Exemple : Tournoi A"
 
 msgid "The name of the tournament on the ChessEvent platform."
 msgstr "Le nom du tournoi sur la plateforme ChessEvent."
+
+msgid "French Federation specific features (player search, leagues, Papi compatibility)"
+msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueurs, ligues, compatibilité avec Papi)"
 
 msgid "Error while updating the FFE database."
 msgstr "Erreur pendant la mise à jour de la base de données FFE."
@@ -2509,6 +2515,9 @@ msgstr "Langage :"
 msgid "The default language used."
 msgstr "Le langage par défaut utilisé."
 
+msgid "Plugins"
+msgstr "Plug-ins"
+
 msgid "Edit the Papi-web settings."
 msgstr "Éditer la configuration de Papi-web."
 
@@ -2560,6 +2569,12 @@ msgstr "Pilote Access (absent)"
 
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
+
+msgid "On"
+msgstr "Activé"
+
+msgid "Off"
+msgstr "Désactivé"
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"

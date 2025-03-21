@@ -12,7 +12,7 @@ from data.player import Player
 from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
 from plugins.utils import (
-    AbstractPluginMigrationManager,
+    PluginMigrationManager,
     ExtraAdminColumn,
     ExtraColumn,
     PluginEngineArgument,
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredEvent
     from database.sqlite.event.event_store import StoredTournament
-    from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
+    from plugins.utils import PluginMigrationManager, PluginEngineArgument
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 
@@ -44,16 +44,12 @@ class AppHookSpecs:
         """Provide any initialisation""" 
 
     @hookspec
-    def get_event_migration_manager(self) -> AbstractPluginMigrationManager:
+    def get_event_migration_manager(self) -> PluginMigrationManager:
         """Provide a migration manager for event databases"""
         
     @hookspec
     def get_controllers(self) -> Iterable[type['BaseController']]:
         """Provide controllers for the application"""
-
-    @hookspec
-    def get_templates_path(self) -> Path:
-        """Provide base path to any provided templates"""
 
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:

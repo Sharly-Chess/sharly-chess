@@ -8,7 +8,7 @@ from packaging.version import Version
 from common import PAPI_WEB_VERSION
 from common.logger import get_logger
 from database.sqlite.config import migrations
-from database.sqlite.config.config_store import StoredConfig
+from database.sqlite.config.config_store import StoredConfig, StoredPlugin
 from database.sqlite.migration import AbstractMigrationManager
 from database.sqlite.versioned_database import SQLiteVersionedDatabase
 
@@ -106,3 +106,47 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         field_sets = (f'`{f}` = ?' for f in fields)
         self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
         return self._get_stored_config()
+
+    # ---------------------------------------------------------------------------------
+    # StoredPlugin
+    # ---------------------------------------------------------------------------------
+
+    def _row_to_stored_plugin(self, row: dict[str, Any]) -> StoredPlugin:
+        return StoredPlugin(
+            name=row['name'],
+            is_enabled=self.load_bool_from_database_field(row['is_enabled']),
+        )
+
+    def load_stored_plugin(self, plugin_name: str) -> StoredPlugin | None:
+        self.execute(
+            'SELECT * FROM `plugin` WHERE `name` = ?',
+            (plugin_name,),
+        )
+        if row := self.fetchone():
+            return self._row_to_stored_plugin(row)
+
+    def update_stored_plugin(
+        self, stored_plugin: StoredPlugin
+    ) -> StoredPlugin | None:
+        self.execute(
+            f'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
+            (stored_plugin.is_enabled, stored_plugin.name,),
+        )
+        return self.load_stored_plugin(stored_plugin.name)
+
+    def insert_stored_plugin(self, stored_plugin: StoredPlugin) -> StoredPlugin:
+        fields: list[str] = [
+            'name',
+            'is_enabled',
+        ]
+        params = (
+            stored_plugin.name,
+            stored_plugin.is_enabled,
+        )
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        self.execute(
+            f'INSERT INTO `plugin` ({fields_str}) '
+            f'VALUES ({', '.join('?' for _ in params)})',
+            params,
+        )
+        return self.load_stored_plugin(stored_plugin.name)

@@ -1030,6 +1030,9 @@ msgstr "{number} jugadores escritos."
 msgid "Error while creating the database: {ex}."
 msgstr "Error al crear la base de datos: {ex}."
 
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
 #, ai_translation
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Introduzca una contraseña para la conexión ChessEvent."
@@ -1273,6 +1276,9 @@ msgstr "Por ejemplo: Tournoi A"
 #, ai_translation
 msgid "The name of the tournament on the ChessEvent platform."
 msgstr "El nombre del torneo en la plataforma ChessEvent."
+
+msgid "French Federation specific features (player search, leagues, Papi compatibility)"
+msgstr ""
 
 #, ai_translation
 msgid "Error while updating the FFE database."
@@ -2025,6 +2031,15 @@ msgstr "Temporizador [{timer_id}] no encontrado."
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "No es posible especificar el número de piezas y el número de elementos por pieza."
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
 
 #, ai_translation
 msgid "Papi-web settings has been updated."
@@ -3245,6 +3260,9 @@ msgstr "Idioma:"
 msgid "The default language used."
 msgstr "El idioma predeterminado utilizado."
 
+msgid "Plugins"
+msgstr ""
+
 #, ai_translation
 msgid "Edit the Papi-web settings."
 msgstr "Editar la configuración de Papi-web."
@@ -3312,6 +3330,12 @@ msgstr "Controlador de acceso (no encontrado)"
 #, ai_translation
 msgid "Other ODBC drivers found on the server"
 msgstr "Otros controladores ODBC encontrados en el servidor"
+
+msgid "On"
+msgstr ""
+
+msgid "Off"
+msgstr ""
 
 #, ai_translation, python-format
 msgid "Unique ID: %(uniq_id)s"
