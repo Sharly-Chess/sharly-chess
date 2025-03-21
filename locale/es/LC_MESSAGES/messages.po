@@ -1729,6 +1729,10 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr "USO EN SUS PROPIOS RIESGOS"
 
 #, ai_translation
+msgid "By default - {option}"
+msgstr "Por defecto - {option}"
+
+#, ai_translation
 msgid "No recording"
 msgstr "Sin grabación"
 
@@ -1737,10 +1741,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] "{num} movimiento ilegal max"
 msgstr[1] "{num} movimientos ilegales max"
-
-#, ai_translation
-msgid "By default - {option}"
-msgstr "Por defecto - {option}"
 
 #, ai_translation
 msgid "Points for gain (full-point bye)"
@@ -3757,6 +3757,9 @@ msgstr "Comentario:"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Cualquier comentario sobre el jugador (los comentarios son visibles sólo por los árbitros)."
 
+msgid "Add"
+msgstr ""
+
 #, ai_translation
 msgid "Tournament record"
 msgstr "Registro del torneo"
@@ -3861,9 +3864,8 @@ msgstr "No hay archivo Papi para los torneos del evento, los jugadores no se pue
 msgid "Add a tournament before adding players."
 msgstr "Añade un torneo antes de añadir jugadores."
 
-#, ai_translation
-msgid "Create a player"
-msgstr "Crear un reproductor"
+msgid "Add player"
+msgstr ""
 
 #, ai_translation
 msgid "Clear all the filters."
@@ -5343,4 +5345,7 @@ msgstr "vs."
 
 #~ msgid "Sonneborn-Berger"
 #~ msgstr "Sonneborn-Berger"
+
+#~ msgid "Create a player"
+#~ msgstr "Crear un reproductor"
 

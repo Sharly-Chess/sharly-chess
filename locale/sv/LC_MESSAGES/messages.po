@@ -1782,6 +1782,10 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr "ANVÄNDNING VID DINA EGNA RISKER"
 
 #, ai_translation
+msgid "By default - {option}"
+msgstr "Som standard - {option}"
+
+#, ai_translation
 msgid "No recording"
 msgstr "Ingen inspelning"
 
@@ -1790,10 +1794,6 @@ msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] "{num} olagligt drag max"
 msgstr[1] "{num} olagliga förflyttningar max"
-
-#, ai_translation
-msgid "By default - {option}"
-msgstr "Som standard - {option}"
 
 #, ai_translation
 msgid "Points for gain (full-point bye)"
@@ -3823,6 +3823,9 @@ msgstr "Anmärkning:"
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Eventuella kommentarer på spelaren (kommentarer syns endast av skiljedomarna)."
 
+msgid "Add"
+msgstr ""
+
 #, ai_translation
 msgid "Tournament record"
 msgstr "Turneringsrekord"
@@ -3927,9 +3930,8 @@ msgstr "Ingen papi fil för turneringarna i händelsen, spelare kan inte läggas
 msgid "Add a tournament before adding players."
 msgstr "Lägg till en turnering innan du lägger till spelare."
 
-#, ai_translation
-msgid "Create a player"
-msgstr "Skapa en spelare"
+msgid "Add player"
+msgstr ""
 
 #, ai_translation
 msgid "Clear all the filters."
@@ -5413,4 +5415,7 @@ msgstr "vs"
 
 #~ msgid "Sonneborn-Berger"
 #~ msgstr "Sonneborn-Berger Ordförande"
+
+#~ msgid "Create a player"
+#~ msgstr "Skapa en spelare"
 
