@@ -28,6 +28,7 @@ from common.logger import (
     print_interactive_warning,
     print_interactive_success,
 )
+from common.network import connected
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
@@ -46,8 +47,12 @@ class Engine:
         print_interactive_info(
             f'Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}'
         )
-        print_interactive_info(_('Checking Papi-web version...'))
-        new_stable_version: Version | None = self._check_version()
+        new_stable_version: Version | None = None
+        if connected():
+            print_interactive_info(_('Checking Papi-web version...'))
+            new_stable_version: Version | None = self._check_version()
+        else:
+            print_interactive_warning(_('Not connected, can not check Papi-web version.'))
         # Engines inheriting from this class should not do anything if property updated is true.
         self.updated: bool = False
         if new_stable_version:
