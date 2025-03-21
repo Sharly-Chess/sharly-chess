@@ -1,7 +1,8 @@
-from collections.abc import Iterable, Callable
-from dataclasses import dataclass
+from collections.abc import Callable
+from decimal import Decimal
+from collections.abc import Iterable
 from pathlib import Path
-from typing import NamedTuple, Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from litestar.contrib.htmx.request import HTMXRequest
 import pluggy  # type: ignore
@@ -10,7 +11,13 @@ from common import APP_NAME
 from data.player import Player
 from data.tournament_export import AbstractTournamentExporter
 from data.util import PrintDocument, ScreenType
-from plugins.utils import AbstractPluginMigrationManager, PluginEngineArgument
+from plugins.utils import (
+    AbstractPluginMigrationManager,
+    ExtraAdminColumn,
+    ExtraColumn,
+    PluginEngineArgument,
+    PrintSplitOption,
+)
 
 if TYPE_CHECKING:
     from data.tie_break import AbstractTieBreak
@@ -23,30 +30,6 @@ if TYPE_CHECKING:
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
-
-@dataclass
-class PrintSplitOption:
-    name: str
-    url_name: str
-    split_fn: Callable[
-        [list[Player]], dict[str, list[Player]]
-    ]
-
-
-@dataclass
-class ExtraColumn:
-    at: str
-    title: str
-    value: Callable[
-        [Any], str
-    ]
-    classes: str = ""
-
-
-class ExtraAdminColumn(NamedTuple):
-    at: str
-    header_template: str
-    cell_template: str
 
 
 class AppHookSpecs:
@@ -253,6 +236,10 @@ class AppHookSpecs:
     def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 
+    @hookspec
+    def get_extra_print_view_css(self, document: PrintDocument) -> str:
+        """Provide extra CSS for the print view"""
+
     # ---------------------------------------------------------------------------------
     # User screens
     # ---------------------------------------------------------------------------------  
@@ -268,3 +255,15 @@ class AppHookSpecs:
     @hookspec
     def get_extra_tie_break_classes(self) -> list[type['AbstractTieBreak']]:
         """Provide extra tournament tie breaks"""
+
+    # ---------------------------------------------------------------------------------
+    # Shared utils
+    # ---------------------------------------------------------------------------------
+
+    @hookspec(firstresult=True)
+    def get_performance_bonus_function(self) -> Callable[[float], int | float]:
+        """Provide a function to compute the performance bonus"""
+
+    @hookspec(firstresult=True)
+    def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
+        """Provide a function to round a ranking to an integer"""

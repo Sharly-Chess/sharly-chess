@@ -88,7 +88,27 @@ class AdminWebContext(WebContext):
 
 
 class BaseAdminController(BaseController):
-    """An base class inherited by all the admin controllers."""
+    """A base class inherited by all the admin controllers."""
+
+    @staticmethod
+    def _get_federation_options(default_federation: str | None):
+        federation_options: dict[str, str] = {}
+        if default_federation:
+            federation_options = {
+                default_federation: _('By default - {option}').format(
+                    option=f'{default_federation} - {PapiWebConfig.federations[default_federation]}'
+                ),
+            } | {
+                federation_id: f'{federation_id} - {federation_name}'
+                for federation_id, federation_name in PapiWebConfig.federations.items()
+                if federation_id != default_federation
+            }
+        else:
+            federation_options = {
+                federation_id: f'{federation_id} - {federation_name}'
+                for federation_id, federation_name in PapiWebConfig.federations.items()
+            }
+        return federation_options
 
     @staticmethod
     def _get_record_illegal_moves_options(
@@ -187,6 +207,14 @@ class BaseAdminController(BaseController):
                 'on' if PapiWebConfig.default_players_show_unpaired else 'off'
             ]
         )
+        return options
+
+    @staticmethod
+    def _get_ranking_crosstable_options() -> dict[str, str]:
+        options: dict[str, str] = {
+            'on': _('Crosstable'),
+            'off': _('Ranking only'),
+        }
         return options
 
     @staticmethod
@@ -745,7 +773,7 @@ class BaseAdminController(BaseController):
                 ]
 
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
-
+                
         context = web_context.template_context | {
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
@@ -758,6 +786,7 @@ class BaseAdminController(BaseController):
             ),
             'event_card_blocks': event_card_blocks,
         }
+        
         match modal:
             case None:
                 pass
@@ -791,15 +820,6 @@ class BaseAdminController(BaseController):
                 launch_browser_options[''] = _('By default - {option}').format(
                     option=launch_browser_options['on' if PapiWebConfig.default_launch_browser else 'off']
                 )
-                federation_options: dict[str, str] = {
-                    PapiWebConfig.default_federation: _('By default - {option}').format(
-                        option=f'{papi_web_config.default_federation} - {papi_web_config.federations[papi_web_config.default_federation]}'
-                    ),
-                } | {
-                    federation_id: f'{federation_id} - {federation_name}'
-                    for federation_id, federation_name in papi_web_config.federations.items()
-                    if federation_id != papi_web_config.default_federation
-                }
                 locale_options: dict[str, str] = {
                     '': '-',
                 } | {
@@ -819,8 +839,8 @@ class BaseAdminController(BaseController):
                     'log_level_options': log_level_options,
                     'launch_browser_options': launch_browser_options,
                     'locale_options': locale_options,
-                    'federation_options': federation_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
+                    'federation_options': cls._get_federation_options(PapiWebConfig.default_federation),
                     'modal': modal,
                     'data': data,
                     'errors': errors,
@@ -840,7 +860,6 @@ class BaseAdminController(BaseController):
 
                 plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
                 context |= {
-                    'federations': PapiWebConfig.federations,
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         PapiWebConfig.default_record_illegal_moves_number
                     ),
@@ -851,6 +870,7 @@ class BaseAdminController(BaseController):
                         data['background_image']
                     ),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
+                    'federation_options': cls._get_federation_options(papi_web_config.stored_config.federation or PapiWebConfig.default_federation),
                     'modal': modal,
                     'action': action,
                     'data': data,

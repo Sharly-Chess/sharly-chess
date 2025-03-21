@@ -498,18 +498,32 @@ msgstr "Av spelare"
 msgid "%t (by player)"
 msgstr "%t (per spelare)"
 
-msgid "Ranking"
-msgstr ""
+#, ai_translation, python-format
+msgid "Crosstable %f-%l"
+msgstr "Gränsöverskridande %f-%l"
 
-msgid "%t (ranking)"
-msgstr ""
+#, ai_translation, python-format
+msgid "Ranking %f-%l"
+msgstr "Placering %f-%l"
+
+#, ai_translation
+msgid "Crosstable"
+msgstr "Korstabell"
+
+#, ai_translation
+msgid "Ranking"
+msgstr "Placering"
+
+#, ai_translation
+msgid "%t ranking"
+msgstr "%t rankning"
 
 #, ai_translation
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr "Ingen skärm av typen [{screen_type}] för menyn på skärmen [{screen_uniq_id}]."
 
 #, ai_translation
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr "Mönster [{pattern}] kan användas av skärmfamiljer."
 
 #, ai_translation
@@ -536,9 +550,37 @@ msgstr "Siffrorna {first} och {last} är inte förenliga ({first} > {last})."
 msgid "%f to %l"
 msgstr "%f till %l"
 
+#, ai_translation, python-format
+msgid "Crosstable %f to %l"
+msgstr "Crosstable %f till %l"
+
+#, ai_translation, python-format
+msgid "Ranking %f to %l"
+msgstr "Placering %f till %l"
+
+#, ai_translation
+msgid "%t crosstable"
+msgstr "%t Genomgångstabell"
+
 #, ai_translation
 msgid "boards {board_numbers}"
 msgstr "styrelser {board_numbers}"
+
+#, ai_translation
+msgid "the whole ranking"
+msgstr "hela rangordningen"
+
+#, ai_translation
+msgid "ranking from #{first} to end"
+msgstr "rankning från #{first} till slutet"
+
+#, ai_translation
+msgid "ranking from #{first} to #{last}"
+msgstr "rankning från #{first} till #{last}"
+
+#, ai_translation
+msgid "ranking from start to #{last}"
+msgstr "ranking från start till #{last}"
 
 #, ai_translation
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
@@ -552,8 +594,9 @@ msgstr "Styckningsdelar"
 msgid "Cut top"
 msgstr "Klipp överst"
 
+#, ai_translation
 msgid "Cut bottom"
-msgstr ""
+msgstr "Klipp ner"
 
 #, ai_translation
 msgid "Played modifier"
@@ -575,8 +618,9 @@ msgstr "Uteslut spelare"
 msgid "Number of wins"
 msgstr "Antal vinster"
 
+#, fuzzy
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
-msgstr ""
+msgstr "NW"
 
 #, ai_translation
 msgid "Number of games won"
@@ -594,8 +638,9 @@ msgstr "Spel vann med svart"
 msgid "Progressive scores"
 msgstr "Progressiva poäng"
 
+#, fuzzy
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
-msgstr ""
+msgstr "PS"
 
 #, ai_translation
 msgid "Rounds one Elected to Play"
@@ -625,8 +670,9 @@ msgstr "Sonnenborn-Berger"
 msgid "Koya"
 msgstr "Koya Ordförande"
 
+#, fuzzy
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
-msgstr ""
+msgstr "Ko."
 
 #, ai_translation
 msgid "Kashdan"
@@ -737,10 +783,14 @@ msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
+# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #, ai_translation
 msgid "U8"
 msgstr ""
 
+# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
+# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
+# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -771,6 +821,12 @@ msgstr "U20 Ordförande"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
+# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
+# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #, ai_translation
 msgid "20+"
 msgstr ""
@@ -779,6 +835,9 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
+# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
+# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
+# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -922,11 +981,13 @@ msgstr "WGM"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
+#, fuzzy
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
-msgstr ""
+msgstr "W"
 
+#, fuzzy
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
-msgstr ""
+msgstr "B"
 
 #, ai_translation
 msgid "White"
@@ -955,6 +1016,9 @@ msgstr "Ingen uppdelning"
 # Error: translation [Denna förordning träder i kraft den tjugonde dagen efter
 # det att den har offentliggjorts i Europeiska unionens officiella tidning.]
 # is much too long compared to initial [Category]
+# Error: translation [Denna förordning träder i kraft den tjugonde dagen efter
+# det att den har offentliggjorts i Europeiska unionens officiella tidning.]
+# is much too long compared to initial [Category]
 #, ai_translation
 msgid "Category"
 msgstr ""
@@ -971,14 +1035,13 @@ msgstr "Förbund"
 msgid "List of players"
 msgstr "Förteckning över spelare"
 
+#, ai_translation
 msgid "Ranking after round #{round}"
-msgstr ""
+msgstr "Rankning efter omgång #{round}"
 
+#, ai_translation
 msgid "Crosstable after round #{round}"
-msgstr ""
-
-msgid "Crosstable"
-msgstr ""
+msgstr "Korsbord efter omgång #{round}"
 
 #, ai_translation
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -1236,8 +1299,9 @@ msgstr "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessev
 msgid "No ChessEvent tournament defined"
 msgstr "Ingen ChessEvent-turnering definierad"
 
+#, ai_translation
 msgid "Connections ChessEvent"
-msgstr ""
+msgstr "Anslutningar ChessEvent"
 
 #, ai_translation
 msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
@@ -1323,35 +1387,41 @@ msgstr "Laddar ner FFE- databasen..."
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Fel vid läsning av följande rad (spelare ignorerad): [{row}]."
 
+#, fuzzy
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
-msgstr ""
+msgstr "Bu."
 
 #, ai_translation
 msgid "Buchholz cut bottom"
 msgstr "Buchholz skär botten"
 
+#, fuzzy
 msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
-msgstr ""
+msgstr "Tr."
 
 #, ai_translation
 msgid "Median Buchholz"
 msgstr "Median Buchholz Ordförande"
 
+#, fuzzy
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
-msgstr ""
+msgstr "Me."
 
 #, ai_translation
 msgid "Performance"
 msgstr "Prestanda"
 
+#, fuzzy
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
-msgstr ""
+msgstr "Perf"
 
+#, fuzzy
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
-msgstr ""
+msgstr "SBh"
 
+#, fuzzy
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
-msgstr ""
+msgstr "Ka."
 
 #, ai_translation
 msgid "No FFE Licence"
@@ -1579,27 +1649,29 @@ msgstr "Förbundet:"
 msgid "The player's league."
 msgstr "Spelarens liga."
 
+#, fuzzy
 msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
-msgstr ""
+msgstr "League."
 
 #, ai_translation
 msgid "Filter the leagues."
 msgstr "Filtrera ligorna."
 
-#, python-format
+#, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr ""
+msgstr "FFE-licens: %(ffe_licence_number)s (utfärdad)."
 
-#, python-format
+#, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr ""
+msgstr "FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet)."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr ""
+msgstr "Okänd typ av FFE-licens [%(ffe_licence)s]."
 
+#, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr ""
+msgstr "FFE"
 
 #, ai_translation
 msgid "Filter the licences."
@@ -1637,8 +1709,9 @@ msgstr "FFE:s kvalifikationer: %(ffe_id)s"
 msgid "No FFE qualification"
 msgstr "Ingen FFE-behörighet"
 
+#, ai_translation
 msgid "Connection French Chess Federation"
-msgstr ""
+msgstr "Anslutning Franska Schackförbundet"
 
 #, ai_translation
 msgid "FFE certification number (optional):"
@@ -1684,11 +1757,13 @@ msgstr "Fel vid uppdatering av FIDE- databasen."
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
 msgstr "Automatiskt installera BBP parningar för utvecklare med PAPI_WEB_EXPERIMENTAL=1."
 
+#, ai_translation
 msgid "Port [{port}] already in use."
-msgstr ""
+msgstr "Hamn [{port}] redan i bruk."
 
+#, ai_translation
 msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
-msgstr ""
+msgstr "Alla kandidatportar [{ports}] är redan i bruk, kan inte starta Papi-webbserver."
 
 #, ai_translation
 msgid "Port: {port}"
@@ -1781,6 +1856,10 @@ msgid "Display all the players, paired and unpaired"
 msgstr "Visa alla spelare, parade och oparade"
 
 #, ai_translation
+msgid "Ranking only"
+msgstr "Endast rangordning"
+
+#, ai_translation
 msgid "Invalid value [{value}]."
 msgstr "Ogiltigt värde [{value}]."
 
@@ -1852,14 +1931,17 @@ msgstr "Nytt evenemang"
 msgid "event"
 msgstr "händelse"
 
+#, ai_translation
 msgid "Invalid log level [{log_level}]."
-msgstr ""
+msgstr "Ogiltig loggnivå [{log_level}]."
 
+#, ai_translation
 msgid "Invalid federation [{federation}]."
-msgstr ""
+msgstr "Ogiltigt förbund [{federation}]."
 
+#, ai_translation
 msgid "Invalid locale [{locale}]."
-msgstr ""
+msgstr "Ogiltig lokal [{locale}]."
 
 #, ai_translation
 msgid "Current events ({num})"
@@ -1897,11 +1979,13 @@ msgstr "Inga arkiverade händelser."
 msgid "Papi-web settings"
 msgstr "Inställning av papi-webben"
 
+#, ai_translation
 msgid "Automatically launch a browser when starting the server"
-msgstr ""
+msgstr "Starta automatiskt en webbläsare när servern startas"
 
+#, ai_translation
 msgid "Do nothing"
-msgstr ""
+msgstr "Gör ingenting"
 
 #, ai_translation
 msgid "Tournaments ({num})"
@@ -1959,11 +2043,13 @@ msgstr "Välj dokumentet."
 msgid "A positive integer is expected."
 msgstr "Ett positivt heltal förväntas."
 
+#, ai_translation
 msgid "Not part of the selected tournament ({rounds} rounds)."
-msgstr ""
+msgstr "Inte en del av den valda turneringen ({rounds} rundor)."
 
+#, ai_translation
 msgid "Round not finished (last finished: {round})."
-msgstr ""
+msgstr "Runda ej färdig (senast färdig: {round})."
 
 #, ai_translation
 msgid "Personal"
@@ -1993,17 +2079,9 @@ msgstr "Timer [{timer_id}] hittades inte."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Det är inte möjligt att ange antalet delar och antalet objekt per del."
 
-msgid "Family [{family_uniq_id}] has been created."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been deleted."
-msgstr ""
-
+#, ai_translation
 msgid "Papi-web settings has been updated."
-msgstr ""
+msgstr "Papi-webbinställningarna har uppdaterats."
 
 #, ai_translation
 msgid "Please enter the last name."
@@ -2013,8 +2091,9 @@ msgstr "Ange efternamnet."
 msgid "Please enter the date of birth."
 msgstr "Ange födelsedatum."
 
+#, ai_translation
 msgid "Only estimated ratings are optional."
-msgstr ""
+msgstr "Endast uppskattade betyg är valfria."
 
 #, ai_translation
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
@@ -2232,14 +2311,17 @@ msgstr "Ange turneringens namn."
 msgid "Tie-break already in use."
 msgstr "Tie-break är redan i bruk."
 
+#, ai_translation
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
-msgstr ""
+msgstr "Parningar av runda {round} genereras för turnering [{tournament_uniq_id}]."
 
+#, ai_translation
 msgid "Papi file [{file}] created."
-msgstr ""
+msgstr "Papi-fil [{file}] skapad."
 
+#, ai_translation
 msgid "Papi file has not been created."
-msgstr ""
+msgstr "Papi- filen har inte skapats."
 
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
@@ -2281,8 +2363,9 @@ msgstr "Parningar efter spelare ({num})"
 msgid "Last results ({num})"
 msgstr "Senaste resultaten ({num})"
 
+#, ai_translation
 msgid "Ranking ({num})"
-msgstr ""
+msgstr "Placering ({num})"
 
 #, ai_translation
 msgid "Image ({num})"
@@ -2324,8 +2407,9 @@ msgstr "Från Papi- webbservern"
 msgid "From the local network (LAN/WAN)"
 msgstr "Från det lokala nätverket (LAN/WAN)"
 
+#, ai_translation
 msgid "The public screens are not available until the Papi-web settings have been validated."
-msgstr ""
+msgstr "De offentliga skärmarna är inte tillgängliga förrän inställningarna för papi-webben har validerats."
 
 #, ai_translation
 msgid "Click here to access the public screens of the events."
@@ -2343,8 +2427,9 @@ msgstr "Arbiter-gränssnittet gör det möjligt att hantera händelserna."
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient."
 
+#, ai_translation
 msgid "Papi-web settings (private access)"
-msgstr ""
+msgstr "Inställningar av papi-webb (privat åtkomst)"
 
 #, ai_translation
 msgid "Arbiter interface (private access)"
@@ -2382,8 +2467,9 @@ msgstr "Sortera spelarna efter betyg (mest betyg först)."
 msgid "Sort the players by rating (less rated first)."
 msgstr "Sortera spelarna efter betyg (mindre betyg först)."
 
+#, ai_translation
 msgid "Sort the players by club."
-msgstr ""
+msgstr "Sortera spelarna efter klubb."
 
 #, ai_translation
 msgid "Sort the players by year of birth (youngest first)."
@@ -2428,6 +2514,43 @@ msgstr "Visa en skärmutgångsknapp:"
 #, ai_translation
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "När du inte visar utgångsknappen, kan användare inte av misstag avsluta inmatningsskärmar."
+
+# Error: translation [Typ: Ursprunglig hänvisning till den nationella
+# lagstiftningen: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . .] is much too long compared to initial [Type:]
+#, ai_translation
+msgid "Type:"
+msgstr ""
+
+#, ai_translation
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgstr "Crosstablen visar alla resultat av spelarna, medan klubben skrivs ut när man endast visar räfsa."
+
+#, ai_translation
+msgid "Maximum number of points (included):"
+msgstr "Maximalt antal punkter (ingår):"
+
+#, ai_translation
+msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr "Maximalt antal poäng för spelarna som visas (om de lämnas tomma visas alla spelare)."
+
+#, ai_translation
+msgid "Minimum number of points (included):"
+msgstr "Minsta antal punkter (ingår):"
+
+#, ai_translation
+msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr "Minsta antal poäng för spelarna som visas (om de lämnas tomma visas alla spelare)."
+
+#, ai_translation
+msgid "Round:"
+msgstr "Omgång:"
+
+#, ai_translation
+msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
+msgstr "Den runda efter vilken rankningen visas (om den lämnas tom, den sista rundan klar)."
 
 #, ai_translation
 msgid "Display of unpaired players:"
@@ -2674,10 +2797,6 @@ msgid "The type of document to print."
 msgstr "Typ av dokument att skriva ut."
 
 #, ai_translation
-msgid "Round:"
-msgstr "Omgång:"
-
-#, ai_translation
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr "Den runda för vilken dokumentet trycks (förvaltar till den sista möjliga omgången)."
 
@@ -2769,6 +2888,46 @@ msgstr "Urval: %(selection)s"
 msgid "Columns:"
 msgstr "Kolumner:"
 
+#, ai_translation
+msgid "Exit button:"
+msgstr "Utgångsknapp:"
+
+#, ai_translation
+msgid "yes"
+msgstr "Ja, det är jag."
+
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
+# Error: translation [Ingen känd frekvens:] is much too long compared to
+# initial [no]
+#, ai_translation
+msgid "no"
+msgstr ""
+
+#, ai_translation
+msgid "Unpaired: displayed"
+msgstr "Oparerad: visas"
+
+#, ai_translation
+msgid "Unpaired: hidden"
+msgstr "Oparerad: gömd"
+
+#, ai_translation
+msgid "Round: the last finished round"
+msgstr "Omgång: den sista avslutade omgången"
+
+#, ai_translation, python-format
+msgid "Points: %(min)s to %(max)s"
+msgstr "Punkterna %(min)s till %(max)s"
+
+#, ai_translation, python-format
+msgid "Points: %(min)s or more"
+msgstr "Poäng: %(min)s eller mer"
+
+#, ai_translation, python-format
+msgid "Points: up to %(max)s"
+msgstr "Poäng: upp till %(max)s"
+
 #, ai_translation, python-format
 msgid "Menu link label: %(menu_label)s"
 msgstr "Menylänk etikett: %(menu_label)s"
@@ -2793,28 +2952,6 @@ msgstr "Tidpunkt: %(timer_uniq_id)s"
 msgid "Timer: none"
 msgstr "Timer: inget"
 
-#, ai_translation
-msgid "Exit button:"
-msgstr "Utgångsknapp:"
-
-#, ai_translation
-msgid "yes"
-msgstr "Ja, det är jag."
-
-# Error: translation [Ingen känd frekvens:] is much too long compared to
-# initial [no]
-#, ai_translation
-msgid "no"
-msgstr ""
-
-#, ai_translation
-msgid "Unpaired: displayed"
-msgstr "Oparerad: visas"
-
-#, ai_translation
-msgid "Unpaired: hidden"
-msgstr "Oparerad: gömd"
-
 #, ai_translation, python-format
 msgid "Boards from #%(first)d to #%(last)d"
 msgstr "Styrelser från #%(first)d till #%(last)d"
@@ -2823,9 +2960,9 @@ msgstr "Styrelser från #%(first)d till #%(last)d"
 msgid "Players from #%(first)s to #%(last)s"
 msgstr "Spelare från #%(first)s till #%(last)s"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Players from #%(first)d to #%(last)d"
-msgstr ""
+msgstr "Spelare från #%(first)d till #%(last)d"
 
 #, ai_translation
 msgid "No screens"
@@ -2834,6 +2971,9 @@ msgstr "Inga skärmar"
 #, ai_translation
 msgid "Edit the properties of the screen family."
 msgstr "Redigera egenskaperna hos skärmfamiljen."
+
+msgid "Go to the first screen."
+msgstr ""
 
 #, ai_translation
 msgid "Clone the screen family."
@@ -2855,8 +2995,9 @@ msgstr "Brädor skärmfamilj skapande"
 msgid "Players screen family creation"
 msgstr "Spelare skärmfamilj skapande"
 
+#, ai_translation
 msgid "Ranking screen family creation"
-msgstr ""
+msgstr "Ranking skärm familj skapande"
 
 #, ai_translation, python-format
 msgid "Cloning of screen family [%(family_uniq_id)s]"
@@ -2886,8 +3027,9 @@ msgstr "Egenskaper (parningar efter styrelse)"
 msgid "Properties (pairings by player)"
 msgstr "Egenskaper (parningar av spelare)"
 
+#, ai_translation
 msgid "Properties (ranking)"
-msgstr ""
+msgstr "Egenskaper (rankning)"
 
 #, ai_translation
 msgid "Public family"
@@ -2925,8 +3067,9 @@ msgstr "Utnämning av styrelse (antal)"
 msgid "Player selection (by alphabetical order)"
 msgstr "Val av spelare (i alfabetisk ordning)"
 
+#, ai_translation
 msgid "Player selection (by rank)"
-msgstr ""
+msgstr "Val av spelare (efter rang)"
 
 #, ai_translation
 msgid "The number of the first board to select, optional (the first board by default)."
@@ -2936,8 +3079,9 @@ msgstr "Numret på det första brädet att välja, valfritt (det första brädet
 msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
 msgstr "Antalet av den första spelaren att välja, valfritt (den första spelaren i alfabetisk ordning som standard)."
 
+#, ai_translation
 msgid "The rank of the first player to select, optional (1 by default)."
-msgstr ""
+msgstr "Den första spelarens rang att välja, valfritt (1 som standard)."
 
 #, ai_translation
 msgid "First board:"
@@ -2955,8 +3099,9 @@ msgstr "Numret på det sista brädet att välja, valfritt (det sista brädet som
 msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
 msgstr "Antalet av den sista spelaren att välja, valfritt (den sista spelaren i alfabetisk ordning som standard)."
 
+#, ai_translation
 msgid "The rank of the last player to select, optional (the rank of the last rank player by default)."
-msgstr ""
+msgstr "Den sista spelarens rang att välja, valfritt (den sista rangens rang som standard)."
 
 #, ai_translation
 msgid "Last board:"
@@ -2965,6 +3110,10 @@ msgstr "Sista brädet:"
 #, ai_translation
 msgid "Last player:"
 msgstr "Senaste spelare:"
+
+#, ai_translation
+msgid "Layout"
+msgstr "Layout (layout)"
 
 #, ai_translation
 msgid "On a given number of screens:"
@@ -3007,10 +3156,6 @@ msgid "The number of players per screen, optional (the number of screens adapts 
 msgstr "Antalet spelare per skärm, valfritt (antalet skärmar anpassar sig till antalet spelare)."
 
 #, ai_translation
-msgid "Layout"
-msgstr "Layout (layout)"
-
-#, ai_translation
 msgid "Timer:"
 msgstr "Tidpunkt:"
 
@@ -3021,6 +3166,10 @@ msgstr "Timern visas på skärmar i familjen."
 #, ai_translation
 msgid "The number of columns used to display data."
 msgstr "Antalet kolumner som används för att visa data."
+
+#, ai_translation
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
+msgstr "När det inte definieras på familjenivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmarna i familjen)."
 
 #, ai_translation
 msgid "Menus"
@@ -3034,8 +3183,9 @@ msgstr "Länkar som visas på skärmens meny:"
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "T.ex.: @ boards, @ family, another-screen"
 
+#, ai_translation
 msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-msgstr ""
+msgstr "Det här fältet låter dig ange skärmar vars länkar visas på menyn på skärmar i familjen. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ familj (alla skärmar i familjen), @ tavlor (alla brädor skärmar), @ input (alla indata skärmar), @ spelare (alla spelare skärmar), @rankning (alla rankningsskärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmarna."
 
 #, ai_translation
 msgid "Links to this screen:"
@@ -3064,10 +3214,6 @@ msgstr "Till exempel: Spelare %%f-%%l"
 #, ai_translation
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Den här etiketten används för länken till andra skärmar i familjen. Om den lämnas tom, används en förvald etikett."
-
-#, ai_translation
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
-msgstr "När det inte definieras på familjenivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmarna i familjen)."
 
 #, ai_translation
 msgid "Screen families"
@@ -3101,8 +3247,9 @@ msgstr "Lägg till en familj av skärmar för att visa parningar per bord."
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Lägg till en grupp skärmar för att visa parningar i alfabetisk ordning."
 
+#, ai_translation
 msgid "Add a family of screens to display the ranking."
-msgstr ""
+msgstr "Lägg till en grupp skärmar för att visa rankingen."
 
 #, ai_translation
 msgid "No screen families."
@@ -3116,41 +3263,53 @@ msgstr "Arkiverad händelse"
 msgid "Deletion date"
 msgstr "Datum för borttagning"
 
+#, ai_translation
 msgid "Edition of papi-web settings"
-msgstr ""
+msgstr "Upplaga av inställningar för papi-web"
 
+#, ai_translation
 msgid "Please validate the global configuration of the application."
-msgstr ""
+msgstr "Validera den globala konfigurationen av programmet."
 
+#, ai_translation
 msgid "Application"
-msgstr ""
+msgstr "Tillämpning"
 
+#, ai_translation
 msgid "Launch browser:"
-msgstr ""
+msgstr "Starta webbläsare:"
 
+#, ai_translation
 msgid "Papi-web can automatically launch a web browser when starting the web server."
-msgstr ""
+msgstr "Papi-web kan automatiskt starta en webbläsare när du startar webbservern."
 
+#, ai_translation
 msgid "Log level:"
-msgstr ""
+msgstr "Loggnivå:"
 
+#, ai_translation
 msgid "The log level allows you to trace the behaviour of the application."
-msgstr ""
+msgstr "Loggnivån gör att du kan spåra beteendet hos programmet."
 
+#, ai_translation
 msgid "Internationalization"
-msgstr ""
+msgstr "Internationellt samarbete"
 
+#, ai_translation
 msgid "The default federation for your events."
-msgstr ""
+msgstr "Förvald federation för dina händelser."
 
+#, ai_translation
 msgid "Language:"
-msgstr ""
+msgstr "Språk:"
 
+#, ai_translation
 msgid "The default language used."
-msgstr ""
+msgstr "Standardspråket som används."
 
+#, ai_translation
 msgid "Edit the Papi-web settings."
-msgstr ""
+msgstr "Redigera inställningarna för papi- webb."
 
 #, ai_translation
 msgid "Add an event."
@@ -3176,11 +3335,13 @@ msgstr "Åtkomst från Papi-web-servern"
 msgid "Access from the local network (LAN/WAN)"
 msgstr "Tillträde från det lokala nätverket (LAN/WAN)"
 
+#, ai_translation
 msgid "Default language"
-msgstr ""
+msgstr "Förvalt språk"
 
+#, ai_translation
 msgid "Default federation:"
-msgstr ""
+msgstr "Förvald federation:"
 
 #, ai_translation
 msgid "Launching the browser on server startup"
@@ -3192,12 +3353,15 @@ msgstr "Ja, det är jag."
 
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
+# Error: translation [Ej tillämpligt] is much too long compared to initial
+# [No]
 #, ai_translation
 msgid "No"
 msgstr ""
 
+#, ai_translation
 msgid "Log level"
-msgstr ""
+msgstr "Loggnivå"
 
 #, ai_translation, python-format
 msgid "%(lib)s version"
@@ -3279,8 +3443,9 @@ msgstr "Information: %(num)d"
 msgid "No informations"
 msgstr "Inga uppgifter"
 
+#, ai_translation
 msgid "Enable/disable the details of events on the cards below."
-msgstr ""
+msgstr "Aktivera/inaktivera information om händelser på korten nedan."
 
 #, ai_translation
 msgid "Refresh this page."
@@ -3878,50 +4043,6 @@ msgstr "Ändra spelarens turnering."
 msgid "No players."
 msgstr "Inga spelare."
 
-#, fuzzy
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Rk."
-
-#, fuzzy
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nb."
-
-#, fuzzy
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Name"
-
-#, fuzzy
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-#, fuzzy
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapid"
-
-#, fuzzy
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-#, fuzzy
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat"
-
-#, fuzzy
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
-msgstr "Fed"
-
-#, fuzzy, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
-msgstr "R %(round)d"
-
-#, fuzzy
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
-#, fuzzy
-msgid "Pts *** POINTS FOR PRINT VIEW"
-msgstr "Pts"
-
 #, ai_translation, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Rotationsfördröjning: %(seconds)d sek."
@@ -3951,6 +4072,9 @@ msgstr "(inga skärmar)"
 #, ai_translation
 msgid "Edit the properties of the rotator."
 msgstr "Redigera rotatorns egenskaper."
+
+msgid "Go to the rotator."
+msgstr ""
 
 #, ai_translation
 msgid "Clone the rotator."
@@ -4053,6 +4177,10 @@ msgid "Type: %(screen_type)s"
 msgstr "Typ: %(screen_type)s"
 
 #, ai_translation, python-format
+msgid "Round: %(round)d"
+msgstr "Omgång: %(round)d"
+
+#, ai_translation, python-format
 msgid "Max number: %(num)d"
 msgstr "Max antal: %(num)d"
 
@@ -4098,6 +4226,9 @@ msgstr "Redigera uppsättningar spelare som visas på skärmen."
 msgid "Boards"
 msgstr "Brädor"
 
+msgid "Go to the screen."
+msgstr ""
+
 #, ai_translation
 msgid "Input screen creation"
 msgstr "Skapa skärminmatning"
@@ -4114,8 +4245,9 @@ msgstr "Bildskärmsskapelse för spelare"
 msgid "Results screen creation"
 msgstr "Bildskärmens resultat"
 
+#, ai_translation
 msgid "Ranking screen creation"
-msgstr ""
+msgstr "Skapande av rankning av skärmen"
 
 #, ai_translation
 msgid "Image screen creation"
@@ -4170,27 +4302,12 @@ msgid "The first tournament of the screen, mandatory (it is possible to add othe
 msgstr "Den första turneringen på skärmen, obligatorisk (det är möjligt att lägga till andra turneringar senare)."
 
 #, ai_translation
-msgid "The timer displayed on the screen."
-msgstr "Timern som visas på skärmen."
-
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr ""
+msgid "E.g.: https://my.club.us/tournament.jpg"
+msgstr "Till exempel: https://my.club.us/tournament.jpg"
 
 #, ai_translation
-msgid "Check the box to allow other screens to display a link to this screen."
-msgstr "Markera rutan för att låta andra skärmar visa en länk till den här skärmen."
-
-#, ai_translation
-msgid "E.g.: Link to my screen"
-msgstr "T.ex.: Länk till min skärm"
-
-#, ai_translation
-msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr "Den här etiketten används för länken till andra skärmar till den här skärmen. Om den lämnas tom, används en förvald etikett."
-
-#, ai_translation
-msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
-msgstr "När det inte definieras på skärmnivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmen)."
+msgid "The URL of the image to display."
+msgstr "Webbadressen till bilden som ska visas."
 
 #, ai_translation
 msgid "Maximum number of results displayed:"
@@ -4221,12 +4338,28 @@ msgid "When not tournament is selected, the results of all the tournaments are d
 msgstr "När inte turnering väljs visas resultaten av alla turneringar."
 
 #, ai_translation
-msgid "E.g.: https://my.club.us/tournament.jpg"
-msgstr "Till exempel: https://my.club.us/tournament.jpg"
+msgid "The timer displayed on the screen."
+msgstr "Timern som visas på skärmen."
 
 #, ai_translation
-msgid "The URL of the image to display."
-msgstr "Webbadressen till bilden som ska visas."
+msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgstr "När det inte definieras på skärmnivå används det varningsmeddelande som definieras på rotator- eller händelsenivå (om inget varningsmeddelande är inställt visas inte rullningsbannern längst ner på skärmen)."
+
+#, ai_translation
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr "Fältet låter dig ange skärmar vars länkar visas på skärmens meny. Skärmidentifierare måste vara åtskilda av kommatecken, nyckelorden @ tavlor (alla brädor skärmar), @input (alla indataskärmar), @players (alla spelare skärmar), @rankning (alla rankningsskärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmen."
+
+#, ai_translation
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr "Markera rutan för att låta andra skärmar visa en länk till den här skärmen."
+
+#, ai_translation
+msgid "E.g.: Link to my screen"
+msgstr "T.ex.: Länk till min skärm"
+
+#, ai_translation
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr "Den här etiketten används för länken till andra skärmar till den här skärmen. Om den lämnas tom, används en förvald etikett."
 
 #, ai_translation, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
@@ -4328,8 +4461,9 @@ msgstr "Lägg till en skärm för att visa parningar i alfabetisk ordning."
 msgid "Add a screen to display the last results."
 msgstr "Lägg till en skärm för att visa de sista resultaten."
 
+#, ai_translation
 msgid "Add a screen to display the ranking."
-msgstr ""
+msgstr "Lägg till en skärm för att visa rankingen."
 
 #, ai_translation
 msgid "Add a screen to display an image."
@@ -4351,8 +4485,9 @@ msgstr "Visa/göm spelskärmarna."
 msgid "Show/hide the results screens."
 msgstr "Visa/göm resultatskärmarna."
 
+#, ai_translation
 msgid "Show/hide the ranking screens."
-msgstr ""
+msgstr "Visa/göm rankningsskärmarna."
 
 #, ai_translation
 msgid "Show/hide the image screens."
@@ -4362,12 +4497,13 @@ msgstr "Visa/göm bildskärmarna."
 msgid "No such screens."
 msgstr "Inga sådana skärmar."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Edition of default timers for event [%(event_uniq_id)s]"
-msgstr ""
+msgstr "Upplaga av standardtider för händelse [%(event_uniq_id)s]"
 
+#, ai_translation
 msgid "Timers"
-msgstr ""
+msgstr "Tidtagare"
 
 #, ai_translation
 msgid "Add a timer to the event."
@@ -4513,28 +4649,33 @@ msgstr "Det unika ID, som används för att referera timern."
 msgid "Colors and delays"
 msgstr "Färger och förseningar"
 
+#, ai_translation
 msgid "Missing Papi file"
-msgstr ""
+msgstr "Saknar papi- fil"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
-msgstr ""
+msgstr "Varning: Papi-filen [%(path)s] hittades inte, många funktioner är inaktiverade."
 
+#, ai_translation
 msgid "Do you want Papi-web to create the file?"
-msgstr ""
+msgstr "Vill du att Papi-webben ska skapa filen?"
 
+#, ai_translation
 msgid "No, I will do it later"
-msgstr ""
+msgstr "Nej, jag gör det senare."
 
+#, ai_translation
 msgid "Yes, create the file"
-msgstr ""
+msgstr "Ja, skapa filen"
 
 #, ai_translation
 msgid "Tournaments"
 msgstr "Turneringar"
 
+#, ai_translation
 msgid "Enable/disable the details of tournaments on the cards below."
-msgstr ""
+msgstr "Aktivera/inaktivera information om turneringar på korten nedan."
 
 #, ai_translation
 msgid "Add a tournament to the event."
@@ -4548,9 +4689,9 @@ msgstr "Skapa en turnering"
 msgid "No tournaments."
 msgstr "Inga turneringar."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Number of players : %(num)d"
-msgstr ""
+msgstr "Antal spelare : %(num)d"
 
 #, ai_translation
 msgid "Illegal moves are not recorded."
@@ -4674,8 +4815,9 @@ msgstr "Namnet på Papi-filen, utan .papi förlängning (som standard FFE kvalif
 msgid "Time control"
 msgstr "Tidskontroll"
 
+#, ai_translation
 msgid "Initial time (optional, seconds):"
-msgstr ""
+msgstr "Ursprunglig tid (frivilligt, sekunder):"
 
 #, ai_translation, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
@@ -4685,15 +4827,17 @@ msgstr "T.ex.: %(seconds)d (%(minutes)dminuter)"
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr "Den inledande tiden i sekunder (kan vara tom om en ökning är inställd)."
 
+#, ai_translation
 msgid "Increment (optional, seconds):"
-msgstr ""
+msgstr "Inkrement (frivilligt, sekunder):"
 
 #, ai_translation
 msgid "The number of seconds added to the players' clock at each move."
 msgstr "Antalet sekunder som läggs till spelarnas klocka vid varje drag."
 
+#, ai_translation
 msgid "Penalty (handicap, seconds):"
-msgstr ""
+msgstr "Straff (handikapp, sekunder):"
 
 #, ai_translation
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
@@ -4711,8 +4855,9 @@ msgstr "T.ex.: 50 (Elo)"
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr "Antalet poäng skillnad mellan rankingen av de spelare som används för att beräkna antalet straff som tillämpas på den högst rankade spelaren."
 
+#, ai_translation
 msgid "Minimal time (handicap, seconds):"
-msgstr ""
+msgstr "Minimal tid (handikapp, sekunder):"
 
 #, ai_translation
 msgid "The minimum time, whatever the ranking difference between the two players."
@@ -4818,8 +4963,9 @@ msgstr "Spelarskärmar visar parningar i alfabetisk ordning."
 msgid "Results screens show the last results (most recent first)."
 msgstr "Resultatskärmar visar de sista resultaten (senaste först)."
 
+#, ai_translation
 msgid "Ranking screens show the players by rank."
-msgstr ""
+msgstr "Rankningsskärmar visar spelarna efter rang."
 
 #, ai_translation
 msgid "Image screens show an image (local or remote)."
@@ -4828,6 +4974,50 @@ msgstr "Bildskärmar visar en bild (lokal eller fjärr)."
 #, ai_translation
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator roterar automatiskt mellan flera skärmar."
+
+#, fuzzy
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
+
+#, fuzzy
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+#, fuzzy
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+#, fuzzy
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+#, fuzzy
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+#, fuzzy
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+#, fuzzy
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat"
+
+#, fuzzy
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr "Fed"
+
+#, fuzzy, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+#, fuzzy
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
+
+#, fuzzy
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
 
 #, ai_translation
 msgid "Go back to the events page."
@@ -4929,6 +5119,8 @@ msgstr "Maximalt antal resultat: obegränsad"
 msgid "Image:"
 msgstr "Bild:"
 
+# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
+# much too long compared to initial [Rnd.Boa]
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
 #, ai_translation
@@ -5179,6 +5371,9 @@ msgstr "vs"
 
 #~ msgid "Minimal time (handicap):"
 #~ msgstr "Minimal tid (handikapp):"
+
+#~ msgid "%t (ranking)"
+#~ msgstr ""
 
 #~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
 #~ msgstr "Bu."

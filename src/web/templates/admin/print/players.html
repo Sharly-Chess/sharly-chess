@@ -1,128 +1,37 @@
 {% import '/common/macros.j2' as macros %}
-
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1">
         <title>{{ tournament.name }}</title>
         <style type="text/css">
-            .odd {font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #000000; background-color: #FFFFFF;}
-            .even {font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #000000; background-color: #E0E0E0;}
-            .column-heading {font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #000000; background-color: #FFFFFF;}
-            .title {font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: bold; color: #000000; margin: 16px 0 12px; border: thin none; background-color: #FFFFFF;}
-            .title_big {font-family: Arial, Helvetica, sans-serif; font-size: 24pt; font-weight: bold;}
-            .title_medium {font-family: Arial, Helvetica, sans-serif; font-size: 16pt; font-weight: bold;}
-            .small {font-size: 10px;}
-            .left {white-space: nowrap; border-style: solid; border-color: black; border-width:0px; text-align:left;}
-            .right {white-space: nowrap; border-style: solid; border-color: black; border-width:0px; text-align:right;}
-            .center {white-space: nowrap; border-style: solid; border-color: black; border-width:0px; text-align:center;}
-            .border_l {white-space: nowrap; border-style: solid; border-color: black; border-width:1px; text-align:left;}
-            .border_r {white-space: nowrap; border-style: solid; border-color: black; border-width:1px; text-align:right;}
-            .border_c {white-space: nowrap; border-style: solid; border-color: black; border-width:1px; text-align:center;}
+            {% include 'print.css' %}
+            {% include 'players.css' %}
+            {{ extra_css }}
         </style>
     </head>
-    <body topmargin="4" leftmargin="4">
+    <body class="
+        {% if crosstable %}crosstable{% endif %}
+        {% if ranking %}ranking{% endif %}
+        {% if player_list %}player-list{% endif %}
+    ">
         <div align="center">
-            <div class="title_big">{{ tournament.name }}</div>
-            <div class="title_medium">{{ title }}</div>
-            
+            <div class="page-title">{{ tournament.name }}</div>
+            <div class="page-subtitle">{{ title }}</div>
             {% set n = [1] %}
-            {% set extra_classes = "" %}
-            {% if document.is_crosstable %}{% set extra_classes = "small" %}{% endif %}
             {% if players %}
                 {% for split_by in players.keys() %}
-                    <div class="title">
+                    <div class="split-by-title">
                         {{ split_by }}
                     </div>
-
-                    <table width="750" cellpadding="2" cellspacing="0" style="border-collapse:collapse;">
+                    <table class="player-table">
                         <thead>
-                            <tr class="column-heading">
-                                {{ macros.extra_column_header("rank", extra_classes, extra_columns)}}
-                                <th class="right {{ extra_classes }}">
-                                    {% if document.is_ranking or document.is_crosstable %}
-                                        {{ _('Rk. *** RANK FOR PRINT VIEW') }}
-                                    {% else %}
-                                        {{ _('Nb. *** NB FOR PRINT VIEW') }}
-                                    {% endif %}
-                                </th>
-                                {{ macros.extra_column_header("title", extra_classes, extra_columns)}}
-                                <th class="right {{ extra_classes }}">&nbsp;</th>
-                                {{ macros.extra_column_header("name", extra_classes, extra_columns)}}
-                                <th class="left {{ extra_classes }}">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
-                                {{ macros.extra_column_header("elo", extra_classes, extra_columns)}}
-                                <th class="center {{ extra_classes }}">
-                                    {% if tournament.rating == 1 %}
-                                        {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
-                                    {% elif tournament.rating == 2 %}
-                                        {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
-                                    {% elif tournament.rating == 3 %}
-                                        {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
-                                    {% endif %}
-                                </th>
-                                {{ macros.extra_column_header("category", extra_classes, extra_columns)}}
-                                <th class="center {{ extra_classes }}">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
-                                {{ macros.extra_column_header("federation", extra_classes, extra_columns)}}
-                                <th class="center {{ extra_classes }}">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
-                                {% if document.is_crosstable %}
-                                    {{ macros.extra_column_header("first-round", extra_classes, extra_columns)}}
-                                    {% for round in range(1, ranking_round + 1) %}
-                                        <th class="right">{{ _('R %(round)d *** ROUND FOR PRINT VIEW', round=round) }}</th>
-                                    {% endfor %}
-                                {% else %}
-                                    {{ macros.extra_column_header("club", extra_classes, extra_columns)}}
-                                    <th class="left {{ extra_classes }}">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
-                                {% endif %}
-                                {% if document.is_ranking or document.is_crosstable %}
-                                    <th class="right {{ extra_classes }}">
-                                        <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
-                                    </th>
-                                    {% for tie_break in admin_tournament.tie_breaks %}
-                                        {% if tie_break.is_displayable %}
-                                            <th class="right">{{ tie_break.acronym }}</th>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                                {{ macros.extra_column_header("end", extra_classes, extra_columns)}}
-                            </tr>
+                            {% include '/common/print/player_header.html' %}
                         </thead>
                         <tbody>
                             {% for player in players[split_by] %}
-                                <tr id="player-{{ player.id }}" class="{% if loop.index is even %}odd{% else %}even{% endif %}">
-                                    {{ macros.extra_column_data("rank", player, extra_classes, extra_columns)}}
-                                    <td class="right {{ extra_classes }}">
-                                        {% if document.is_ranking or document.is_crosstable %}
-                                            {{ player.rank }}
-                                        {% else %}
-                                            {{ n|length }}
-                                        {% endif %}
-                                    </td>
-                                    {{ macros.extra_column_data("title", player, extra_classes, extra_columns)}}
-                                    <td class="right {{ extra_classes }}">{{ player.title.short_name }}</td>
-                                    {{ macros.extra_column_data("name", player, extra_classes, extra_columns)}}
-                                    <td class="left {{ extra_classes }}"><b>{{ player.last_name }} {{ player.first_name }}</b></td>
-                                    {{ macros.extra_column_data("elo", player, extra_classes, extra_columns)}}
-                                    <td class="right {{ extra_classes }}">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
-                                    {{ macros.extra_column_data("category", player, extra_classes, extra_columns)}}
-                                    <td class="center {{ extra_classes }}">{{ player.category.short_name }}</td>
-                                    {{ macros.extra_column_data("federation", player, extra_classes, extra_columns)}}
-                                    <td class="center {{ extra_classes }}">{{ player.federation }}</td>
-                                    {% if document.is_crosstable %}
-                                        {{ macros.extra_column_data("first-round", player, extra_classes, extra_columns)}}
-                                        {% for crosstable_string in (player.crosstable_strings)[:ranking_round] %}
-                                            <td class="right {{ extra_classes }}">{{ crosstable_string }}</td>
-                                        {% endfor %}
-                                    {% else %}
-                                         {{ macros.extra_column_data("club", player, extra_classes, extra_columns)}}
-                                        <td class="left {{ extra_classes }}">{{ player.club }}</td>
-                                    {% endif %}
-                                    {% if document.is_ranking or document.is_crosstable %}
-                                        <td class="right {{ extra_classes }}"><strong>{{ player.points_str }}</strong></td>
-                                        {% for tie_break_string in player.tie_break_values_as_strings %}
-                                            <td class="right {{ extra_classes }}">{{ tie_break_string }}</td>
-                                        {% endfor %}
-                                    {% endif %}
-                                    {{ macros.extra_column_data("end", extra_classes, extra_columns)}}
-                                </tr>
+                                {% with row_class='even' if loop.index is even else 'odd' %}
+                                    {% include '/common/print/player_row.html' %}
+                                {% endwith %}
                                 {% set __ = n.append(1) %}
                             {% endfor %}
                         </tbody>

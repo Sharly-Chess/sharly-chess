@@ -28,6 +28,7 @@ from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from pairing.bbp_pairings import BbpPairings
+from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -423,7 +424,7 @@ class TournamentAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/{event_uniq_id:str}/tournaments',
+        path='/admin/event/{event_uniq_id:str}/tournaments',
         name='admin-event-tournaments-tab',
         cache=1,
     )
@@ -879,19 +880,26 @@ class TournamentAdminController(BaseEventAdminController):
         per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
             document=print_document
         )
-        extra_columns = {}
+        extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
+        per_plugin_css: list[str] = plugin_manager.hook.get_extra_print_view_css(
+            document=print_document
+        )
+        extra_css: str = '\n'.join(per_plugin_css)
 
         template_context |= {
             'tournament': admin_tournament,
             'players': split_players,
             'title': print_document.to_title(round),
-            'document': print_document,
+            'crosstable': print_document.is_crosstable,
+            'ranking': print_document.is_ranking,
+            'player_list': print_document.is_player_list,
             'ranking_round': round,
             'extra_columns': extra_columns,
+            'extra_css': extra_css,
         }
         return HTMXTemplate(
             template_name='admin/print/players.html', context=template_context

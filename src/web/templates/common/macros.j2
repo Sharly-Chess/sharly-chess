@@ -171,23 +171,21 @@
 
 {% macro extra_column_header(
     index,
-    classes = '',
     extra_columns = {}
 ) %}
     {% set columns=extra_columns[index] or [] %}
     {% for column in columns %}
-        <th class="{{ classes }} {{ column.classes }}">{{ column.title }}</th>
+        <th class="{{ column.classes }}">{{ column.title }}</th>
     {% endfor %}
 {% endmacro %}
 
 {% macro extra_column_data(
     index,
     value,
-    classes = '',
     extra_columns = {}
 ) %}
     {% set columns=extra_columns[index] or [] %}
     {% for column in columns %}
-        <td class="{{ classes }} {{ column.classes }}">{{ column.value(value) }}</td>
+        <td class="{{ column.classes }}">{{ column.value(value) }}</td>
     {% endfor %}
 {% endmacro %}

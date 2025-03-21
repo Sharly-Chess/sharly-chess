@@ -1,0 +1,23 @@
+{# ========== BORDERS ========== #}
+.player-table { border-collapse:collapse; }
+{# ========== WIDTH, MARGINS, PADDING ==========#}
+.player-table { width: 750px; }
+.player-table { padding: 2px; border-spacing: 0; }
+{# ========== FONT SIZE ========== #}
+.crosstable .player-header *,
+.crosstable .player-row * { font-size: 10px; }
+{# ========== FONT WEIGHT ========== #}
+.player-header * { font-weight: bold; }
+.player-row .name,
+.player-row .points { font-weight: bold; }
+{# ========== TEXT ALIGN ========== #}
+.player-table .name,
+.player-table .club { text-align: left; }
+.player-table .rank,
+.player-table .title,
+.player-table .rating { text-align: right; }
+.player-table .category,
+.player-table .federation,
+.player-table .round,
+.player-table .points,
+.player-table .tie-break { text-align: center; }

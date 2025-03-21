@@ -498,18 +498,32 @@ msgstr "Op speler"
 msgid "%t (by player)"
 msgstr "%t (per speler)"
 
-msgid "Ranking"
-msgstr ""
+#, ai_translation, python-format
+msgid "Crosstable %f-%l"
+msgstr "Crosstable %f-%l"
 
-msgid "%t (ranking)"
-msgstr ""
+#, ai_translation, python-format
+msgid "Ranking %f-%l"
+msgstr "Ranglijst %f-%l"
+
+#, ai_translation
+msgid "Crosstable"
+msgstr "Crosstabel"
+
+#, ai_translation
+msgid "Ranking"
+msgstr "Ranglijst"
+
+#, ai_translation
+msgid "%t ranking"
+msgstr "%t rangschikking"
 
 #, ai_translation
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr "Geen scherm van het type [{screen_type}] voor het schermmenu [{screen_uniq_id}]."
 
 #, ai_translation
-msgid "Pattern [{pattern}] can be used by screen families."
+msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr "Patroon [{pattern}] kan gebruikt worden door schermfamilies."
 
 #, ai_translation
@@ -536,9 +550,37 @@ msgstr "De nummers {first} en {last} zijn niet compatibel ({first} > {last})."
 msgid "%f to %l"
 msgstr "%f tot en met %l"
 
+#, ai_translation, python-format
+msgid "Crosstable %f to %l"
+msgstr "Crosstable %f to %l"
+
+#, ai_translation, python-format
+msgid "Ranking %f to %l"
+msgstr "Ranglijst %f tot %l"
+
+#, ai_translation
+msgid "%t crosstable"
+msgstr "%t kruistafel"
+
 #, ai_translation
 msgid "boards {board_numbers}"
 msgstr "boards {board_numbers}"
+
+#, ai_translation
+msgid "the whole ranking"
+msgstr "de hele rangschikking"
+
+#, ai_translation
+msgid "ranking from #{first} to end"
+msgstr "rangschikking van #{first} tot einde"
+
+#, ai_translation
+msgid "ranking from #{first} to #{last}"
+msgstr "rangschikking van #{first} naar #{last}"
+
+#, ai_translation
+msgid "ranking from start to #{last}"
+msgstr "rangschikking van begin naar #{last}"
 
 #, ai_translation
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
@@ -552,8 +594,9 @@ msgstr "Knippen"
 msgid "Cut top"
 msgstr "Knippen boven"
 
+#, ai_translation
 msgid "Cut bottom"
-msgstr ""
+msgstr "Onderkant knippen"
 
 #, ai_translation
 msgid "Played modifier"
@@ -575,8 +618,9 @@ msgstr "Spelers uitsluiten"
 msgid "Number of wins"
 msgstr "Aantal overwinningen"
 
+#, fuzzy
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
-msgstr ""
+msgstr "NW"
 
 #, ai_translation
 msgid "Number of games won"
@@ -594,8 +638,9 @@ msgstr "Games gewonnen met zwart"
 msgid "Progressive scores"
 msgstr "Progressieve scores"
 
+#, fuzzy
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
-msgstr ""
+msgstr "PS"
 
 #, ai_translation
 msgid "Rounds one Elected to Play"
@@ -625,8 +670,9 @@ msgstr "Sonnenborn-Berger"
 msgid "Koya"
 msgstr "Koya"
 
+#, fuzzy
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
-msgstr ""
+msgstr "Ko."
 
 #, ai_translation
 msgid "Kashdan"
@@ -912,11 +958,13 @@ msgstr "WGM"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
+#, fuzzy
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
-msgstr ""
+msgstr "W"
 
+#, fuzzy
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
-msgstr ""
+msgstr "B"
 
 #, ai_translation
 msgid "White"
@@ -958,14 +1006,13 @@ msgstr "Federatie"
 msgid "List of players"
 msgstr "Lijst van spelers"
 
+#, ai_translation
 msgid "Ranking after round #{round}"
-msgstr ""
+msgstr "Rangorde na ronde #{round}"
 
+#, ai_translation
 msgid "Crosstable after round #{round}"
-msgstr ""
-
-msgid "Crosstable"
-msgstr ""
+msgstr "Kruisbaar na ronde #{round}"
 
 #, ai_translation
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
@@ -1223,8 +1270,9 @@ msgstr "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessev
 msgid "No ChessEvent tournament defined"
 msgstr "Geen ChessEvent-toernooi gedefinieerd"
 
+#, ai_translation
 msgid "Connections ChessEvent"
-msgstr ""
+msgstr "Verbindingen met het schaakevenement"
 
 #, ai_translation
 msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
@@ -1310,35 +1358,41 @@ msgstr "Downloaden van de FFE-database..."
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Fout bij lezen van de volgende rij (speler genegeerd): [{row}]."
 
+#, fuzzy
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
-msgstr ""
+msgstr "Bu."
 
 #, ai_translation
 msgid "Buchholz cut bottom"
 msgstr "Buchholz gesneden bodem"
 
+#, fuzzy
 msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
-msgstr ""
+msgstr "Tr."
 
 #, ai_translation
 msgid "Median Buchholz"
 msgstr "Mediaan Buchholz"
 
+#, fuzzy
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
-msgstr ""
+msgstr "Me."
 
 #, ai_translation
 msgid "Performance"
 msgstr "Prestaties"
 
+#, fuzzy
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
-msgstr ""
+msgstr "Perf"
 
+#, fuzzy
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
-msgstr ""
+msgstr "SBh"
 
+#, fuzzy
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
-msgstr ""
+msgstr "Ka."
 
 #, ai_translation
 msgid "No FFE Licence"
@@ -1566,27 +1620,29 @@ msgstr "League:"
 msgid "The player's league."
 msgstr "De spelerscompetitie."
 
+#, fuzzy
 msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
-msgstr ""
+msgstr "League."
 
 #, ai_translation
 msgid "Filter the leagues."
 msgstr "Filter de competities."
 
-#, python-format
+#, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr ""
+msgstr "FFE-licentie: %(ffe_licence_number)s (verlopen)."
 
-#, python-format
+#, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr ""
+msgstr "FFE licentie: %(ffe_licence_number)s (klik om te kopiëren naar het klembord)."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr ""
+msgstr "Onbekend FFE-licentietype [%(ffe_licence)s]."
 
+#, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr ""
+msgstr "FFE"
 
 #, ai_translation
 msgid "Filter the licences."
@@ -1624,8 +1680,9 @@ msgstr "FFE-kwalificatie: %(ffe_id)s"
 msgid "No FFE qualification"
 msgstr "Geen FFE-kwalificatie"
 
+#, ai_translation
 msgid "Connection French Chess Federation"
-msgstr ""
+msgstr "Verbinding Franse Schaak Federatie"
 
 #, ai_translation
 msgid "FFE certification number (optional):"
@@ -1671,11 +1728,13 @@ msgstr "Fout bij het bijwerken van de FIDE-database."
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
 msgstr "Automatische installatie van BBP-paringen voor ontwikkelaars met PAPI_WEB_EXPERIMENTAL=1."
 
+#, ai_translation
 msgid "Port [{port}] already in use."
-msgstr ""
+msgstr "Poort [{port}] is al in gebruik."
 
+#, ai_translation
 msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
-msgstr ""
+msgstr "Alle kandidaat-poorten [{ports}] zijn al in gebruik, kunnen Papi-webserver niet starten."
 
 #, ai_translation
 msgid "Port: {port}"
@@ -1768,6 +1827,10 @@ msgid "Display all the players, paired and unpaired"
 msgstr "Toon alle spelers, gekoppeld en ongepaard"
 
 #, ai_translation
+msgid "Ranking only"
+msgstr "Uitsluitend rangschikking"
+
+#, ai_translation
 msgid "Invalid value [{value}]."
 msgstr "Ongeldige waarde [{value}]."
 
@@ -1839,14 +1902,17 @@ msgstr "Nieuwe agendanotitie"
 msgid "event"
 msgstr "agendanotitie"
 
+#, ai_translation
 msgid "Invalid log level [{log_level}]."
-msgstr ""
+msgstr "Ongeldig logniveau [{log_level}]."
 
+#, ai_translation
 msgid "Invalid federation [{federation}]."
-msgstr ""
+msgstr "Ongeldige federatie [{federation}]."
 
+#, ai_translation
 msgid "Invalid locale [{locale}]."
-msgstr ""
+msgstr "Ongeldige locale [{locale}]."
 
 #, ai_translation
 msgid "Current events ({num})"
@@ -1884,11 +1950,13 @@ msgstr "Geen gearchiveerde evenementen."
 msgid "Papi-web settings"
 msgstr "Papi-webconfiguratie"
 
+#, ai_translation
 msgid "Automatically launch a browser when starting the server"
-msgstr ""
+msgstr "Automatisch een browser starten bij het starten van de server"
 
+#, ai_translation
 msgid "Do nothing"
-msgstr ""
+msgstr "Niets doen"
 
 #, ai_translation
 msgid "Tournaments ({num})"
@@ -1946,11 +2014,13 @@ msgstr "Kies het document."
 msgid "A positive integer is expected."
 msgstr "Een positief geheel getal wordt verwacht."
 
+#, ai_translation
 msgid "Not part of the selected tournament ({rounds} rounds)."
-msgstr ""
+msgstr "Geen deel van het geselecteerde toernooi ({rounds} rondes)."
 
+#, ai_translation
 msgid "Round not finished (last finished: {round})."
-msgstr ""
+msgstr "Ronde niet afgewerkt (laatste voltooid: {round})."
 
 #, ai_translation
 msgid "Personal"
@@ -1980,17 +2050,9 @@ msgstr "Timer [{timer_id}] niet gevonden."
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "Het opgeven van het aantal onderdelen en het aantal items per onderdeel is niet mogelijk."
 
-msgid "Family [{family_uniq_id}] has been created."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been deleted."
-msgstr ""
-
+#, ai_translation
 msgid "Papi-web settings has been updated."
-msgstr ""
+msgstr "Papi-webinstellingen zijn bijgewerkt."
 
 #, ai_translation
 msgid "Please enter the last name."
@@ -2000,8 +2062,9 @@ msgstr "Voer de achternaam in."
 msgid "Please enter the date of birth."
 msgstr "Voer de geboortedatum in."
 
+#, ai_translation
 msgid "Only estimated ratings are optional."
-msgstr ""
+msgstr "Alleen geschatte ratings zijn facultatief."
 
 #, ai_translation
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
@@ -2219,14 +2282,17 @@ msgstr "Voer de toernooinaam in."
 msgid "Tie-break already in use."
 msgstr "Bie-break is al in gebruik."
 
+#, ai_translation
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
-msgstr ""
+msgstr "Pairings of round {round} generated for toernooi [{tournament_uniq_id}]."
 
+#, ai_translation
 msgid "Papi file [{file}] created."
-msgstr ""
+msgstr "Papi-bestand [{file}] aangemaakt."
 
+#, ai_translation
 msgid "Papi file has not been created."
-msgstr ""
+msgstr "Papi-bestand is niet aangemaakt."
 
 #, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
@@ -2268,8 +2334,9 @@ msgstr "Pairings by player ({num})"
 msgid "Last results ({num})"
 msgstr "Laatste resultaten ({num})"
 
+#, ai_translation
 msgid "Ranking ({num})"
-msgstr ""
+msgstr "Ranglijst ({num})"
 
 #, ai_translation
 msgid "Image ({num})"
@@ -2311,8 +2378,9 @@ msgstr "Van de Papi-webserver"
 msgid "From the local network (LAN/WAN)"
 msgstr "Vanuit het lokale netwerk (LAN/WAN)"
 
+#, ai_translation
 msgid "The public screens are not available until the Papi-web settings have been validated."
-msgstr ""
+msgstr "De publieke schermen zijn niet beschikbaar voordat de Papi-webinstellingen zijn gevalideerd."
 
 #, ai_translation
 msgid "Click here to access the public screens of the events."
@@ -2330,8 +2398,9 @@ msgstr "De Arbiter interface maakt het beheer van de gebeurtenissen mogelijk."
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Toegang tot de Arbiter interface is niet toegestaan van deze client."
 
+#, ai_translation
 msgid "Papi-web settings (private access)"
-msgstr ""
+msgstr "Papi-webinstellingen (privé-toegang)"
 
 #, ai_translation
 msgid "Arbiter interface (private access)"
@@ -2369,8 +2438,9 @@ msgstr "Sorteer de spelers op rating (meest gewaardeerd als eerste)."
 msgid "Sort the players by rating (less rated first)."
 msgstr "Sorteer de spelers op rating (minder gewaardeerd als eerste)."
 
+#, ai_translation
 msgid "Sort the players by club."
-msgstr ""
+msgstr "Sorteer de spelers op club."
 
 #, ai_translation
 msgid "Sort the players by year of birth (youngest first)."
@@ -2415,6 +2485,38 @@ msgstr "Weergave van een schermafsluitknop:"
 #, ai_translation
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Wanneer de exit-knop niet wordt weergegeven, kunnen gebruikers niet per ongeluk de invoerschermen verlaten."
+
+#, ai_translation
+msgid "Type:"
+msgstr "Type:"
+
+#, ai_translation
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgstr "De crosstable toont alle resultaten van de spelers, terwijl de club wordt afgedrukt bij het weergeven van alleen harken."
+
+#, ai_translation
+msgid "Maximum number of points (included):"
+msgstr "Maximumaantal punten (inbegrepen):"
+
+#, ai_translation
+msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr "Het maximale aantal punten van de weergegeven spelers (indien leeg gelaten, worden alle spelers weergegeven)."
+
+#, ai_translation
+msgid "Minimum number of points (included):"
+msgstr "Minimumaantal punten (inbegrepen):"
+
+#, ai_translation
+msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr "Het minimum aantal punten van de weergegeven spelers (indien leeg gelaten, worden alle spelers weergegeven)."
+
+#, ai_translation
+msgid "Round:"
+msgstr "Rond:"
+
+#, ai_translation
+msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
+msgstr "De ronde waarna de rangschikking wordt weergegeven (indien leeg gelaten, is de laatste ronde voltooid)."
 
 #, ai_translation
 msgid "Display of unpaired players:"
@@ -2661,10 +2763,6 @@ msgid "The type of document to print."
 msgstr "Het type document om af te drukken."
 
 #, ai_translation
-msgid "Round:"
-msgstr "Rond:"
-
-#, ai_translation
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr "De ronde waarvoor het document is afgedrukt (Standaarden tot de laatste mogelijke ronde)."
 
@@ -2756,6 +2854,42 @@ msgstr "Selectie: %(selection)s"
 msgid "Columns:"
 msgstr "Kolommen:"
 
+#, ai_translation
+msgid "Exit button:"
+msgstr "Afsluitknop:"
+
+#, ai_translation
+msgid "yes"
+msgstr "ja"
+
+#, ai_translation
+msgid "no"
+msgstr "nee"
+
+#, ai_translation
+msgid "Unpaired: displayed"
+msgstr "Ongepaard: weergegeven"
+
+#, ai_translation
+msgid "Unpaired: hidden"
+msgstr "Ongepaard: verborgen"
+
+#, ai_translation
+msgid "Round: the last finished round"
+msgstr "Rond: de laatste afgeronde ronde"
+
+#, ai_translation, python-format
+msgid "Points: %(min)s to %(max)s"
+msgstr "Punten: %(min)s tot en met %(max)s"
+
+#, ai_translation, python-format
+msgid "Points: %(min)s or more"
+msgstr "punten: %(min)s of meer"
+
+#, ai_translation, python-format
+msgid "Points: up to %(max)s"
+msgstr "Punten: tot en met %(max)s"
+
 #, ai_translation, python-format
 msgid "Menu link label: %(menu_label)s"
 msgstr "Menulink label: %(menu_label)s"
@@ -2780,26 +2914,6 @@ msgstr "Timer: %(timer_uniq_id)s"
 msgid "Timer: none"
 msgstr "Timer: geen"
 
-#, ai_translation
-msgid "Exit button:"
-msgstr "Afsluitknop:"
-
-#, ai_translation
-msgid "yes"
-msgstr "ja"
-
-#, ai_translation
-msgid "no"
-msgstr "nee"
-
-#, ai_translation
-msgid "Unpaired: displayed"
-msgstr "Ongepaard: weergegeven"
-
-#, ai_translation
-msgid "Unpaired: hidden"
-msgstr "Ongepaard: verborgen"
-
 #, ai_translation, python-format
 msgid "Boards from #%(first)d to #%(last)d"
 msgstr "Borden van #%(first)d tot #%(last)d"
@@ -2808,9 +2922,9 @@ msgstr "Borden van #%(first)d tot #%(last)d"
 msgid "Players from #%(first)s to #%(last)s"
 msgstr "Spelers van #%(first)s tot #%(last)s"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Players from #%(first)d to #%(last)d"
-msgstr ""
+msgstr "Spelers van #%(first)d tot #%(last)d"
 
 #, ai_translation
 msgid "No screens"
@@ -2819,6 +2933,9 @@ msgstr "Geen schermen"
 #, ai_translation
 msgid "Edit the properties of the screen family."
 msgstr "Bewerk de eigenschappen van de schermfamilie."
+
+msgid "Go to the first screen."
+msgstr ""
 
 #, ai_translation
 msgid "Clone the screen family."
@@ -2840,8 +2957,9 @@ msgstr "Schermafbeeldingen aanmaken van familie"
 msgid "Players screen family creation"
 msgstr "Aanmaken van een spelersschermfamilie"
 
+#, ai_translation
 msgid "Ranking screen family creation"
-msgstr ""
+msgstr "Schermfamilie aanmaken"
 
 #, ai_translation, python-format
 msgid "Cloning of screen family [%(family_uniq_id)s]"
@@ -2871,8 +2989,9 @@ msgstr "Eigenschappen (paarden per bord)"
 msgid "Properties (pairings by player)"
 msgstr "Eigenschappen (paarden per speler)"
 
+#, ai_translation
 msgid "Properties (ranking)"
-msgstr ""
+msgstr "Eigenschappen (ranking)"
 
 #, ai_translation
 msgid "Public family"
@@ -2910,8 +3029,9 @@ msgstr "Selectie van het bestuur (op nummer)"
 msgid "Player selection (by alphabetical order)"
 msgstr "Spelerselectie (op alfabetische volgorde)"
 
+#, ai_translation
 msgid "Player selection (by rank)"
-msgstr ""
+msgstr "Spelerselectie (op rang)"
 
 #, ai_translation
 msgid "The number of the first board to select, optional (the first board by default)."
@@ -2921,8 +3041,9 @@ msgstr "Het nummer van het eerste te selecteren bord, optioneel (standaard het e
 msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
 msgstr "Het nummer van de eerste te selecteren speler, optioneel (de eerste speler op alfabetische volgorde standaard)."
 
+#, ai_translation
 msgid "The rank of the first player to select, optional (1 by default)."
-msgstr ""
+msgstr "De rang van de eerste te selecteren speler, optioneel (1 standaard)."
 
 #, ai_translation
 msgid "First board:"
@@ -2940,8 +3061,9 @@ msgstr "Het nummer van het laatste te selecteren bord, optioneel (standaard het 
 msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
 msgstr "Het nummer van de laatste te selecteren speler, optioneel (de laatste speler op alfabetische volgorde standaard)."
 
+#, ai_translation
 msgid "The rank of the last player to select, optional (the rank of the last rank player by default)."
-msgstr ""
+msgstr "De rang van de laatste te selecteren speler, optioneel (standaard de rang van de laatste speler)."
 
 #, ai_translation
 msgid "Last board:"
@@ -2950,6 +3072,10 @@ msgstr "Laatste bord:"
 #, ai_translation
 msgid "Last player:"
 msgstr "Laatste speler:"
+
+#, ai_translation
+msgid "Layout"
+msgstr "Opmaak"
 
 #, ai_translation
 msgid "On a given number of screens:"
@@ -2992,10 +3118,6 @@ msgid "The number of players per screen, optional (the number of screens adapts 
 msgstr "Het aantal spelers per scherm, optioneel (het aantal schermen past zich aan het aantal spelers)."
 
 #, ai_translation
-msgid "Layout"
-msgstr "Opmaak"
-
-#, ai_translation
 msgid "Timer:"
 msgstr "Timer:"
 
@@ -3006,6 +3128,10 @@ msgstr "De timer die op de schermen van de familie wordt weergegeven."
 #, ai_translation
 msgid "The number of columns used to display data."
 msgstr "Het aantal kolommen dat gebruikt wordt om gegevens weer te geven."
+
+#, ai_translation
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
+msgstr "Wanneer het alarmbericht niet op familieniveau is gedefinieerd, wordt het alarmbericht dat op rotator- of gebeurtenisniveau is gedefinieerd gebruikt (als er geen waarschuwingsbericht is ingesteld, wordt de schuifbanner onderaan de schermen van de familie niet weergegeven)."
 
 #, ai_translation
 msgid "Menus"
@@ -3019,8 +3145,9 @@ msgstr "Links weergegeven in het schermmenu:"
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Bijvoorbeeld: @boards, @family, een ander scherm"
 
+#, ai_translation
 msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-msgstr ""
+msgstr "Dit veld geeft u de schermen aan waarvan de links worden weergegeven op het menu van de schermen van de familie. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @family (alle schermen van de familie), @boards (alle boards screens), @input (alle invoerschermen), @players (alle spelers screens), @ranking (alle ranking screens) en de wildcard * kan worden gebruikt. Als dit veld leeg blijft, zal er geen menu worden weergegeven op de schermen."
 
 #, ai_translation
 msgid "Links to this screen:"
@@ -3049,10 +3176,6 @@ msgstr "Bijvoorbeeld: Spelers %%f-%%l"
 #, ai_translation
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Dit label zal gebruikt worden voor de link naar andere schermen naar de schermen van de familie. Indien leeg gelaten, zal er een standaard label gebruikt worden."
-
-#, ai_translation
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
-msgstr "Wanneer het alarmbericht niet op familieniveau is gedefinieerd, wordt het alarmbericht dat op rotator- of gebeurtenisniveau is gedefinieerd gebruikt (als er geen waarschuwingsbericht is ingesteld, wordt de schuifbanner onderaan de schermen van de familie niet weergegeven)."
 
 #, ai_translation
 msgid "Screen families"
@@ -3086,8 +3209,9 @@ msgstr "Voeg een familie van schermen toe om de paringen per bord weer te geven.
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Voeg een groep schermen toe om de paren op alfabetische volgorde weer te geven."
 
+#, ai_translation
 msgid "Add a family of screens to display the ranking."
-msgstr ""
+msgstr "Voeg een familie van schermen toe om de ranking weer te geven."
 
 #, ai_translation
 msgid "No screen families."
@@ -3101,41 +3225,53 @@ msgstr "Gearchiveerde gebeurtenis"
 msgid "Deletion date"
 msgstr "Schrappingsdatum"
 
+#, ai_translation
 msgid "Edition of papi-web settings"
-msgstr ""
+msgstr "Edition of papi-web settings"
 
+#, ai_translation
 msgid "Please validate the global configuration of the application."
-msgstr ""
+msgstr "Bevestig de algemene configuratie van de toepassing."
 
+#, ai_translation
 msgid "Application"
-msgstr ""
+msgstr "Toepassing"
 
+#, ai_translation
 msgid "Launch browser:"
-msgstr ""
+msgstr "Browser starten:"
 
+#, ai_translation
 msgid "Papi-web can automatically launch a web browser when starting the web server."
-msgstr ""
+msgstr "Papi-web kan automatisch een webbrowser starten bij het starten van de webserver."
 
+#, ai_translation
 msgid "Log level:"
-msgstr ""
+msgstr "Logniveau:"
 
+#, ai_translation
 msgid "The log level allows you to trace the behaviour of the application."
-msgstr ""
+msgstr "Met het logniveau kunt u het gedrag van de toepassing traceren."
 
+#, ai_translation
 msgid "Internationalization"
-msgstr ""
+msgstr "Internationalisering"
 
+#, ai_translation
 msgid "The default federation for your events."
-msgstr ""
+msgstr "De standaard federatie voor uw evenementen."
 
+#, ai_translation
 msgid "Language:"
-msgstr ""
+msgstr "Taal:"
 
+#, ai_translation
 msgid "The default language used."
-msgstr ""
+msgstr "De standaardtaal gebruikt."
 
+#, ai_translation
 msgid "Edit the Papi-web settings."
-msgstr ""
+msgstr "Bewerk de Papi-webinstellingen."
 
 #, ai_translation
 msgid "Add an event."
@@ -3161,11 +3297,13 @@ msgstr "Toegang vanaf de Papi-webserver"
 msgid "Access from the local network (LAN/WAN)"
 msgstr "Toegang van het lokale netwerk (LAN/WAN)"
 
+#, ai_translation
 msgid "Default language"
-msgstr ""
+msgstr "Standaardtaal"
 
+#, ai_translation
 msgid "Default federation:"
-msgstr ""
+msgstr "Standaard federatie:"
 
 #, ai_translation
 msgid "Launching the browser on server startup"
@@ -3179,8 +3317,9 @@ msgstr "Ja."
 msgid "No"
 msgstr "Nee"
 
+#, ai_translation
 msgid "Log level"
-msgstr ""
+msgstr "Logniveau"
 
 #, ai_translation, python-format
 msgid "%(lib)s version"
@@ -3262,8 +3401,9 @@ msgstr "Informatie: %(num)d"
 msgid "No informations"
 msgstr "Geen informatie"
 
+#, ai_translation
 msgid "Enable/disable the details of events on the cards below."
-msgstr ""
+msgstr "Schakel de details van de gebeurtenissen op de onderstaande kaarten in/uit."
 
 #, ai_translation
 msgid "Refresh this page."
@@ -3861,50 +4001,6 @@ msgstr "Wijzig het toernooi van de speler."
 msgid "No players."
 msgstr "Geen spelers."
 
-#, fuzzy
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Rk."
-
-#, fuzzy
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nb."
-
-#, fuzzy
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Name"
-
-#, fuzzy
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-#, fuzzy
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapid"
-
-#, fuzzy
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-#, fuzzy
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat"
-
-#, fuzzy
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
-msgstr "Fed"
-
-#, fuzzy, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
-msgstr "R %(round)d"
-
-#, fuzzy
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
-#, fuzzy
-msgid "Pts *** POINTS FOR PRINT VIEW"
-msgstr "Pts"
-
 #, ai_translation, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Rotatievertraging: %(seconds)d sec."
@@ -3934,6 +4030,9 @@ msgstr "(geen schermen)"
 #, ai_translation
 msgid "Edit the properties of the rotator."
 msgstr "Bewerk de eigenschappen van de rotator."
+
+msgid "Go to the rotator."
+msgstr ""
 
 #, ai_translation
 msgid "Clone the rotator."
@@ -4036,6 +4135,10 @@ msgid "Type: %(screen_type)s"
 msgstr "Type: %(screen_type)s"
 
 #, ai_translation, python-format
+msgid "Round: %(round)d"
+msgstr "Ronde: %(round)d"
+
+#, ai_translation, python-format
 msgid "Max number: %(num)d"
 msgstr "Max. nummer: %(num)d"
 
@@ -4081,6 +4184,9 @@ msgstr "Bewerk de sets van spelers die op het scherm worden weergegeven."
 msgid "Boards"
 msgstr "Borden"
 
+msgid "Go to the screen."
+msgstr ""
+
 #, ai_translation
 msgid "Input screen creation"
 msgstr "Aanmaken van invoerscherm"
@@ -4097,8 +4203,9 @@ msgstr "Schermaanmaak voor spelers"
 msgid "Results screen creation"
 msgstr "Resultaten scherm aanmaken"
 
+#, ai_translation
 msgid "Ranking screen creation"
-msgstr ""
+msgstr "Schermaanmaak"
 
 #, ai_translation
 msgid "Image screen creation"
@@ -4153,27 +4260,12 @@ msgid "The first tournament of the screen, mandatory (it is possible to add othe
 msgstr "Het eerste toernooi van het scherm, verplicht (het is mogelijk om andere toernooien later toe te voegen)."
 
 #, ai_translation
-msgid "The timer displayed on the screen."
-msgstr "De timer die op het scherm wordt weergegeven."
-
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr ""
+msgid "E.g.: https://my.club.us/tournament.jpg"
+msgstr "Bijvoorbeeld: https://my.club.us/tournament.jpg"
 
 #, ai_translation
-msgid "Check the box to allow other screens to display a link to this screen."
-msgstr "Vink het vakje aan om andere schermen een link naar dit scherm te laten weergeven."
-
-#, ai_translation
-msgid "E.g.: Link to my screen"
-msgstr "Bijvoorbeeld: Link naar mijn scherm"
-
-#, ai_translation
-msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr "Dit label zal gebruikt worden voor de link naar andere schermen naar dit scherm. Indien leeg gelaten, zal er een standaard label gebruikt worden."
-
-#, ai_translation
-msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
-msgstr "Wanneer het alarmbericht niet op schermniveau is gedefinieerd, wordt het alarmbericht dat op draai- of gebeurtenisniveau is gedefinieerd gebruikt (als er geen waarschuwingsbericht is ingesteld, wordt de schuifbanner onderaan het scherm niet weergegeven)."
+msgid "The URL of the image to display."
+msgstr "De URL van de te tonen afbeelding."
 
 #, ai_translation
 msgid "Maximum number of results displayed:"
@@ -4204,12 +4296,28 @@ msgid "When not tournament is selected, the results of all the tournaments are d
 msgstr "Wanneer geen toernooi is geselecteerd, worden de resultaten van alle toernooien weergegeven."
 
 #, ai_translation
-msgid "E.g.: https://my.club.us/tournament.jpg"
-msgstr "Bijvoorbeeld: https://my.club.us/tournament.jpg"
+msgid "The timer displayed on the screen."
+msgstr "De timer die op het scherm wordt weergegeven."
 
 #, ai_translation
-msgid "The URL of the image to display."
-msgstr "De URL van de te tonen afbeelding."
+msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgstr "Wanneer het alarmbericht niet op schermniveau is gedefinieerd, wordt het alarmbericht dat op draai- of gebeurtenisniveau is gedefinieerd gebruikt (als er geen waarschuwingsbericht is ingesteld, wordt de schuifbanner onderaan het scherm niet weergegeven)."
+
+#, ai_translation
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr "Dit veld geeft u de schermen aan waarvan de links op het schermmenu worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @boards (alle boards), @input (alle invoerschermen), @players (alle spelersschermen), @ranking (alle rankingschermen) en de wildcard * kunnen worden gebruikt. Als dit veld leeg blijft, wordt er geen menu op het scherm weergegeven."
+
+#, ai_translation
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr "Vink het vakje aan om andere schermen een link naar dit scherm te laten weergeven."
+
+#, ai_translation
+msgid "E.g.: Link to my screen"
+msgstr "Bijvoorbeeld: Link naar mijn scherm"
+
+#, ai_translation
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr "Dit label zal gebruikt worden voor de link naar andere schermen naar dit scherm. Indien leeg gelaten, zal er een standaard label gebruikt worden."
 
 #, ai_translation, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
@@ -4311,8 +4419,9 @@ msgstr "Voeg een scherm toe om de paringen op alfabetische volgorde weer te geve
 msgid "Add a screen to display the last results."
 msgstr "Voeg een scherm toe om de laatste resultaten weer te geven."
 
+#, ai_translation
 msgid "Add a screen to display the ranking."
-msgstr ""
+msgstr "Voeg een scherm toe om de ranking weer te geven."
 
 #, ai_translation
 msgid "Add a screen to display an image."
@@ -4334,8 +4443,9 @@ msgstr "De spelersschermen tonen/verbergen."
 msgid "Show/hide the results screens."
 msgstr "De resultatenschermen tonen/verbergen."
 
+#, ai_translation
 msgid "Show/hide the ranking screens."
-msgstr ""
+msgstr "De rankingschermen tonen/verbergen."
 
 #, ai_translation
 msgid "Show/hide the image screens."
@@ -4345,12 +4455,13 @@ msgstr "Afbeeldingsschermen tonen/verbergen."
 msgid "No such screens."
 msgstr "Zo'n schermen bestaan niet."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Edition of default timers for event [%(event_uniq_id)s]"
-msgstr ""
+msgstr "Edition of default timers for event [%(event_uniq_id)s]"
 
+#, ai_translation
 msgid "Timers"
-msgstr ""
+msgstr "Timers"
 
 #, ai_translation
 msgid "Add a timer to the event."
@@ -4496,28 +4607,33 @@ msgstr "Het unieke ID, gebruikt om naar de timer te verwijzen."
 msgid "Colors and delays"
 msgstr "Kleuren en vertragingen"
 
+#, ai_translation
 msgid "Missing Papi file"
-msgstr ""
+msgstr "Ontbrekend Papi-bestand"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
-msgstr ""
+msgstr "Waarschuwing: Papi-bestand [%(path)s] niet gevonden, veel functies zijn uitgeschakeld."
 
+#, ai_translation
 msgid "Do you want Papi-web to create the file?"
-msgstr ""
+msgstr "Wilt u dat Papi-web het bestand aanmaakt?"
 
+#, ai_translation
 msgid "No, I will do it later"
-msgstr ""
+msgstr "Nee, ik doe het later wel."
 
+#, ai_translation
 msgid "Yes, create the file"
-msgstr ""
+msgstr "Ja, maak het bestand aan"
 
 #, ai_translation
 msgid "Tournaments"
 msgstr "Toernooien"
 
+#, ai_translation
 msgid "Enable/disable the details of tournaments on the cards below."
-msgstr ""
+msgstr "Schakel de details van toernooien op de onderstaande kaarten in/uit."
 
 #, ai_translation
 msgid "Add a tournament to the event."
@@ -4531,9 +4647,9 @@ msgstr "Een toernooi aanmaken"
 msgid "No tournaments."
 msgstr "Geen toernooien."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Number of players : %(num)d"
-msgstr ""
+msgstr "Aantal spelers : %(num)d"
 
 #, ai_translation
 msgid "Illegal moves are not recorded."
@@ -4657,8 +4773,9 @@ msgstr "De naam van het Papi bestand, zonder de .papi extensie (standaard het FF
 msgid "Time control"
 msgstr "Tijdregeling"
 
+#, ai_translation
 msgid "Initial time (optional, seconds):"
-msgstr ""
+msgstr "Begintijd (facultatief, seconden):"
 
 #, ai_translation, python-format
 msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
@@ -4668,15 +4785,17 @@ msgstr "Bijvoorbeeld: %(seconds)d (%(minutes)d minuten)"
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr "De begintijd in seconden (kan leeg zijn als een verhoging is ingesteld)."
 
+#, ai_translation
 msgid "Increment (optional, seconds):"
-msgstr ""
+msgstr "Increment (facultatief, seconden):"
 
 #, ai_translation
 msgid "The number of seconds added to the players' clock at each move."
 msgstr "Het aantal seconden toegevoegd aan de klok van de spelers bij elke beweging."
 
+#, ai_translation
 msgid "Penalty (handicap, seconds):"
-msgstr ""
+msgstr "Straf (handicap, seconden):"
 
 #, ai_translation
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
@@ -4694,8 +4813,9 @@ msgstr "Bijv.: 50 (Elo)"
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr "Het aantal punten verschil tussen de rangschikking van de spelers gebruikt om het aantal sancties toegepast op de hoogste gerangschikte speler te berekenen."
 
+#, ai_translation
 msgid "Minimal time (handicap, seconds):"
-msgstr ""
+msgstr "Minimale tijd (handicap, seconden):"
 
 #, ai_translation
 msgid "The minimum time, whatever the ranking difference between the two players."
@@ -4713,6 +4833,8 @@ msgstr "Een URL, of het pad naar het regelsbestand op de server, in PDF-formaat 
 msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
 msgstr "Het maximale aantal illegale bewegingen dat per ronde kan worden geregistreerd voor een speler (van 0 naar 3, standaard %(default)d)."
 
+# Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
+# long compared to initial [Pairings]
 # Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
 # long compared to initial [Pairings]
 #, ai_translation
@@ -4803,8 +4925,9 @@ msgstr "Spelers schermen tonen paren op alfabetische volgorde."
 msgid "Results screens show the last results (most recent first)."
 msgstr "Resultatenschermen tonen de laatste resultaten (meest recente eerste)."
 
+#, ai_translation
 msgid "Ranking screens show the players by rank."
-msgstr ""
+msgstr "Ranking schermen tonen de spelers op rang."
 
 #, ai_translation
 msgid "Image screens show an image (local or remote)."
@@ -4813,6 +4936,50 @@ msgstr "Afbeeldingsschermen tonen een afbeelding (lokaal of op afstand)."
 #, ai_translation
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Rotator draait automatisch tussen meerdere schermen."
+
+#, fuzzy
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
+
+#, fuzzy
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+#, fuzzy
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+#, fuzzy
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+#, fuzzy
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+#, fuzzy
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+#, fuzzy
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat"
+
+#, fuzzy
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr "Fed"
+
+#, fuzzy, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+#, fuzzy
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
+
+#, fuzzy
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
 
 #, ai_translation
 msgid "Go back to the events page."
@@ -5162,6 +5329,9 @@ msgstr "vs"
 
 #~ msgid "Minimal time (handicap):"
 #~ msgstr "Minimale tijd (handicap):"
+
+#~ msgid "%t (ranking)"
+#~ msgstr ""
 
 #~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
 #~ msgstr "Bu."

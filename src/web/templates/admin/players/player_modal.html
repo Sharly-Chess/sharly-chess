@@ -157,7 +157,7 @@
                             help_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
                             disabled=action == 'delete',
                             error=action == 'delete',
-                            number_min=1,
+                            min=1,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -222,7 +222,7 @@
                             help_text=_('The player\'s FIDE ID (do not change).') if action != 'delete' else '',
                             disabled=true,
                             error=action == 'delete',
-                            number_min=1,
+                            min=1,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -238,41 +238,15 @@
                         ) }}
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        {# can not use admin_macros.select_input() here because of dynamic-select #}
-                        {% with id='federation', name='federation' %}
-                            <div>
-                                <label for="{{ id }}" class="mb-1 form-check-label d-block">{{ _('Federation:') }}</label>
-                                <select
-                                    name="{{ name }}"
-                                    class="form-control {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                    {% if action == 'delete' %}
-                                        disabled
-                                    {% else %}
-                                        data-dynamic-select
-                                    {% endif %}
-                                >
-                                    {% for federation_id, federation_name in federations.items() %}
-                                        <option
-                                            value="{{ federation_id }}"
-                                            {% if federation_id == data[name] %}selected{%endif %}
-                                            data-img="{{ url_for('static', file_path='/images/federations/' ~ federation_id ~ '.svg') }}"
-                                        >
-                                            {{ federation_id }} - {{ federation_name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                {% if action != 'delete' %}
-                                    <div id="{{ id }}-help" class="form-text">
-                                        {{ _('The player\'s federation.') }}
-                                    </div>
-                                {% endif %}
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endwith %}
+                        {{ admin_macros.select_input(
+                            name='federation',
+                            label=_('Federation:'),
+                            help_text=_('The player\'s federation.'),
+                            select_options=federation_options,
+                            disabled=action == 'delete',
+                            error=action == 'delete',
+                            data=data, errors=errors
+                        ) }}
                     </div>
                 </div>
 

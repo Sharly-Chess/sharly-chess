@@ -101,6 +101,10 @@ class FamilyAdminController(BaseEventAdminController):
         timer_id: int | None = None
         input_exit_button: bool | None = None
         players_show_unpaired: bool | None = None
+        ranking_crosstable: bool | None = None
+        ranking_round: int | None = None
+        ranking_min_points: float | None = None
+        ranking_max_points: float | None = None
         tournament_id: int | None = None
         first: int | None = None
         last: int | None = None
@@ -208,7 +212,19 @@ class FamilyAdminController(BaseEventAdminController):
                             data, 'players_show_unpaired'
                         )
                     case 'ranking':
-                        pass
+                        ranking_crosstable = WebContext.form_data_to_bool(data, field := 'ranking_crosstable')
+                        try:
+                            ranking_round = WebContext.form_data_to_int(data, field := 'ranking_round')
+                        except ValueError:
+                            errors[field] = _('A positive integer is expected.')
+                        try:
+                            ranking_min_points = WebContext.form_data_to_float(data, field := 'ranking_min_points')
+                        except ValueError:
+                            errors[field] = _('A positive integer is expected.')
+                        try:
+                            ranking_max_points = WebContext.form_data_to_float(data, field := 'ranking_max_points')
+                        except ValueError:
+                            errors[field] = _('A positive integer is expected.')
                     case _:
                         raise ValueError(f'type=[{type_}]')
                 field: str = 'parts'
@@ -259,6 +275,10 @@ class FamilyAdminController(BaseEventAdminController):
             timer_id=timer_id,
             input_exit_button=input_exit_button,
             players_show_unpaired=players_show_unpaired,
+            ranking_crosstable=ranking_crosstable,
+            ranking_round=ranking_round,
+            ranking_min_points=ranking_min_points,
+            ranking_max_points=ranking_max_points,
             first=first,
             last=last,
             parts=parts,
@@ -313,6 +333,10 @@ class FamilyAdminController(BaseEventAdminController):
                     timer_id: int | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool | None = None
+                    ranking_crosstable: bool | None = None
+                    ranking_round: int | None = None
+                    ranking_min_points: float | None = None
+                    ranking_max_points: float | None = None
                     tournament_id: int | None = None
                     first: int | None = None
                     last: int | None = None
@@ -366,7 +390,10 @@ class FamilyAdminController(BaseEventAdminController):
                                 case ScreenType.PLAYERS:
                                     players_show_unpaired = web_context.admin_family.stored_family.players_show_unpaired
                                 case ScreenType.RANKING:
-                                    pass
+                                    ranking_crosstable = web_context.admin_family.stored_family.ranking_crosstable
+                                    ranking_round = web_context.admin_family.stored_family.ranking_round
+                                    ranking_min_points = web_context.admin_family.stored_family.ranking_min_points
+                                    ranking_max_points = web_context.admin_family.stored_family.ranking_max_points
                                 case _:
                                     raise ValueError(
                                         f'type=[{web_context.admin_family.type}]'
@@ -424,6 +451,10 @@ class FamilyAdminController(BaseEventAdminController):
                         'players_show_unpaired': WebContext.value_to_form_data(
                             players_show_unpaired
                         ),
+                        'ranking_crosstable': WebContext.value_to_form_data(ranking_crosstable),
+                        'ranking_round': WebContext.value_to_form_data(ranking_round),
+                        'ranking_min_points': WebContext.value_to_form_data(ranking_min_points),
+                        'ranking_max_points': WebContext.value_to_form_data(ranking_max_points),
                     }
                     stored_family: StoredFamily = (
                         cls._admin_validate_family_update_data(
@@ -441,6 +472,7 @@ class FamilyAdminController(BaseEventAdminController):
                     'timer_options': cls._get_timer_options(web_context.admin_event),
                     'input_exit_button_options': cls._get_input_exit_button_options(),
                     'players_show_unpaired_options': cls._get_players_show_unpaired_options(),
+                    'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -451,7 +483,7 @@ class FamilyAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/{event_uniq_id:str}/families',
+        path='/admin/event/{event_uniq_id:str}/families',
         name='admin-event-families-tab',
         cache=1,
     )

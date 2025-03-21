@@ -1,0 +1,48 @@
+<tr class="player-header">
+    {{ macros.extra_column_header("rank", extra_columns)}}
+    <th class="rank text-end">
+        {% if ranking or crosstable %}
+            {{ _('Rk. *** RANK FOR PRINT VIEW') }}
+        {% else %}
+            {{ _('Nb. *** NB FOR PRINT VIEW') }}
+        {% endif %}
+    </th>
+    {{ macros.extra_column_header("title", extra_columns)}}
+    <th class="title text-end">&nbsp;</th>
+    {{ macros.extra_column_header("name", extra_columns)}}
+    <th class="name text-start">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+    {{ macros.extra_column_header("elo", extra_columns)}}
+    <th class="rating text-end">
+        {% if tournament.rating == 1 %}
+            {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
+        {% elif tournament.rating == 2 %}
+            {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
+        {% elif tournament.rating == 3 %}
+            {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
+        {% endif %}
+    </th>
+    {{ macros.extra_column_header("category", extra_columns)}}
+    <th class="category text-center">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>
+    {{ macros.extra_column_header("federation", extra_columns)}}
+    <th class="federation text-center">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
+    {% if crosstable %}
+        {{ macros.extra_column_header("first-round", extra_columns)}}
+        {% for round in range(1, ranking_round + 1) %}
+            <th class="round text-center">{{ _('R %(round)d *** ROUND FOR PRINT VIEW', round=round) }}</th>
+        {% endfor %}
+    {% else %}
+        {{ macros.extra_column_header("club", extra_columns)}}
+        <th class="club text-start">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+    {% endif %}
+    {% if ranking or crosstable %}
+        <th class="points text-center">
+            <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
+        </th>
+        {% for tie_break in tournament.tie_breaks %}
+            {% if tie_break.is_displayable %}
+                <th class="tie-break text-center">{{ tie_break.acronym }}</th>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {{ macros.extra_column_header("end", extra_columns)}}
+</tr>

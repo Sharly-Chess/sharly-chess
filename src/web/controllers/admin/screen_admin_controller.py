@@ -133,6 +133,10 @@ class ScreenAdminController(BaseEventAdminController):
         results_limit: int | None = None
         results_max_age: int | None = None
         results_tournament_ids: list[int] | None = None
+        ranking_crosstable: bool | None = None
+        ranking_round: int | None = None
+        ranking_min_points: float | None = None
+        ranking_max_points: float | None = None
         background_image: str | None = None
         background_color: str | None = None
         message_default: bool = True
@@ -214,7 +218,19 @@ class ScreenAdminController(BaseEventAdminController):
                             if WebContext.form_data_to_bool(data, field):
                                 results_tournament_ids.append(tournament_id)
                     case ScreenType.RANKING:
-                        pass
+                        ranking_crosstable = WebContext.form_data_to_bool(data, field := 'ranking_crosstable')
+                        try:
+                            ranking_round = WebContext.form_data_to_int(data, field := 'ranking_round')
+                        except ValueError:
+                            errors[field] = _('A positive integer is expected.')
+                        try:
+                            ranking_min_points = WebContext.form_data_to_float(data, field := 'ranking_min_points')
+                        except ValueError:
+                            errors[field] = _('A positive integer is expected.')
+                        try:
+                            ranking_max_points = WebContext.form_data_to_float(data, field := 'ranking_max_points')
+                        except ValueError:
+                            errors[field] = _('A positive integer is expected.')
                     case ScreenType.IMAGE:
                         field = 'background_image'
                         background_image = WebContext.form_data_to_str(data, field, '')
@@ -280,6 +296,10 @@ class ScreenAdminController(BaseEventAdminController):
             results_limit=results_limit,
             results_max_age=results_max_age,
             results_tournament_ids=results_tournament_ids,
+            ranking_crosstable=ranking_crosstable,
+            ranking_round=ranking_round,
+            ranking_min_points=ranking_min_points,
+            ranking_max_points=ranking_max_points,
             background_image=background_image,
             background_color=background_color,
             message_default=message_default,
@@ -425,6 +445,10 @@ class ScreenAdminController(BaseEventAdminController):
                     results_limit: int | None = None
                     results_max_age: int | None = None
                     results_tournament_ids: list[int] | None = None
+                    ranking_crosstable: bool | None = None
+                    ranking_round: int | None = None
+                    ranking_min_points: float | None = None
+                    ranking_max_points: float | None = None
                     init_set_tournament_id: int | None = None
                     match action:
                         case 'update':
@@ -446,6 +470,13 @@ class ScreenAdminController(BaseEventAdminController):
                             name = web_context.admin_event.get_unused_screen_name(
                                 screen_type=ScreenType(screen_type)
                             )
+                            match screen_type:
+                                case 'ranking':
+                                    ranking_crosstable = False
+                                case 'input' | 'boards' | 'players' | 'ranking' | 'results' | 'image':
+                                    pass
+                                case _:
+                                    raise ValueError(f'screen_type=[{screen_type}]')
                         case 'clone':
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
                                 base_uniq_id=web_context.admin_screen.uniq_id
@@ -485,7 +516,10 @@ class ScreenAdminController(BaseEventAdminController):
                                     results_max_age = web_context.admin_screen.stored_screen.results_max_age
                                     results_tournament_ids = web_context.admin_screen.stored_screen.results_tournament_ids
                                 case ScreenType.RANKING:
-                                    pass
+                                    ranking_crosstable = web_context.admin_screen.stored_screen.ranking_crosstable
+                                    ranking_round = web_context.admin_screen.stored_screen.ranking_round
+                                    ranking_min_points = web_context.admin_screen.stored_screen.ranking_min_points
+                                    ranking_max_points = web_context.admin_screen.stored_screen.ranking_max_points
                                 case ScreenType.IMAGE:
                                     background_image = web_context.admin_screen.stored_screen.background_image
                                     background_color = (
@@ -542,6 +576,10 @@ class ScreenAdminController(BaseEventAdminController):
                         'results_max_age': WebContext.value_to_form_data(
                             results_max_age
                         ),
+                        'ranking_crosstable': WebContext.value_to_form_data(ranking_crosstable),
+                        'ranking_round': WebContext.value_to_form_data(ranking_round),
+                        'ranking_min_points': WebContext.value_to_form_data(ranking_min_points),
+                        'ranking_max_points': WebContext.value_to_form_data(ranking_max_points),
                         'background_image': WebContext.value_to_form_data(
                             background_image
                         ),
@@ -580,6 +618,7 @@ class ScreenAdminController(BaseEventAdminController):
                     'timer_options': cls._get_timer_options(web_context.admin_event),
                     'input_exit_button_options': cls._get_input_exit_button_options(),
                     'players_show_unpaired_options': cls._get_players_show_unpaired_options(),
+                    'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -632,7 +671,7 @@ class ScreenAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/{event_uniq_id:str}/screens',
+        path='/admin/event/{event_uniq_id:str}/screens',
         name='admin-event-screens-tab',
         cache=1,
     )
