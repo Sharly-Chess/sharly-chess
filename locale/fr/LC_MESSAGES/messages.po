@@ -2636,9 +2636,6 @@ msgstr "Aucun message d'information"
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
 
-msgid "Refresh this page."
-msgstr "Actualiser la page."
-
 msgid "Open/close check-in."
 msgstr "Ouvrir/fermer le pointage."
 
@@ -3011,6 +3008,9 @@ msgstr "Ajoutez un tournoi pour pouvoir ajouter des joueur·euses."
 
 msgid "Add player"
 msgstr "Ajouter"
+
+msgid "Refresh this page."
+msgstr "Actualiser la page."
 
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."

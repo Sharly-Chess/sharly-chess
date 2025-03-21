@@ -2636,9 +2636,6 @@ msgstr ""
 msgid "Enable/disable the details of events on the cards below."
 msgstr ""
 
-msgid "Refresh this page."
-msgstr ""
-
 msgid "Open/close check-in."
 msgstr ""
 
@@ -3010,6 +3007,9 @@ msgid "Add a tournament before adding players."
 msgstr ""
 
 msgid "Add player"
+msgstr ""
+
+msgid "Refresh this page."
 msgstr ""
 
 msgid "Clear all the filters."
