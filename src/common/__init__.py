@@ -1,3 +1,4 @@
+import importlib.metadata
 import os
 import re
 import sys
@@ -14,6 +15,7 @@ from packaging.version import Version
 from common.logger import get_logger
 
 APP_NAME: str = 'papi-web'
+PAPI_WEB_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 
 # True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
@@ -28,7 +30,6 @@ EXPERIMENTAL_FEATURES: bool = os.environ.get(
     '1',
 ]
 
-PAPI_WEB_VERSION: Version = Version("2.4.27")
 
 REQUEST_TIMEOUT: int = 10
 
