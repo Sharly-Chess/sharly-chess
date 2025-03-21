@@ -40,27 +40,29 @@
         </div>
 </div>
 
-<table class="table table-striped table-sm table-hover w-auto bg-light mx-auto justify-content-center">
-    <thead class="table-dark position-sticky top-0 z-2">
+<table class="table table-sm table-hover w-auto bg-light mx-auto justify-content-center">
+    <thead
+        class="table-dark"
+    >
         <tr>
             <th scope="col" class="text-nowrap">{{ _('Configuration') }}</th>
             <th scope="col" class=""></th>
         </tr>
     </thead>
     <tbody>
-        <tr>
+        <tr class="{{ row_cycler(True) }}">
             <th scope="row" class="text-nowrap">{{ _('Port') }}</th>
             <td>{{ papi_web_config.web_port }}</td>
         </tr>
-        <tr>
+        <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Access from the Papi-web server') }}</th>
             <td><a href="{{ papi_web_config.local_url }}" target="_blank">{{ papi_web_config.local_url }}</a></td>
         </tr>
-        <tr>
+        <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Access from the local network (LAN/WAN)') }}</th>
             <td>{% if papi_web_config.lan_url %}<a href="{{ papi_web_config.lan_url }}" target="_blank">{{ papi_web_config.lan_url }}</a>{% else %}<span class="fst-italic">-</span>{% endif %}</td>
         </tr>
-        <tr>
+        <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Default language') }}</th>
             <td>
                 {% set l_info = locale_infos[papi_web_config.locale] %}
@@ -78,7 +80,7 @@
                 {% endif %}
             </td>
         </tr>
-        <tr>
+        <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Default federation:') }}</th>
             <td>
                 <img
@@ -93,7 +95,7 @@
                 {% endif %}
             </td>
         </tr>
-        <tr>
+        <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Launching the browser on server startup') }}</th>
             <td>
                 {% if papi_web_config.launch_browser %}{{ _('Yes') }}{% else %}{{ _('No') }}{% endif %}
@@ -104,7 +106,7 @@
                 {% endif %}
             </td>
         </tr>
-        <tr>
+        <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Log level') }}</th>
             <td>
                 {{ papi_web_config.log_levels[papi_web_config.log_level] }}
@@ -115,48 +117,70 @@
                 {% endif %}
             </td>
         </tr>
-        <tr>
+        <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Papi-web') }}</th>
             <td>{{ papi_web_config['version'] }}</td>
         </tr>
+
+        <tr>
+            <th scope="row" class="padded-header text-nowrap">{{ _('Plugins') }}</th>
+            <th scope="row" class="padded-header"></th>
+        </tr>
+        {% for plugin in plugins %}
+            <tr class="{{ row_cycler(loop.index == 0) }}">
+                <th scope="row" class="text-nowrap">{{ plugin.name }}</th>
+                <td>
+                    {% if plugin.is_enabled %}
+                        {{ _('On') }}
+                    {% else %}
+                        {{ _('Off') }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+
         {% if DEVEL_ENV %}
             <tr>
+                <th scope="row" class="padded-header text-nowrap">{{ _('Libraries') }}</th>
+                <th scope="row" class="padded-header"></th>
+            </tr>
+            <tr class="{{ row_cycler(True) }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Uvicorn') }}</th>
                 <td>{{ papi_web_config.uvicorn_version }}</td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='LiteStar') }}</th>
                 <td>{{ papi_web_config.litestar_version }}</td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Jinja2') }}</th>
                 <td>{{ papi_web_config.jinja2_version }}</td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='HTMX') }}</th>
                 <td id="htmx-version"></td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jQuery') }}</th>
                 <td id="jquery-version"></td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Bootstrap') }}</th>
                 <td id="bootstrap-version"></td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='SortableJS') }}</th>
                 <td>{{ papi_web_config.sortable_version }}</td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jsTree') }}</th>
                 <td>{{ papi_web_config.jstree_version }}</td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='PyODBC') }}</th>
                 <td>{{ papi_web_config.pyodbc_version }}</td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{
                     _('Access driver (found)')
                     if access_driver in odbc_drivers else
@@ -164,7 +188,7 @@
                 </th>
                 <td>{{ access_driver }}</td>
             </tr>
-            <tr>
+            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">
                     {{ _('Other ODBC drivers found on the server') }}
                 </th>
@@ -179,22 +203,6 @@
                 </td>
             </tr>
         {% endif %}
-        <tr>
-            <th scope="row" class="text-nowrap">{{ _('Plugins') }}</th>
-            <td scope="row"></td>
-        </tr>
-        {% for plugin in plugins %}
-            <tr>
-                <th scope="row" class="text-nowrap">{{ plugin.name }}</th>
-                <td>
-                    {% if plugin.is_enabled %}
-                        {{ _('On') }}
-                    {% else %}
-                        {{ _('Off') }}
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
     </tbody>
 </table>
 <script>

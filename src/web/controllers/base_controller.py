@@ -1,3 +1,4 @@
+from itertools import cycle
 import re
 import time
 from datetime import datetime, date
@@ -411,3 +412,13 @@ class BaseController(Controller):
             # sets the locale to the current thread and stores it to the session
             if set_locale(locale):
                 SessionHandler.set_session_locale(request, locale)
+
+    @staticmethod
+    def get_cycler(items: list[str]):
+        iter_ = cycle(items)
+        def cycler(reset: bool = False):
+            nonlocal iter_
+            if reset:
+                iter_ = cycle(items)
+            return next(iter_)
+        return cycler
