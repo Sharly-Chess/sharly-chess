@@ -46,7 +46,9 @@ class FfeSearchController(BaseEventAdminController):
         search_results: list['Player'] = []
         search_messages: list[tuple] = []
         if search_ffe:
-            start: float = time.perf_counter()
+            start: float = 0.0
+            if DEVEL_ENV:
+                start = time.perf_counter()
             try:
                 with FFESqlServer() as ffe_sql_server:
                     search_results: list['Player'] = [
@@ -54,8 +56,8 @@ class FfeSearchController(BaseEventAdminController):
                             search_ffe, limit=self.MAX_RESULTS
                         )
                     ]
-                    seconds: float = time.perf_counter() - start
                     if DEVEL_ENV:
+                        seconds: float = time.perf_counter() - start
                         if len(search_results):
                             message: str = ngettext(
                                 '{num} player found in {seconds:.2f} seconds.',
@@ -82,7 +84,9 @@ class FfeSearchController(BaseEventAdminController):
                     )
             except PapiWebException as e:
                 search_messages.append(('bi-cloud-slash', '', str(e)))
-                start: float = time.perf_counter()
+                start: float = 0.0
+                if DEVEL_ENV:
+                    start = time.perf_counter()
                 if not FfeDatabase().exists():
                     search_messages.append(('bi-database-slash', '', _('No local database.')))
                 else:
@@ -91,8 +95,8 @@ class FfeSearchController(BaseEventAdminController):
                             player for player in ffe_database.search_player(
                                 search_ffe, limit=self.MAX_RESULTS)
                         ]
-                        seconds: float = time.perf_counter() - start
                         if DEVEL_ENV:
+                            seconds: float = time.perf_counter() - start
                             if len(search_results):
                                 message: str = ngettext(
                                     '{num} player found in {seconds:.2f} seconds.',
