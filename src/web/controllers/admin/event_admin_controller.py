@@ -461,7 +461,7 @@ class EventAdminController(BaseEventAdminController):
         data: str = ''
         vcf_players = [
             player for player in players
-            if not (player.phone or player.mail)
+            if player.phone or player.mail
         ]
         for player in vcf_players:
             if player.mail or player.phone:
