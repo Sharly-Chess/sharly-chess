@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, Namespace
 
 from common.exception import PapiWebException
-from common.logger import print_interactive_error, print_interactive_info
+from common.logger import print_interactive_error, print_interactive_info, print_interactive_success
 from plugins.ffe.ffe_sql_server import FFESqlServer
 
 
@@ -46,12 +46,15 @@ def main():
         args.password,
         args.database,
     )
+    print_interactive_success('The credentials have been written to {FFESqlServer.CREDENTIALS_FILE}.')
+    print_interactive_info('Now testing the remote database...')
     try:
         with FFESqlServer() as ffe_sql_server:
             for player in ffe_sql_server.search_player('pascal aubry', limit=8):
                 print_interactive_info(f'{player=}')
     except PapiWebException as exception:
         print_interactive_error(f'{exception=}')
+    print_interactive_info('Done.')
 
 if __name__ == '__main__':
     main()
