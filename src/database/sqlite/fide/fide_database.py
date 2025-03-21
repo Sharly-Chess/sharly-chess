@@ -213,6 +213,7 @@ class FideDatabase(SQLiteDatabase):
             self.execute('CREATE INDEX `player_first_name` ON `player` (`first_name` COLLATE NOCASE)')
             self.execute('CREATE INDEX `player_last_name` ON `player` (`last_name` COLLATE NOCASE)')
             self.execute('CREATE INDEX `player_fide_id` ON `player` (`fide_id`)')
+            self.commit()
 
     def read_federation_ids(self) -> Iterator[str]:
         self.execute(
