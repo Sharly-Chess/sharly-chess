@@ -768,6 +768,27 @@ msgstr "Classement après la ronde {round}"
 msgid "Crosstable after round #{round}"
 msgstr "Grille américaine après la ronde {round}"
 
+msgid "Crosstable"
+msgstr "Grille américaine"
+
+msgid "Connection to the FFE server failed: {error}."
+msgstr "La connexion au serveur fédéral a échoué : {error}."
+
+msgid "Connection to the FFE server failed."
+msgstr "La connexion au serveur fédéral a échoué."
+
+msgid "Connection to the FFE database failed: {error}."
+msgstr "La connexion à la base fédérale a échoué : {error}."
+
+msgid "Connection to the FFE database failed."
+msgstr "La connexion à la base fédérale a échoué."
+
+msgid "Request to the FFE database failed: {error}."
+msgstr "La requête à la base fédérale a échoué : {error}."
+
+msgid "Request to the FFE database failed."
+msgstr "La requête à la base fédérale a échoué."
+
 msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr "La base de données FIDE [{file}] est introuvable, voulez-vous la créer (O/n) ? "
 
@@ -1035,6 +1056,28 @@ msgstr "Téléchargement de la base de données de la FFE..."
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
 
+msgid "{num} player found in {seconds:.2f} seconds."
+msgid_plural "{num} players found in {seconds:.2f} seconds."
+msgstr[0] "{num} joueur·euse trouvé·e en {seconds:.2f} secondes."
+msgstr[1] "{num} joueur·euses trouvé·es en {seconds:.2f} secondes."
+
+msgid "No players found in {seconds:.2f} seconds."
+msgstr "Aucun·e joueur·euse trouvé·e in {seconds:.2f} seconds."
+
+msgid "{num} player found."
+msgid_plural "{num} players found."
+msgstr[0] "{num} joueur·euse trouvé·e."
+msgstr[1] "{num} joueur·euses trouvé·es."
+
+msgid "No players found."
+msgstr "Aucun·e joueur·euse trouvé·e."
+
+msgid "No local database."
+msgstr "Aucune base de donnée locale."
+
+msgid "Not connected to internet."
+msgstr "Aucune connection à internet."
+
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
 msgstr "Bu."
 
@@ -1259,11 +1302,11 @@ msgstr "Filtrer les licences."
 msgid "FFE database:"
 msgstr "Base de données FFE :"
 
-msgid "The FFE database is not available."
-msgstr "La base de données FFE n'est pas disponible."
+msgid "No internet connection and no local database."
+msgstr "Aucune base de données locale et aucune connexion à internet."
 
-msgid "No results."
-msgstr "Aucun résultat."
+msgid "Searching..."
+msgstr "Recherche en cours..."
 
 #, python-format
 msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
@@ -2704,6 +2747,9 @@ msgstr "Télécharger les informations des joueur·euses (format ODS)."
 
 msgid "Download the information of the selected players (XLSX format)."
 msgstr "Télécharger les informations des joueur·euses (format XLSX)."
+
+msgid "No results."
+msgstr "Aucun résultat."
 
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."

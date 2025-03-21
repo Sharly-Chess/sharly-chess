@@ -275,6 +275,7 @@ class FfeDatabase(SQLiteDatabase):
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
             ('first_name', '', '%'),
+            ('league', '%', '%'),
             ('club', '%', '%'),
             ('city', '%', '%'),
             ('ffe_licence_number', '', '')
@@ -306,10 +307,25 @@ class FfeDatabase(SQLiteDatabase):
             for row in self.fetchall()
         )
 
-    def get_player_by_ffe_id(self, player_ffe_id: int) -> Player | None:
-        self.execute('SELECT * FROM player WHERE ffe_id = ?', (player_ffe_id, ))
-        return self.get_player_from_row(self.fetchone())
+    def _get_player_by_id(
+        self,
+        field: str,
+        id_: int,
+    ) -> Player | None:
+        self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_, ))
+        if row := self.fetchone():
+            return self.get_player_from_row(row)
+        else:
+            return None
 
-    def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
-        return self.get_player_from_row(self.fetchone())
+    def get_player_by_ffe_id(
+        self,
+        player_ffe_id: int,
+    ) -> Player | None:
+        return self._get_player_by_id('ffe_id', player_ffe_id)
+
+    def get_player_by_fide_id(
+        self,
+        player_fide_id: int,
+    ) -> Player | None:
+        return self._get_player_by_id('fide_id', player_fide_id)

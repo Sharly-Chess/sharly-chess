@@ -91,6 +91,10 @@ nav .btn-link:hover {
 .dropdown-menu.columns-number {
     min-width: 0;
 }
+.dropdown-item.no-hover:hover {
+    color: var(--bs-dropdown-link-color);
+    background-color: transparent;
+}
 .player-ffe-lic {
     color: #ffffff;
     display: inline-block;

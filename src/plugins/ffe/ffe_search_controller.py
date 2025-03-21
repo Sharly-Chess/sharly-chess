@@ -1,12 +1,18 @@
+import time
 from typing import Any, TYPE_CHECKING
 
 from litestar import get
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
+from common import DEVEL_ENV
+from common.exception import PapiWebException
+from common.i18n import ngettext, _
+from common.network import connected
 from data.util import PlayerRatingType, TournamentRating
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
+from plugins.ffe.ffe_sql_server import FFESqlServer
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 
@@ -15,11 +21,13 @@ if TYPE_CHECKING:
 
 class FfeSearchController(BaseEventAdminController):
 
+    MAX_RESULTS: int = 10
+
     @get(
         path='/ffe/search/{event_uniq_id:str}',
         name='ffe-search',
     )
-    async def htmx_search_ffe(
+    async def htmx_ffe_search(
             self,
             request: HTMXRequest,
             event_uniq_id: str,
@@ -35,14 +43,89 @@ class FfeSearchController(BaseEventAdminController):
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
-        players: list['Player'] | None = None
+        search_results: list['Player'] = []
+        search_messages: list[tuple] = []
         if search_ffe:
-            with FfeDatabase() as ffe_database:
-                players: list['Player'] = [player for player in ffe_database.search_player(search_ffe, limit=8)]
+            start: float = 0.0
+            if DEVEL_ENV:
+                start = time.perf_counter()
+            try:
+                with FFESqlServer() as ffe_sql_server:
+                    search_results: list['Player'] = [
+                        player for player in ffe_sql_server.search_player(
+                            search_ffe, limit=self.MAX_RESULTS
+                        )
+                    ]
+                    if DEVEL_ENV:
+                        seconds: float = time.perf_counter() - start
+                        if len(search_results):
+                            message: str = ngettext(
+                                '{num} player found in {seconds:.2f} seconds.',
+                                '{num} players found in {seconds:.2f} seconds.',
+                                len(search_results)
+                            ).format(num=len(search_results), seconds=seconds)
+                        else:
+                            message: str = _('No players found in {seconds:.2f} seconds.').format(seconds=seconds)
+                    else:
+                        if len(search_results):
+                            message: str = ngettext(
+                                '{num} player found.',
+                                '{num} players found.',
+                                len(search_results)
+                            ).format(num=len(search_results))
+                        else:
+                            message: str = _('No players found.')
+                    search_messages.append(
+                        (
+                            'bi-cloud-arrow-down-fill',
+                            'text-primary',
+                            message,
+                        )
+                    )
+            except PapiWebException as e:
+                search_messages.append(('bi-cloud-slash', '', str(e)))
+                start: float = 0.0
+                if DEVEL_ENV:
+                    start = time.perf_counter()
+                if not FfeDatabase().exists():
+                    search_messages.append(('bi-database-slash', '', _('No local database.')))
+                else:
+                    with FfeDatabase() as ffe_database:
+                        search_results: list['Player'] = [
+                            player for player in ffe_database.search_player(
+                                search_ffe, limit=self.MAX_RESULTS)
+                        ]
+                        if DEVEL_ENV:
+                            seconds: float = time.perf_counter() - start
+                            if len(search_results):
+                                message: str = ngettext(
+                                    '{num} player found in {seconds:.2f} seconds.',
+                                    '{num} players found in {seconds:.2f} seconds.',
+                                    len(search_results),
+                                ).format(num=len(search_results), seconds=seconds)
+                            else:
+                                message: str = _('No players found in {seconds:.2f} seconds.').format(seconds=seconds)
+                        else:
+                            if len(search_results):
+                                message: str = ngettext(
+                                    '{num} player found.',
+                                    '{num} players found.',
+                                    len(search_results),
+                                ).format(num=len(search_results))
+                            else:
+                                message: str = _('No players found.')
+                        search_messages.append(
+                            (
+                                'bi-database-fill-check',
+                                'text-primary',
+                                message,
+                            )
+                        )
         return HTMXTemplate(
             template_name='/ffe_search_results.html',
             context= template_context | {
-                'search_results': players,
+                'search_results': search_results,
+                'search_messages': search_messages,
             }
         )
 
@@ -58,29 +141,34 @@ class FfeSearchController(BaseEventAdminController):
         player_ffe_id: int | None,
     ) -> Template | ClientRedirect:
         if player_ffe_id:
-            with FfeDatabase() as ffe_database:
-                player = ffe_database.get_player_by_ffe_id(player_ffe_id)
-                # Try to get more information by requesting the FIDE database
+            if connected():
+                with FFESqlServer() as ffe_sql_server:
+                    ffe_player: Player = ffe_sql_server.get_player_by_ffe_id(player_ffe_id)
+            else:
+                with FfeDatabase() as ffe_database:
+                    ffe_player: Player = ffe_database.get_player_by_ffe_id(player_ffe_id)
+            # Try to get more information by requesting the FIDE database
+            if ffe_player and FideDatabase().exists():
                 with FideDatabase() as fide_database:
-                    if fide_player := fide_database.get_player_by_fide_id(player.fide_id):
-                        player.federation = fide_player.federation
-                        player.title = fide_player.title
+                    if fide_player := fide_database.get_player_by_fide_id(ffe_player.fide_id):
+                        ffe_player.federation = fide_player.federation
+                        ffe_player.title = fide_player.title
                         for rating_type in [
                             TournamentRating.STANDARD,
                             TournamentRating.RAPID,
                             TournamentRating.BLITZ,
                         ]:
                             if (
-                                player.rating_types[rating_type] == PlayerRatingType.ESTIMATED and
+                                ffe_player.rating_types[rating_type] == PlayerRatingType.ESTIMATED and
                                 fide_player.rating_types[rating_type] != PlayerRatingType.ESTIMATED
                             ):
-                                player.ratings[rating_type] = fide_player.ratings[rating_type]
-                                player.rating_types[rating_type] = fide_player.rating_types[rating_type]
+                                ffe_player.ratings[rating_type] = fide_player.ratings[rating_type]
+                                ffe_player.rating_types[rating_type] = fide_player.rating_types[rating_type]
 
         return PlayerAdminController._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
             modal='player',
             action='create',
-            player_from_plugin=player,
+            player_from_plugin=ffe_player,
         )
