@@ -459,35 +459,32 @@ class EventAdminController(BaseEventAdminController):
     ) -> Response[str]:
         """Returns a file with all the vCards of the players."""
         data: str = ''
-        vcf_players = [
-            player for player in players
-            if player.phone or player.mail
-        ]
-        for player in vcf_players:
-            if player.mail or player.phone:
+        for player in players:
+            if not (player.mail or player.phone):
+                continue
+            data += (
+                'BEGIN:VCARD\n'
+                'VERSION:3.0\n'
+            )
+            if player.first_name:
                 data += (
-                    'BEGIN:VCARD\n'
-                    'VERSION:3.0\n'
+                    f'N:{capwords(player.last_name)};{player.first_name}\n'
+                    f'FN:{player.first_name} {capwords(player.last_name)}\n'
                 )
-                if player.first_name:
-                    data += (
-                        f'N:{capwords(player.last_name)};{player.first_name}\n'
-                        f'FN:{player.first_name} {capwords(player.last_name)}\n'
-                    )
-                else:
-                    data += (
-                        f'N:{capwords(player.last_name)}\n'
-                        f'FN:{capwords(player.last_name)}\n'
-                    )
+            else:
                 data += (
-                    f'ORG:{player.club}\n'
-                    f'item1.TEL:{player.phone}\n'
-                    f'item1.X-ABLabel:{_('Personal')}\n'
-                    f'item2.EMAIL;type=INTERNET:{player.mail}\n'
-                    f'item2.X-ABLabel:{_('Personal')}\n'
-                    f'CATEGORIES:{_('Chess')}\n'
-                    'END:VCARD\n\n'
+                    f'N:{capwords(player.last_name)}\n'
+                    f'FN:{capwords(player.last_name)}\n'
                 )
+            data += (
+                f'ORG:{player.club}\n'
+                f'item1.TEL:{player.phone}\n'
+                f'item1.X-ABLabel:{_('Personal')}\n'
+                f'item2.EMAIL;type=INTERNET:{player.mail}\n'
+                f'item2.X-ABLabel:{_('Personal')}\n'
+                f'CATEGORIES:{_('Chess')}\n'
+                'END:VCARD\n\n'
+            )
         return Response(
             content=data,
             media_type='text/x-vcard',

@@ -2694,7 +2694,7 @@ msgid "Download the players."
 msgstr "Télécharger les joueur·euses."
 
 msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
-msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les joueur.euses sans numéros de téléphone ou adresse email ne seront pas inclus."
+msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les joueur·euses sans numéros de téléphone ou adresse email ne seront pas inclus·es."
 
 msgid "Download the information of the selected players (CSV format)."
 msgstr "Télécharger les informations des joueur·euses (format CSV)."
