@@ -3509,9 +3509,8 @@ msgstr "Κλείστε το check-in"
 msgid "Download the players."
 msgstr "Κατεβάστε τους παίκτες."
 
-#, ai_translation
-msgid "Download the vCards of the selected players (VCF format)."
-msgstr "Κατεβάστε το vCards των επιλεγμένων παικτών (VCF format)."
+msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
+msgstr ""
 
 #, ai_translation
 msgid "Download the information of the selected players (CSV format)."
@@ -5413,4 +5412,7 @@ msgstr "vs"
 
 #~ msgid "Create a player"
 #~ msgstr "Δημιουργία ενός παίκτη"
+
+#~ msgid "Download the vCards of the selected players (VCF format)."
+#~ msgstr "Κατεβάστε το vCards των επιλεγμένων παικτών (VCF format)."
 
