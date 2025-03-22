@@ -38,8 +38,10 @@ class AppPluginManager(PluginManager):
         ]
 
     def load_register(self):
-        for plugin in self.enabled_plugins:
+        for plugin in self.all_plugins:
             self.register(plugin, plugin.id)
+            if not plugin.is_enabled:
+                self.unregister(plugin, plugin.id)
 
     def reload_register(self):
         for plugin in self.all_plugins:
