@@ -316,7 +316,7 @@ msgid "Black"
 msgstr "Noirs"
 
 msgid "Blitz"
-msgstr ""
+msgstr "Blitz"
 
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
@@ -414,7 +414,7 @@ msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat."
 
 msgid "Cat."
-msgstr ""
+msgstr "Cat."
 
 msgid "Category"
 msgstr "Catégorie"
@@ -1320,7 +1320,7 @@ msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
 msgid "FIDE ID"
-msgstr ""
+msgstr "FIDE ID"
 
 msgid "FIDE ID:"
 msgstr "Identifiant FIDE :"
@@ -1378,7 +1378,7 @@ msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Féd."
 
 msgid "Fed."
-msgstr ""
+msgstr "Féd."
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
 msgstr "Fed."
@@ -1508,7 +1508,7 @@ msgid "Games won with black"
 msgstr "Nombre de parties gagnées avec les noirs"
 
 msgid "Gender"
-msgstr ""
+msgstr "Genre"
 
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Genre"
@@ -1765,7 +1765,7 @@ msgid "League:"
 msgstr "Ligue :"
 
 msgid "Libraries"
-msgstr ""
+msgstr "Bibliothèques"
 
 msgid "Licence number:"
 msgstr "Numéro de licence :"
@@ -1939,7 +1939,7 @@ msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
 msgstr "NV"
 
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Nom"
@@ -2166,7 +2166,7 @@ msgid "No upcoming events."
 msgstr "Aucun évènement à venir."
 
 msgid "No update found."
-msgstr ""
+msgstr "Aucun mise à jour trouvée."
 
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
@@ -2439,7 +2439,7 @@ msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
 
 msgid "Player updates are possible, select the players to update:"
-msgstr ""
+msgstr "Des mises à jour sont possibles, sélectionnez les joueur·euses à mettre à jour :"
 
 msgid "Players"
 msgstr "Joueur·euses"
@@ -2696,7 +2696,7 @@ msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
 
 msgid "Rapid"
-msgstr ""
+msgstr "Rapide"
 
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapide"
@@ -3008,7 +3008,7 @@ msgid "Split by:"
 msgstr "Rupture :"
 
 msgid "Standard"
-msgstr ""
+msgstr "Standard"
 
 msgid "Standard rating"
 msgstr "Classement standard"
@@ -3767,7 +3767,7 @@ msgid "Update"
 msgstr "Modifier"
 
 msgid "Update players"
-msgstr ""
+msgstr "Mettre à jour les joueur·euses"
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
@@ -3895,7 +3895,7 @@ msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "O"
 
 msgid "YOB"
-msgstr ""
+msgstr "An."
 
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "An."
