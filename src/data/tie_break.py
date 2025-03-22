@@ -47,9 +47,21 @@ class TieBreakManager:
             plugin_manager.hook.get_extra_tie_break_classes()
         ))
 
-    @staticmethod
-    def option_types() -> list[type['AbstractTieBreakOption']]:
-        return OPTION_CLASSES
+    @classmethod
+    def tie_break_type_by_id(cls) -> dict[str, type['AbstractTieBreak']]:
+        return {
+            tie_break_type().id: tie_break_type
+            for tie_break_type in cls.tie_break_types()
+        }
+
+    @classmethod
+    def tie_break_by_papi_id(cls) -> dict[str, 'AbstractTieBreak']:
+        papi_tie_breaks: dict[str, 'AbstractTieBreak'] = {}
+        for tie_break_type in cls.tie_break_types():
+            tie_break = tie_break_type()
+            if tie_break.papi_id:
+                papi_tie_breaks[tie_break.papi_id] = tie_break
+        return papi_tie_breaks
 
     @classmethod
     def papi_compatible_tie_breaks(cls) -> list['AbstractTieBreak']:
@@ -59,50 +71,16 @@ class TieBreakManager:
             if tie_break_type().papi_id is not None
         ]
 
-    @classmethod
-    def tie_break_from_papi_id(
-        cls, papi_id: str
-    ) -> 'AbstractTieBreak | None':
-        return next(
-            (
-                tie_break_type()
-                for tie_break_type in cls.tie_break_types()
-                if tie_break_type().papi_id == papi_id
-            ),
-            None,
-        )
+    @staticmethod
+    def option_types() -> list[type['AbstractTieBreakOption']]:
+        return OPTION_CLASSES
 
     @classmethod
-    def tie_break_from_id(
-        cls,
-        tie_break_id: str,
-        options: list['AbstractTieBreakOption'] | None = None
-    ) -> 'AbstractTieBreak | None':
-        """Returns The tie-break matching the ID
-        or None if no tie-break is found for that ID"""
-        return next(
-            (
-                tie_break_type(options)
-                for tie_break_type in cls.tie_break_types()
-                if tie_break_type().id == tie_break_id
-            ),
-            None,
-        )
-
-    @classmethod
-    def option_from_id(
-        cls, option_id: str, value: Any | None = None
-    ) -> 'AbstractTieBreakOption | None':
-        """Returns The tie-break option matching the ID
-        or None if no option is found for that ID"""
-        return next(
-            (
-                option_type(value)
-                for option_type in cls.option_types()
-                if option_type().id == option_id
-            ),
-            None,
-        )
+    def option_type_by_id(cls) -> dict[str, type['AbstractTieBreakOption']]:
+        return {
+            option_type().id: option_type
+            for option_type in cls.option_types()
+        }
 
 
 class AbstractTieBreakOption(ABC):
