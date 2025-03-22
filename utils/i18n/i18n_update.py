@@ -29,7 +29,7 @@ from common.i18n import (
     locale_localized_name,
     locale_flag_url,
     trusted_locales,
-    translators, untrusted_locales,
+    translators,
 )
 from common.logger import (
     print_interactive_error,
@@ -364,7 +364,7 @@ class I18nUpdater:
         for locale_info in self.locale_infos.values():
             locale_info.control()
             if (
-                locale_info.id not in trusted_locales
+                locale_info.id not in self.trusted_locales
                 and locale_info.empty_optional_messages
             ):
                 untrusted_locales_with_missing_translations.append(locale_info.id)
