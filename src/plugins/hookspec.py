@@ -163,11 +163,11 @@ class AppHookSpecs:
     def get_event_form_fields_template(self) -> str:
         """Returns the path of the template for additional fields of the event modal"""
       
-    @hookimpl
+    @hookspec
     def get_event_form_data(self, event: 'Event | None') -> dict[str, Any]:
         """Provide form data for the additional event form fields"""
     
-    @hookimpl
+    @hookspec
     def get_validated_event_form_fields(self, action: str, event: 'Event | None', data: dict[str, str], errors: dict[str, str]) -> dict[str, Any]:
         """Validate the additional event form fields and return as plugin data"""
         
