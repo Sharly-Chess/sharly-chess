@@ -6,6 +6,7 @@ from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
+from networkx.algorithms.tournament import tournament_matrix
 
 from common.i18n import _
 from common.logger import get_logger
@@ -211,7 +212,11 @@ class BaseScreenUserController(BaseUserController):
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-
+        if  web_context.screen.type == ScreenType.RANKING:
+            for tournament in {
+                screen_set.tournament for screen_set in web_context.screen.screen_sets_sorted_by_order
+            }:
+                tournament.compute_player_ranks(after_round=web_context.screen.ranking_round)
         return HTMXTemplate(
             template_name='user/screen.html',
             context=web_context.template_context
