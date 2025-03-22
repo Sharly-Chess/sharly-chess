@@ -73,14 +73,12 @@ class PapiDatabase(AccessDatabase):
         )
         rating_limit1: int = int(self._read_var('EloBase1'))
         rating_limit2: int = int(self._read_var('EloBase2'))
-        tie_breaks: list[AbstractTieBreak] = [
-            tie_break for tie_break in [
-                TieBreakManager.tie_break_from_papi_id(
-                    self._read_var(f'Dep{index}')
-                )
-                for index in range(1, 4)
-            ] if tie_break is not None
-        ]
+        tie_break_by_id = TieBreakManager.tie_break_by_papi_id()
+        tie_breaks: list[AbstractTieBreak] = []
+        for index in range(1, 4):
+            papi_id = self._read_var(f'Dep{index}')
+            if tie_break := tie_break_by_id.get(papi_id, None):
+                tie_breaks.append(tie_break)
         point_value_type: PointValueType = PointValueType.from_papi_value(self._read_var('DecomptePoints'))
         location: str = self._read_var('Lieu')
         start_date: str = self._read_var('DateDebut')

@@ -181,18 +181,21 @@ class TournamentAdminController(BaseEventAdminController):
 
         if action == 'update':
             tie_breaks = []
-            used_tie_break_types: list[type[AbstractTieBreak]] = []
+            tie_break_type_by_id = TieBreakManager.tie_break_type_by_id()
+            used_tie_break_ids: list[str] = []
             for index in range(1, 4):
                 field = f'tie_break_{index}'
                 tie_break_id = WebContext.form_data_to_str(data, field)
                 if not tie_break_id:
                     continue
-                tie_break = TieBreakManager.tie_break_from_id(tie_break_id)
-                if type(tie_break) in used_tie_break_types:
+                if tie_break_id in used_tie_break_ids:
                     errors[field] = _('Tie-break already in use.')
                     break
-                used_tie_break_types.append(type(tie_break))
-                tie_breaks.append(tie_break)
+                used_tie_break_ids.append(tie_break_id)
+                if tie_break_type := (
+                    tie_break_type_by_id.get(tie_break_id, None)
+                ):
+                    tie_breaks.append(tie_break_type())
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
